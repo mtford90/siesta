@@ -225,7 +225,7 @@ module.exports = function (grunt) {
              */
             gruntfile: {
                 files: 'Gruntfile.js',
-                tasks: [ 'jshint:gruntfile' ],
+                tasks: [],
                 options: {
                     livereload: false
                 }
@@ -291,14 +291,20 @@ module.exports = function (grunt) {
         'karma:continuous'
     ]);
 
+    /**
+     * Same thing.
+     */
+    grunt.registerTask('test', [
+        'build'
+    ]);
+
     grunt.registerTask('build-no-test', [
         'clean',
-        'browserify',
-        'html2js',
         'copy:build_appjs',
         'copy:build_vendorjs',
         'karmaconfig'
     ]);
+
 
 
     /**
@@ -309,7 +315,6 @@ module.exports = function (grunt) {
         'cssmin',
         'ngmin',
         'concat:compile_js',
-        'jshint',
         'uglify'
     ]);
 

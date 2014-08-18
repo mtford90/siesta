@@ -13,35 +13,20 @@ describe('abc', function () {
             ObjectMapping = _ObjectMapping_;
         });
 
-//        RestAPI._reset();
-
-//        done();
+        RestAPI._reset();
 
     });
 
     describe('Create Rest API', function () {
-//
-//        it('abc', function (done) {
-//            var api = new RestAPI('Cars', function (err) {
-//                if (err) done(err);
-//                done();
-//                var t = setInterval(function() {
-//                    $rootScope.$apply();
-//                }, 100);
-//            });
-//        });
-
         it('abc', function (done) {
             var pouch = new PouchDB('asdasdas');
             console.log(pouch);
-            pouch.post({
+            pouch.put({
                 name: 'hi'
-            }, function () {
+            }, 'asdasd', function () {
                 done();
             });
         });
-
-
     });
 
 });
