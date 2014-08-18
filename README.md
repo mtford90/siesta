@@ -176,7 +176,31 @@ but at different moments in time. We have a single source of truth.
 
 ### Pagination
 
-TODO
+Pagination is configured in the descriptors. By default we expect no pagination. 
+Example:
+
+```javascript
+api.registerResponseDescriptor({
+    path: 'cars/',
+    method: 'GET',
+    mapping: 'Car',
+    pagination: {
+        count: 'count', 
+        nextPage: 'next',
+        previousPage: 'previous',
+        data: 'data'
+    }
+});
+```
+
+If the API allows us to specify pageSize etc we can do so using the following once this response descriptor
+is configured:
+
+```javascript
+api.get('cars/', {page_size: 5}).then(function (cars) { 
+    // ... 
+});
+```
 
 ### Notifications
 
