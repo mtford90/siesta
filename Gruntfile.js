@@ -78,7 +78,6 @@ module.exports = function (grunt) {
          * The directories to delete when `grunt clean` is executed.
          */
         clean: {
-            css: '<%= build_dir %>/**/*.css',
             build: '<%= build_dir %>',
             compile: '<%= compile_dir %>'
         },
@@ -89,16 +88,6 @@ module.exports = function (grunt) {
          * `build_dir`, and then to copy the assets to `compile_dir`.
          */
         copy: {
-            build_app_assets: {
-                files: [
-                    {
-                        src: [ '**' ],
-                        dest: '<%= build_dir %>/assets/',
-                        cwd: 'src/assets',
-                        expand: true
-                    }
-                ]
-            },
             build_appjs: {
                 files: [
                     {
@@ -118,78 +107,15 @@ module.exports = function (grunt) {
                         expand: true
                     }
                 ]
-            },
-            precompile_vendor_assets: {
-                files: [
-                    {
-                        src: [ '<%= vendor_files.assets %>' ],
-                        dest: '<%= build_dir %>/assets/',
-                        cwd: '.',
-                        expand: true,
-                        flatten: true
-                    }
-                ]
-            },
-            compile_assets: {
-                files: [
-                    {
-                        src: [ '**' ],
-                        dest: '<%= compile_dir %>/assets',
-                        cwd: '<%= build_dir %>/assets',
-                        expand: true
-                    }
-                ]
             }
-        },
 
-        cssmin: {
-            combine: {
-                options: {
-                    banner: '<%= meta.banner %>',
-                    keepSpecialComments: false
-                },
-                files: {
-                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.min.css': [
-                        '<%= build_dir %>/css/*.css',
-                        '<%= build_dir %>/vendor/**/*.css'
-                    ]
-                }
-            }
-        },
-
-        browserify: {
-            build: {
-                src: 'browserified/**/*.js',
-                dest: '<%= build_dir %>/browserified/bundle.js',
-                options: {
-                    postBundleCB: function (err, src, next) {
-                        if (err) {
-                            next(err);
-                        }
-                        else {
-                            next(null, ';' + src + ';');
-                        }
-                    }
-                }
-
-            }
         },
 
         /**
          * `grunt concat` concatenates multiple source files into a single file.
          */
         concat: {
-            /**
-             * The `build_css` target concatenates compiled CSS and vendor CSS
-             * together.
-             */
-            build_css: {
-                src: [
-                    '<%= vendor_files.css %>',
-                    '<%= build_dir %>/css/*.css'
-                ],
-                dest: '<%= build_dir %>/css/<%= pkg.name %>-<%= pkg.version %>.css'
-            },
+
             /**
              * The `compile_js` target is the concatenation of our application source
              * code and all specified vendor source code into a single file.
@@ -242,67 +168,6 @@ module.exports = function (grunt) {
             }
         },
 
-
-        /**
-         * `jshint` defines the rules of our linter as well as which files we
-         * should check. This file, all javascript sources, and all our unit tests
-         * are linted based on the policies listed in `options`. But we can also
-         * specify exclusionary patterns by prefixing them with an exclamation
-         * point (!); this is useful when code comes from a third party but is
-         * nonetheless inside `src/`.
-         */
-        jshint: {
-            src: [
-                '<%= app_files.js %>'
-            ],
-            test: [
-                '<%= app_files.jsunit %>'
-            ],
-            gruntfile: [
-                'Gruntfile.js'
-            ],
-            options: {
-                curly: true,
-                immed: true,
-                newcap: true,
-                noarg: true,
-                sub: true,
-                boss: true,
-                eqnull: true
-            },
-            globals: {}
-        },
-
-        /**
-         * HTML2JS is a Grunt plugin that takes all of your template files and
-         * places them into JavaScript files as strings that are added to
-         * AngularJS's template cache. This means that the templates too become
-         * part of the initial payload as one JavaScript file. Neat!
-         */
-        html2js: {
-            /**
-             * These are the templates from `src/app`.
-             */
-            app: {
-                options: {
-                    base: 'src/app'
-                },
-                src: [ '<%= app_files.atpl %>' ],
-                dest: '<%= build_dir %>/templates-app.js'
-            },
-
-            /**
-             * These are the templates from `src/common`.
-             */
-            common: {
-                options: {
-                    base: 'src/common'
-                },
-                src: [ '<%= app_files.ctpl %>' ],
-                dest: '<%= build_dir %>/templates-common.js'
-            }
-        },
-
         /**
          * The Karma configurations.
          */
@@ -315,39 +180,6 @@ module.exports = function (grunt) {
             continuous: {
                 configFile: '<%= build_dir %>/karma-unit.js',
                 singleRun: true
-            }
-        },
-
-        /**
-         * The `index` task compiles the `index.html` file as a Grunt template. CSS
-         * and JS files co-exist here but they get split apart later.
-         */
-        index: {
-            /**
-             * During development, we don't want to have wait for compilation,
-             * concatenation, minification, etc. So to avoid these steps, we simply
-             * add all script files directly to the `<head>` of `index.html`. The
-             * `src` property contains the list of included files.
-             */
-            build: {
-                dir: '<%= build_dir %>',
-                src: [
-                    '<%= vendor_files.js %>',
-                    '<%= build_dir %>/src/**/*.js'
-                ]
-            },
-
-            /**
-             * When it is time to have a completely compiled application, we can
-             * alter the above to include only a single JavaScript and a single CSS
-             * file. Now we're back!
-             */
-            compile: {
-                dir: '<%= compile_dir %>',
-                src: [
-                    '<%= concat.compile_js.dest %>',
-                    '<%= build_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.min.css'
-                ]
             }
         },
 
