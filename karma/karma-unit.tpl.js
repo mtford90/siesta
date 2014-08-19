@@ -20,8 +20,9 @@ module.exports = function ( karma ) {
     ],
     exclude: [
     ],
-    frameworks: [ 'mocha', 'chai' ],
+    frameworks: [ 'mocha', 'chai-things', 'chai' ],
     plugins: [ 'karma-mocha',
+               'karma-chai-things',
                'karma-chai',
                'karma-phantomjs-launcher',
                'karma-chrome-launcher'

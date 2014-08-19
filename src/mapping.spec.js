@@ -1,6 +1,22 @@
 describe('abc', function () {
 
     var RestAPI;
+    var api;
+
+    function configureAPI(done, callback) {
+        var configCalled = false;
+        api = new RestAPI('myApi', function (err, version) {
+            if (err) done(err);
+            assert.notOk(version);
+            api.version = 1;
+            if (callback) callback();
+            configCalled = true;
+        }, function () {
+            assert.ok(configCalled, 'configuration function should be called');
+            done();
+        });
+        return api;
+    }
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -13,25 +29,11 @@ describe('abc', function () {
         });
 
         RestAPI._reset();
-
     });
 
-    describe('Create Rest API', function () {
+    describe('Create Basic Rest API', function () {
 
-        var api;
-
-        beforeEach(function (done) {
-            var configCalled = false;
-            api = new RestAPI('myApi', function (err, version) {
-                if (err) done(err);
-                assert.notOk(version);
-                api.version = 1;
-                configCalled = true;
-            }, function () {
-                assert.ok(configCalled, 'configuration function should be called');
-                done();
-            });
-        });
+        beforeEach(configureAPI);
 
         describe('persistence', function () {
             it('version is set', function (done) {
@@ -69,17 +71,58 @@ describe('abc', function () {
                 });
             });
 
-            it('version is updated', function (done) {
-                RestAPI._getPouch().get(apiAgain._docId, function (err, doc) {
-                    if (err) done(err);
-                    assert.equal(doc.version, newVersion);
-                    done();
+            describe('persistence', function () {
+                it('version is updated', function (done) {
+                    RestAPI._getPouch().get(apiAgain._docId, function (err, doc) {
+                        if (err) done(err);
+                        assert.equal(doc.version, newVersion);
+                        done();
+                    });
+                });
+            });
+
+
+        });
+    });
+
+    describe('Object mapping registration', function () {
+
+        var api;
+
+        beforeEach(function (done) {
+            api = configureAPI(done, function () {
+                api.registerMapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
             });
         });
 
+        it('mappings', function () {
+            assert.ok(api._mappings.Person);
+            assert.ok(api.Person);
+        });
 
+        describe('persistence', function () {
+            it('version is updated', function (done) {
+                RestAPI._getPouch().get(api._docId, function (err, doc) {
+                    if (err) done(err);
+                    assert.ok(doc.mappings.Person);
 
-    });
+                    done();
+                });
+            });
+            it('reconfig', function (done) {
+                var a = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                }, function () {
+                    console.log(a._mappings);
+                    assert.ok(a._mappings.Person);
+                    done();
+                });
+            })
+        });
+
+    })
 
 });

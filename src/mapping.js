@@ -23,11 +23,37 @@ angular.module('restkit.mapping', ['logging'])
         }
     })
 
-    .factory('RestAPI', function (wrappedCallback, jlog, guid) {
+    .factory('Pouch', function (guid, jlog) {
+
+        var $log = jlog.loggerWithName('Pouch');
+
+        var pouch = PouchDB('Rest');
+        return {
+            /**
+             * Create a randomly named PouchDB instance.
+             * Used for testing purposes.
+             * @private
+             */
+            reset: function () {
+                var dbName = guid();
+                $log.debug('_reset:', dbName);
+                pouch = new PouchDB(dbName);
+            },
+
+            /**
+             * Return the global PouchDB instance.
+             * Used for testing purposes.
+             * @returns {PouchDB}
+             */
+            getPouch: function () {
+                return pouch;
+            }
+        }
+    })
+
+    .factory('RestAPI', function (wrappedCallback, jlog, Model, Pouch) {
 
         var $log = jlog.loggerWithName('RestAPI');
-
-        var pouch;
 
         /**
          * @param name
@@ -50,6 +76,8 @@ angular.module('restkit.mapping', ['logging'])
             // Current version used for migrations.
             this.version = null;
 
+            this._mappings = {};
+
             /**
              * Serialise this RestAPI config into a pouchdb document.
              *
@@ -58,6 +86,7 @@ angular.module('restkit.mapping', ['logging'])
             function serialiseIntoPouchDoc(doc) {
                 doc.name = self._name;
                 doc.version = self.version;
+                doc.mappings = self._mappings;
                 return doc;
             }
 
@@ -80,6 +109,7 @@ angular.module('restkit.mapping', ['logging'])
              */
             function updateSelf(doc) {
                 self.version = doc.version;
+                self._mappings = doc.mappings;
             }
 
             /**
@@ -94,10 +124,10 @@ angular.module('restkit.mapping', ['logging'])
              * setup.
              */
             function init() {
-                pouch.get(self._docId).then(function (doc) {
+                Pouch.getPouch().get(self._docId).then(function (doc) {
                     updateSelf(doc);
                     _.bind(configureCallback, self, null, doc.version)();
-                    pouch.put(serialiseIntoPouchDoc(doc), function (err, resp) {
+                    Pouch.getPouch().put(serialiseIntoPouchDoc(doc), function (err, resp) {
                         if (!err) {
                             updateDoc(doc, resp);
                             updateSelf(doc);
@@ -108,7 +138,7 @@ angular.module('restkit.mapping', ['logging'])
                     if (err.status == 404) {
                         _.bind(configureCallback, self, null, null)();
                         var doc = serialiseIntoPouchDoc({});
-                        pouch.put(doc, self._docId, function (err, resp) {
+                        Pouch.getPouch().put(doc, self._docId, function (err, resp) {
                             if (!err) {
                                 doc._id = resp.id;
                                 doc._rev = resp.rev;
@@ -127,28 +157,36 @@ angular.module('restkit.mapping', ['logging'])
 
         }
 
-        /**
-         * Create a randomly named PouchDB instance.
-         * Used for testing purposes.
-         * @private
-         */
-        RestAPI._reset = function () {
-            var dbName = guid();
-            $log.debug('_reset:', dbName);
-            pouch = new PouchDB(dbName);
-        };
 
-        /**
-         * Return the global PouchDB instance.
-         * Used for testing purposes.
-         * @returns {PouchDB}
-         * @private
-         */
-        RestAPI._getPouch = function () {
-            return pouch;
+        RestAPI._reset = Pouch.reset;
+
+        RestAPI._getPouch = Pouch.getPouch;
+
+        RestAPI.prototype.registerMapping = function (name, mapping) {
+            this._mappings[name] = mapping;
+            this[name] = new Model(name);
         };
 
         return RestAPI;
+    })
+
+    .factory('Model', function ($q) {
+        function Model(name) {
+            this._name = name;
+        }
+        Model.prototype.query = function (opts, callback) {
+            if (opts) {
+                var deferred = $q.defer();
+                // TODO: Execute the query.
+                return deferred.promise;
+            }
+            else {
+                return this.all(callback);
+            }
+        };
+        Model.prototype.get = function (id) {};
+        Model.prototype.all = function () {};
+        return Model;
     })
 
 ;

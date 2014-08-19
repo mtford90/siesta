@@ -12,8 +12,6 @@ Current limitations:
 
 ## Quick Start
 
-Full documentation is available [here (todo)](#) but here's how you can get started quickly.
-
 ### Step 1: Installation
 
 TODO
@@ -399,6 +397,15 @@ var api = new RestAPI('MyAPI', function (err, version) {
 We can synchronise with CouchDB instances thanks to the use of PouchDB behind the scenes.
 
 TODO
+
+## Recipes
+
+Useful stuff that can be done with the combination of <rest> and the underlying PouchDB.
+
+### Custom Views
+
+TODO: Install custom PouchDB views. Useful for analysis of data etc.
+
 
 ## Contributing
 

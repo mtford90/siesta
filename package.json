@@ -48,6 +48,8 @@
     "grunt-contrib-htmlmin": "~0.3.0",
     "es5-shim": "~4.0.1",
     "q": "~1.0.1",
-    "sinon": "~1.10.3"
+    "sinon": "~1.10.3",
+    "chai-things": "~0.2.0",
+    "karma-chai-things": "~0.1.3"
   }
 }
