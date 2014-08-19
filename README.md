@@ -23,9 +23,9 @@ TODO
 The point of entry is `RestAPI` and is used to configure each REST API you want to interface with.
 
 ```javascript
-var api = new RestAPI('MyAPI', function (err, isNew) {
+var api = new RestAPI('MyAPI', function (err, version) {
     if (!err) {
-        if (isNew) {
+        if (!version) { // MyAPI has never been configured on this browser.
             // Base URL.
             this.setBaseURL('http://mysite.com/api/');
             configureObjectMappings(this);
@@ -101,17 +101,17 @@ function configureDescriptors(api) {
 
 ```javascript
 // Get objects
-api.get('cars/', function (err, cars) {
+api.GET('cars/', function (err, cars) {
     console.log('I got me some cars!', cars);
 });
 
-api.get('cars/5', function (err, car) {
+api.GET('cars/5', function (err, car) {
     console.log('I got me a car!', car);
 });
 
 // Create objects
 var person = new api.Person({name: 'Michael'});
-person.post(function (err) {
+person.POST(function (err) {
     if (!err) { 
         var car = new api.Car({colour: red, owner: person});
         promise = car.post().then(function () {
@@ -126,9 +126,16 @@ person.post(function (err) {
 });
 
 // Update object
-
+person.name = 'Bob';
+person.PATCH(function (err) {
+    // ...
+});
 
 // Delete object
+person.DELETE(function (err) {
+    // ...
+});
+
 ```
 
 ### Step 6: Play with local data
@@ -261,6 +268,7 @@ $rootScope.on('Car', function (notification) {
              },
              changes: [{
                  type: 'updated',
+                 key: 'colour',
                  old: 'red',
                  new: 'blue'
              }]
@@ -271,6 +279,116 @@ $rootScope.on('Car', function (notification) {
     notification.object.owner.get(function (err, person) {
         console.log(person);
     });
+});
+```
+
+### Schema Migrations
+
+Schema migrations are rudimentary at the moment. If you detect a change in version when setting
+up the Rest API you can either delete all the data and start from scratch:
+
+```javascript
+var api = new RestAPI('MyAPI', function (err, version) {
+    if (!err) {
+        if (version) {
+            if (version !== MY_VERSION) {
+                api.reset();
+            }
+        }
+        doFirstTimeSetup();
+    }
+    else {
+        handleError(err);
+    }
+});
+```
+
+or you could implement a migration scheme:
+
+```javascript
+var api = new RestAPI('MyAPI', function (err, version) {
+    if (!err) {
+        if (!version) {
+            doFirstTimeSetup();
+            api.setVersion(THIRD_VERSION);
+        }
+        if (version < SECOND_VERSION) {
+            addSomeMappings();
+            api.setVersion(SECOND_VERSION);
+        }
+        if (version < THIRD_VERSION) {
+            addSomeIndexes(); 
+            api.setVersion(THIRD_VERSION);
+        }
+        // ... and so on.
+    }
+    else {
+        handleError(err);
+    }
+});
+```
+
+The problem with this is that things could quickly get out of hand. I would suggest having a migrations
+module like follows:
+
+```javascript
+angular.module('myApp.rest.migrations')
+
+    .factory('applyMigrations', function (migrations, fromScratch) {
+        return function (api) {
+            if (!api.version) {
+                fromScratch(api);
+            }
+            else {
+                _.each(migrations, function (migration) {
+                    if (api.version < migration.version) {
+                        migration.apply(api);
+                        api.version = migration.version;
+                    }
+                });
+            }
+        }
+    })
+
+    .factory('migrations', function (Migration1, Migration2) {
+        return [Migration1, Migration2];
+    })
+    
+    .factory('fromScratch', function () {
+        return function (api) {
+            // First time setup.
+        };
+    })
+    
+    .factory('Migration1', function () {
+        return {
+            version: 1,
+            apply: function () {
+                // Add mappings, indexes, change data etc
+            };
+        }
+    })    
+    
+    .factory('Migration2', function () {
+        return {
+            version: 2,
+            apply: function () {
+                // Add some more mappings, indexes, change data etc
+            };
+        }
+    })
+```
+
+and then when you setup the Rest API:
+
+```javascript
+var api = new RestAPI('MyAPI', function (err, version) {
+    if (!err) {
+        applyMigrations(api);
+    }
+    else {
+        handleError(err);
+    }
 });
 ```
 
