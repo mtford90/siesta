@@ -83,7 +83,7 @@ describe('abc', function () {
         })
     });
 
-    describe.only('Indexes', function () {
+    describe('Indexes', function () {
         it('field combinations', function () {
             var combinations = Indexes._getFieldCombinations(['field1', 'field2', 'field3']);
             assert.equal(7, combinations.length);

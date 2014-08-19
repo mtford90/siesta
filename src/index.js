@@ -2,7 +2,13 @@ angular.module('restkit.indexing', ['restkit.mapping'])
 
     .factory('Indexes', function (Index) {
 
-        // http://stackoverflow.com/questions/5752002/find-all-possible-subset-combos-in-an-array
+        /**
+         * Adapted from:
+         * http://stackoverflow.com/questions/5752002/find-all-possible-subset-combos-in-an-array
+         * @param a
+         * @param min
+         * @returns {Array}
+         */
         function combine(a, min) {
             var fn = function(n, src, got, all) {
                 if (n == 0) {
@@ -70,6 +76,11 @@ angular.module('restkit.indexing', ['restkit.mapping'])
             }
         }
 
+        Index.prototype._getDesignDocName = function () {
+            var name = this._getName();
+            return '_design/' + name;
+        };
+
         /**
          * Return a PouchDB secondary index.
          * See http://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html
@@ -78,7 +89,7 @@ angular.module('restkit.indexing', ['restkit.mapping'])
         Index.prototype._constructPouchDbView = function () {
             var name = this._getName();
             var index = {
-                _id: '_design/' + name,
+                _id: this._getDesignDocName(),
                 views: {}
             };
             index.views[name] = {
