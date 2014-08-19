@@ -23,7 +23,7 @@ TODO
 The point of entry is `RestAPI` and is used to configure each REST API you want to interface with.
 
 ```javascript
-var api = new RestAPI('MyAPI', function (err, version) {
+var api = new RestAPI('MyAPI', function configure (err, version) {
     if (!err) {
         if (!version) { // MyAPI has never been configured on this browser.
             // Base URL.
@@ -31,11 +31,13 @@ var api = new RestAPI('MyAPI', function (err, version) {
             configureObjectMappings(this);
             configureDescriptors(this);
         }
-        doStuff();
     }
     else {
         handleError(err);
     }
+}, function done () {
+    // All done.
+    doStuff();
 });
 ```
 
@@ -51,7 +53,7 @@ function configureObjectMappings(api) {
         relationships: {
             owner: {
                 mapping: 'Person',
-                type: 'OneToOne',
+                type: RelationshipType.ManyToOne,
                 reverse: 'cars' // Will show up on Person objects
             }
         },
