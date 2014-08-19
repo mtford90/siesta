@@ -1,4 +1,4 @@
-describe.only('mapping!', function () {
+describe('mapping!', function () {
 
     var Index, Pouch, Indexes, Query, Mapping;
 
@@ -22,26 +22,36 @@ describe.only('mapping!', function () {
 
     it('_fields', function () {
         var m = new Mapping({
-            name: 'name',
+            type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
         });
         assert.include(m._fields, 'id');
         assert.include(m._fields, 'field1');
         assert.include(m._fields, 'field2');
+        assert.notInclude(m._fields, 'type');
     });
 
-    it('name', function () {
+    it('type', function () {
         var m = new Mapping({
-            name: 'name',
+            type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
         });
-        assert.equal(m.name, 'name');
+        assert.equal(m.type, 'type');
+    });
+
+    it('id', function () {
+        var m = new Mapping({
+            type: 'type',
+            id: 'id',
+            attributes: ['field1', 'field2']
+        });
+        assert.equal(m.id, 'id');
     });
 
     describe('validation', function () {
-        it('no name', function () {
+        it('no type', function () {
             var m = new Mapping({
                 id: 'id',
                 attributes: ['field1', 'field2']
@@ -49,7 +59,93 @@ describe.only('mapping!', function () {
             var errors = m._validate();
             console.log('errors:', errors);
             assert.equal(1, errors.length);
-        }) ;
+        });
     });
 
+    it('installation', function (done) {
+        var m = new Mapping({
+            type: 'Type',
+            id: 'id',
+            attributes: ['field1', 'field2']
+        });
+        m.install(function (err) {
+            if (err) done(err);
+            assert.equal(Index.indexes.length, 8);
+            done();
+        });
+    });
+
+
+    describe.only('queries', function () {
+
+        beforeEach(function (done) {
+            Pouch.getPouch().bulkDocs([
+                {
+                    type: 'Car',
+                    id: 4,
+                    color: 'red',
+                    name: 'Aston Martin'
+                },
+                {
+                    type: 'Car',
+                    id: 5,
+                    color: 'blue',
+                    name: 'Ford'
+                }
+            ], function (err) {
+                done(err);
+            });
+        });
+
+        it('all', function (done) {
+            var m = new Mapping({
+                type: 'Car',
+                id: 'id',
+                attributes: ['color', 'name']
+            });
+            m.install(function (err) {
+                if (err) done(err);
+                m.all(function (err, cars) {
+                    if (err) done(err);
+                    assert.equal(cars.length, 2);
+                    done();
+                });
+            });
+
+        });
+
+        it('query', function (done) {
+            var m = new Mapping({
+                type: 'Car',
+                id: 'id',
+                attributes: ['color', 'name']
+            });
+            m.install(function (err) {
+                if (err) done(err);
+                m.query({color: 'red'}, function (err, cars) {
+                    if (err) done(err);
+                    assert.equal(cars.length, 1);
+                    done();
+                });
+            });
+        });
+
+        it('get', function (done) {
+            var m = new Mapping({
+                type: 'Car',
+                id: 'id',
+                attributes: ['color', 'name']
+            });
+            m.install(function (err) {
+                if (err) done(err);
+                m.get(4, function (err, car) {
+                    if (err) done(err);
+                    assert.ok(car);
+                    assert.equal(car.color, 'red');
+                    done();
+                });
+            });
+        });
+
+    });
 });

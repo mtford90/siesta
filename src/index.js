@@ -1,6 +1,8 @@
 angular.module('restkit.indexing', ['restkit'])
 
-    .factory('Indexes', function (Index) {
+    .factory('Indexes', function (Index, jlog) {
+
+        var $log = jlog.loggerWithName('Indexes');
 
         /**
          * Adapted from:
@@ -10,7 +12,7 @@ angular.module('restkit.indexing', ['restkit'])
          * @returns {Array}
          */
         function combine(a, min) {
-            var fn = function(n, src, got, all) {
+            var fn = function (n, src, got, all) {
                 if (n == 0) {
                     if (got.length > 0) {
                         all[all.length] = got;
@@ -30,10 +32,12 @@ angular.module('restkit.indexing', ['restkit'])
         }
 
         function getFieldCombinations(fields) {
-            return combine(fields, 1);
+            var combinations = combine(fields, 1);
+            combinations.push([]);
+            return  combinations;
         }
 
-        function constructIndexes (modelName, fields) {
+        function constructIndexes(modelName, fields) {
             var combinations = getFieldCombinations(fields);
             return _.map(combinations, function (fields) {
                 return new Index(modelName, fields);
@@ -41,7 +45,7 @@ angular.module('restkit.indexing', ['restkit'])
         }
 
         return {
-            installIndexes: function(modelName, fields, callback) {
+            installIndexes: function (modelName, fields, callback) {
                 var indexes = constructIndexes(modelName, fields);
                 var numCompleted = 0;
                 var errors = [];
@@ -52,6 +56,7 @@ angular.module('restkit.indexing', ['restkit'])
                         }
                         numCompleted++;
                         if (numCompleted == indexes.length) {
+                            $log.info('Successfully installed all indexes');
                             callback(errors.length ? errors : null);
                         }
                     });
@@ -65,6 +70,7 @@ angular.module('restkit.indexing', ['restkit'])
 
     .factory('Index', function (Pouch, jlog) {
         var $log = jlog.loggerWithName('Index');
+
         function Index(model, fields_or_field) {
             this.model = model;
             if (fields_or_field.length) {
@@ -105,32 +111,46 @@ angular.module('restkit.indexing', ['restkit'])
         };
 
         Index.prototype._constructMapFunction = function () {
-            var mapFunc = function (doc) {
-                var fields = $1;
-                var aggField = '';
-                for (var idx in fields) {
-                    //noinspection JSUnfilteredForInLoop
-                    var field = fields[idx];
-                    var value = doc[field];
-                    if (value !== null && value !== undefined) {
-                        aggField += value.toString() + '_';
+            var mapFunc;
+            var onlyEmptyFieldSetSpecified = (this.fields.length == 1 && !this.fields[0].length);
+            var noFieldSetsSpecified = !this.fields.length || onlyEmptyFieldSetSpecified;
+            if (noFieldSetsSpecified) {
+                mapFunc = function (doc) {
+                    var type = "$2";
+                    if (doc.type == type) {
+                        emit(doc.type, doc);
                     }
-                    else if(value === null) {
-                        aggField += 'null_';
+                }.toString();
+            }
+            else {
+                mapFunc = function (doc) {
+                    var type = "$2";
+                    if (doc.type == type) {
+                        var fields = $1;
+                        var aggField = '';
+                        for (var idx in fields) {
+                            //noinspection JSUnfilteredForInLoop
+                            var field = fields[idx];
+                            var value = doc[field];
+                            if (value !== null && value !== undefined) {
+                                aggField += value.toString() + '_';
+                            }
+                            else if (value === null) {
+                                aggField += 'null_';
+                            }
+                            else {
+                                aggField += 'undefined_';
+                            }
+                        }
+                        aggField = aggField.substring(0, aggField.length - 1);
+                        emit(aggField, doc);
                     }
-                    else {
-                        aggField += 'undefined_';
-                    }
-                }
-                aggField = aggField.substring(0, aggField.length-1);
-                if (doc.type == "$2") {
-                    emit(aggField, doc);
-                }
-
-            }.toString();
-            var arr = this._fieldArrayAsString();
-            mapFunc = mapFunc.replace('$1', arr);
+                }.toString();
+                var arr = this._fieldArrayAsString();
+                mapFunc = mapFunc.replace('$1', arr);
+            }
             mapFunc = mapFunc.replace('$2', this.model);
+            $log.debug('mapFunc:', mapFunc);
             return mapFunc;
         };
 
@@ -140,6 +160,7 @@ angular.module('restkit.indexing', ['restkit'])
         };
 
         Index.prototype.install = function (callback) {
+            var self = this;
             var constructPouchDbView = this._constructPouchDbView();
             var indexName = this._getName();
             $log.debug('Installing Index: ' + indexName, constructPouchDbView);
@@ -150,9 +171,14 @@ angular.module('restkit.indexing', ['restkit'])
                         err = null;
                     }
                 }
+                if (!err && Index.indexes.indexOf(self) < 0) {
+                    Index.indexes.push(self);
+                }
                 callback(err, resp);
             });
         };
+
+        Index.indexes = [];
 
         return Index;
     })

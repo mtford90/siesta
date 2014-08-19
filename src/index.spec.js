@@ -74,6 +74,7 @@ describe('abc', function () {
             var i = new Index('Car', ['colour', 'name']);
             i.install(function (err) {
                 if (err) done(err);
+                assert.include(Index.indexes, i);
                 Pouch.getPouch().get('_design/' + i._getName(), function (err, doc) {
                     if (err) done(err);
                     assert.ok(doc);
@@ -86,13 +87,13 @@ describe('abc', function () {
     describe('Indexes', function () {
         it('field combinations', function () {
             var combinations = Indexes._getFieldCombinations(['field1', 'field2', 'field3']);
-            assert.equal(7, combinations.length);
+            assert.equal(8, combinations.length);
         });
 
         it('indexes', function () {
             var indexes = Indexes._constructIndexes('Car', ['field1', 'field2', 'field3']);
             console.log('indexes', indexes);
-            assert.equal(7, indexes.length);
+            assert.equal(8, indexes.length);
             _.each(indexes, function (i) {assert.ok(i.install)});
         });
 

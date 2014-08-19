@@ -1,6 +1,9 @@
 angular.module('restkit.query', ['restkit', 'restkit.indexing'])
 
-    .factory('Query', function (Index, Pouch) {
+    .factory('Query', function (Index, Pouch, jlog) {
+
+        var $log = jlog.loggerWithName('Query');
+
         function Query(modelName, query) {
             this.modelName = modelName;
             this.query = query;
@@ -11,12 +14,20 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing'])
             var designDocId = this._getDesignDocName();
             Pouch.getPouch().get(designDocId, function (err, doc) {
                 if (!err) {
-                    Pouch.getPouch().query(self._getIndexName(), {key: self._constructKey()}, function (err, resp) {
+                    var b = self._getIndexName();
+                    var key = self._constructKey();
+                    if (!key.length) {
+                        key = self.modelName;
+                    }
+                    $log.debug('Executing query ' + b + ':' + ' ' + key);
+                    Pouch.getPouch().query(b, {key: key}, function (err, resp) {
                         if (err) {
                             if (callback) callback(err);
                         }
                         else {
-                            if (callback) callback(null, resp.rows);
+                            var results = _.pluck(resp.rows, 'value');
+                            $log.debug('Executed query ' + b + ':' + ' ' + key, {results: results, totalRows: resp.total_rows});
+                            if (callback) callback(null, results);
                         }
                     });
                 }
