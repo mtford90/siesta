@@ -1,4 +1,4 @@
-angular.module('restkit.query', ['restkit.mapping', 'restkit.indexing'])
+angular.module('restkit.query', ['restkit', 'restkit.indexing'])
 
     .factory('Query', function (Index, Pouch) {
         function Query(modelName, query) {

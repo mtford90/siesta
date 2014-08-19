@@ -1,4 +1,4 @@
-angular.module('restkit.indexing', ['restkit.mapping'])
+angular.module('restkit.indexing', ['restkit'])
 
     .factory('Indexes', function (Index) {
 

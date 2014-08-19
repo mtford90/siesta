@@ -1,4 +1,4 @@
-describe.only('query', function () {
+describe('query', function () {
 
     var Index, Pouch, Indexes, Query;
 
