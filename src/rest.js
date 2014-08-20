@@ -180,7 +180,9 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             var opts = $.extend(true, {}, mapping);
             opts.type = name;
             opts.api = this._name;
-            this[name] = new Mapping(opts);
+            var mappingObject = new Mapping(opts);
+            this[name] = mappingObject;
+            return mappingObject;
         };
 
         return RestAPI;

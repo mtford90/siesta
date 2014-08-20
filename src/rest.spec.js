@@ -103,7 +103,7 @@ describe('rest', function () {
                 });
             });
 
-            describe.only('raw mapping to Mapping object', function () {
+            describe('raw mapping to Mapping object', function () {
                 function assertMapping(api) {
                     var rawMapping = api._mappings.Person;
                     assert.ok(rawMapping);
