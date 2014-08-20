@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query'])
 
-    .factory('Mapping', function (Indexes, RawQuery, defineSubProperty) {
+    .factory('Mapping', function (Indexes, Query, defineSubProperty) {
         function Mapping(opts) {
             var self = this;
             this._opts = opts;
@@ -28,14 +28,14 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         }
 
         Mapping.prototype.query = function (query, callback) {
-            var q = new RawQuery(this.api, this.type, query);
+            var q = new Query(this, query);
             q.execute(callback);
         };
 
         Mapping.prototype.get = function (id, callback) {
             var opts = {};
             opts[this.id] = id;
-            var q = new RawQuery(this.api, this.type, opts);
+            var q = new Query(this, opts);
             q.execute(function (err, rows) {
                 var obj = null;
                 if (!err && rows.length) {
@@ -51,7 +51,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         };
 
         Mapping.prototype.all = function (callback) {
-            var q = new RawQuery(this.api, this.type, {});
+            var q = new Query(this, {});
             q.execute(callback);
         };
 

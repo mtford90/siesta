@@ -51,7 +51,15 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         }
     })
 
-    .factory('RestAPI', function (wrappedCallback, jlog, Mapping, Pouch) {
+    .factory('RestAPIRegistry', function () {
+        function RestAPIRegistry () {}
+        RestAPIRegistry.prototype.register = function (api) {
+            this[api._name] = api;
+        };
+        return new RestAPIRegistry();
+    })
+
+    .factory('RestAPI', function (wrappedCallback, jlog, Mapping, Pouch, RestAPIRegistry) {
 
         var $log = jlog.loggerWithName('RestAPI');
 
@@ -89,19 +97,6 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                 doc.version = self.version;
                 doc.mappings = self._mappings;
                 return doc;
-            }
-
-            /**
-             * Given a response from PouchDB, update the document with new _id and _rev so
-             * that when we next push to PouchDB we're informing it which version of the
-             * document we think we have.
-             * @param doc
-             * @param resp
-             */
-            function updateDoc(doc, resp) {
-                doc._id = resp.id;
-                doc._rev = resp.rev;
-                self._doc = doc;
             }
 
             /**
@@ -162,7 +157,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             }
 
             function finishUp(err) {
-                RestAPI[self._name] = self;
+                RestAPIRegistry.register(self);
                 wrappedCallback(finishedCallback)(err);
             }
 

@@ -1,5 +1,50 @@
-angular.module('restkit.query', ['restkit', 'restkit.indexing'])
+angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDocAdapter'])
 
+    /**
+     * Query and return Fondant objects.
+     */
+    .factory('Query', function (RawQuery, jlog, PouchDocAdapter,RestError) {
+        var $log = jlog.loggerWithName('Query');
+        function Query(mapping, query) {
+            this.mapping = mapping;
+            this.query = query;
+        }
+
+        Query.prototype.execute = function (callback) {
+
+            var rawQuery = new RawQuery(this.mapping.api, this.mapping.type, this.query);
+            rawQuery.execute(function (err, results) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    try {
+                        $log.debug('got results', results);
+                        var fondantObjects = _.map(results, function (r) {
+                            return PouchDocAdapter.toNew(r);
+                        });
+                        $log.debug('got fondant objects', fondantObjects);
+                        if (callback) callback(null, fondantObjects);
+                    }
+                    catch (err) {
+                        if (err instanceof RestError) {
+                            if (callback) callback(err);
+                        }
+                        else {
+                            throw err;
+                        }
+                    }
+
+                }
+            });
+        };
+
+        return Query;
+    })
+
+    /**
+     * Query and return raw pouchdb documents.
+     */
     .factory('RawQuery', function (Index, Pouch, jlog) {
 
         var $log = jlog.loggerWithName('RawQuery');
@@ -37,6 +82,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing'])
                 }
             })
         };
+
 
         RawQuery.prototype._getFields = function () {
             var fields = [];

@@ -1,6 +1,6 @@
 describe('mapping!', function () {
 
-    var Index, Pouch, Indexes, RawQuery, Mapping;
+    var Index, Pouch, Indexes, RawQuery, Mapping, RestObject, RestAPI;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -8,12 +8,14 @@ describe('mapping!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _RestAPI_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
             Mapping = _Mapping_;
+            RestObject = _RestObject_;
+            RestAPI = _RestAPI_;
         });
 
         Pouch.reset();
@@ -65,7 +67,7 @@ describe('mapping!', function () {
             var m = new Mapping({
                 id: 'id',
                 attributes: ['field1', 'field2'],
-                type:'Car'
+                type: 'Car'
             });
             var errors = m._validate();
             console.log('errors:', errors);
@@ -88,79 +90,67 @@ describe('mapping!', function () {
     });
 
 
-    describe('queries', function () {
-
+    describe.only('queries', function () {
+        var api, mapping;
         beforeEach(function (done) {
-            Pouch.getPouch().bulkDocs([
-                {
-                    type: 'Car',
-                    id: 4,
-                    color: 'red',
-                    name: 'Aston Martin',
-                    api: 'myApi'
-                },
-                {
-                    type: 'Car',
-                    id: 5,
-                    color: 'blue',
-                    name: 'Ford',
-                    api: 'myApi'
-                }
-            ], function (err) {
-                done(err);
+            api = new RestAPI('myApi', function (err) {
+                if (err) done(err);
+                mapping = api.registerMapping('Car', {
+                    id: 'id',
+                    attributes: ['color', 'name']
+                });
+            }, function (err) {
+                if (err) done(err);
+                Pouch.getPouch().bulkDocs([
+                    {
+                        type: 'Car',
+                        id: 4,
+                        color: 'red',
+                        name: 'Aston Martin',
+                        api: 'myApi'
+                    },
+                    {
+                        type: 'Car',
+                        id: 5,
+                        color: 'blue',
+                        name: 'Ford',
+                        api: 'myApi'
+                    }
+                ], function (err) {
+                    done(err);
+                });
             });
         });
 
         it('all', function (done) {
-            var m = new Mapping({
-                type: 'Car',
-                id: 'id',
-                attributes: ['color', 'name'],
-                api: 'myApi'
-            });
-            m.install(function (err) {
+            mapping.all(function (err, cars) {
                 if (err) done(err);
-                m.all(function (err, cars) {
-                    if (err) done(err);
-                    assert.equal(cars.length, 2);
-                    done();
+                assert.equal(cars.length, 2);
+                _.each(cars, function (car) {
+                    assert.instanceOf(car, RestObject);
                 });
+                done();
             });
-
         });
 
         it('query', function (done) {
-            var m = new Mapping({
-                type: 'Car',
-                id: 'id',
-                attributes: ['color', 'name'],
-                api: 'myApi'
-            });
-            m.install(function (err) {
+            mapping.query({color: 'red'}, function (err, cars) {
                 if (err) done(err);
-                m.query({color: 'red'}, function (err, cars) {
-                    if (err) done(err);
-                    assert.equal(cars.length, 1);
-                    done();
+                assert.equal(cars.length, 1);
+                _.each(cars, function (car) {
+                    assert.instanceOf(car, RestObject);
                 });
+                done();
             });
         });
 
         it('get', function (done) {
-            var m = new Mapping({
-                type: 'Car',
-                id: 'id',
-                attributes: ['color', 'name'],
-                api: 'myApi'
-            });
-            m.install(function (err) {
+            mapping.get(4, function (err, car) {
                 if (err) done(err);
-                m.get(4, function (err, car) {
-                    if (err) done(err);
-                    assert.ok(car);
-                    assert.equal(car.color, 'red');
-                    done();
-                });
+                assert.ok(car);
+                assert.instanceOf(car, RestObject);
+                assert.equal(car.color, 'red');
+                done();
             });
         });
 
