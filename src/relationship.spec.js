@@ -1,9 +1,9 @@
-describe('pouch doc adapter', function () {
+describe.only('relationship', function () {
 
     var RestAPI;
 
     beforeEach(function () {
-        module('restkit.pouchDocAdapter', function ($provide) {
+        module('restkit.relationship', function ($provide) {
             $provide.value('$log', console);
             $provide.value('$q', Q);
         });
@@ -15,7 +15,7 @@ describe('pouch doc adapter', function () {
         RestAPI._reset();
     });
 
-    it('asdasfcv', function () {
+    it('dsfsdfsdf', function () {
 
     });
 

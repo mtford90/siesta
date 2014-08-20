@@ -126,7 +126,9 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             function init() {
                 Pouch.getPouch().get(self._docId).then(function (doc) {
                     updateSelf(doc);
-                    _.bind(configureCallback, self, null, doc.version)();
+                    if (configureCallback) {
+                        _.bind(configureCallback, self, null, doc.version)();
+                    }
                     Pouch.getPouch().put(serialiseIntoPouchDoc(doc), function (err, resp) {
                         if (!err) {
                             updateDoc(doc, resp);
@@ -135,9 +137,11 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                         RestAPI[self._name] = self;
                         wrappedCallback(finishedCallback)(err);
                     });
-                }).catch( function(err) {
+                }).catch(function (err) {
                     if (err.status == 404) {
-                        _.bind(configureCallback, self, null, null)();
+                        if (configureCallback) {
+                            _.bind(configureCallback, self, null, null)();
+                        }
                         var doc = serialiseIntoPouchDoc({});
                         Pouch.getPouch().put(doc, self._docId, function (err, resp) {
                             if (!err) {
@@ -150,7 +154,9 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                         });
                     }
                     else {
-                        configureCallback(err);
+                        if (configureCallback) {
+                            configureCallback(err);
+                        }
                     }
                 });
             }
@@ -196,6 +202,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                 Error.captureStackTrace(this, ssf);
             }
         }
+
         RestError.prototype = Object.create(Error.prototype);
         RestError.prototype.name = 'RestError';
         RestError.prototype.constructor = RestError;
@@ -203,9 +210,9 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         return RestError;
     })
 
-    /**
-     * Delegate property of an object to another object.
-     */
+/**
+ * Delegate property of an object to another object.
+ */
     .factory('defineSubProperty', function () {
         return function (property, subObj) {
             return Object.defineProperty(this, property, {
@@ -220,7 +227,6 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             });
         }
     })
-
 
 
 ;
