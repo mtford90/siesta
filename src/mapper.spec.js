@@ -21,7 +21,8 @@ describe('mapper', function () {
         var mapping = new Mapping({
             type: 'Car',
             id: 'id',
-            attributes: ['colour', 'name']
+            attributes: ['colour', 'name'],
+            api: 'myApi'
         });
         var r = new RestObject(mapping);
         assert.equal(r.idField, 'id');
@@ -31,10 +32,21 @@ describe('mapper', function () {
         var mapping = new Mapping({
             type: 'Car',
             id: 'id',
-            attributes: ['colour', 'name']
+            attributes: ['colour', 'name'],
+            api: 'myApi'
         });
         var r = new RestObject(mapping);
         assert.equal(r.type, 'Car');
+    });
+    it('typeField', function () {
+        var mapping = new Mapping({
+            type: 'Car',
+            id: 'id',
+            attributes: ['colour', 'name'],
+            api: 'myApi'
+        });
+        var r = new RestObject(mapping);
+        assert.equal(r.api, 'myApi');
     });
 
 });

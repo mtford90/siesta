@@ -1,6 +1,6 @@
 describe('query', function () {
 
-    var Index, Pouch, Indexes, Query;
+    var Index, Pouch, Indexes, RawQuery;
 
     beforeEach(function () {
         module('restkit.query', function ($provide) {
@@ -8,11 +8,11 @@ describe('query', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _Query_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
-            Query = _Query_;
+            RawQuery = _RawQuery_;
         });
 
         Pouch.reset();
@@ -20,31 +20,31 @@ describe('query', function () {
     });
 
     it('design doc name', function () {
-        console.log(Query);
-        var name = new Query('Car', {colour: 'red', name:'Aston Martin'})._getDesignDocName();
-        assert.equal(name, '_design/Index_Car_colour_name');
+        console.log(RawQuery);
+        var name = new RawQuery('myApi', 'Car', {colour: 'red', name:'Aston Martin'})._getDesignDocName();
+        assert.equal(name, '_design/myApi_Index_Car_colour_name');
     });
 
 
 
     it('fields', function () {
-        console.log(Query);
-        var q = new Query('Car', {colour: 'red', name:'Aston Martin'});
+        console.log(RawQuery);
+        var q = new RawQuery('myApi', 'Car', {colour: 'red', name:'Aston Martin'});
         var fields = q._getFields();
         assert.include(fields, 'colour');
         assert.include(fields, 'name');
     });
 
     it('construct key', function () {
-        console.log(Query);
-        var q = new Query('Car', {colour: 'red', name:'Aston Martin'});
+        console.log(RawQuery);
+        var q = new RawQuery('myApi', 'Car', {colour: 'red', name:'Aston Martin'});
         var key = q._constructKey();
         assert.equal(key, 'red_Aston Martin');
     });
 
     it('execute with no index', function (done) {
-        console.log(Query);
-        var q = new Query('Car', {colour: 'red', name:'Aston Martin'});
+        console.log(RawQuery);
+        var q = new RawQuery('myApi', 'Car', {colour: 'red', name:'Aston Martin'});
         q.execute(function(err, results) {
             assert.equal(err.status, 404);
             done();
@@ -52,9 +52,9 @@ describe('query', function () {
     });
 
     it('execute with index', function (done) {
-        console.log(Query);
-        var q = new Query('Car', {colour: 'red', name:'Aston Martin'});
-        var i = new Index('Car', ['colour', 'name']);
+        console.log(RawQuery);
+        var q = new RawQuery('myApi', 'Car', {colour: 'red', name:'Aston Martin'});
+        var i = new Index('myApi', 'Car', ['colour', 'name']);
         i.install(function (err) {
             if (err) done(err);
             q.execute(function(err, results) {
@@ -67,12 +67,12 @@ describe('query', function () {
     });
 
     it('execute with index with rows', function (done) {
-        console.log(Query);
-        var q = new Query('Car', {colour: 'red', name:'Aston Martin'});
-        var i = new Index('Car', ['colour', 'name']);
+        console.log(RawQuery);
+        var q = new RawQuery('myApi', 'Car', {colour: 'red', name:'Aston Martin'});
+        var i = new Index('myApi', 'Car', ['colour', 'name']);
         i.install(function (err) {
             if (err) done(err);
-            Pouch.getPouch().post({'type': 'Car', colour:'red', name: 'Aston Martin'}, function (err) {
+            Pouch.getPouch().post({'type': 'Car', colour:'red', name: 'Aston Martin', api: 'myApi'}, function (err) {
                 if (err) done(err);
                 q.execute(function(err, results) {
                     if (done) done (err);

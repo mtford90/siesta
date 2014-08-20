@@ -35,6 +35,10 @@ describe('abc', function () {
 
         beforeEach(configureAPI);
 
+        it('global access', function () {
+            assert.equal(api, RestAPI.myApi);
+        });
+
         describe('persistence', function () {
             it('version is set', function (done) {
                 RestAPI._getPouch().get(api._docId, function (err, doc) {

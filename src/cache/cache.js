@@ -1,9 +1,11 @@
 angular.module('restkit.cache', ['restkit', 'restkit.mapper'])
 
-/**
- *
- */
-    .factory('cache', function ($rootScope, RestObject, RestError) {
+
+    .factory('Store', function () {
+
+    })
+
+    .factory('cache', function (RestObject, RestError) {
 
         /**
          * Cache by pouch _id.
@@ -35,9 +37,13 @@ angular.module('restkit.cache', ['restkit', 'restkit.mapper'])
                     var idField = opts.mapping.id;
                     var id = opts[idField];
                     var type = opts.mapping.type;
-                    var typeCache = restCache[type];
-                    if (typeCache) {
-                        return typeCache[id];
+                    var api = opts.mapping.api;
+                    var apiCache = restCache[api];
+                    if (apiCache) {
+                        var typeCache = restCache[api][type];
+                        if (typeCache) {
+                            return typeCache[id];
+                        }
                     }
                     return null;
                 }
@@ -53,19 +59,27 @@ angular.module('restkit.cache', ['restkit', 'restkit.mapper'])
                     var idField = obj.idField;
                     var id = obj[idField];
                     if (id) {
-                        var type = obj.mapping.type;
-                        if (type) {
-                            if (!restCache[type]) {
-                                restCache[type] = {};
+                        var api = obj.mapping.api;
+                        if (api) {
+                            if (!restCache[api]) {
+                                restCache[api] = {};
                             }
-                            if (!restCache[type][id]) {
-                                restCache[type][id] = obj;
+                            var type = obj.mapping.type;
+                            if (type) {
+                                if (!restCache[api][type]) {
+                                    restCache[api][type] = {};
+                                }
+                                if (!restCache[api][type][id]) {
+                                    restCache[api][type][id] = obj;
+                                }
+                            }
+                            else {
+                                throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
                             }
                         }
                         else {
-                            throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
+                            throw new RestError('Mapping has no api', {mapping: obj.mapping, obj: obj});
                         }
-
                     }
                 }
                 else {

@@ -132,6 +132,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                             updateDoc(doc, resp);
                             updateSelf(doc);
                         }
+                        RestAPI[self._name] = self;
                         wrappedCallback(finishedCallback)(err);
                     });
                 }).catch( function(err) {
@@ -144,6 +145,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                                 doc._rev = resp.rev;
                                 self._doc = doc;
                             }
+                            RestAPI[self._name] = self;
                             wrappedCallback(finishedCallback)(err);
                         });
                     }
@@ -172,21 +174,46 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
     })
 
     .factory('RestError', function () {
-        function RestError(message, context) {
+        /**
+         * Extension of javascript Error class for internal errors.
+         * @param message
+         * @param context
+         * @param ssf
+         * @returns {RestError}
+         * @constructor
+         */
+        function RestError(message, context, ssf) {
+            if (!this) {
+                return new RestError(message, context);
+            }
+
             this.message = message;
-            this.context= context;
+
+            this.context = context;
+            // capture stack trace
+            ssf = ssf || arguments.callee;
+            if (ssf && Error.captureStackTrace) {
+                Error.captureStackTrace(this, ssf);
+            }
         }
+        RestError.prototype = Object.create(Error.prototype);
+        RestError.prototype.name = 'RestError';
+        RestError.prototype.constructor = RestError;
+
         return RestError;
     })
 
+    /**
+     * Delegate property of an object to another object.
+     */
     .factory('defineSubProperty', function () {
-        return function (k, subObj) {
-            return Object.defineProperty(this, k, {
+        return function (property, subObj) {
+            return Object.defineProperty(this, property, {
                 get: function () {
-                    return subObj[k];
+                    return subObj[property];
                 },
-                set: function (name) {
-                    subObj[ k] = name;
+                set: function (value) {
+                    subObj[property] = value;
                 },
                 enumerable: true,
                 configurable: true

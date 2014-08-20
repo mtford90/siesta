@@ -1,6 +1,6 @@
 describe('mapping!', function () {
 
-    var Index, Pouch, Indexes, Query, Mapping;
+    var Index, Pouch, Indexes, RawQuery, Mapping;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -8,11 +8,11 @@ describe('mapping!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _Query_, _Mapping_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
-            Query = _Query_;
+            RawQuery = _RawQuery_;
             Mapping = _Mapping_;
         });
 
@@ -54,7 +54,18 @@ describe('mapping!', function () {
         it('no type', function () {
             var m = new Mapping({
                 id: 'id',
-                attributes: ['field1', 'field2']
+                attributes: ['field1', 'field2'],
+                api: 'myApi'
+            });
+            var errors = m._validate();
+            console.log('errors:', errors);
+            assert.equal(1, errors.length);
+        });
+        it('no api', function () {
+            var m = new Mapping({
+                id: 'id',
+                attributes: ['field1', 'field2'],
+                type:'Car'
             });
             var errors = m._validate();
             console.log('errors:', errors);
@@ -66,7 +77,8 @@ describe('mapping!', function () {
         var m = new Mapping({
             type: 'Type',
             id: 'id',
-            attributes: ['field1', 'field2']
+            attributes: ['field1', 'field2'],
+            api: 'myApi'
         });
         m.install(function (err) {
             if (err) done(err);
@@ -84,13 +96,15 @@ describe('mapping!', function () {
                     type: 'Car',
                     id: 4,
                     color: 'red',
-                    name: 'Aston Martin'
+                    name: 'Aston Martin',
+                    api: 'myApi'
                 },
                 {
                     type: 'Car',
                     id: 5,
                     color: 'blue',
-                    name: 'Ford'
+                    name: 'Ford',
+                    api: 'myApi'
                 }
             ], function (err) {
                 done(err);
@@ -101,7 +115,8 @@ describe('mapping!', function () {
             var m = new Mapping({
                 type: 'Car',
                 id: 'id',
-                attributes: ['color', 'name']
+                attributes: ['color', 'name'],
+                api: 'myApi'
             });
             m.install(function (err) {
                 if (err) done(err);
@@ -118,7 +133,8 @@ describe('mapping!', function () {
             var m = new Mapping({
                 type: 'Car',
                 id: 'id',
-                attributes: ['color', 'name']
+                attributes: ['color', 'name'],
+                api: 'myApi'
             });
             m.install(function (err) {
                 if (err) done(err);
@@ -134,7 +150,8 @@ describe('mapping!', function () {
             var m = new Mapping({
                 type: 'Car',
                 id: 'id',
-                attributes: ['color', 'name']
+                attributes: ['color', 'name'],
+                api: 'myApi'
             });
             m.install(function (err) {
                 if (err) done(err);

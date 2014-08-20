@@ -1,15 +1,16 @@
 angular.module('restkit.query', ['restkit', 'restkit.indexing'])
 
-    .factory('Query', function (Index, Pouch, jlog) {
+    .factory('RawQuery', function (Index, Pouch, jlog) {
 
-        var $log = jlog.loggerWithName('Query');
+        var $log = jlog.loggerWithName('RawQuery');
 
-        function Query(modelName, query) {
+        function RawQuery(api, modelName, query) {
+            this.api = api;
             this.modelName = modelName;
             this.query = query;
         }
 
-        Query.prototype.execute = function (callback) {
+        RawQuery.prototype.execute = function (callback) {
             var self = this;
             var designDocId = this._getDesignDocName();
             Pouch.getPouch().get(designDocId, function (err, doc) {
@@ -37,7 +38,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing'])
             })
         };
 
-        Query.prototype._getFields = function () {
+        RawQuery.prototype._getFields = function () {
             var fields = [];
             for (var field in this.query) {
                 if (this.query.hasOwnProperty(field)) {
@@ -47,7 +48,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing'])
             return fields;
         };
 
-        Query.prototype._constructKey = function () {
+        RawQuery.prototype._constructKey = function () {
             var self = this;
             var fields = this._getFields();
             var sortedFields = _.sortBy(fields, function (x) {return x});
@@ -67,16 +68,16 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing'])
             return key.substring(0, key.length - 1);
         };
 
-        Query.prototype._getDesignDocName = function () {
-            var i = new Index(this.modelName, this._getFields());
+        RawQuery.prototype._getDesignDocName = function () {
+            var i = new Index(this.api, this.modelName, this._getFields());
             return i._getDesignDocName();
         };
 
-        Query.prototype._getIndexName = function () {
-            var i = new Index(this.modelName, this._getFields());
+        RawQuery.prototype._getIndexName = function () {
+            var i = new Index(this.api, this.modelName, this._getFields());
             return i._getName();
         };
 
-        return Query;
+        return RawQuery;
     });
 

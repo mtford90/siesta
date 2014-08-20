@@ -2,7 +2,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
 
 
-    .factory('Mapping', function (Indexes, Query, defineSubProperty) {
+    .factory('Mapping', function (Indexes, RawQuery, defineSubProperty) {
         function Mapping(opts) {
             var self = this;
             this._opts = opts;
@@ -26,17 +26,18 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             });
             defineSubProperty.call(this, 'type', self._opts);
             defineSubProperty.call(this, 'id', self._opts);
+            defineSubProperty.call(this, 'api', self._opts);
         }
 
         Mapping.prototype.query = function (query, callback) {
-            var q = new Query(this.type, query);
+            var q = new RawQuery(this.api, this.type, query);
             q.execute(callback);
         };
 
         Mapping.prototype.get = function (id, callback) {
             var opts = {};
             opts[this.id] = id;
-            var q = new Query(this.type, opts);
+            var q = new RawQuery(this.api, this.type, opts);
             q.execute(function (err, rows) {
                 var obj = null;
                 if (!err && rows.length) {
@@ -52,18 +53,27 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         };
 
         Mapping.prototype.all = function (callback) {
-            var q = new Query(this.type, {});
+            var q = new RawQuery(this.api, this.type, {});
             q.execute(callback);
         };
 
         Mapping.prototype.install = function (callback) {
-            Indexes.installIndexes(this.type, this._fields, callback);
+            var errors = this._validate();
+            if (!errors.length) {
+                Indexes.installIndexes(this.api, this.type, this._fields, callback);
+            }
+            else {
+                if(callback) callback(errors);
+            }
         };
 
         Mapping.prototype._validate = function () {
             var errors = [];
             if (!this.type) {
                 errors.push('Must specify a type');
+            }
+            if (!this.api) {
+                errors.push('A mapping must belong to an api');
             }
             return errors;
         };

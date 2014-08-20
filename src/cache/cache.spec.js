@@ -1,4 +1,4 @@
-describe.only('cache', function () {
+describe('cache', function () {
 
     var RestAPI, cache, RestObject, Mapping;
 
@@ -28,7 +28,8 @@ describe.only('cache', function () {
         mapping = new Mapping({
             type: 'Car',
             id: 'id',
-            attributes: ['colour', 'name']
+            attributes: ['colour', 'name'],
+            api: 'myApi'
         });
         mapping.install(function (err) {
             done(err);
@@ -52,7 +53,9 @@ describe.only('cache', function () {
 
             var restCache = cache._restCache();
             console.log('restCache:', restCache);
-            assert.equal(r, restCache[r.type][r.id]);
+            console.log('type:', r.type);
+            console.log('api:', r.api);
+            assert.equal(r, restCache[r.api][r.type][r.id]);
         });
 
         it('by custom id', function () {
@@ -64,7 +67,8 @@ describe.only('cache', function () {
             var restCache = cache._restCache();
             console.log('restCache:', restCache);
             console.log('type:', r.type);
-            assert.equal(r, restCache[r.type][r.customId]);
+            console.log('api:', r.api);
+            assert.equal(r, restCache[r.api][r.type][r.customId]);
         });
     });
 
@@ -91,6 +95,4 @@ describe.only('cache', function () {
             assert.equal(returned, r);
         });
     });
-
-
 });
