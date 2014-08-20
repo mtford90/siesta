@@ -443,3 +443,12 @@ describe.only('block of tests', function () {
     });
 });
 ```
+
+## To Sort
+
+### RestError
+
+`RestError` is an extension to Javascript's `Error` class.
+
+* `RestError.message` describes the error.
+* `RestError.context` gives some useful context.

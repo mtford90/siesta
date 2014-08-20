@@ -1,6 +1,22 @@
-angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.query', 'restkit.pouchDocAdapter'])
+angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAdapter'])
 
-    .factory('Store', function (cache, $q, wrappedCallback, RawQuery, Pouch, PouchDocAdapter) {
+    /**
+     * Local object store. Mediates between in-memory cache and Pouch.
+     */
+    .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError) {
+        function processDoc(doc, callback) {
+            try {
+                var restObject = PouchDocAdapter.toNew(doc);
+                cache.insert(restObject);
+                if (callback) callback(null, restObject);
+            }
+            catch (err) {
+                if (callback) {
+                    callback(err);
+                }
+            }
+        }
+
         return {
             get: function (opts, callback) {
                 var restObject = cache.get(opts);
@@ -10,20 +26,29 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.query', 'r
                 else {
                     if (opts._id) {
                         Pouch.getPouch().get(opts._id).then(function (doc) {
-                            try {
-                                var restObject = PouchDocAdapter.toNew(doc);
-                                cache.insert(restObject);
-                                if (callback) callback(null, restObject);
-                            }
-                            catch (err) {
-                                if (callback) {
-                                    callback(err);
-                                }
-                            }
-
+                            processDoc(doc, callback);
                         }, wrappedCallback(callback));
                     }
+                    else if (opts.mapping) {
+                        var mapping = opts.mapping;
+                        var idField = mapping.id;
+                        var id = opts[idField];
+                        if (id) {
+                            mapping.get(id, function (err, doc) {
+                                if (!err) {
+                                    processDoc(doc, callback);
+                                }
+                                else {
+                                    callback(err);
+                                }
+                            });
+                        }
+                        else {
+                            wrappedCallback(callback)(new RestError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
+                        }
+                    }
                     else {
+                        // No way in which to find an object locally.
                         wrappedCallback(callback)(new RestError('Invalid options given to store', {opts: opts}));
                     }
                 }

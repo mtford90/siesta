@@ -4,6 +4,7 @@ describe('rest', function () {
     var api;
 
     function configureAPI(done, callback) {
+        console.log('configureAPI');
         var configCalled = false;
         api = new RestAPI('myApi', function (err, version) {
             if (err) done(err);
@@ -63,6 +64,7 @@ describe('rest', function () {
 
             beforeEach(function (done) {
                 var configCalled = false;
+                console.log('apiAgain');
                 apiAgain = new RestAPI('myApi', function (err, version) {
                     if (err) done(err);
                     assert.equal(version, 1);
@@ -78,6 +80,7 @@ describe('rest', function () {
             describe('persistence', function () {
                 it('version is updated', function (done) {
                     RestAPI._getPouch().get(apiAgain._docId, function (err, doc) {
+                        console.log('doc:', doc);
                         if (err) done(err);
                         assert.equal(doc.version, newVersion);
                         done();
@@ -131,7 +134,6 @@ describe('rest', function () {
             });
 
 
-
             describe('persistence', function () {
                 it('version is updated', function (done) {
                     RestAPI._getPouch().get(api._docId, function (err, doc) {
@@ -142,6 +144,7 @@ describe('rest', function () {
                     });
                 });
                 it('reconfig', function (done) {
+                    console.log('reconfig');
                     var a = new RestAPI('myApi', function (err, version) {
                         if (err) done(err);
                     }, function () {

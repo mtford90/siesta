@@ -1,4 +1,4 @@
-describe.only('store', function () {
+describe('store', function () {
 
     var RestAPI, cache, RestObject, Mapping, Store, Pouch;
 
@@ -18,9 +18,7 @@ describe.only('store', function () {
             Store = _Store_;
             Pouch = _Pouch_;
         });
-
         RestAPI._reset();
-
         api = new RestAPI('myApi', function (err, version) {
             if (err) done(err);
             mapping = api.registerMapping('Car', {
@@ -45,12 +43,25 @@ describe.only('store', function () {
         });
     });
 
-    it('in pouch', function (done) {
+    it('in pouch, have _id', function (done) {
         var pouchid = 'pouchId';
         Pouch.getPouch().put({type: 'Car', api: 'myApi', colour:'red', _id: pouchid}, function (err, doc) {
             if (err) done(err);
             Store.get({_id: pouchid}, function (err, doc) {
                 if (err)done(err);
+                console.log('doc:', doc);
+                done();
+            });
+        });
+    });
+
+    it('in pouch, dont have _id', function (done) {
+        var pouchid = 'pouchId';
+        var remoteId = 'xyz';
+        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour:'red', _id: pouchid, id: remoteId}, function (err, doc) {
+            if (err) done(err);
+            Store.get({id: remoteId, mapping: mapping}, function (err, doc) {
+                if (err) done(err);
                 console.log('doc:', doc);
                 done();
             });

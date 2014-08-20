@@ -84,6 +84,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
              * @param doc PouchDB document
              */
             function serialiseIntoPouchDoc(doc) {
+                $log.debug('serialiseIntoPouchDoc', doc);
                 doc.name = self._name;
                 doc.version = self.version;
                 doc.mappings = self._mappings;
@@ -106,14 +107,50 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             /**
              * Update attributes using persisted version.
              * @param doc PouchDB doc representing this RestAPI.
+             * @param callback
              */
-            function updateSelf(doc) {
+            function fromDoc(doc, callback) {
+                $log.debug('fromDoc', doc);
                 self.version = doc.version;
                 self._mappings = doc.mappings;
-                for (var mappingName in self._mappings) {
+                var numMappingsInstalled = 0;
+                var mappingInstallationErrors = {};
+                var numErrors = 0;
+                var numMappings = 0;
+                var mappingName;
+                for (mappingName in self._mappings) {
                     if (self._mappings.hasOwnProperty(mappingName)) {
-                        self.registerMapping(mappingName, self._mappings[mappingName]);
+                        numMappings++;
                     }
+                }
+                if (numMappings) {
+                    for (mappingName in self._mappings) {
+                        if (self._mappings.hasOwnProperty(mappingName)) {
+                            var mapping = self.registerMapping(mappingName, self._mappings[mappingName]);
+                            $log.debug('Installing mapping "' + mappingName.toString() + '"');
+                            mapping.install(function (err) {
+                                numMappingsInstalled++;
+                                if (err) {
+                                    $log.error('mapping "' + mappingName.toString() + '" failed to install', err);
+                                    mappingInstallationErrors[mappingName] = err;
+                                    numErrors++;
+                                }
+                                else {
+                                    $log.debug(numMappingsInstalled.toString() + '/' + numMappings.toString() + ': mapping "' + mappingName.toString() + '" installed');
+                                }
+                                if (numMappingsInstalled == numMappings) {
+                                    var aggError;
+                                    if (numErrors) {
+                                        aggError = new RestError('Error installing mappings', {errors: mappingInstallationErrors});
+                                    }
+                                    callback(aggError);
+                                }
+                            });
+                        }
+                    }
+                }
+                else {
+                    callback(null, doc);
                 }
             }
 
@@ -124,23 +161,34 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                 return 'RestAPI[' + self._name.toString() + ']';
             }
 
+            function finishUp(err) {
+                RestAPI[self._name] = self;
+                wrappedCallback(finishedCallback)(err);
+            }
+
             /**
              * Pull this RestAPI from PouchDB or else perform first time
              * setup.
              */
             function init() {
+                $log.debug('init');
                 Pouch.getPouch().get(self._docId).then(function (doc) {
-                    updateSelf(doc);
-                    if (configureCallback) {
-                        _.bind(configureCallback, self, null, doc.version)();
-                    }
-                    Pouch.getPouch().put(serialiseIntoPouchDoc(doc), function (err, resp) {
-                        if (!err) {
-                            updateDoc(doc, resp);
-                            updateSelf(doc);
+                    fromDoc(doc, function (err) {
+                        if (err) finishUp(err);
+                        else {
+                            if (configureCallback) {
+                                var bound = _.bind(configureCallback, self, null, doc.version);
+                                bound();
+                            }
+                            doc = serialiseIntoPouchDoc(doc);
+                            $log.debug('put', doc);
+                            Pouch.getPouch().put(doc, function (err, resp) {
+                                doc._id = resp.id;
+                                doc._rev = resp.rev;
+                                if (err) finishUp(err);
+                                fromDoc(doc, finishUp);
+                            });
                         }
-                        RestAPI[self._name] = self;
-                        wrappedCallback(finishedCallback)(err);
                     });
                 }).catch(function (err) {
                     if (err.status == 404) {
@@ -153,9 +201,11 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                                 doc._id = resp.id;
                                 doc._rev = resp.rev;
                                 self._doc = doc;
+                                fromDoc(doc, finishUp);
                             }
-                            RestAPI[self._name] = self;
-                            wrappedCallback(finishedCallback)(err);
+                            else {
+                                finishUp(err);
+                            }
                         });
                     }
                     else {
