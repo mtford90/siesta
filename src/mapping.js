@@ -1,7 +1,5 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query'])
 
-
-
     .factory('Mapping', function (Indexes, RawQuery, defineSubProperty) {
         function Mapping(opts) {
             var self = this;

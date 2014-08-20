@@ -110,6 +110,11 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             function updateSelf(doc) {
                 self.version = doc.version;
                 self._mappings = doc.mappings;
+                for (var mappingName in self._mappings) {
+                    if (self._mappings.hasOwnProperty(mappingName)) {
+                        self.registerMapping(mappingName, self._mappings[mappingName]);
+                    }
+                }
             }
 
             /**
@@ -172,7 +177,10 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
 
         RestAPI.prototype.registerMapping = function (name, mapping) {
             this._mappings[name] = mapping;
-            this[name] = new Mapping(name);
+            var opts = $.extend(true, {}, mapping);
+            opts.type = name;
+            opts.api = this._name;
+            this[name] = new Mapping(opts);
         };
 
         return RestAPI;

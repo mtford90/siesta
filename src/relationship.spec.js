@@ -1,4 +1,4 @@
-describe.only('relationship', function () {
+describe('relationship', function () {
 
     var RestAPI, Mapping, ForeignKeyRelationship, RestObject;
 

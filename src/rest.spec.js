@@ -1,4 +1,4 @@
-describe('abc', function () {
+describe('rest', function () {
 
     var RestAPI;
     var api;
@@ -92,8 +92,6 @@ describe('abc', function () {
     describe('Object mapping registration', function () {
 
         var api;
-
-
         describe('basic', function () {
 
             beforeEach(function (done) {
@@ -105,10 +103,34 @@ describe('abc', function () {
                 });
             });
 
-            it('mappings', function () {
-                assert.ok(api._mappings.Person);
-                assert.ok(api.Person);
+            describe.only('raw mapping to Mapping object', function () {
+                function assertMapping(api) {
+                    var rawMapping = api._mappings.Person;
+                    assert.ok(rawMapping);
+                    var mappingObj = api.Person;
+                    console.log('mappingObj:', mappingObj);
+                    assert.equal(mappingObj.type, 'Person');
+                    assert.equal(mappingObj.id, 'id');
+                    assert.equal(mappingObj.api, 'myApi');
+                    assert.include(mappingObj._fields, 'name');
+                    assert.include(mappingObj._fields, 'age');
+                    assert.ok(mappingObj);
+                }
+
+                it('mappings', function () {
+                    assertMapping(api);
+                });
+                it('reconfig', function (done) {
+                    var a = new RestAPI('myApi', function (err, version) {
+                        if (err) done(err);
+                    }, function () {
+                        assertMapping(a);
+                        done();
+                    });
+                })
             });
+
+
 
             describe('persistence', function () {
                 it('version is updated', function (done) {
@@ -130,8 +152,6 @@ describe('abc', function () {
                 })
             });
         });
-
-
 
         describe('indexing', function () {
             beforeEach(function (done) {
