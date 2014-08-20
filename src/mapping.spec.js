@@ -90,7 +90,7 @@ describe('mapping!', function () {
     });
 
 
-    describe.only('queries', function () {
+    describe('queries', function () {
         var api, mapping;
         beforeEach(function (done) {
             api = new RestAPI('myApi', function (err) {

@@ -25,7 +25,8 @@ module.exports = {
             'bower_components/jquery/dist/jquery.js',
             'bower_components/underscore/underscore.js',
             'bower_components/async/lib/async.js',
-            'bower_components/angular/angular.js'
+            'bower_components/angular/angular.js',
+            'bower_components/xregexp/xregexp-all.js'
         ]
     }
 };

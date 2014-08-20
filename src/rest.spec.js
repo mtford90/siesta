@@ -1,6 +1,6 @@
 describe('rest', function () {
 
-    var RestAPI;
+    var RestAPI, RestAPIRegistry;
     var api;
 
     function configureAPI(done, callback) {
@@ -25,8 +25,9 @@ describe('rest', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_) {
+        inject(function (_RestAPI_, _RestAPIRegistry_) {
             RestAPI = _RestAPI_;
+            RestAPIRegistry = _RestAPIRegistry_;
         });
 
         RestAPI._reset();
@@ -37,7 +38,7 @@ describe('rest', function () {
         beforeEach(configureAPI);
 
         it('global access', function () {
-            assert.equal(api, RestAPI.myApi);
+            assert.equal(api, RestAPIRegistry.myApi);
         });
 
         describe('persistence', function () {
@@ -130,7 +131,6 @@ describe('rest', function () {
                     });
                 })
             });
-
 
             describe('persistence', function () {
                 it('version is updated', function (done) {
