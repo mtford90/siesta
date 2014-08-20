@@ -1,6 +1,6 @@
 angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.query'])
 
-    .factory('gsfdgsdfg', function (cache, $q, wrappedCallback, RawQuery, Pouch) {
+    .factory('Store', function (cache, $q, wrappedCallback, RawQuery, Pouch) {
         return {
             get: function (opts, callback) {
                 var deferred = $q.defer();

@@ -43,10 +43,29 @@ describe.only('relationship', function () {
             });
         });
 
-        it('sdas', function (done) {
+        it('local id', function (done) {
             var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
             var car = new RestObject(carMapping);
-            car.ownerId = 5;
+            car.ownerLocalId = '4234sdfsdf';
+            r.getRelated(car, function (err, related) {
+                done(err);
+            });
+        });
+
+        it('remote id', function (done) {
+            var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+            var car = new RestObject(carMapping);
+            car.ownerRemoteId = 5;
+            r.getRelated(car, function (err, related) {
+                done(err);
+            });
+        });
+
+        it('both identifiers', function (done) {
+            var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+            var car = new RestObject(carMapping);
+            car.ownerLocalId = '4234sdfsdf';
+            car.ownerRemoteId = 5;
             r.getRelated(car, function (err, related) {
                 done(err);
             });
