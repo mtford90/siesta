@@ -1,23 +1,8 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query'])
 
-    .factory('defineSubProperty', function () {
-        return function (k, subObj) {
-            return Object.defineProperty(this, k, {
-                get: function () {
-                    return subObj[k];
-                },
-                set: function (name) {
-                    subObj[ k] = name;
-                },
-                enumerable: true,
-                configurable: true
-            });
-        }
-    })
+
 
     .factory('Mapping', function (Indexes, Query, defineSubProperty) {
-
-
         function Mapping(opts) {
             var self = this;
             this._opts = opts;

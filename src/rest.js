@@ -171,6 +171,29 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
 
     })
 
+    .factory('RestError', function () {
+        function RestError(message, context) {
+            this.message = message;
+            this.context= context;
+        }
+        return RestError;
+    })
+
+    .factory('defineSubProperty', function () {
+        return function (k, subObj) {
+            return Object.defineProperty(this, k, {
+                get: function () {
+                    return subObj[k];
+                },
+                set: function (name) {
+                    subObj[ k] = name;
+                },
+                enumerable: true,
+                configurable: true
+            });
+        }
+    })
+
 
 
 ;

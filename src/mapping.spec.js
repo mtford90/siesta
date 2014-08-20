@@ -76,7 +76,7 @@ describe('mapping!', function () {
     });
 
 
-    describe.only('queries', function () {
+    describe('queries', function () {
 
         beforeEach(function (done) {
             Pouch.getPouch().bulkDocs([

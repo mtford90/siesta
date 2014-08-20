@@ -150,7 +150,7 @@ angular.module('restkit.indexing', ['restkit'])
                 mapFunc = mapFunc.replace('$1', arr);
             }
             mapFunc = mapFunc.replace('$2', this.model);
-            $log.debug('mapFunc:', mapFunc);
+//            $log.debug('mapFunc:', mapFunc);
             return mapFunc;
         };
 
