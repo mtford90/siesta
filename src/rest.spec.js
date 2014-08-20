@@ -87,8 +87,6 @@ describe('rest', function () {
                     });
                 });
             });
-
-
         });
     });
 

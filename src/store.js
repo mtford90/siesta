@@ -3,7 +3,10 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
     /**
      * Local object store. Mediates between in-memory cache and Pouch.
      */
-    .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError) {
+    .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError, jlog) {
+
+        var $log = jlog.loggerWithName('Store');
+
         function processDoc(doc, callback) {
             try {
                 var restObject = PouchDocAdapter.toNew(doc);
@@ -19,6 +22,7 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
 
         return {
             get: function (opts, callback) {
+                $log.debug('Store.get', opts);
                 var restObject = cache.get(opts);
                 if (restObject) {
                     wrappedCallback(callback)(null, restObject);
@@ -36,7 +40,12 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                         if (id) {
                             mapping.get(id, function (err, doc) {
                                 if (!err) {
-                                    processDoc(doc, callback);
+                                    if (doc) {
+                                        processDoc(doc, callback);
+                                    }
+                                    else {
+                                        callback(new RestError('No such object with identifier ' + id.toString()));
+                                    }
                                 }
                                 else {
                                     callback(err);

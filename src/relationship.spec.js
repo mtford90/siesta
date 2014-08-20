@@ -1,6 +1,6 @@
 describe('relationship', function () {
 
-    var RestAPI, Mapping, ForeignKeyRelationship, RestObject;
+    var RestAPI, Mapping, ForeignKeyRelationship, RestObject, cache;
 
     beforeEach(function () {
         module('restkit.relationship', function ($provide) {
@@ -12,11 +12,12 @@ describe('relationship', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _Mapping_, _ForeignKeyRelationship_, _RestObject_) {
+        inject(function (_RestAPI_, _Mapping_, _ForeignKeyRelationship_, _RestObject_, _cache_) {
             RestAPI = _RestAPI_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
             RestObject = _RestObject_;
+            cache = _cache_;
         });
 
         RestAPI._reset();
@@ -47,28 +48,27 @@ describe('relationship', function () {
             var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
             var car = new RestObject(carMapping);
             car.ownerLocalId = '4234sdfsdf';
+            var personObject = new RestObject(personMapping);
+            personObject._id = car.ownerLocalId;
+            cache.insert(personObject);
             r.getRelated(car, function (err, related) {
                 done(err);
+                assert.equal(personObject, related);
             });
         });
 
         it('remote id', function (done) {
             var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
             var car = new RestObject(carMapping);
-            car.ownerRemoteId = 5;
+            car.ownerRemoteId = '4234sdfsdf';
+            var personObject = new RestObject(personMapping);
+            personObject.id = car.ownerRemoteId;
+            cache.insert(personObject);
             r.getRelated(car, function (err, related) {
                 done(err);
+                assert.equal(personObject, related);
             });
         });
 
-        it('both identifiers', function (done) {
-            var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.ownerLocalId = '4234sdfsdf';
-            car.ownerRemoteId = 5;
-            r.getRelated(car, function (err, related) {
-                done(err);
-            });
-        });
     });
 });
