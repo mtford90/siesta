@@ -45,7 +45,7 @@ describe('store', function () {
 
     it('in pouch, have _id', function (done) {
         var pouchid = 'pouchId';
-        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour:'red', _id: pouchid}, function (err, doc) {
+        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid}, function (err, doc) {
             if (err) done(err);
             Store.get({_id: pouchid}, function (err, doc) {
                 if (err)done(err);
@@ -58,7 +58,7 @@ describe('store', function () {
     it('in pouch, dont have _id', function (done) {
         var pouchid = 'pouchId';
         var remoteId = 'xyz';
-        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour:'red', _id: pouchid, id: remoteId}, function (err, doc) {
+        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
             if (err) done(err);
             Store.get({id: remoteId, mapping: mapping}, function (err, doc) {
                 if (err) done(err);
@@ -66,6 +66,33 @@ describe('store', function () {
                 done();
             });
         });
+    });
+
+    describe('multiple', function () {
+        it('xyz', function (done) {
+            Pouch.getPouch().bulkDocs(
+                [
+                    {type: 'Car', api: 'myApi', colour: 'red', _id: 'localId1', id: 'remoteId1'},
+                    {type: 'Car', api: 'myApi', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
+                    {type: 'Car', api: 'myApi', colour: 'green', _id: 'localId3', id: 'remoteId3'}
+                ],
+                function (err) {
+                    if (err) done(err);
+                    Store.getMultiple([
+                        {_id: 'localId1'},
+                        {_id: 'localId2'},
+                        {_id: 'localId3'}
+                    ], function (err, docs) {
+                        if (err) done(err);
+                        console.log('docs:', docs);
+                        _.each(docs, function (d) {
+                            assert.instanceOf(d, RestObject);
+                        });
+                        done();
+                    })
+                }
+            );
+        })
     });
 
 });
