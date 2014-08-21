@@ -1,6 +1,6 @@
 describe('query', function () {
 
-    var Index, Pouch, Indexes, RawQuery, Query, RestAPI, RestObject;
+    var Index, Pouch, Indexes, RawQuery, Query, RestAPI, RestObject, RestError;
 
     beforeEach(function () {
         module('restkit.query', function ($provide) {
@@ -13,7 +13,7 @@ describe('query', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Query_, _RestAPI_, _RestObject_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Query_, _RestAPI_, _RestObject_, _RestError_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
@@ -21,6 +21,7 @@ describe('query', function () {
             Query = _Query_;
             RestAPI = _RestAPI_;
             RestObject = _RestObject_;
+            RestError = _RestError_;
         });
 
         Pouch.reset();
@@ -50,13 +51,10 @@ describe('query', function () {
             assert.equal(key, 'red_Aston Martin');
         });
 
-        it('execute with no index', function (done) {
+        it('execute with no index', function () {
             console.log(RawQuery);
-            var q = new RawQuery('myApi', 'Car', {colour: 'red', name: 'Aston Martin'});
-            q.execute(function (err, results) {
-                assert.equal(err.status, 404);
-                done();
-            });
+            var q = new RawQuery();
+            assert.throws(_.bind(q.execute, q, 'myApi', 'Car', {colour: 'red', name: 'Aston Martin'}), RestError);
         });
 
         it('execute with index', function (done) {

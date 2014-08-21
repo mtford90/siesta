@@ -102,9 +102,6 @@ describe('mapping!', function () {
     });
 
     describe('queries', function () {
-
-
-
         var api, mapping;
         beforeEach(function (done) {
             api = new RestAPI('myApi', function (err) {
@@ -202,7 +199,7 @@ describe('mapping!', function () {
 
     });
 
-    describe.only('relationships', function () {
+    describe('relationships', function () {
 
         var api, carMapping, personMapping;
 

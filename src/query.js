@@ -11,7 +11,6 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         }
 
         Query.prototype.execute = function (callback) {
-
             var rawQuery = new RawQuery(this.mapping.api, this.mapping.type, this.query);
             rawQuery.execute(function (err, results) {
                 if (err) {
@@ -45,7 +44,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
     /**
      * Query and return raw pouchdb documents.
      */
-    .factory('RawQuery', function (Index, Pouch, jlog) {
+    .factory('RawQuery', function (Index, Pouch, jlog, RestError) {
 
         var $log = jlog.loggerWithName('RawQuery');
 
@@ -78,7 +77,14 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                     });
                 }
                 else {
-                    callback(err);
+                    if (err.status == 404) {
+                        var errorMessage = 'Design doc "' + designDocId.toString() + '" doesnt exist. Do you have an index configured for this query?';
+                        $log.error(errorMessage, self.query);
+                        throw new RestError(errorMessage, {api: self.api, type: self.modelName, query: self.query});
+                    }
+                    else {
+                        callback(err);
+                    }
                 }
             })
         };
