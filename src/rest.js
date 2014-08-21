@@ -283,5 +283,14 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         }
     })
 
+    .factory('assert', function (RestError) {
+        function assert(condition, message, context) {
+            if (!condition) {
+                message = message || "Assertion failed";
+                throw new RestError(message, context);
+            }
+        }
+        return assert;
+    })
 
 ;

@@ -17,7 +17,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
         return new RequestDescriptorRegistry();
     })
 
-    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError, DescriptorRegistry) {
+    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError, DescriptorRegistry, assert) {
         // The XRegExp object has these properties that we want to ignore when matching.
         var ignore = ['index', 'input'];
 
@@ -95,6 +95,8 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                             var key = arr[i];
                             if (i == (arr.length - 1)) {
                                 obj[previousKey] = key;
+                                deepest = obj;
+                                deepestKey = previousKey;
                             }
                             else {
                                 var newVar = {};
@@ -117,7 +119,6 @@ angular.module('restkit.requestDescriptor', ['restkit'])
         }
 
         RequestDescriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
-
 
         RequestDescriptor.prototype._matchPath = function (path) {
             var match = XRegExp.exec(path, this.path);
@@ -142,6 +143,48 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                 }
             }
             return false;
+        };
+
+        /**
+         * Bury obj as far down in data as poss.
+         * @param obj
+         * @param data keypath object
+         * @returns {*}
+         */
+        function bury(obj, data) {
+            var root = data;
+            var keys = Object.keys(data);
+            assert(keys.length == 1);
+            var key = keys[0];
+            var curr = data;
+            while (!(typeof(curr[key]) == 'string')) {
+                curr = curr[key];
+                keys = Object.keys(curr);
+                assert(keys.length == 1);
+                key = keys[0];
+            }
+            var newParent = curr[key];
+            var newObj = {};
+            curr[key] = newObj;
+            newObj[newParent] = obj;
+            return root;
+        }
+
+        RequestDescriptor.prototype._embedData = function (data) {
+            if (this.data) {
+                var nested;
+                if (typeof(this.data) == 'string') {
+                    nested = {};
+                    nested[this.data] = data;
+                }
+                else {
+                    nested = bury(data, $.extend(true, {}, this.data));
+                }
+                return nested;
+            }
+            else {
+                return data;
+            }
         };
 
 
