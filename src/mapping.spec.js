@@ -1,6 +1,6 @@
 describe('mapping!', function () {
 
-    var Index, Pouch, Indexes, RawQuery, Mapping, RestObject, RestAPI;
+    var Index, Pouch, Indexes, RawQuery, Mapping, RestObject, RestAPI, RestError;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -8,7 +8,7 @@ describe('mapping!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _RestAPI_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _RestAPI_, _RestError_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
@@ -16,6 +16,7 @@ describe('mapping!', function () {
             Mapping = _Mapping_;
             RestObject = _RestObject_;
             RestAPI = _RestAPI_;
+            RestError = _RestError_;
         });
 
         Pouch.reset();
@@ -32,6 +33,16 @@ describe('mapping!', function () {
         assert.include(m._fields, 'field1');
         assert.include(m._fields, 'field2');
         assert.notInclude(m._fields, 'type');
+    });
+
+    it('attributes', function () {
+        var m = new Mapping({
+            type: 'type',
+            id: 'id',
+            attributes: ['field1', 'field2']
+        });
+        assert.include(m.attributes, 'field1');
+        assert.include(m.attributes, 'field2');
     });
 
     it('type', function () {
@@ -89,8 +100,10 @@ describe('mapping!', function () {
         });
     });
 
-
     describe('queries', function () {
+
+
+
         var api, mapping;
         beforeEach(function (done) {
             api = new RestAPI('myApi', function (err) {
@@ -155,4 +168,37 @@ describe('mapping!', function () {
         });
 
     });
+
+    describe.only('mapping', function () {
+        var api, carMapping;
+
+        beforeEach(function (done) {
+            api = new RestAPI('myApi', function (err, version) {
+                if (err) done(err);
+                carMapping = api.registerMapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+            }, function () {
+                done();
+            });
+        });
+
+        describe('new object', function () {
+            it('valid', function () {
+                var r = carMapping._new({colour: 'red', name: 'Aston Martin', invalidField: 'invalid', id: 'xyz'});
+                assert.equal(r.colour, 'red');
+                assert.equal(r.name, 'Aston Martin');
+                assert.equal(r.id, 'xyz');
+                assert.ok(r._id);
+                assert.notOk(r.invalidField);
+            });
+            it('no id should cause an error', function () {
+                var invocation = _.bind(carMapping._new, carMapping, {colour: 'red', name: 'Aston Martin', invalidField: 'invalid'});
+                assert.throws(invocation, RestError);
+            });
+        });
+
+    });
+
 });

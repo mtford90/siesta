@@ -1,4 +1,4 @@
-describe.only('request descriptor', function () {
+describe('request descriptor', function () {
 
     var RestAPI, RequestDescriptor, RestError, DescriptorRegistry;
 
@@ -248,7 +248,7 @@ describe.only('request descriptor', function () {
                     method: 'POST',
                     url: '/cars/5/',
                     data: {
-                        path: {
+                        path: { // Missing 'to'
                             data: {
                                 x: 1,
                                 y: 2
