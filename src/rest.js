@@ -51,15 +51,18 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         }
     })
 
-    .factory('RestAPIRegistry', function () {
+    .factory('RestAPIRegistry', function (jlog) {
+        var $log = jlog.loggerWithName('RestAPIRegistry');
         function RestAPIRegistry () {}
         RestAPIRegistry.prototype.register = function (api) {
-            this[api._name] = api;
+            var name = api._name;
+            $log.debug('register ' + name);
+            this[ name] = api;
         };
         return new RestAPIRegistry();
     })
 
-    .factory('RestAPI', function (wrappedCallback, jlog, Mapping, Pouch, RestAPIRegistry) {
+    .factory('RestAPI', function (wrappedCallback, jlog, Mapping, Pouch, RestAPIRegistry, RestError) {
 
         var $log = jlog.loggerWithName('RestAPI');
 
@@ -110,6 +113,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                 self._mappings = doc.mappings;
                 var numMappingsInstalled = 0;
                 var mappingInstallationErrors = {};
+                var mappingsInstalled = [];
                 var numErrors = 0;
                 var numMappings = 0;
                 var mappingName;
@@ -120,11 +124,31 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                     }
                 }
 
+                function installRelationships() {
+                    _.each(mappingsInstalled, function (mapping) {
+                        mapping.installRelationships();
+                    });
+                }
+
                 function checkIfFinishedInstallingMappings() {
                     if (numMappingsInstalled == numMappings) {
                         var aggError;
                         if (numErrors) {
                             aggError = new RestError('Error installing mappings', {errors: mappingInstallationErrors});
+                        }
+                        else {
+                            try {
+                                installRelationships();
+                            }
+                            catch (err) {
+                                // Only allow our own internal errors to bubble up.
+                                if (err instanceof RestError) {
+                                    callback(err);
+                                }
+                                else {
+                                    throw err;
+                                }
+                            }
                         }
                         callback(aggError);
                     }
@@ -141,6 +165,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                             numErrors++;
                         }
                         else {
+                            mappingsInstalled.push(mapping);
                             $log.debug(numMappingsInstalled.toString() + '/' + numMappings.toString() + ': mapping "' + name + '" installed');
                         }
                         checkIfFinishedInstallingMappings();
@@ -174,7 +199,6 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             }
 
             function finishUp(err) {
-                RestAPIRegistry.register(self);
                 wrappedCallback(finishedCallback)(err);
             }
 
@@ -184,6 +208,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
              */
             function init() {
                 $log.debug('init');
+                RestAPIRegistry.register(self);
                 Pouch.getPouch().get(self._docId).then(function (doc) {
                     fromDoc(doc, function (err) {
                         if (err) finishUp(err);

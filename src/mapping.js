@@ -31,57 +31,56 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             console.log(1);
             this._relationships = null;
 
-            // Lazily construct relationship objects so that all mappings are registered beforehand.
-            // Doubt that this has too much performance impact.
             Object.defineProperty(this, 'relationships', {
                 get: function () {
-                    if (!self._relationships) {
-                        $log.debug(self.type + ': lazily constructing relationships');
-                        self._relationships = [];
-                        if (self._opts.relationships) {
-                            for (var name in self._opts.relationships) {
-                                $log.debug(self.type + ': configuring relationship ' + name);
-                                if (self._opts.relationships.hasOwnProperty(name)) {
-                                    var relationship = self._opts.relationships[name];
-                                    var relationshipClass;
-                                    if (relationship.type == RelationshipType.ForeignKey) {
-                                        relationshipClass = ForeignKeyRelationship;
-                                    }
-                                    else if (relationship.type == RelationshipType.OneToOne) {
-                                        relationshipClass = OneToOneRelationship;
-                                    }
-                                    else if (relationship.type == RelationshipType.ManyToMany) {
-                                        relationshipClass = ManyToManyRelationship;
-                                    }
-                                    else {
-                                        throw new RestError('Unknown relationship type "' + relationship.type.toString() + '"');
-                                    }
-                                    var reverseMappingName = relationship.mapping;
-                                    $log.debug('reverseMappingName', reverseMappingName);
-                                    var api = RestAPIRegistry[self.api];
-                                    $log.debug('api', RestAPIRegistry);
-                                    var reverseMapping = api[reverseMappingName];
-                                    if (reverseMapping) {
-                                        $log.debug('reverseMapping', reverseMapping);
-                                        var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
-                                        self._relationships.push(relationshipObj);
-                                    }
-                                    else {
-                                        throw new RestError('Mapping with name "' + reverseMappingName.toString() + '" does not exist');
-                                    }
-
-                                }
-                            }
-                        }
-                    }
                     return self._relationships;
                 },
                 enumerable: true,
                 configurable: true
             });
 
-
         }
+
+        Mapping.prototype.installRelationships = function () {
+            var self = this;
+            $log.debug(self.type + ': lazily constructing relationships');
+            self._relationships = [];
+            if (self._opts.relationships) {
+                for (var name in self._opts.relationships) {
+                    $log.debug(self.type + ': configuring relationship ' + name);
+                    if (self._opts.relationships.hasOwnProperty(name)) {
+                        var relationship = self._opts.relationships[name];
+                        var relationshipClass;
+                        if (relationship.type == RelationshipType.ForeignKey) {
+                            relationshipClass = ForeignKeyRelationship;
+                        }
+                        else if (relationship.type == RelationshipType.OneToOne) {
+                            relationshipClass = OneToOneRelationship;
+                        }
+                        else if (relationship.type == RelationshipType.ManyToMany) {
+                            relationshipClass = ManyToManyRelationship;
+                        }
+                        else {
+                            throw new RestError('Unknown relationship type "' + relationship.type.toString() + '"');
+                        }
+                        var reverseMappingName = relationship.mapping;
+                        $log.debug('reverseMappingName', reverseMappingName);
+                        var api = RestAPIRegistry[self.api];
+                        $log.debug('api', RestAPIRegistry);
+                        var reverseMapping = api[reverseMappingName];
+                        if (reverseMapping) {
+                            $log.debug('reverseMapping', reverseMapping);
+                            var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
+                            self._relationships.push(relationshipObj);
+                        }
+                        else {
+                            throw new RestError('Mapping with name "' + reverseMappingName.toString() + '" does not exist');
+                        }
+
+                    }
+                }
+            }
+        };
 
         Mapping.prototype.query = function (query, callback) {
             var q = new Query(this, query);

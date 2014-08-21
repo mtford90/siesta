@@ -38,7 +38,7 @@ describe('rest', function () {
         beforeEach(configureAPI);
 
         it('global access', function () {
-            assert.equal(api, RestAPIRegistry.myApi);
+            assert.equal(RestAPIRegistry.myApi, api);
         });
 
         describe('persistence', function () {

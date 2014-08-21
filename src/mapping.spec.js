@@ -287,7 +287,7 @@ describe('mapping!', function () {
 
         });
 
-        describe.only('invalid', function () {
+        describe('invalid', function () {
             it('No such mapping', function (done) {
                 var carMapping;
                 var api = new RestAPI('myApi', function (err, version) {
@@ -304,16 +304,12 @@ describe('mapping!', function () {
                         }
                     });
                 }, function (err) {
-                    if (err) done(err);
-                    try {
-                        carMapping.relationships;
-                    }
-                    catch (err) {
+                    if (err) {
                         if (err instanceof RestError) {
                             done()
                         }
                         else {
-                            throw err;
+                            done(err);
                         }
                     }
                 });
@@ -339,16 +335,12 @@ describe('mapping!', function () {
                         attributes: ['name', 'age']
                     });
                 }, function (err) {
-                    if (err) done(err);
-                    try {
-                        carMapping.relationships;
-                    }
-                    catch (err) {
+                    if (err) {
                         if (err instanceof RestError) {
                             done()
                         }
                         else {
-                            throw err;
+                            done(err);
                         }
                     }
                 });
