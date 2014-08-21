@@ -183,25 +183,26 @@ describe('mapping!', function () {
         });
 
         describe('new object', function () {
-            it('valid', function () {
-                var r = carMapping._new({colour: 'red', name: 'Aston Martin', invalidField: 'invalid', id: 'xyz'});
-                assert.equal(r.colour, 'red');
-                assert.equal(r.name, 'Aston Martin');
-                assert.equal(r.id, 'xyz');
-                assert.ok(r._id);
-                assert.notOk(r.invalidField);
-            });
-            it('no id should cause an error', function () {
-                var invocation = _.bind(carMapping._new, carMapping, {colour: 'red', name: 'Aston Martin', invalidField: 'invalid'});
-                assert.throws(invocation, RestError);
+            describe('no relationships', function () {
+                it('valid', function () {
+                    var r = carMapping._new({colour: 'red', name: 'Aston Martin', invalidField: 'invalid', id: 'xyz'});
+                    assert.equal(r.colour, 'red');
+                    assert.equal(r.name, 'Aston Martin');
+                    assert.equal(r.id, 'xyz');
+                    assert.ok(r._id);
+                    assert.notOk(r.invalidField);
+                });
+                it('no id should cause an error', function () {
+                    var invocation = _.bind(carMapping._new, carMapping, {colour: 'red', name: 'Aston Martin', invalidField: 'invalid'});
+                    assert.throws(invocation, RestError);
+                });
             });
         });
+
 
     });
 
     describe('relationships', function () {
-
-
         describe('valid', function () {
             var api, carMapping, personMapping;
 
@@ -227,7 +228,6 @@ describe('mapping!', function () {
                     done(err);
                 });
             }
-
 
             describe('Valid Foreign Key', function () {
 
@@ -346,7 +346,6 @@ describe('mapping!', function () {
                 });
             });
         });
-
 
 
     });

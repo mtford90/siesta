@@ -1,6 +1,6 @@
 describe('mapper', function () {
 
-    var RestAPI, RestObject, Mapping;
+    var RestAPI, RestObject, Mapping, RelationshipType;
 
     beforeEach(function () {
         module('restkit.mapper', function ($provide) {
@@ -8,10 +8,16 @@ describe('mapper', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _RestObject_, _Mapping_) {
+        module('restkit.relationship', function ($provide) {
+            $provide.value('$log', console);
+            $provide.value('$q', Q);
+        });
+
+        inject(function (_RestAPI_, _RestObject_, _Mapping_, _RelationshipType_) {
             RestAPI = _RestAPI_;
             RestObject = _RestObject_;
             Mapping = _Mapping_;
+            RelationshipType = _RelationshipType_;
         });
 
         RestAPI._reset();
@@ -28,7 +34,7 @@ describe('mapper', function () {
         assert.equal(r.idField, 'id');
     });
 
-    it('typeField', function () {
+    it('type field', function () {
         var mapping = new Mapping({
             type: 'Car',
             id: 'id',
@@ -38,7 +44,8 @@ describe('mapper', function () {
         var r = new RestObject(mapping);
         assert.equal(r.type, 'Car');
     });
-    it('typeField', function () {
+
+    it('api field', function () {
         var mapping = new Mapping({
             type: 'Car',
             id: 'id',

@@ -20,6 +20,9 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         Relationship.prototype.getRelated = function (obj, callback) {
             throw Error('Relationship.getRelated must be overridden');
         };
+        Relationship.prototype.contributeToRestObject = function (obj) {
+            throw Error('Relationship.getRelcontributeToRestObjectated must be overridden');
+        };
         return Relationship;
     })
 
@@ -81,7 +84,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         return ManyToManyRelationship;
     })
 
-    .factory('ForeignKeyRelationship', function (Relationship, Store, jlog) {
+    .factory('ForeignKeyRelationship', function (Relationship, Store, jlog, RestError) {
         var $log = jlog.loggerWithName('ForeignKeyRelationship');
 
         function ForeignKeyRelationship(name, reverseName, mapping, reverseMapping) {
@@ -94,7 +97,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         ForeignKeyRelationship.prototype = Object.create(Relationship.prototype);
 
         ForeignKeyRelationship.prototype.getRelated = function (obj, callback) {
-
             var self = this;
             var storeQuery = {};
             if (obj[this.name]) {
@@ -123,6 +125,15 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     callback();
                 }
             });
+        };
+
+        ForeignKeyRelationship.prototype.contributeToRestObject = function (obj) {
+            if (obj.mapping == this.mapping) {
+
+            }
+            else {
+                throw new RestError('Cannot contribute to object as this relationship has neither a forward or reverse mapping that matches', {relationship: this, obj: obj});
+            }
         };
 
         return ForeignKeyRelationship;

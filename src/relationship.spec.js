@@ -1,6 +1,6 @@
 describe('relationship', function () {
 
-    var RestAPI, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship,ManyToManyRelationship;
+    var RestAPI, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship,ManyToManyRelationship, RelationshipType;
 
     beforeEach(function () {
         module('restkit.relationship', function ($provide) {
@@ -12,7 +12,7 @@ describe('relationship', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
+        inject(function (_RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
             RestAPI = _RestAPI_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
@@ -20,6 +20,7 @@ describe('relationship', function () {
             ManyToManyRelationship = _ManyToManyRelationship_;
             RestObject = _RestObject_;
             cache = _cache_;
+            RelationshipType = _RelationshipType_;
         });
 
         RestAPI._reset();
@@ -71,6 +72,53 @@ describe('relationship', function () {
                 assert.equal(person, related);
             });
         });
+
+
+
+    });
+
+    describe.only('contributions', function () {
+        var api, carMapping, personMapping;
+
+        beforeEach(function (done) {
+            api = new RestAPI('myApi', function (err, version) {
+                if (err) done(err);
+                carMapping = api.registerMapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+//                    relationships: {
+//                        owner: {
+//                            mapping: 'Person',
+//                            type: RelationshipType.ForeignKey,
+//                            reverse: 'cars'
+//                        }
+//                    }
+                });
+                personMapping = api.registerMapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+            }, function (err) {
+                done(err);
+            });
+        });
+
+        describe('foreign key contributions', function () {
+            it('forward', function () {
+                var obj = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                relationship.contributeToRestObject(obj);
+                assert.property(obj, 'ownerId');
+                assert.property(obj, 'owner');
+                assert.property(obj, 'getOwner');
+            });
+//            it('reverse', function () {
+//                var obj = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+//                var relationship = ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+//                assert.ok(obj);
+//            })
+        });
+
 
     });
 

@@ -1,14 +1,22 @@
-rest
+Fount
 ====
 
-RESTKit/CoreData inspired persistence for AngularJS. Features:
 
-* Single source of truth for models.
-* PouchDB-powered local peristence and synchronisation.
 
-Current limitations:
+Fount is inspired by:
 
-* Only JSON supported.
+* CoreData
+    * Single source of truth
+    * Persistence
+* RestKit
+    * Mappings
+    * Descriptors
+* Django
+    * URL configs
+* South
+    * Migrations
+* CouchDB/PouchDB (and makes use of the latter)
+    * Synchronisation
 
 ## Quick Start
 
@@ -16,15 +24,16 @@ Current limitations:
 
 TODO
 
-### Step 2: Base Configuration
+### Step 2: Create a collection
 
-The point of entry is `RestAPI` and is used to configure each REST API you want to interface with.
+The point of entry is `Collection` and is used to configure any Rest APIs that you want to interface with
+as well as any local data structures that you want to model.
 
 ```javascript
-var api = new RestAPI('MyAPI', function configure (err, version) {
+var api = new Collection('MyCollection', function configure (err, version) {
     if (!err) {
-        if (!version) { // MyAPI has never been configured on this browser.
-            // Base URL.
+        if (!version) { // MyCollection has never been configured on this browser.
+            // Base URL. Only necessary if you're going to be interfacing with a remote data source.
             this.setBaseURL('http://mysite.com/api/');
             configureObjectMappings(this);
             configureDescriptors(this);
@@ -288,7 +297,7 @@ Schema migrations are rudimentary at the moment. If you detect a change in versi
 up the Rest API you can either delete all the data and start from scratch:
 
 ```javascript
-var api = new RestAPI('MyAPI', function (err, version) {
+var api = new Collection('MyCollection', function (err, version) {
     if (!err) {
         if (version) {
             if (version !== MY_VERSION) {
@@ -306,7 +315,7 @@ var api = new RestAPI('MyAPI', function (err, version) {
 or you could implement a migration scheme:
 
 ```javascript
-var api = new RestAPI('MyAPI', function (err, version) {
+var api = new Collection('MyCollection', function (err, version) {
     if (!err) {
         if (!version) {
             doFirstTimeSetup();
@@ -382,7 +391,7 @@ angular.module('myApp.rest.migrations')
 and then when you setup the Rest API:
 
 ```javascript
-var api = new RestAPI('MyAPI', function (err, version) {
+var api = new Collection('MyCollection', function (err, version) {
     if (!err) {
         applyMigrations(api);
     }
@@ -402,12 +411,15 @@ TODO
 
 Useful stuff that can be done with the combination of <rest> and the underlying PouchDB.
 
+### 
+
 ### Custom Views
 
 TODO: Install custom PouchDB views. Useful for analysis of data etc.
 
-
 ## Contributing
+
+### Getting setup
 
 Download dependencies:
 
@@ -446,9 +458,60 @@ describe.only('block of tests', function () {
 
 ## To Sort
 
+Things that don't have a home yet.
+
 ### RestError
 
 `RestError` is an extension to Javascript's `Error` class.
 
 * `RestError.message` describes the error.
 * `RestError.context` gives some useful context.
+
+### Relationships
+
+#### Foreign Key, OneToOne
+
+If we have the following mappings:
+
+```javascript
+carMapping = collection.registerMapping('Car', {
+    id: 'id',
+    attributes: ['colour', 'name'],
+    relationships: {
+        owner: {
+            mapping: 'Person',
+            type: RelationshipType.ForeignKey,
+            reverse: 'cars'
+        }
+    }
+});
+
+personMapping = collection.registerMapping('Person', {
+    id: 'id',
+    attributes: ['name', 'age']
+});
+```
+
+A `Car` object will have the following properties due to this relationship.
+
+```javascript
+Car.ownerId; // Locally unique identifier for the Person that this car belongs to.
+Car.owner; // The Person object itself (if has been fetched).
+
+// Fetches the owner of the car using ownerId. Note that this does not fetch from the remote source.
+Car.getOwner(function (err, owner) { 
+    // Car.owner will now be populated if no error (and of course will stay in sync).
+}); 
+
+Car.getRelationships(function (err) {
+    // Car.owner and any other relationship will now be populated.
+});
+
+Car.getRelationships(function (err) {
+    // Car.owner and any other relationship will now be populated.
+    // Additionally, relationships in related objects will be populated.
+}, true);
+```
+
+
+#### ManyToMany
