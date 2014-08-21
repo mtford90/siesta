@@ -133,7 +133,7 @@ describe('request descriptor', function () {
             var r = new RequestDescriptor({data: 'path.to.data'});
             assert.equal(r.data.path.to, 'data');
         });
-        describe.only('embed', function () {
+        describe('embed', function () {
             var data = {x: 1, y: 2, z: 3};
             it('if null, should simply return the object', function () {
                 var r = new RequestDescriptor({data: null});
@@ -152,6 +152,29 @@ describe('request descriptor', function () {
                 var extractData = r._embedData(data);
                 console.log('yo', extractData);
                 assert.equal(data, extractData.path.to.data);
+            });
+        });
+        describe('extract', function () {
+            var data = {x: 1, y: 2, z: 3};
+            it('if null, should simply return the object', function () {
+                var r = new RequestDescriptor({data: null});
+                var extractData = r._extractData(data);
+                assert.equal(extractData, data);
+            });
+            it('if empty string, should simply return the object', function () {
+                var r = new RequestDescriptor({data: ''});
+                var extractData = r._extractData(data);
+                assert.equal(extractData, data);
+            });
+            it('if length 1, should return 1 level deep object', function () {
+                var r = new RequestDescriptor({data: 'abc'});
+                var extractData = r._extractData({abc: data});
+                assert.equal(extractData, data);
+            });
+            it('if > length 1, should return n level deep object', function () {
+                var r = new RequestDescriptor({data: 'path.to.data'});
+                var extractData = r._extractData({path: {to: {data: data}}});
+                assert.equal(extractData, data);
             });
         });
     });

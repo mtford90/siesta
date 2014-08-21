@@ -187,6 +187,32 @@ angular.module('restkit.requestDescriptor', ['restkit'])
             }
         };
 
+        RequestDescriptor.prototype._extractData = function (data) {
+            if (this.data) {
+                if (typeof(this.data) == 'string') {
+                    return data[this.data];
+                }
+                else {
+                    var keys = Object.keys(this.data);
+                    assert(keys.length == 1);
+                    var currKey = keys[0];
+                    var currTheirs = data;
+                    var currOurs = this.data;
+                    while(typeof(currOurs) != 'string') {
+                        console.log(currKey, currOurs, currTheirs);
+                            keys = Object.keys(currOurs);
+                            assert(keys.length == 1);
+                            currKey = keys[0];
+                            currTheirs = currTheirs[currKey];
+                            currOurs = currOurs[currKey];
+                    }
+                    return currTheirs[currOurs];
+                }
+            }
+            else {
+                return data;
+            }
+        };
 
         return RequestDescriptor;
     })
