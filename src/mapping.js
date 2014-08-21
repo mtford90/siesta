@@ -1,6 +1,7 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship'])
 
-    .factory('Mapping', function (Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship) {
+    .factory('Mapping', function (Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog,
+                                  RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, ManyToManyRelationship) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -42,16 +43,27 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                 $log.debug(self.type + ': configuring relationship ' + name);
                                 if (self._opts.relationships.hasOwnProperty(name)) {
                                     var relationship = self._opts.relationships[name];
+                                    var relationshipClass;
                                     if (relationship.type == RelationshipType.ForeignKey) {
-                                        var reverseMappingName = relationship.mapping;
-                                        $log.debug('reverseMappingName', reverseMappingName);
-                                        var api = RestAPIRegistry[self.api];
-                                        $log.debug('api', RestAPIRegistry);
-                                        var reverseMapping = api[reverseMappingName];
-                                        $log.debug('reverseMapping', reverseMapping);
-                                        var relationshipObj = new ForeignKeyRelationship(name, relationship.reverse, self, reverseMapping);
-                                        self._relationships.push(relationshipObj)
+                                        relationshipClass = ForeignKeyRelationship;
                                     }
+                                    else if (relationship.type == RelationshipType.OneToOne) {
+                                        relationshipClass = OneToOneRelationship;
+                                    }
+                                    else if (relationship.type == RelationshipType.ManyToMany) {
+                                        relationshipClass = ManyToManyRelationship;
+                                    }
+                                    else {
+                                        throw new RestError('Unknown relationship type "' + relationship.type.toString() + '"');
+                                    }
+                                    var reverseMappingName = relationship.mapping;
+                                    $log.debug('reverseMappingName', reverseMappingName);
+                                    var api = RestAPIRegistry[self.api];
+                                    $log.debug('api', RestAPIRegistry);
+                                    var reverseMapping = api[reverseMappingName];
+                                    $log.debug('reverseMapping', reverseMapping);
+                                    var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
+                                    self._relationships.push(relationshipObj);
                                 }
                             }
                         }
