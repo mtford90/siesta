@@ -36,7 +36,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             Object.defineProperty(this, 'relationships', {
                 get: function () {
                     if (!self._relationships) {
-                        $log.debug('lazily constructing relationships');
+                        $log.debug(self.type + ': lazily constructing relationships');
                         self._relationships = [];
                         if (self._opts.relationships) {
                             for (var name in self._opts.relationships) {
@@ -61,9 +61,15 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                     var api = RestAPIRegistry[self.api];
                                     $log.debug('api', RestAPIRegistry);
                                     var reverseMapping = api[reverseMappingName];
-                                    $log.debug('reverseMapping', reverseMapping);
-                                    var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
-                                    self._relationships.push(relationshipObj);
+                                    if (reverseMapping) {
+                                        $log.debug('reverseMapping', reverseMapping);
+                                        var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
+                                        self._relationships.push(relationshipObj);
+                                    }
+                                    else {
+                                        throw new RestError('Mapping with name "' + reverseMappingName.toString() + '" does not exist');
+                                    }
+
                                 }
                             }
                         }

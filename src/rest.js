@@ -131,15 +131,17 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                 }
 
                 function installMapping(mapping) {
+                    var name = mapping.type.toString();
+                    $log.debug('Installing mapping "' + name + '"');
                     mapping.install(function (err) {
                         numMappingsInstalled++;
                         if (err) {
-                            $log.error('mapping "' + mappingName.toString() + '" failed to install', err);
+                            $log.error('mapping "' +name + '" failed to install', err);
                             mappingInstallationErrors[mappingName] = err;
                             numErrors++;
                         }
                         else {
-                            $log.debug(numMappingsInstalled.toString() + '/' + numMappings.toString() + ': mapping "' + mappingName.toString() + '" installed');
+                            $log.debug(numMappingsInstalled.toString() + '/' + numMappings.toString() + ': mapping "' + name + '" installed');
                         }
                         checkIfFinishedInstallingMappings();
                     });
@@ -150,14 +152,11 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                         if (!self[mappingName]) {
                             if (self._mappings.hasOwnProperty(mappingName)) {
                                 var mapping = self.registerMapping(mappingName, self._mappings[mappingName]);
-                                $log.debug('Installing mapping "' + mappingName.toString() + '"');
                                 installMapping(mapping);
                             }
                         }
                         else {
                             installMapping(self[mappingName]);
-                            numMappingsInstalled++;
-                            checkIfFinishedInstallingMappings();
                         }
                     }
                 }

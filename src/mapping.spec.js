@@ -201,9 +201,10 @@ describe('mapping!', function () {
 
     describe('relationships', function () {
 
-        var api, carMapping, personMapping;
 
         describe('valid', function () {
+            var api, carMapping, personMapping;
+
             function configureRelationship(done, type) {
                 api = new RestAPI('myApi', function (err, version) {
                     if (err) done(err);
@@ -226,6 +227,7 @@ describe('mapping!', function () {
                     done(err);
                 });
             }
+
 
             describe('Valid Foreign Key', function () {
 
@@ -283,6 +285,74 @@ describe('mapping!', function () {
 
             });
 
+        });
+
+        describe.only('invalid', function () {
+            it('No such mapping', function (done) {
+                var carMapping;
+                var api = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'asd',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    try {
+                        carMapping.relationships;
+                    }
+                    catch (err) {
+                        if (err instanceof RestError) {
+                            done()
+                        }
+                        else {
+                            throw err;
+                        }
+                    }
+                });
+            });
+
+            it('No such relationship type', function (done) {
+                var carMapping, personMapping;
+                var api = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: 'invalidtype',
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                    personMapping = api.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    try {
+                        carMapping.relationships;
+                    }
+                    catch (err) {
+                        if (err instanceof RestError) {
+                            done()
+                        }
+                        else {
+                            throw err;
+                        }
+                    }
+                });
+            });
         });
 
 
