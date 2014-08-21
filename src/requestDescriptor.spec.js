@@ -1,6 +1,6 @@
 describe('request descriptor', function () {
 
-    var RestAPI, RequestDescriptor, RestError;
+    var RestAPI, RequestDescriptor, RestError, DescriptorRegistry;
 
     var api, mapping;
 
@@ -10,10 +10,11 @@ describe('request descriptor', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _RequestDescriptor_, _RestError_) {
+        inject(function (_RestAPI_, _RequestDescriptor_, _RestError_, _DescriptorRegistry_) {
             RestAPI = _RestAPI_;
             RequestDescriptor = _RequestDescriptor_;
             RestError = _RestError_;
+            DescriptorRegistry = _DescriptorRegistry_;
         });
 
         api = new RestAPI('myApi', function (err, version) {
@@ -70,7 +71,7 @@ describe('request descriptor', function () {
         });
     });
 
-    describe.only('data', function () {
+    describe('data', function () {
         it('if null, should be null', function () {
             var r = new RequestDescriptor({data: null});
             assert.notOk(r.data);
@@ -87,7 +88,13 @@ describe('request descriptor', function () {
             var r = new RequestDescriptor({data: 'path.to.data'});
             assert.equal(r.data.path.to, 'data');
         });
+    });
 
+    describe('registry', function () {
+        it('should register request descriptor', function () {
+            var r = new RequestDescriptor({data: 'path.to.data'});
+            assert.include(DescriptorRegistry.requestDescriptors, r);
+        }) ;
     });
 
 

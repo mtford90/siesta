@@ -1,6 +1,23 @@
 angular.module('restkit.requestDescriptor', ['restkit'])
 
-    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError) {
+    .factory('DescriptorRegistry', function () {
+        function RequestDescriptorRegistry() {
+            if (!this) {
+                return new RequestDescriptorRegistry(opts);
+            }
+            this.requestDescriptors = [];
+            this.responseDescriptors = [];
+        }
+        RequestDescriptorRegistry.prototype.registerRequestDescriptor = function (requestDescriptor) {
+            this.requestDescriptors.push(requestDescriptor);
+        };
+        RequestDescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
+            this.requestDescriptors.push(responseDescriptor);
+        };
+        return new RequestDescriptorRegistry();
+    })
+
+    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError, DescriptorRegistry) {
         // The XRegExp object has these properties that we want to ignore when matching.
         var ignore = ['index', 'input'];
 
@@ -89,6 +106,8 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                     this._opts.data = root;
                 }
             }
+
+            DescriptorRegistry.registerRequestDescriptor(this);
 
             defineSubProperty.call(this, 'path', this._opts);
             defineSubProperty.call(this, 'method', this._opts);
