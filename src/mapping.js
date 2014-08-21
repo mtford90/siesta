@@ -1,6 +1,6 @@
-angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query'])
+angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship'])
 
-    .factory('Mapping', function (Indexes, Query, defineSubProperty, guid, RestObject, jlog, RestError) {
+    .factory('Mapping', function (Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -22,12 +22,47 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 configurable: true
             });
 
-
-
             defineSubProperty.call(this, 'type', self._opts);
             defineSubProperty.call(this, 'id', self._opts);
             defineSubProperty.call(this, 'api', self._opts);
             defineSubProperty.call(this, 'attributes', self._opts);
+
+            console.log(1);
+            this._relationships = null;
+
+            // Lazily construct relationship objects so that all mappings are registered beforehand.
+            // Doubt that this has too much performance impact.
+            Object.defineProperty(this, 'relationships', {
+                get: function () {
+                    if (!self._relationships) {
+                        $log.debug('lazily constructing relationships');
+                        self._relationships = [];
+                        if (self._opts.relationships) {
+                            for (var name in self._opts.relationships) {
+                                $log.debug(self.type + ': configuring relationship ' + name);
+                                if (self._opts.relationships.hasOwnProperty(name)) {
+                                    var relationship = self._opts.relationships[name];
+                                    if (relationship.type == RelationshipType.ForeignKey) {
+                                        var reverseMappingName = relationship.mapping;
+                                        $log.debug('reverseMappingName', reverseMappingName);
+                                        var api = RestAPIRegistry[self.api];
+                                        $log.debug('api', RestAPIRegistry);
+                                        var reverseMapping = api[reverseMappingName];
+                                        $log.debug('reverseMapping', reverseMapping);
+                                        var relationshipObj = new ForeignKeyRelationship(name, relationship.reverse, self, reverseMapping);
+                                        self._relationships.push(relationshipObj)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return self._relationships;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+
         }
 
         Mapping.prototype.query = function (query, callback) {

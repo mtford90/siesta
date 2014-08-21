@@ -1,6 +1,6 @@
 describe('mapping!', function () {
 
-    var Index, Pouch, Indexes, RawQuery, Mapping, RestObject, RestAPI, RestError;
+    var Index, Pouch, Indexes, RawQuery, Mapping, RestObject, RestAPI, RestError, RelationshipType;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -8,7 +8,7 @@ describe('mapping!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _RestAPI_, _RestError_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _RestAPI_, _RestError_, _RelationshipType_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
@@ -17,6 +17,7 @@ describe('mapping!', function () {
             RestObject = _RestObject_;
             RestAPI = _RestAPI_;
             RestError = _RestError_;
+            RelationshipType = _RelationshipType_
         });
 
         Pouch.reset();
@@ -63,6 +64,20 @@ describe('mapping!', function () {
         assert.equal(m.id, 'id');
     });
 
+    it('installation', function (done) {
+        var m = new Mapping({
+            type: 'Type',
+            id: 'id',
+            attributes: ['field1', 'field2'],
+            api: 'myApi'
+        });
+        m.install(function (err) {
+            if (err) done(err);
+            assert.equal(Index.indexes.length, 8);
+            done();
+        });
+    });
+
     describe('validation', function () {
         it('no type', function () {
             var m = new Mapping({
@@ -83,20 +98,6 @@ describe('mapping!', function () {
             var errors = m._validate();
             console.log('errors:', errors);
             assert.equal(1, errors.length);
-        });
-    });
-
-    it('installation', function (done) {
-        var m = new Mapping({
-            type: 'Type',
-            id: 'id',
-            attributes: ['field1', 'field2'],
-            api: 'myApi'
-        });
-        m.install(function (err) {
-            if (err) done(err);
-            assert.equal(Index.indexes.length, 8);
-            done();
         });
     });
 
@@ -169,7 +170,7 @@ describe('mapping!', function () {
 
     });
 
-    describe.only('mapping', function () {
+    describe('mapping', function () {
         var api, carMapping;
 
         beforeEach(function (done) {
@@ -200,5 +201,51 @@ describe('mapping!', function () {
         });
 
     });
+
+    describe.only('relationships', function () {
+
+        var api, carMapping, personMapping;
+
+        beforeEach(function (done) {
+            api = new RestAPI('myApi', function (err, version) {
+                if (err) done(err);
+                carMapping = api.registerMapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                personMapping = api.registerMapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+            }, function (err) {
+                done(err);
+            });
+        });
+
+        describe('Valid relationships', function () {
+            it('Foreign Key', function () {
+                var relationships = carMapping.relationships;
+                console.log('relationships:', relationships);
+                assert.equal(relationships.length, 1);
+                var relationship = relationships[0];
+                inject(function (ForeignKeyRelationship) {
+                    assert.instanceOf(relationship, ForeignKeyRelationship);
+                });
+                assert.equal(relationship.mapping, carMapping);
+                assert.equal(relationship.reverseMapping, personMapping);
+            })
+        });
+
+
+
+    });
+
 
 });

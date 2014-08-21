@@ -1,5 +1,11 @@
 angular.module('restkit.relationship', ['restkit', 'restkit.store'])
 
+    .constant('RelationshipType', {
+        ForeignKey: 'ForeignKey',
+        ManyToMany: 'ManyToMany',
+        OneToOne: 'OneToOne'
+    })
+
     .factory('Relationship', function () {
         function Relationship(name, reverseName, mapping, reverseMapping) {
             if (!this) {

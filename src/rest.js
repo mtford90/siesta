@@ -113,40 +113,53 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                 var numErrors = 0;
                 var numMappings = 0;
                 var mappingName;
+
                 for (mappingName in self._mappings) {
                     if (self._mappings.hasOwnProperty(mappingName)) {
                         numMappings++;
                     }
                 }
+
+                function checkIfFinishedInstallingMappings() {
+                    if (numMappingsInstalled == numMappings) {
+                        var aggError;
+                        if (numErrors) {
+                            aggError = new RestError('Error installing mappings', {errors: mappingInstallationErrors});
+                        }
+                        callback(aggError);
+                    }
+                }
+
                 if (numMappings) {
                     for (mappingName in self._mappings) {
-                        if (self._mappings.hasOwnProperty(mappingName)) {
-                            var mapping = self.registerMapping(mappingName, self._mappings[mappingName]);
-                            $log.debug('Installing mapping "' + mappingName.toString() + '"');
-                            mapping.install(function (err) {
-                                numMappingsInstalled++;
-                                if (err) {
-                                    $log.error('mapping "' + mappingName.toString() + '" failed to install', err);
-                                    mappingInstallationErrors[mappingName] = err;
-                                    numErrors++;
-                                }
-                                else {
-                                    $log.debug(numMappingsInstalled.toString() + '/' + numMappings.toString() + ': mapping "' + mappingName.toString() + '" installed');
-                                }
-                                if (numMappingsInstalled == numMappings) {
-                                    var aggError;
-                                    if (numErrors) {
-                                        aggError = new RestError('Error installing mappings', {errors: mappingInstallationErrors});
+                        if (!self[mappingName]) {
+                            if (self._mappings.hasOwnProperty(mappingName)) {
+                                var mapping = self.registerMapping(mappingName, self._mappings[mappingName]);
+                                $log.debug('Installing mapping "' + mappingName.toString() + '"');
+                                mapping.install(function (err) {
+                                    numMappingsInstalled++;
+                                    if (err) {
+                                        $log.error('mapping "' + mappingName.toString() + '" failed to install', err);
+                                        mappingInstallationErrors[mappingName] = err;
+                                        numErrors++;
                                     }
-                                    callback(aggError);
-                                }
-                            });
+                                    else {
+                                        $log.debug(numMappingsInstalled.toString() + '/' + numMappings.toString() + ': mapping "' + mappingName.toString() + '" installed');
+                                    }
+                                    checkIfFinishedInstallingMappings();
+                                });
+                            }
+                        }
+                        else {
+                            numMappingsInstalled++;
+                            checkIfFinishedInstallingMappings();
                         }
                     }
                 }
                 else {
                     callback(null, doc);
                 }
+
             }
 
             /**
@@ -265,9 +278,9 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         return RestError;
     })
 
-/**
- * Delegate property of an object to another object.
- */
+    /**
+     * Delegate property of an object to another object.
+     */
     .factory('defineSubProperty', function () {
         return function (property, subObj) {
             return Object.defineProperty(this, property, {
