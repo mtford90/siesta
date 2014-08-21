@@ -30,27 +30,72 @@ describe('request descriptor', function () {
         RestAPI._reset();
     });
 
-    it('match path', function () {
-        var r = new RequestDescriptor({path: '/cars/(?<id>[0-9])/?'});
-        var match = r._matchPath('/cars/5/');
-        assert.equal(match.id, '5');
-        match = r._matchPath('/cars/5');
-        assert.equal(match.id, '5');
-    });
+    describe('matching', function () {
 
-    it('all http methods', function () {
-        var r = new RequestDescriptor({method: '*'});
-        _.each(r.httpMethods, function (method) {
-            assert.include(r.method, method);
+        describe('path', function () {
+            it('match id', function () {
+                var r = new RequestDescriptor({path: '/cars/(?<id>[0-9])/?'});
+                var match = r._matchPath('/cars/5/');
+                assert.equal(match.id, '5');
+                match = r._matchPath('/cars/5');
+                assert.equal(match.id, '5');
+            });
         });
-        r = new RequestDescriptor({method: ['*']});
-        _.each(r.httpMethods, function (method) {
-            assert.include(r.method, method);
+
+        describe.only('http methods', function () {
+            it('all http methods', function () {
+                var r = new RequestDescriptor({method: '*'});
+                _.each(r.httpMethods, function (method) {
+                    assert.include(r.method, method);
+                });
+                r = new RequestDescriptor({method: ['*']});
+                _.each(r.httpMethods, function (method) {
+                    assert.include(r.method, method);
+                });
+                r = new RequestDescriptor({method: ['*', 'GET']});
+                _.each(r.httpMethods, function (method) {
+                    assert.include(r.method, method);
+                });
+            });
+            it('match against all', function () {
+                var r = new RequestDescriptor({method: '*'});
+                _.each(r.httpMethods, function (method) {
+                    assert.ok(r._matchMethod(method));
+                    assert.ok(r._matchMethod(method.toUpperCase()));
+                    assert.ok(r._matchMethod(method.toLowerCase()));
+                });
+            });
+            it('match against some', function () {
+                var r = new RequestDescriptor({method: ['POST', 'PUT']});
+                assert.ok(r._matchMethod('POST'));
+                assert.ok(r._matchMethod('PUT'));
+                assert.ok(r._matchMethod('post'));
+                assert.ok(r._matchMethod('put'));
+                assert.ok(r._matchMethod('PoSt'));
+                assert.ok(r._matchMethod('pUt'));
+                assert.notOk(r._matchMethod('HEAD'));
+                assert.notOk(r._matchMethod('head'));
+                assert.notOk(r._matchMethod('hEaD'));
+            });
+            it('match against single', function () {
+                function assertMatchMethod(r) {
+                    console.log(r._matchMethod);
+                    assert.ok(r._matchMethod('POST'));
+                    assert.ok(r._matchMethod('post'));
+                    assert.ok(r._matchMethod('PoSt'));
+                    assert.notOk(r._matchMethod('HEAD'));
+                    assert.notOk(r._matchMethod('head'));
+                    assert.notOk(r._matchMethod('hEaD'));
+                }
+                assertMatchMethod(new RequestDescriptor({method: ['POST']}));
+                assertMatchMethod(new RequestDescriptor({method: ['pOsT']}));
+                assertMatchMethod(new RequestDescriptor({method: 'pOsT'}));
+                assertMatchMethod(new RequestDescriptor({method: 'post'}));
+                assertMatchMethod(new RequestDescriptor({method: 'POST'}));
+            })
         });
-        r = new RequestDescriptor({method: ['*', 'GET']});
-        _.each(r.httpMethods, function (method) {
-            assert.include(r.method, method);
-        });
+
+
     });
 
     describe('specify mapping', function () {
@@ -94,7 +139,7 @@ describe('request descriptor', function () {
         it('should register request descriptor', function () {
             var r = new RequestDescriptor({data: 'path.to.data'});
             assert.include(DescriptorRegistry.requestDescriptors, r);
-        }) ;
+        });
     });
 
 

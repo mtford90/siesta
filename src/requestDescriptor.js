@@ -36,7 +36,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                 }
             }
 
-            // Convert wildcards into methods and ensure is an array.
+            // Convert wildcards into methods and ensure is an array of uppercase methods.
             if (this._opts.method) {
                 if (this._opts.method == '*' || this._opts.method.indexOf('*') > -1) {
                     this._opts.method = this.httpMethods;
@@ -44,6 +44,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                 else if (typeof(this._opts.method) == 'string') {
                     this._opts.method = [this._opts.method];
                 }
+                this._opts.method = _.map(this._opts.method, function (x) {return x.toUpperCase()});
             }
 
             // Mappings can be passed as the actual mapping object or as a string (with API specified too)
@@ -133,6 +134,16 @@ angular.module('restkit.requestDescriptor', ['restkit'])
             }
             return matched;
         };
+
+        RequestDescriptor.prototype._matchMethod = function (method) {
+            for (var i=0;i<this.method.length;i++) {
+                if (method.toUpperCase() == this.method[i]) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
 
         return RequestDescriptor;
     })
