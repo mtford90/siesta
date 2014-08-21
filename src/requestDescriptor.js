@@ -1,6 +1,6 @@
 angular.module('restkit.requestDescriptor', ['restkit'])
 
-    .factory('RequestDescriptor', function (defineSubProperty) {
+    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError) {
         // The XRegExp object has these properties that we want to ignore when matching.
         var ignore = ['index', 'input'];
 
@@ -29,8 +29,40 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                 }
             }
 
+            // Mappings can be passed as the actual mapping object or as a string (with API specified too)
+            if (this._opts.mapping) {
+                if (typeof(this._opts.mapping) == 'string') {
+                    if (this._opts.api) {
+                        var api;
+                        if (typeof(this._opts.api) == 'string') {
+                            api = RestAPIRegistry[this._opts.api];
+                        }
+                        else {
+                            api = this._opts.api;
+                        }
+                        if (api) {
+                            var actualMapping = api[this._opts.mapping];
+                            if (actualMapping) {
+                                this._opts.mapping = actualMapping;
+                            }
+                            else {
+                                throw new RestError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts});
+                            }
+                        }
+                        else {
+                            throw new RestError('API ' + this._opts.api + ' does not exist', {opts: opts});
+                        }
+                    }
+                    else {
+                        throw new RestError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts});
+                    }
+                }
+            }
+
             defineSubProperty.call(this, 'path', this._opts);
             defineSubProperty.call(this, 'method', this._opts);
+            defineSubProperty.call(this, 'mapping', this._opts);
+            defineSubProperty.call(this, 'data', this._opts);
         }
 
         RequestDescriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
