@@ -59,6 +59,37 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                 }
             }
 
+            // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
+            // otherwise leave as string or undefined.
+            var data = this._opts.data;
+            if (data) {
+                if (data.length) {
+                    var root;
+                    var arr = data.split('.');
+                    if (arr.length == 1) {
+                        root = arr[0];
+                    }
+                    else {
+                        var obj = {};
+                        root = obj;
+                        var previousKey = arr[0];
+                        for (var i = 1; i < arr.length; i++) {
+                            var key = arr[i];
+                            if (i == (arr.length - 1)) {
+                                obj[previousKey] = key;
+                            }
+                            else {
+                                var newVar = {};
+                                obj[previousKey] = newVar;
+                                obj = newVar;
+                                previousKey = key;
+                            }
+                        }
+                    }
+                    this._opts.data = root;
+                }
+            }
+
             defineSubProperty.call(this, 'path', this._opts);
             defineSubProperty.call(this, 'method', this._opts);
             defineSubProperty.call(this, 'mapping', this._opts);

@@ -1,4 +1,4 @@
-describe.only('request descriptor', function () {
+describe('request descriptor', function () {
 
     var RestAPI, RequestDescriptor, RestError;
 
@@ -70,9 +70,25 @@ describe.only('request descriptor', function () {
         });
     });
 
-    it('data', function () {
-        var r = new RequestDescriptor({data: 'path.to.data'});
-        assert.equal(r.data, 'path.to.data');
+    describe.only('data', function () {
+        it('if null, should be null', function () {
+            var r = new RequestDescriptor({data: null});
+            assert.notOk(r.data);
+        });
+        it('if empty string, should be null', function () {
+            var r = new RequestDescriptor({data: ''});
+            assert.notOk(r.data);
+        });
+        it('if length 1, should be a string', function () {
+            var r = new RequestDescriptor({data: 'abc'});
+            assert.equal(r.data, 'abc');
+        });
+        it('if > length 1, should be an object', function () {
+            var r = new RequestDescriptor({data: 'path.to.data'});
+            assert.equal(r.data.path.to, 'data');
+        });
+
     });
+
 
 });
