@@ -1,8 +1,8 @@
-describe('request descriptor', function () {
+describe.only('request descriptor', function () {
 
     var RestAPI, RequestDescriptor, RestError, DescriptorRegistry;
 
-    var api, mapping;
+    var api, carMapping;
 
     beforeEach(function (done) {
         module('restkit.requestDescriptor', function ($provide) {
@@ -19,7 +19,7 @@ describe('request descriptor', function () {
 
         api = new RestAPI('myApi', function (err, version) {
             if (err) done(err);
-            mapping = api.registerMapping('Car', {
+            carMapping = api.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -87,6 +87,7 @@ describe('request descriptor', function () {
                     assert.notOk(r._matchMethod('head'));
                     assert.notOk(r._matchMethod('hEaD'));
                 }
+
                 assertMatchMethod(new RequestDescriptor({method: ['POST']}));
                 assertMatchMethod(new RequestDescriptor({method: ['pOsT']}));
                 assertMatchMethod(new RequestDescriptor({method: 'pOsT'}));
@@ -100,8 +101,8 @@ describe('request descriptor', function () {
 
     describe('specify mapping', function () {
         it('as object', function () {
-            var r = new RequestDescriptor({mapping: mapping});
-            assert.equal(r.mapping, mapping);
+            var r = new RequestDescriptor({mapping: carMapping});
+            assert.equal(r.mapping, carMapping);
         });
         it('as string', function () {
             var r = new RequestDescriptor({mapping: 'Car', api: 'myApi'});
@@ -185,6 +186,81 @@ describe('request descriptor', function () {
             assert.include(DescriptorRegistry.requestDescriptors, r);
         });
     });
+
+    describe('match http config', function () {
+        describe('no data', function () {
+            var descriptor;
+            beforeEach(function () {
+                descriptor = new RequestDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+            });
+            it('match', function () {
+                assert.equal(descriptor.match({
+                    method: 'POST',
+                    url: '/cars/5/'
+                }), carMapping);
+            });
+            it('no match because of method', function () {
+                assert.notOk(descriptor.match({
+                    method: 'GET',
+                    url: '/cars/5/'
+                }));
+            });
+            it('no match because of url', function () {
+                assert.notOk(descriptor.match({
+                    method: 'POST',
+                    url: '/asdasd/'
+                }));
+            });
+        });
+
+        describe('data', function () {
+            var descriptor;
+            beforeEach(function () {
+                descriptor = new RequestDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?',
+                    data: 'path.to.data'
+                });
+            });
+            it('match', function () {
+                assert.equal(descriptor.match({
+                    method: 'POST',
+                    url: '/cars/5/',
+                    data: {
+                        path: {
+                            to: {
+                                data: {
+                                    x: 1,
+                                    y: 2
+                                }
+                            }
+                        }
+                    }
+                }), carMapping);
+            });
+            it('no match', function () {
+                assert.notOk(descriptor.match({
+                    method: 'POST',
+                    url: '/cars/5/',
+                    data: {
+                        path: {
+                            data: {
+                                x: 1,
+                                y: 2
+                            }
+                        }
+                    }
+                }));
+            });
+
+        })
+
+    })
 
 
 });

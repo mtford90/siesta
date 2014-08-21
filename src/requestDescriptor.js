@@ -8,6 +8,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
             this.requestDescriptors = [];
             this.responseDescriptors = [];
         }
+
         RequestDescriptorRegistry.prototype.registerRequestDescriptor = function (requestDescriptor) {
             this.requestDescriptors.push(requestDescriptor);
         };
@@ -17,7 +18,10 @@ angular.module('restkit.requestDescriptor', ['restkit'])
         return new RequestDescriptorRegistry();
     })
 
-    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError, DescriptorRegistry, assert) {
+    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError, DescriptorRegistry, assert, jlog) {
+
+        var $log = jlog.loggerWithName('RequestDescriptor');
+
         // The XRegExp object has these properties that we want to ignore when matching.
         var ignore = ['index', 'input'];
 
@@ -95,8 +99,6 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                             var key = arr[i];
                             if (i == (arr.length - 1)) {
                                 obj[previousKey] = key;
-                                deepest = obj;
-                                deepestKey = previousKey;
                             }
                             else {
                                 var newVar = {};
@@ -137,7 +139,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
         };
 
         RequestDescriptor.prototype._matchMethod = function (method) {
-            for (var i=0;i<this.method.length;i++) {
+            for (var i = 0; i < this.method.length; i++) {
                 if (method.toUpperCase() == this.method[i]) {
                     return true;
                 }
@@ -188,6 +190,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
         };
 
         RequestDescriptor.prototype._extractData = function (data) {
+            $log.debug('_extractData', data);
             if (this.data) {
                 if (typeof(this.data) == 'string') {
                     return data[this.data];
@@ -195,23 +198,41 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                 else {
                     var keys = Object.keys(this.data);
                     assert(keys.length == 1);
-                    var currKey = keys[0];
                     var currTheirs = data;
                     var currOurs = this.data;
-                    while(typeof(currOurs) != 'string') {
-                        console.log(currKey, currOurs, currTheirs);
-                            keys = Object.keys(currOurs);
-                            assert(keys.length == 1);
-                            currKey = keys[0];
-                            currTheirs = currTheirs[currKey];
-                            currOurs = currOurs[currKey];
+                    while (typeof(currOurs) != 'string') {
+                        console.log(currOurs, currTheirs);
+                        keys = Object.keys(currOurs);
+                        assert(keys.length == 1);
+                        var key = keys[0];
+                        currOurs = currOurs[key];
+                        currTheirs = currTheirs[key];
+                        if (!currTheirs) {
+                            break;
+                        }
                     }
-                    return currTheirs[currOurs];
+                    console.log(currOurs, currTheirs);
+                    return currTheirs ? currTheirs[currOurs] : null;
                 }
             }
             else {
                 return data;
             }
+        };
+
+        /**
+         * Returns this descriptors mapping if the request config matches.
+         * @param config http config for $http
+         */
+        RequestDescriptor.prototype.match = function (config) {
+            var matches = config.method ? this._matchMethod(config.method) : true;
+            if (matches) {
+                matches = config.url ? this._matchPath(config.url) : true;
+                if (this.data) {
+                    matches = config.data ? !!this._extractData(config.data) : false;
+                }
+            }
+            return matches ? this.mapping : null;
         };
 
         return RequestDescriptor;
