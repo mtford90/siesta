@@ -30,69 +30,77 @@ describe('store', function () {
         });
     });
 
-    it('already cached', function (done) {
-        var restObject = new RestObject(mapping);
-        var pouchId = 'pouchId';
-        restObject._id = pouchId;
-        cache.insert(restObject);
-        Store.get({_id: pouchId}, function (err, doc) {
-            if (err)done(err);
-            console.log('doc:', doc);
-            assert.equal(doc, restObject);
-            done();
-        });
-    });
-
-    it('in pouch, have _id', function (done) {
-        var pouchid = 'pouchId';
-        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid}, function (err, doc) {
-            if (err) done(err);
-            Store.get({_id: pouchid}, function (err, doc) {
+    describe('get', function () {
+        it('already cached', function (done) {
+            var restObject = new RestObject(mapping);
+            var pouchId = 'pouchId';
+            restObject._id = pouchId;
+            cache.insert(restObject);
+            Store.get({_id: pouchId}, function (err, doc) {
                 if (err)done(err);
                 console.log('doc:', doc);
+                assert.equal(doc, restObject);
                 done();
             });
         });
-    });
 
-    it('in pouch, dont have _id', function (done) {
-        var pouchid = 'pouchId';
-        var remoteId = 'xyz';
-        Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
-            if (err) done(err);
-            Store.get({id: remoteId, mapping: mapping}, function (err, doc) {
+        it('in pouch, have _id', function (done) {
+            var pouchid = 'pouchId';
+            Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid}, function (err, doc) {
                 if (err) done(err);
-                console.log('doc:', doc);
-                done();
+                Store.get({_id: pouchid}, function (err, doc) {
+                    if (err)done(err);
+                    console.log('doc:', doc);
+                    done();
+                });
             });
         });
+
+        it('in pouch, dont have _id', function (done) {
+            var pouchid = 'pouchId';
+            var remoteId = 'xyz';
+            Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
+                if (err) done(err);
+                Store.get({id: remoteId, mapping: mapping}, function (err, doc) {
+                    if (err) done(err);
+                    console.log('doc:', doc);
+                    done();
+                });
+            });
+        });
+
+        describe('multiple', function () {
+            it('xyz', function (done) {
+                Pouch.getPouch().bulkDocs(
+                    [
+                        {type: 'Car', api: 'myApi', colour: 'red', _id: 'localId1', id: 'remoteId1'},
+                        {type: 'Car', api: 'myApi', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
+                        {type: 'Car', api: 'myApi', colour: 'green', _id: 'localId3', id: 'remoteId3'}
+                    ],
+                    function (err) {
+                        if (err) done(err);
+                        Store.getMultiple([
+                            {_id: 'localId1'},
+                            {_id: 'localId2'},
+                            {_id: 'localId3'}
+                        ], function (err, docs) {
+                            if (err) done(err);
+                            console.log('docs:', docs);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, RestObject);
+                            });
+                            done();
+                        })
+                    }
+                );
+            })
+        });
+
     });
 
-    describe('multiple', function () {
-        it('xyz', function (done) {
-            Pouch.getPouch().bulkDocs(
-                [
-                    {type: 'Car', api: 'myApi', colour: 'red', _id: 'localId1', id: 'remoteId1'},
-                    {type: 'Car', api: 'myApi', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
-                    {type: 'Car', api: 'myApi', colour: 'green', _id: 'localId3', id: 'remoteId3'}
-                ],
-                function (err) {
-                    if (err) done(err);
-                    Store.getMultiple([
-                        {_id: 'localId1'},
-                        {_id: 'localId2'},
-                        {_id: 'localId3'}
-                    ], function (err, docs) {
-                        if (err) done(err);
-                        console.log('docs:', docs);
-                        _.each(docs, function (d) {
-                            assert.instanceOf(d, RestObject);
-                        });
-                        done();
-                    })
-                }
-            );
-        })
+    describe('put objects to store', function () {
+        // TODO
     });
+
 
 });

@@ -87,6 +87,9 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                         }
                     });
                 });
+            },
+            put: function (callback) {
+                // TODO
             }
         }
     })

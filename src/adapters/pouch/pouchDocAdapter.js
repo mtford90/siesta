@@ -45,9 +45,35 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.mapper'])
             return r;
         }
 
+        /**
+         * Convert a RestObject instance into a Pouch document so can be persisted.
+         * @param obj An instance of RestObject
+         */
+        function from (obj) {
+            var mapping = obj.mapping;
+            var adapted = {};
+            _.each(mapping._fields, function (f) {
+                var v = obj[f];
+                if (v) {
+                    adapted[f] = v;
+                }
+            });
+            _.each(mapping.relationships, function (r) {
+                var name = r.name;
+                var proxy = obj[name];
+                if (proxy._id) {
+                    adapted[name] = proxy._id;
+                }
+            });
+            adapted._id = obj._id;
+            adapted._rev = obj._rev;
+            return adapted;
+        }
+
         return {
             toNew: toNew,
-            _validate: validate
+            _validate: validate,
+            from: from
         }
     })
 

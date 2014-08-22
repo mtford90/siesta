@@ -6,7 +6,36 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         OneToOne: 'OneToOne'
     })
 
-    .factory('Relationship', function () {
+    .factory('RelatedObjectProxy', function ($q) {
+        function RelatedObjectProxy(relationship, object) {
+            this.relationship = relationship;
+            this.object = object;
+            // The below is populated if a related object exists, even if at fault and is used for the
+            // lookup.
+            this._id = null;
+            // The below are only populated if not at fault.
+            this.relatedObject = null;
+            this.relatedObjects = null;
+        }
+
+        RelatedObjectProxy.prototype.get = function (callback) {
+            var deferred = $q.defer();
+            this.relationship.getRelated(this.object, function (err, related) {
+                if (callback) callback(err, related);
+                if (err) {
+                    deferred.reject(err);
+                }
+                else {
+                    deferred.resolve(related);
+                }
+            });
+            return deferred.promise;
+        };
+
+        return RelatedObjectProxy;
+    })
+
+    .factory('Relationship', function (RestError, RelatedObjectProxy) {
         function Relationship(name, reverseName, mapping, reverseMapping) {
             if (!this) {
                 return new Relationship(name, reverseName, mapping, reverseMapping);
@@ -21,12 +50,20 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             throw Error('Relationship.getRelated must be overridden');
         };
         Relationship.prototype.contributeToRestObject = function (obj) {
-            throw Error('Relationship.getRelcontributeToRestObjectated must be overridden');
+            if (obj.mapping === this.mapping) {
+                obj[this.name] = new RelatedObjectProxy(this, obj);
+            }
+            else if (obj.mapping == this.reverseMapping) {
+                obj[this.reverseName] = new RelatedObjectProxy(this, obj);
+            }
+            else {
+                throw new RestError('Cannot contribute to object as this relationship has neither a forward or reverse mapping that matches', {relationship: this, obj: obj});
+            }
         };
         return Relationship;
     })
 
-    .factory('ManyToManyRelationship', function (Relationship,  Store, jlog) {
+    .factory('ManyToManyRelationship', function (Relationship, Store, jlog) {
 
         var $log = jlog.loggerWithName('ManyToManyRelationship');
 
@@ -44,7 +81,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             var self = this;
             var storeQueries;
             if (obj[this.name]) {
-                storeQueries = _.map(obj[this.name], function(_id) {return {_id: _id}});
+                storeQueries = _.map(obj[this.name], function (_id) {return {_id: _id}});
             }
             else {
                 if (callback) callback('No local or remote id for relationship "' + this.name.toString() + '"');
@@ -53,7 +90,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             Store.getMultiple(storeQueries, function (errs) {
                 if (errs) {
                     var allErrorsAre404 = true;
-                    for (var i=0;i<errs.length;i++) {
+                    for (var i = 0; i < errs.length; i++) {
                         var err = errs[i];
                         if (err.status != 404) {
                             allErrorsAre404 = false;
@@ -84,7 +121,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         return ManyToManyRelationship;
     })
 
-    .factory('ForeignKeyRelationship', function (Relationship, Store, jlog, RestError) {
+    .factory('ForeignKeyRelationship', function (Relationship, Store, jlog) {
         var $log = jlog.loggerWithName('ForeignKeyRelationship');
 
         function ForeignKeyRelationship(name, reverseName, mapping, reverseMapping) {
@@ -125,15 +162,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     callback();
                 }
             });
-        };
-
-        ForeignKeyRelationship.prototype.contributeToRestObject = function (obj) {
-            if (obj.mapping == this.mapping) {
-
-            }
-            else {
-                throw new RestError('Cannot contribute to object as this relationship has neither a forward or reverse mapping that matches', {relationship: this, obj: obj});
-            }
         };
 
         return ForeignKeyRelationship;

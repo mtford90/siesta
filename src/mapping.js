@@ -150,14 +150,21 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             var idField = this.id;
             if (data[idField]) {
                 var _id = guid();
-                var restObject = new RestObject();
+                var restObject = new RestObject(this);
                 restObject._id = _id;
+                // Place attributes on the object.
                 _.each(this._fields, function (field) {
                     $log.debug('_new looking for "' + field + '" in ', data);
                     if (data[field]) {
                         restObject[field] = data[field];
                     }
                 });
+                // Place relationships on the object.
+                _.each(this.relationships, function (relationship) {
+                    relationship.contributeToRestObject(restObject);
+                    restObject[relationship.name]._id = data[relationship.name];
+                });
+
                 return restObject;
             }
             else {

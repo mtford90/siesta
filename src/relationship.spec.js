@@ -1,6 +1,6 @@
 describe('relationship', function () {
 
-    var RestAPI, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship,ManyToManyRelationship, RelationshipType;
+    var RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship,ManyToManyRelationship, RelationshipType, RelatedObjectProxy;
 
     beforeEach(function () {
         module('restkit.relationship', function ($provide) {
@@ -12,7 +12,7 @@ describe('relationship', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
+        inject(function (_RestError_, _RelatedObjectProxy_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
             RestAPI = _RestAPI_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
@@ -21,6 +21,8 @@ describe('relationship', function () {
             RestObject = _RestObject_;
             cache = _cache_;
             RelationshipType = _RelationshipType_;
+            RelatedObjectProxy = _RelatedObjectProxy_;
+            RestError = _RestError_;
         });
 
         RestAPI._reset();
@@ -77,8 +79,8 @@ describe('relationship', function () {
 
     });
 
-    describe.only('contributions', function () {
-        var api, carMapping, personMapping;
+    describe('contributions', function () {
+        var api, carMapping, personMapping, dogMapping;
 
         beforeEach(function (done) {
             api = new RestAPI('myApi', function (err, version) {
@@ -86,37 +88,38 @@ describe('relationship', function () {
                 carMapping = api.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
-//                    relationships: {
-//                        owner: {
-//                            mapping: 'Person',
-//                            type: RelationshipType.ForeignKey,
-//                            reverse: 'cars'
-//                        }
-//                    }
                 });
                 personMapping = api.registerMapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
+                });
+                dogMapping = api.registerMapping('Dog', {
+                    id: 'id',
+                    attributes: ['name', 'age', 'breed']
                 });
             }, function (err) {
                 done(err);
             });
         });
 
-        describe('foreign key contributions', function () {
-            it('forward', function () {
+        describe('contributions', function () {
+            it('should contribute to an object belonging to the forward mapping', function () {
                 var obj = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
                 var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
                 relationship.contributeToRestObject(obj);
-                assert.property(obj, 'ownerId');
-                assert.property(obj, 'owner');
-                assert.property(obj, 'getOwner');
+                assert.instanceOf(obj.owner, RelatedObjectProxy);
             });
-//            it('reverse', function () {
-//                var obj = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
-//                var relationship = ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
-//                assert.ok(obj);
-//            })
+            it('should contribute to an object belonging to a reverse mapping', function () {
+                var obj = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                relationship.contributeToRestObject(obj);
+                assert.instanceOf(obj.cars, RelatedObjectProxy);
+            });
+            it('should throw an error if relationship has ', function () {
+                var obj = dogMapping._new({name: 'Woody', id: 'asdasd', age: 2, breed:'Chinese Crested'});
+                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                assert.throws(_.bind(relationship.contributeToRestObject, relationship, obj), RestError);
+            })
         });
 
 
