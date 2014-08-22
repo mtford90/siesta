@@ -75,8 +75,6 @@ describe('relationship', function () {
             });
         });
 
-
-
     });
 
     describe('contributions', function () {
@@ -123,6 +121,44 @@ describe('relationship', function () {
         });
 
 
+    });
+
+    describe('RelatedObjectProxy', function () {
+
+        var api, carMapping, personMapping;
+
+        beforeEach(function (done) {
+            api = new RestAPI('myApi', function (err, version) {
+                if (err) done(err);
+                carMapping = api.registerMapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                personMapping = api.registerMapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+            }, function (err) {
+                done(err);
+            });
+        });
+
+        describe('faults', function () {
+            it('not a fault if no related object', function () {
+                var car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                var proxy = new RelatedObjectProxy(relationship, car);
+                assert.notOk(proxy.isFault());
+            });
+            it('is a fault if related object exists, but hasnt been obtained yet', function () {
+                var person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                var car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                var proxy = new RelatedObjectProxy(relationship, car);
+                proxy._id = person._id;
+                assert.ok(proxy.isFault());
+            });
+        });
     });
 
     describe('OneToOne', function () {

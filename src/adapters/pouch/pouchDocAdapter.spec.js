@@ -88,10 +88,10 @@ describe('pouch doc adapter', function () {
         });
     });
 
-    describe.only('from fount to pouch', function () {
+    describe('from fount to pouch', function () {
 
         var api, personMapping, carMapping;
-
+git st
         beforeEach(function (done) {
             api = new RestAPI('myApi', function () {
                 personMapping = api.registerMapping('Person', {
@@ -133,6 +133,8 @@ describe('pouch doc adapter', function () {
             assert.equal(adapted._id, car._id);
             assert.equal(adapted.owner, person._id);
         });
+
+
 
     });
 

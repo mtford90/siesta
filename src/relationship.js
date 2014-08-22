@@ -10,12 +10,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         function RelatedObjectProxy(relationship, object) {
             this.relationship = relationship;
             this.object = object;
-            // The below is populated if a related object exists, even if at fault and is used for the
-            // lookup.
             this._id = null;
-            // The below are only populated if not at fault.
             this.relatedObject = null;
-            this.relatedObjects = null;
         }
 
         RelatedObjectProxy.prototype.get = function (callback) {
@@ -30,6 +26,13 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
             });
             return deferred.promise;
+        };
+
+        RelatedObjectProxy.prototype.isFault = function () {
+            if (this._id) {
+                return !this.relatedObject;
+            }
+            return false; // If no object is related then implicitly this is not a fault.
         };
 
         return RelatedObjectProxy;
