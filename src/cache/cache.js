@@ -1,9 +1,6 @@
 angular.module('restkit.cache', ['restkit', 'restkit.mapper'])
 
 
-    .factory('Store', function () {
-
-    })
 
     .factory('cache', function (RestObject, RestError) {
 

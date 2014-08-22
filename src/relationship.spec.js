@@ -1,6 +1,6 @@
 describe('relationship', function () {
 
-    var RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship,ManyToManyRelationship, RelationshipType, RelatedObjectProxy;
+    var Store, RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship,ManyToManyRelationship, RelationshipType, RelatedObjectProxy;
 
     beforeEach(function () {
         module('restkit.relationship', function ($provide) {
@@ -12,7 +12,7 @@ describe('relationship', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestError_, _RelatedObjectProxy_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
+        inject(function (_Store_, _RestError_, _RelatedObjectProxy_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
             RestAPI = _RestAPI_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
@@ -23,58 +23,10 @@ describe('relationship', function () {
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
             RestError = _RestError_;
+            Store = _Store_;
         });
 
         RestAPI._reset();
-    });
-
-    describe('ForeignKey', function () {
-        var carMapping, personMapping;
-        beforeEach(function (done) {
-            carMapping = new Mapping({
-                type: 'Car',
-                id: 'id',
-                attributes: ['colour', 'name'],
-                api: 'myApi'
-            });
-            personMapping = new Mapping({
-                type: 'Person',
-                id: 'id',
-                attributes: ['name', 'age'],
-                api: 'myApi'
-            });
-            carMapping.install(function (err) {
-                if (err) done(err);
-                personMapping.install(done);
-            });
-        });
-
-        it('local id', function (done) {
-            var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.owner = '4234sdfsdf';
-            var person = new RestObject(personMapping);
-            person._id = car.owner;
-            cache.insert(person);
-            r.getRelated(car, function (err, related) {
-                done(err);
-                assert.equal(person, related);
-            });
-        });
-
-        it('remote id', function (done) {
-            var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.owner = '4234sdfsdf';
-            var person = new RestObject(personMapping);
-            person.id = car.owner;
-            cache.insert(person);
-            r.getRelated(car, function (err, related) {
-                done(err);
-                assert.equal(person, related);
-            });
-        });
-
     });
 
     describe('contributions', function () {
@@ -150,6 +102,15 @@ describe('relationship', function () {
                 var proxy = new RelatedObjectProxy(relationship, car);
                 assert.notOk(proxy.isFault());
             });
+            it('is not a fault if related object exists', function () {
+                var person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                var car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                var proxy = new RelatedObjectProxy(relationship, car);
+                proxy._id = person._id;
+                proxy.relatedObject = person;
+                assert.notOk(proxy.isFault());
+            });
             it('is a fault if related object exists, but hasnt been obtained yet', function () {
                 var person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
                 var car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
@@ -159,110 +120,195 @@ describe('relationship', function () {
                 assert.ok(proxy.isFault());
             });
         });
+
+        describe('get forward foreign key', function () {
+
+            var proxy, person, car;
+
+            beforeEach(function (done) {
+                person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                Store.put(person, function (err) {
+                    if (err) done(err);
+                    car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                    var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                    proxy = new RelatedObjectProxy(relationship, car);
+                    car.owner = proxy;
+                    proxy._id = person._id;
+                    proxy.get(function (err) {
+                        if (err) done(err);
+                        done();
+                    });
+                });
+            });
+
+            it('forward foreign key should populate related object', function () {
+                var related = proxy.relatedObject;
+                assert.equal(related, person);
+            });
+
+        });
+
+
+
+
+
+
+
     });
 
-    describe('OneToOne', function () {
-        var carMapping, personMapping;
-        beforeEach(function (done) {
-            carMapping = new Mapping({
-                type: 'Car',
-                id: 'id',
-                attributes: ['colour', 'name'],
-                api: 'myApi'
+    describe('get related', function () {
+
+        describe('ForeignKey', function () {
+            var carMapping, personMapping;
+            beforeEach(function (done) {
+                carMapping = new Mapping({
+                    type: 'Car',
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    api: 'myApi'
+                });
+                personMapping = new Mapping({
+                    type: 'Person',
+                    id: 'id',
+                    attributes: ['name', 'age'],
+                    api: 'myApi'
+                });
+                carMapping.install(function (err) {
+                    if (err) done(err);
+                    personMapping.install(done);
+                });
             });
-            personMapping = new Mapping({
-                type: 'Person',
-                id: 'id',
-                attributes: ['name', 'age'],
-                api: 'myApi'
+
+            it('forward', function (done) {
+                var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                var car = new RestObject(carMapping);
+                var proxy = new RelatedObjectProxy(r, car);
+                proxy._id = 'xyz123';
+                car.owner = proxy;
+                var person = new RestObject(personMapping);
+                person._id = car.owner._id;
+                cache.insert(person);
+                r.getRelated(car, function (err, related) {
+                    done(err);
+                    assert.equal(person, related);
+                });
             });
-            carMapping.install(function (err) {
-                if (err) done(err);
-                personMapping.install(done);
+
+            it('reverse', function (done) {
+                var r = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                var car = new RestObject(carMapping);
+                car._id = 'xyz123';
+                var proxy = new RelatedObjectProxy(r, car);
+                proxy._id = ['xyz123'];
+                var person = new RestObject(personMapping);
+                person.cars = proxy;
+                cache.insert(person);
+                cache.insert(car);
+                r.getRelated(person, function (err, related) {
+                    done(err);
+                    assert.include(related, car);
+                });
             });
+
         });
 
-        it('local id', function (done) {
-            var r = new OneToOneRelationship('owner', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.owner = '4234sdfsdf';
-            var person = new RestObject(personMapping);
-            person._id = car.owner;
-            cache.insert(person);
-            r.getRelated(car, function (err, related) {
-                done(err);
-                assert.equal(person, related);
+
+        describe.only('OneToOne', function () {
+            var carMapping, personMapping;
+            beforeEach(function (done) {
+                carMapping = new Mapping({
+                    type: 'Car',
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    api: 'myApi'
+                });
+                personMapping = new Mapping({
+                    type: 'Person',
+                    id: 'id',
+                    attributes: ['name', 'age'],
+                    api: 'myApi'
+                });
+                carMapping.install(function (err) {
+                    if (err) done(err);
+                    personMapping.install(done);
+                });
             });
+
+            it('forward', function (done) {
+                var r = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
+                var car = new RestObject(carMapping);
+                var proxy = new RelatedObjectProxy(r, car);
+                proxy._id = 'xyz123';
+                car.owner = proxy;
+                var person = new RestObject(personMapping);
+                person._id = car.owner._id;
+                cache.insert(person);
+                r.getRelated(car, function (err, related) {
+                    done(err);
+                    assert.equal(person, related);
+                });
+            });
+
+            it('reverse', function (done) {
+                var r = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
+                var car = new RestObject(carMapping);
+                car._id = 'xyz123';
+                var proxy = new RelatedObjectProxy(r, car);
+                proxy._id = 'xyz123';
+                var person = new RestObject(personMapping);
+                person.car = proxy;
+                cache.insert(person);
+                cache.insert(car);
+                r.getRelated(person, function (err, related) {
+                    done(err);
+                    assert.equal(car, related);
+                });
+            });
+
         });
 
-        it('remote id', function (done) {
-            var r = new OneToOneRelationship('owner', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.owner = '4234sdfsdf';
-            var person = new RestObject(personMapping);
-            person.id = car.owner;
-            cache.insert(person);
-            r.getRelated(car, function (err, related) {
-                done(err);
-                assert.equal(person, related);
-            });
-        });
+//        describe('ManyToMany', function () {
+//            var carMapping, personMapping;
+//            beforeEach(function (done) {
+//                carMapping = new Mapping({
+//                    type: 'Car',
+//                    id: 'id',
+//                    attributes: ['colour', 'name'],
+//                    api: 'myApi'
+//                });
+//                personMapping = new Mapping({
+//                    type: 'Person',
+//                    id: 'id',
+//                    attributes: ['name', 'age'],
+//                    api: 'myApi'
+//                });
+//                carMapping.install(function (err) {
+//                    if (err) done(err);
+//                    personMapping.install(done);
+//                });
+//            });
+//
+//            it('local id', function (done) {
+//                var r = new ManyToManyRelationship('owners', 'cars', carMapping, personMapping);
+//                var car = new RestObject(carMapping);
+//                car.owners = ['4234sdfsdf', '5245tdfd'];
+//                var person1 = new RestObject(personMapping);
+//                var person2 = new RestObject(personMapping);
+//                person1._id = car.owners[0];
+//                person2._id = car.owners[1];
+//                cache.insert(person1);
+//                cache.insert(person2);
+//                r.getRelated(car, function (err, related) {
+//                    done(err);
+//                    assert.include(related, person1);
+//                    assert.include(related, person2);
+//                });
+//            });
+//
+//
+//        });
     });
 
-    describe('ManyToMany', function () {
-        var carMapping, personMapping;
-        beforeEach(function (done) {
-            carMapping = new Mapping({
-                type: 'Car',
-                id: 'id',
-                attributes: ['colour', 'name'],
-                api: 'myApi'
-            });
-            personMapping = new Mapping({
-                type: 'Person',
-                id: 'id',
-                attributes: ['name', 'age'],
-                api: 'myApi'
-            });
-            carMapping.install(function (err) {
-                if (err) done(err);
-                personMapping.install(done);
-            });
-        });
 
-        it('local id', function (done) {
-            var r = new ManyToManyRelationship('owners', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.owners = ['4234sdfsdf', '5245tdfd'];
-            var person1 = new RestObject(personMapping);
-            var person2 = new RestObject(personMapping);
-            person1._id = car.owners[0];
-            person2._id = car.owners[1];
-            cache.insert(person1);
-            cache.insert(person2);
-            r.getRelated(car, function (err, related) {
-                done(err);
-                assert.include(related, person1);
-                assert.include(related, person2);
-            });
-        });
-
-        it('remote id', function (done) {
-            var r = new ManyToManyRelationship('owners', 'cars', carMapping, personMapping);
-            var car = new RestObject(carMapping);
-            car.owners = ['4234sdfsdf', '5245tdfd'];
-            var person1 = new RestObject(personMapping);
-            var person2 = new RestObject(personMapping);
-            person1.id = car.owners[0];
-            person2.id = car.owners[1];
-            cache.insert(person1);
-            cache.insert(person2);
-            r.getRelated(car, function (err, related) {
-                done(err);
-                assert.include(related, person1);
-                assert.include(related, person2);
-            });
-        });
-    });
 
 });

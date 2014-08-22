@@ -21,16 +21,25 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
         }
 
         function get(opts, callback) {
-            $log.debug('Store.get', opts);
+            $log.debug('get', opts);
             var restObject = cache.get(opts);
             if (restObject) {
+                $log.debug('Had cached object', {opts: opts, obj: restObject});
                 wrappedCallback(callback)(null, restObject);
             }
             else {
+                $log.debug('Object not cached, checking PouchDB', {opts: opts});
                 if (opts._id) {
-                    Pouch.getPouch().get(opts._id).then(function (doc) {
-                        processDoc(doc, callback);
-                    }, wrappedCallback(callback));
+                    // TODO: Is there a nicer way to check if obj is an array?
+                    if (Object.prototype.toString.call(opts._id) === '[object Array]') {
+                        // Proxy onto getMultiple instead.
+                        getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
+                    }
+                    else {
+                        Pouch.getPouch().get(opts._id).then(function (doc) {
+                            processDoc(doc, callback);
+                        }, wrappedCallback(callback));
+                    }
                 }
                 else if (opts.mapping) {
                     var mapping = opts.mapping;
@@ -62,39 +71,44 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
             }
         }
 
-        return {
-            get: get,
-            getMultiple: function (optsArray, callback) {
-                var docs = [];
-                var errors = [];
-                _.each(optsArray, function (opts) {
-                    get(opts, function (err, doc) {
-                        if (err) {
-                            errors.push(err);
-                        }
-                        else {
-                            docs.push(doc);
-                        }
-                        if (docs.length + errors.length == optsArray.length) {
-                            if (callback) {
-                                if (errors.length) {
-                                    callback(errors);
-                                }
-                                else {
-                                    callback(null, docs);
-                                }
+        function getMultiple (optsArray, callback) {
+            var docs = [];
+            var errors = [];
+            _.each(optsArray, function (opts) {
+                get(opts, function (err, doc) {
+                    if (err) {
+                        errors.push(err);
+                    }
+                    else {
+                        docs.push(doc);
+                    }
+                    if (docs.length + errors.length == optsArray.length) {
+                        if (callback) {
+                            if (errors.length) {
+                                callback(errors);
+                            }
+                            else {
+                                callback(null, docs);
                             }
                         }
-                    });
+                    }
                 });
-            },
+            });
+        }
+
+        return {
+            get: get,
+            getMultiple: getMultiple,
             put: function (object, callback) {
+                $log.debug('put', object);
                 assert(object._id);
                 cache.insert(object);
                 var adapted = PouchDocAdapter.from(object);
                 Pouch.getPouch().put(adapted, function (err, resp) {
                     if (!err) {
                         object._rev = resp.rev;
+                        $log.debug('put success', object);
+
                     }
                     if (callback) callback(err);
                 });

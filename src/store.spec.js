@@ -70,7 +70,8 @@ describe('store', function () {
         });
 
         describe('multiple', function () {
-            it('xyz', function (done) {
+
+            beforeEach(function (done) {
                 Pouch.getPouch().bulkDocs(
                     [
                         {type: 'Car', api: 'myApi', colour: 'red', _id: 'localId1', id: 'remoteId1'},
@@ -78,27 +79,42 @@ describe('store', function () {
                         {type: 'Car', api: 'myApi', colour: 'green', _id: 'localId3', id: 'remoteId3'}
                     ],
                     function (err) {
-                        if (err) done(err);
-                        Store.getMultiple([
-                            {_id: 'localId1'},
-                            {_id: 'localId2'},
-                            {_id: 'localId3'}
-                        ], function (err, docs) {
-                            if (err) done(err);
-                            console.log('docs:', docs);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, RestObject);
-                            });
-                            done();
-                        })
+                        done(err);
                     }
                 );
-            })
+            });
+
+            it('getMultiple should return multiple', function (done) {
+                Store.getMultiple([
+                    {_id: 'localId1'},
+                    {_id: 'localId2'},
+                    {_id: 'localId3'}
+                ], function (err, docs) {
+                    if (err) done(err);
+                    console.log('docs:', docs);
+                    _.each(docs, function (d) {
+                        assert.instanceOf(d, RestObject);
+                    });
+                    done();
+                });
+            });
+
+            it('get should proxy to getMultiple if _id is an array', function (done) {
+                Store.get({_id: ['localId1', 'localId2', 'localId3']}, function (err, docs) {
+                    if (err) done(err);
+                    console.log('docs:', docs);
+                    _.each(docs, function (d) {
+                        assert.instanceOf(d, RestObject);
+                    });
+                    done();
+                });
+            });
+
         });
 
     });
 
-    describe.only('put objects to store', function () {
+    describe('put objects to store', function () {
 
         describe('store object that has never been stored', function () {
             var car;
@@ -134,6 +150,7 @@ describe('store', function () {
                 it('should be in cache', function () {
                     assert.equal(cache.get({_id: car._id}), car);
                 });
+
                 it('should be in pouch', function (done) {
                     Pouch.getPouch().get(car._id, function (err, doc) {
                         if (err) done(err);

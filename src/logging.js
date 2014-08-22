@@ -85,7 +85,7 @@ angular.module('logging', [])
         Logger.prototype.$error = function (message) {
             this.performLog($log.error, logLevels.error, message, arguments);
         };
-        Logger.prototype.error = Logger.prototype.$warn;
+        Logger.prototype.error = Logger.prototype.$error;
         return {
             loggerWithName: function (name) {
                 return new Logger(name);

@@ -15,8 +15,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         }
 
         RelatedObjectProxy.prototype.get = function (callback) {
+            var self = this;
             var deferred = $q.defer();
             this.relationship.getRelated(this.object, function (err, related) {
+                if (!err) {
+                    self.relatedObject = related;
+                }
                 if (callback) callback(err, related);
                 if (err) {
                     deferred.reject(err);
@@ -137,32 +141,28 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         ForeignKeyRelationship.prototype = Object.create(Relationship.prototype);
 
         ForeignKeyRelationship.prototype.getRelated = function (obj, callback) {
-            var self = this;
+            var name;
+            if (obj.mapping === this.mapping) {
+                name = this.name;
+            }
+            else if (obj.mapping === this.reverseMapping) {
+                name = this.reverseName;
+            }
             var storeQuery = {};
-            if (obj[this.name]) {
-                storeQuery._id = obj[this.name];
+            var proxy = obj[name];
+            if (proxy) {
+                storeQuery._id = proxy._id;
             }
             else {
-                if (callback) callback('No local or remote id for relationship "' + this.name.toString() + '"');
+                if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
                 return;
             }
-            Store.get(storeQuery, function (err) {
+            Store.get(storeQuery, function (err, obj) {
                 if (err) {
-                    if (err.status == 404) {
-                        $log.debug('Couldnt find using _id, therefore using as remote id');
-                        // Attempt to use the identifier as a remote id and lookup that way instead.
-                        storeQuery = {};
-                        storeQuery[self.reverseMapping.id] = obj[self.name];
-                        storeQuery.mapping = self.reverseMapping;
-                        $log.debug(1);
-                        Store.get(storeQuery, callback);
-                    }
-                    else {
-                        if (callback) callback(err);
-                    }
+                    if (callback) callback(err);
                 }
                 else if (callback) {
-                    callback();
+                    callback(null, obj);
                 }
             });
         };
@@ -183,29 +183,25 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         OneToOneRelationship.prototype = Object.create(Relationship.prototype);
 
         OneToOneRelationship.prototype.getRelated = function (obj, callback) {
-            var self = this;
+            var name;
+            if (obj.mapping === this.mapping) {
+                name = this.name;
+            }
+            else if (obj.mapping === this.reverseMapping) {
+                name = this.reverseName;
+            }
             var storeQuery = {};
-            if (obj[this.name]) {
-                storeQuery._id = obj[this.name];
+            var proxy = obj[name];
+            if (proxy) {
+                storeQuery._id = proxy._id;
             }
             else {
-                if (callback) callback('No local or remote id for relationship "' + this.name.toString() + '"');
+                if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
                 return;
             }
             Store.get(storeQuery, function (err) {
                 if (err) {
-                    if (err.status == 404) {
-                        $log.debug('Couldnt find using _id, therefore using as remote id');
-                        // Attempt to use the identifier as a remote id and lookup that way instead.
-                        storeQuery = {};
-                        storeQuery[self.reverseMapping.id] = obj[self.name];
-                        storeQuery.mapping = self.reverseMapping;
-                        $log.debug(1);
-                        Store.get(storeQuery, callback);
-                    }
-                    else {
-                        if (callback) callback(err);
-                    }
+                    if (callback) callback(err);
                 }
                 else if (callback) {
                     callback();
