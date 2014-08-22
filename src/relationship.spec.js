@@ -300,60 +300,156 @@ describe('relationship', function () {
                 });
 
                 describe('pre-existing', function () {
-                    // TODO
+                    var anotherPerson;
+                    beforeEach(function (done) {
+                        configureAPI(RelationshipType.ForeignKey, 'cars', function (err) {
+                            if (err) done(err);
+                            car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'remoteCarId'});
+                            person = personMapping._new({name: 'Michael Ford', age: 23, id: 'remotePersonId'});
+                            anotherPerson = personMapping._new({name: 'Robbie Mcdonald', age: 18, id: 'remotePersonId2'});
+                            Store.put(anotherPerson, function (err) {
+                                if (err) done(err);
+                                car.owner.set(person, function (err) {
+                                    done(err);
+                                });
+                            });
+
+                        });
+                    });
+                    it('should set forward', function (done) {
+                        car.owner.set(anotherPerson, function (err) {
+                            if (err) done(err);
+                            assert.equal(car.owner._id, anotherPerson._id);
+                            assert.equal(car.owner.relatedObject, anotherPerson);
+                            car.owner.get(function (err, related) {
+                                if (err) done(err);
+                                assert.equal(related, anotherPerson);
+                                done();
+                            });
+                        })
+                    });
+                    it('should set backward of new object', function (done) {
+                        car.owner.set(anotherPerson, function (err) {
+                            if (err) done(err);
+                            assert.equal(anotherPerson.cars._id.length, 1);
+                            assert.equal(anotherPerson.cars.relatedObject.length, 1);
+                            assert.include(anotherPerson.cars._id, car._id);
+                            assert.include(anotherPerson.cars.relatedObject, car);
+                            anotherPerson.cars.get(function (err, related) {
+                                if (err) done(err);
+                                assert.include(related, car);
+                                done();
+                            });
+                            done();
+                        })
+                    });
+                    it('should remove backward of old object', function (done) {
+                        car.owner.set(anotherPerson, function (err) {
+                            if (err) done(err);
+                            assert.equal(person.cars._id.length, 0);
+                            assert.equal(person.cars.relatedObject.length, 0);
+                            done();
+                        })
+                    });
+                });
+            });
+
+            describe('one-to-one', function () {
+
+
+                beforeEach(function (done) {
+                    configureAPI(RelationshipType.OneToOne, 'car', function (err) {
+                        if (err) done(err);
+                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'remoteCarId'});
+                        person = personMapping._new({name: 'Michael Ford', age: 23, id: 'remotePersonId'});
+                        Store.put(car, function (err) {
+                            if (err) done(err);
+                            Store.put(person, function (err) {
+                                if (err) done(err);
+                                done();
+                            })
+                        });
+                    });
+                });
+
+                describe('none pre-existing', function () {
+                    it('should set forward', function (done) {
+                        car.owner.set(person, function (err) {
+                            if (err) done(err);
+                            assert.equal(car.owner._id, person._id);
+                            assert.equal(car.owner.relatedObject, person);
+                            car.owner.get(function (err, related) {
+                                if (err) done(err);
+                                assert.equal(related, person);
+                                done();
+                            });
+                        })
+                    });
+
+                    it('should set backward', function (done) {
+                        car.owner.set(person, function (err) {
+                            if (err) done(err);
+                            assert.equal(person.car._id, car._id);
+                            assert.equal(person.car.relatedObject, car);
+                            person.car.get(function (err, related) {
+                                if (err) done(err);
+                                assert.equal(related, car);
+                                done();
+                            });
+                        });
+                    });
                 });
 
 
+                describe('pre-existing', function () {
+                    var anotherPerson;
+                    beforeEach(function (done) {
+                        anotherPerson = personMapping._new({name: 'Robbie Mcdonald', age: 18, id: 'remotePersonId2'});
+                        Store.put(anotherPerson, function (err) {
+                            if (err) done(err);
+                            car.owner.set(person, function (err) {
+                                done(err);
+                            });
+                        });
+                    });
+                    it('should set forward', function (done) {
+                        car.owner.set(anotherPerson, function (err) {
+                            if (err) done(err);
+                            assert.equal(car.owner._id, anotherPerson._id);
+                            assert.equal(car.owner.relatedObject, anotherPerson);
+                            car.owner.get(function (err, related) {
+                                if (err) done(err);
+                                assert.equal(related, anotherPerson);
+                                done();
+                            });
+                        })
+                    });
+
+                    it('should set backward', function (done) {
+                        car.owner.set(anotherPerson, function (err) {
+                            if (err) done(err);
+                            assert.equal(anotherPerson.car._id, car._id);
+                            assert.equal(anotherPerson.car.relatedObject, car);
+                            anotherPerson.car.get(function (err, related) {
+                                if (err) done(err);
+                                assert.equal(related, car);
+                                done();
+                            });
+                        });
+                    });
+
+                    it('should clear the previous persons car', function (done) {
+                        car.owner.set(anotherPerson, function (err) {
+                            if (err) done(err);
+                            assert.notOk(person.car._id);
+                            assert.notOk(person.car.relatedObject);
+                            done();
+                        });
+                    });
+
+
+                });
             });
-
-//            describe('one-to-one', function () {
-//                beforeEach(function (done) {
-//                    configureAPI(RelationshipType.OneToOne, 'car', function (err) {
-//                        if (err) done(err);
-//                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'remoteCarId'});
-//                        person = personMapping._new({name: 'Michael Ford', age: 23, id: 'remotePersonId'});
-//                        Store.put(car, function (err) {
-//                            if (err) done(err);
-//                            Store.put(person, function (err) {
-//                                if (err) done(err);
-//                                done();
-//                            })
-//                        });
-//                    });
-//                });
-//
-//                describe('none pre-existing', function () {
-//                    it('should set forward', function (done) {
-//                        car.owner.set(person, function (err) {
-//                            if (err) done(err);
-//                            assert.equal(car.owner._id, person._id);
-//                            assert.equal(car.owner.relatedObject, person);
-//                            car.owner.get(function (err, related) {
-//                                if (err) done(err);
-//                                assert.equal(related, person);
-//                                done();
-//                            });
-//                        })
-//                    });
-//
-//                    it('should set backward', function (done) {
-//                        car.owner.set(person, function (err) {
-//                            if (err) done(err);
-//                            assert.include(person.cars._id, car._id);
-//                            assert.include(person.cars.relatedObject, car);
-//                            person.car.get(function (err, related) {
-//                                if (err) done(err);
-//                                assert.equal(related, car);
-//                                done();
-//                            });
-//                        });
-//                    });
-//
-//                });
-//
-//
-//            });
-
 
         });
 
@@ -470,46 +566,6 @@ describe('relationship', function () {
 
         });
 
-//        describe('ManyToMany', function () {
-//            var carMapping, personMapping;
-//            beforeEach(function (done) {
-//                carMapping = new Mapping({
-//                    type: 'Car',
-//                    id: 'id',
-//                    attributes: ['colour', 'name'],
-//                    api: 'myApi'
-//                });
-//                personMapping = new Mapping({
-//                    type: 'Person',
-//                    id: 'id',
-//                    attributes: ['name', 'age'],
-//                    api: 'myApi'
-//                });
-//                carMapping.install(function (err) {
-//                    if (err) done(err);
-//                    personMapping.install(done);
-//                });
-//            });
-//
-//            it('local id', function (done) {
-//                var r = new ManyToManyRelationship('owners', 'cars', carMapping, personMapping);
-//                var car = new RestObject(carMapping);
-//                car.owners = ['4234sdfsdf', '5245tdfd'];
-//                var person1 = new RestObject(personMapping);
-//                var person2 = new RestObject(personMapping);
-//                person1._id = car.owners[0];
-//                person2._id = car.owners[1];
-//                cache.insert(person1);
-//                cache.insert(person2);
-//                r.getRelated(car, function (err, related) {
-//                    done(err);
-//                    assert.include(related, person1);
-//                    assert.include(related, person2);
-//                });
-//            });
-//
-//
-//        });
     });
 
 });

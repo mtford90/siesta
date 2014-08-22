@@ -183,6 +183,10 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             }
         };
 
+        Mapping.prototype.toString = function () {
+            return 'Mapping[' + this.type + ']';
+        };
+
         return Mapping;
     })
 
