@@ -128,6 +128,9 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
                     _.each(mappingsInstalled, function (mapping) {
                         mapping.installRelationships();
                     });
+                    _.each(mappingsInstalled, function (mapping) {
+                        mapping.installReverseRelationships();
+                    });
                 }
 
                 function checkIfFinishedInstallingMappings() {

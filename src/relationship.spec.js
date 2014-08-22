@@ -121,109 +121,239 @@ describe('relationship', function () {
             });
         });
 
-
-        describe('get foreign key', function () {
-            describe('forward', function () {
-                var proxy, person, car;
-                beforeEach(function (done) {
-                    person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
-                    Store.put(person, function (err) {
-                        if (err) done(err);
-                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
-                        var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
-                        proxy = new RelatedObjectProxy(relationship, car);
-                        car.owner = proxy;
-                        proxy._id = person._id;
-                        proxy.get(function (err) {
+        describe('get', function () {
+            describe('get foreign key', function () {
+                describe('forward', function () {
+                    var proxy, person, car;
+                    beforeEach(function (done) {
+                        person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                        Store.put(person, function (err) {
                             if (err) done(err);
-                            done();
-                        });
-                    });
-                });
-                it('forward foreign key should populate related object', function () {
-                    var related = proxy.relatedObject;
-                    assert.equal(related, person);
-                });
-            });
-
-            describe('reverse', function () {
-                var proxy, person, car;
-                beforeEach(function (done) {
-                    person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
-                    car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
-                    Store.put(person, function (err) {
-                        if (err) done(err);
-                        Store.put(car, function (err) {
-                            if (err) done(err);
+                            car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
                             var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
-                            proxy = new RelatedObjectProxy(relationship, person);
-                            person.cars = proxy;
-                            proxy._id = [car._id];
+                            proxy = new RelatedObjectProxy(relationship, car);
+                            car.owner = proxy;
+                            proxy._id = person._id;
                             proxy.get(function (err) {
                                 if (err) done(err);
                                 done();
                             });
                         });
                     });
+                    it('forward foreign key should populate related object', function () {
+                        var related = proxy.relatedObject;
+                        assert.equal(related, person);
+                    });
                 });
-                it('reverse foreign key should populate related object', function () {
-                    var related = proxy.relatedObject;
-                    assert.include(related, car);
+
+                describe('reverse', function () {
+                    var proxy, person, car;
+                    beforeEach(function (done) {
+                        person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                        Store.put(person, function (err) {
+                            if (err) done(err);
+                            Store.put(car, function (err) {
+                                if (err) done(err);
+                                var relationship = new ForeignKeyRelationship('owner', 'cars', carMapping, personMapping);
+                                proxy = new RelatedObjectProxy(relationship, person);
+                                person.cars = proxy;
+                                proxy._id = [car._id];
+                                proxy.get(function (err) {
+                                    if (err) done(err);
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                    it('reverse foreign key should populate related object', function () {
+                        var related = proxy.relatedObject;
+                        assert.include(related, car);
+                    });
                 });
+
             });
 
+            describe('get one to one', function () {
+
+                describe('forward', function () {
+                    var proxy, person, car;
+                    beforeEach(function (done) {
+                        person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                        Store.put(person, function (err) {
+                            if (err) done(err);
+                            car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                            var relationship = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
+                            proxy = new RelatedObjectProxy(relationship, car);
+                            car.owner = proxy;
+                            proxy._id = person._id;
+                            proxy.get(function (err) {
+                                if (err) done(err);
+                                done();
+                            });
+                        });
+                    });
+                    it('forward one-to-one should populate related object', function () {
+                        var related = proxy.relatedObject;
+                        assert.equal(related, person);
+                    });
+                });
+
+                describe('reverse', function () {
+                    var proxy, person, car;
+                    beforeEach(function (done) {
+                        person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
+                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
+                        Store.put(person, function (err) {
+                            if (err) done(err);
+                            Store.put(car, function (err) {
+                                if (err) done(err);
+                                var relationship = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
+                                proxy = new RelatedObjectProxy(relationship, person);
+                                person.car = proxy;
+                                proxy._id = car._id;
+                                proxy.get(function (err) {
+                                    if (err) done(err);
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                    it('reverse one to one should populate related object', function () {
+                        var related = proxy.relatedObject;
+                        assert.equal(related, car);
+                    });
+                });
+
+            });
         });
 
-        describe('get one to one', function () {
+        describe('set relationship', function () {
+            var api, carMapping, personMapping;
+            var car, person;
 
-            describe('forward', function () {
-                var proxy, person, car;
+            function configureAPI(type, reverseName, done) {
+                api = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: type,
+                                reverse: reverseName
+                            }
+                        }
+                    });
+                    personMapping = api.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                }, function (err) {
+                    done(err);
+                });
+            }
+
+            describe('foreign key', function () {
                 beforeEach(function (done) {
-                    person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
-                    Store.put(person, function (err) {
+                    configureAPI(RelationshipType.ForeignKey, 'cars', function (err) {
                         if (err) done(err);
-                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
-                        var relationship = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
-                        proxy = new RelatedObjectProxy(relationship, car);
-                        car.owner = proxy;
-                        proxy._id = person._id;
-                        proxy.get(function (err) {
+                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'remoteCarId'});
+                        person = personMapping._new({name: 'Michael Ford', age: 23, id: 'remotePersonId'});
+                        Store.put(car, function (err) {
                             if (err) done(err);
-                            done();
+                            Store.put(person, function (err) {
+                                if (err) done(err);
+                                done();
+                            })
                         });
                     });
                 });
-                it('forward one-to-one should populate related object', function () {
-                    var related = proxy.relatedObject;
-                    assert.equal(related, person);
-                });
-            });
 
-            describe('reverse', function () {
-                var proxy, person, car;
-                beforeEach(function (done) {
-                    person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
-                    car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
-                    Store.put(person, function (err) {
-                        if (err) done(err);
-                        Store.put(car, function (err) {
+                describe('none pre-existing', function () {
+                    it('should set forward', function (done) {
+                        car.owner.set(person, function (err) {
                             if (err) done(err);
-                            var relationship = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
-                            proxy = new RelatedObjectProxy(relationship, person);
-                            person.car = proxy;
-                            proxy._id = car._id;
-                            proxy.get(function (err) {
+                            assert.equal(car.owner._id, person._id);
+                            assert.equal(car.owner.relatedObject, person);
+                            car.owner.get(function (err, related) {
                                 if (err) done(err);
+                                assert.equal(related, person);
+                                done();
+                            });
+                        })
+                    });
+
+                    it('should set backward', function (done) {
+                        car.owner.set(person, function (err) {
+                            if (err) done(err);
+                            assert.include(person.cars._id, car._id);
+                            assert.include(person.cars.relatedObject, car);
+                            person.cars.get(function (err, related) {
+                                if (err) done(err);
+                                assert.include(related, car);
                                 done();
                             });
                         });
                     });
                 });
-                it('reverse one to one should populate related object', function () {
-                    var related = proxy.relatedObject;
-                    assert.equal(related, car);
+
+                describe('pre-existing', function () {
+                    // TODO
                 });
+
+
             });
+
+//            describe('one-to-one', function () {
+//                beforeEach(function (done) {
+//                    configureAPI(RelationshipType.OneToOne, 'car', function (err) {
+//                        if (err) done(err);
+//                        car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'remoteCarId'});
+//                        person = personMapping._new({name: 'Michael Ford', age: 23, id: 'remotePersonId'});
+//                        Store.put(car, function (err) {
+//                            if (err) done(err);
+//                            Store.put(person, function (err) {
+//                                if (err) done(err);
+//                                done();
+//                            })
+//                        });
+//                    });
+//                });
+//
+//                describe('none pre-existing', function () {
+//                    it('should set forward', function (done) {
+//                        car.owner.set(person, function (err) {
+//                            if (err) done(err);
+//                            assert.equal(car.owner._id, person._id);
+//                            assert.equal(car.owner.relatedObject, person);
+//                            car.owner.get(function (err, related) {
+//                                if (err) done(err);
+//                                assert.equal(related, person);
+//                                done();
+//                            });
+//                        })
+//                    });
+//
+//                    it('should set backward', function (done) {
+//                        car.owner.set(person, function (err) {
+//                            if (err) done(err);
+//                            assert.include(person.cars._id, car._id);
+//                            assert.include(person.cars.relatedObject, car);
+//                            person.car.get(function (err, related) {
+//                                if (err) done(err);
+//                                assert.equal(related, car);
+//                                done();
+//                            });
+//                        });
+//                    });
+//
+//                });
+//
+//
+//            });
+
 
         });
 
@@ -381,6 +511,5 @@ describe('relationship', function () {
 //
 //        });
     });
-
 
 });

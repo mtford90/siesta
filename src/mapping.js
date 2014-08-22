@@ -62,23 +62,31 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         else {
                             throw new RestError('Unknown relationship type "' + relationship.type.toString() + '"');
                         }
-                        var reverseMappingName = relationship.mapping;
-                        $log.debug('reverseMappingName', reverseMappingName);
+                        var mappingName = relationship.mapping;
+                        $log.debug('reverseMappingName', mappingName);
                         var api = RestAPIRegistry[self.api];
                         $log.debug('api', RestAPIRegistry);
-                        var reverseMapping = api[reverseMappingName];
+                        var reverseMapping = api[mappingName];
                         if (reverseMapping) {
                             $log.debug('reverseMapping', reverseMapping);
                             var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
                             self._relationships.push(relationshipObj);
                         }
                         else {
-                            throw new RestError('Mapping with name "' + reverseMappingName.toString() + '" does not exist');
+                            throw new RestError('Mapping with name "' + mappingName.toString() + '" does not exist');
                         }
-
                     }
                 }
             }
+        };
+
+        Mapping.prototype.installReverseRelationships = function () {
+            _.each(this.relationships, function (r) {
+                var reverseMapping = r.reverseMapping;
+                if (reverseMapping.relationships.indexOf(r) < 0) {
+                    reverseMapping.relationships.push(r);
+                }
+            });
         };
 
         Mapping.prototype.query = function (query, callback) {
@@ -162,7 +170,10 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 // Place relationships on the object.
                 _.each(this.relationships, function (relationship) {
                     relationship.contributeToRestObject(restObject);
-                    restObject[relationship.name]._id = data[relationship.name];
+                    var isForwardRelationship = relationship.isForward(restObject);
+                    if (isForwardRelationship) {
+                        restObject[relationship.name]._id = data[relationship.name];
+                    }
                 });
 
                 return restObject;

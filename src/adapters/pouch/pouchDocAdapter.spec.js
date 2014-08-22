@@ -116,12 +116,12 @@ describe('pouch doc adapter', function () {
         });
 
         it('should convert objects with no relationships successfully', function () {
-            var obj = personMapping._new({name: 'Michael', age: 23, id: 'xyz'});
-            var adapted = PouchDocAdapter.from(obj);
+            var person = personMapping._new({name: 'Michael', age: 23, id: 'xyz'});
+            var adapted = PouchDocAdapter.from(person);
             assert.equal(adapted.name, 'Michael');
             assert.equal(adapted.age, 23);
             assert.equal(adapted.id, 'xyz');
-            assert.equal(adapted._id, obj._id);
+            assert.equal(adapted._id, person._id);
         });
 
         it('should convert objects with relationship successfully', function () {

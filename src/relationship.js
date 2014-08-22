@@ -32,8 +32,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             return deferred.promise;
         };
 
-        RelatedObjectProxy.prototype.set = function (callback) {
-            // TODO
+        RelatedObjectProxy.prototype.set = function (obj, callback) {
+            this.relationship.setRelated(this.object, obj, callback);
         };
 
         RelatedObjectProxy.prototype.isFault = function () {
@@ -60,11 +60,20 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         Relationship.prototype.getRelated = function (obj, callback) {
             throw Error('Relationship.getRelated must be overridden');
         };
+        Relationship.prototype.setRelated = function (obj, related, callback) {
+            throw Error('Relationship.setRelated must be overridden');
+        };
+        Relationship.prototype.isForward = function (obj) {
+            return obj.mapping === this.mapping;
+        };
+        Relationship.prototype.isReverse = function (obj) {
+            return obj.mapping === this.reverseMapping;
+        };
         Relationship.prototype.contributeToRestObject = function (obj) {
-            if (obj.mapping === this.mapping) {
+            if (this.isForward(obj)) {
                 obj[this.name] = new RelatedObjectProxy(this, obj);
             }
-            else if (obj.mapping == this.reverseMapping) {
+            else if (this.isReverse(obj)) {
                 obj[this.reverseName] = new RelatedObjectProxy(this, obj);
             }
             else {
@@ -171,6 +180,66 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             });
         };
 
+        ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback) {
+            var err;
+            if (obj.mapping === this.mapping) {
+                obj[this.name]._id = related._id;
+                obj[this.name].relatedObject = related;
+                this.addRelated(related, obj, callback);
+                // TODO: Handle the reverse (remove the old value if any, add the new value).
+            }
+            else if (obj.mapping === this.reverseMapping) {
+                err = new RestError('Cannot use setRelated on a reverse foreign key relationship. Use addRelated instead.', {relationship: this, obj: obj});
+                if (callback) callback(err);
+            }
+            else {
+                err = new RestError('Cannot setRelated as this relationship has neither a forward or reverse mapping that matches.', {relationship: this, obj: obj});
+                if (callback) callback(err);
+            }
+        };
+
+        ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback) {
+            var err;
+            if (obj.mapping === this.mapping) {
+                err = new RestError('Cannot use addRelate on a forward foreign key relationship. Use addRelated instead.', {relationship: this, obj: obj});
+                if (callback) callback(err);
+            }
+            else if (obj.mapping === this.reverseMapping) {
+                $log.debug('addRelated[' + this.reverseName + ']', {obj: obj, related: related});
+
+                var proxy = obj[this.reverseName];
+                function insert () {
+                    if (!proxy.relatedObject) {
+                        proxy.relatedObject = [];
+                    }
+                    if (!proxy._id) {
+                        proxy._id = [];
+                    }
+                    proxy._id.push(related._id);
+                    proxy.relatedObject.push(related);
+                    callback();
+                }
+                // Fetch other related objects before inserting the new one.
+                if (proxy.isFault()) {
+                    proxy.get(function (err) {
+                        if (!err) {
+                            insert();
+                        }
+                        else if (callback) {
+                            callback(err);
+                        }
+                    });
+                }
+                else {
+                    insert();
+                }
+            }
+            else {
+                err = new RestError('Cannot setRelated as this relationship has neither a forward or reverse mapping that matches.', {relationship: this, obj: obj});
+                if (callback) callback(err);
+            }
+        };
+
         return ForeignKeyRelationship;
     })
 
@@ -211,6 +280,24 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     callback(null, storedObj);
                 }
             });
+        };
+
+        OneToOneRelationship.prototype.setRelated = function (obj, related, callback) {
+            var err;
+            if (obj.mapping === this.mapping) {
+                obj[this.name]._id = related._id;
+                obj[this.name].relatedObject = related;
+                // TODO: Handle the reverse (remove the old value if any, add the new value).
+            }
+            else if (obj.mapping === this.reverseMapping) {
+                obj[this.reverseName]._id = related._id;
+                obj[this.reverseName].relatedObject = related;
+                // TODO: Handle the forward (remove the old value if any, add the new value).
+            }
+            else {
+                err = new RestError('Cannot setRelated as this relationship has neither a forward or reverse mapping that matches.', {relationship: this, obj: obj});
+            }
+            if (callback) callback(err);
         };
 
         return OneToOneRelationship;

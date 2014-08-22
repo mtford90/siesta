@@ -59,10 +59,13 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.mapper'])
                 }
             });
             _.each(mapping.relationships, function (r) {
-                var name = r.name;
-                var proxy = obj[name];
-                if (proxy._id) {
-                    adapted[name] = proxy._id;
+                // Only forward relationships are stored in the database.
+                if (r.isForward(obj)) {
+                    var name = r.name;
+                    var proxy = obj[name];
+                    if (proxy._id) {
+                        adapted[name] = proxy._id;
+                    }
                 }
             });
             adapted._id = obj._id;

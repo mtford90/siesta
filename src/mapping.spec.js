@@ -209,17 +209,18 @@ describe('mapping!', function () {
             describe('relationships', function () {
                 var api, carMapping, personMapping;
 
-                beforeEach(function (done) {
+                function configureAPI(type, reverseName, done) {
                     api = new RestAPI('myApi', function (err, version) {
                         if (err) done(err);
+
                         carMapping = api.registerMapping('Car', {
                             id: 'id',
                             attributes: ['colour', 'name'],
                             relationships: {
                                 owner: {
                                     mapping: 'Person',
-                                    type: RelationshipType.ForeignKey,
-                                    reverse: 'cars'
+                                    type: type,
+                                    reverse: reverseName
                                 }
                             }
                         });
@@ -230,25 +231,33 @@ describe('mapping!', function () {
                     }, function () {
                         done();
                     });
+                }
+
+                beforeEach(function (done) {
+                    configureAPI(RelationshipType.ForeignKey, 'cars', done);
                 });
 
-                it('installs related object proxies', function () {
-                    var personObject = personMapping._new({
-                        name: 'Michael Ford',
-                        age: 23,
-                        id: 'remotePersonId'
+                describe('installation of proxies', function () {
+                    it('installs related object proxies', function () {
+                        var personObject = personMapping._new({
+                            name: 'Michael Ford',
+                            age: 23,
+                            id: 'remotePersonId'
+                        });
+                        assert.ok(personObject._id);
+                        var carObject = carMapping._new({
+                            colour: 'red',
+                            name: 'Aston Martin',
+                            invalidField: 'invalid',
+                            id: 'remoteCarId',
+                            owner: personObject._id
+                        });
+                        assert.instanceOf(carObject.owner, RelatedObjectProxy);
+                        assert.equal(carObject.owner._id, personObject._id);
                     });
-                    assert.ok(personObject._id);
-                    var carObject = carMapping._new({
-                        colour: 'red',
-                        name: 'Aston Martin',
-                        invalidField: 'invalid',
-                        id: 'remoteCarId',
-                        owner: personObject._id
-                    });
-                    assert.instanceOf(carObject.owner, RelatedObjectProxy);
-                    assert.equal(carObject.owner._id, personObject._id);
                 });
+
+
 
             });
         });
@@ -260,7 +269,7 @@ describe('mapping!', function () {
         describe('valid', function () {
             var api, carMapping, personMapping;
 
-            function configureRelationship(done, type) {
+            function configureAPI(type, done) {
                 api = new RestAPI('myApi', function (err, version) {
                     if (err) done(err);
                     carMapping = api.registerMapping('Car', {
@@ -286,26 +295,54 @@ describe('mapping!', function () {
             describe('Valid Foreign Key', function () {
 
                 beforeEach(function (done) {
-                    configureRelationship(done, RelationshipType.ForeignKey);
+                    configureAPI(RelationshipType.ForeignKey, function (err) {
+                        if (err) done(err);
+
+                        done();
+                    });
                 });
 
-                it('Foreign Key', function () {
-                    var relationships = carMapping.relationships;
-                    console.log('relationships:', relationships);
-                    assert.equal(relationships.length, 1);
-                    var relationship = relationships[0];
+                it('one relationship in car mapping', function () {
+                    var carRelationships = carMapping.relationships;
+                    assert.equal(carRelationships.length, 1);
+                });
+
+                it('one relationship in person mapping', function () {
+                    var personRelationships = personMapping.relationships;
+                    assert.equal(personRelationships.length, 1);
+                });
+
+                it('relationship in car and person mapping are the same', function () {
+                    var carRelationships = carMapping.relationships;
+                    var personRelationships = personMapping.relationships;
+                    assert.equal(carRelationships[0], personRelationships[0]);
+                });
+
+                it('is a foreign key relationship', function () {
+                    var carRelationships = carMapping.relationships;
+                    var r = carRelationships[0];
                     inject(function (ForeignKeyRelationship) {
-                        assert.instanceOf(relationship, ForeignKeyRelationship);
+                        assert.instanceOf(r, ForeignKeyRelationship);
                     });
-                    assert.equal(relationship.mapping, carMapping);
-                    assert.equal(relationship.reverseMapping, personMapping);
+                });
+
+                it('forward mapping is the car mapping', function () {
+                    var carRelationships = carMapping.relationships;
+                    var r = carRelationships[0];
+                    assert.equal(r.mapping, carMapping);
+                });
+
+                it('reverse mapping is the person mapping', function () {
+                    var carRelationships = carMapping.relationships;
+                    var r = carRelationships[0];
+                    assert.equal(r.reverseMapping, personMapping);
                 });
 
             });
 
             describe('Valid OneToOne', function () {
                 beforeEach(function (done) {
-                    configureRelationship(done, RelationshipType.OneToOne);
+                    configureAPI(RelationshipType.OneToOne, done);
                 });
 
                 it('OneToOne', function () {
@@ -323,7 +360,7 @@ describe('mapping!', function () {
 
             describe('Valid ManyToMany', function () {
                 beforeEach(function (done) {
-                    configureRelationship(done, RelationshipType.ManyToMany);
+                    configureAPI(RelationshipType.ManyToMany, done);
                 });
 
                 it('ManyToMany', function () {
