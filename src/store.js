@@ -3,7 +3,7 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
 /**
  * Local object store. Mediates between in-memory cache and Pouch.
  */
-    .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError, jlog) {
+    .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError, jlog, assert) {
 
         var $log = jlog.loggerWithName('Store');
 
@@ -88,8 +88,16 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                     });
                 });
             },
-            put: function (callback) {
-                // TODO
+            put: function (object, callback) {
+                assert(object._id);
+                cache.insert(object);
+                var adapted = PouchDocAdapter.from(object);
+                Pouch.getPouch().put(adapted, function (err, resp) {
+                    if (!err) {
+                        object._rev = resp.rev;
+                    }
+                    if (callback) callback(err);
+                });
             }
         }
     })

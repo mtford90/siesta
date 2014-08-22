@@ -2,7 +2,7 @@ describe('store', function () {
 
     var RestAPI, cache, RestObject, Mapping, Store, Pouch;
 
-    var mapping, api;
+    var carMapping, api;
 
     beforeEach(function (done) {
         module('restkit.store', function ($provide) {
@@ -21,7 +21,7 @@ describe('store', function () {
         RestAPI._reset();
         api = new RestAPI('myApi', function (err, version) {
             if (err) done(err);
-            mapping = api.registerMapping('Car', {
+            carMapping = api.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -32,7 +32,7 @@ describe('store', function () {
 
     describe('get', function () {
         it('already cached', function (done) {
-            var restObject = new RestObject(mapping);
+            var restObject = new RestObject(carMapping);
             var pouchId = 'pouchId';
             restObject._id = pouchId;
             cache.insert(restObject);
@@ -61,7 +61,7 @@ describe('store', function () {
             var remoteId = 'xyz';
             Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
                 if (err) done(err);
-                Store.get({id: remoteId, mapping: mapping}, function (err, doc) {
+                Store.get({id: remoteId, mapping: carMapping}, function (err, doc) {
                     if (err) done(err);
                     console.log('doc:', doc);
                     done();
@@ -98,8 +98,53 @@ describe('store', function () {
 
     });
 
-    describe('put objects to store', function () {
-        // TODO
+    describe.only('put objects to store', function () {
+
+        describe('store object that has never been stored', function () {
+            var car;
+            beforeEach(function (done) {
+                car = carMapping._new({colour: 'red', id: 'remoteId'});
+                Store.put(car, function (err) {
+                    done(err);
+                });
+            });
+            it('should be in cache', function () {
+                assert.equal(cache.get({_id: car._id}), car);
+            });
+            it('should be in pouch', function (done) {
+                Pouch.getPouch().get(car._id, function (err, doc) {
+                    if (err) done(err);
+                    assert.equal(doc._id, car._id);
+                    done();
+                });
+            });
+            describe('store object that has been stored before', function () {
+                var err;
+                beforeEach(function (done) {
+                    Store.put(car, function (_err) {
+                        done();
+                        err = _err;
+                    });
+                });
+
+                it('should not return an error', function () {
+                    assert.notOk(err);
+                });
+
+                it('should be in cache', function () {
+                    assert.equal(cache.get({_id: car._id}), car);
+                });
+                it('should be in pouch', function (done) {
+                    Pouch.getPouch().get(car._id, function (err, doc) {
+                        if (err) done(err);
+                        assert.equal(doc._id, car._id);
+                        done();
+                    });
+                });
+
+            });
+        });
+
     });
 
 

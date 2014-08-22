@@ -91,7 +91,7 @@ describe('pouch doc adapter', function () {
     describe('from fount to pouch', function () {
 
         var api, personMapping, carMapping;
-git st
+
         beforeEach(function (done) {
             api = new RestAPI('myApi', function () {
                 personMapping = api.registerMapping('Person', {
