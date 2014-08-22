@@ -32,6 +32,10 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             return deferred.promise;
         };
 
+        RelatedObjectProxy.prototype.set = function (callback) {
+            // TODO
+        };
+
         RelatedObjectProxy.prototype.isFault = function () {
             if (this._id) {
                 return !this.relatedObject;
@@ -157,12 +161,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
                 return;
             }
-            Store.get(storeQuery, function (err, obj) {
+            Store.get(storeQuery, function (err, storedObj) {
                 if (err) {
                     if (callback) callback(err);
                 }
                 else if (callback) {
-                    callback(null, obj);
+                    callback(null, storedObj);
                 }
             });
         };
@@ -199,12 +203,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
                 return;
             }
-            Store.get(storeQuery, function (err) {
+            Store.get(storeQuery, function (err, storedObj) {
                 if (err) {
                     if (callback) callback(err);
                 }
                 else if (callback) {
-                    callback();
+                    callback(null, storedObj);
                 }
             });
         };
