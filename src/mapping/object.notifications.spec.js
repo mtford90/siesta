@@ -264,7 +264,7 @@ describe('notifications', function () {
 
             });
 
-            describe.only('unshift', function () {
+            describe('unshift', function () {
                 beforeEach(function (done) {
                     car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
                     Store.put(car, function (err) {
@@ -314,11 +314,107 @@ describe('notifications', function () {
                     assert.equal(change.index, 0);
                 });
 
-
             });
 
+            describe('sort', function () {
+                beforeEach(function (done) {
+                    car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
+                    Store.put(car, function (err) {
+                        if (err) done(err);
+                        $rootScope.$on('myApi:Car', function (e, n) {
+                            notif = n;
+                            console.log('notif', notif);
+                            done();
+                        });
+                        car.colours.sort();
+                        $rootScope.$digest();
+                    });
+                });
 
+                it('notif contains type', function () {
+                    assert.equal(notif.api, 'myApi');
+                });
 
+                it('notif contains api', function () {
+                    assert.equal(notif.type, 'Car');
+                });
+
+                it('notif contains object', function () {
+                    assert.equal(notif.obj, car);
+                });
+
+                it('changeDict contains attribute name', function () {
+                    var change = notif.change;
+                    assert.equal(change.field, 'colours');
+                });
+
+                it('changeDict contains change type', function () {
+                    var change = notif.change;
+                    assert.equal(change.type, ChangeType.Move);
+                });
+
+                it('changeDict contains indexes', function () {
+                    var change = notif.change;
+                    console.log('indexes', change.indexes);
+                    assert.equal(change.indexes.length, 1);
+                });
+
+                it('correct order', function () {
+                    assert.equal(car.colours[0], 'blue');
+                    assert.equal(car.colours[1], 'green');
+                    assert.equal(car.colours[2], 'red');
+                })
+            });
+
+            describe('reverse', function () {
+                beforeEach(function (done) {
+                    car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
+                    Store.put(car, function (err) {
+                        if (err) done(err);
+                        $rootScope.$on('myApi:Car', function (e, n) {
+                            notif = n;
+                            console.log('notif', notif);
+                            done();
+                        });
+                        car.colours.reverse();
+                        $rootScope.$digest();
+                    });
+                });
+
+                it('notif contains type', function () {
+                    assert.equal(notif.api, 'myApi');
+                });
+
+                it('notif contains api', function () {
+                    assert.equal(notif.type, 'Car');
+                });
+
+                it('notif contains object', function () {
+                    assert.equal(notif.obj, car);
+                });
+
+                it('changeDict contains attribute name', function () {
+                    var change = notif.change;
+                    assert.equal(change.field, 'colours');
+                });
+
+                it('changeDict contains change type', function () {
+                    var change = notif.change;
+                    assert.equal(change.type, ChangeType.Move);
+                });
+
+                it('changeDict contains indexes', function () {
+                    var change = notif.change;
+                    console.log('indexes', change.indexes);
+                    assert.equal(change.indexes.length, 1);
+                });
+
+                it('correct order', function () {
+                    assert.equal(car.colours[0], 'blue');
+                    assert.equal(car.colours[1], 'green');
+                    assert.equal(car.colours[2], 'red');
+                })
+            });
 
         });
 

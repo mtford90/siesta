@@ -164,7 +164,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          * @param restObject the object to which this array is a property
          */
         function wrapArray(array, field, restObject) {
-            function fountPush (push) {
+            function fountPush(push) {
                 var objects = Array.prototype.slice.call(arguments, 1);
                 var res = push.apply(this, objects);
                 broadcast(restObject, {
@@ -180,10 +180,10 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 array.push = _.bind(fountPush, array, array.push);
             }
 
-            function fountPop (pop) {
+            function fountPop(pop) {
                 var objects = Array.prototype.slice.call(arguments, 1);
                 if (this.length) {
-                    var old = [this[this.length-1]];
+                    var old = [this[this.length - 1]];
                     var res = pop.apply(this, objects);
                     broadcast(restObject, {
                         type: ChangeType.Remove,
@@ -202,7 +202,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 array.pop = _.bind(fountPop, array, array.pop);
             }
 
-            function fountShift (shift) {
+            function fountShift(shift) {
                 var objects = Array.prototype.slice.call(arguments, 1);
                 if (this.length) {
                     var old = [this[0]];
@@ -224,7 +224,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 array.shift = _.bind(fountShift, array, array.shift);
             }
 
-            function fountUnshift (unshift) {
+            function fountUnshift(unshift) {
                 var objects = Array.prototype.slice.call(arguments, 1);
                 var res = unshift.apply(this, objects);
                 broadcast(restObject, {
@@ -238,6 +238,75 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
             if (array.unshift.name != 'fountUnshift') {
                 array.unshift = _.bind(fountUnshift, array, array.unshift);
+            }
+
+            function Swap(oldIndex, newIndex) {
+                this.oldIndex = oldIndex;
+                this.newIndex = newIndex;
+            }
+
+            function computeDiff(arr, otherArr) {
+                var indexes = [];
+                indexes.in = _.bind(function (other) {
+                    //noinspection JSPotentiallyInvalidUsageOfThis
+                    for (var i = 0; i < this.length; i++) {
+                        var thisObj = this[i];
+                        if (thisObj.oldIndex == other.oldIndex && thisObj.newIndex == other.newIndex) {
+                            return true;
+                        }
+                        if (thisObj.newIndex == other.oldIndex && thisObj.oldIndex == other.newIndex) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }, indexes);
+
+                for (var i = 0; i < arr.length; i++) {
+                    var obj = arr[i];
+                    var newIndex = i;
+                    var oldIndex = otherArr.indexOf(obj);
+                    if (newIndex != oldIndex) {
+                        var swap = new Swap(oldIndex, newIndex);
+                        if (!indexes.in(swap)) {
+                            indexes.push(swap);
+                        }
+                    }
+                }
+                return indexes;
+            }
+
+            function fountSort(sort) {
+                var clone = $.extend(true, [], this);
+                var objects = Array.prototype.slice.call(arguments, 1);
+                var res = sort.apply(this, objects);
+                var indexes = computeDiff(this, clone);
+                broadcast(restObject, {
+                    type: ChangeType.Move,
+                    field: field,
+                    indexes: indexes
+                });
+                return res;
+            }
+
+            if (array.sort.name != 'fountSort') {
+                array.sort = _.bind(fountSort, array, array.sort);
+            }
+
+            function fountReverse(reverse) {
+                var clone = $.extend(true, [], this);
+                var objects = Array.prototype.slice.call(arguments, 1);
+                var res = reverse.apply(this, objects);
+                var indexes = computeDiff(this, clone);
+                broadcast(restObject, {
+                    type: ChangeType.Move,
+                    field: field,
+                    indexes: indexes
+                });
+                return res;
+            }
+
+            if (array.reverse.name != 'fountReverse') {
+                array.reverse = _.bind(fountReverse, array, array.reverse);
             }
 
 
