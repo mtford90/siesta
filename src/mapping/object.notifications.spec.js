@@ -747,7 +747,7 @@ describe('notifications', function () {
         var api, carMapping, personMapping;
         var car, person, carNotif, personNotif;
 
-        describe.only('OneToOne', function () {
+        describe('OneToOne', function () {
             beforeEach(function (done) {
                 api = new RestAPI('myApi', function (err) {
                     if (err) done(err);
@@ -839,11 +839,80 @@ describe('notifications', function () {
                 });
             });
 
+        });
+
+
+        describe('ForeignKey', function () {
+            beforeEach(function (done) {
+                api = new RestAPI('myApi', function (err) {
+                    if (err) done(err);
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'car'
+                            }
+                        }
+                    });
+                    personMapping = api.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'xyz'});
+                    Store.put(car, function (err) {
+                        if (err) done(err);
+                        person = personMapping._new({name: 'Michael Ford', age: 23, id: '12312312'});
+                        Store.put(person, function (err) {
+                            if (err) done(err);
+                            $rootScope.$on('myApi:Car', function (e, n) {
+                                carNotif = n;
+                                done();
+                            });
+//                            $rootScope.$on('myApi:Person', function (e, n) {
+//                                personNotif = n;
+//                                if (carNotif && personNotif) {
+//                                    done();
+//                                }
+//                            });
+                            car.owner.set(person, function (err) {
+                                if (err) done(err);
+                                $rootScope.$digest();
+                            });
+                        });
+                    });
+                });
+            });
+
+            describe('forward notif', function () {
+                it('has type', function () {
+                    assert.equal(carNotif.type, 'Car');
+                });
+
+                it('has api', function () {
+                    assert.equal(carNotif.api, 'myApi');
+                });
+
+                it('has change type', function () {
+                    assert.equal(carNotif.change.type, ChangeType.Set);
+                });
+
+                it('has no old', function () {
+                    assert.notOk(carNotif.change.old);
+                });
+
+                it('has new', function () {
+                    assert.equal(carNotif.change.new, person);
+                });
+            });
+
 
 
         });
 
     });
-
-
 });

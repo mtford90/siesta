@@ -141,7 +141,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         return ManyToManyRelationship;
     })
 
-    .factory('ForeignKeyRelationship', function (Relationship, Store, jlog, RestError) {
+    .factory('ForeignKeyRelationship', function (Relationship, Store, jlog, RestError, ChangeType, $rootScope) {
         var $log = jlog.loggerWithName('ForeignKeyRelationship');
 
         function ForeignKeyRelationship(name, reverseName, mapping, reverseMapping) {
@@ -183,17 +183,34 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback, reverse) {
             var self = this;
             var err;
+            var previouslyRelatedObject;
 
             function addNewRelated(proxy) {
                 $log.debug('addNewRelated');
+
+                function broadCast() {
+                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                        api: obj.api,
+                        type: obj.type,
+                        change: {
+                            type: ChangeType.Set,
+                            old: previouslyRelatedObject,
+                            new: related
+                        }
+                    });
+                }
+
                 if (related) {
                     proxy._id = related._id;
                     proxy.relatedObject = related;
+                    broadCast();
                     self.addRelated(related, obj, callback);
                 }
                 else {
                     proxy._id = null;
                     proxy.relatedObject = null;
+                    broadCast();
+
                     if (callback) callback();
                 }
             }
@@ -231,15 +248,17 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 var proxy = obj[this.name];
                 if (proxy._id && !reverse) {
                     if (proxy.relatedObject) {
-                        removeOldRelatedAndThenSetNewRelated(proxy.relatedObject);
+                        previouslyRelatedObject = proxy.relatedObject;
+                        removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
                     }
                     else {
                         proxy.get(function (err, oldRelated) {
+                            previouslyRelatedObject = oldRelated;
                             if (err) {
                                 callback(err);
                             }
                             else {
-                                removeOldRelatedAndThenSetNewRelated(oldRelated);
+                                removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
                             }
                         });
                     }
