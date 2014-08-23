@@ -1,4 +1,4 @@
-describe.only('perform mapping', function () {
+describe('perform mapping', function () {
 
     var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy, RestObject;
 
@@ -75,13 +75,33 @@ describe.only('perform mapping', function () {
 
             describe('existing', function () {
 
-                describe.only('via id', function () {
+                describe('via id', function () {
                     var newObj;
                     beforeEach(function (done) {
                         console.log('mapping 2nd');
                         carMapping.map({colour: 'blue', id: 'dfadf'}, function (err, obj) {
                             if (err) done(err);
                             console.log('done mapping 2nd');
+                            newObj = obj;
+                            done();
+                        });
+                    });
+
+                    it('should be mapped onto the old object', function () {
+                        assert.equal(newObj, obj);
+                    });
+
+                    it('should have the new colour', function () {
+                        assert.equal(newObj.colour, 'blue');
+                    });
+                });
+
+                describe('via _id', function () {
+                    var newObj;
+                    beforeEach(function (done) {
+                        console.log('mapping 2nd');
+                        carMapping.map({colour: 'blue', _id: obj._id}, function (err, obj) {
+                            if (err) done(err);
                             newObj = obj;
                             done();
                         });

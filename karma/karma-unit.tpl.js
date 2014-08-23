@@ -63,7 +63,9 @@ module.exports = function ( karma ) {
 //      'PhantomJS'
       'Chrome'
 //      'Firefox'
-    ]
+    ],
+
+    logLevel: 'info'
 
   });
 };

@@ -1,8 +1,8 @@
 angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAdapter'])
 
-    /**
-     * Local object store. Mediates between in-memory cache and Pouch.
-     */
+/**
+ * Local object store. Mediates between in-memory cache and Pouch.
+ */
     .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError, jlog, assert) {
 
         var $log = jlog.loggerWithName('Store');
@@ -21,57 +21,81 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
         }
 
         function get(opts, callback) {
-            $log.debug('get', opts);
-            var restObject = cache.get(opts);
-            if (restObject) {
-                $log.debug('Had cached object', {opts: opts, obj: restObject});
-                wrappedCallback(callback)(null, restObject);
-            }
-            else {
-                $log.debug('Object not cached, checking PouchDB', {opts: opts});
-                if (opts._id) {
-                    // TODO: Is there a nicer way to check if obj is an array?
-                    if (Object.prototype.toString.call(opts._id) === '[object Array]') {
-                        // Proxy onto getMultiple instead.
-                        getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
-                    }
-                    else {
-                        Pouch.getPouch().get(opts._id).then(function (doc) {
-                            processDoc(doc, callback);
-                        }, wrappedCallback(callback));
-                    }
-                }
-                else if (opts.mapping) {
-                    var mapping = opts.mapping;
-                    var idField = mapping.id;
-                    var id = opts[idField];
-                    if (id) {
-                        mapping.get(id, function (err, doc) {
-                            if (!err) {
-                                if (doc) {
-                                    processDoc(doc, callback);
-                                }
-                                else {
-                                    callback(null, null);
-                                }
-                            }
-                            else {
-                                callback(err);
-                            }
-                        });
-                    }
-                    else {
-                        wrappedCallback(callback)(new RestError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
-                    }
+            var restObject;
+            if (opts._id) {
+                if (Object.prototype.toString.call(opts._id) === '[object Array]') {
+                    // Proxy onto getMultiple instead.
+                    getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
                 }
                 else {
-                    // No way in which to find an object locally.
-                    wrappedCallback(callback)(new RestError('Invalid options given to store', {opts: opts}));
+                    restObject = cache.get(opts);
+                    if (restObject) {
+                        $log.debug('Had cached object', {opts: opts, obj: restObject});
+                        wrappedCallback(callback)(null, restObject);
+                    }
+                    else {
+                        // TODO: Is there a nicer way to check if obj is an array?
+                        if (Object.prototype.toString.call(opts._id) === '[object Array]') {
+                            // Proxy onto getMultiple instead.
+                            getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
+                        }
+                        else {
+                            Pouch.getPouch().get(opts._id).then(function (doc) {
+                                processDoc(doc, callback);
+                            }, wrappedCallback(callback));
+                        }
+                    }
                 }
             }
+            else if (opts.mapping) {
+                if (Object.prototype.toString.call(opts[opts.mapping.id]) === '[object Array]') {
+                    // Proxy onto getMultiple instead.
+                    getMultiple(_.map(opts[opts.mapping.id], function (id) {
+                        var o = {};
+                        o[opts.mapping.id] = id;
+                        return o
+                    }), callback);
+                }
+                else {
+                    restObject = cache.get(opts);
+                    if (restObject) {
+                        $log.debug('Had cached object', {opts: opts, obj: restObject});
+                        wrappedCallback(callback)(null, restObject);
+                    }
+                    else {
+                        var mapping = opts.mapping;
+                        var idField = mapping.id;
+                        var id = opts[idField];
+                        if (id) {
+                            mapping.get(id, function (err, doc) {
+                                if (!err) {
+                                    if (doc) {
+                                        processDoc(doc, callback);
+                                    }
+                                    else {
+                                        callback(null, null);
+                                    }
+                                }
+                                else {
+                                    callback(err);
+                                }
+                            });
+                        }
+                        else {
+                            wrappedCallback(callback)(new RestError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
+                        }
+                    }
+                }
+            }
+            else {
+                // No way in which to find an object locally.
+                wrappedCallback(callback)(new RestError('Invalid options given to store', {opts: opts}));
+            }
+
+
         }
 
-        function getMultiple (optsArray, callback) {
+        function getMultiple(optsArray, callback) {
             var docs = [];
             var errors = [];
             _.each(optsArray, function (opts) {
