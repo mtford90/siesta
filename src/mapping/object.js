@@ -26,7 +26,8 @@ angular.module('restkit.object', ['restkit'])
         Set: 'Set',
         Insert: 'Insert',
         Remove: 'Remove',
-        Move: 'Move'
+        Move: 'Move',
+        Replace: 'Replace'
     })
 
 ;

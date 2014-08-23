@@ -309,6 +309,17 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 array.reverse = _.bind(fountReverse, array, array.reverse);
             }
 
+            array.setObjectAtIndex = function (obj, index) {
+                var old = this[index];
+                this[index] = obj;
+                broadcast(restObject, {
+                    type: ChangeType.Replace,
+                    field: field,
+                    index: index,
+                    old: old,
+                    new: obj
+                });
+            }
 
         }
 
