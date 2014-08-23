@@ -24,7 +24,7 @@ describe('mapping new object', function () {
 
     });
 
-    describe('no relationships', function () {
+    describe('fields', function () {
         var api, carMapping;
 
         beforeEach(function (done) {
@@ -38,6 +38,7 @@ describe('mapping new object', function () {
                 done();
             });
         });
+
         it('valid', function () {
             var r = carMapping._new({colour: 'red', name: 'Aston Martin', invalidField: 'invalid', id: 'xyz'});
             assert.equal(r.colour, 'red');
@@ -46,6 +47,7 @@ describe('mapping new object', function () {
             assert.ok(r._id);
             assert.notOk(r.invalidField);
         });
+
         it('no id should cause an error', function () {
             var invocation = _.bind(carMapping._new, carMapping, {colour: 'red', name: 'Aston Martin', invalidField: 'invalid'});
             assert.throws(invocation, RestError);

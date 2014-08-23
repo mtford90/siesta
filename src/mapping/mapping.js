@@ -161,8 +161,18 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 var restObject = new RestObject(this);
                 restObject._id = _id;
                 // Place attributes on the object.
+                restObject.__values = {};
                 _.each(this._fields, function (field) {
-                    $log.debug('_new looking for "' + field + '" in ', data);
+                    Object.defineProperty(restObject, field, {
+                        get: function () {
+                            return restObject.__values[field];
+                        },
+                        set: function (v) {
+                            restObject.__values[field] = v;
+                        },
+                        enumerable: true,
+                        configurable: true
+                    });
                     if (data[field]) {
                         restObject[field] = data[field];
                     }
