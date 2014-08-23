@@ -367,7 +367,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         return ForeignKeyRelationship;
     })
 
-    .factory('OneToOneRelationship', function (Relationship, Store, jlog, RestError) {
+    .factory('OneToOneRelationship', function (Relationship, Store, jlog, RestError, $rootScope, ChangeType) {
         var $log = jlog.loggerWithName('OneToOneRelationship');
 
         function OneToOneRelationship(name, reverseName, mapping, reverseMapping) {
@@ -418,6 +418,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         OneToOneRelationship.prototype.setRelated = function (obj, related, callback, reverse) {
             var err;
             var self = this;
+            var previouslyRelatedObject;
 
             function _setRelated(proxy, obj, related, err) {
                 $log.debug('_setRelated');
@@ -434,6 +435,16 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                         proxy.relatedObject = null;
                     }
 
+                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                        api: obj.api,
+                        type: obj.type,
+                        change: {
+                            type: ChangeType.Set,
+                            old: previouslyRelatedObject,
+                            new: related
+                        }
+                    });
+
                     if (!reverse) { // Avoid infinite recursion.
                         if (related) {
                             self.setRelated(related, obj, callback, true);
@@ -448,17 +459,18 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     var previousId = proxy._id;
                     if (previousId) {
                         $log.debug('Have a previous one-to-one relationship, therefore must clear it.');
-                        var previouslyRelatedObject = proxy.relatedObject;
+                        previouslyRelatedObject = proxy.relatedObject;
                         if (previouslyRelatedObject) {
                             self.setRelated(previouslyRelatedObject, null, _.bind(_setRelated, self, proxy, obj, related), true);
                         }
                         else {
-                            proxy.get(function (err, previousRelatedObject) {
+                            proxy.get(function (err, obj) {
+                                previouslyRelatedObject = obj;
                                 if (err) {
                                     callback(err);
                                 }
                                 else {
-                                    self.setRelated(previousRelatedObject, null, _.bind(_setRelated, self, proxy, obj, related), true);
+                                    self.setRelated(previouslyRelatedObject, null, _.bind(_setRelated, self, proxy, obj, related), true);
                                 }
                             });
                         }
