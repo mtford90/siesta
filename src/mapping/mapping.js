@@ -319,7 +319,74 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                     old: old,
                     new: obj
                 });
+            };
+
+            function fountSplice(splice, index, howMany) {
+                var self = this;
+                var objects = Array.prototype.slice.call(arguments, 3);
+                var removals = [];
+                var replacements = [];
+                var insertions = [];
+                for (var i = index; i < index + Math.max(howMany, objects.length); i++) {
+                    var relativeIndex = i - index;
+                    var newObject;
+                    if (objects.length && relativeIndex < objects.length && relativeIndex < howMany) { // Replacement
+                        var oldObject = this[i];
+                        newObject = objects[relativeIndex];
+                        replacements.push({index: index, oldObject: this[i],  newObject: newObject});
+                        $log.debug('Replacement', oldObject, newObject);
+                    }
+                    else if (objects.length && relativeIndex < objects.length) { // Insertion
+                        newObject = objects[relativeIndex];
+                        insertions.push({index: i, newObject: newObject});
+                        $log.debug('Insertion', i, newObject);
+                    }
+                    else if (relativeIndex < howMany) { // Deletion
+                        $log.debug('Deletion');
+                        removals.push(i);
+                    }
+                }
+                var changes = [];
+                var old;
+                var newObjs;
+                if (removals.length) {
+                    old = _.map(removals, function (i) { return self[i]});
+                    changes.push({
+                        type: ChangeType.Remove,
+                        index: removals[0],
+                        old: old,
+                        field: field
+                    })
+                }
+                if (replacements.length) {
+                    old = _.pluck(replacements, 'oldObject');
+                    newObjs = _.pluck(replacements, 'newObject');
+                    changes.push({
+                        type: ChangeType.Replace,
+                        field: field,
+                        index: replacements[0].index,
+                        old: old,
+                        new: newObjs
+                    })
+                }
+                if (insertions.length) {
+                    newObjs = _.pluck(insertions, 'newObject');
+                    changes.push({
+                        type: ChangeType.Insert,
+                        field: field,
+                        index: insertions[0].index,
+                        new: newObjs
+                    })
+                }
+                var res = _.bind(splice, this, index, howMany).apply(this, objects);
+                broadcast(restObject, changes);
+                return res;
             }
+
+            if (array.splice.name != 'fountSplice') {
+                array.splice = _.bind(fountSplice, array, array.splice);
+            }
+
 
         }
 
