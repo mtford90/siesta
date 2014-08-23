@@ -316,45 +316,88 @@ describe('relationship', function () {
 
                         });
                     });
-                    it('should set forward', function (done) {
-                        car.owner.set(anotherPerson, function (err) {
-                            if (err) done(err);
-                            assert.equal(car.owner._id, anotherPerson._id);
-                            assert.equal(car.owner.relatedObject, anotherPerson);
-                            car.owner.get(function (err, related) {
+
+                    describe('set another object', function () {
+                        it('should set forward', function (done) {
+                            car.owner.set(anotherPerson, function (err) {
                                 if (err) done(err);
-                                assert.equal(related, anotherPerson);
+                                assert.equal(car.owner._id, anotherPerson._id);
+                                assert.equal(car.owner.relatedObject, anotherPerson);
+                                car.owner.get(function (err, related) {
+                                    if (err) done(err);
+                                    assert.equal(related, anotherPerson);
+                                    done();
+                                });
+                            })
+                        });
+                        it('should set backward of new object', function (done) {
+                            car.owner.set(anotherPerson, function (err) {
+                                if (err) done(err);
+                                assert.equal(anotherPerson.cars._id.length, 1);
+                                assert.equal(anotherPerson.cars.relatedObject.length, 1);
+                                assert.include(anotherPerson.cars._id, car._id);
+                                assert.include(anotherPerson.cars.relatedObject, car);
+                                anotherPerson.cars.get(function (err, related) {
+                                    if (err) done(err);
+                                    assert.include(related, car);
+                                    done();
+                                });
+                                done();
+                            })
+                        });
+                        it('should remove backward of old object', function (done) {
+                            car.owner.set(anotherPerson, function (err) {
+                                if (err) done(err);
+                                assert.equal(person.cars._id.length, 0);
+                                assert.equal(person.cars.relatedObject.length, 0);
+                                done();
+                            })
+                        });
+                    });
+
+                    describe('set null', function () {
+                        it('should set forward', function (done) {
+                            car.owner.set(null, function (err) {
+                                if (err) done(err);
+                                assert.notOk(car.owner._id);
+                                assert.notOk(car.owner.relatedObject);
                                 done();
                             });
-                        })
-                    });
-                    it('should set backward of new object', function (done) {
-                        car.owner.set(anotherPerson, function (err) {
-                            if (err) done(err);
-                            assert.equal(anotherPerson.cars._id.length, 1);
-                            assert.equal(anotherPerson.cars.relatedObject.length, 1);
-                            assert.include(anotherPerson.cars._id, car._id);
-                            assert.include(anotherPerson.cars.relatedObject, car);
-                            anotherPerson.cars.get(function (err, related) {
+                        });
+                        it('should remove backward of old object', function (done) {
+                            car.owner.set(null, function (err) {
                                 if (err) done(err);
-                                assert.include(related, car);
+                                assert.equal(person.cars._id.length, 0);
+                                assert.equal(person.cars.relatedObject.length, 0);
+                                done();
+                            })
+                        });
+                    });
+
+                    describe.only('remove object from reverse', function () {
+
+                        it('should remove the car from the person', function (done) {
+                            person.cars.relationship.removeRelated(person, car, function (err) {
+                                if (err) done(err);
+                                assert.equal(person.cars._id.length, 0);
+                                assert.equal(person.cars.relatedObject.length, 0);
                                 done();
                             });
-                            done();
-                        })
-                    });
-                    it('should remove backward of old object', function (done) {
-                        car.owner.set(anotherPerson, function (err) {
-                            if (err) done(err);
-                            assert.equal(person.cars._id.length, 0);
-                            assert.equal(person.cars.relatedObject.length, 0);
-                            done();
-                        })
+                        });
+                        it('should nullify the cars owner', function (done) {
+                            person.cars.relationship.removeRelated(person, car, function (err) {
+                                if (err) done(err);
+                                assert.notOk(car.owner._id);
+                                assert.notOk(car.owner.relatedObject);
+                                done();
+                            });
+                        });
+
                     });
                 });
             });
 
-            describe.only('one-to-one', function () {
+            describe('one-to-one', function () {
 
 
                 beforeEach(function (done) {

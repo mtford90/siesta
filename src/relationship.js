@@ -180,22 +180,29 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             });
         };
 
-        ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback) {
+        ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback, reverse) {
             var self = this;
             var err;
 
             function addNewRelated(proxy) {
                 $log.debug('addNewRelated');
-                proxy._id = related._id;
-                proxy.relatedObject = related;
-                self.addRelated(related, obj, callback);
+                if (related) {
+                    proxy._id = related._id;
+                    proxy.relatedObject = related;
+                    self.addRelated(related, obj, callback);
+                }
+                else {
+                    proxy._id = null;
+                    proxy.relatedObject = null;
+                    if (callback) callback();
+                }
             }
 
             function _removeOldRelatedAndThenSetNewRelated(proxy, oldRelated) {
                 $log.debug('_removeOldRelatedAndThenSetNewRelated');
                 self.removeRelated(oldRelated, obj, function (err) {
                     if (err) {
-                        callback(err);
+                        if (callback) callback(err);
                     }
                     else {
                         addNewRelated(proxy);
@@ -222,7 +229,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
 
             if (obj.mapping === this.mapping) {
                 var proxy = obj[this.name];
-                if (proxy._id) {
+                if (proxy._id && !reverse) {
                     if (proxy.relatedObject) {
                         removeOldRelatedAndThenSetNewRelated(proxy.relatedObject);
                     }
@@ -301,7 +308,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy.get(function (err) {
                         if (!err) {
                             self.removeRelatedFromProxy(proxy, related);
-                            callback();
+                            self.setRelated(related, null, callback, true);
                         }
                         else if (callback) {
                             callback(err);
@@ -310,7 +317,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
                 else {
                     self.removeRelatedFromProxy(proxy, related);
-                    callback();
+                    self.setRelated(related, null, callback, true);
                 }
             }
             else {
