@@ -419,7 +419,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         for (var prop in data) {
                             if (data.hasOwnProperty(prop) && obj._fields.indexOf(prop) > -1) {
                                 obj[prop] = data[prop];
-
                                 // TODO: Differentiate between scalar attributes + arrays
                             }
                             // TODO: Relationships

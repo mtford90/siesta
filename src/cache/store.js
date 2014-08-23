@@ -53,6 +53,7 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                     getMultiple(_.map(opts[opts.mapping.id], function (id) {
                         var o = {};
                         o[opts.mapping.id] = id;
+                        o.mapping = opts.mapping;
                         return o
                     }), callback);
                 }
