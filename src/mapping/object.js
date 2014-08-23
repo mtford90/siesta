@@ -18,10 +18,13 @@ angular.module('restkit.object', ['restkit'])
         return RestObject;
     })
 
-    .factory('asdasd', function (guid) {
-        return {
+    .factory('FountArray', function () {
 
-        }
+    })
+
+    .constant('ChangeType', {
+        Set: 'Set',
+        Insert: 'Insert'
     })
 
 ;

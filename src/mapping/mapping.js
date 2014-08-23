@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship'])
 
-    .factory('Mapping', function (Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, ManyToManyRelationship) {
+    .factory('Mapping', function ($rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, ManyToManyRelationship) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -147,6 +147,41 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         };
 
+        function broadcast(restObject, change) {
+            $rootScope.$broadcast(restObject.api + ':' + restObject.type, {
+                api: restObject.api,
+                type: restObject.type,
+                obj: restObject,
+                change: change
+            });
+        }
+
+        /**
+         * Wraps the methods of a javascript array object so that notifications are sent
+         * on calls.
+         * @param array the array we have wrapping
+         * @param field name of the field
+         * @param restObject the object to which this array is a property
+         */
+        function wrapArray(array, field, restObject) {
+            function fountPush (push) {
+                var objects = Array.prototype.slice.call(arguments, 1);
+                var res = push.apply(this, objects);
+                broadcast(restObject, {
+                    type: ChangeType.Insert,
+                    new: objects,
+                    field: field,
+                    index: this.length - 1
+                });
+                return  res;
+            }
+            // Have to ensure we don't wrap the method twice, otherwise we'll end up sending
+            // multiple notifications...
+            if (array.push.name != 'fountPush') {
+                array.push = _.bind(fountPush, array, array.push);
+            }
+        }
+
         /**
          * Convert raw data into a RestObject
          * @param data
@@ -168,6 +203,15 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                             return restObject.__values[field];
                         },
                         set: function (v) {
+                            broadcast(restObject, {
+                                type: ChangeType.Set,
+                                old: restObject.__values[field],
+                                new: v,
+                                field: field
+                            });
+                            if (Object.prototype.toString.call(v) === '[object Array]') {
+                                wrapArray(v, field, restObject);
+                            }
                             restObject.__values[field] = v;
                         },
                         enumerable: true,
