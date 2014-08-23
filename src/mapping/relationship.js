@@ -210,7 +210,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy._id = null;
                     proxy.relatedObject = null;
                     broadCast();
-
                     if (callback) callback();
                 }
             }
@@ -293,6 +292,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             }
             proxy._id.push(related._id);
             proxy.relatedObject.push(related);
+
         };
 
         ForeignKeyRelationship.prototype.removeRelatedFromProxy = function (proxy, related) {
@@ -349,7 +349,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         };
 
         ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback) {
-            $log.debug('addRelated');
             var self = this;
             var err;
             if (this.isForward(obj)) {
@@ -365,6 +364,15 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy.get(function (err) {
                         if (!err) {
                             self.addRelatedToProxy(proxy, related);
+                            $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                                api: obj.api,
+                                type: obj.type,
+                                change: {
+                                    type: ChangeType.Insert,
+                                    new: related,
+                                    index: proxy.relatedObject.length - 1
+                                }
+                            });
                             callback();
                         }
                         else if (callback) {
@@ -375,6 +383,16 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 else {
                     this.addRelatedToProxy(proxy, related);
                     callback();
+                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                        api: obj.api,
+                        type: obj.type,
+                        change: {
+                            type: ChangeType.Insert,
+                            new: related,
+                            index: proxy.relatedObject.length - 1
+
+                        }
+                    });
                 }
             }
             else {

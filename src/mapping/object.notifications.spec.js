@@ -842,7 +842,7 @@ describe('notifications', function () {
         });
 
 
-        describe('ForeignKey', function () {
+        describe.only('ForeignKey', function () {
             beforeEach(function (done) {
                 api = new RestAPI('myApi', function (err) {
                     if (err) done(err);
@@ -871,14 +871,16 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myApi:Car', function (e, n) {
                                 carNotif = n;
-                                done();
+                                if (carNotif && personNotif) {
+                                    done();
+                                }
                             });
-//                            $rootScope.$on('myApi:Person', function (e, n) {
-//                                personNotif = n;
-//                                if (carNotif && personNotif) {
-//                                    done();
-//                                }
-//                            });
+                            $rootScope.$on('myApi:Person', function (e, n) {
+                                personNotif = n;
+                                if (carNotif && personNotif) {
+                                    done();
+                                }
+                            });
                             car.owner.set(person, function (err) {
                                 if (err) done(err);
                                 $rootScope.$digest();
@@ -910,6 +912,27 @@ describe('notifications', function () {
                 });
             });
 
+            describe('reverse notif', function () {
+                it('has type', function () {
+                    assert.equal(personNotif.type, 'Person');
+                });
+
+                it('has api', function () {
+                    assert.equal(personNotif.api, 'myApi');
+                });
+
+                it('has change type', function () {
+                    assert.equal(personNotif.change.type, ChangeType.Insert);
+                });
+
+                it('has new', function () {
+                    assert.equal(personNotif.change.new, car);
+                });
+
+                it('has index', function () {
+                    assert.equal(personNotif.change.index, 0);
+                });
+            });
 
 
         });
