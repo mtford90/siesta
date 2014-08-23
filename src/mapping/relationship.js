@@ -36,6 +36,10 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             this.relationship.setRelated(this.object, obj, callback);
         };
 
+        RelatedObjectProxy.prototype.remove = function (obj, callback) {
+            this.relationship.removeRelated(this.object, obj, callback);
+        };
+
         RelatedObjectProxy.prototype.isFault = function () {
             if (this._id) {
                 return !this.relatedObject;
@@ -309,6 +313,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy._id.splice(idx, 1);
                 }
             }
+            return idx;
         };
 
         ForeignKeyRelationship.prototype.removeRelated = function (obj, related, callback) {
@@ -326,7 +331,16 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 if (proxy.isFault()) {
                     proxy.get(function (err) {
                         if (!err) {
-                            self.removeRelatedFromProxy(proxy, related);
+                            var idx = self.removeRelatedFromProxy(proxy, related);
+                            $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                                api: obj.api,
+                                type: obj.type,
+                                change: {
+                                    type: ChangeType.Remove,
+                                    index: idx,
+                                    old: related
+                                }
+                            });
                             self.setRelated(related, null, callback, true);
                         }
                         else if (callback) {
@@ -335,7 +349,16 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     });
                 }
                 else {
-                    self.removeRelatedFromProxy(proxy, related);
+                    var idx = self.removeRelatedFromProxy(proxy, related);
+                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                        api: obj.api,
+                        type: obj.type,
+                        change: {
+                            type: ChangeType.Remove,
+                            index: idx,
+                            old: related
+                        }
+                    });
                     self.setRelated(related, null, callback, true);
                 }
             }
@@ -352,7 +375,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             var self = this;
             var err;
             if (this.isForward(obj)) {
-                err = new RestError('Cannot use addRelate on a forward foreign key relationship. Use addRelated instead.', {relationship: this, obj: obj});
+                err = new RestError('Cannot use addRelate on a forward foreign key relationship. Use setRelated instead.', {relationship: this, obj: obj});
                 if (callback) callback(err);
             }
             else if (this.isReverse(obj)) {

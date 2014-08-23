@@ -842,7 +842,7 @@ describe('notifications', function () {
         });
 
 
-        describe.only('ForeignKey', function () {
+        describe('ForeignKey', function () {
             beforeEach(function (done) {
                 api = new RestAPI('myApi', function (err) {
                     if (err) done(err);
@@ -890,47 +890,154 @@ describe('notifications', function () {
                 });
             });
 
-            describe('forward notif', function () {
-                it('has type', function () {
-                    assert.equal(carNotif.type, 'Car');
+            describe('add starting from null', function () {
+                describe('forward notif', function () {
+                    it('has type', function () {
+                        assert.equal(carNotif.type, 'Car');
+                    });
+
+                    it('has api', function () {
+                        assert.equal(carNotif.api, 'myApi');
+                    });
+
+                    it('has change type', function () {
+                        assert.equal(carNotif.change.type, ChangeType.Set);
+                    });
+
+                    it('has no old', function () {
+                        assert.notOk(carNotif.change.old);
+                    });
+
+                    it('has new', function () {
+                        assert.equal(carNotif.change.new, person);
+                    });
                 });
 
-                it('has api', function () {
-                    assert.equal(carNotif.api, 'myApi');
-                });
+                describe('reverse notif', function () {
+                    it('has type', function () {
+                        assert.equal(personNotif.type, 'Person');
+                    });
 
-                it('has change type', function () {
-                    assert.equal(carNotif.change.type, ChangeType.Set);
-                });
+                    it('has api', function () {
+                        assert.equal(personNotif.api, 'myApi');
+                    });
 
-                it('has no old', function () {
-                    assert.notOk(carNotif.change.old);
-                });
+                    it('has change type', function () {
+                        assert.equal(personNotif.change.type, ChangeType.Insert);
+                    });
 
-                it('has new', function () {
-                    assert.equal(carNotif.change.new, person);
+                    it('has new', function () {
+                        assert.equal(personNotif.change.new, car);
+                    });
+
+                    it('has index', function () {
+                        assert.equal(personNotif.change.index, 0);
+                    });
                 });
             });
 
-            describe('reverse notif', function () {
-                it('has type', function () {
-                    assert.equal(personNotif.type, 'Person');
+            describe.only('set forward foreign key having already set', function () {
+                var anotherCar, anotherPerson;
+                var anotherCarNotif, anotherPersonNotifInsert, personNotifRemove;
+
+                beforeEach(function (done) {
+                    anotherCar = carMapping._new({name: 'Lambo', id:'asq34asdasd', colour:'yellow'});
+                    anotherPerson = personMapping._new({name: 'Robert Manning', id:'asq34asdasd', age:52});
+                    Store.put(anotherCar, function (err) {
+                        if (err) done(err);
+                        Store.put(anotherPerson, function (err) {
+                            if (err) done(err);
+                            $rootScope.$on('myApi:Car', function (e, n) {
+                                anotherCarNotif = n;
+                                if (anotherCarNotif && anotherPersonNotifInsert && personNotifRemove) {
+                                    done();
+                                }
+                            });
+                            $rootScope.$on('myApi:Person', function (e, n) {
+                                dump(n);
+                                if (n.change.type == ChangeType.Insert) {
+                                    anotherPersonNotifInsert = n;
+                                }
+                                else if (n.change.type == ChangeType.Remove) {
+                                    personNotifRemove = n;
+                                }
+                                if (anotherCarNotif && anotherPersonNotifInsert && personNotifRemove) {
+                                    done();
+                                }
+                            });
+                            car.owner.set(anotherPerson, function (err) {
+                                if (err) done(err);
+                                $rootScope.$digest();
+                            });
+                        });
+                    });
                 });
 
-                it('has api', function () {
-                    assert.equal(personNotif.api, 'myApi');
+
+                describe('forward notif', function () {
+                    it('has type', function () {
+                        assert.equal(anotherCarNotif.type, 'Car');
+                    });
+
+                    it('has api', function () {
+                        assert.equal(anotherCarNotif.api, 'myApi');
+                    });
+
+                    it('has change type', function () {
+                        assert.equal(anotherCarNotif.change.type, ChangeType.Set);
+                    });
+
+                    it('has old', function () {
+                        assert.equal(anotherCarNotif.change.old, person);
+                    });
+
+                    it('has new', function () {
+                        assert.equal(anotherCarNotif.change.new, anotherPerson);
+                    });
                 });
 
-                it('has change type', function () {
-                    assert.equal(personNotif.change.type, ChangeType.Insert);
+                describe('reverse notif insert', function () {
+                    it('has type', function () {
+                        assert.equal(anotherPersonNotifInsert.type, 'Person');
+                    });
+
+                    it('has api', function () {
+                        assert.equal(anotherPersonNotifInsert.api, 'myApi');
+                    });
+
+                    it('has change type', function () {
+                        assert.equal(anotherPersonNotifInsert.change.type, ChangeType.Insert);
+                    });
+
+                    it('has new', function () {
+                        assert.equal(anotherPersonNotifInsert.change.new, car);
+                    });
+
+                    it('has index', function () {
+                        assert.equal(anotherPersonNotifInsert.change.index, 0);
+                    });
                 });
 
-                it('has new', function () {
-                    assert.equal(personNotif.change.new, car);
-                });
+                describe('reverse notif removal', function () {
+                    it('has type', function () {
+                        assert.equal(personNotifRemove.type, 'Person');
+                    });
 
-                it('has index', function () {
-                    assert.equal(personNotif.change.index, 0);
+                    it('has api', function () {
+                        assert.equal(personNotifRemove.api, 'myApi');
+                    });
+
+                    it('has change type', function () {
+                        assert.equal(personNotifRemove.change.type, ChangeType.Remove);
+                    });
+
+                    it('has old', function () {
+                        assert.equal(personNotifRemove.change.old, car);
+                    });
+
+                    it('has index', function () {
+                        assert.equal(personNotifRemove.change.index, 0);
+                    });
                 });
             });
 
