@@ -24,7 +24,8 @@ angular.module('restkit.object', ['restkit'])
 
     .constant('ChangeType', {
         Set: 'Set',
-        Insert: 'Insert'
+        Insert: 'Insert',
+        Remove: 'Remove'
     })
 
 ;

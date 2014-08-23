@@ -175,11 +175,34 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 });
                 return  res;
             }
-            // Have to ensure we don't wrap the method twice, otherwise we'll end up sending
-            // multiple notifications...
+
             if (array.push.name != 'fountPush') {
                 array.push = _.bind(fountPush, array, array.push);
             }
+
+            function fountPop (pop) {
+                var objects = Array.prototype.slice.call(arguments, 1);
+                if (this.length) {
+                    var old = [this[this.length-1]];
+                    var res = pop.apply(this, objects);
+                    broadcast(restObject, {
+                        type: ChangeType.Remove,
+                        old: old,
+                        field: field,
+                        index: this.length
+                    });
+                    return  res;
+                }
+                else {
+                    return pop.apply(this, objects);
+                }
+            }
+
+            if (array.pop.name != 'fountPop') {
+                array.pop = _.bind(fountPop, array, array.pop);
+            }
+
+
         }
 
         /**
