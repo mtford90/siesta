@@ -1,4 +1,4 @@
-angular.module('restkit.mapper', ['restkit'])
+angular.module('restkit.object', ['restkit'])
 
     .factory('RestObject', function (defineSubProperty) {
         function RestObject (mapping) {

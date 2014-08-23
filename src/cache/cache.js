@@ -1,4 +1,4 @@
-angular.module('restkit.cache', ['restkit', 'restkit.mapper'])
+angular.module('restkit.cache', ['restkit', 'restkit.object'])
 
 
 

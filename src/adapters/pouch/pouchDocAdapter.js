@@ -1,4 +1,4 @@
-angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.mapper'])
+angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
 
     .factory('PouchDocAdapter', function (RestObject, RestAPIRegistry, RestError) {
 

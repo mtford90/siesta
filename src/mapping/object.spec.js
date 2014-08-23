@@ -1,9 +1,9 @@
-describe('mapper', function () {
+describe('object', function () {
 
     var RestAPI, RestObject, Mapping, RelationshipType;
 
     beforeEach(function () {
-        module('restkit.mapper', function ($provide) {
+        module('restkit.object', function ($provide) {
             $provide.value('$log', console);
             $provide.value('$q', Q);
         });

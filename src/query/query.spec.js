@@ -8,7 +8,7 @@ describe('query', function () {
             $provide.value('$q', Q);
         });
 
-        module('restkit.mapper', function ($provide) {
+        module('restkit.object', function ($provide) {
             $provide.value('$log', console);
             $provide.value('$q', Q);
         });

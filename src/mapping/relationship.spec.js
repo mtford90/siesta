@@ -374,7 +374,7 @@ describe('relationship', function () {
                         });
                     });
 
-                    describe.only('remove object from reverse', function () {
+                    describe('remove object from reverse', function () {
 
                         it('should remove the car from the person', function (done) {
                             person.cars.relationship.removeRelated(person, car, function (err) {
