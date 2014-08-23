@@ -224,6 +224,23 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 array.shift = _.bind(fountShift, array, array.shift);
             }
 
+            function fountUnshift (unshift) {
+                var objects = Array.prototype.slice.call(arguments, 1);
+                var res = unshift.apply(this, objects);
+                broadcast(restObject, {
+                    type: ChangeType.Insert,
+                    new: objects,
+                    field: field,
+                    index: 0
+                });
+                return res;
+            }
+
+            if (array.unshift.name != 'fountUnshift') {
+                array.unshift = _.bind(fountUnshift, array, array.unshift);
+            }
+
+
         }
 
         /**
