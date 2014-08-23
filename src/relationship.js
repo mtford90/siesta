@@ -409,26 +409,72 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         };
 
         OneToOneRelationship.prototype.setRelated = function (obj, related, callback, reverse) {
-            var err, proxy;
-            if (obj.mapping === this.mapping) {
-                proxy = obj[this.name];
-                var previousId = proxy.id;
-                if (previousId) {
-                    this.setRelated(related, obj, callback, true);
+            var err;
+            var self = this;
+
+            function _setRelated(proxy, obj, related, err) {
+                $log.debug('_setRelated');
+                if (err) {
+                    callback(err);
                 }
-                proxy._id = related._id;
-                proxy.relatedObject = related;
-                if (!reverse) { // Avoid infinite recursion.
-                    this.setRelated(related, obj, callback, true);
+                else {
+                    if (related) {
+                        proxy._id = related._id;
+                        proxy.relatedObject = related;
+                    }
+                    else {
+                        proxy._id = null;
+                        proxy.relatedObject = null;
+                    }
+
+                    if (!reverse) { // Avoid infinite recursion.
+                        if (related) {
+                            self.setRelated(related, obj, callback, true);
+                        }
+                    }
                 }
             }
-            else if (obj.mapping === this.reverseMapping) {
-                proxy = obj[this.reverseName];
-                proxy._id = related._id;
-                proxy.relatedObject = related;
-                if (!reverse) { // Avoid infinite recursion.
-                    this.setRelated(related, obj, callback, true);
+
+            function _unsetReversePreviouslyRelatedAndThenSetRelated(proxy) {
+                $log.debug('_unsetReversePreviouslyRelatedAndThenSetRelated');
+                if (!reverse) {
+                    var previousId = proxy._id;
+                    if (previousId) {
+                        $log.debug('Have a previous one-to-one relationship, therefore must clear it.');
+                        var previouslyRelatedObject = proxy.relatedObject;
+                        if (previouslyRelatedObject) {
+                            self.setRelated(previouslyRelatedObject, null, _.bind(_setRelated, self, proxy, obj, related), true);
+                        }
+                        else {
+                            proxy.get(function (err, previousRelatedObject) {
+                                if (err) {
+                                    callback(err);
+                                }
+                                else {
+                                    self.setRelated(previousRelatedObject, null, _.bind(_setRelated, self, proxy, obj, related), true);
+                                }
+                            });
+                        }
+                    }
+                    else {
+                        _setRelated(proxy, obj, related);
+                    }
                 }
+                else {
+                    _setRelated(proxy, obj, related);
+                }
+            }
+
+            if (obj.mapping === this.mapping) {
+                var name = this.name;
+                $log.debug('setRelated[' + name + ']: ' + obj._id);
+                _unsetReversePreviouslyRelatedAndThenSetRelated(obj[name]);
+            }
+            else if (obj.mapping === this.reverseMapping) {
+                var reverseName = this.reverseName;
+                $log.debug('setRelated[' + reverseName + ']: ' + obj._id);
+                _unsetReversePreviouslyRelatedAndThenSetRelated(obj[reverseName]);
+
             }
             else {
                 err = new RestError('Cannot setRelated as this relationship has neither a forward or reverse mapping that matches.', {

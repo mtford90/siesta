@@ -175,7 +175,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         restObject[relationship.name]._id = data[relationship.name];
                     }
                 });
-
                 return restObject;
             }
             else {
