@@ -936,7 +936,7 @@ describe('notifications', function () {
                 });
             });
 
-            describe.only('set forward foreign key having already set', function () {
+            describe('set forward foreign key having already set', function () {
                 var anotherCar, anotherPerson;
                 var anotherCarNotif, anotherPersonNotifInsert, personNotifRemove;
 

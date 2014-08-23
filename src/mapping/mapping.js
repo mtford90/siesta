@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship'])
 
-    .factory('Mapping', function ($rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, ManyToManyRelationship) {
+    .factory('Mapping', function (Pouch, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, ManyToManyRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -138,14 +138,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             return errors;
         };
 
-        /**
-         * Map data into Fount. This is where the magic happens.
-         *
-         * @param data Raw data received remotely or otherwise
-         */
-        Mapping.prototype.map = function (data) {
-
-        };
 
         function broadcast(restObject, change) {
             $rootScope.$broadcast(restObject.api + ':' + restObject.type, {
@@ -159,6 +151,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         /**
          * Wraps the methods of a javascript array object so that notifications are sent
          * on calls.
+         *
          * @param array the array we have wrapping
          * @param field name of the field
          * @param restObject the object to which this array is a property
@@ -333,7 +326,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                     if (objects.length && relativeIndex < objects.length && relativeIndex < howMany) { // Replacement
                         var oldObject = this[i];
                         newObject = objects[relativeIndex];
-                        replacements.push({index: index, oldObject: this[i],  newObject: newObject});
+                        replacements.push({index: index, oldObject: this[i], newObject: newObject});
                         $log.debug('Replacement', oldObject, newObject);
                     }
                     else if (objects.length && relativeIndex < objects.length) { // Insertion
@@ -389,6 +382,54 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
 
         }
+
+        /**
+         * Map data into Fount. This is where the magic happens.
+         *
+         * @param data Raw data received remotely or otherwise
+         * @param callback Called once pouch persistence returns.
+         */
+        Mapping.prototype.map = function (data, callback) {
+            var self = this;
+            var storeOpts = {};
+            var identifier = data[this.id];
+            if (identifier) {
+                storeOpts[this.id] = identifier;
+                storeOpts.mapping = this;
+            }
+            Store.get(storeOpts, function (err, obj) {
+                if (!err) {
+                    if (!obj) {
+                        var restObject = self._new(data);
+                        Store.put(restObject, function (err) {
+                            if (err) {
+                                if (callback) callback(err);
+                            }
+                            else {
+                                if (callback) {
+                                    callback(null, restObject);
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        for (var prop in data) {
+                            if (data.hasOwnProperty(prop) && obj._fields.indexOf(prop) > -1) {
+                                obj[prop] = data[prop];
+                                // TODO: Differentiate between scalar attributes + arrays
+                            }
+                            // TODO: Relationships
+                        }
+                        if (callback) {
+                            callback(null, obj)
+                        }
+                    }
+                }
+                else if (callback) {
+                    callback(err);
+                }
+            });
+        };
 
         /**
          * Convert raw data into a RestObject

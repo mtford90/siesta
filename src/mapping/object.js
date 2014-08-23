@@ -13,6 +13,7 @@ angular.module('restkit.object', ['restkit'])
             });
             defineSubProperty.call(this, 'type', this.mapping);
             defineSubProperty.call(this, 'api', this.mapping);
+            defineSubProperty.call(this, '_fields', this.mapping);
 
         }
         return RestObject;

@@ -1,8 +1,8 @@
 angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAdapter'])
 
-/**
- * Local object store. Mediates between in-memory cache and Pouch.
- */
+    /**
+     * Local object store. Mediates between in-memory cache and Pouch.
+     */
     .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError, jlog, assert) {
 
         var $log = jlog.loggerWithName('Store');
@@ -52,7 +52,7 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                                     processDoc(doc, callback);
                                 }
                                 else {
-                                    callback(new RestError('No such object with identifier ' + id.toString()));
+                                    callback(null, null);
                                 }
                             }
                             else {
