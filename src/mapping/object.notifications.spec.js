@@ -158,7 +158,7 @@ describe('notifications', function () {
 
             });
 
-            describe.only('pop', function () {
+            describe('pop', function () {
                 beforeEach(function (done) {
                     car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
                     Store.put(car, function (err) {
@@ -206,6 +206,59 @@ describe('notifications', function () {
                 it('changeDict contains index', function () {
                     var change = notif.change;
                     assert.equal(change.index, 1);
+                });
+
+
+            });
+
+            describe.only('shift', function () {
+                beforeEach(function (done) {
+                    car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
+                    Store.put(car, function (err) {
+                        if (err) done(err);
+                        $rootScope.$on('myApi:Car', function (e, n) {
+                            notif = n;
+                            console.log('notif', notif);
+                            done();
+                        });
+                        console.log('colours', car.colours);
+                        car.colours.shift();
+                        $rootScope.$digest();
+                    });
+                });
+
+                it('notif contains type', function () {
+                    assert.equal(notif.api, 'myApi');
+                });
+
+                it('notif contains api', function () {
+                    assert.equal(notif.type, 'Car');
+                });
+
+                it('notif contains object', function () {
+                    assert.equal(notif.obj, car);
+                });
+
+                it('changeDict contains attribute name', function () {
+                    var change = notif.change;
+                    assert.equal(change.field, 'colours');
+                });
+
+                it('changeDict contains change type', function () {
+                    var change = notif.change;
+                    assert.equal(change.type, ChangeType.Remove);
+                });
+
+                it('changeDict contains old value', function () {
+                    var change = notif.change;
+                    console.log('old:', change.old);
+                    assert.equal(change.old.length, 1);
+                    assert.include(change.old, 'red');
+                });
+
+                it('changeDict contains index', function () {
+                    var change = notif.change;
+                    assert.equal(change.index, 0);
                 });
 
 
