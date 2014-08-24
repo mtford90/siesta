@@ -286,6 +286,86 @@ describe('relationship notifications', function () {
             });
         });
 
+        describe.only('set reverse foreign key having already set', function () {
+
+            var newCars;
+
+            var carNotifications = [];
+            var peopleNotifications = [];
+
+            function assertNotifications(notifications, opts) {
+                if (!opts.change) opts.change = {};
+                var exists = false;
+                for (var i = 0; i < notifications.length; i++) {
+                    var n = notifications[i];
+                    dump(n);
+                    var objMatches = true;
+                    if (opts.obj) {
+                        objMatches =opts.obj == n.obj
+                    }
+                    if (objMatches) {
+                        var changeMatches = true;
+                        if (opts.change.type !== undefined) {
+                            changeMatches = opts.change.type == n.change.type;
+                        }
+                        if (changeMatches && opts.change.new !== undefined) {
+                            changeMatches = opts.change.new == n.change.new;
+                        }
+                        if (changeMatches && opts.change.old !== undefined) {
+                            changeMatches = opts.change.old == n.change.old;
+                        }
+                        if (changeMatches && opts.change.field !== undefined) {
+                            changeMatches = opts.change.field == n.change.field;
+                        }
+                        if (changeMatches) {
+                            exists = true;
+                            break;
+                        }
+                    }
+
+                }
+                assert(exists, 'No such car notification');
+            }
+
+            function assertCarNotification(opts) {
+                assertNotifications(carNotifications, opts);
+            }
+
+            function assertPeopleNotification(opts) {
+                assertNotifications(carNotifications, opts);
+            }
+
+            beforeEach(function (done) {
+
+                carMapping.map([
+                    {colour: 'red', name: 'Aston Martin', id: '36yedfhdfgswftwsdg'},
+                    {colour: 'blue', name: 'Lambo', id: 'asd03r0hasdfsd'},
+                    {colour: 'green', name: 'Ford', id: "nmihoahdabf"}
+                ], function (err, objs) {
+                    if (err) done(err);
+                    newCars = objs;
+                    $rootScope.$on('myApi:Car', function (e, n) {
+                        carNotifications.push(n);
+                    });
+                    $rootScope.$on('myApi:Person', function (e, n) {
+                        peopleNotifications.push(n);
+                    });
+                    done();
+                });
+            });
+
+            it('sends out notification for old car', function (done) {
+                var relationship = car.owner.relationship;
+                relationship.setRelated(person, newCars, function (err) {
+                    $rootScope.$digest();
+                    dump({carNotifications: _.pluck(_.pluck(carNotifications, 'change'), 'new'), peopleNotifications: peopleNotifications});
+                    assert.equal(carNotifications.length, 4);
+                    assertCarNotification({change: {type: ChangeType.Set, new: null, field:'owner', old:person}, obj: car});
+                    done(err);
+                });
+            });
+
+        });
 
     });
 

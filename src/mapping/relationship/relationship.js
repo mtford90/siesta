@@ -168,10 +168,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     $rootScope.$broadcast(obj.api + ':' + obj.type, {
                         api: obj.api,
                         type: obj.type,
+                        obj: obj,
                         change: {
                             type: ChangeType.Set,
                             old: previouslyRelatedObject,
-                            new: related
+                            new: related,
+                            field: self.name
                         }
                     });
                 }
@@ -227,21 +229,28 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             var proxy;
             if (obj.mapping === this.mapping) {
                 proxy = obj[this.name];
-                if (proxy._id && !reverse) {
+                if (proxy._id) {
                     if (proxy.relatedObject) {
                         previouslyRelatedObject = proxy.relatedObject;
-                        removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
+                        if (!reverse) {
+                            removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
+                        }
+                        else {
+                            previouslyRelatedObject = proxy.relatedObject;
+                            addNewRelated(proxy);
+                        }
                     }
                     else {
-                        proxy.get(function (err, oldRelated) {
-                            previouslyRelatedObject = oldRelated;
-                            if (err) {
-                                callback(err);
-                            }
-                            else {
-                                removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
-                            }
-                        });
+                        throw 'nyi';
+//                        proxy.get(function (err, oldRelated) {
+//                            previouslyRelatedObject = oldRelated;
+//                            if (err) {
+//                                callback(err);
+//                            }
+//                            else {
+//                                removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
+//                            }
+//                        });
                     }
                 }
                 else {
@@ -376,7 +385,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                                 change: {
                                     type: ChangeType.Remove,
                                     index: idx,
-                                    old: related
+                                    old: related,
+                                    field: this.reverseName
                                 }
                             });
                             self.setRelated(related, null, callback, true);
@@ -394,7 +404,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                         change: {
                             type: ChangeType.Remove,
                             index: idx,
-                            old: related
+                            old: related,
+                            field: this.reverseName
                         }
                     });
                     self.setRelated(related, null, callback, true);
@@ -430,7 +441,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                                 change: {
                                     type: ChangeType.Insert,
                                     new: related,
-                                    index: proxy.relatedObject.length - 1
+                                    index: proxy.relatedObject.length - 1,
+                                    field: this.reverseName
                                 }
                             });
                             callback();
@@ -449,7 +461,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                         change: {
                             type: ChangeType.Insert,
                             new: related,
-                            index: proxy.relatedObject.length - 1
+                            index: proxy.relatedObject.length - 1,
+                            field: this.reverseName
                         }
                     });
                 }
