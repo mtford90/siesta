@@ -242,7 +242,7 @@ describe('perform mapping', function () {
                         });
                     });
 
-                    describe.only('remoteids of objects that dont exist', function () {
+                    describe('remoteids of objects that dont exist', function () {
                         var person;
                         beforeEach(function (done) {
                             personMapping.map({
@@ -268,7 +268,54 @@ describe('perform mapping', function () {
                         })
                     });
 
-                    describe('mixture', function () {
+                    describe.only('mixture', function () {
+                        var person, cars;
+                        beforeEach(function (done) {
+                            var raw = [
+                                {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
+                                {colour: 'green', name: 'Ford', id: "remoteId3"}
+                            ];
+                            carMapping._mapBulk(raw, function (err, objs, res) {
+                                if (err) done(err);
+                                cars = objs;
+                                personMapping.map({
+                                    name: 'Michael Ford',
+                                    age: 23,
+                                    id: 'personRemoteId',
+                                    cars: ['remoteId1', 'remoteId2', 'remoteId3']
+                                }, function (err, _person) {
+                                    if (err) done(err);
+                                    person = _person;
+                                    done();
+                                });
+                            });
+                        });
+
+                        it('cars should have person as their owner', function () {
+                            _.each(cars, function (car) {
+                                assert.equal(car.owner._id, person._id);
+                            })
+                        });
+
+                        it('person should have car objects', function () {
+                            dump(person.cars);
+                            _.each(cars, function (car) {
+                                assert.include(person.cars._id, car._id);
+                                assert.include(person.cars.relatedObject, car);
+                            })
+                        });
+
+                        it('person has 3 new cars, and those cars are owned by the person', function (done) {
+                            person.cars.get(function (err, cars) {
+                                done(err);
+                                assert.equal(cars.length, 3);
+                                _.each(cars, function (car) {
+                                    assert.equal(car.owner._id, person._id);
+                                })
+                            });
+                        })
+
+
 
                     })
                 })
