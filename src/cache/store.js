@@ -90,7 +90,10 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
             }
             else {
                 // No way in which to find an object locally.
-                wrappedCallback(callback)(new RestError('Invalid options given to store', {opts: opts}));
+                var context = {opts: opts};
+                var msg = 'Invalid options given to store';
+                $log.error(msg, context);
+                wrappedCallback(callback)(new RestError(msg, context));
             }
 
 

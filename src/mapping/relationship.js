@@ -182,23 +182,35 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             else if (obj.mapping === this.reverseMapping) {
                 name = this.reverseName;
             }
-            var storeQuery = {};
-            var proxy = obj[name];
-            if (proxy) {
-                storeQuery._id = proxy._id;
-            }
-            else {
-                if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
-                return;
-            }
-            Store.get(storeQuery, function (err, storedObj) {
-                if (err) {
-                    if (callback) callback(err);
+            if (name) {
+                var storeQuery = {};
+                var proxy = obj[name];
+                if (proxy) {
+                    storeQuery._id = proxy._id;
+                }
+                else {
+                    if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
+                    return;
+                }
+                if (proxy._id) {
+                    Store.get(storeQuery, function (err, storedObj) {
+                        if (err) {
+                            if (callback) callback(err);
+                        }
+                        else if (callback) {
+                            callback(null, storedObj);
+                        }
+                    });
                 }
                 else if (callback) {
-                    callback(null, storedObj);
+                    callback(null, null);
                 }
-            });
+
+            }
+            else {
+                callback(new RestError('Cannot use getRelated as this relationship does not match either of the mappings'));
+            }
+
         };
 
         ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback, reverse) {
