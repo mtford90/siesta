@@ -2,7 +2,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
 
     .constant('RelationshipType', {
         ForeignKey: 'ForeignKey',
-        ManyToMany: 'ManyToMany',
         OneToOne: 'OneToOne'
     })
 
@@ -96,7 +95,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     callback(err);
                 }
                 else {
-                    self.setRelated(obj, related, callback);
+                    self.setRelated(obj, related);
+                    if (callback) callback();
                 }
             })
         };
@@ -104,63 +104,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         return Relationship;
     })
 
-    .factory('ManyToManyRelationship', function (Relationship, Store, jlog) {
-
-        var $log = jlog.loggerWithName('ManyToManyRelationship');
-
-        function ManyToManyRelationship(name, reverseName, mapping, reverseMapping) {
-            if (!this) {
-                return new ManyToManyRelationship(name, reverseName, mapping, reverseMapping);
-            }
-            Relationship.call(this, name, reverseName, mapping, reverseMapping);
-        }
-
-        ManyToManyRelationship.prototype = Object.create(Relationship.prototype);
-
-        ManyToManyRelationship.prototype.getRelated = function (obj, callback) {
-
-            var self = this;
-            var storeQueries;
-            if (obj[this.name]) {
-                storeQueries = _.map(obj[this.name], function (_id) {return {_id: _id}});
-            }
-            else {
-                if (callback) callback('No local or remote id for relationship "' + this.name.toString() + '"');
-                return;
-            }
-            Store.getMultiple(storeQueries, function (errs) {
-                if (errs) {
-                    var allErrorsAre404 = true;
-                    for (var i = 0; i < errs.length; i++) {
-                        var err = errs[i];
-                        if (err.status != 404) {
-                            allErrorsAre404 = false;
-                            break;
-                        }
-                    }
-                    if (allErrorsAre404) {
-                        $log.debug('Couldnt find using _id, therefore using as remote id');
-                        // Attempt to use the identifier as a remote id and lookup that way instead.
-                        storeQueries = _.map(obj[self.name], function (id) {
-                            var storeQuery = {};
-                            storeQuery[self.reverseMapping.id] = id;
-                            storeQuery.mapping = self.reverseMapping;
-                            return storeQuery;
-                        });
-                        Store.getMultiple(storeQueries, callback);
-                    }
-                    else {
-                        if (callback) callback(errs);
-                    }
-                }
-                else if (callback) {
-                    callback();
-                }
-            });
-        };
-
-        return ManyToManyRelationship;
-    })
 
     .factory('ForeignKeyRelationship', function (Relationship, Store, jlog, RestError, ChangeType, $rootScope) {
         var $log = jlog.loggerWithName('ForeignKeyRelationship');
@@ -300,8 +243,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
             }
             else if (obj.mapping === this.reverseMapping) {
-                err = new RestError('Cannot use setRelated on a reverse foreign key relationship. Use addRelated instead.', {relationship: this, obj: obj});
-                if (callback) callback(err);
+                if (callback) callback();
             }
             else {
                 err = new RestError('Cannot setRelated as this relationship has neither a forward or reverse mapping that matches.', {relationship: this, obj: obj});

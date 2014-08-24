@@ -1,6 +1,6 @@
 describe('relationship', function () {
 
-    var Store, RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship, ManyToManyRelationship, RelationshipType, RelatedObjectProxy;
+    var Store, RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship, RelationshipType, RelatedObjectProxy;
 
     beforeEach(function () {
         module('restkit.relationship', function ($provide) {
@@ -12,12 +12,11 @@ describe('relationship', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Store_, _RestError_, _RelatedObjectProxy_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_, _ManyToManyRelationship_) {
+        inject(function (_Store_, _RestError_, _RelatedObjectProxy_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_) {
             RestAPI = _RestAPI_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
             OneToOneRelationship = _OneToOneRelationship_;
-            ManyToManyRelationship = _ManyToManyRelationship_;
             RestObject = _RestObject_;
             cache = _cache_;
             RelationshipType = _RelationshipType_;

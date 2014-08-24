@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship'])
 
-    .factory('Mapping', function (Pouch, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, ManyToManyRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (Pouch, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -55,9 +55,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         }
                         else if (relationship.type == RelationshipType.OneToOne) {
                             relationshipClass = OneToOneRelationship;
-                        }
-                        else if (relationship.type == RelationshipType.ManyToMany) {
-                            relationshipClass = ManyToManyRelationship;
                         }
                         else {
                             throw new RestError('Unknown relationship type "' + relationship.type.toString() + '"');
