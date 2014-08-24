@@ -286,7 +286,7 @@ describe('relationship notifications', function () {
             });
         });
 
-        describe.only('set reverse foreign key having already set', function () {
+        describe('set reverse foreign key having already set', function () {
 
             var newCars;
 
@@ -336,7 +336,8 @@ describe('relationship notifications', function () {
             }
 
             beforeEach(function (done) {
-
+                carNotifications = [];
+                peopleNotifications = [];
                 carMapping.map([
                     {colour: 'red', name: 'Aston Martin', id: '36yedfhdfgswftwsdg'},
                     {colour: 'blue', name: 'Lambo', id: 'asd03r0hasdfsd'},
@@ -350,18 +351,42 @@ describe('relationship notifications', function () {
                     $rootScope.$on('myApi:Person', function (e, n) {
                         peopleNotifications.push(n);
                     });
-                    done();
+                    var relationship = car.owner.relationship;
+                    relationship.setRelated(person, newCars, function (err) {
+                        if (err) done(err);
+                        $rootScope.$digest();
+                        done();
+                    });
                 });
             });
 
-            it('sends out notification for old car', function (done) {
-                var relationship = car.owner.relationship;
-                relationship.setRelated(person, newCars, function (err) {
-                    $rootScope.$digest();
-                    dump({carNotifications: _.pluck(_.pluck(carNotifications, 'change'), 'new'), peopleNotifications: peopleNotifications});
-                    assert.equal(carNotifications.length, 4);
-                    assertCarNotification({change: {type: ChangeType.Set, new: null, field:'owner', old:person}, obj: car});
-                    done(err);
+            it('should send out 4 notifications for cars', function () {
+                assert.equal(carNotifications.length, 4);
+            });
+
+            it('should send out 1 notifications for person', function () {
+                assert.equal(peopleNotifications.length, 1);
+            });
+
+            it('sends out notification for old car', function () {
+                assertCarNotification({change: {type: ChangeType.Set, new: null, field:'owner', old:person}, obj: car});
+            });
+
+            it('sends out notifications for new cars', function () {
+                _.each(newCars, function (newCar) {
+                    assertCarNotification({change: {type: ChangeType.Set, new: person, field:'owner', old:null}, obj: newCar});
+                });
+            });
+
+            it('should send out a notification for removal of the car from person', function () {
+                assert.equal(peopleNotifications.length, 1);
+                var notification = peopleNotifications[0];
+                assert.equal(notification.change.field, 'cars');
+                assert.equal(notification.change.old.length, 1);
+                assert.include(notification.change.old, car);
+                assert.equal(notification.change.new.length, 3);
+                _.each(newCars, function (newCar) {
+                    assert.include(notification.change.new, newCar);
                 });
             });
 

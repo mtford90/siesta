@@ -95,8 +95,9 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     callback(err);
                 }
                 else {
-                    self.setRelated(obj, related);
-                    if (callback) callback();
+                    self.setRelated(obj, related, function () {
+                        if (callback) callback();
+                    });
                 }
             })
         };
@@ -241,16 +242,15 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                         }
                     }
                     else {
-                        throw 'nyi';
-//                        proxy.get(function (err, oldRelated) {
-//                            previouslyRelatedObject = oldRelated;
-//                            if (err) {
-//                                callback(err);
-//                            }
-//                            else {
-//                                removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
-//                            }
-//                        });
+                        proxy.get(function (err, oldRelated) {
+                            previouslyRelatedObject = oldRelated;
+                            if (err) {
+                                callback(err);
+                            }
+                            else {
+                                removeOldRelatedAndThenSetNewRelated(previouslyRelatedObject);
+                            }
+                        });
                     }
                 }
                 else {
@@ -258,6 +258,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
             }
             else if (obj.mapping === this.reverseMapping) {
+
+                var previous;
                 if (Object.prototype.toString.call(related) === '[object Array]') {
                     proxy = obj[this.reverseName];
 
@@ -278,6 +280,17 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     function setRelated() {
                         proxy._id = _.pluck(related, '_id');
                         proxy.relatedObject = related;
+                        $rootScope.$broadcast(obj.api + ':' + obj.type, {
+                            api: obj.api,
+                            type: obj.type,
+                            obj: obj,
+                            change: {
+                                type: ChangeType.Set,
+                                old: previous,
+                                new: related,
+                                field: self.reverseName
+                            }
+                        });
                         // Reverse
                         if (related.length) {
                             var errs = [];
@@ -300,6 +313,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     // Forward
                     if (proxy._id ? proxy._id.length : proxy._id) {
                         if (proxy.relatedObject) {
+                            previous = proxy.relatedObject;
                             removeOldRelated(function (err) {
                                 if (err) {
                                     callback(err);

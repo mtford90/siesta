@@ -27,7 +27,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             defineSubProperty.call(this, 'api', self._opts);
             defineSubProperty.call(this, 'attributes', self._opts);
 
-            console.log(1);
             this._relationships = null;
 
             Object.defineProperty(this, 'relationships', {

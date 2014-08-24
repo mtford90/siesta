@@ -65,7 +65,7 @@ module.exports = function ( karma ) {
 //      'Firefox'
     ],
 
-    logLevel: 'info'
+    logLevel: karma.LOG_ERROR
 
   });
 };
