@@ -1,4 +1,4 @@
-describe.only('store', function () {
+describe('store', function () {
 
     var RestAPI, cache, RestObject, Mapping, Store, Pouch;
 
