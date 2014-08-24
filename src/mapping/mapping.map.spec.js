@@ -1,6 +1,6 @@
 describe('perform mapping', function () {
 
-    var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy, RestObject;
+    var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy, RestObject, $rootScope;
     var api, carMapping;
 
     beforeEach(function () {
@@ -13,13 +13,14 @@ describe('perform mapping', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _RestObject_, _Mapping_, _RestAPI_, _RestError_, _RelationshipType_, _RelatedObjectProxy_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _RestObject_, _Mapping_, _RestAPI_, _RestError_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
             RestAPI = _RestAPI_;
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
             RestObject = _RestObject_;
+            $rootScope = _$rootScope_;
         });
 
         Pouch.reset();
@@ -141,7 +142,7 @@ describe('perform mapping', function () {
                 });
             });
 
-            describe('remote id', function () {
+            describe.only('remote id', function () {
                 var person, car;
                 beforeEach(function (done) {
                     personMapping.map({name: 'Michael Ford', age: 23, id:'personRemoteId'}, function (err, _person) {
@@ -155,12 +156,12 @@ describe('perform mapping', function () {
                     });
                 });
                 it('owner of car should be michael', function (done) {
+                    $rootScope.$digest();
                     car.owner.get(function (err, owner) {
                         if (err) done(err);
                         assert.equal(owner, person);
                         done();
                     })
-
                 });
             });
         });

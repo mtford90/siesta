@@ -72,7 +72,7 @@ describe('cache', function () {
             assert.equal(r, restCache[r.api][r.type][r.customId]);
         });
 
-        describe.only('remote id set after insertion', function () {
+        describe('remote id set after insertion', function () {
             it('never had a remote id', function () {
                 var r = mapping._new();
                 r._id = 'xyz123';

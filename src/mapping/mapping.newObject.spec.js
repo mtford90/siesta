@@ -50,11 +50,6 @@ describe('mapping new object', function () {
             assert.notOk(r.invalidField);
         });
 
-        it('no id should cause an error', function () {
-            var invocation = _.bind(carMapping._new, carMapping, {colour: 'red', name: 'Aston Martin', invalidField: 'invalid'});
-            assert.throws(invocation, RestError);
-        });
-
     });
 
     describe('relationships', function () {

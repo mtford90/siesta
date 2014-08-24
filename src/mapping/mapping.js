@@ -369,19 +369,29 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         }
 
-        Mapping.prototype._map = function (obj, data) {
-            $log.debug('_map', obj);
+        Mapping.prototype._map = function (obj, data, callback) {
+            var waiting = [];
+            var finished = [];
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
+                    var val = data[prop];
                     if (obj._fields.indexOf(prop) > -1) {
-                        obj[prop] = data[prop];
+                        obj[prop] = val;
                         // TODO: Differentiate between scalar attributes + arrays
                     }
                     else if (obj._relationshipFields.indexOf(prop) > -1) {
-                        var proxy = obj[prop];
-                        proxy._id = data[prop];
+                        if (typeof(val) == 'object') {
+                            throw 'nyi';
+                        }
+                        else { // Store lookup needed.
+                            throw 'nyi';
+                        }
+
                     }
                 }
+            }
+            if (!waiting.length) { // No store lookups were required.
+                if (callback) callback();
             }
         };
 
