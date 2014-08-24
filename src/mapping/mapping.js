@@ -1,6 +1,6 @@
-angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship'])
+angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications'])
 
-    .factory('Mapping', function (Pouch, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (broadcast, Pouch, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -133,15 +133,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             return errors;
         };
 
-
-        function broadcast(restObject, change) {
-            $rootScope.$broadcast(restObject.api + ':' + restObject.type, {
-                api: restObject.api,
-                type: restObject.type,
-                obj: restObject,
-                change: change
-            });
-        }
 
         /**
          * Wraps the methods of a javascript array object so that notifications are sent
@@ -470,57 +461,44 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         /**
          * Convert raw data into a RestObject
-         * @param data
          * @returns {RestObject}
          * @private
          */
-        Mapping.prototype._new = function (data) {
-            $log.debug('_new', data);
-            var idField = this.id;
-            if (data[idField]) {
-                var _id = guid();
-                var restObject = new RestObject(this);
-                restObject._id = _id;
-                // Place attributes on the object.
-                restObject.__values = {};
-                _.each(this._fields, function (field) {
-                    Object.defineProperty(restObject, field, {
-                        get: function () {
-                            return restObject.__values[field];
-                        },
-                        set: function (v) {
-                            broadcast(restObject, {
-                                type: ChangeType.Set,
-                                old: restObject.__values[field],
-                                new: v,
-                                field: field
-                            });
-                            if (Object.prototype.toString.call(v) === '[object Array]') {
-                                wrapArray(v, field, restObject);
-                            }
-                            restObject.__values[field] = v;
-                        },
-                        enumerable: true,
-                        configurable: true
-                    });
-//                    if (data[field]) {
-//                        restObject[field] = data[field];
-//                    }
+        Mapping.prototype._new = function () {
+            var _id = guid();
+            var restObject = new RestObject(this);
+            restObject._id = _id;
+            // Place attributes on the object.
+            restObject.__values = {};
+            _.each(this._fields, function (field) {
+                Object.defineProperty(restObject, field, {
+                    get: function () {
+                        return restObject.__values[field];
+                    },
+                    set: function (v) {
+                        broadcast(restObject, {
+                            type: ChangeType.Set,
+                            old: restObject.__values[field],
+                            new: v,
+                            field: field
+                        });
+                        if (Object.prototype.toString.call(v) === '[object Array]') {
+                            wrapArray(v, field, restObject);
+                        }
+                        restObject.__values[field] = v;
+                    },
+                    enumerable: true,
+                    configurable: true
                 });
-                // Place relationships on the object.
-                _.each(this.relationships, function (relationship) {
-                    relationship.contributeToRestObject(restObject);
-//                    var isForwardRelationship = relationship.isForward(restObject);
-//                    if (isForwardRelationship) {
-//                        restObject[relationship.name]._id = data[relationship.name];
-//                    }
-                });
-                return restObject;
-            }
-            else {
-                throw new RestError('id field "' + idField.toString() + '" is not present', {data: data});
-            }
+
+            });
+            // Place relationships on the object.
+            _.each(this.relationships, function (relationship) {
+                relationship.contributeToRestObject(restObject);
+            });
+            return restObject;
         };
+
 
         Mapping.prototype.toString = function () {
             return 'Mapping[' + this.type + ']';

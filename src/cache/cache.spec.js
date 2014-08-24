@@ -1,6 +1,6 @@
 describe('cache', function () {
 
-    var RestAPI, cache, RestObject, Mapping;
+    var RestAPI, cache, RestObject, Mapping, $rootScope;
 
     var mapping;
 
@@ -15,11 +15,12 @@ describe('cache', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _cache_, _Mapping_, _RestObject_) {
+        inject(function (_RestAPI_, _cache_, _Mapping_, _RestObject_, _$rootScope_) {
             RestAPI = _RestAPI_;
             cache = _cache_;
             RestObject = _RestObject_;
             Mapping = _Mapping_;
+            $rootScope = _$rootScope_;
         });
 
         RestAPI._reset();
@@ -70,6 +71,32 @@ describe('cache', function () {
             console.log('api:', r.api);
             assert.equal(r, restCache[r.api][r.type][r.customId]);
         });
+
+        describe.only('remote id set after insertion', function () {
+            it('never had a remote id', function () {
+                var r = mapping._new();
+                r._id = 'xyz123';
+                cache.insert(r);
+                r.id = '5678';
+                var restCache = cache._restCache();
+                dump(restCache);
+                $rootScope.$digest();
+                assert.equal(restCache[r.api][r.type][r.id], r);
+            });
+            it('changed remote id', function () {
+                var r = mapping._new();
+                r._id = 'xyz123';
+                r.id = '5678';
+                cache.insert(r);
+                r.id = '1000';
+                var restCache = cache._restCache();
+                dump(restCache);
+                $rootScope.$digest();
+                assert.equal(restCache[r.api][r.type][r.id], r);
+                assert.notOk(restCache[r.api][r.type]['5678']);
+            });
+        })
+
     });
 
     describe('get', function () {

@@ -19,7 +19,7 @@ angular.module('logging', [])
             Pouch: logLevels.error,
             RestAPIRegistry: logLevels.error,
             RestAPI: logLevels.error,
-            Cache: logLevels.error,
+            Cache: logLevels.debug,
             Store: logLevels.error,
             Indexes: logLevels.error,
             Index: logLevels.error,

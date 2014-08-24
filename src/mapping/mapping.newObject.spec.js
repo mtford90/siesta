@@ -1,4 +1,4 @@
-describe.only('mapping new object', function () {
+describe('mapping new object', function () {
 
     var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy;
 

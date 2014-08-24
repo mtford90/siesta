@@ -31,10 +31,12 @@ describe('notifications', function () {
         var api, carMapping;
         var car, notif;
 
+        var apiNotif, genericNotif;
 
         describe('set value', function () {
 
             beforeEach(function (done) {
+                notif = null;
                 api = new RestAPI('myApi', function (err) {
                     if (err) done(err);
                     carMapping = api.registerMapping('Car', {
@@ -48,7 +50,21 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
-                            done();
+                            if (notif && genericNotif && apiNotif) {
+                                done();
+                            }
+                        });
+                        $rootScope.$on('myApi', function (e, n) {
+                            apiNotif = n;
+                            if (notif && genericNotif && apiNotif) {
+                                done();
+                            }
+                        });
+                        $rootScope.$on('Fount', function (e, n) {
+                            genericNotif = n;
+                            if (notif && genericNotif && apiNotif) {
+                                done();
+                            }
                         });
                         car.colour = 'blue';
                         $rootScope.$digest();

@@ -1,7 +1,7 @@
 angular.module('restkit.cache', ['restkit', 'restkit.object'])
 
 
-    .factory('cache', function (RestObject, RestError, jlog, $rootScope) {
+    .factory('cache', function (RestObject, RestError, jlog, $rootScope, ChangeType) {
 
         var $log = jlog.loggerWithName('Cache');
 
@@ -59,6 +59,50 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
             return null;
         }
 
+        /**
+         * If an object that we have cached by localId changes its remoteId then we need to know about it
+         * and update the cache accordingly.
+         */
+        $rootScope.$on('Fount', function (e, n) {
+            $log.debug('Cache received Fount notification', n);
+            var obj = n.obj;
+            var mapping = n.obj.mapping;
+            var idField = mapping.id;
+            if (n.change.type == ChangeType.Set && n.change.field == idField) {
+                if (idCache[obj._id]) {
+                    insert(obj, n.change.new);
+                    if (n.change.old) {
+                        restCache[obj.api][obj.type][n.change.old] = null;
+                    }
+                }
+            }
+        });
+
+        function insert(obj, remoteId) {
+            var api = obj.mapping.api;
+            if (api) {
+                if (!restCache[api]) {
+                    restCache[api] = {};
+                }
+                var type = obj.mapping.type;
+                if (type) {
+                    if (!restCache[api][type]) {
+                        restCache[api][type] = {};
+                    }
+                    if (!restCache[api][type][remoteId]) {
+                        restCache[api][type][remoteId] = obj;
+                        $log.debug('Cache insert ' + obj.api + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
+                    }
+                }
+                else {
+                    throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
+                }
+            }
+            else {
+                throw new RestError('Mapping has no api', {mapping: obj.mapping, obj: obj});
+            }
+        }
+
         return {
             '_restCache': function () {return restCache},
             '_idCache': function () {return idCache},
@@ -101,28 +145,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                     var idField = obj.idField;
                     var remoteId = obj[idField];
                     if (remoteId) {
-                        var api = obj.mapping.api;
-                        if (api) {
-                            if (!restCache[api]) {
-                                restCache[api] = {};
-                            }
-                            var type = obj.mapping.type;
-                            if (type) {
-                                if (!restCache[api][type]) {
-                                    restCache[api][type] = {};
-                                }
-                                if (!restCache[api][type][remoteId]) {
-                                    restCache[api][type][remoteId] = obj;
-                                    $log.debug('Cache insert ' + obj.api + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
-                                }
-                            }
-                            else {
-                                throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
-                            }
-                        }
-                        else {
-                            throw new RestError('Mapping has no api', {mapping: obj.mapping, obj: obj});
-                        }
+                        insert(obj, remoteId);
                     }
                     else {
                         $log.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
