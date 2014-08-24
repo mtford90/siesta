@@ -49,7 +49,7 @@ describe('relationship proxy byid', function () {
 
     });
 
-    it('setRelatedById', function (done) {
+    it('setRelatedById forward', function (done) {
         var r = new Relationship('car', 'cars', carMapping, personMapping);
         sinon.stub(r, 'setRelated', function (obj, related, callback) {
             callback();
@@ -58,6 +58,34 @@ describe('relationship proxy byid', function () {
             sinon.assert.calledWith(r.setRelated, car, person);
             done();
         });
+    });
+
+    it('setRelatedById reverse', function (done) {
+        carMapping.map([
+            {colour: 'red', name: 'Aston Martin', id: '36yedfhdfgswftwsdg'},
+            {colour: 'blue', name: 'Lambo', id: 'asd03r0hasdfsd'},
+            {colour: 'green', name: 'Ford', id: "nmihoahdabf"}
+        ], function (err, objs) {
+            if (err) done(err);
+            var r = new Relationship('car', 'cars', carMapping, personMapping);
+            sinon.stub(r, 'setRelated', function (obj, related, callback) {
+                callback();
+            });
+            r.setRelatedById(person, _.pluck(objs, '_id'), function (err) {
+                if (err) done(err);
+                sinon.assert.calledOnce(r.setRelated);
+                var args = r.setRelated.args[0];
+                var obj = args[0];
+                var related = args[1];
+                assert.equal(obj, person);
+                _.each(objs, function (car) {
+                    assert.include(related, car);
+                });
+                done();
+            });
+        });
+
+
     });
 
 
