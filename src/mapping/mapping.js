@@ -383,9 +383,11 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                     }
                     else if (obj._relationshipFields.indexOf(prop) > -1) {
                         if (val instanceof RestObject) {
+                            $log.error('NYI');
                             // TODO: Awesome. Set the relationship.
                         }
-                        else if (typeof(val) == 'object') {
+                        else if (typeof(val) == 'object' && !(Object.prototype.toString.call(val) == '[object Array]')) {
+                            $log.error('NYI');
                             // TODO: Use the relationship to get the mapping, and perform the mapping.
                         }
                         else { // Store lookup needed.
@@ -400,19 +402,32 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                 reverseMapping = relationship.mapping;
                             }
                             var idField = reverseMapping.id;
-                            var reverseData = {};
-                            reverseData[idField] = val;
+                            var reverseData;
+                            if (Object.prototype.toString.call(val) == '[object Array]') {
+                                reverseData = _.map(val, function (id) {
+                                    var o = {};
+                                    // Executed straight away so the warning below isn't an issue.
+                                    //noinspection JSReferencingMutableVariableFromClosure
+                                    o[idField] = id;
+                                    return o;
+                                });
+                            }
+                            else {
+                                reverseData = {};
+                                reverseData[idField] = val;
+                            }
+
                             var ref = {obj: obj, data: data, field: prop};
                             waiting.push(ref);
                             dump(waiting);
-                            function checkIfDone () {
+                            function checkIfDone() {
                                 $log.debug('checkIfDone');
                                 if (waiting.length == results.length) {
                                     if (callback) callback(errors.length ? errors : null, obj, results);
                                 }
                             }
 
-                            function map (ref, prop, reverseMapping, reverseData) {
+                            function map(ref, prop, reverseMapping, reverseData) {
                                 reverseMapping.map(reverseData, function (err, related) {
                                     if (err) {
                                         ref.err = err;
@@ -437,8 +452,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
                             map(ref, prop, reverseMapping, reverseData);
 
-
-                            // TODO: Use as a remoteId and do a store lookup.
                         }
                     }
                 }
