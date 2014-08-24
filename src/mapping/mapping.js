@@ -371,27 +371,83 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         Mapping.prototype._map = function (obj, data, callback) {
             var waiting = [];
-            var finished = [];
+            var errors = [];
+            var results = [];
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
+                    $log.debug('_map', prop);
                     var val = data[prop];
                     if (obj._fields.indexOf(prop) > -1) {
                         obj[prop] = val;
                         // TODO: Differentiate between scalar attributes + arrays
                     }
                     else if (obj._relationshipFields.indexOf(prop) > -1) {
-                        if (typeof(val) == 'object') {
-                            throw 'nyi';
+                        if (val instanceof RestObject) {
+                            // TODO: Awesome. Set the relationship.
+                        }
+                        else if (typeof(val) == 'object') {
+                            // TODO: Use the relationship to get the mapping, and perform the mapping.
                         }
                         else { // Store lookup needed.
-                            throw 'nyi';
-                        }
+                            $log.debug('Store lookup needed', val);
+                            var relationship = obj[prop].relationship;
+                            var isForward = relationship.isForward(obj);
+                            var reverseMapping;
+                            if (isForward) {
+                                reverseMapping = relationship.reverseMapping;
+                            }
+                            else {
+                                reverseMapping = relationship.mapping;
+                            }
+                            var idField = reverseMapping.id;
+                            var reverseData = {};
+                            reverseData[idField] = val;
+                            var ref = {obj: obj, data: data, field: prop};
+                            waiting.push(ref);
+                            dump(waiting);
+                            function checkIfDone () {
+                                $log.debug('checkIfDone');
+                                if (waiting.length == results.length) {
+                                    if (callback) callback(errors.length ? errors : null, obj, results);
+                                }
+                            }
 
+                            function map (ref, prop, reverseMapping, reverseData) {
+                                reverseMapping.map(reverseData, function (err, related) {
+                                    if (err) {
+                                        ref.err = err;
+                                        errors.push(err);
+                                        results.push(ref);
+                                        checkIfDone();
+                                    }
+                                    else {
+                                        var proxy = obj[prop];
+                                        dump(proxy);
+                                        proxy.set(related, function (err) {
+                                            if (err) {
+                                                ref.err = err;
+                                                errors.push(err);
+                                            }
+                                            results.push(ref);
+                                            checkIfDone();
+                                        });
+                                    }
+                                });
+                            }
+
+                            map(ref, prop, reverseMapping, reverseData);
+
+
+                            // TODO: Use as a remoteId and do a store lookup.
+                        }
                     }
                 }
             }
             if (!waiting.length) { // No store lookups were required.
-                if (callback) callback();
+                $log.debug('no store lookups required');
+                if (callback) {
+                    callback(null, obj);
+                }
             }
         };
 
@@ -425,10 +481,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                     if (callback) callback(err);
                                 }
                                 else {
-                                    self._map(restObject, data);
-                                    if (callback) {
-                                        callback(null, restObject);
-                                    }
+                                    self._map(restObject, data, callback);
                                 }
                             });
                         }

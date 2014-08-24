@@ -468,7 +468,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
                 else {
                     this.addRelatedToProxy(proxy, related);
-                    callback();
+                    if (callback) callback();
                     $rootScope.$broadcast(obj.api + ':' + obj.type, {
                         api: obj.api,
                         type: obj.type,
