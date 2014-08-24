@@ -1,4 +1,4 @@
-describe('notifications', function () {
+describe.only('notifications', function () {
 
     var Pouch, RawQuery, RestAPI, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
 
@@ -31,6 +31,7 @@ describe('notifications', function () {
         var api, carMapping;
         var car, notif;
 
+
         describe('set value', function () {
 
             beforeEach(function (done) {
@@ -42,8 +43,8 @@ describe('notifications', function () {
                     });
                 }, function (err) {
                     if (err) done(err);
-                    car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -52,6 +53,7 @@ describe('notifications', function () {
                         car.colour = 'blue';
                         $rootScope.$digest();
                     });
+
                 });
 
             });
@@ -107,8 +109,8 @@ describe('notifications', function () {
 
             describe('push', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -160,8 +162,8 @@ describe('notifications', function () {
 
             describe('pop', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -213,8 +215,8 @@ describe('notifications', function () {
 
             describe('shift', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -225,6 +227,7 @@ describe('notifications', function () {
                         car.colours.shift();
                         $rootScope.$digest();
                     });
+
                 });
 
                 it('notif contains type', function () {
@@ -266,18 +269,21 @@ describe('notifications', function () {
 
             describe('unshift', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
-                        if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
-                            notif = n;
-                            console.log('notif', notif);
-                            done();
+                    carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
+                        Store.put(car, function (err) {
+                            if (err) done(err);
+                            $rootScope.$on('myApi:Car', function (e, n) {
+                                notif = n;
+                                console.log('notif', notif);
+                                done();
+                            });
+                            console.log('colours', car.colours);
+                            car.colours.unshift('green');
+                            $rootScope.$digest();
                         });
-                        console.log('colours', car.colours);
-                        car.colours.unshift('green');
-                        $rootScope.$digest();
                     });
+
                 });
 
                 it('notif contains type', function () {
@@ -318,8 +324,8 @@ describe('notifications', function () {
 
             describe('sort', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -368,8 +374,8 @@ describe('notifications', function () {
 
             describe('reverse', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -418,8 +424,8 @@ describe('notifications', function () {
 
             describe('assign', function () {
                 beforeEach(function (done) {
-                    car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                    Store.put(car, function (err) {
+                    carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                        car = _car;
                         if (err) done(err);
                         $rootScope.$on('myApi:Car', function (e, n) {
                             notif = n;
@@ -475,8 +481,8 @@ describe('notifications', function () {
 
                 describe('add 1', function () {
                     beforeEach(function (done) {
-                        car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                        Store.put(car, function (err) {
+                        car = carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                            car = _car;
                             if (err) done(err);
                             $rootScope.$on('myApi:Car', function (e, n) {
                                 notif = n;
@@ -524,8 +530,8 @@ describe('notifications', function () {
 
                 describe('delete 1, add 1', function () {
                     beforeEach(function (done) {
-                        car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                        Store.put(car, function (err) {
+                        carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                            car = _car;
                             if (err) done(err);
                             $rootScope.$on('myApi:Car', function (e, n) {
                                 notif = n;
@@ -579,8 +585,8 @@ describe('notifications', function () {
 
                 describe('delete 2', function () {
                     beforeEach(function (done) {
-                        car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                        Store.put(car, function (err) {
+                        carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                            car = _car;
                             if (err) done(err);
                             $rootScope.$on('myApi:Car', function (e, n) {
                                 notif = n;
@@ -590,6 +596,7 @@ describe('notifications', function () {
                             car.colours.splice(1, 2);
                             $rootScope.$digest();
                         });
+
                     });
 
                     it('array has changed as expected', function () {
@@ -626,8 +633,8 @@ describe('notifications', function () {
 
                 describe('delete 2, add 1', function () {
                     beforeEach(function (done) {
-                        car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                        Store.put(car, function (err) {
+                        carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                            car = _car;
                             if (err) done(err);
                             $rootScope.$on('myApi:Car', function (e, n) {
                                 notif = n;
@@ -689,8 +696,8 @@ describe('notifications', function () {
 
                 describe('delete 2, add 3', function () {
                     beforeEach(function (done) {
-                        car = carMapping._new({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'});
-                        Store.put(car, function (err) {
+                        carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                            car = _car;
                             if (err) done(err);
                             $rootScope.$on('myApi:Car', function (e, n) {
                                 notif = n;
@@ -700,6 +707,7 @@ describe('notifications', function () {
                             car.colours.splice(1, 2, 'purple', 'yellow', 'indigo');
                             $rootScope.$digest();
                         });
+
                     });
 
                     it('array has changed as expected', function () {
