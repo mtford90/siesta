@@ -222,23 +222,71 @@ describe('foreign key relationship', function () {
                             relationship.setRelated(person, cars, function (err) {
                                 done(err)
                             });
-                        })
-                    })
+                        });
+                    });
                 });
 
-//                it('all cars should have person as their owner', function () {
-//                    _.each(cars, function (c) {
-//                        assert.equal(c.owner.relatedObject, person);
-//                        assert.equal(c.owner._id, person._id);
-//                    });
-//                });
-//
-//                it('person should have all cars', function () {
-//                    _.each(cars, function (c) {
-//                        assert.include(person.cars.relatedObject, c);
-//                        assert.include(person.cars._id, c._id);
-//                    });
-//                });
+                describe('no previous', function () {
+                    it('all cars should have person as their owner', function () {
+                        _.each(cars, function (c) {
+                            assert.equal(c.owner.relatedObject, person);
+                            assert.equal(c.owner._id, person._id);
+                        });
+                    });
+
+                    it('person should have all cars', function () {
+                        _.each(cars, function (c) {
+                            assert.include(person.cars.relatedObject, c);
+                            assert.include(person.cars._id, c._id);
+                        });
+                    });
+                });
+
+                describe('has previous', function () {
+                    var newCars;
+                    beforeEach(function (done) {
+                        carMapping.map([
+                            {colour: 'purple', name: 'Aston Martin', id: 'fjfg9iwmf'},
+                            {colour: 'bright yellow', name: 'Lambo', id: 'kjgds8yh92n'}
+                        ], function (err, objs) {
+                            if (err) done(err);
+                            newCars = objs;
+                            // For some reason loses its binding.
+                            _.each(newCars, _.bind(relationship.contributeToRestObject, relationship));
+                            relationship.setRelated(person, newCars, function (err) {
+                                done(err)
+                            });
+                        });
+                    });
+
+                    it('all new cars should have person as their owner', function () {
+                        _.each(newCars, function (c) {
+                            assert.equal(c.owner.relatedObject, person);
+                            assert.equal(c.owner._id, person._id);
+                        });
+                    });
+
+                    it('person should have all cars', function () {
+                        _.each(newCars, function (c) {
+                            assert.include(person.cars.relatedObject, c);
+                            assert.include(person.cars._id, c._id);
+                        });
+                    });
+
+                    it('person should no longer have the old cars', function () {
+                        _.each(cars, function (c) {
+                            assert.notInclude(person.cars.relatedObject, c);
+                            assert.notInclude(person.cars._id, c._id);
+                        });
+                    });
+
+                    it('the old cars should no longer have the person as their owner', function () {
+                        _.each(cars, function (c) {
+                            assert.notOk(c.owner.relatedObject);
+                            assert.notOk(c.owner._id);
+                        });
+                    });
+                });
 
             });
 

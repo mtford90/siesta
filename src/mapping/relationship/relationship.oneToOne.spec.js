@@ -29,7 +29,7 @@ describe('relationship', function () {
     });
 
     describe('OneToOne', function () {
-        var carMapping, personMapping;
+//        var carMapping, personMapping;
         beforeEach(function (done) {
             carMapping = new Mapping({
                 type: 'Car',

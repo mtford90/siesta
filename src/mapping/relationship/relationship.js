@@ -180,7 +180,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy._id = related._id;
                     proxy.relatedObject = related;
                     broadCast();
-                    self.addRelated(related, obj, callback);
+                    if (!reverse) {
+                        self.addRelated(related, obj, callback);
+                    }
+                    else if(callback) {
+                        callback();
+                    }
                 }
                 else {
                     proxy._id = null;
@@ -219,8 +224,9 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
             }
 
+            var proxy;
             if (obj.mapping === this.mapping) {
-                var proxy = obj[this.name];
+                proxy = obj[this.name];
                 if (proxy._id && !reverse) {
                     if (proxy.relatedObject) {
                         previouslyRelatedObject = proxy.relatedObject;
@@ -243,7 +249,68 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
             }
             else if (obj.mapping === this.reverseMapping) {
-                if (callback) callback();
+                if (Object.prototype.toString.call(related) === '[object Array]') {
+                    proxy = obj[this.reverseName];
+
+                    function removeOldRelated (callback) {
+                        var errs = [];
+                        var finished = [];
+                        _.each(proxy.relatedObject, function (oldRelated) {
+                            self.setRelated(oldRelated, null, function (err) {
+                                if (err) errs.push(err);
+                                finished.push(oldRelated);
+                                if (finished.length == proxy.relatedObject.length) {
+                                    callback(errs.length ? errs : null);
+                                }
+                            }, true);
+                        });
+                    }
+
+                    function setRelated() {
+                        proxy._id = _.pluck(related, '_id');
+                        proxy.relatedObject = related;
+                        // Reverse
+                        if (related.length) {
+                            var errs = [];
+                            var finished = [];
+                            _.each(related, function (r) {
+                                self.setRelated(r, obj, function (err) {
+                                    if (err) errs.push(err);
+                                    finished.push(r);
+                                    if (finished.length == related.length) {
+                                        if (callback) callback(errs.length ? errs : null);
+                                    }
+                                }, true);
+                            });
+                        }
+                        else {
+                            callback();
+                        }
+                    }
+
+                    // Forward
+                    if (proxy._id ? proxy._id.length : proxy._id) {
+                        if (proxy.relatedObject) {
+                            removeOldRelated(function (err) {
+                                if (err) {
+                                    callback(err);
+                                }
+                                else {
+                                    setRelated();
+                                }
+                            });
+                        }
+                        else {
+                            throw 'nyi';
+                        }
+                    }
+                    else {
+                        setRelated();
+                    }
+                }
+                else {
+                    if (callback) callback(new RestError('setRelated on reverse foreign key must be an array'));
+                }
             }
             else {
                 err = new RestError('Cannot setRelated as this relationship has neither a forward or reverse mapping that matches.', {relationship: this, obj: obj});
@@ -351,7 +418,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             }
             else if (this.isReverse(obj)) {
                 $log.debug('addRelated[' + this.reverseName + ']', {obj: obj, related: related});
-
                 var proxy = obj[this.reverseName];
                 // Fetch other related objects before inserting the new one.
                 if (proxy.isFault()) {
@@ -384,7 +450,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                             type: ChangeType.Insert,
                             new: related,
                             index: proxy.relatedObject.length - 1
-
                         }
                     });
                 }

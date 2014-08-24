@@ -34,7 +34,6 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                         wrappedCallback(callback)(null, restObject);
                     }
                     else {
-                        // TODO: Is there a nicer way to check if obj is an array?
                         if (Object.prototype.toString.call(opts._id) === '[object Array]') {
                             // Proxy onto getMultiple instead.
                             getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
