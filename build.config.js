@@ -15,7 +15,7 @@ module.exports = {
     test_files: {
         js: [
             'bower_components/angular-mocks/angular-mocks.js',
-            'node_modules/sinon/pkg/sinon.js',
+            'node_modules/sinon/pkg/sinon.js'
         ]
     },
 

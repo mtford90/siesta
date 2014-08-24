@@ -50,7 +50,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         return RelatedObjectProxy;
     })
 
-    .factory('Relationship', function (RestError, RelatedObjectProxy) {
+    .factory('Relationship', function (RestError, RelatedObjectProxy, Store) {
         function Relationship(name, reverseName, mapping, reverseMapping) {
             if (!this) {
                 return new Relationship(name, reverseName, mapping, reverseMapping);
@@ -64,15 +64,19 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
         Relationship.prototype.getRelated = function (obj, callback) {
             throw Error('Relationship.getRelated must be overridden');
         };
+
         Relationship.prototype.setRelated = function (obj, related, callback) {
             throw Error('Relationship.setRelated must be overridden');
         };
+
         Relationship.prototype.isForward = function (obj) {
             return obj.mapping === this.mapping;
         };
+
         Relationship.prototype.isReverse = function (obj) {
             return obj.mapping === this.reverseMapping;
         };
+
         Relationship.prototype.contributeToRestObject = function (obj) {
             if (this.isForward(obj)) {
                 obj[this.name] = new RelatedObjectProxy(this, obj);
@@ -84,6 +88,19 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 throw new RestError('Cannot contribute to object as this relationship has neither a forward or reverse mapping that matches', {relationship: this, obj: obj});
             }
         };
+
+        Relationship.prototype.setRelatedById = function (obj, relatedId, callback) {
+            var self = this;
+            Store.get({_id: relatedId}, function (err, related) {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    self.setRelated(obj, related, callback);
+                }
+            })
+        };
+
         return Relationship;
     })
 
