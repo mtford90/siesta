@@ -141,7 +141,7 @@ describe('perform mapping', function () {
                 });
             });
 
-            describe.only('remote id', function () {
+            describe('remote id', function () {
 
                 describe('forward', function () {
                     describe('object that already exists', function () {
@@ -229,7 +229,7 @@ describe('perform mapping', function () {
 
                         it('cars should have person as their owner', function () {
                             _.each(cars, function (car) {
-                                assert.equal(car.owner._id , person._id);
+                                assert.equal(car.owner._id, person._id);
                             })
                         });
 
@@ -242,8 +242,30 @@ describe('perform mapping', function () {
                         });
                     });
 
-                    describe('remoteids of objects that dont exist', function () {
+                    describe.only('remoteids of objects that dont exist', function () {
+                        var person;
+                        beforeEach(function (done) {
+                            personMapping.map({
+                                name: 'Michael Ford',
+                                age: 23,
+                                id: 'personRemoteId',
+                                cars: ['remoteId1', 'remoteId2', 'remoteId3']
+                            }, function (err, _person) {
+                                if (err) done(err);
+                                person = _person;
+                                done();
+                            });
+                        });
 
+                        it('person has 3 new cars, and those cars are owned by the person', function (done) {
+                            person.cars.get(function (err, cars) {
+                                done(err);
+                                assert.equal(cars.length, 3);
+                                _.each(cars, function (car) {
+                                    assert.equal(car.owner._id, person._id);
+                                })
+                            });
+                        })
                     });
 
                     describe('mixture', function () {
