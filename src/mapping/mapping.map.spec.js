@@ -115,7 +115,7 @@ describe('perform mapping', function () {
 
     describe('with relationship', function () {
 
-        describe('foreign key', function () {
+        describe.only('foreign key', function () {
             var personMapping;
             beforeEach(function (done) {
                 api = new RestAPI('myApi', function (err, version) {
@@ -323,29 +323,6 @@ describe('perform mapping', function () {
 
             // TODO
             describe('_id', function () {
-                describe('forward', function () {
-                    describe('object already exists', function () {
-                        // TODO
-                    });
-                    describe('object doesnt exist', function () {
-                        // TODO
-                    });
-                });
-                describe('reverse', function () {
-                    describe('all objects already exist', function () {
-                        // TODO
-                    });
-                    describe('no objects exist', function () {
-                        // TODO
-                    });
-                    describe('mixed', function () {
-                        // TODO
-                    });
-                });
-            });
-
-            // TODO
-            describe('object', function () {
                 describe('forward', function () {
                     describe('object already exists', function () {
                         // TODO
