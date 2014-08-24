@@ -41,7 +41,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         Mapping.prototype.installRelationships = function () {
             var self = this;
-            $log.debug(self.type + ': lazily constructing relationships');
             self._relationships = [];
             if (self._opts.relationships) {
                 for (var name in self._opts.relationships) {
@@ -380,12 +379,29 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         }
 
         /**
-         * Map data into Fount. This is where the magic happens.
+         * Map data into Fount.
          *
          * @param data Raw data received remotely or otherwise
          * @param callback Called once pouch persistence returns.
          */
         Mapping.prototype.map = function (data, callback) {
+
+            function _map(obj) {
+                $log.debug('_map', obj);
+                for (var prop in data) {
+                    if (data.hasOwnProperty(prop)) {
+                        if (obj._fields.indexOf(prop) > -1) {
+                            obj[prop] = data[prop];
+                            // TODO: Differentiate between scalar attributes + arrays
+                        }
+                        else if (obj._relationshipFields.indexOf(prop) > -1) {
+                            var proxy = obj[prop];
+                            proxy._id = data[prop];
+                        }
+                    }
+                }
+            }
+
             if (Object.prototype.toString.call(data) === '[object Array]') {
                 this._mapBulk(data, callback);
             }
@@ -409,6 +425,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                     if (callback) callback(err);
                                 }
                                 else {
+                                    _map(restObject);
                                     if (callback) {
                                         callback(null, restObject);
                                     }
@@ -416,15 +433,10 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                             });
                         }
                         else {
-                            for (var prop in data) {
-                                if (data.hasOwnProperty(prop) && obj._fields.indexOf(prop) > -1) {
-                                    obj[prop] = data[prop];
-                                    // TODO: Differentiate between scalar attributes + arrays
-                                }
-                                // TODO: Relationships
-                            }
+                            $log.info('Mapping attributes');
+                            _map(obj);
                             if (callback) {
-                                callback(null, obj)
+                                callback(null, obj);
                             }
                         }
                     }
@@ -440,14 +452,16 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             var objs = [];
             var errs = [];
             var res = [];
-            function done () {
+
+            function done() {
                 if (callback) callback(errs.length ? errs : null, objs, res);
             }
+
             _.each(data, function (d) {
                 self.map(d, function (err, obj) {
                     if (obj) objs.push(obj);
                     if (err) errs.push(err);
-                    res.push({err:err, obj:obj, raw:d});
+                    res.push({err: err, obj: obj, raw: d});
                     if (res.length == data.length) {
                         done();
                     }
@@ -490,17 +504,17 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         enumerable: true,
                         configurable: true
                     });
-                    if (data[field]) {
-                        restObject[field] = data[field];
-                    }
+//                    if (data[field]) {
+//                        restObject[field] = data[field];
+//                    }
                 });
                 // Place relationships on the object.
                 _.each(this.relationships, function (relationship) {
                     relationship.contributeToRestObject(restObject);
-                    var isForwardRelationship = relationship.isForward(restObject);
-                    if (isForwardRelationship) {
-                        restObject[relationship.name]._id = data[relationship.name];
-                    }
+//                    var isForwardRelationship = relationship.isForward(restObject);
+//                    if (isForwardRelationship) {
+//                        restObject[relationship.name]._id = data[relationship.name];
+//                    }
                 });
                 return restObject;
             }

@@ -21,6 +21,7 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
         }
 
         function get(opts, callback) {
+            $log.debug('get', opts);
             var restObject;
             if (opts._id) {
                 if (Object.prototype.toString.call(opts._id) === '[object Array]') {

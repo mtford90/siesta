@@ -1,8 +1,7 @@
 angular.module('restkit.cache', ['restkit', 'restkit.object'])
 
 
-
-    .factory('cache', function (RestObject, RestError, jlog) {
+    .factory('cache', function (RestObject, RestError, jlog, $rootScope) {
 
         var $log = jlog.loggerWithName('Cache');
 
@@ -25,43 +24,78 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
 
         reset();
 
+        function getViaLocalId(localId) {
+            $log.debug('looking up via _id "' + localId.toString() + '"');
+            var obj = idCache[localId];
+            if (obj) {
+                $log.debug('Cache hit on _id "' + localId.toString() + '"');
+            }
+            else {
+                $log.debug('Cache miss on _id "' + localId.toString() + '"');
+            }
+            return  obj;
+        }
+
+        function getViaRemoteId(remoteId, opts) {
+            var type = opts.mapping.type;
+            var api = opts.mapping.api;
+            var desc = api.toString() + ':' + type.toString() + '[' + remoteId + ']';
+            $log.debug('looking up via mapping ' + desc, {restCache: restCache, idCache: idCache});
+            var apiCache = restCache[api];
+            if (apiCache) {
+                var typeCache = restCache[api][type];
+                if (typeCache) {
+                    var obj = typeCache[remoteId];
+                    if (obj) {
+                        $log.debug('Cache hit on ' + desc);
+                    }
+                    else {
+                        $log.debug('Cache miss on ' + desc);
+                    }
+                    return  obj;
+                }
+            }
+            $log.debug('Cache miss on ' + desc);
+            return null;
+        }
+
         return {
             '_restCache': function () {return restCache},
             '_idCache': function () {return idCache},
             get: function (opts) {
+                var obj, idField, remoteId;
                 $log.debug('get', opts);
-                if (opts._id) {
-                    $log.debug('looking up via _id "' + opts._id.toString() + '"');
-                    return idCache[opts._id];
+                var localId = opts._id;
+                if (localId) {
+                    obj = getViaLocalId(localId);
+                    if (obj) {
+                        return obj;
+                    }
+                    else {
+                        idField = opts.mapping.id;
+                        remoteId = opts[idField];
+                        return getViaRemoteId(remoteId, opts);
+                    }
                 }
                 else if (opts.mapping) {
-                    var idField = opts.mapping.id;
-                    var id = opts[idField];
-                    var type = opts.mapping.type;
-                    var api = opts.mapping.api;
-                    $log.debug('looking up via mapping ' + api.toString() + ':' + type.toString() + '[' + id + ']', {restCache: restCache, idCache: idCache});
-                    var apiCache = restCache[api];
-                    if (apiCache) {
-                        var typeCache = restCache[api][type];
-                        if (typeCache) {
-                            return typeCache[id];
-                        }
-                    }
-                    return null;
+                    idField = opts.mapping.id;
+                    remoteId = opts[idField];
+                    return getViaRemoteId(remoteId, opts);
                 }
+                $log.warn('Invalid opts to cache', {opts: opts});
                 return null;
             },
             insert: function (obj) {
                 if (obj instanceof RestObject) {
                     if (obj._id) {
                         if (!idCache[obj._id]) {
-                            $log.debug('Cached object '  + obj.api + ':' + obj.type + '[_id="' + obj._id + '"]');
+                            $log.debug('Cache insert ' + obj.api + ':' + obj.type + '[_id="' + obj._id + '"]');
                             idCache[obj._id] = obj;
                         }
                     }
                     var idField = obj.idField;
-                    var id = obj[idField];
-                    if (id) {
+                    var remoteId = obj[idField];
+                    if (remoteId) {
                         var api = obj.mapping.api;
                         if (api) {
                             if (!restCache[api]) {
@@ -72,9 +106,9 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                                 if (!restCache[api][type]) {
                                     restCache[api][type] = {};
                                 }
-                                if (!restCache[api][type][id]) {
-                                    restCache[api][type][id] = obj;
-                                    $log.debug('Cached object '  + obj.api + ':' + obj.type + '[' + obj.mapping.id + '="' + id + '"]');
+                                if (!restCache[api][type][remoteId]) {
+                                    restCache[api][type][remoteId] = obj;
+                                    $log.debug('Cache insert ' + obj.api + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
                                 }
                             }
                             else {
@@ -84,6 +118,9 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         else {
                             throw new RestError('Mapping has no api', {mapping: obj.mapping, obj: obj});
                         }
+                    }
+                    else {
+                        $log.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
                     }
                 }
                 else {
