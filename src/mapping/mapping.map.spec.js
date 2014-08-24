@@ -81,7 +81,7 @@ describe('perform mapping', function () {
                     });
                 });
 
-                it.only('should be mapped onto the old object', function () {
+                it('should be mapped onto the old object', function () {
                     assert.equal(newObj, obj);
                 });
 

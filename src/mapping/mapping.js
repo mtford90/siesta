@@ -378,6 +378,22 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         }
 
+        Mapping.prototype._map = function (obj, data) {
+            $log.debug('_map', obj);
+            for (var prop in data) {
+                if (data.hasOwnProperty(prop)) {
+                    if (obj._fields.indexOf(prop) > -1) {
+                        obj[prop] = data[prop];
+                        // TODO: Differentiate between scalar attributes + arrays
+                    }
+                    else if (obj._relationshipFields.indexOf(prop) > -1) {
+                        var proxy = obj[prop];
+                        proxy._id = data[prop];
+                    }
+                }
+            }
+        };
+
         /**
          * Map data into Fount.
          *
@@ -385,23 +401,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          * @param callback Called once pouch persistence returns.
          */
         Mapping.prototype.map = function (data, callback) {
-
-            function _map(obj) {
-                $log.debug('_map', obj);
-                for (var prop in data) {
-                    if (data.hasOwnProperty(prop)) {
-                        if (obj._fields.indexOf(prop) > -1) {
-                            obj[prop] = data[prop];
-                            // TODO: Differentiate between scalar attributes + arrays
-                        }
-                        else if (obj._relationshipFields.indexOf(prop) > -1) {
-                            var proxy = obj[prop];
-                            proxy._id = data[prop];
-                        }
-                    }
-                }
-            }
-
             if (Object.prototype.toString.call(data) === '[object Array]') {
                 this._mapBulk(data, callback);
             }
@@ -425,7 +424,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                     if (callback) callback(err);
                                 }
                                 else {
-                                    _map(restObject);
+                                    self._map(restObject, data);
                                     if (callback) {
                                         callback(null, restObject);
                                     }
@@ -434,7 +433,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         }
                         else {
                             $log.info('Mapping attributes');
-                            _map(obj);
+                            self._map(obj, data);
                             if (callback) {
                                 callback(null, obj);
                             }

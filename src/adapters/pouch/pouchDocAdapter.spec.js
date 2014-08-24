@@ -115,25 +115,33 @@ describe('pouch doc adapter', function () {
             });
         });
 
-        it('should convert objects with no relationships successfully', function () {
-            var person = personMapping._new({name: 'Michael', age: 23, id: 'xyz'});
-            var adapted = PouchDocAdapter.from(person);
-            assert.equal(adapted.name, 'Michael');
-            assert.equal(adapted.age, 23);
-            assert.equal(adapted.id, 'xyz');
-            assert.equal(adapted._id, person._id);
+        it('should convert objects with no relationships successfully', function (done) {
+            personMapping.map({name: 'Michael', age: 23, id: 'xyz'}, function (err, person) {
+                if (err) done(err);
+                var adapted = PouchDocAdapter.from(person);
+                assert.equal(adapted.name, 'Michael');
+                assert.equal(adapted.age, 23);
+                assert.equal(adapted.id, 'xyz');
+                assert.equal(adapted._id, person._id);
+                done();
+            });
         });
 
-        it('should convert objects with relationship successfully', function () {
-            var person = personMapping._new({name: 'Michael', age: 23, id: 'xyz'});
-            var car = carMapping._new({name: 'Aston Martin', id: 'xyz123', owner: person._id});
-            var adapted = PouchDocAdapter.from(car);
-            assert.equal(adapted.name, 'Aston Martin');
-            assert.equal(adapted.id, 'xyz123');
-            assert.equal(adapted._id, car._id);
-            assert.equal(adapted.owner, person._id);
-        });
+        it('should convert objects with relationship successfully', function (done) {
+            personMapping.map({name: 'Michael', age: 23, id: 'xyz'}, function (err, person) {
+                if (err) done(err);
+                carMapping.map({name: 'Aston Martin', id: 'xyz123', owner: person._id}, function (err, car) {
+                    if (err) done(err);
+                    var adapted = PouchDocAdapter.from(car);
+                    assert.equal(adapted.name, 'Aston Martin');
+                    assert.equal(adapted.id, 'xyz123');
+                    assert.equal(adapted._id, car._id);
+                    assert.equal(adapted.owner, person._id);
+                    done();
+                });
+            });
 
+        });
 
 
     });

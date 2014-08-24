@@ -72,9 +72,14 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         return obj;
                     }
                     else {
-                        idField = opts.mapping.id;
-                        remoteId = opts[idField];
-                        return getViaRemoteId(remoteId, opts);
+                        if (opts.mapping) {
+                            idField = opts.mapping.id;
+                            remoteId = opts[idField];
+                            return getViaRemoteId(remoteId, opts);
+                        }
+                        else {
+                            return null;
+                        }
                     }
                 }
                 else if (opts.mapping) {

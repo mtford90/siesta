@@ -1,4 +1,4 @@
-describe.only('notifications', function () {
+describe('notifications', function () {
 
     var Pouch, RawQuery, RestAPI, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
 

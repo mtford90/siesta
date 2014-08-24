@@ -1,4 +1,4 @@
-describe('store', function () {
+describe.only('store', function () {
 
     var RestAPI, cache, RestObject, Mapping, Store, Pouch;
 
@@ -49,7 +49,7 @@ describe('store', function () {
             Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid}, function (err, doc) {
                 if (err) done(err);
                 Store.get({_id: pouchid}, function (err, doc) {
-                    if (err)done(err);
+                    if (err) done(err);
                     console.log('doc:', doc);
                     done();
                 });
@@ -119,7 +119,9 @@ describe('store', function () {
         describe('store object that has never been stored', function () {
             var car;
             beforeEach(function (done) {
-                car = carMapping._new({colour: 'red', id: 'remoteId'});
+                var data = {colour: 'red', id: 'remoteId'};
+                car = carMapping._new(data);
+                carMapping._map(car, data);
                 Store.put(car, function (err) {
                     done(err);
                 });
