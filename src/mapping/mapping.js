@@ -390,47 +390,72 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          * @param callback Called once pouch persistence returns.
          */
         Mapping.prototype.map = function (data, callback) {
-            var self = this;
-            var storeOpts = {};
-            var identifier = data[this.id];
-            if (identifier) {
-                storeOpts[this.id] = identifier;
-                storeOpts.mapping = this;
+            if (Object.prototype.toString.call(data) === '[object Array]') {
+                this._mapBulk(data, callback);
             }
-            if (data._id) {
-                storeOpts._id = data._id;
-            }
-            Store.get(storeOpts, function (err, obj) {
-                if (!err) {
-                    if (!obj) {
-                        var restObject = self._new(data);
-                        Store.put(restObject, function (err) {
-                            if (err) {
-                                if (callback) callback(err);
-                            }
-                            else {
-                                if (callback) {
-                                    callback(null, restObject);
+            else {
+                var self = this;
+                var storeOpts = {};
+                var identifier = data[this.id];
+                if (identifier) {
+                    storeOpts[this.id] = identifier;
+                    storeOpts.mapping = this;
+                }
+                if (data._id) {
+                    storeOpts._id = data._id;
+                }
+                Store.get(storeOpts, function (err, obj) {
+                    if (!err) {
+                        if (!obj) {
+                            var restObject = self._new(data);
+                            Store.put(restObject, function (err) {
+                                if (err) {
+                                    if (callback) callback(err);
                                 }
-                            }
-                        });
-                    }
-                    else {
-                        for (var prop in data) {
-                            if (data.hasOwnProperty(prop) && obj._fields.indexOf(prop) > -1) {
-                                obj[prop] = data[prop];
-                                // TODO: Differentiate between scalar attributes + arrays
-                            }
-                            // TODO: Relationships
+                                else {
+                                    if (callback) {
+                                        callback(null, restObject);
+                                    }
+                                }
+                            });
                         }
-                        if (callback) {
-                            callback(null, obj)
+                        else {
+                            for (var prop in data) {
+                                if (data.hasOwnProperty(prop) && obj._fields.indexOf(prop) > -1) {
+                                    obj[prop] = data[prop];
+                                    // TODO: Differentiate between scalar attributes + arrays
+                                }
+                                // TODO: Relationships
+                            }
+                            if (callback) {
+                                callback(null, obj)
+                            }
                         }
                     }
-                }
-                else if (callback) {
-                    callback(err);
-                }
+                    else if (callback) {
+                        callback(err);
+                    }
+                });
+            }
+        };
+
+        Mapping.prototype._mapBulk = function (data, callback) {
+            var self = this;
+            var objs = [];
+            var errs = [];
+            var res = [];
+            function done () {
+                if (callback) callback(errs.length ? errs : null, objs, res);
+            }
+            _.each(data, function (d) {
+                self.map(d, function (err, obj) {
+                    if (obj) objs.push(obj);
+                    if (err) errs.push(err);
+                    res.push({err:err, obj:obj, raw:d});
+                    if (res.length == data.length) {
+                        done();
+                    }
+                });
             });
         };
 

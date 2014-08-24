@@ -1,4 +1,4 @@
-describe.only('relationship notifications', function () {
+describe('relationship notifications', function () {
 
     var Pouch, RawQuery, RestAPI, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
     var api, carMapping, personMapping;
