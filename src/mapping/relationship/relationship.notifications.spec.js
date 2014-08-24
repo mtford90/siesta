@@ -219,7 +219,6 @@ describe.only('relationship notifications', function () {
                 });
             });
 
-
             describe('forward notif', function () {
                 it('has type', function () {
                     assert.equal(anotherCarNotif.type, 'Car');
