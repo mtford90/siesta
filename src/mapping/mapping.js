@@ -406,7 +406,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             _.each(this._fields, function (field) {
                 Object.defineProperty(restObject, field, {
                     get: function () {
-                        return restObject.__values[field];
+                        return restObject.__values[field] || null;
                     },
                     set: function (v) {
                         broadcast(restObject, {

@@ -40,14 +40,10 @@ describe('mapping new object', function () {
         });
 
         it('valid', function () {
-            var data = {colour: 'red', name: 'Aston Martin', invalidField: 'invalid', id: 'xyz'};
-            var r = carMapping._new(data);
-            carMapping._map(r, data);
-            assert.equal(r.colour, 'red');
-            assert.equal(r.name, 'Aston Martin');
-            assert.equal(r.id, 'xyz');
-            assert.ok(r._id);
-            assert.notOk(r.invalidField);
+            var car = carMapping._new();
+            _.each(carMapping._fields, function (f) {
+                assert(car[f] !== undefined);
+            });
         });
 
     });
@@ -84,27 +80,17 @@ describe('mapping new object', function () {
         });
 
         describe('installation of proxies', function () {
-            it('installs related object proxies', function () {
-                var personData = {
-                    name: 'Michael Ford',
-                    age: 23,
-                    id: 'remotePersonId'
-                };
-                var personObject = personMapping._new(personData);
-                personMapping._map(personObject, personData);
-                assert.ok(personObject._id);
-                var carData = {
-                    colour: 'red',
-                    name: 'Aston Martin',
-                    invalidField: 'invalid',
-                    id: 'remoteCarId',
-                    owner: personObject._id
-                };
-                var carObject = carMapping._new(carData);
-                carMapping._map(carObject, carData);
+
+            it('installs forward related object proxy', function () {
+                var carObject = carMapping._new();
                 assert.instanceOf(carObject.owner, RelatedObjectProxy);
-                assert.equal(carObject.owner._id, personObject._id);
             });
+
+            it('installs reverse related object proxy', function () {
+                var personObject = personMapping._new();
+                assert.instanceOf(personObject.cars, RelatedObjectProxy);
+            });
+
         });
 
 

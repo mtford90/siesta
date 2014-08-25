@@ -119,9 +119,9 @@ describe('store', function () {
         describe('store object that has never been stored', function () {
             var car;
             beforeEach(function (done) {
-                var data = {colour: 'red', id: 'remoteId'};
-                car = carMapping._new(data);
-                carMapping._map(car, data);
+                car = carMapping._new();
+                car.colour = 'red';
+                car.id = 'remoteId';
                 Store.put(car, function (err) {
                     done(err);
                 });

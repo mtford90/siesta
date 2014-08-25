@@ -1,4 +1,4 @@
-describe.only('perform mapping', function () {
+describe('perform mapping', function () {
 
     var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy, RestObject, $rootScope;
     var api, carMapping;

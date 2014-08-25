@@ -130,7 +130,7 @@ describe('pouch doc adapter', function () {
         it('should convert objects with relationship successfully', function (done) {
             personMapping.map({name: 'Michael', age: 23, id: 'xyz'}, function (err, person) {
                 if (err) done(err);
-                carMapping.map({name: 'Aston Martin', id: 'xyz123', owner: person._id}, function (err, car) {
+                carMapping.map({name: 'Aston Martin', id: 'xyz123', owner: {_id: person._id}}, function (err, car) {
                     if (err) done(err);
                     var adapted = PouchDocAdapter.from(car);
                     assert.equal(adapted.name, 'Aston Martin');
