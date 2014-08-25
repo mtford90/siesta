@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications', 'restkit.mapping.operation'])
 
-    .factory('Mapping', function (broadcast, Pouch, MappingOperation, BulkMappingOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (broadcast, Pouch, MappingOperation, BulkMappingOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -59,8 +59,8 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         }
                         var mappingName = relationship.mapping;
                         $log.debug('reverseMappingName', mappingName);
-                        var api = RestAPIRegistry[self.api];
-                        $log.debug('api', RestAPIRegistry);
+                        var api = CollectionRegistry[self.api];
+                        $log.debug('api', CollectionRegistry);
                         var reverseMapping = api[mappingName];
                         if (reverseMapping) {
                             $log.debug('reverseMapping', reverseMapping);

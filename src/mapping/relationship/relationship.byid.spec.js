@@ -1,6 +1,6 @@
 describe('relationship proxy byid', function () {
 
-    var RestAPI, RelationshipType, Relationship;
+    var Collection, RelationshipType, Relationship;
     var api, carMapping, personMapping;
     var car, person;
 
@@ -14,16 +14,16 @@ describe('relationship proxy byid', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _RelationshipType_, _Relationship_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Collection_, _RelationshipType_, _Relationship_) {
+            Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             Relationship = _Relationship_;
         });
 
 
-        RestAPI._reset();
+        Collection._reset();
 
-        api = new RestAPI('myApi', function (err, version) {
+        api = new Collection('myApi', function (err, version) {
             if (err) done(err);
             carMapping = api.registerMapping('Car', {
                 id: 'id',

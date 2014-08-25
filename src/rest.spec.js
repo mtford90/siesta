@@ -1,12 +1,12 @@
 describe('rest', function () {
 
-    var RestAPI, RestAPIRegistry;
+    var Collection, CollectionRegistry;
     var api;
 
     function configureAPI(done, callback) {
         console.log('configureAPI');
         var configCalled = false;
-        api = new RestAPI('myApi', function (err, version) {
+        api = new Collection('myApi', function (err, version) {
             if (err) done(err);
             assert.notOk(version);
             api.version = 1;
@@ -25,12 +25,12 @@ describe('rest', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _RestAPIRegistry_) {
-            RestAPI = _RestAPI_;
-            RestAPIRegistry = _RestAPIRegistry_;
+        inject(function (_Collection_, _CollectionRegistry_) {
+            Collection = _Collection_;
+            CollectionRegistry = _CollectionRegistry_;
         });
 
-        RestAPI._reset();
+        Collection._reset();
     });
 
     describe('Create Basic Rest API', function () {
@@ -38,12 +38,12 @@ describe('rest', function () {
         beforeEach(configureAPI);
 
         it('global access', function () {
-            assert.equal(RestAPIRegistry.myApi, api);
+            assert.equal(CollectionRegistry.myApi, api);
         });
 
         describe('persistence', function () {
             it('version is set', function (done) {
-                RestAPI._getPouch().get(api._docId, function (err, doc) {
+                Collection._getPouch().get(api._docId, function (err, doc) {
                     if (err) done(err);
                     assert.equal(doc.version, api.version);
                     done();
@@ -51,7 +51,7 @@ describe('rest', function () {
             });
 
             it('_doc is set and is of same revision', function (done) {
-                RestAPI._getPouch().get(api._docId, function (err, doc) {
+                Collection._getPouch().get(api._docId, function (err, doc) {
                     if (err) done(err);
                     assert.equal(doc._rev, api._doc._rev);
                     done();
@@ -66,7 +66,7 @@ describe('rest', function () {
             beforeEach(function (done) {
                 var configCalled = false;
                 console.log('apiAgain');
-                apiAgain = new RestAPI('myApi', function (err, version) {
+                apiAgain = new Collection('myApi', function (err, version) {
                     if (err) done(err);
                     assert.equal(version, 1);
                     assert.equal(apiAgain.version, 1);
@@ -80,7 +80,7 @@ describe('rest', function () {
 
             describe('persistence', function () {
                 it('version is updated', function (done) {
-                    RestAPI._getPouch().get(apiAgain._docId, function (err, doc) {
+                    Collection._getPouch().get(apiAgain._docId, function (err, doc) {
                         console.log('doc:', doc);
                         if (err) done(err);
                         assert.equal(doc.version, newVersion);
@@ -123,7 +123,7 @@ describe('rest', function () {
                     assertMapping(api);
                 });
                 it('reconfig', function (done) {
-                    var a = new RestAPI('myApi', function (err, version) {
+                    var a = new Collection('myApi', function (err, version) {
                         if (err) done(err);
                     }, function () {
                         assertMapping(a);
@@ -134,7 +134,7 @@ describe('rest', function () {
 
             describe('persistence', function () {
                 it('version is updated', function (done) {
-                    RestAPI._getPouch().get(api._docId, function (err, doc) {
+                    Collection._getPouch().get(api._docId, function (err, doc) {
                         if (err) done(err);
                         assert.ok(doc.mappings.Person);
 
@@ -143,7 +143,7 @@ describe('rest', function () {
                 });
                 it('reconfig', function (done) {
                     console.log('reconfig');
-                    var a = new RestAPI('myApi', function (err, version) {
+                    var a = new Collection('myApi', function (err, version) {
                         if (err) done(err);
                     }, function () {
                         console.log(a._mappings);

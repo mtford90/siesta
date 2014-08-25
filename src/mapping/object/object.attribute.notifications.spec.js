@@ -1,6 +1,6 @@
 describe('notifications', function () {
 
-    var Pouch, RawQuery, RestAPI, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
+    var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -12,10 +12,10 @@ describe('notifications', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Pouch_, _RawQuery_, _RestAPI_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _Store_, _ChangeType_) {
+        inject(function (_Pouch_, _RawQuery_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _Store_, _ChangeType_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
-            RestAPI = _RestAPI_;
+            Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
             $rootScope = _$rootScope_;
@@ -37,7 +37,7 @@ describe('notifications', function () {
 
             beforeEach(function (done) {
                 notif = null;
-                api = new RestAPI('myApi', function (err) {
+                api = new Collection('myApi', function (err) {
                     if (err) done(err);
                     carMapping = api.registerMapping('Car', {
                         id: 'id',
@@ -111,7 +111,7 @@ describe('notifications', function () {
 
         describe('array notifications', function () {
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function (err) {
+                api = new Collection('myApi', function (err) {
                     if (err) done(err);
                     carMapping = api.registerMapping('Car', {
                         id: 'id',

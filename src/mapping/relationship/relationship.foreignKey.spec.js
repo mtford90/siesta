@@ -1,6 +1,6 @@
 describe('foreign key relationship', function () {
 
-    var Store, RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, RelationshipType;
+    var Store, Collection, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, RelationshipType;
     var api, carMapping, personMapping;
     var person, car;
     var relationship;
@@ -15,8 +15,8 @@ describe('foreign key relationship', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Store_, _RestError_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _RestObject_, _cache_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Store_, _RestError_, _RelationshipType_, _Collection_, _Mapping_, _ForeignKeyRelationship_, _RestObject_, _cache_) {
+            Collection = _Collection_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
             RestObject = _RestObject_;
@@ -26,9 +26,9 @@ describe('foreign key relationship', function () {
             Store = _Store_;
         });
 
-        RestAPI._reset();
+        Collection._reset();
 
-        api = new RestAPI('myApi', function (err, version) {
+        api = new Collection('myApi', function (err, version) {
             if (err) done(err);
             carMapping = api.registerMapping('Car', {
                 id: 'id',

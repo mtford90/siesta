@@ -1,6 +1,6 @@
 describe('relationship proxy', function () {
 
-    var Store, RestAPI, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship, RelationshipType, RelatedObjectProxy;
+    var Store, Collection, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship, RelationshipType, RelatedObjectProxy;
     var api, carMapping, personMapping;
 
     beforeEach(function (done) {
@@ -13,8 +13,8 @@ describe('relationship proxy', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Store_, _RestError_, _RelatedObjectProxy_, _RelationshipType_, _RestAPI_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Store_, _RestError_, _RelatedObjectProxy_, _RelationshipType_, _Collection_, _Mapping_, _ForeignKeyRelationship_, _OneToOneRelationship_, _RestObject_, _cache_) {
+            Collection = _Collection_;
             Mapping = _Mapping_;
             ForeignKeyRelationship = _ForeignKeyRelationship_;
             OneToOneRelationship = _OneToOneRelationship_;
@@ -26,9 +26,9 @@ describe('relationship proxy', function () {
             Store = _Store_;
         });
 
-        RestAPI._reset();
+        Collection._reset();
 
-        api = new RestAPI('myApi', function (err, version) {
+        api = new Collection('myApi', function (err, version) {
             if (err) done(err);
             carMapping = api.registerMapping('Car', {
                 id: 'id',
@@ -44,7 +44,7 @@ describe('relationship proxy', function () {
     });
 
     function configureAPI(type, reverseName, done) {
-        api = new RestAPI('myApi', function (err, version) {
+        api = new Collection('myApi', function (err, version) {
             if (err) done(err);
             carMapping = api.registerMapping('Car', {
                 id: 'id',

@@ -1,11 +1,11 @@
 angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
 
-    .factory('PouchDocAdapter', function (RestObject, RestAPIRegistry, RestError) {
+    .factory('PouchDocAdapter', function (RestObject, CollectionRegistry, RestError) {
 
         function validate(doc) {
             var apiName = doc.api;
             if (apiName) {
-                var api = RestAPIRegistry[apiName];
+                var api = CollectionRegistry[apiName];
                 if (api) {
                     var mappingType = doc.type;
                     if (mappingType) {

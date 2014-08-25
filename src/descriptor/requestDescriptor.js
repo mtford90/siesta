@@ -18,7 +18,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
         return new RequestDescriptorRegistry();
     })
 
-    .factory('RequestDescriptor', function (defineSubProperty, RestAPIRegistry, RestError, DescriptorRegistry, assert, jlog) {
+    .factory('RequestDescriptor', function (defineSubProperty, CollectionRegistry, RestError, DescriptorRegistry, assert, jlog) {
 
         var $log = jlog.loggerWithName('RequestDescriptor');
 
@@ -57,7 +57,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                     if (this._opts.api) {
                         var api;
                         if (typeof(this._opts.api) == 'string') {
-                            api = RestAPIRegistry[this._opts.api];
+                            api = CollectionRegistry[this._opts.api];
                         }
                         else {
                             api = this._opts.api;

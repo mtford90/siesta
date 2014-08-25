@@ -1,6 +1,6 @@
 describe('pouch doc adapter', function () {
 
-    var RestAPI, Pouch, PouchDocAdapter, RestError, RelationshipType;
+    var Collection, Pouch, PouchDocAdapter, RestError, RelationshipType;
 
     beforeEach(function () {
         module('restkit.pouchDocAdapter', function ($provide) {
@@ -8,22 +8,22 @@ describe('pouch doc adapter', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _Pouch_, _PouchDocAdapter_, _RestError_, _RelationshipType_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Collection_, _Pouch_, _PouchDocAdapter_, _RestError_, _RelationshipType_) {
+            Collection = _Collection_;
             Pouch = _Pouch_;
             PouchDocAdapter = _PouchDocAdapter_;
             RestError = _RestError_;
             RelationshipType = _RelationshipType_;
         });
 
-        RestAPI._reset();
+        Collection._reset();
     });
 
     describe('from pouch to fount', function () {
         describe('new', function () {
             var api;
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function () {
+                api = new Collection('myApi', function () {
                     api.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
@@ -53,7 +53,7 @@ describe('pouch doc adapter', function () {
             });
 
             it('No type field', function (done) {
-                new RestAPI('myApi', null, function () {
+                new Collection('myApi', null, function () {
                     assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {api: 'myApi'}), RestError);
                     done();
                 });
@@ -64,14 +64,14 @@ describe('pouch doc adapter', function () {
             });
 
             it('non existent type', function (done) {
-                new RestAPI('myApi', null, function () {
+                new Collection('myApi', null, function () {
                     assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {api: 'myApi', type: 'Car'}), RestError);
                     done();
                 });
             });
 
             it('valid', function (done) {
-                var api = new RestAPI('myApi', function () {
+                var api = new Collection('myApi', function () {
                     api.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
@@ -93,7 +93,7 @@ describe('pouch doc adapter', function () {
         var api, personMapping, carMapping;
 
         beforeEach(function (done) {
-            api = new RestAPI('myApi', function () {
+            api = new Collection('myApi', function () {
                 personMapping = api.registerMapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age'],

@@ -51,20 +51,20 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         }
     })
 
-    .factory('RestAPIRegistry', function (jlog) {
-        var $log = jlog.loggerWithName('RestAPIRegistry');
-        function RestAPIRegistry () {}
-        RestAPIRegistry.prototype.register = function (api) {
+    .factory('CollectionRegistry', function (jlog) {
+        var $log = jlog.loggerWithName('CollectionRegistry');
+        function CollectionRegistry () {}
+        CollectionRegistry.prototype.register = function (api) {
             var name = api._name;
             $log.debug('register ' + name);
             this[ name] = api;
         };
-        return new RestAPIRegistry();
+        return new CollectionRegistry();
     })
 
-    .factory('RestAPI', function (wrappedCallback, jlog, Mapping, Pouch, RestAPIRegistry, RestError) {
+    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError) {
 
-        var $log = jlog.loggerWithName('RestAPI');
+        var $log = jlog.loggerWithName('Collection');
 
         /**
          * @param name
@@ -72,16 +72,16 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
          * @param {Function} finishedCallback()
          * @constructor
          */
-        function RestAPI(name, configureCallback, finishedCallback) {
+        function Collection(name, configureCallback, finishedCallback) {
             var self = this;
 
             // Name of this API. Used to construct _docId
             this._name = name;
 
             // The PouchDB id.
-            this._docId = 'RestAPI_' + this._name;
+            this._docId = 'Collection_' + this._name;
 
-            // The PouchDB document that represents this RestAPI.
+            // The PouchDB document that represents this Collection.
             this._doc = null;
 
             // Current version used for migrations.
@@ -90,7 +90,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             this._mappings = {};
 
             /**
-             * Serialise this RestAPI config into a pouchdb document.
+             * Serialise this Collection config into a pouchdb document.
              *
              * @param doc PouchDB document
              */
@@ -104,7 +104,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
 
             /**
              * Update attributes using persisted version.
-             * @param doc PouchDB doc representing this RestAPI.
+             * @param doc PouchDB doc representing this Collection.
              * @param callback
              */
             function fromDoc(doc, callback) {
@@ -198,7 +198,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
              * @returns {string} A string represention of this API.
              */
             function description() {
-                return 'RestAPI[' + self._name.toString() + ']';
+                return 'Collection[' + self._name.toString() + ']';
             }
 
             function finishUp(err) {
@@ -206,12 +206,12 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             }
 
             /**
-             * Pull this RestAPI from PouchDB or else perform first time
+             * Pull this Collection from PouchDB or else perform first time
              * setup.
              */
             function init() {
                 $log.debug('init');
-                RestAPIRegistry.register(self);
+                CollectionRegistry.register(self);
                 Pouch.getPouch().get(self._docId).then(function (doc) {
                     fromDoc(doc, function (err) {
                         if (err) finishUp(err);
@@ -261,11 +261,11 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
         }
 
 
-        RestAPI._reset = Pouch.reset;
+        Collection._reset = Pouch.reset;
 
-        RestAPI._getPouch = Pouch.getPouch;
+        Collection._getPouch = Pouch.getPouch;
 
-        RestAPI.prototype.registerMapping = function (name, mapping) {
+        Collection.prototype.registerMapping = function (name, mapping) {
             this._mappings[name] = mapping;
             var opts = $.extend(true, {}, mapping);
             opts.type = name;
@@ -275,7 +275,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             return mappingObject;
         };
 
-        return RestAPI;
+        return Collection;
 
     })
 

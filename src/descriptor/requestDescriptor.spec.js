@@ -1,6 +1,6 @@
 describe('request descriptor', function () {
 
-    var RestAPI, RequestDescriptor, RestError, DescriptorRegistry;
+    var Collection, RequestDescriptor, RestError, DescriptorRegistry;
 
     var api, carMapping;
 
@@ -10,14 +10,14 @@ describe('request descriptor', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _RequestDescriptor_, _RestError_, _DescriptorRegistry_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Collection_, _RequestDescriptor_, _RestError_, _DescriptorRegistry_) {
+            Collection = _Collection_;
             RequestDescriptor = _RequestDescriptor_;
             RestError = _RestError_;
             DescriptorRegistry = _DescriptorRegistry_;
         });
 
-        api = new RestAPI('myApi', function (err, version) {
+        api = new Collection('myApi', function (err, version) {
             if (err) done(err);
             carMapping = api.registerMapping('Car', {
                 id: 'id',
@@ -27,7 +27,7 @@ describe('request descriptor', function () {
             done();
         });
 
-        RestAPI._reset();
+        Collection._reset();
     });
 
     describe('matching', function () {

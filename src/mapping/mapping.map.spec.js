@@ -1,6 +1,6 @@
 describe('perform mapping', function () {
 
-    var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy, RestObject, $rootScope;
+    var Pouch, RawQuery, Collection, RestError, RelationshipType, RelatedObjectProxy, RestObject, $rootScope;
     var api, carMapping;
 
     beforeEach(function () {
@@ -13,10 +13,10 @@ describe('perform mapping', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _RestObject_, _Mapping_, _RestAPI_, _RestError_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _RestObject_, _Mapping_, _Collection_, _RestError_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
-            RestAPI = _RestAPI_;
+            Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
             RestObject = _RestObject_;
@@ -31,7 +31,7 @@ describe('perform mapping', function () {
         var obj;
 
         beforeEach(function (done) {
-            api = new RestAPI('myApi', function (err, version) {
+            api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
                 carMapping = api.registerMapping('Car', {
                     id: 'id',
@@ -121,7 +121,7 @@ describe('perform mapping', function () {
         describe('foreign key', function () {
             var personMapping;
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function (err, version) {
+                api = new Collection('myApi', function (err, version) {
                     if (err) done(err);
                     personMapping = api.registerMapping('Person', {
                         id: 'id',
@@ -706,7 +706,7 @@ describe('perform mapping', function () {
         describe('one-to-one', function () {
             var personMapping;
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function (err, version) {
+                api = new Collection('myApi', function (err, version) {
                     if (err) done(err);
                     personMapping = api.registerMapping('Person', {
                         id: 'id',
@@ -1128,7 +1128,7 @@ describe('perform mapping', function () {
 
             var personMapping;
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function (err, version) {
+                api = new Collection('myApi', function (err, version) {
                     if (err) done(err);
                     personMapping = api.registerMapping('Person', {
                         id: 'id',
@@ -1185,7 +1185,7 @@ describe('perform mapping', function () {
 
             var personMapping;
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function (err, version) {
+                api = new Collection('myApi', function (err, version) {
                     if (err) done(err);
                     personMapping = api.registerMapping('Person', {
                         id: 'id',
@@ -1261,7 +1261,7 @@ describe('perform mapping', function () {
         describe('new', function () {
 
             beforeEach(function (done) {
-                api = new RestAPI('myApi', function (err, version) {
+                api = new Collection('myApi', function (err, version) {
                     if (err) done(err);
                     carMapping = api.registerMapping('Car', {
                         id: 'id',

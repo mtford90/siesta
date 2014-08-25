@@ -1,6 +1,6 @@
 describe('query', function () {
 
-    var Index, Pouch, Indexes, RawQuery, Query, RestAPI, RestObject, RestError;
+    var Index, Pouch, Indexes, RawQuery, Query, Collection, RestObject, RestError;
 
     beforeEach(function () {
         module('restkit.query', function ($provide) {
@@ -13,13 +13,13 @@ describe('query', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Query_, _RestAPI_, _RestObject_, _RestError_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Query_, _Collection_, _RestObject_, _RestError_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
             Query = _Query_;
-            RestAPI = _RestAPI_;
+            Collection = _Collection_;
             RestObject = _RestObject_;
             RestError = _RestError_;
         });
@@ -95,7 +95,7 @@ describe('query', function () {
         var api, mapping;
 
         it('asdasd', function (done) {
-            api = new RestAPI('myApi', function (err, version) {
+            api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
                 mapping = api.registerMapping('Person', {
                     id: 'id',

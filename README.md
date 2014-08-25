@@ -1,8 +1,5 @@
 Fount
 ====
-
-
-
 Fount is inspired by:
 
 * CoreData

@@ -1,6 +1,6 @@
-describe('http', function () {
+describe('httasdasp', function () {
 
-    var RestAPI
+    var Collection;
 
     beforeEach(function () {
         module('restkit.http', function ($provide) {
@@ -8,11 +8,11 @@ describe('http', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Collection_) {
+            Collection = _Collection_;
         });
 
-        RestAPI._reset();
+        Collection._reset();
     });
 
     it('dsfsdfsdf', function () {

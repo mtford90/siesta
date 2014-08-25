@@ -1,6 +1,6 @@
 describe('cache', function () {
 
-    var RestAPI, cache, RestObject, Mapping, $rootScope;
+    var Collection, cache, RestObject, Mapping, $rootScope;
 
     var mapping;
 
@@ -15,15 +15,15 @@ describe('cache', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_RestAPI_, _cache_, _Mapping_, _RestObject_, _$rootScope_) {
-            RestAPI = _RestAPI_;
+        inject(function (_Collection_, _cache_, _Mapping_, _RestObject_, _$rootScope_) {
+            Collection = _Collection_;
             cache = _cache_;
             RestObject = _RestObject_;
             Mapping = _Mapping_;
             $rootScope = _$rootScope_;
         });
 
-        RestAPI._reset();
+        Collection._reset();
         cache.reset();
 
         mapping = new Mapping({

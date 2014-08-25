@@ -1,6 +1,6 @@
 describe('mapping new object', function () {
 
-    var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy;
+    var Pouch, RawQuery, Collection, RestError, RelationshipType, RelatedObjectProxy;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -12,10 +12,10 @@ describe('mapping new object', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _RestAPI_, _RestError_, _RelationshipType_, _RelatedObjectProxy_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _Collection_, _RestError_, _RelationshipType_, _RelatedObjectProxy_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
-            RestAPI = _RestAPI_;
+            Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
         });
@@ -28,7 +28,7 @@ describe('mapping new object', function () {
         var api, carMapping;
 
         beforeEach(function (done) {
-            api = new RestAPI('myApi', function (err, version) {
+            api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
                 carMapping = api.registerMapping('Car', {
                     id: 'id',
@@ -52,7 +52,7 @@ describe('mapping new object', function () {
         var api, carMapping, personMapping;
 
         function configureAPI(type, reverseName, done) {
-            api = new RestAPI('myApi', function (err, version) {
+            api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
 
                 carMapping = api.registerMapping('Car', {

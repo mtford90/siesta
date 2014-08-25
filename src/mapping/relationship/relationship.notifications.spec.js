@@ -1,6 +1,6 @@
 describe('relationship notifications', function () {
 
-    var Pouch, RawQuery, RestAPI, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
+    var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
     var api, carMapping, personMapping;
     var car, person, carNotif, personNotif;
 
@@ -13,10 +13,10 @@ describe('relationship notifications', function () {
             $provide.value('$log', console);
             $provide.value('$q', Q);
         });
-        inject(function (_Pouch_, _RawQuery_, _RestAPI_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _Store_, _ChangeType_) {
+        inject(function (_Pouch_, _RawQuery_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _Store_, _ChangeType_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
-            RestAPI = _RestAPI_;
+            Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
             $rootScope = _$rootScope_;
@@ -27,7 +27,7 @@ describe('relationship notifications', function () {
     }
 
     function setupFixtures(relationshipType, reverseName, done) {
-        api = new RestAPI('myApi', function (err) {
+        api = new Collection('myApi', function (err) {
             if (err) done(err);
 
             carMapping = api.registerMapping('Car', {

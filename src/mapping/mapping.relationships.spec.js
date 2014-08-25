@@ -1,6 +1,6 @@
 describe('mapping relationships', function () {
 
-    var Pouch,  RestObject, RestAPI, RestError, RelationshipType;
+    var Pouch,  RestObject, Collection, RestError, RelationshipType;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -12,10 +12,10 @@ describe('mapping relationships', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Pouch_, _Mapping_, _RestObject_, _RestAPI_, _RestError_, _RelationshipType_) {
+        inject(function (_Pouch_, _Mapping_, _RestObject_, _Collection_, _RestError_, _RelationshipType_) {
             Pouch = _Pouch_;
             RestObject = _RestObject_;
-            RestAPI = _RestAPI_;
+            Collection = _Collection_;
             RestError = _RestError_;
             RelationshipType = _RelationshipType_;
         });
@@ -28,7 +28,7 @@ describe('mapping relationships', function () {
         var api, carMapping, personMapping;
 
         function configureAPI(type, done) {
-            api = new RestAPI('myApi', function (err, version) {
+            api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
                 carMapping = api.registerMapping('Car', {
                     id: 'id',
@@ -150,7 +150,7 @@ describe('mapping relationships', function () {
     describe('invalid', function () {
         it('No such mapping', function (done) {
             var carMapping;
-            var api = new RestAPI('myApi', function (err, version) {
+            var api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
                 carMapping = api.registerMapping('Car', {
                     id: 'id',
@@ -177,7 +177,7 @@ describe('mapping relationships', function () {
 
         it('No such relationship type', function (done) {
             var carMapping, personMapping;
-            var api = new RestAPI('myApi', function (err, version) {
+            var api = new Collection('myApi', function (err, version) {
                 if (err) done(err);
                 carMapping = api.registerMapping('Car', {
                     id: 'id',

@@ -17,8 +17,8 @@ angular.module('logging', [])
     .factory('jlogConfig', function (logLevels) {
         var ll = {
             Pouch: logLevels.error,
-            RestAPIRegistry: logLevels.error,
-            RestAPI: logLevels.error,
+            CollectionRegistry: logLevels.error,
+            Collection: logLevels.error,
             Cache: logLevels.error,
             Store: logLevels.error,
             Indexes: logLevels.error,
