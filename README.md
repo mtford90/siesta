@@ -23,15 +23,14 @@ TODO
 
 ### Step 2: Create a collection
 
-The point of entry is `Collection` and is used to configure any Rest APIs that you want to interface with
-as well as any local data structures that you want to model.
+A `Collection` describes a set of models and can be either used locally or hooked up to a remote collection.
 
 ```javascript
-var api = new Collection('MyCollection', function configure (err, version) {
+var collection = new Collection('MyCollection', function configure (err, version) {
     if (!err) {
         if (!version) { // MyCollection has never been configured on this browser.
             // Base URL. Only necessary if you're going to be interfacing with a remote data source.
-            this.setBaseURL('http://mysite.com/api/');
+            this.setBaseURL('http://mysite.com/collection/');
             configureObjectMappings(this);
             configureDescriptors(this);
         }
@@ -47,12 +46,12 @@ var api = new Collection('MyCollection', function configure (err, version) {
 
 ### Step 3: Configure Object Mappings
 
-Your object mappings describe the models that will be downloaded from the target REST API.
+Your object mappings describe the models within the collection.
 
 ```javascript
-function configureObjectMappings(api) {
+function configureObjectMappings(collection) {
     // Car Mapping
-    api.registerMapping('Car', {
+    collection.registerMapping('Car', {
         id: 'id',
         relationships: {
             owner: {
@@ -66,7 +65,7 @@ function configureObjectMappings(api) {
     });
     
     // Person Mapping
-    api.registerMapping('Person', {
+    collection.registerMapping('Person', {
         id: 'id',
         attributes: ['name', 'age']
     });
@@ -78,15 +77,15 @@ function configureObjectMappings(api) {
 Descriptors map HTTP request and responses onto your object mappings and perform the appropriate action.
 
 ```javascript
-function configureDescriptors(api) {
+function configureDescriptors(collection) {
     // Request descriptors
-    api.registerRequestDescriptor({
+    collection.registerRequestDescriptor({
         path: 'cars/',
         method: 'POST',
         mapping: 'Car',
         data: 'data' // Serialise to {data: {...}} when sending the request.
     });
-    api.registerRequestDescriptor({
+    collection.registerRequestDescriptor({
         path: 'cars/:id/'
         method: 'PUT',
         mapping: 'Car',
@@ -94,7 +93,7 @@ function configureDescriptors(api) {
     });
     
     // Response descriptors
-    api.registerResponseDescriptor({
+    collection.registerResponseDescriptor({
         path: 'cars/(.*)/',
         method: '*', // Any method
         mapping: 'Car',
@@ -107,19 +106,19 @@ function configureDescriptors(api) {
 
 ```javascript
 // Get objects
-api.GET('cars/', function (err, cars) {
+collection.GET('cars/', function (err, cars) {
     console.log('I got me some cars!', cars);
 });
 
-api.GET('cars/5', function (err, car) {
+collection.GET('cars/5', function (err, car) {
     console.log('I got me a car!', car);
 });
 
-// Create objects
-var person = new api.Person({name: 'Michael'});
-person.POST(function (err) {
+// Create objects 
+var person = new collection.Person({name: 'Michael'});
+collection.POST('people/', person, function (err, car) {
     if (!err) { 
-        var car = new api.Car({colour: red, owner: person});
+        var car = new collection.Car({colour: red, owner: person});
         promise = car.post().then(function () {
             // Do some stuff.
         }).catch(function (err) {
@@ -129,6 +128,9 @@ person.POST(function (err) {
     else {
         // Handle error.
     }
+});
+person.POST(function (err) {
+
 });
 
 // Update object
@@ -155,14 +157,14 @@ The best way to explain this concept is by way of example:
 ```javascript
 
 // Get all cars that are stored locally.
-api.Car.all(function (err, cars) {
+collection.Car.all(function (err, cars) {
     /* 
         cars = [{colour: 'blue', model: 'Aston Martin', id: 5}]
     */
     var car = cars[0];
     
     // Get all people that are stored remotely.
-    api.('people/').get(function (err, people) {
+    collection.('people/').get(function (err, people) {
         /*
             people = [{
                 id: 4,
@@ -193,7 +195,7 @@ Pagination is configured in the descriptors. By default we expect no pagination.
 Example:
 
 ```javascript
-api.registerResponseDescriptor({
+collection.registerResponseDescriptor({
     path: 'cars/',
     method: 'GET',
     mapping: 'Car',
@@ -206,11 +208,11 @@ api.registerResponseDescriptor({
 });
 ```
 
-If the API allows us to specify pageSize etc we can do so using the following once this response descriptor
+If the collection allows us to specify pageSize etc we can do so using the following once this response descriptor
 is configured:
 
 ```javascript
-api.get('cars/', {page_size: 5}).then(function (cars) { 
+collection.get('cars/', {page_size: 5}).then(function (cars) { 
     // ... 
 });
 ```
@@ -225,11 +227,10 @@ The notification looks as follows:
 
 ```javascript
 {
-    name: 'post Car', // Name of the notification
-    object: {  // The object that has been posted to the server.
-        colour: 'red', 
-        owner: function getter() { ... } 
-    },
+	 name: 'POST MyCollection Car',
+    type: 'Car',
+    collection: 'MyCollection',
+    obj: Object{}, // The object in question
     mapping: { ... }, // The 'Car' mapping.
     requestDescriptor: { ... }, // The request descriptor used to perform the serialisation.
     request: {path: 'cars/', data: {...}} // The HTTP request sent to the server.
@@ -246,12 +247,12 @@ $rootScope.on('POST', function (notification) {
 });
 
 // Sent on sending of POST request to server of a Car.
-$rootScope.on('POST Car', function (notification) {
+$rootScope.on('POST MyCollection Car', function (notification) {
     console.log(notification);
 });
 
 // Sent on successful response of POST of a Car.
-$rootScope.on('POST Car success', function (notification) {
+$rootScope.on('POST MyCollection Car success', function (notification) {
     console.log(notification);
 });
 
@@ -291,14 +292,14 @@ $rootScope.on('Car', function (notification) {
 ### Schema Migrations
 
 Schema migrations are rudimentary at the moment. If you detect a change in version when setting
-up the Rest API you can either delete all the data and start from scratch:
+up the Rest collection you can either delete all the data and start from scratch:
 
 ```javascript
-var api = new Collection('MyCollection', function (err, version) {
+var collection = new Collection('MyCollection', function (err, version) {
     if (!err) {
         if (version) {
             if (version !== MY_VERSION) {
-                api.reset();
+                collection.reset();
             }
         }
         doFirstTimeSetup();
@@ -312,19 +313,19 @@ var api = new Collection('MyCollection', function (err, version) {
 or you could implement a migration scheme:
 
 ```javascript
-var api = new Collection('MyCollection', function (err, version) {
+var collection = new Collection('MyCollection', function (err, version) {
     if (!err) {
         if (!version) {
             doFirstTimeSetup();
-            api.setVersion(THIRD_VERSION);
+            collection.setVersion(THIRD_VERSION);
         }
         if (version < SECOND_VERSION) {
             addSomeMappings();
-            api.setVersion(SECOND_VERSION);
+            collection.setVersion(SECOND_VERSION);
         }
         if (version < THIRD_VERSION) {
             addSomeIndexes(); 
-            api.setVersion(THIRD_VERSION);
+            collection.setVersion(THIRD_VERSION);
         }
         // ... and so on.
     }
@@ -341,15 +342,15 @@ module like follows:
 angular.module('myApp.rest.migrations')
 
     .factory('applyMigrations', function (migrations, fromScratch) {
-        return function (api) {
-            if (!api.version) {
-                fromScratch(api);
+        return function (collection) {
+            if (!collection.version) {
+                fromScratch(collection);
             }
             else {
                 _.each(migrations, function (migration) {
-                    if (api.version < migration.version) {
-                        migration.apply(api);
-                        api.version = migration.version;
+                    if (collection.version < migration.version) {
+                        migration.apply(collection);
+                        collection.version = migration.version;
                     }
                 });
             }
@@ -361,7 +362,7 @@ angular.module('myApp.rest.migrations')
     })
     
     .factory('fromScratch', function () {
-        return function (api) {
+        return function (collection) {
             // First time setup.
         };
     })
@@ -385,12 +386,12 @@ angular.module('myApp.rest.migrations')
     })
 ```
 
-and then when you setup the Rest API:
+and then when you setup the Rest collection:
 
 ```javascript
-var api = new Collection('MyCollection', function (err, version) {
+var collection = new Collection('MyCollection', function (err, version) {
     if (!err) {
-        applyMigrations(api);
+        applyMigrations(collection);
     }
     else {
         handleError(err);
@@ -466,7 +467,7 @@ Things that don't have a home yet.
 
 ### Relationships
 
-#### Foreign Key, OneToOne
+#### Foreign Key
 
 If we have the following mappings:
 
@@ -492,23 +493,113 @@ personMapping = collection.registerMapping('Person', {
 A `Car` object will have the following properties due to this relationship.
 
 ```javascript
-Car.ownerId; // Locally unique identifier for the Person that this car belongs to.
-Car.owner; // The Person object itself (if has been fetched).
+Car.owner._id; // Locally unique identifier for the Person that this car belongs to.
+Car.owner.relatedObject; // The Person object itself (if has been fetched).
 
 // Fetches the owner of the car using ownerId. Note that this does not fetch from the remote source.
-Car.getOwner(function (err, owner) { 
-    // Car.owner will now be populated if no error (and of course will stay in sync).
+Car.owner.get(function (err, owner) { 
+    // Car.owner.relatedObject will now be populated if no error.
 }); 
 
-Car.getRelationships(function (err) {
-    // Car.owner and any other relationship will now be populated.
+Car.owner.set(person, function (err) {
+	// Called once persisted.
 });
 
-Car.getRelationships(function (err) {
-    // Car.owner and any other relationship will now be populated.
-    // Additionally, relationships in related objects will be populated.
-}, true);
+Person.cars.set([car1, car2], function (err) {
+	// Called once persisted.
+});
 ```
 
 
-#### ManyToMany
+### HTTP
+
+Below are some example HTTP requests. The responses from these requests are passed through the descriptors and mapped into Fount.
+
+#### GET
+
+The cars will be deserialised as per the response descriptor.
+
+```javascript
+collection.GET('cars/', function (err, cars) {
+    console.log('I got me some cars!', cars);
+});
+
+collection.GET('cars/5', function (err, car) {
+    console.log('I got me a car!', car);
+});
+
+// See https://docs.angularjs.org/api/ng/service/$http
+var opts = {
+	params: {
+		queryParam1: 'something'
+		queryParam2: 'something else'
+	},
+	headers: {
+		x-my-header: 'some value'
+	},
+	requestType: 'json',
+	responseType: 'json'
+};
+
+collection.GET('cars/', opts, function (err, cars) {
+    console.log('I got me some cars!', cars);
+});
+
+collection.GET('cars/5', opts, function (err, car) {
+    console.log('I got me a car!', car);
+});
+```
+
+#### POST/PUT/PATCH
+
+The person will be serialised as per the request descriptor and deserialised as per the response descriptor.
+
+```javascript
+var person = new collection.Person({name: 'Michael'});
+
+// See https://docs.angularjs.org/api/ng/service/$http
+var opts = {
+	params: {
+		queryParam1: 'something'
+		queryParam2: 'something else'
+	},
+	headers: {
+		x-my-header: 'some value'
+	},
+	// Added to the body alongside whatever is serialised.
+	// This will ignore the request descriptor.
+	data: { 
+		key: {
+			value: 'xyz'
+		}
+	}
+	requestType: 'json',
+	responseType: 'json'
+};
+
+collection.POST('people/', person, opts, function (err, person) {
+    // ...
+});
+
+collection.PUT('people/' + person.id, person, opts, function (err, person) {
+    // ...
+});
+
+collection.PATCH('people/' + person.id, person, opts, function (err, person) {
+    // ...
+});
+```
+
+#### DELETE
+
+```javascript
+console.log(person._id); // 'xyz'
+collection.DELETE('people/' + person.id, person, opts, function (err) {
+    if (!err) {
+    	console.log(person._id); // null
+    }
+    else {
+    	console.log(person._id); // 'xyz'
+    }
+});
+```

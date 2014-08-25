@@ -18,7 +18,7 @@ angular.module('logging', [])
         var ll = {
             Pouch: logLevels.error,
             CollectionRegistry: logLevels.error,
-            Collection: logLevels.error,
+            Collection: logLevels.trace,
             Cache: logLevels.error,
             Store: logLevels.error,
             Indexes: logLevels.error,
