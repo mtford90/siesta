@@ -704,6 +704,159 @@ describe('perform mapping', function () {
 
         });
 
+        describe.only('one-to-one', function () {
+            var personMapping;
+            beforeEach(function (done) {
+                api = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                    personMapping = api.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.OneToOne,
+                                reverse: 'car'
+                            }
+                        }
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    done();
+                });
+            });
+
+            describe('remote id', function () {
+                describe('forward', function () {
+                    describe('object that already exists', function () {
+                        var person, car;
+                        beforeEach(function (done) {
+                            personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err, _person) {
+                                if (err) done(err);
+                                person = _person;
+                                carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId', owner: 'personRemoteId'}, function (err, _car) {
+                                    if (err) {
+                                        console.error('Error when mapping car object', err);
+                                        done(err);
+                                    }
+                                    car = _car;
+
+                                    done();
+                                });
+                            });
+
+                        });
+                        it('owner of car should be michael', function (done) {
+                            $rootScope.$digest(); // Ensure cache gets updated.
+                            car.owner.get(function (err, owner) {
+                                if (err) done(err);
+                                assert.equal(owner, person);
+                                done();
+                            })
+                        });
+                        it('michael should own the car', function (done) {
+                            $rootScope.$digest(); // Ensure cache gets updated.
+                            person.car.get(function (err, personsCar) {
+                                if (err) done(err);
+                                assert.equal(car, personsCar);
+                                done();
+                            });
+                        });
+                    });
+
+                    describe('remote id of an object that doesnt exist', function () {
+                        var car;
+                        beforeEach(function (done) {
+                            carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
+                                if (err) done(err);
+                                car = _car;
+                                done();
+                            });
+                        });
+                        it('car should have a new owner and new owner should have a car', function (done) {
+                            $rootScope.$digest(); // Ensure cache gets updated.
+                            car.owner.get(function (err, person) {
+                                if (err) done(err);
+                                assert.equal(person.id, 'personRemoteId');
+                                person.car.get(function (err, personsCar) {
+                                    if (err) done(err);
+                                    assert.equal(personsCar, car);
+                                    done();
+                                });
+                            });
+                        })
+
+                    })
+                });
+                describe('reverse', function () {
+                    describe('object that already exists', function () {
+                        var person, car;
+                        beforeEach(function (done) {
+                            carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId'}, function (err, _car) {
+                                if (err) {
+                                    console.error('Error when mapping car object', err);
+                                    done(err);
+                                }
+                                car = _car;
+                                personMapping.map({name: 'Michael Ford', age: 23, car: 'carRemoteId', id: 'personRemoteId'}, function (err, _person) {
+                                    if (err) done(err);
+                                    person = _person;
+                                    done();
+                                });
+                            });
+                        });
+                        it('owner of car should be michael', function (done) {
+                            $rootScope.$digest(); // Ensure cache gets updated.
+                            car.owner.get(function (err, owner) {
+                                if (err) done(err);
+                                assert.equal(owner, person);
+                                done();
+                            })
+                        });
+                        it('michael should own the car', function (done) {
+                            $rootScope.$digest(); // Ensure cache gets updated.
+                            person.car.get(function (err, personsCar) {
+                                if (err) done(err);
+                                assert.equal(car, personsCar);
+                                done();
+                            });
+                        });
+                    });
+
+                    describe('remote id of an object that doesnt exist', function () {
+                        var car;
+                        beforeEach(function (done) {
+                            carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
+                                if (err) done(err);
+                                car = _car;
+                                done();
+                            });
+                        });
+                        it('car should have a new owner and new owner should have a car', function (done) {
+                            $rootScope.$digest(); // Ensure cache gets updated.
+                            car.owner.get(function (err, person) {
+                                if (err) done(err);
+                                assert.equal(person.id, 'personRemoteId');
+                                person.car.get(function (err, personsCar) {
+                                    if (err) done(err);
+                                    assert.equal(personsCar, car);
+                                    done();
+                                });
+                            });
+                        })
+
+                    })
+                });
+            });
+
+
+
+        })
+
     });
 
     describe('bulk', function () {
