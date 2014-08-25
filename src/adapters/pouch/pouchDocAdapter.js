@@ -3,13 +3,13 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
     .factory('PouchDocAdapter', function (RestObject, CollectionRegistry, RestError) {
 
         function validate(doc) {
-            var apiName = doc.api;
-            if (apiName) {
-                var api = CollectionRegistry[apiName];
-                if (api) {
+            var collectionName = doc.collection;
+            if (collectionName) {
+                var collection = CollectionRegistry[collectionName];
+                if (collection) {
                     var mappingType = doc.type;
                     if (mappingType) {
-                        var mapping = api[mappingType];
+                        var mapping = collection[mappingType];
                         if (mapping) {
                             return mapping;
                         }
@@ -25,13 +25,13 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
                 }
                 else {
                     throw new RestError('Cannot convert PouchDB document into RestObject. ' +
-                        'API "' + apiName.toString() + '" doesnt exist.', {doc: doc});
+                        'API "' + collectionName.toString() + '" doesnt exist.', {doc: doc});
                 }
 
             }
             else {
                 throw new RestError('Cannot convert PouchDB document into RestObject. ' +
-                    'No api field within document', {doc: doc});
+                    'No collection field within document', {doc: doc});
             }
         }
 

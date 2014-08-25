@@ -26,11 +26,11 @@ describe('mapping queries', function () {
     });
 
     describe('queries', function () {
-        var api, mapping;
+        var collection, mapping;
         beforeEach(function (done) {
-            api = new Collection('myApi', function (err) {
+            collection = new Collection('myCollection', function (err) {
                 if (err) done(err);
-                mapping = api.registerMapping('Car', {
+                mapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['color', 'name']
                 });
@@ -42,14 +42,14 @@ describe('mapping queries', function () {
                         id: 4,
                         color: 'red',
                         name: 'Aston Martin',
-                        api: 'myApi'
+                        collection: 'myCollection'
                     },
                     {
                         type: 'Car',
                         id: 5,
                         color: 'blue',
                         name: 'Ford',
-                        api: 'myApi'
+                        collection: 'myCollection'
                     }
                 ], function (err) {
                     done(err);

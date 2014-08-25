@@ -1,7 +1,7 @@
 describe('relationship notifications', function () {
 
     var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
-    var api, carMapping, personMapping;
+    var collection, carMapping, personMapping;
     var car, person, carNotif, personNotif;
 
     function setupModules() {
@@ -27,10 +27,10 @@ describe('relationship notifications', function () {
     }
 
     function setupFixtures(relationshipType, reverseName, done) {
-        api = new Collection('myApi', function (err) {
+        collection = new Collection('myCollection', function (err) {
             if (err) done(err);
 
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -41,7 +41,7 @@ describe('relationship notifications', function () {
                     }
                 }
             });
-            personMapping = api.registerMapping('Person', {
+            personMapping = collection.registerMapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -53,13 +53,13 @@ describe('relationship notifications', function () {
                 person = personMapping._new({name: 'Michael Ford', age: 23, id: '12312312'});
                 Store.put(person, function (err) {
                     if (err) done(err);
-                    $rootScope.$on('myApi:Car', function (e, n) {
+                    $rootScope.$on('myCollection:Car', function (e, n) {
                         carNotif = n;
                         if (carNotif && personNotif) {
                             done();
                         }
                     });
-                    $rootScope.$on('myApi:Person', function (e, n) {
+                    $rootScope.$on('myCollection:Person', function (e, n) {
                         personNotif = n;
                         if (carNotif && personNotif) {
                             done();
@@ -87,8 +87,8 @@ describe('relationship notifications', function () {
                 assert.equal(carNotif.type, 'Car');
             });
 
-            it('has api', function () {
-                assert.equal(carNotif.api, 'myApi');
+            it('has collection', function () {
+                assert.equal(carNotif.collection, 'myCollection');
             });
 
             it('has change type', function () {
@@ -109,8 +109,8 @@ describe('relationship notifications', function () {
                 assert.equal(personNotif.type, 'Person');
             });
 
-            it('has api', function () {
-                assert.equal(personNotif.api, 'myApi');
+            it('has collection', function () {
+                assert.equal(personNotif.collection, 'myCollection');
             });
 
             it('has change type', function () {
@@ -142,8 +142,8 @@ describe('relationship notifications', function () {
                     assert.equal(carNotif.type, 'Car');
                 });
 
-                it('has api', function () {
-                    assert.equal(carNotif.api, 'myApi');
+                it('has collection', function () {
+                    assert.equal(carNotif.collection, 'myCollection');
                 });
 
                 it('has change type', function () {
@@ -164,8 +164,8 @@ describe('relationship notifications', function () {
                     assert.equal(personNotif.type, 'Person');
                 });
 
-                it('has api', function () {
-                    assert.equal(personNotif.api, 'myApi');
+                it('has collection', function () {
+                    assert.equal(personNotif.collection, 'myCollection');
                 });
 
                 it('has change type', function () {
@@ -193,13 +193,13 @@ describe('relationship notifications', function () {
                     if (err) done(err);
                     Store.put(anotherPerson, function (err) {
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             anotherCarNotif = n;
                             if (anotherCarNotif && anotherPersonNotifInsert && personNotifRemove) {
                                 done();
                             }
                         });
-                        $rootScope.$on('myApi:Person', function (e, n) {
+                        $rootScope.$on('myCollection:Person', function (e, n) {
                             dump(n);
                             if (n.change.type == ChangeType.Insert) {
                                 anotherPersonNotifInsert = n;
@@ -224,8 +224,8 @@ describe('relationship notifications', function () {
                     assert.equal(anotherCarNotif.type, 'Car');
                 });
 
-                it('has api', function () {
-                    assert.equal(anotherCarNotif.api, 'myApi');
+                it('has collection', function () {
+                    assert.equal(anotherCarNotif.collection, 'myCollection');
                 });
 
                 it('has change type', function () {
@@ -246,8 +246,8 @@ describe('relationship notifications', function () {
                     assert.equal(anotherPersonNotifInsert.type, 'Person');
                 });
 
-                it('has api', function () {
-                    assert.equal(anotherPersonNotifInsert.api, 'myApi');
+                it('has collection', function () {
+                    assert.equal(anotherPersonNotifInsert.collection, 'myCollection');
                 });
 
                 it('has change type', function () {
@@ -268,8 +268,8 @@ describe('relationship notifications', function () {
                     assert.equal(personNotifRemove.type, 'Person');
                 });
 
-                it('has api', function () {
-                    assert.equal(personNotifRemove.api, 'myApi');
+                it('has collection', function () {
+                    assert.equal(personNotifRemove.collection, 'myCollection');
                 });
 
                 it('has change type', function () {
@@ -345,10 +345,10 @@ describe('relationship notifications', function () {
                 ], function (err, objs) {
                     if (err) done(err);
                     newCars = objs;
-                    $rootScope.$on('myApi:Car', function (e, n) {
+                    $rootScope.$on('myCollection:Car', function (e, n) {
                         carNotifications.push(n);
                     });
-                    $rootScope.$on('myApi:Person', function (e, n) {
+                    $rootScope.$on('myCollection:Person', function (e, n) {
                         peopleNotifications.push(n);
                     });
                     var relationship = car.owner.relationship;

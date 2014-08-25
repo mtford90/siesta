@@ -2,7 +2,7 @@ describe('request descriptor', function () {
 
     var Collection, RequestDescriptor, RestError, DescriptorRegistry;
 
-    var api, carMapping;
+    var collection, carMapping;
 
     beforeEach(function (done) {
         module('restkit.requestDescriptor', function ($provide) {
@@ -17,9 +17,9 @@ describe('request descriptor', function () {
             DescriptorRegistry = _DescriptorRegistry_;
         });
 
-        api = new Collection('myApi', function (err, version) {
+        collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -105,14 +105,14 @@ describe('request descriptor', function () {
             assert.equal(r.mapping, carMapping);
         });
         it('as string', function () {
-            var r = new RequestDescriptor({mapping: 'Car', api: 'myApi'});
+            var r = new RequestDescriptor({mapping: 'Car', collection: 'myCollection'});
             assert.equal('Car', r.mapping.type);
         });
-        it('as string, but api as object', function () {
-            var r = new RequestDescriptor({mapping: 'Car', api: api});
+        it('as string, but collection as object', function () {
+            var r = new RequestDescriptor({mapping: 'Car', collection: collection});
             assert.equal('Car', r.mapping.type);
         });
-        it('should throw an exception if passed as string without api', function () {
+        it('should throw an exception if passed as string without collection', function () {
             assert.throws(_.partial(RequestDescriptor, {mapping: 'Car'}), RestError);
         });
     });

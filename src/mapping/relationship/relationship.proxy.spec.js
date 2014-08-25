@@ -1,7 +1,7 @@
 describe('relationship proxy', function () {
 
     var Store, Collection, RestError, Mapping, ForeignKeyRelationship, RestObject, cache, OneToOneRelationship, RelationshipType, RelatedObjectProxy;
-    var api, carMapping, personMapping;
+    var collection, carMapping, personMapping;
 
     beforeEach(function (done) {
         module('restkit.relationship', function ($provide) {
@@ -28,13 +28,13 @@ describe('relationship proxy', function () {
 
         Collection._reset();
 
-        api = new Collection('myApi', function (err, version) {
+        collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            personMapping = api.registerMapping('Person', {
+            personMapping = collection.registerMapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -44,9 +44,9 @@ describe('relationship proxy', function () {
     });
 
     function configureAPI(type, reverseName, done) {
-        api = new Collection('myApi', function (err, version) {
+        collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -57,7 +57,7 @@ describe('relationship proxy', function () {
                     }
                 }
             });
-            personMapping = api.registerMapping('Person', {
+            personMapping = collection.registerMapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });

@@ -28,7 +28,7 @@ describe('object', function () {
             type: 'Car',
             id: 'id',
             attributes: ['colour', 'name'],
-            api: 'myApi'
+            collection: 'myCollection'
         });
         var r = new RestObject(mapping);
         assert.equal(r.idField, 'id');
@@ -39,21 +39,21 @@ describe('object', function () {
             type: 'Car',
             id: 'id',
             attributes: ['colour', 'name'],
-            api: 'myApi'
+            collection: 'myCollection'
         });
         var r = new RestObject(mapping);
         assert.equal(r.type, 'Car');
     });
 
-    it('api field', function () {
+    it('collection field', function () {
         var mapping = new Mapping({
             type: 'Car',
             id: 'id',
             attributes: ['colour', 'name'],
-            api: 'myApi'
+            collection: 'myCollection'
         });
         var r = new RestObject(mapping);
-        assert.equal(r.api, 'myApi');
+        assert.equal(r.collection, 'myCollection');
     });
 
 });

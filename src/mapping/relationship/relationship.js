@@ -166,8 +166,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 $log.debug('addNewRelated');
 
                 function broadCast() {
-                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                        api: obj.api,
+                    $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                        collection: obj.collection,
                         type: obj.type,
                         obj: obj,
                         change: {
@@ -280,8 +280,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     function setRelated() {
                         proxy._id = _.pluck(related, '_id');
                         proxy.relatedObject = related;
-                        $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                            api: obj.api,
+                        $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                            collection: obj.collection,
                             type: obj.type,
                             obj: obj,
                             change: {
@@ -393,8 +393,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy.get(function (err) {
                         if (!err) {
                             var idx = self.removeRelatedFromProxy(proxy, related);
-                            $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                                api: obj.api,
+                            $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                                collection: obj.collection,
                                 type: obj.type,
                                 change: {
                                     type: ChangeType.Remove,
@@ -412,8 +412,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
                 else {
                     var idx = self.removeRelatedFromProxy(proxy, related);
-                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                        api: obj.api,
+                    $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                        collection: obj.collection,
                         type: obj.type,
                         change: {
                             type: ChangeType.Remove,
@@ -449,8 +449,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     proxy.get(function (err) {
                         if (!err) {
                             self.addRelatedToProxy(proxy, related);
-                            $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                                api: obj.api,
+                            $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                                collection: obj.collection,
                                 type: obj.type,
                                 change: {
                                     type: ChangeType.Insert,
@@ -469,8 +469,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 else {
                     this.addRelatedToProxy(proxy, related);
                     if (callback) callback();
-                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                        api: obj.api,
+                    $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                        collection: obj.collection,
                         type: obj.type,
                         change: {
                             type: ChangeType.Insert,
@@ -558,8 +558,8 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                         proxy.relatedObject = null;
                     }
 
-                    $rootScope.$broadcast(obj.api + ':' + obj.type, {
-                        api: obj.api,
+                    $rootScope.$broadcast(obj.collection + ':' + obj.type, {
+                        collection: obj.collection,
                         type: obj.type,
                         change: {
                             type: ChangeType.Set,

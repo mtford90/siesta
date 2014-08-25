@@ -38,12 +38,12 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
 
         function getViaRemoteId(remoteId, opts) {
             var type = opts.mapping.type;
-            var api = opts.mapping.api;
-            var desc = api.toString() + ':' + type.toString() + '[' + remoteId + ']';
+            var collection = opts.mapping.collection;
+            var desc = collection.toString() + ':' + type.toString() + '[' + remoteId + ']';
             $log.debug('looking up via mapping ' + desc, {restCache: restCache, idCache: idCache});
-            var apiCache = restCache[api];
-            if (apiCache) {
-                var typeCache = restCache[api][type];
+            var collectionCache = restCache[collection];
+            if (collectionCache) {
+                var typeCache = restCache[collection][type];
                 if (typeCache) {
                     var obj = typeCache[remoteId];
                     if (obj) {
@@ -72,26 +72,26 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                 if (idCache[obj._id]) {
                     insert(obj, n.change.new);
                     if (n.change.old) {
-                        restCache[obj.api][obj.type][n.change.old] = null;
+                        restCache[obj.collection][obj.type][n.change.old] = null;
                     }
                 }
             }
         });
 
         function insert(obj, remoteId) {
-            var api = obj.mapping.api;
-            if (api) {
-                if (!restCache[api]) {
-                    restCache[api] = {};
+            var collection = obj.mapping.collection;
+            if (collection) {
+                if (!restCache[collection]) {
+                    restCache[collection] = {};
                 }
                 var type = obj.mapping.type;
                 if (type) {
-                    if (!restCache[api][type]) {
-                        restCache[api][type] = {};
+                    if (!restCache[collection][type]) {
+                        restCache[collection][type] = {};
                     }
-                    if (!restCache[api][type][remoteId]) {
-                        restCache[api][type][remoteId] = obj;
-                        $log.debug('Cache insert ' + obj.api + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
+                    if (!restCache[collection][type][remoteId]) {
+                        restCache[collection][type][remoteId] = obj;
+                        $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
                     }
                 }
                 else {
@@ -99,7 +99,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                 }
             }
             else {
-                throw new RestError('Mapping has no api', {mapping: obj.mapping, obj: obj});
+                throw new RestError('Mapping has no collection', {mapping: obj.mapping, obj: obj});
             }
         }
 
@@ -138,7 +138,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                 if (obj instanceof RestObject) {
                     if (obj._id) {
                         if (!idCache[obj._id]) {
-                            $log.debug('Cache insert ' + obj.api + ':' + obj.type + '[_id="' + obj._id + '"]');
+                            $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[_id="' + obj._id + '"]');
                             idCache[obj._id] = obj;
                         }
                     }

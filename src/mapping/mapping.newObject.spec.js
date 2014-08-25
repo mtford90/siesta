@@ -25,12 +25,12 @@ describe('mapping new object', function () {
     });
 
     describe('fields', function () {
-        var api, carMapping;
+        var collection, carMapping;
 
         beforeEach(function (done) {
-            api = new Collection('myApi', function (err, version) {
+            collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
@@ -49,13 +49,13 @@ describe('mapping new object', function () {
     });
 
     describe('relationships', function () {
-        var api, carMapping, personMapping;
+        var collection, carMapping, personMapping;
 
         function configureAPI(type, reverseName, done) {
-            api = new Collection('myApi', function (err, version) {
+            collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
 
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -66,7 +66,7 @@ describe('mapping new object', function () {
                         }
                     }
                 });
-                personMapping = api.registerMapping('Person', {
+                personMapping = collection.registerMapping('Person', {
                     id: 'id',
                     attributes: ['age', 'name']
                 });

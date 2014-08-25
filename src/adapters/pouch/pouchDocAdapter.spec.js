@@ -21,10 +21,10 @@ describe('pouch doc adapter', function () {
 
     describe('from pouch to fount', function () {
         describe('new', function () {
-            var api;
+            var collection;
             beforeEach(function (done) {
-                api = new Collection('myApi', function () {
-                    api.registerMapping('Person', {
+                collection = new Collection('myCollection', function () {
+                    collection.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
                         indexes: ['name', 'age']
@@ -35,7 +35,7 @@ describe('pouch doc adapter', function () {
             });
 
             it('absorbs properties', function () {
-                var doc = {name: 'Michael', type: 'Person', api: 'myApi', age: 23, _id: 'randomId', _rev: 'randomRev'};
+                var doc = {name: 'Michael', type: 'Person', collection: 'myCollection', age: 23, _id: 'randomId', _rev: 'randomRev'};
                 var obj = PouchDocAdapter.toNew(doc);
                 console.log('obj:', obj);
                 for (var prop in doc) {
@@ -53,32 +53,32 @@ describe('pouch doc adapter', function () {
             });
 
             it('No type field', function (done) {
-                new Collection('myApi', null, function () {
-                    assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {api: 'myApi'}), RestError);
+                new Collection('myCollection', null, function () {
+                    assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {collection: 'myCollection'}), RestError);
                     done();
                 });
             });
 
             it('non existent API', function () {
-                assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {api: 'myApi', type: 'Car'}), RestError);
+                assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {collection: 'myCollection', type: 'Car'}), RestError);
             });
 
             it('non existent type', function (done) {
-                new Collection('myApi', null, function () {
-                    assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {api: 'myApi', type: 'Car'}), RestError);
+                new Collection('myCollection', null, function () {
+                    assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {collection: 'myCollection', type: 'Car'}), RestError);
                     done();
                 });
             });
 
             it('valid', function (done) {
-                var api = new Collection('myApi', function () {
-                    api.registerMapping('Person', {
+                var collection = new Collection('myCollection', function () {
+                    collection.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
                         indexes: ['name', 'age']
                     });
                 }, function () {
-                    var mapping = PouchDocAdapter._validate({name: 'Michael', type: 'Person', api: 'myApi', age: 23});
+                    var mapping = PouchDocAdapter._validate({name: 'Michael', type: 'Person', collection: 'myCollection', age: 23});
                     console.log('mapping:', mapping);
                     assert.ok(mapping);
                     done();
@@ -90,16 +90,16 @@ describe('pouch doc adapter', function () {
 
     describe('from fount to pouch', function () {
 
-        var api, personMapping, carMapping;
+        var collection, personMapping, carMapping;
 
         beforeEach(function (done) {
-            api = new Collection('myApi', function () {
-                personMapping = api.registerMapping('Person', {
+            collection = new Collection('myCollection', function () {
+                personMapping = collection.registerMapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age'],
                     indexes: ['name', 'age']
                 });
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['name', 'colour'],
                     relationships: {

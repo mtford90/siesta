@@ -25,12 +25,12 @@ describe('mapping relationships', function () {
     });
 
     describe('valid', function () {
-        var api, carMapping, personMapping;
+        var collection, carMapping, personMapping;
 
         function configureAPI(type, done) {
-            api = new Collection('myApi', function (err, version) {
+            collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -41,7 +41,7 @@ describe('mapping relationships', function () {
                         }
                     }
                 });
-                personMapping = api.registerMapping('Person', {
+                personMapping = collection.registerMapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -150,9 +150,9 @@ describe('mapping relationships', function () {
     describe('invalid', function () {
         it('No such mapping', function (done) {
             var carMapping;
-            var api = new Collection('myApi', function (err, version) {
+            var collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -177,9 +177,9 @@ describe('mapping relationships', function () {
 
         it('No such relationship type', function (done) {
             var carMapping, personMapping;
-            var api = new Collection('myApi', function (err, version) {
+            var collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -190,7 +190,7 @@ describe('mapping relationships', function () {
                         }
                     }
                 });
-                personMapping = api.registerMapping('Person', {
+                personMapping = collection.registerMapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });

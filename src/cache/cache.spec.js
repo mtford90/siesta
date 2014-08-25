@@ -30,7 +30,7 @@ describe('cache', function () {
             type: 'Car',
             id: 'id',
             attributes: ['colour', 'name'],
-            api: 'myApi'
+            collection: 'myCollection'
         });
         mapping.install(function (err) {
             done(err);
@@ -55,8 +55,8 @@ describe('cache', function () {
             var restCache = cache._restCache();
             console.log('restCache:', restCache);
             console.log('type:', r.type);
-            console.log('api:', r.api);
-            assert.equal(r, restCache[r.api][r.type][r.id]);
+            console.log('collection:', r.collection);
+            assert.equal(r, restCache[r.collection][r.type][r.id]);
         });
 
         it('by custom id', function () {
@@ -68,8 +68,8 @@ describe('cache', function () {
             var restCache = cache._restCache();
             console.log('restCache:', restCache);
             console.log('type:', r.type);
-            console.log('api:', r.api);
-            assert.equal(r, restCache[r.api][r.type][r.customId]);
+            console.log('collection:', r.collection);
+            assert.equal(r, restCache[r.collection][r.type][r.customId]);
         });
 
         describe('remote id set after insertion', function () {
@@ -81,7 +81,7 @@ describe('cache', function () {
                 var restCache = cache._restCache();
                 dump(restCache);
                 $rootScope.$digest();
-                assert.equal(restCache[r.api][r.type][r.id], r);
+                assert.equal(restCache[r.collection][r.type][r.id], r);
             });
             it('changed remote id', function () {
                 var r = mapping._new();
@@ -92,8 +92,8 @@ describe('cache', function () {
                 var restCache = cache._restCache();
                 dump(restCache);
                 $rootScope.$digest();
-                assert.equal(restCache[r.api][r.type][r.id], r);
-                assert.notOk(restCache[r.api][r.type]['5678']);
+                assert.equal(restCache[r.collection][r.type][r.id], r);
+                assert.notOk(restCache[r.collection][r.type]['5678']);
             });
         })
 

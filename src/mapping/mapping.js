@@ -24,7 +24,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
             defineSubProperty.call(this, 'type', self._opts);
             defineSubProperty.call(this, 'id', self._opts);
-            defineSubProperty.call(this, 'api', self._opts);
+            defineSubProperty.call(this, 'collection', self._opts);
             defineSubProperty.call(this, 'attributes', self._opts);
 
             this._relationships = null;
@@ -59,9 +59,9 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         }
                         var mappingName = relationship.mapping;
                         $log.debug('reverseMappingName', mappingName);
-                        var api = CollectionRegistry[self.api];
-                        $log.debug('api', CollectionRegistry);
-                        var reverseMapping = api[mappingName];
+                        var collection = CollectionRegistry[self.collection];
+                        $log.debug('collection', CollectionRegistry);
+                        var reverseMapping = collection[mappingName];
                         if (reverseMapping) {
                             $log.debug('reverseMapping', reverseMapping);
                             var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
@@ -115,7 +115,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         Mapping.prototype.install = function (callback) {
             var errors = this._validate();
             if (!errors.length) {
-                Indexes.installIndexes(this.api, this.type, this._fields, callback);
+                Indexes.installIndexes(this.collection, this.type, this._fields, callback);
             }
             else {
                 if (callback) callback(errors);
@@ -127,8 +127,8 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             if (!this.type) {
                 errors.push('Must specify a type');
             }
-            if (!this.api) {
-                errors.push('A mapping must belong to an api');
+            if (!this.collection) {
+                errors.push('A mapping must belong to an collection');
             }
             return errors;
         };

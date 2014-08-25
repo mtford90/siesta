@@ -12,7 +12,7 @@ angular.module('restkit.object', ['restkit'])
                 configurable: true
             });
             defineSubProperty.call(this, 'type', this.mapping);
-            defineSubProperty.call(this, 'api', this.mapping);
+            defineSubProperty.call(this, 'collection', this.mapping);
             defineSubProperty.call(this, '_fields', this.mapping);
             Object.defineProperty(this, '_relationshipFields', {
                 get: function () {

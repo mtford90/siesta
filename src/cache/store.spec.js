@@ -2,7 +2,7 @@ describe('store', function () {
 
     var Collection, cache, RestObject, Mapping, Store, Pouch;
 
-    var carMapping, api;
+    var carMapping, collection;
 
     beforeEach(function (done) {
         module('restkit.store', function ($provide) {
@@ -19,9 +19,9 @@ describe('store', function () {
             Pouch = _Pouch_;
         });
         Collection._reset();
-        api = new Collection('myApi', function (err, version) {
+        collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -46,7 +46,7 @@ describe('store', function () {
 
         it('in pouch, have _id', function (done) {
             var pouchid = 'pouchId';
-            Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid}, function (err, doc) {
+            Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid}, function (err, doc) {
                 if (err) done(err);
                 Store.get({_id: pouchid}, function (err, doc) {
                     if (err) done(err);
@@ -59,7 +59,7 @@ describe('store', function () {
         it('in pouch, dont have _id', function (done) {
             var pouchid = 'pouchId';
             var remoteId = 'xyz';
-            Pouch.getPouch().put({type: 'Car', api: 'myApi', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
+            Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
                 if (err) done(err);
                 Store.get({id: remoteId, mapping: carMapping}, function (err, doc) {
                     if (err) done(err);
@@ -74,9 +74,9 @@ describe('store', function () {
             beforeEach(function (done) {
                 Pouch.getPouch().bulkDocs(
                     [
-                        {type: 'Car', api: 'myApi', colour: 'red', _id: 'localId1', id: 'remoteId1'},
-                        {type: 'Car', api: 'myApi', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
-                        {type: 'Car', api: 'myApi', colour: 'green', _id: 'localId3', id: 'remoteId3'}
+                        {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
+                        {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
+                        {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
                     ],
                     function (err) {
                         done(err);

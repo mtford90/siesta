@@ -37,16 +37,16 @@ angular.module('restkit.indexing', ['restkit'])
             return  combinations;
         }
 
-        function constructIndexes(api, modelName, fields) {
+        function constructIndexes(collection, modelName, fields) {
             var combinations = getFieldCombinations(fields);
             return _.map(combinations, function (fields) {
-                return new Index(api, modelName, fields);
+                return new Index(collection, modelName, fields);
             });
         }
 
         return {
-            installIndexes: function (api, modelName, fields, callback) {
-                var indexes = constructIndexes(api, modelName, fields);
+            installIndexes: function (collection, modelName, fields, callback) {
+                var indexes = constructIndexes(collection, modelName, fields);
                 var numCompleted = 0;
                 var errors = [];
                 _.each(indexes, function (index) {
@@ -70,9 +70,9 @@ angular.module('restkit.indexing', ['restkit'])
     .factory('Index', function (Pouch, jlog, RestError) {
         var $log = jlog.loggerWithName('Index');
 
-        function Index(api, type, fields_or_field) {
+        function Index(collection, type, fields_or_field) {
             this.type = type;
-            this.api = api;
+            this.collection = collection;
             if (fields_or_field.length) {
                 this.fields = _.sortBy(fields_or_field, function (x) {return x});
 
@@ -117,8 +117,8 @@ angular.module('restkit.indexing', ['restkit'])
             if (noFieldSetsSpecified) {
                 mapFunc = function (doc) {
                     var type = "$2";
-                    var api = "$3";
-                    if (doc.type == type && doc.api == api) {
+                    var collection = "$3";
+                    if (doc.type == type && doc.collection == collection) {
                         emit(doc.type, doc);
                     }
                 }.toString();
@@ -126,8 +126,8 @@ angular.module('restkit.indexing', ['restkit'])
             else {
                 mapFunc = function (doc) {
                     var type = "$2";
-                    var api = "$3";
-                    if (doc.type == type && doc.api == api) {
+                    var collection = "$3";
+                    if (doc.type == type && doc.collection == collection) {
                         var fields = $1;
                         var aggField = '';
                         for (var idx in fields) {
@@ -153,7 +153,7 @@ angular.module('restkit.indexing', ['restkit'])
             }
             this._validate();
             mapFunc = mapFunc.replace('$2', this.type);
-            mapFunc = mapFunc.replace('$3', this.api);
+            mapFunc = mapFunc.replace('$3', this.collection);
             return mapFunc;
         };
 
@@ -161,7 +161,7 @@ angular.module('restkit.indexing', ['restkit'])
             if (!this.type) {
                 throw new RestError('Type must be specified in order to construct index map function.', {index: this});
             }
-            if (!this.api) {
+            if (!this.collection) {
                 throw new RestError('API must be specified in order to construct index map function.', {index: this});
             }
         };
@@ -169,7 +169,7 @@ angular.module('restkit.indexing', ['restkit'])
         Index.prototype._getName = function () {
             this._validate();
             var appendix = _.reduce(this.fields, function (memo, field) {return memo + '_' + field}, '');
-            return this.api + '_' + 'Index_' + this.type + appendix;
+            return this.collection + '_' + 'Index_' + this.type + appendix;
         };
 
         Index.prototype.install = function (callback) {

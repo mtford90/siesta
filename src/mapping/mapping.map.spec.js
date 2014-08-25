@@ -1,7 +1,7 @@
 describe('perform mapping', function () {
 
     var Pouch, RawQuery, Collection, RestError, RelationshipType, RelatedObjectProxy, RestObject, $rootScope;
-    var api, carMapping;
+    var collection, carMapping;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -31,9 +31,9 @@ describe('perform mapping', function () {
         var obj;
 
         beforeEach(function (done) {
-            api = new Collection('myApi', function (err, version) {
+            collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = api.registerMapping('Car', {
+                carMapping = collection.registerMapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
@@ -121,13 +121,13 @@ describe('perform mapping', function () {
         describe('foreign key', function () {
             var personMapping;
             beforeEach(function (done) {
-                api = new Collection('myApi', function (err, version) {
+                collection = new Collection('myCollection', function (err, version) {
                     if (err) done(err);
-                    personMapping = api.registerMapping('Person', {
+                    personMapping = collection.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -706,13 +706,13 @@ describe('perform mapping', function () {
         describe('one-to-one', function () {
             var personMapping;
             beforeEach(function (done) {
-                api = new Collection('myApi', function (err, version) {
+                collection = new Collection('myCollection', function (err, version) {
                     if (err) done(err);
-                    personMapping = api.registerMapping('Person', {
+                    personMapping = collection.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -1128,13 +1128,13 @@ describe('perform mapping', function () {
 
             var personMapping;
             beforeEach(function (done) {
-                api = new Collection('myApi', function (err, version) {
+                collection = new Collection('myCollection', function (err, version) {
                     if (err) done(err);
-                    personMapping = api.registerMapping('Person', {
+                    personMapping = collection.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -1185,13 +1185,13 @@ describe('perform mapping', function () {
 
             var personMapping;
             beforeEach(function (done) {
-                api = new Collection('myApi', function (err, version) {
+                collection = new Collection('myCollection', function (err, version) {
                     if (err) done(err);
-                    personMapping = api.registerMapping('Person', {
+                    personMapping = collection.registerMapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -1261,9 +1261,9 @@ describe('perform mapping', function () {
         describe('new', function () {
 
             beforeEach(function (done) {
-                api = new Collection('myApi', function (err, version) {
+                collection = new Collection('myCollection', function (err, version) {
                     if (err) done(err);
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });

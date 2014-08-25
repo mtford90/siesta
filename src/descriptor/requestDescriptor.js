@@ -54,16 +54,16 @@ angular.module('restkit.requestDescriptor', ['restkit'])
             // Mappings can be passed as the actual mapping object or as a string (with API specified too)
             if (this._opts.mapping) {
                 if (typeof(this._opts.mapping) == 'string') {
-                    if (this._opts.api) {
-                        var api;
-                        if (typeof(this._opts.api) == 'string') {
-                            api = CollectionRegistry[this._opts.api];
+                    if (this._opts.collection) {
+                        var collection;
+                        if (typeof(this._opts.collection) == 'string') {
+                            collection = CollectionRegistry[this._opts.collection];
                         }
                         else {
-                            api = this._opts.api;
+                            collection = this._opts.collection;
                         }
-                        if (api) {
-                            var actualMapping = api[this._opts.mapping];
+                        if (collection) {
+                            var actualMapping = collection[this._opts.mapping];
                             if (actualMapping) {
                                 this._opts.mapping = actualMapping;
                             }
@@ -72,7 +72,7 @@ angular.module('restkit.requestDescriptor', ['restkit'])
                             }
                         }
                         else {
-                            throw new RestError('API ' + this._opts.api + ' does not exist', {opts: opts});
+                            throw new RestError('Collection ' + this._opts.collection + ' does not exist', {opts: opts});
                         }
                     }
                     else {

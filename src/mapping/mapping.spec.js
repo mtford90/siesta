@@ -67,7 +67,7 @@ describe('mapping!', function () {
             type: 'Type',
             id: 'id',
             attributes: ['field1', 'field2'],
-            api: 'myApi'
+            collection: 'myCollection'
         });
         m.install(function (err) {
             if (err) done(err);

@@ -31,14 +31,14 @@ describe('query', function () {
     describe('raw query', function () {
         it('design doc name', function () {
             console.log(RawQuery);
-            var name = new RawQuery('myApi', 'Car', {colour: 'red', name: 'Aston Martin'})._getDesignDocName();
-            assert.equal(name, '_design/myApi_Index_Car_colour_name');
+            var name = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'})._getDesignDocName();
+            assert.equal(name, '_design/myCollection_Index_Car_colour_name');
         });
 
 
         it('fields', function () {
             console.log(RawQuery);
-            var q = new RawQuery('myApi', 'Car', {colour: 'red', name: 'Aston Martin'});
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             var fields = q._getFields();
             assert.include(fields, 'colour');
             assert.include(fields, 'name');
@@ -46,7 +46,7 @@ describe('query', function () {
 
         it('construct key', function () {
             console.log(RawQuery);
-            var q = new RawQuery('myApi', 'Car', {colour: 'red', name: 'Aston Martin'});
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             var key = q._constructKey();
             assert.equal(key, 'red_Aston Martin');
         });
@@ -54,13 +54,13 @@ describe('query', function () {
         it('execute with no index', function () {
             console.log(RawQuery);
             var q = new RawQuery();
-            assert.throws(_.bind(q.execute, q, 'myApi', 'Car', {colour: 'red', name: 'Aston Martin'}), RestError);
+            assert.throws(_.bind(q.execute, q, 'myCollection', 'Car', {colour: 'red', name: 'Aston Martin'}), RestError);
         });
 
         it('execute with index', function (done) {
             console.log(RawQuery);
-            var q = new RawQuery('myApi', 'Car', {colour: 'red', name: 'Aston Martin'});
-            var i = new Index('myApi', 'Car', ['colour', 'name']);
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+            var i = new Index('myCollection', 'Car', ['colour', 'name']);
             i.install(function (err) {
                 if (err) done(err);
                 q.execute(function (err, results) {
@@ -74,11 +74,11 @@ describe('query', function () {
 
         it('execute with index with rows', function (done) {
             console.log(RawQuery);
-            var q = new RawQuery('myApi', 'Car', {colour: 'red', name: 'Aston Martin'});
-            var i = new Index('myApi', 'Car', ['colour', 'name']);
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+            var i = new Index('myCollection', 'Car', ['colour', 'name']);
             i.install(function (err) {
                 if (err) done(err);
-                Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', api: 'myApi'}, function (err) {
+                Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
                     if (err) done(err);
                     q.execute(function (err, results) {
                         if (done) done(err);
@@ -92,18 +92,18 @@ describe('query', function () {
     });
 
     describe('query', function () {
-        var api, mapping;
+        var collection, mapping;
 
         it('asdasd', function (done) {
-            api = new Collection('myApi', function (err, version) {
+            collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                mapping = api.registerMapping('Person', {
+                mapping = collection.registerMapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
             }, function (err) {
                 if (err) done(err);
-                Pouch.getPouch().post({type: 'Person', age: 23, api: 'myApi', name: 'Michael'}, function (err, resp) {
+                Pouch.getPouch().post({type: 'Person', age: 23, collection: 'myCollection', name: 'Michael'}, function (err, resp) {
                     if (err) done(err);
                     var q = new Query(mapping, {age: 23});
                     q.execute(function (err, objs) {

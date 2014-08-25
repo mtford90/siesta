@@ -22,13 +22,13 @@ describe('mapping validation', function () {
             var m = new Mapping({
                 id: 'id',
                 attributes: ['field1', 'field2'],
-                api: 'myApi'
+                collection: 'myCollection'
             });
             var errors = m._validate();
             console.log('errors:', errors);
             assert.equal(1, errors.length);
         });
-        it('no api', function () {
+        it('no collection', function () {
             var m = new Mapping({
                 id: 'id',
                 attributes: ['field1', 'field2'],

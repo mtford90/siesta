@@ -11,7 +11,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         }
 
         Query.prototype.execute = function (callback) {
-            var rawQuery = new RawQuery(this.mapping.api, this.mapping.type, this.query);
+            var rawQuery = new RawQuery(this.mapping.collection, this.mapping.type, this.query);
             rawQuery.execute(function (err, results) {
                 if (err) {
                     callback(err);
@@ -48,8 +48,8 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
 
         var $log = jlog.loggerWithName('RawQuery');
 
-        function RawQuery(api, modelName, query) {
-            this.api = api;
+        function RawQuery(collection, modelName, query) {
+            this.collection = collection;
             this.modelName = modelName;
             this.query = query;
         }
@@ -80,7 +80,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                     if (err.status == 404) {
                         var errorMessage = 'Design doc "' + designDocId.toString() + '" doesnt exist. Do you have an index configured for this query?';
                         $log.error(errorMessage, self.query);
-                        throw new RestError(errorMessage, {api: self.api, type: self.modelName, query: self.query});
+                        throw new RestError(errorMessage, {collection: self.collection, type: self.modelName, query: self.query});
                     }
                     else {
                         callback(err);
@@ -121,12 +121,12 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         };
 
         RawQuery.prototype._getDesignDocName = function () {
-            var i = new Index(this.api, this.modelName, this._getFields());
+            var i = new Index(this.collection, this.modelName, this._getFields());
             return i._getDesignDocName();
         };
 
         RawQuery.prototype._getIndexName = function () {
-            var i = new Index(this.api, this.modelName, this._getFields());
+            var i = new Index(this.collection, this.modelName, this._getFields());
             return i._getName();
         };
 

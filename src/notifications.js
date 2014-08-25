@@ -5,13 +5,13 @@ angular.module('restkit.notifications', [])
         return function (restObject, change) {
 
             var notification = {
-                api: restObject.api,
+                collection: restObject.collection,
                 type: restObject.type,
                 obj: restObject,
                 change: change
             };
-            $rootScope.$broadcast(restObject.api + ':' + restObject.type, notification);
-            $rootScope.$broadcast(restObject.api, notification);
+            $rootScope.$broadcast(restObject.collection + ':' + restObject.type, notification);
+            $rootScope.$broadcast(restObject.collection, notification);
             $rootScope.$broadcast('Fount', notification);
         }
 

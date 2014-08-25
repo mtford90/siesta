@@ -54,10 +54,10 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
     .factory('CollectionRegistry', function (jlog) {
         var $log = jlog.loggerWithName('CollectionRegistry');
         function CollectionRegistry () {}
-        CollectionRegistry.prototype.register = function (api) {
-            var name = api._name;
+        CollectionRegistry.prototype.register = function (collection) {
+            var name = collection._name;
             $log.debug('register ' + name);
-            this[ name] = api;
+            this[ name] = collection;
         };
         return new CollectionRegistry();
     })
@@ -269,7 +269,7 @@ angular.module('restkit', ['logging', 'restkit.mapping'])
             this._mappings[name] = mapping;
             var opts = $.extend(true, {}, mapping);
             opts.type = name;
-            opts.api = this._name;
+            opts.collection = this._name;
             var mappingObject = new Mapping(opts);
             this[name] = mappingObject;
             return mappingObject;

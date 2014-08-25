@@ -28,18 +28,18 @@ describe('notifications', function () {
     });
 
     describe('attributes', function () {
-        var api, carMapping;
+        var collection, carMapping;
         var car, notif;
 
-        var apiNotif, genericNotif;
+        var collectionNotif, genericNotif;
 
         describe('set value', function () {
 
             beforeEach(function (done) {
                 notif = null;
-                api = new Collection('myApi', function (err) {
+                collection = new Collection('myCollection', function (err) {
                     if (err) done(err);
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
@@ -48,21 +48,21 @@ describe('notifications', function () {
                     carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            if (notif && genericNotif && apiNotif) {
+                            if (notif && genericNotif && collectionNotif) {
                                 done();
                             }
                         });
-                        $rootScope.$on('myApi', function (e, n) {
-                            apiNotif = n;
-                            if (notif && genericNotif && apiNotif) {
+                        $rootScope.$on('myCollection', function (e, n) {
+                            collectionNotif = n;
+                            if (notif && genericNotif && collectionNotif) {
                                 done();
                             }
                         });
                         $rootScope.$on('Fount', function (e, n) {
                             genericNotif = n;
-                            if (notif && genericNotif && apiNotif) {
+                            if (notif && genericNotif && collectionNotif) {
                                 done();
                             }
                         });
@@ -75,10 +75,10 @@ describe('notifications', function () {
             });
 
             it('notif contains type', function () {
-                assert.equal(notif.api, 'myApi');
+                assert.equal(notif.collection, 'myCollection');
             });
 
-            it('notif contains api', function () {
+            it('notif contains collection', function () {
                 assert.equal(notif.type, 'Car');
             });
 
@@ -111,9 +111,9 @@ describe('notifications', function () {
 
         describe('array notifications', function () {
             beforeEach(function (done) {
-                api = new Collection('myApi', function (err) {
+                collection = new Collection('myCollection', function (err) {
                     if (err) done(err);
-                    carMapping = api.registerMapping('Car', {
+                    carMapping = collection.registerMapping('Car', {
                         id: 'id',
                         attributes: ['colours', 'name']
                     });
@@ -128,7 +128,7 @@ describe('notifications', function () {
                     carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
                             console.log('notif', notif);
                             done();
@@ -140,10 +140,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -181,7 +181,7 @@ describe('notifications', function () {
                     carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
                             console.log('notif', notif);
                             done();
@@ -193,10 +193,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -234,7 +234,7 @@ describe('notifications', function () {
                     carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
                             console.log('notif', notif);
                             done();
@@ -247,10 +247,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -289,7 +289,7 @@ describe('notifications', function () {
                         car = _car;
                         Store.put(car, function (err) {
                             if (err) done(err);
-                            $rootScope.$on('myApi:Car', function (e, n) {
+                            $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
                                 console.log('notif', notif);
                                 done();
@@ -303,10 +303,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -343,7 +343,7 @@ describe('notifications', function () {
                     carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
                             console.log('notif', notif);
                             done();
@@ -354,10 +354,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -393,7 +393,7 @@ describe('notifications', function () {
                     carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
                             console.log('notif', notif);
                             done();
@@ -404,10 +404,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -443,7 +443,7 @@ describe('notifications', function () {
                     carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        $rootScope.$on('myApi:Car', function (e, n) {
+                        $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
                             console.log('notif', notif);
                             done();
@@ -454,10 +454,10 @@ describe('notifications', function () {
                 });
 
                 it('notif contains type', function () {
-                    assert.equal(notif.api, 'myApi');
+                    assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains api', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.type, 'Car');
                 });
 
@@ -500,7 +500,7 @@ describe('notifications', function () {
                         car = carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                             car = _car;
                             if (err) done(err);
-                            $rootScope.$on('myApi:Car', function (e, n) {
+                            $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
                                 console.log('notif', notif);
                                 done();
@@ -549,7 +549,7 @@ describe('notifications', function () {
                         carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                             car = _car;
                             if (err) done(err);
-                            $rootScope.$on('myApi:Car', function (e, n) {
+                            $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
                                 console.log('notif', notif);
                                 done();
@@ -604,7 +604,7 @@ describe('notifications', function () {
                         carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                             car = _car;
                             if (err) done(err);
-                            $rootScope.$on('myApi:Car', function (e, n) {
+                            $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
                                 console.log('notif', notif);
                                 done();
@@ -652,7 +652,7 @@ describe('notifications', function () {
                         carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                             car = _car;
                             if (err) done(err);
-                            $rootScope.$on('myApi:Car', function (e, n) {
+                            $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
                                 console.log('notif', notif);
                                 done();
@@ -715,7 +715,7 @@ describe('notifications', function () {
                         carMapping.map({colours: ['red', 'green', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                             car = _car;
                             if (err) done(err);
-                            $rootScope.$on('myApi:Car', function (e, n) {
+                            $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
                                 console.log('notif', notif);
                                 done();

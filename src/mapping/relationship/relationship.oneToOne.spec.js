@@ -35,13 +35,13 @@ describe('relationship', function () {
                 type: 'Car',
                 id: 'id',
                 attributes: ['colour', 'name'],
-                api: 'myApi'
+                collection: 'myCollection'
             });
             personMapping = new Mapping({
                 type: 'Person',
                 id: 'id',
                 attributes: ['name', 'age'],
-                api: 'myApi'
+                collection: 'myCollection'
             });
             carMapping.install(function (err) {
                 if (err) done(err);

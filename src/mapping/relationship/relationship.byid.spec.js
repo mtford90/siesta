@@ -1,7 +1,7 @@
 describe('relationship proxy byid', function () {
 
     var Collection, RelationshipType, Relationship;
-    var api, carMapping, personMapping;
+    var collection, carMapping, personMapping;
     var car, person;
 
     beforeEach(function (done) {
@@ -23,13 +23,13 @@ describe('relationship proxy byid', function () {
 
         Collection._reset();
 
-        api = new Collection('myApi', function (err, version) {
+        collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            personMapping = api.registerMapping('Person', {
+            personMapping = collection.registerMapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });

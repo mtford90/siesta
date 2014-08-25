@@ -2,7 +2,7 @@ describe('store notifications', function () {
 
     var Collection, cache, RestObject, Mapping, Store, Pouch;
 
-    var carMapping, api;
+    var carMapping, collection;
 
     beforeEach(function (done) {
         module('restkit.store', function ($provide) {
@@ -19,9 +19,9 @@ describe('store notifications', function () {
             Pouch = _Pouch_;
         });
         Collection._reset();
-        api = new Collection('myApi', function (err, version) {
+        collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = api.registerMapping('Car', {
+            carMapping = collection.registerMapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
