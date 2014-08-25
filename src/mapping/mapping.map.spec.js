@@ -1,4 +1,4 @@
-describe('perform mapping', function () {
+describe.only('perform mapping', function () {
 
     var Pouch, RawQuery, RestAPI, RestError, RelationshipType, RelatedObjectProxy, RestObject, $rootScope;
     var api, carMapping;
@@ -40,8 +40,12 @@ describe('perform mapping', function () {
             }, function (err) {
                 if (err) done(err);
                 carMapping.map({colour: 'red', name: 'Aston Martin', id: 'dfadf'}, function (err, _obj) {
+                    if (err) {
+                        console.error('Error when mapping new car:', err);
+                        done(err);
+                    }
                     obj = _obj;
-                    done(err);
+                    done();
                 });
             });
         });
@@ -115,7 +119,7 @@ describe('perform mapping', function () {
 
     describe('with relationship', function () {
 
-        describe.only('foreign key', function () {
+        describe('foreign key', function () {
             var personMapping;
             beforeEach(function (done) {
                 api = new RestAPI('myApi', function (err, version) {
@@ -151,7 +155,10 @@ describe('perform mapping', function () {
                                 if (err) done(err);
                                 person = _person;
                                 carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
-                                    if (err) done(err);
+                                    if (err) {
+                                        console.error('Error when mapping car object', err);
+                                        done(err);
+                                    }
                                     car = _car;
                                     done();
                                 });
@@ -212,15 +219,28 @@ describe('perform mapping', function () {
                                 {colour: 'green', name: 'Ford', id: "remoteId3"}
                             ];
                             carMapping._mapBulk(raw, function (err, objs, res) {
-                                if (err) done(err);
+                                if (err) {
+                                    console.error('Error bulk mapping cars:', err);
+                                    done(err);
+                                }
+                                else {
+                                    console.log('Successfully mapped cars');
+                                }
                                 cars = objs;
+                                console.log('Mapping person');
                                 personMapping.map({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
                                     cars: ['remoteId1', 'remoteId2', 'remoteId3']
                                 }, function (err, _person) {
-                                    if (err) done(err);
+                                    if (err) {
+                                        console.error('Error mapping person:', err);
+                                        done(err);
+                                    }
+                                    else {
+                                        console.log('Successfully mapped person');
+                                    }
                                     person = _person;
                                     done();
                                 });
@@ -397,7 +417,6 @@ describe('perform mapping', function () {
             });
 
 
-
         });
 
     });
@@ -440,6 +459,7 @@ describe('perform mapping', function () {
                     {colour: 'green', name: 'Ford', id: "remoteId3"}
                 ];
                 carMapping._mapBulk(raw, function (err, objs, res) {
+                    dump(res);
                     assert.notOk(err);
                     assert.equal(objs.length, raw.length);
                     assert.equal(res.length, raw.length);
@@ -457,22 +477,8 @@ describe('perform mapping', function () {
                 })
             });
 
-            it('one err', function (done) {
-                var raw = [
-                    {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
-                    {colour: 'blue', name: 'Lambo'},
-                    {colour: 'green', name: 'Ford', id: "remoteId3"}
-                ];
-                carMapping._mapBulk(raw, function (err, objs, res) {
-                    assert.equal(err.length, 1);
-                    assert.equal(objs.length, raw.length - 1);
-                    assert.equal(res.length, raw.length);
-                    assert.include(_.pluck(res, 'err'), err[0]);
-                    done();
-                })
-            });
 
-        })
+        });
 
     });
 

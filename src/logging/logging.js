@@ -19,8 +19,8 @@ angular.module('logging', [])
             Pouch: logLevels.error,
             RestAPIRegistry: logLevels.error,
             RestAPI: logLevels.error,
-            Cache: logLevels.debug,
-            Store: logLevels.debug,
+            Cache: logLevels.error,
+            Store: logLevels.error,
             Indexes: logLevels.error,
             Index: logLevels.error,
             http: logLevels.error,
@@ -28,7 +28,8 @@ angular.module('logging', [])
             ForeignKeyRelationship: logLevels.error,
             OneToOneRelationship: logLevels.error,
             Query: logLevels.error,
-            RawQuery: logLevels.error
+            RawQuery: logLevels.error,
+            MappingOperation: logLevels.debug
         };
 
         var t = {};

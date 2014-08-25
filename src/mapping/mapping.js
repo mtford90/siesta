@@ -1,6 +1,6 @@
-angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications'])
+angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications', 'restkit.mapping.operation'])
 
-    .factory('Mapping', function (broadcast, Pouch, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (broadcast, Pouch, MappingOperation, BulkMappingOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, RestAPIRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -369,128 +369,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         }
 
-        Mapping.prototype._mapArray = function (obj, prop, arr, callback) {
-
-        };
-
-        Mapping.prototype._mapRestObject = function (obj, prop, restObject, callback) {
-
-        };
-
-        Mapping.prototype._map = function (obj, data, callback) {
-            var waiting = [];
-            var errors = [];
-            var results = [];
-            function checkIfDone() {
-                $log.debug('checkIfDone');
-                if (waiting.length == results.length) {
-                    if (callback) callback(errors.length ? errors : null, obj, results);
-                }
-            }
-            for (var prop in data) {
-                if (data.hasOwnProperty(prop)) {
-                    $log.debug('_map', prop);
-                    var val = data[prop];
-                    if (obj._fields.indexOf(prop) > -1) {
-                        obj[prop] = val;
-                        // TODO: Differentiate between scalar attributes + arrays
-                    }
-                    else if (obj._relationshipFields.indexOf(prop) > -1) {
-                        if (val instanceof RestObject) {
-                            var ref = {obj: obj, data: val, field: prop};
-                            waiting.push(ref);
-                            var proxy = obj[prop];
-
-                            function setRelated(ref, related, proxy) {
-                                proxy.set(related, function (err) {
-                                    if (err) {
-                                        errors.push(err);
-                                    }
-                                    results.push(ref);
-                                    checkIfDone();
-                                });
-                            }
-
-                            setRelated(ref, val, proxy);
-
-                        }
-                        else if (typeof(val) == 'object' && !(Object.prototype.toString.call(val) == '[object Array]')) {
-                            $log.error('NYI');
-                            // TODO: Use the relationship to get the mapping, and perform the mapping.
-                        }
-                        else { // Store lookup needed.
-                            $log.debug('Store lookup needed', val);
-                            var relationship = obj[prop].relationship;
-                            var isForward = relationship.isForward(obj);
-                            var reverseMapping;
-                            if (isForward) {
-                                reverseMapping = relationship.reverseMapping;
-                            }
-                            else {
-                                reverseMapping = relationship.mapping;
-                            }
-                            var idField = reverseMapping.id;
-                            var reverseData;
-                            if (Object.prototype.toString.call(val) == '[object Array]') {
-                                reverseData = _.map(val, function (v) {
-                                    var o;
-                                    if (v instanceof RestObject || typeof(v) == 'object') {
-                                        o = v;
-                                    }
-                                    else {
-                                        o = {};
-                                        o[idField] = v;
-                                    }
-                                    return o;
-                                });
-                            }
-                            else {
-                                reverseData = {};
-                                reverseData[idField] = val;
-                            }
-
-                            var ref = {obj: obj, data: data, field: prop};
-                            waiting.push(ref);
-                            dump(waiting);
-
-
-                            function map(ref, prop, reverseMapping, reverseData) {
-                                reverseMapping.map(reverseData, function (err, related) {
-                                    if (err) {
-                                        ref.err = err;
-                                        errors.push(err);
-                                        results.push(ref);
-                                        checkIfDone();
-                                    }
-                                    else {
-                                        var proxy = obj[prop];
-                                        dump(proxy);
-                                        proxy.set(related, function (err) {
-                                            if (err) {
-                                                ref.err = err;
-                                                errors.push(err);
-                                            }
-                                            results.push(ref);
-                                            checkIfDone();
-                                        });
-                                    }
-                                });
-                            }
-
-                            map(ref, prop, reverseMapping, reverseData);
-
-                        }
-                    }
-                }
-            }
-            if (!waiting.length) { // No store lookups were required.
-                $log.debug('no store lookups required');
-                if (callback) {
-                    callback(null, obj);
-                }
-            }
-        };
-
         /**
          * Map data into Fount.
          *
@@ -498,71 +376,20 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          * @param callback Called once pouch persistence returns.
          */
         Mapping.prototype.map = function (data, callback) {
-            if (Object.prototype.toString.call(data) === '[object Array]') {
-                this._mapBulk(data, callback);
-            }
-            else if (data instanceof RestObject) {
-                if (callback) callback(null, data);
+            if (Object.prototype.toString.call(data) == '[object Array]') {
+                return this._mapBulk(data, callback);
             }
             else {
-                var self = this;
-                var storeOpts = {};
-                var identifier = data[this.id];
-                if (identifier) {
-                    storeOpts[this.id] = identifier;
-                    storeOpts.mapping = this;
-                }
-                if (data._id) {
-                    storeOpts._id = data._id;
-                }
-                Store.get(storeOpts, function (err, obj) {
-                    if (!err) {
-                        if (!obj) {
-                            var restObject = self._new(data);
-                            Store.put(restObject, function (err) {
-                                if (err) {
-                                    if (callback) callback(err);
-                                }
-                                else {
-                                    self._map(restObject, data, callback);
-                                }
-                            });
-                        }
-                        else {
-                            $log.info('Mapping attributes');
-                            self._map(obj, data);
-                            if (callback) {
-                                callback(null, obj);
-                            }
-                        }
-                    }
-                    else if (callback) {
-                        callback(err);
-                    }
-                });
+                var op = new MappingOperation(this, data, callback);
+                op.start();
+                return op;
             }
         };
 
         Mapping.prototype._mapBulk = function (data, callback) {
-            var self = this;
-            var objs = [];
-            var errs = [];
-            var res = [];
-
-            function done() {
-                if (callback) callback(errs.length ? errs : null, objs, res);
-            }
-
-            _.each(data, function (d) {
-                self.map(d, function (err, obj) {
-                    if (obj) objs.push(obj);
-                    if (err) errs.push(err);
-                    res.push({err: err, obj: obj, raw: d});
-                    if (res.length == data.length) {
-                        done();
-                    }
-                });
-            });
+            var op = new BulkMappingOperation(this, data, callback);
+            op.start();
+            return op;
         };
 
         /**
