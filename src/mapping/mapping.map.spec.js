@@ -321,28 +321,81 @@ describe('perform mapping', function () {
 
             });
 
-            // TODO
-            describe('_id', function () {
+            describe('object', function () {
+
                 describe('forward', function () {
-                    describe('object already exists', function () {
-                        // TODO
+                    var person, car;
+                    beforeEach(function (done) {
+                        personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err, _person) {
+                            if (err) done(err);
+                            person = _person;
+                            carMapping.map({name: 'Bentley', colour: 'black', owner: person, id: 'carRemoteId'}, function (err, _car) {
+                                if (err) done(err);
+                                car = _car;
+                                done();
+                            });
+                        });
                     });
-                    describe('object doesnt exist', function () {
-                        // TODO
+                    it('owner of car should be michael', function (done) {
+                        $rootScope.$digest(); // Ensure cache gets updated.
+                        car.owner.get(function (err, owner) {
+                            if (err) done(err);
+                            assert.equal(owner, person);
+                            done();
+                        })
                     });
+                    it('michael should the car', function (done) {
+                        $rootScope.$digest(); // Ensure cache gets updated.
+                        person.cars.get(function (err, cars) {
+                            if (err) done(err);
+                            assert.include(cars, car);
+                            done();
+                        });
+                    });
+
                 });
+
                 describe('reverse', function () {
-                    describe('all objects already exist', function () {
-                        // TODO
+                    var person, cars;
+                    beforeEach(function (done) {
+                        var raw = [
+                            {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
+                            {colour: 'blue', name: 'Lambo', id: "remoteId2"},
+                            {colour: 'green', name: 'Ford', id: "remoteId3"}
+                        ];
+                        carMapping._mapBulk(raw, function (err, objs, res) {
+                            if (err) done(err);
+                            cars = objs;
+                            personMapping.map({
+                                name: 'Michael Ford',
+                                age: 23,
+                                id: 'personRemoteId',
+                                cars: objs
+                            }, function (err, _person) {
+                                if (err) done(err);
+                                person = _person;
+                                done();
+                            });
+                        });
                     });
-                    describe('no objects exist', function () {
-                        // TODO
+
+                    it('cars should have person as their owner', function () {
+                        _.each(cars, function (car) {
+                            assert.equal(car.owner._id, person._id);
+                        })
                     });
-                    describe('mixed', function () {
-                        // TODO
+
+                    it('person should have car objects', function () {
+                        dump(person.cars);
+                        _.each(cars, function (car) {
+                            assert.include(person.cars._id, car._id);
+                            assert.include(person.cars.relatedObject, car);
+                        })
                     });
-                });
+                })
+
             });
+
 
 
         });

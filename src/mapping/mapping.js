@@ -373,6 +373,12 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             var waiting = [];
             var errors = [];
             var results = [];
+            function checkIfDone() {
+                $log.debug('checkIfDone');
+                if (waiting.length == results.length) {
+                    if (callback) callback(errors.length ? errors : null, obj, results);
+                }
+            }
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
                     $log.debug('_map', prop);
@@ -383,8 +389,22 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                     }
                     else if (obj._relationshipFields.indexOf(prop) > -1) {
                         if (val instanceof RestObject) {
-                            $log.error('NYI');
-                            // TODO: Awesome. Set the relationship.
+                            var ref = {obj: obj, data: val, field: prop};
+                            waiting.push(ref);
+                            var proxy = obj[prop];
+
+                            function setRelated(ref, related, proxy) {
+                                proxy.set(related, function (err) {
+                                    if (err) {
+                                        errors.push(err);
+                                    }
+                                    results.push(ref);
+                                    checkIfDone();
+                                });
+                            }
+
+                            setRelated(ref, val, proxy);
+
                         }
                         else if (typeof(val) == 'object' && !(Object.prototype.toString.call(val) == '[object Array]')) {
                             $log.error('NYI');
@@ -404,11 +424,15 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                             var idField = reverseMapping.id;
                             var reverseData;
                             if (Object.prototype.toString.call(val) == '[object Array]') {
-                                reverseData = _.map(val, function (id) {
-                                    var o = {};
-                                    // Executed straight away so the warning below isn't an issue.
-                                    //noinspection JSReferencingMutableVariableFromClosure
-                                    o[idField] = id;
+                                reverseData = _.map(val, function (v) {
+                                    var o;
+                                    if (v instanceof RestObject || typeof(v) == 'object') {
+                                        o = v;
+                                    }
+                                    else {
+                                        o = {};
+                                        o[idField] = v;
+                                    }
                                     return o;
                                 });
                             }
@@ -420,12 +444,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                             var ref = {obj: obj, data: data, field: prop};
                             waiting.push(ref);
                             dump(waiting);
-                            function checkIfDone() {
-                                $log.debug('checkIfDone');
-                                if (waiting.length == results.length) {
-                                    if (callback) callback(errors.length ? errors : null, obj, results);
-                                }
-                            }
+
 
                             function map(ref, prop, reverseMapping, reverseData) {
                                 reverseMapping.map(reverseData, function (err, related) {
@@ -473,6 +492,9 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         Mapping.prototype.map = function (data, callback) {
             if (Object.prototype.toString.call(data) === '[object Array]') {
                 this._mapBulk(data, callback);
+            }
+            else if (data instanceof RestObject) {
+                if (callback) callback(null, data);
             }
             else {
                 var self = this;
