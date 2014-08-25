@@ -116,7 +116,6 @@ describe('perform mapping', function () {
 
     });
 
-
     describe('with relationship', function () {
 
         describe('foreign key', function () {
@@ -1120,6 +1119,68 @@ describe('perform mapping', function () {
             });
 
         })
+
+    });
+
+    describe.only('errors', function () {
+
+        describe('one-to-one', function () {
+
+            var personMapping;
+            beforeEach(function (done) {
+                api = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                    personMapping = api.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.OneToOne,
+                                reverse: 'car'
+                            }
+                        }
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    done();
+                });
+            });
+
+            it('assign array to scalar relationship', function (done) {
+                carMapping.map({
+                    colour: 'red',
+                    name: 'Aston Martin',
+                    owner: ['remoteId1', 'remoteId2'],
+                    id:'carRemoteId'
+                }, function (err, obj) {
+                    dump(err.owner.context);
+                    var ownerError = err.owner;
+                    assert.ok(ownerError);
+                    done();
+                });
+            });
+
+            it('assign array to scalar relationship reverse', function (done) {
+                personMapping.map({
+                    name: 'Michael Ford',
+                    car: ['remoteId1', 'remoteId2'],
+                    age: 23,
+                    id:'personRemoteId'
+                }, function (err, obj) {
+                    dump(err, obj);
+                    assert.ok(err.car);
+                    done();
+                });
+            });
+
+
+
+        });
 
     });
 

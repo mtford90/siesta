@@ -440,6 +440,37 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         return Mapping;
     })
 
+    .factory('MappingError', function (RestError) {
+        /**
+         * A subclass of RestError specifcally for errors that occur during mapping.
+         * @param message
+         * @param context
+         * @param ssf
+         * @returns {MappingError}
+         * @constructor
+         */
+        function MappingError(message, context, ssf) {
+            if (!this) {
+                return new MappingError(message, context);
+            }
+
+            this.message = message;
+
+            this.context = context;
+            // capture stack trace
+            ssf = ssf || arguments.callee;
+            if (ssf && RestError.captureStackTrace) {
+                RestError.captureStackTrace(this, ssf);
+            }
+        }
+
+        MappingError.prototype = Object.create(RestError.prototype);
+        MappingError.prototype.name = 'MappingError';
+        MappingError.prototype.constructor = MappingError;
+
+        return MappingError;
+    })
+
 
 
 ;

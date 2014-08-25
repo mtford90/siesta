@@ -213,6 +213,7 @@ angular.module('restkit.mapping.operation', [])
                 var idField = this.mapping.id;
                 var identifier;
                 if (typeof(data) == 'object') {
+                    dump('eep', this.data);
                     identifier = data[idField];
                 }
                 else {
