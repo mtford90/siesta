@@ -1122,7 +1122,7 @@ describe('perform mapping', function () {
 
     });
 
-    describe.only('errors', function () {
+    describe('errors', function () {
 
         describe('one-to-one', function () {
 
@@ -1174,6 +1174,63 @@ describe('perform mapping', function () {
                 }, function (err, obj) {
                     dump(err, obj);
                     assert.ok(err.car);
+                    done();
+                });
+            });
+
+
+
+        });
+        describe('foreign key', function () {
+
+            var personMapping;
+            beforeEach(function (done) {
+                api = new RestAPI('myApi', function (err, version) {
+                    if (err) done(err);
+                    personMapping = api.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                    carMapping = api.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    done();
+                });
+            });
+
+            it('assign array to scalar relationship', function (done) {
+                carMapping.map({
+                    colour: 'red',
+                    name: 'Aston Martin',
+                    owner: ['remoteId1', 'remoteId2'],
+                    id:'carRemoteId'
+                }, function (err, obj) {
+                    dump(err.owner.context);
+                    var ownerError = err.owner;
+                    assert.ok(ownerError);
+                    done();
+                });
+            });
+
+            it('assign scalar to vector relationship reverse', function (done) {
+                personMapping.map({
+                    name: 'Michael Ford',
+                    cars: 'remoteId1',
+                    age: 23,
+                    id:'personRemoteId'
+                }, function (err, obj) {
+                    dump(err, obj);
+                    assert.ok(err.cars);
                     done();
                 });
             });
