@@ -369,6 +369,14 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         }
 
+        Mapping.prototype._mapArray = function (obj, prop, arr, callback) {
+
+        };
+
+        Mapping.prototype._mapRestObject = function (obj, prop, restObject, callback) {
+
+        };
+
         Mapping.prototype._map = function (obj, data, callback) {
             var waiting = [];
             var errors = [];
@@ -604,5 +612,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         return Mapping;
     })
+
+
 
 ;
