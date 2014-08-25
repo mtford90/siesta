@@ -3,9 +3,9 @@ describe.only('http!', function () {
     var Collection, RelationshipType, Pouch;
     var collection, carMapping, personMapping;
 
-    var carRequestHandler;
 
-    var $rootScope, $httpBackend, $http;
+    var $rootScope;
+    var server;
 
 
     beforeEach(function () {
@@ -18,20 +18,22 @@ describe.only('http!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$httpBackend_, _$rootScope_, _$http_) {
-            _$httpBackend_.expectGET('http://mywebsite.co.uk/cars/')
-                .respond({colour: 'red'});
-            $httpBackend = _$httpBackend_;
+        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_) {
             $rootScope = _$rootScope_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             Pouch = _Pouch_;
-            $http = _$http_;
         });
 
+        server = sinon.fakeServer.create();
 
         Pouch.reset();
 
+    });
+
+    afterEach(function () {
+        // Restore original server implementation.
+        server.restore();
     });
 
     describe('foreign key', function () {
@@ -62,13 +64,14 @@ describe.only('http!', function () {
 
 
         it('xyz', function (done) {
-            $httpBackend.expectGET("/data").respond("pig");
-            $rootScope.$apply();
-            $http.get("/data")
-                .success(function (data) {done()})
-                .error(function (status) {console.log('err');done()});
-            $rootScope.$apply();
-
+            server.respondWith("GET", "http://mywebsite.co.uk/cars/",
+                [200, { "Content-Type": "application/json" },
+                    JSON.stringify([{colour: 'red', name: 'Aston Martin', owner: '093hodhfno'}])]);
+            collection.GET('cars/', function (err, data) {
+                dump(data);
+                done(err);
+            });
+            server.respond();
         });
 
     });

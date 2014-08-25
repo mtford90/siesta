@@ -219,18 +219,24 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping'])
         Collection.prototype.GET = function (path, callback) {
             var baseURL = this.baseURL;
             var url = baseURL + path;
-            $log.debug('GET ' + url);
-            $http({
-                method: 'GET',
-                url: url
-            }).success(function (data, status, headers, config) {
-                $log.debug(3);
-                callback(null, data);
-            }).error(function (data, status, headers, config) {
-                $log.debug('fail', data, status, headers, config);
-                callback(data);
+            $log.debug(url);
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (data, textStatus, jqXHR) {
+                    $rootScope.$apply(function () {
+                        if(callback) callback(null, data);
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $rootScope.$apply(function () {
+                        if (callback) callback({jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown});
+                    });
+                }
             });
         };
+
+
 
         return Collection;
 
