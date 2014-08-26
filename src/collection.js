@@ -216,27 +216,39 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping'])
             return mappingObject;
         };
 
-        Collection.prototype.GET = function (path, callback) {
+        Collection.prototype.HTTP = function (method, path) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            var callback;
+            var opts = {};
+            if (typeof(args[0]) == 'function') {
+                callback = args[0];
+            }
+            else if (typeof (args[0]) == 'object') {
+                opts = args[0];
+                callback = args[1];
+            }
             var baseURL = this.baseURL;
             var url = baseURL + path;
             $log.debug(url);
-            $.ajax({
-                type: 'GET',
-                url: url,
-                success: function (data, textStatus, jqXHR) {
-                    $rootScope.$apply(function () {
-                        if(callback) callback(null, data);
-                    });
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    $rootScope.$apply(function () {
-                        if (callback) callback({jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown});
-                    });
-                }
-            });
+            opts.type = method;
+            opts.url = url;
+            opts.success = function (data, textStatus, jqXHR) {
+                $rootScope.$apply(function () {
+                    if (callback) callback(null, data, {data: data, textStatus: textStatus, jqXHR: jqXHR});
+                })
+            };
+            opts.error = function (jqXHR, textStatus, errorThrown) {
+                $rootScope.$apply(function () {
+                    var resp = {jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown};
+                    if (callback) callback(resp, null, resp);
+                });
+            };
+            $.ajax(opts);
         };
 
-
+        Collection.prototype.GET = function () {
+            _.partial(this.HTTP, 'GET').apply(this, arguments);
+        };
 
         return Collection;
 

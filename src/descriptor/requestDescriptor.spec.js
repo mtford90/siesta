@@ -1,18 +1,18 @@
 describe('request descriptor', function () {
 
-    var Collection, RequestDescriptor, RestError, DescriptorRegistry;
+    var Collection, Descriptor, RestError, DescriptorRegistry;
 
     var collection, carMapping;
 
     beforeEach(function (done) {
-        module('restkit.requestDescriptor', function ($provide) {
+        module('restkit.descriptor', function ($provide) {
             $provide.value('$log', console);
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _RequestDescriptor_, _RestError_, _DescriptorRegistry_) {
+        inject(function (_Collection_, _Descriptor_, _RestError_, _DescriptorRegistry_) {
             Collection = _Collection_;
-            RequestDescriptor = _RequestDescriptor_;
+            Descriptor = _Descriptor_;
             RestError = _RestError_;
             DescriptorRegistry = _DescriptorRegistry_;
         });
@@ -34,7 +34,7 @@ describe('request descriptor', function () {
 
         describe('path', function () {
             it('match id', function () {
-                var r = new RequestDescriptor({path: '/cars/(?<id>[0-9])/?'});
+                var r = new Descriptor({path: '/cars/(?<id>[0-9])/?'});
                 var match = r._matchPath('/cars/5/');
                 assert.equal(match.id, '5');
                 match = r._matchPath('/cars/5');
@@ -44,21 +44,21 @@ describe('request descriptor', function () {
 
         describe('http methods', function () {
             it('all http methods', function () {
-                var r = new RequestDescriptor({method: '*'});
+                var r = new Descriptor({method: '*'});
                 _.each(r.httpMethods, function (method) {
                     assert.include(r.method, method);
                 });
-                r = new RequestDescriptor({method: ['*']});
+                r = new Descriptor({method: ['*']});
                 _.each(r.httpMethods, function (method) {
                     assert.include(r.method, method);
                 });
-                r = new RequestDescriptor({method: ['*', 'GET']});
+                r = new Descriptor({method: ['*', 'GET']});
                 _.each(r.httpMethods, function (method) {
                     assert.include(r.method, method);
                 });
             });
             it('match against all', function () {
-                var r = new RequestDescriptor({method: '*'});
+                var r = new Descriptor({method: '*'});
                 _.each(r.httpMethods, function (method) {
                     assert.ok(r._matchMethod(method));
                     assert.ok(r._matchMethod(method.toUpperCase()));
@@ -66,7 +66,7 @@ describe('request descriptor', function () {
                 });
             });
             it('match against some', function () {
-                var r = new RequestDescriptor({method: ['POST', 'PUT']});
+                var r = new Descriptor({method: ['POST', 'PUT']});
                 assert.ok(r._matchMethod('POST'));
                 assert.ok(r._matchMethod('PUT'));
                 assert.ok(r._matchMethod('post'));
@@ -88,11 +88,11 @@ describe('request descriptor', function () {
                     assert.notOk(r._matchMethod('hEaD'));
                 }
 
-                assertMatchMethod(new RequestDescriptor({method: ['POST']}));
-                assertMatchMethod(new RequestDescriptor({method: ['pOsT']}));
-                assertMatchMethod(new RequestDescriptor({method: 'pOsT'}));
-                assertMatchMethod(new RequestDescriptor({method: 'post'}));
-                assertMatchMethod(new RequestDescriptor({method: 'POST'}));
+                assertMatchMethod(new Descriptor({method: ['POST']}));
+                assertMatchMethod(new Descriptor({method: ['pOsT']}));
+                assertMatchMethod(new Descriptor({method: 'pOsT'}));
+                assertMatchMethod(new Descriptor({method: 'post'}));
+                assertMatchMethod(new Descriptor({method: 'POST'}));
             })
         });
 
@@ -101,55 +101,55 @@ describe('request descriptor', function () {
 
     describe('specify mapping', function () {
         it('as object', function () {
-            var r = new RequestDescriptor({mapping: carMapping});
+            var r = new Descriptor({mapping: carMapping});
             assert.equal(r.mapping, carMapping);
         });
         it('as string', function () {
-            var r = new RequestDescriptor({mapping: 'Car', collection: 'myCollection'});
+            var r = new Descriptor({mapping: 'Car', collection: 'myCollection'});
             assert.equal('Car', r.mapping.type);
         });
         it('as string, but collection as object', function () {
-            var r = new RequestDescriptor({mapping: 'Car', collection: collection});
+            var r = new Descriptor({mapping: 'Car', collection: collection});
             assert.equal('Car', r.mapping.type);
         });
         it('should throw an exception if passed as string without collection', function () {
-            assert.throws(_.partial(RequestDescriptor, {mapping: 'Car'}), RestError);
+            assert.throws(_.partial(Descriptor, {mapping: 'Car'}), RestError);
         });
     });
 
     describe('data', function () {
         it('if null, should be null', function () {
-            var r = new RequestDescriptor({data: null});
+            var r = new Descriptor({data: null});
             assert.notOk(r.data);
         });
         it('if empty string, should be null', function () {
-            var r = new RequestDescriptor({data: ''});
+            var r = new Descriptor({data: ''});
             assert.notOk(r.data);
         });
         it('if length 1, should be a string', function () {
-            var r = new RequestDescriptor({data: 'abc'});
+            var r = new Descriptor({data: 'abc'});
             assert.equal(r.data, 'abc');
         });
         it('if > length 1, should be an object', function () {
-            var r = new RequestDescriptor({data: 'path.to.data'});
+            var r = new Descriptor({data: 'path.to.data'});
             assert.equal(r.data.path.to, 'data');
         });
         describe('embed', function () {
             var data = {x: 1, y: 2, z: 3};
             it('if null, should simply return the object', function () {
-                var r = new RequestDescriptor({data: null});
+                var r = new Descriptor({data: null});
                 assert.equal(data, r._embedData(data));
             });
             it('if empty string, should simply return the object', function () {
-                var r = new RequestDescriptor({data: ''});
+                var r = new Descriptor({data: ''});
                 assert.equal(data, r._embedData(data));
             });
             it('if length 1, should return 1 level deep object', function () {
-                var r = new RequestDescriptor({data: 'abc'});
+                var r = new Descriptor({data: 'abc'});
                 assert.equal(data, r._embedData(data).abc);
             });
             it('if > length 1, should return n level deep object', function () {
-                var r = new RequestDescriptor({data: 'path.to.data'});
+                var r = new Descriptor({data: 'path.to.data'});
                 var extractData = r._embedData(data);
                 console.log('yo', extractData);
                 assert.equal(data, extractData.path.to.data);
@@ -158,22 +158,22 @@ describe('request descriptor', function () {
         describe('extract', function () {
             var data = {x: 1, y: 2, z: 3};
             it('if null, should simply return the object', function () {
-                var r = new RequestDescriptor({data: null});
+                var r = new Descriptor({data: null});
                 var extractData = r._extractData(data);
                 assert.equal(extractData, data);
             });
             it('if empty string, should simply return the object', function () {
-                var r = new RequestDescriptor({data: ''});
+                var r = new Descriptor({data: ''});
                 var extractData = r._extractData(data);
                 assert.equal(extractData, data);
             });
             it('if length 1, should return 1 level deep object', function () {
-                var r = new RequestDescriptor({data: 'abc'});
+                var r = new Descriptor({data: 'abc'});
                 var extractData = r._extractData({abc: data});
                 assert.equal(extractData, data);
             });
             it('if > length 1, should return n level deep object', function () {
-                var r = new RequestDescriptor({data: 'path.to.data'});
+                var r = new Descriptor({data: 'path.to.data'});
                 var extractData = r._extractData({path: {to: {data: data}}});
                 assert.equal(extractData, data);
             });
@@ -182,7 +182,7 @@ describe('request descriptor', function () {
 
     describe('registry', function () {
         it('should register request descriptor', function () {
-            var r = new RequestDescriptor({data: 'path.to.data'});
+            var r = new Descriptor({data: 'path.to.data'});
             assert.include(DescriptorRegistry.requestDescriptors, r);
         });
     });
@@ -191,7 +191,7 @@ describe('request descriptor', function () {
         describe('no data', function () {
             var descriptor;
             beforeEach(function () {
-                descriptor = new RequestDescriptor({
+                descriptor = new Descriptor({
                     method: 'POST',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
@@ -220,7 +220,7 @@ describe('request descriptor', function () {
         describe('data', function () {
             var descriptor;
             beforeEach(function () {
-                descriptor = new RequestDescriptor({
+                descriptor = new Descriptor({
                     method: 'POST',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?',

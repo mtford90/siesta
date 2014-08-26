@@ -1,12 +1,10 @@
-describe.only('http!', function () {
+describe('http!', function () {
 
-    var Collection, RelationshipType, Pouch;
+    var Collection, RelationshipType, Pouch, RestObject;
     var collection, carMapping, personMapping;
-
 
     var $rootScope;
     var server;
-
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -18,11 +16,12 @@ describe.only('http!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_) {
+        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_) {
             $rootScope = _$rootScope_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             Pouch = _Pouch_;
+            RestObject = _RestObject_;
         });
 
         server = sinon.fakeServer.create();
@@ -36,7 +35,7 @@ describe.only('http!', function () {
         server.restore();
     });
 
-    describe('foreign key', function () {
+    describe('GET', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
@@ -62,17 +61,49 @@ describe.only('http!', function () {
             });
         });
 
-
-        it('xyz', function (done) {
-            server.respondWith("GET", "http://mywebsite.co.uk/cars/",
-                [200, { "Content-Type": "application/json" },
-                    JSON.stringify([{colour: 'red', name: 'Aston Martin', owner: '093hodhfno'}])]);
-            collection.GET('cars/', function (err, data) {
-                dump(data);
-                done(err);
+        describe('success', function () {
+            var err, obj, resp;
+            beforeEach(function (done) {
+                var raw = {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'};
+                var headers = { "Content-Type": "application/json" };
+                var path = "http://mywebsite.co.uk/cars/5/";
+                var method = "GET";
+                var status = 200;
+                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                collection.GET('cars/5/', function (_err, _obj, _resp) {
+                    err = _err;
+                    obj = _obj;
+                    resp = _resp;
+                    done();
+                });
+                server.respond();
             });
-            server.respond();
-        });
+
+            it('no error', function () {
+                assert.notOk(err);
+            });
+
+            it('returns data', function () {
+                assert.equal(resp.data.colour, 'red');
+                assert.equal(resp.data.name, 'Aston Martin');
+                assert.equal(resp.data.owner, '093hodhfno');
+                assert.equal(resp.data.id, '5');
+            });
+
+            it('returns text status', function () {
+                assert.equal(resp.textStatus, 'success');
+            });
+
+            it('returns jqxhr', function () {
+                assert.ok(resp.jqXHR);
+            });
+
+            it('returns a car object', function () {
+                assert.instanceOf(obj, RestObject);
+            })
+
+        })
+
 
     });
 
