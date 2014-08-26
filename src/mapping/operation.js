@@ -1,6 +1,43 @@
 angular.module('restkit.mapping.operation', [])
 
-    .factory('MappingOperation', function (jlog, RestObject, Store, cache) {
+    .factory('Operation', function () {
+
+        var runningOperations = [];
+
+        function Operation() {
+            if (!this) return new Operation();
+            Object.defineProperty(this, 'running', {
+                get: function () {
+                    return runningOperations.indexOf(this) > -1
+                },
+                enumerable: true,
+                configurable: true
+            });
+        }
+
+        Operation.prototype.start = function () {
+            runningOperations.push(this);
+        };
+
+        Operation.prototype.finish = function () {
+            var idx = runningOperations.indexOf(this);
+            runningOperations.splice(idx, 1);
+        };
+
+        Operation.runningOperations = runningOperations;
+
+        Object.defineProperty(Operation, 'operationsAreRunning', {
+            get: function () {
+                return !!runningOperations.length;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        return Operation;
+    })
+
+    .factory('MappingOperation', function (jlog, RestObject, Store, cache, Operation) {
 
         var $log = jlog.loggerWithName('MappingOperation');
 
@@ -15,6 +52,9 @@ angular.module('restkit.mapping.operation', [])
             if (!this) {
                 return new MappingOperation(mapping, data, completion);
             }
+
+            Operation.call(this);
+
             var self = this;
             this.mapping = mapping;
             this.data = data;
@@ -37,12 +77,16 @@ angular.module('restkit.mapping.operation', [])
             });
         }
 
+        MappingOperation.prototype = Object.create(Operation.prototype);
+
+
         /**
          * Check to see if all sub-ops have finished. Call the completion function if finished.
          */
         MappingOperation.prototype.checkIfDone = function () {
             var isFinished = this._operations.length == this._finished.length;
             if (isFinished) {
+                this.finish();
                 $log.info('Mapping operation finishing', {obj: this._obj._id});
                 if (this.completion) {
                     var errors = this.failed ? this._errors : null;
@@ -202,6 +246,7 @@ angular.module('restkit.mapping.operation', [])
          * Kick off the operation.
          */
         MappingOperation.prototype.start = function () {
+            Operation.prototype.start.call(this); // super call
             var self = this;
             var data = this.data;
             var remoteIdentifier;
@@ -283,13 +328,14 @@ angular.module('restkit.mapping.operation', [])
         return MappingOperation;
     })
 
-    .factory('BulkMappingOperation', function (MappingOperation, jlog, $rootScope) {
+    .factory('BulkMappingOperation', function (MappingOperation, jlog, $rootScope, Operation) {
         var $log = jlog.loggerWithName('BulkMappingOperation');
 
         function BulkMappingOperation(mapping, data, completion) {
             if (!this) {
                 return new BulkMappingOperation(mapping, data, completion);
             }
+            Operation.call(this);
             var self = this;
             this.mapping = mapping;
             this.data = data;
@@ -307,7 +353,10 @@ angular.module('restkit.mapping.operation', [])
             });
         }
 
+        BulkMappingOperation.prototype = Object.create(Operation.prototype);
+
         BulkMappingOperation.prototype.start = function () {
+            Operation.prototype.start.call(this); // super clal
             $log.trace('start');
             var self = this;
             var data = this.data;
@@ -322,6 +371,7 @@ angular.module('restkit.mapping.operation', [])
                         }
                         self._finished.push(op);
                         if (self._finished.length == self._operations.length) {
+                            this.finish();
                             if (self.completion) {
                                 if (self.failed) {
                                     $log.trace('fail');

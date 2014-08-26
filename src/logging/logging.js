@@ -16,22 +16,22 @@ angular.module('logging', [])
 
     .factory('jlogConfig', function (logLevels) {
         var ll = {
-            Pouch: logLevels.error,
-            CollectionRegistry: logLevels.error,
-            Collection: logLevels.error,
-            Cache: logLevels.debug,
-            'Cache.notifications': logLevels.error,
-            Store: logLevels.error,
-            Indexes: logLevels.error,
-            Index: logLevels.error,
-            http: logLevels.error,
+            Pouch: logLevels.warn,
+            CollectionRegistry: logLevels.warn,
+            Collection: logLevels.warn,
+            Cache: logLevels.warn,
+            'Cache.notifications': logLevels.warn,
+            Store: logLevels.warn,
+            Indexes: logLevels.warn,
+            Index: logLevels.warn,
+            http: logLevels.warn,
             Mapping: logLevels.warn,
-            ForeignKeyRelationship: logLevels.error,
-            OneToOneRelationship: logLevels.error,
-            Query: logLevels.debug,
-            RawQuery: logLevels.debug,
+            ForeignKeyRelationship: logLevels.warn,
+            OneToOneRelationship: logLevels.warn,
+            Query: logLevels.warn,
+            RawQuery: logLevels.warn,
             MappingOperation: logLevels.warn,
-            Descriptor: logLevels.error,
+            Descriptor: logLevels.warn,
             BulkMappingOperation: logLevels.warn
         };
 
