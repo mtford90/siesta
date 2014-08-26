@@ -1,6 +1,6 @@
 describe.only('request descriptor', function () {
 
-    var Collection, Descriptor, RestError, DescriptorRegistry;
+    var Collection, Descriptor, RestError, DescriptorRegistry,RequestDescriptor, ResponseDescriptor;
 
     var collection, carMapping;
 
@@ -10,11 +10,13 @@ describe.only('request descriptor', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _Descriptor_, _RestError_, _DescriptorRegistry_) {
+        inject(function (_Collection_, _Descriptor_, _RestError_, _DescriptorRegistry_, _RequestDescriptor_, _ResponseDescriptor_) {
             Collection = _Collection_;
             Descriptor = _Descriptor_;
             RestError = _RestError_;
             DescriptorRegistry = _DescriptorRegistry_;
+            RequestDescriptor = _RequestDescriptor_;
+            ResponseDescriptor = _ResponseDescriptor_;
         });
 
         collection = new Collection('myCollection', function (err, version) {
@@ -182,13 +184,13 @@ describe.only('request descriptor', function () {
 
     describe('registry', function () {
         it('should register request descriptor', function () {
-            var r = new Descriptor({data: 'path.to.data', mapping: carMapping});
+            var r = new RequestDescriptor({data: 'path.to.data', mapping: carMapping});
             assert.include(DescriptorRegistry.requestDescriptors[carMapping.collection], r);
         });
         describe('request descriptors for collection', function () {
             var descriptor;
             beforeEach(function () {
-                descriptor = new Descriptor({data: 'path.to.data', mapping: carMapping});
+                descriptor = new RequestDescriptor({data: 'path.to.data', mapping: carMapping});
             });
             it('request descriptors should be accessible by collection name', function () {
                 assert.include(DescriptorRegistry.requestDescriptorsForCollection(carMapping.collection), descriptor);
@@ -211,68 +213,88 @@ describe.only('request descriptor', function () {
                 });
             });
             it('match', function () {
-                assert.equal(descriptor.match({
+                assert.ok(descriptor._matchConfig({
                     type: 'POST',
                     url: '/cars/5/'
-                }), carMapping);
+                }));
             });
             it('no match because of method', function () {
-                assert.notOk(descriptor.match({
+                assert.notOk(descriptor._matchConfig({
                     type: 'GET',
                     url: '/cars/5/'
                 }));
             });
             it('no match because of url', function () {
-                assert.notOk(descriptor.match({
+                assert.notOk(descriptor._matchConfig({
                     type: 'POST',
                     url: '/asdasd/'
                 }));
             });
         });
 
-        describe('data', function () {
-            var descriptor;
-            beforeEach(function () {
-                descriptor = new Descriptor({
-                    type: 'POST',
-                    mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?',
-                    data: 'path.to.data'
-                });
+
+    });
+
+    describe('data', function () {
+        var descriptor;
+        beforeEach(function () {
+            descriptor = new Descriptor({
+                mapping: carMapping,
+                data: 'path.to.data'
             });
-            it('match', function () {
-                assert.equal(descriptor.match({
-                    type: 'POST',
-                    url: '/cars/5/',
-                    data: {
-                        path: {
-                            to: {
-                                data: {
-                                    x: 1,
-                                    y: 2
-                                }
-                            }
+        });
+        it('match', function () {
+            assert.ok(descriptor._matchData({
+                path: {
+                    to: {
+                        data: {
+                            x: 1,
+                            y: 2
                         }
                     }
-                }), carMapping);
-            });
-            it('no match', function () {
-                assert.notOk(descriptor.match({
-                    type: 'POST',
-                    url: '/cars/5/',
+                }
+            }));
+        });
+        it('no match', function () {
+            assert.notOk(descriptor._matchData({
+                path: { // Missing 'to'
                     data: {
-                        path: { // Missing 'to'
-                            data: {
-                                x: 1,
-                                y: 2
-                            }
+                        x: 1,
+                        y: 2
+                    }
+                }
+            }));
+        });
+    });
+
+    describe('compound match', function () {
+        var descriptor;
+        beforeEach(function () {
+            descriptor = new Descriptor({
+                method: 'POST',
+                mapping: carMapping,
+                path: '/cars/(?<id>[0-9])/?',
+                data: 'path.to.data'
+            });
+        });
+
+        it('success', function () {
+            var config = {
+                type: 'POST',
+                url: '/cars/5/'
+            };
+            var data = {
+                path: {
+                    to: {
+                        data: {
+                            x: 1,
+                            y: 2
                         }
                     }
-                }));
-            });
-
-        })
-
+                }
+            };
+            assert.ok(descriptor.match(config, data));
+        });
     });
 
     describe('defaults', function () {
@@ -294,6 +316,8 @@ describe.only('request descriptor', function () {
     });
 
     describe('errors', function () {
+
+
         it('no mapping', function () {
             assert.throws(function () {
                 new Descriptor({data: 'data'})

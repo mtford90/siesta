@@ -1,7 +1,7 @@
-angular.module('restkit.collection', ['logging', 'restkit.mapping'])
+angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.descriptor'])
 
 
-    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope) {
+    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry) {
 
         var $log = jlog.loggerWithName('Collection');
 
@@ -233,9 +233,42 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping'])
             opts.type = method;
             opts.url = url;
             opts.success = function (data, textStatus, jqXHR) {
-                $rootScope.$apply(function () {
-                    if (callback) callback(null, data, {data: data, textStatus: textStatus, jqXHR: jqXHR});
-                })
+                var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
+                var descriptors = DescriptorRegistry.responseDescriptorsForCollection(this);
+                var matchedDescriptor;
+                var extractedData;
+                for (var i = 0; i < descriptors.length; i++) {
+                    var descriptor = descriptors[i];
+                    extractedData = descriptor.matches(opts, data);
+                    if (extractedData) {
+                        matchedDescriptor = descriptor;
+                        break;
+                    }
+                }
+                if (matchedDescriptor) {
+                    if (typeof(extractedData) == 'object') {
+                        var mapping = matchedDescriptor.mapping;
+                        mapping.map(extractedData, function (err, obj) {
+                            if (callback) {
+                                $rootScope.$apply(function () {
+                                    callback(err, obj, resp);
+                                });
+                            }
+
+                        });
+                    }
+                    else { // Matched, but no data.
+                        $rootScope.$apply(function () {
+                            callback(null, true, resp);
+                        });
+                    }
+                }
+                else if (callback) {
+                    $log.debug('No matched descriptor', {collection: this._name, method: method, path: path});
+                    $rootScope.$apply(function () {
+                        callback(null, null, resp);
+                    });
+                }
             };
             opts.error = function (jqXHR, textStatus, errorThrown) {
                 $rootScope.$apply(function () {

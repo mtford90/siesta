@@ -28,13 +28,23 @@ angular.module('restkit.descriptor', ['restkit'])
             _registerDescriptor(this.responseDescriptors, responseDescriptor);
         };
 
-        DescriptorRegistry.prototype.requestDescriptorsForCollection = function (collection) {
+        function _descriptorsForCollection(descriptors, collection) {
+            var descriptorsForCollection;
             if (typeof(collection) == 'string') {
-                return this.requestDescriptors[collection];
+                descriptorsForCollection = descriptors[collection];
             }
             else {
-                return this.requestDescriptors[collection._name];
+                descriptorsForCollection = (descriptors[collection._name] || []);
             }
+            return descriptorsForCollection;
+        }
+
+        DescriptorRegistry.prototype.requestDescriptorsForCollection = function (collection) {
+            return _descriptorsForCollection(this.requestDescriptors, collection);
+        };
+
+        DescriptorRegistry.prototype.responseDescriptorsForCollection = function (collection) {
+            return _descriptorsForCollection(this.responseDescriptors, collection);
         };
 
         return new DescriptorRegistry();
@@ -150,8 +160,6 @@ angular.module('restkit.descriptor', ['restkit'])
             defineSubProperty.call(this, 'method', this._opts);
             defineSubProperty.call(this, 'mapping', this._opts);
             defineSubProperty.call(this, 'data', this._opts);
-
-            DescriptorRegistry.registerRequestDescriptor(this);
         }
 
         Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
@@ -257,19 +265,65 @@ angular.module('restkit.descriptor', ['restkit'])
         /**
          * Returns this descriptors mapping if the request config matches.
          * @param config for jquery ajax
+         * @returns {boolean} true if match
          */
-        Descriptor.prototype.match = function (config) {
+        Descriptor.prototype._matchConfig = function (config) {
             var matches = config.type ? this._matchMethod(config.type) : true;
             if (matches) {
                 matches = config.url ? this._matchPath(config.url) : true;
-                if (this.data) {
-                    matches = config.data ? !!this._extractData(config.data) : false;
+            }
+            return matches;
+        };
+
+        Descriptor.prototype._matchData = function (data) {
+            var extractedData = null;
+            if (this.data) {
+                if (data) {
+                    extractedData = this._extractData(data);
                 }
             }
-            return matches ? this.mapping : null;
+            return extractedData;
+        };
+
+        Descriptor.prototype.match = function (config, data) {
+            var matches = this._matchConfig(config);
+            if (matches) {
+                matches = this._matchData(data);
+            }
+            return matches;
         };
 
         return Descriptor;
+    })
+
+    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor) {
+        function RequestDescriptor (opts) {
+            if (!this) {
+                return new RequestDescriptor(opts);
+            }
+
+            Descriptor.call(this, opts);
+
+            DescriptorRegistry.registerRequestDescriptor(this);
+        }
+
+        RequestDescriptor.prototype = Object.create(Descriptor);
+        return RequestDescriptor;
+    })
+
+    .factory('ResponseDescriptor', function (DescriptorRegistry,Descriptor) {
+        function ResponseDescriptor (opts) {
+            if (!this) {
+                return new ResponseDescriptor(opts);
+            }
+
+            Descriptor.call(this, opts);
+
+            DescriptorRegistry.registerResponseDescriptor(this);
+        }
+
+        ResponseDescriptor.prototype = Object.create(Descriptor);
+        return ResponseDescriptor;
     })
 
 ;
