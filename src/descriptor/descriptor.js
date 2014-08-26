@@ -1,20 +1,42 @@
 angular.module('restkit.descriptor', ['restkit'])
 
-    .factory('DescriptorRegistry', function () {
+    .factory('DescriptorRegistry', function (assert) {
         function DescriptorRegistry() {
             if (!this) {
                 return new DescriptorRegistry(opts);
             }
-            this.requestDescriptors = [];
-            this.responseDescriptors = [];
+            this.requestDescriptors = {};
+            this.responseDescriptors = {};
+        }
+
+        function _registerDescriptor(descriptors, descriptor) {
+            var mapping = descriptor.mapping;
+            var collection = mapping.collection;
+            assert(mapping);
+            assert(collection);
+            if (!descriptors[collection]) {
+                descriptors[collection] = [];
+            }
+            descriptors[collection].push(descriptor);
         }
 
         DescriptorRegistry.prototype.registerRequestDescriptor = function (requestDescriptor) {
-            this.requestDescriptors.push(requestDescriptor);
+            _registerDescriptor(this.requestDescriptors, requestDescriptor);
         };
+
         DescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
-            this.requestDescriptors.push(responseDescriptor);
+            _registerDescriptor(this.responseDescriptors, responseDescriptor);
         };
+
+        DescriptorRegistry.prototype.requestDescriptorsForCollection = function (collection) {
+            if (typeof(collection) == 'string') {
+                return this.requestDescriptors[collection];
+            }
+            else {
+                return this.requestDescriptors[collection._name];
+            }
+        };
+
         return new DescriptorRegistry();
     })
 
@@ -39,6 +61,9 @@ angular.module('restkit.descriptor', ['restkit'])
                     this._opts.path = XRegExp(this._opts.path);
                 }
             }
+            else {
+                this._opts.path = '';
+            }
 
             // Convert wildcards into methods and ensure is an array of uppercase methods.
             if (this._opts.method) {
@@ -48,8 +73,11 @@ angular.module('restkit.descriptor', ['restkit'])
                 else if (typeof(this._opts.method) == 'string') {
                     this._opts.method = [this._opts.method];
                 }
-                this._opts.method = _.map(this._opts.method, function (x) {return x.toUpperCase()});
             }
+            else {
+                this._opts.method = this.httpMethods;
+            }
+            this._opts.method = _.map(this._opts.method, function (x) {return x.toUpperCase()});
 
             // Mappings can be passed as the actual mapping object or as a string (with API specified too)
             if (this._opts.mapping) {
@@ -68,20 +96,20 @@ angular.module('restkit.descriptor', ['restkit'])
                                 this._opts.mapping = actualMapping;
                             }
                             else {
-                                throw new RestError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts});
+                                throw new RestError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts, descriptor: this});
                             }
                         }
                         else {
-                            throw new RestError('Collection ' + this._opts.collection + ' does not exist', {opts: opts});
+                            throw new RestError('Collection ' + this._opts.collection + ' does not exist', {opts: opts, descriptor: this});
                         }
                     }
                     else {
-                        throw new RestError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts});
+                        throw new RestError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts, descriptor: this});
                     }
                 }
             }
             else {
-                throw new RestError('Descriptors must be initialised with a mapping');
+                throw new RestError('Descriptors must be initialised with a mapping', {opts: opts, descriptor: this});
             }
 
             // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
@@ -114,13 +142,16 @@ angular.module('restkit.descriptor', ['restkit'])
                     this._opts.data = root;
                 }
             }
-
-            DescriptorRegistry.registerRequestDescriptor(this);
+            else {
+                this._opts.data = '';
+            }
 
             defineSubProperty.call(this, 'path', this._opts);
             defineSubProperty.call(this, 'method', this._opts);
             defineSubProperty.call(this, 'mapping', this._opts);
             defineSubProperty.call(this, 'data', this._opts);
+
+            DescriptorRegistry.registerRequestDescriptor(this);
         }
 
         Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
@@ -225,7 +256,7 @@ angular.module('restkit.descriptor', ['restkit'])
 
         /**
          * Returns this descriptors mapping if the request config matches.
-         * @param config http config for $http
+         * @param config for jquery ajax
          */
         Descriptor.prototype.match = function (config) {
             var matches = config.method ? this._matchMethod(config.method) : true;

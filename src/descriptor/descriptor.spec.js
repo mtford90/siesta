@@ -183,8 +183,21 @@ describe.only('request descriptor', function () {
     describe('registry', function () {
         it('should register request descriptor', function () {
             var r = new Descriptor({data: 'path.to.data', mapping: carMapping});
-            assert.include(DescriptorRegistry.requestDescriptors, r);
+            assert.include(DescriptorRegistry.requestDescriptors[carMapping.collection], r);
         });
+        describe('request descriptors for collection', function () {
+            var descriptor;
+            beforeEach(function () {
+                descriptor = new Descriptor({data: 'path.to.data', mapping: carMapping});
+            });
+            it('request descriptors should be accessible by collection name', function () {
+                assert.include(DescriptorRegistry.requestDescriptorsForCollection(carMapping.collection), descriptor);
+            });
+            it('request descriptors should be accessible by collection', function () {
+                assert.include(DescriptorRegistry.requestDescriptorsForCollection(collection), descriptor);
+            });
+        });
+
     });
 
     describe('match http config', function () {
@@ -260,7 +273,33 @@ describe.only('request descriptor', function () {
 
         })
 
-    })
+    });
+
+    describe('defaults', function () {
+        var descriptor;
+        beforeEach(function () {
+            descriptor = new Descriptor({mapping: carMapping});
+        });
+        it('default method is *', function () {
+            _.each(descriptor.httpMethods, function (method) {
+                assert.include(descriptor.method, method.toUpperCase());
+            });
+        });
+        it('default path is blank', function () {
+            assert.equal(descriptor.path, '');
+        });
+        it('default data is blank', function () {
+            assert.equal(descriptor.data, '');
+        })
+    });
+
+    describe('errors', function () {
+        it('no mapping', function () {
+            assert.throws(function () {
+                new Descriptor({data: 'data'})
+            }, RestError);
+        });
+    });
 
 
 });
