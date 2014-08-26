@@ -80,6 +80,9 @@ angular.module('restkit.descriptor', ['restkit'])
                     }
                 }
             }
+            else {
+                throw new RestError('Descriptors must be initialised with a mapping');
+            }
 
             // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
             // otherwise leave as string or undefined.
