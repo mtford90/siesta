@@ -1,4 +1,4 @@
-describe.only('http!', function () {
+describe('http!', function () {
 
     var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry;
     var collection, carMapping, personMapping;

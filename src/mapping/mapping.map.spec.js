@@ -1325,8 +1325,7 @@ describe('perform mapping', function () {
                     });
                 });
 
-
-                it.only('same owner', function (done) {
+                it('same owner using _mapBulk', function (done) {
                     var raw = [
                         {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'},
                         {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:'ownerId'},
@@ -1365,7 +1364,24 @@ describe('perform mapping', function () {
                         dump(ownerIdentifiers);
                         done();
                     })
+                });
+
+                it('same owner using map', function (done) {
+                    var carRaw1 = {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'};
+                    var carRaw2 = {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:'ownerId'};
+                    carMapping.map(carRaw1, function (err, car1) {
+                        if (err) done (err);
+                         carMapping.map(carRaw2, function (err, car2) {
+                             if (err) done (err);
+                             assert.equal(car1.owner._id, car2.owner._id);
+                             assert.equal(car1.owner.relatedObject, car2.owner.relatedObject);
+                             done();
+                         })
+                    });
                 })
+
+
+
             })
 
 
