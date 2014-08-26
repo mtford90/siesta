@@ -212,19 +212,19 @@ describe.only('request descriptor', function () {
             });
             it('match', function () {
                 assert.equal(descriptor.match({
-                    method: 'POST',
+                    type: 'POST',
                     url: '/cars/5/'
                 }), carMapping);
             });
             it('no match because of method', function () {
                 assert.notOk(descriptor.match({
-                    method: 'GET',
+                    type: 'GET',
                     url: '/cars/5/'
                 }));
             });
             it('no match because of url', function () {
                 assert.notOk(descriptor.match({
-                    method: 'POST',
+                    type: 'POST',
                     url: '/asdasd/'
                 }));
             });
@@ -234,7 +234,7 @@ describe.only('request descriptor', function () {
             var descriptor;
             beforeEach(function () {
                 descriptor = new Descriptor({
-                    method: 'POST',
+                    type: 'POST',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?',
                     data: 'path.to.data'
@@ -242,7 +242,7 @@ describe.only('request descriptor', function () {
             });
             it('match', function () {
                 assert.equal(descriptor.match({
-                    method: 'POST',
+                    type: 'POST',
                     url: '/cars/5/',
                     data: {
                         path: {
@@ -258,7 +258,7 @@ describe.only('request descriptor', function () {
             });
             it('no match', function () {
                 assert.notOk(descriptor.match({
-                    method: 'POST',
+                    type: 'POST',
                     url: '/cars/5/',
                     data: {
                         path: { // Missing 'to'

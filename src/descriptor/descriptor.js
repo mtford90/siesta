@@ -259,7 +259,7 @@ angular.module('restkit.descriptor', ['restkit'])
          * @param config for jquery ajax
          */
         Descriptor.prototype.match = function (config) {
-            var matches = config.method ? this._matchMethod(config.method) : true;
+            var matches = config.type ? this._matchMethod(config.type) : true;
             if (matches) {
                 matches = config.url ? this._matchPath(config.url) : true;
                 if (this.data) {
