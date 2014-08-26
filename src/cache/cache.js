@@ -43,75 +43,89 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
             if (collectionCache) {
                 var typeCache = restCache[collection][type];
                 if (typeCache) {
+                    $log.debug('Translated cache query:', {query: {collection: collection, type: type, remoteId: remoteId}, cached: typeCache});
                     var obj = typeCache[remoteId];
                     if (obj) {
                         $log.debug('Cache hit on ' + desc);
                     }
                     else {
                         $log.debug('Cache miss on ' + desc);
-                        $log.debug('Current state of cache:', restCache);
+                        $log.debug('Current state of cache:', typeCache);
                     }
                     return  obj;
                 }
             }
-            $log.debug('Cache miss on ' + desc);
+            $log.debug('Cache miss on ' + desc, {cache: collectionCache});
             return null;
         }
 
-        /**
-         * If an object that we have cached by localId changes its remoteId then we need to know about it
-         * and update the cache accordingly.
-         */
-
-        $rootScope.$on('Fount', function (e, n) {
-            var obj = n.obj;
-            var mapping = n.obj.mapping;
-            var idField = mapping.id;
-            if (n.change.type == ChangeType.Set && n.change.field == idField) {
-                jlog.loggerWithName('Cache.notifications').debug('Cache received Fount notification', n);
-                if (idCache[obj._id]) {
-                    insert(obj, n.change.new);
-                    if (n.change.old) {
-                        restCache[obj.collection][obj.type][n.change.old] = null;
-                    }
-                }
-            }
-        });
+//        /**
+//         * If an object that we have cached by localId changes its remoteId then we need to know about it
+//         * and update the cache accordingly.
+//         */
+//
+//        $rootScope.$on('Fount', function (e, n) {
+//            var obj = n.obj;
+//            var mapping = n.obj.mapping;
+//            var idField = mapping.id;
+//            if (n.change.type == ChangeType.Set && n.change.field == idField) {
+//                jlog.loggerWithName('Cache.notifications').debug('Cache received Fount notification', n);
+//                if (idCache[obj._id]) {
+//                    insert(obj, n.change.new);
+//                    if (n.change.old) {
+//                        restCache[obj.collection][obj.type][n.change.old] = null;
+//                    }
+//                }
+//            }
+//        });
 
         function insert(obj, remoteId) {
-            var collection = obj.mapping.collection;
-            if (collection) {
-                if (!restCache[collection]) {
-                    restCache[collection] = {};
-                }
-                var type = obj.mapping.type;
-                if (type) {
-                    if (!restCache[collection][type]) {
-                        restCache[collection][type] = {};
+            if (obj) {
+                var collection = obj.mapping.collection;
+                if (collection) {
+                    if (!restCache[collection]) {
+                        restCache[collection] = {};
                     }
-                    if (!restCache[collection][type][remoteId]) {
-                        restCache[collection][type][remoteId] = obj;
-                        $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
+                    var type = obj.mapping.type;
+                    if (type) {
+                        if (!restCache[collection][type]) {
+                            restCache[collection][type] = {};
+                        }
+                        $log.debug('Translated cache insert:', {query: {collection: collection, type: type, remoteId: remoteId}, cache: restCache[collection][type]});
+                        var cachedObject = restCache[collection][type][remoteId];
+                        if (!cachedObject) {
+                            restCache[collection][type][remoteId] = obj;
+                            $log.debug('insert ' + obj.collection + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]', {cache: restCache[collection][type]});
+                        }
+                        else {
+                            // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
+                            // should ever exist.
+                            if (obj != cachedObject) {
+                                var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache.' +
+                                    ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
+                                $log.error(message);
+                                throw new RestError(message);
+                            }
+                            else {
+                                $log.debug('Object has already been inserted.', restCache[collection][type]);
+                            }
+
+                        }
                     }
                     else {
-                        // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
-                        // should ever exist.
-                        if (obj != restCache[collection][type][remoteId]) {
-                            var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache.' +
-                                ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
-                            $log.error(message);
-                            throw new RestError(message);
-                        }
-
+                        throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
                     }
                 }
                 else {
-                    throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
+                    throw new RestError('Mapping has no collection', {mapping: obj.mapping, obj: obj});
                 }
             }
             else {
-                throw new RestError('Mapping has no collection', {mapping: obj.mapping, obj: obj});
+                var msg = 'Must pass an object when inserting to cache';
+                $log.error(msg);
+                throw new RestError(msg);
             }
+
         }
 
         return {

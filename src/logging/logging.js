@@ -19,20 +19,20 @@ angular.module('logging', [])
             Pouch: logLevels.error,
             CollectionRegistry: logLevels.error,
             Collection: logLevels.error,
-            Cache: logLevels.trace,
+            Cache: logLevels.debug,
             'Cache.notifications': logLevels.error,
             Store: logLevels.error,
             Indexes: logLevels.error,
             Index: logLevels.error,
             http: logLevels.error,
-            Mapping: logLevels.info,
+            Mapping: logLevels.warn,
             ForeignKeyRelationship: logLevels.error,
             OneToOneRelationship: logLevels.error,
-            Query: logLevels.error,
-            RawQuery: logLevels.error,
-            MappingOperation: logLevels.info,
+            Query: logLevels.debug,
+            RawQuery: logLevels.debug,
+            MappingOperation: logLevels.warn,
             Descriptor: logLevels.error,
-            BulkMappingOperation: logLevels.trace
+            BulkMappingOperation: logLevels.warn
         };
 
         var t = {};

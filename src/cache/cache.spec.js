@@ -73,28 +73,28 @@ describe('cache', function () {
             assert.equal(r, restCache[r.collection][r.type][r.customId]);
         });
 
-        describe('remote id set after insertion', function () {
-            it('never had a remote id', function () {
-                var r = mapping._new();
-                r._id = 'xyz123';
-                cache.insert(r);
-                r.id = '5678';
-                var restCache = cache._restCache();
-                $rootScope.$digest();
-                assert.equal(restCache[r.collection][r.type][r.id], r);
-            });
-            it('changed remote id', function () {
-                var r = mapping._new();
-                r._id = 'xyz123';
-                r.id = '5678';
-                cache.insert(r);
-                r.id = '1000';
-                var restCache = cache._restCache();
-                $rootScope.$digest();
-                assert.equal(restCache[r.collection][r.type][r.id], r);
-                assert.notOk(restCache[r.collection][r.type]['5678']);
-            });
-        })
+//        describe('remote id set after insertion', function () {
+//            it('never had a remote id', function () {
+//                var r = mapping._new();
+//                r._id = 'xyz123';
+//                cache.insert(r);
+//                r.id = '5678';
+//                var restCache = cache._restCache();
+//                $rootScope.$digest();
+//                assert.equal(restCache[r.collection][r.type][r.id], r);
+//            });
+//            it('changed remote id', function () {
+//                var r = mapping._new();
+//                r._id = 'xyz123';
+//                r.id = '5678';
+//                cache.insert(r);
+//                r.id = '1000';
+//                var restCache = cache._restCache();
+//                $rootScope.$digest();
+//                assert.equal(restCache[r.collection][r.type][r.id], r);
+//                assert.notOk(restCache[r.collection][r.type]['5678']);
+//            });
+//        })
 
     });
 

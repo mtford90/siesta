@@ -13,7 +13,7 @@ describe('query', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Query_, _Collection_, _RestObject_, _RestError_) {
+        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Query_, _Collection_, _RestObject_, _RestError_, _cache_) {
             Index = _Index_;
             Indexes = _Indexes_;
             Pouch = _Pouch_;
@@ -21,10 +21,11 @@ describe('query', function () {
             Query = _Query_;
             Collection = _Collection_;
             RestObject = _RestObject_;
-            RestError = _RestError_;
+            cache = _cache_;
         });
 
         Pouch.reset();
+        cache.reset();
 
     });
 

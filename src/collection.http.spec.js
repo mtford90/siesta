@@ -31,11 +31,11 @@ describe('http!', function () {
         Pouch.reset();
 
     });
-
-    afterEach(function () {
-        // Restore original server implementation.
-        server.restore();
-    });
+//
+//    afterEach(function () {
+//        // Restore original server implementation.
+//        server.restore();
+//    });
 
     describe('GET', function () {
         beforeEach(function (done) {

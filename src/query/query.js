@@ -17,22 +17,22 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                     callback(err);
                 }
                 else {
-                    try {
+//                    try {
                         $log.debug('got results', results);
                         var fondantObjects = _.map(results, function (r) {
                             return PouchDocAdapter.toNew(r);
                         });
                         $log.debug('got fondant objects', fondantObjects);
                         if (callback) callback(null, fondantObjects);
-                    }
-                    catch (err) {
-                        if (err instanceof RestError) {
-                            if (callback) callback(err);
-                        }
-                        else {
-                            throw err;
-                        }
-                    }
+//                    }
+//                    catch (err) {
+//                        if (err instanceof RestError) {
+//                            if (callback) callback(err);
+//                        }
+//                        else {
+//                            throw err;
+//                        }
+//                    }
 
                 }
             });
