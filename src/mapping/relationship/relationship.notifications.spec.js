@@ -200,7 +200,6 @@ describe('relationship notifications', function () {
                             }
                         });
                         $rootScope.$on('myCollection:Person', function (e, n) {
-                            dump(n);
                             if (n.change.type == ChangeType.Insert) {
                                 anotherPersonNotifInsert = n;
                             }
@@ -298,7 +297,6 @@ describe('relationship notifications', function () {
                 var exists = false;
                 for (var i = 0; i < notifications.length; i++) {
                     var n = notifications[i];
-                    dump(n);
                     var objMatches = true;
                     if (opts.obj) {
                         objMatches =opts.obj == n.obj

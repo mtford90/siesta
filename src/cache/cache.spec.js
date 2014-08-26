@@ -1,6 +1,6 @@
 describe('cache', function () {
 
-    var Collection, cache, RestObject, Mapping, $rootScope;
+    var Collection, cache, RestObject, Mapping, $rootScope, RestError;
 
     var mapping;
 
@@ -15,12 +15,13 @@ describe('cache', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _cache_, _Mapping_, _RestObject_, _$rootScope_) {
+        inject(function (_Collection_, _cache_, _Mapping_, _RestObject_, _$rootScope_, _RestError_) {
             Collection = _Collection_;
             cache = _cache_;
             RestObject = _RestObject_;
             Mapping = _Mapping_;
             $rootScope = _$rootScope_;
+            RestError = _RestError_;
         });
 
         Collection._reset();
@@ -79,7 +80,6 @@ describe('cache', function () {
                 cache.insert(r);
                 r.id = '5678';
                 var restCache = cache._restCache();
-                dump(restCache);
                 $rootScope.$digest();
                 assert.equal(restCache[r.collection][r.type][r.id], r);
             });
@@ -90,7 +90,6 @@ describe('cache', function () {
                 cache.insert(r);
                 r.id = '1000';
                 var restCache = cache._restCache();
-                dump(restCache);
                 $rootScope.$digest();
                 assert.equal(restCache[r.collection][r.type][r.id], r);
                 assert.notOk(restCache[r.collection][r.type]['5678']);
@@ -122,4 +121,78 @@ describe('cache', function () {
             assert.equal(returned, r);
         });
     });
+
+    describe('full test', function () {
+        var collection, carMapping, personMapping;
+
+        beforeEach(function (done) {
+            inject(function (DescriptorRegistry, ResponseDescriptor, RelationshipType) {
+                collection = new Collection('myCollection', function (err, version) {
+                    if (err) done(err);
+                    personMapping = collection.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                    carMapping = collection.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                    collection.baseURL = 'http://mywebsite.co.uk/';
+                    var desc = new ResponseDescriptor({
+                        method: 'GET',
+                        mapping: carMapping,
+                        path: '/cars/(?<id>[0-9])/?'
+                    });
+                    DescriptorRegistry.registerResponseDescriptor(desc);
+                }, function (err) {
+                    if (err) done(err);
+                    done();
+                });
+
+            });
+
+        });
+
+        describe.only('errors', function () {
+            it('ignore duplicate inserts if is the same object', function () {
+                var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
+                cache.insert(person);
+                cache.insert(person); // Should be fine as is the exact same object.
+            });
+
+            it('cant insert object with same _id', function () {
+                var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
+                cache.insert(person);
+                var duplicateObject = new RestObject();
+                duplicateObject._id = person._id;
+                assert.throws(function () {
+                    cache.insert(duplicateObject);
+                }, RestError);
+            });
+
+            it('cant insert object with same id', function () {
+                var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
+                cache.insert(person);
+
+                assert.throws(function () {
+                    cache.insert(personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'}));
+                }, RestError);
+            });
+
+
+        });
+
+
+
+
+
+    })
+
 });

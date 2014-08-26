@@ -495,7 +495,6 @@ describe('perform mapping', function () {
                     });
 
                     it('person should have car objects', function () {
-                        dump(person.cars);
                         _.each(cars, function (car) {
                             assert.include(person.cars._id, car._id);
                             assert.include(person.cars.relatedObject, car);
@@ -676,7 +675,6 @@ describe('perform mapping', function () {
                         });
 
                         it('person should have car objects', function () {
-                            dump(person.cars);
                             _.each(cars, function (car) {
                                 assert.include(person.cars._id, car._id);
                                 assert.include(person.cars.relatedObject, car);

@@ -41,8 +41,9 @@ angular.module('restkit.mapping.operation', [])
          * Check to see if all sub-ops have finished. Call the completion function if finished.
          */
         MappingOperation.prototype.checkIfDone = function () {
-            $log.trace('checkIfDone');
-            if (this._operations.length == this._finished.length) {
+            var isFinished = this._operations.length == this._finished.length;
+            if (isFinished) {
+                $log.info('Mapping operation finishing', {obj: this._obj._id});
                 if (this.completion) {
                     var errors = this.failed ? this._errors : null;
                     if (errors) {
@@ -81,7 +82,7 @@ angular.module('restkit.mapping.operation', [])
                 for (var i = 0; i < arr.length; i++) {
                     (function (i, item) {
                         var subOperation = new MappingOperation(reverseMapping, item, function (err, related) {
-                            $log.debug('finished array mapping operation', {prop: prop, item: item, related: related});
+                            $log.info('Mapping operation completed.', {prop: prop, related: related._id, obj: obj._id});
                             if (!err) {
                                 mappedArr[i] = related;
                             }
@@ -89,7 +90,6 @@ angular.module('restkit.mapping.operation', [])
                                 errors.push(err);
                             }
                             numFinished++;
-                            dump(numFinished, arr.length);
                             if (numFinished == arr.length) {
                                 if (!errors.length) {
                                     var proxy = obj[prop];
@@ -173,7 +173,7 @@ angular.module('restkit.mapping.operation', [])
          * @private
          */
         MappingOperation.prototype._startMapping = function () {
-            $log.trace('Start', this);
+            $log.info('Mapping operation starting', {obj: this._obj._id});
             var data = this.data;
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
@@ -204,38 +204,44 @@ angular.module('restkit.mapping.operation', [])
         MappingOperation.prototype.start = function () {
             var self = this;
             var data = this.data;
+            var remoteIdentifier;
+            var idField;
             if (data instanceof RestObject) {
                 this._obj = data;
                 this.checkIfDone();
             }
             else {
                 var storeOpts = {};
-                var idField = this.mapping.id;
-                var identifier;
+                idField = this.mapping.id;
                 if (typeof(data) == 'object') {
-                    dump('eep', this.data);
-                    identifier = data[idField];
+                    remoteIdentifier = data[idField];
                 }
                 else {
                     // Here we assume that the data given is a remote identifier.
-                    identifier = data;
+                    $log.trace('Assuming remote identifier');
+                    remoteIdentifier = data;
                     this.data = {};
                     this.data[idField] = data;
                     data = this.data;
                 }
-                if (identifier) {
+                if (remoteIdentifier) {
                     $log.debug('Can lookup via remote id');
-                    storeOpts[idField] = identifier;
+                    storeOpts[idField] = remoteIdentifier;
                     storeOpts.mapping = this.mapping;
                 }
                 if (data._id) {
                     $log.debug('Can lookup via _id');
                     storeOpts._id = data._id;
                 }
+                $log.info('Checking store');
                 Store.get(storeOpts, function (err, obj) {
                     if (!err) {
                         if (!obj) {
-                            var restObject = self.mapping._new();
+                            var newData = {};
+                            if (remoteIdentifier && idField) {
+                                newData[idField] = remoteIdentifier;
+                            }
+                            var restObject = self.mapping._new(newData);
                             Store.put(restObject, function (err) {
                                 if (err) {
                                     if (callback) callback(err);
@@ -262,7 +268,7 @@ angular.module('restkit.mapping.operation', [])
         return MappingOperation;
     })
 
-    .factory('BulkMappingOperation', function (MappingOperation, jlog) {
+    .factory('BulkMappingOperation', function (MappingOperation, jlog, $rootScope) {
         var $log = jlog.loggerWithName('BulkMappingOperation');
 
         function BulkMappingOperation(mapping, data, completion) {

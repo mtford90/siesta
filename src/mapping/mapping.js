@@ -397,12 +397,13 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          * @returns {RestObject}
          * @private
          */
-        Mapping.prototype._new = function () {
+        Mapping.prototype._new = function (data) {
             var _id = guid();
             var restObject = new RestObject(this);
+            $log.info('New object created _id="' + _id.toString() + '"');
             restObject._id = _id;
             // Place attributes on the object.
-            restObject.__values = {};
+            restObject.__values = data || {};
             _.each(this._fields, function (field) {
                 Object.defineProperty(restObject, field, {
                     get: function () {

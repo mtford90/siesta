@@ -17,7 +17,6 @@ angular.module('restkit.descriptor', ['restkit'])
             var collection = mapping.collection;
             assert(mapping);
             assert(collection);
-            dump(collection);
             assert(typeof(collection) == 'string');
             if (!descriptors[collection]) {
                 descriptors[collection] = [];
@@ -32,7 +31,6 @@ angular.module('restkit.descriptor', ['restkit'])
         DescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
             $log.trace('registerResponseDescriptor');
             _registerDescriptor(this.responseDescriptors, responseDescriptor);
-            dump(this.responseDescriptors);
         };
 
         function _descriptorsForCollection(descriptors, collection) {

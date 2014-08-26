@@ -25,7 +25,6 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
         reset();
 
         function getViaLocalId(localId) {
-            $log.debug('looking up via _id "' + localId.toString() + '"');
             var obj = idCache[localId];
             if (obj) {
                 $log.debug('Cache hit on _id "' + localId.toString() + '"');
@@ -39,8 +38,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
         function getViaRemoteId(remoteId, opts) {
             var type = opts.mapping.type;
             var collection = opts.mapping.collection;
-            var desc = collection.toString() + ':' + type.toString() + '[' + remoteId + ']';
-            $log.debug('looking up via mapping ' + desc, {restCache: restCache, idCache: idCache});
+            var desc = collection.toString() + ':' + type.toString() + '[' + opts.mapping.id + '="' + remoteId + '"]';
             var collectionCache = restCache[collection];
             if (collectionCache) {
                 var typeCache = restCache[collection][type];
@@ -51,6 +49,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                     }
                     else {
                         $log.debug('Cache miss on ' + desc);
+                        $log.debug('Current state of cache:', restCache);
                     }
                     return  obj;
                 }
@@ -63,12 +62,13 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
          * If an object that we have cached by localId changes its remoteId then we need to know about it
          * and update the cache accordingly.
          */
+
         $rootScope.$on('Fount', function (e, n) {
-            $log.debug('Cache received Fount notification', n);
             var obj = n.obj;
             var mapping = n.obj.mapping;
             var idField = mapping.id;
             if (n.change.type == ChangeType.Set && n.change.field == idField) {
+                jlog.loggerWithName('Cache.notifications').debug('Cache received Fount notification', n);
                 if (idCache[obj._id]) {
                     insert(obj, n.change.new);
                     if (n.change.old) {
@@ -93,6 +93,16 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         restCache[collection][type][remoteId] = obj;
                         $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]');
                     }
+                    else {
+                        // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
+                        // should ever exist.
+                        if (obj != restCache[collection][type][remoteId]) {
+                            var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache';
+                            $log.error(message);
+                            throw new RestError(message);
+                        }
+
+                    }
                 }
                 else {
                     throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
@@ -108,7 +118,6 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
             '_idCache': function () {return idCache},
             get: function (opts) {
                 var obj, idField, remoteId;
-                $log.debug('get', opts);
                 var localId = opts._id;
                 if (localId) {
                     obj = getViaLocalId(localId);
@@ -140,6 +149,14 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         if (!idCache[obj._id]) {
                             $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[_id="' + obj._id + '"]');
                             idCache[obj._id] = obj;
+                        }
+                        else {
+                            // Something has gone badly wrong here. Two objects should never exist with the same _id
+                            if (idCache[obj._id] != obj) {
+                                var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache';
+                                $log.error(message);
+                                throw new RestError(message);
+                            }
                         }
                     }
                     var idField = obj.idField;
