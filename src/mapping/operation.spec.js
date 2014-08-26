@@ -106,8 +106,8 @@ describe('operations', function () {
 
         it('bulk', function (done) {
             var op = carMapping.map([
-                {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
-                {colour: 'blue', name: 'chevy', id: 'remoteId2'}
+                {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'},
+                {colour: 'blue', name: 'chevy', id: 'remoteId2', owner:'ownerId'}
             ], function (err, obj) {
                 if (err) done(err);
                 assert.notOk(op.running);
