@@ -1270,100 +1270,100 @@ describe('perform mapping', function () {
                         done(err);
                     });
                 });
-
-                it('all valid', function (done) {
-                    var raw = [
-                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
-                        {colour: 'blue', name: 'Lambo', id: "remoteId2"},
-                        {colour: 'green', name: 'Ford', id: "remoteId3"}
-                    ];
-                    carMapping._mapBulk(raw, function (err, objs, res) {
-                        dump(res);
-                        assert.notOk(err);
-                        assert.equal(objs.length, raw.length);
-                        assert.equal(res.length, raw.length);
-                        _.each(res, function (r) {
-                            assert.notOk(r.err);
-                            assert.ok(r.obj);
-                        });
-                        _.each(objs, function (o) {
-                            assert.include(_.pluck(res, 'obj'), o);
-                        });
-                        _.each(raw, function (r) {
-                            assert.include(_.pluck(res, 'raw'), r);
-                        });
-                        done();
-                    })
-                });
+//
+//                it('all valid', function (done) {
+//                    var raw = [
+//                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
+//                        {colour: 'blue', name: 'Lambo', id: "remoteId2"},
+//                        {colour: 'green', name: 'Ford', id: "remoteId3"}
+//                    ];
+//                    carMapping._mapBulk(raw, function (err, objs, res) {
+//                        dump(res);
+//                        assert.notOk(err);
+//                        assert.equal(objs.length, raw.length);
+//                        assert.equal(res.length, raw.length);
+//                        _.each(res, function (r) {
+//                            assert.notOk(r.err);
+//                            assert.ok(r.obj);
+//                        });
+//                        _.each(objs, function (o) {
+//                            assert.include(_.pluck(res, 'obj'), o);
+//                        });
+//                        _.each(raw, function (r) {
+//                            assert.include(_.pluck(res, 'raw'), r);
+//                        });
+//                        done();
+//                    })
+//                });
             });
 
             describe('foreign key', function () {
-                var personMapping;
-
-                beforeEach(function (done) {
-                    collection = new Collection('myCollection', function (err, version) {
-                        if (err) done(err);
-                        personMapping = collection.registerMapping('Person', {
-                            id: 'id',
-                            attributes: ['name', 'age']
-                        });
-                        carMapping = collection.registerMapping('Car', {
-                            id: 'id',
-                            attributes: ['colour', 'name'],
-                            relationships: {
-                                owner: {
-                                    mapping: 'Person',
-                                    type: RelationshipType.ForeignKey,
-                                    reverse: 'cars'
-                                }
-                            }
-                        });
-                    }, function (err) {
-                        done(err);
-                    });
-                });
-
-                it('same owner using _mapBulk', function (done) {
-                    var raw = [
-                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'},
-                        {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:'ownerId'},
-                        {colour: 'green', name: 'Ford', id: "remoteId3", owner:'ownerId'}
-                    ];
-                    carMapping._mapBulk(raw, function (err, objs, res) {
-                        if (err) done(err);
-                        assert.notOk(err);
-                        assert.equal(objs.length, raw.length);
-                        assert.equal(res.length, raw.length);
-                        _.each(res, function (r) {
-                            assert.notOk(r.err);
-                            assert.ok(r.obj);
-                        });
-                        _.each(objs, function (o) {
-                            assert.include(_.pluck(res, 'obj'), o);
-                        });
-                        _.each(raw, function (r) {
-                            assert.include(_.pluck(res, 'raw'), r);
-                        });
-                        var ownerIdentifiers = _.map(objs, function (o) {
-                            return o.owner._id;
-                        });
-                        Array.prototype.getUnique = function(){
-                            var u = {}, a = [];
-                            for(var i = 0, l = this.length; i < l; ++i){
-                                if(u.hasOwnProperty(this[i])) {
-                                    continue;
-                                }
-                                a.push(this[i]);
-                                u[this[i]] = 1;
-                            }
-                            return a;
-                        };
-                        assert.equal(ownerIdentifiers.getUnique().length, 1);
-                        dump(ownerIdentifiers);
-                        done();
-                    })
-                });
-
+//                var personMapping;
+//
+//                beforeEach(function (done) {
+//                    collection = new Collection('myCollection', function (err, version) {
+//                        if (err) done(err);
+//                        personMapping = collection.registerMapping('Person', {
+//                            id: 'id',
+//                            attributes: ['name', 'age']
+//                        });
+//                        carMapping = collection.registerMapping('Car', {
+//                            id: 'id',
+//                            attributes: ['colour', 'name'],
+//                            relationships: {
+//                                owner: {
+//                                    mapping: 'Person',
+//                                    type: RelationshipType.ForeignKey,
+//                                    reverse: 'cars'
+//                                }
+//                            }
+//                        });
+//                    }, function (err) {
+//                        done(err);
+//                    });
+//                });
+//
+//                it('same owner using _mapBulk', function (done) {
+//                    var raw = [
+//                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'},
+//                        {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:'ownerId'},
+//                        {colour: 'green', name: 'Ford', id: "remoteId3", owner:'ownerId'}
+//                    ];
+//                    carMapping._mapBulk(raw, function (err, objs, res) {
+//                        if (err) done(err);
+//                        assert.notOk(err);
+//                        assert.equal(objs.length, raw.length);
+//                        assert.equal(res.length, raw.length);
+//                        _.each(res, function (r) {
+//                            assert.notOk(r.err);
+//                            assert.ok(r.obj);
+//                        });
+//                        _.each(objs, function (o) {
+//                            assert.include(_.pluck(res, 'obj'), o);
+//                        });
+//                        _.each(raw, function (r) {
+//                            assert.include(_.pluck(res, 'raw'), r);
+//                        });
+//                        var ownerIdentifiers = _.map(objs, function (o) {
+//                            return o.owner._id;
+//                        });
+//                        Array.prototype.getUnique = function(){
+//                            var u = {}, a = [];
+//                            for(var i = 0, l = this.length; i < l; ++i){
+//                                if(u.hasOwnProperty(this[i])) {
+//                                    continue;
+//                                }
+//                                a.push(this[i]);
+//                                u[this[i]] = 1;
+//                            }
+//                            return a;
+//                        };
+//                        assert.equal(ownerIdentifiers.getUnique().length, 1);
+//                        dump(ownerIdentifiers);
+//                        done();
+//                    })
+//                });
+//
                 it('same owner using map', function (done) {
                     var carRaw1 = {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'};
                     var carRaw2 = {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:'ownerId'};
