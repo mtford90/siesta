@@ -1,6 +1,9 @@
 angular.module('restkit.descriptor', ['restkit'])
 
-    .factory('DescriptorRegistry', function (assert) {
+    .factory('DescriptorRegistry', function (assert, jlog) {
+
+        var $log = jlog.loggerWithName('DescriptorRegistry');
+
         function DescriptorRegistry() {
             if (!this) {
                 return new DescriptorRegistry(opts);
@@ -14,6 +17,8 @@ angular.module('restkit.descriptor', ['restkit'])
             var collection = mapping.collection;
             assert(mapping);
             assert(collection);
+            dump(collection);
+            assert(typeof(collection) == 'string');
             if (!descriptors[collection]) {
                 descriptors[collection] = [];
             }
@@ -25,13 +30,15 @@ angular.module('restkit.descriptor', ['restkit'])
         };
 
         DescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
+            $log.trace('registerResponseDescriptor');
             _registerDescriptor(this.responseDescriptors, responseDescriptor);
+            dump(this.responseDescriptors);
         };
 
         function _descriptorsForCollection(descriptors, collection) {
             var descriptorsForCollection;
             if (typeof(collection) == 'string') {
-                descriptorsForCollection = descriptors[collection];
+                descriptorsForCollection = descriptors[collection] || [];
             }
             else {
                 descriptorsForCollection = (descriptors[collection._name] || []);
@@ -151,9 +158,6 @@ angular.module('restkit.descriptor', ['restkit'])
                     }
                     this._opts.data = root;
                 }
-            }
-            else {
-                this._opts.data = '';
             }
 
             defineSubProperty.call(this, 'path', this._opts);
@@ -278,17 +282,32 @@ angular.module('restkit.descriptor', ['restkit'])
         Descriptor.prototype._matchData = function (data) {
             var extractedData = null;
             if (this.data) {
+                $log.trace('path specified');
                 if (data) {
                     extractedData = this._extractData(data);
                 }
+            }
+            else {
+                extractedData = data;
             }
             return extractedData;
         };
 
         Descriptor.prototype.match = function (config, data) {
+            $log.trace('match', {config: config, data:data, descriptor: this});
             var matches = this._matchConfig(config);
             if (matches) {
+                $log.trace('config matches');
                 matches = this._matchData(data);
+                if (matches) {
+                    $log.trace('data matches');
+                }
+                else {
+                    $log.trace('data doesnt match');
+                }
+            }
+            else {
+                $log.trace('config doesnt match');
             }
             return matches;
         };
@@ -296,33 +315,28 @@ angular.module('restkit.descriptor', ['restkit'])
         return Descriptor;
     })
 
-    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor) {
-        function RequestDescriptor (opts) {
+    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog) {
+        function RequestDescriptor(opts) {
             if (!this) {
                 return new RequestDescriptor(opts);
             }
 
             Descriptor.call(this, opts);
-
-            DescriptorRegistry.registerRequestDescriptor(this);
         }
 
-        RequestDescriptor.prototype = Object.create(Descriptor);
+        RequestDescriptor.prototype = Object.create(Descriptor.prototype);
         return RequestDescriptor;
     })
 
-    .factory('ResponseDescriptor', function (DescriptorRegistry,Descriptor) {
-        function ResponseDescriptor (opts) {
+    .factory('ResponseDescriptor', function (DescriptorRegistry, Descriptor, jlog) {
+        function ResponseDescriptor(opts) {
             if (!this) {
                 return new ResponseDescriptor(opts);
             }
-
             Descriptor.call(this, opts);
-
-            DescriptorRegistry.registerResponseDescriptor(this);
         }
 
-        ResponseDescriptor.prototype = Object.create(Descriptor);
+        ResponseDescriptor.prototype = Object.create(Descriptor.prototype);
         return ResponseDescriptor;
     })
 

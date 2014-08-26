@@ -216,7 +216,8 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             return mappingObject;
         };
 
-        Collection.prototype.HTTP = function (method, path) {
+        Collection.prototype.HTTP = function (method, path, assert) {
+            var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
             var opts = {};
@@ -233,19 +234,23 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             opts.type = method;
             opts.url = url;
             opts.success = function (data, textStatus, jqXHR) {
+
                 var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
-                var descriptors = DescriptorRegistry.responseDescriptorsForCollection(this);
+                var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
+                $log.debug('descriptors', descriptors);
                 var matchedDescriptor;
                 var extractedData;
+
                 for (var i = 0; i < descriptors.length; i++) {
                     var descriptor = descriptors[i];
-                    extractedData = descriptor.matches(opts, data);
+                    extractedData = descriptor.match(opts, data);
                     if (extractedData) {
                         matchedDescriptor = descriptor;
                         break;
                     }
                 }
                 if (matchedDescriptor) {
+                    $log.trace('matched descriptor', matchedDescriptor);
                     if (typeof(extractedData) == 'object') {
                         var mapping = matchedDescriptor.mapping;
                         mapping.map(extractedData, function (err, obj) {
@@ -254,7 +259,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                                     callback(err, obj, resp);
                                 });
                             }
-
                         });
                     }
                     else { // Matched, but no data.

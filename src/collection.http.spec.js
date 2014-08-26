@@ -1,6 +1,6 @@
 describe('http!', function () {
 
-    var Collection, RelationshipType, Pouch, RestObject;
+    var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry;
     var collection, carMapping, personMapping;
 
     var $rootScope;
@@ -16,12 +16,14 @@ describe('http!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_) {
+        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_, _ResponseDescriptor_, _DescriptorRegistry_) {
             $rootScope = _$rootScope_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             Pouch = _Pouch_;
             RestObject = _RestObject_;
+            ResponseDescriptor = _ResponseDescriptor_;
+            DescriptorRegistry = _DescriptorRegistry_;
         });
 
         server = sinon.fakeServer.create();
@@ -55,6 +57,13 @@ describe('http!', function () {
                     }
                 });
                 collection.baseURL = 'http://mywebsite.co.uk/';
+
+                var desc = new ResponseDescriptor({
+                    method: 'GET',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                DescriptorRegistry.registerResponseDescriptor(desc);
             }, function (err) {
                 if (err) done(err);
                 done();

@@ -1,4 +1,4 @@
-describe.only('request descriptor', function () {
+describe('request descriptor', function () {
 
     var Collection, Descriptor, RestError, DescriptorRegistry,RequestDescriptor, ResponseDescriptor;
 
@@ -185,12 +185,14 @@ describe.only('request descriptor', function () {
     describe('registry', function () {
         it('should register request descriptor', function () {
             var r = new RequestDescriptor({data: 'path.to.data', mapping: carMapping});
+            DescriptorRegistry.registerRequestDescriptor(r);
             assert.include(DescriptorRegistry.requestDescriptors[carMapping.collection], r);
         });
         describe('request descriptors for collection', function () {
             var descriptor;
             beforeEach(function () {
                 descriptor = new RequestDescriptor({data: 'path.to.data', mapping: carMapping});
+                DescriptorRegistry.registerRequestDescriptor(descriptor);
             });
             it('request descriptors should be accessible by collection name', function () {
                 assert.include(DescriptorRegistry.requestDescriptorsForCollection(carMapping.collection), descriptor);
@@ -235,36 +237,44 @@ describe.only('request descriptor', function () {
 
     });
 
-    describe('data', function () {
+    describe('match against data', function () {
         var descriptor;
-        beforeEach(function () {
-            descriptor = new Descriptor({
-                mapping: carMapping,
-                data: 'path.to.data'
+
+        describe('data specified', function () {
+            beforeEach(function () {
+                descriptor = new Descriptor({
+                    mapping: carMapping,
+                    data: 'path.to.data'
+                });
             });
-        });
-        it('match', function () {
-            assert.ok(descriptor._matchData({
-                path: {
-                    to: {
+            it('match', function () {
+                assert.ok(descriptor._matchData({
+                    path: {
+                        to: {
+                            data: {
+                                x: 1,
+                                y: 2
+                            }
+                        }
+                    }
+                }));
+            });
+            it('no match', function () {
+                assert.notOk(descriptor._matchData({
+                    path: { // Missing 'to'
                         data: {
                             x: 1,
                             y: 2
                         }
                     }
-                }
-            }));
+                }));
+            });
         });
-        it('no match', function () {
-            assert.notOk(descriptor._matchData({
-                path: { // Missing 'to'
-                    data: {
-                        x: 1,
-                        y: 2
-                    }
-                }
-            }));
-        });
+
+        describe('data unspecified', function () {
+
+        })
+
     });
 
     describe('compound match', function () {
@@ -310,8 +320,8 @@ describe.only('request descriptor', function () {
         it('default path is blank', function () {
             assert.equal(descriptor.path, '');
         });
-        it('default data is blank', function () {
-            assert.equal(descriptor.data, '');
+        it('default data is null', function () {
+            assert.equal(descriptor.data, null);
         })
     });
 
