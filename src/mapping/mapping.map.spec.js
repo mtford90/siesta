@@ -1270,8 +1270,9 @@ describe('perform mapping', function () {
                         done(err);
                     });
                 });
-//
-//                it('all valid', function (done) {
+
+                it('all valid', function (done) {
+                    assert(false, 'need to stop this clobbering the other tests');
 //                    var raw = [
 //                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
 //                        {colour: 'blue', name: 'Lambo', id: "remoteId2"},
@@ -1294,36 +1295,37 @@ describe('perform mapping', function () {
 //                        });
 //                        done();
 //                    })
-//                });
+                });
             });
 
             describe('foreign key', function () {
-//                var personMapping;
-//
-//                beforeEach(function (done) {
-//                    collection = new Collection('myCollection', function (err, version) {
-//                        if (err) done(err);
-//                        personMapping = collection.registerMapping('Person', {
-//                            id: 'id',
-//                            attributes: ['name', 'age']
-//                        });
-//                        carMapping = collection.registerMapping('Car', {
-//                            id: 'id',
-//                            attributes: ['colour', 'name'],
-//                            relationships: {
-//                                owner: {
-//                                    mapping: 'Person',
-//                                    type: RelationshipType.ForeignKey,
-//                                    reverse: 'cars'
-//                                }
-//                            }
-//                        });
-//                    }, function (err) {
-//                        done(err);
-//                    });
-//                });
-//
-//                it('same owner using _mapBulk', function (done) {
+                var personMapping;
+
+                beforeEach(function (done) {
+                    collection = new Collection('myCollection', function (err, version) {
+                        if (err) done(err);
+                        personMapping = collection.registerMapping('Person', {
+                            id: 'id',
+                            attributes: ['name', 'age']
+                        });
+                        carMapping = collection.registerMapping('Car', {
+                            id: 'id',
+                            attributes: ['colour', 'name'],
+                            relationships: {
+                                owner: {
+                                    mapping: 'Person',
+                                    type: RelationshipType.ForeignKey,
+                                    reverse: 'cars'
+                                }
+                            }
+                        });
+                    }, function (err) {
+                        done(err);
+                    });
+                });
+
+                it('same owner using _mapBulk', function (done) {
+                    assert(false, 'need to stop this clobbering the other tests');
 //                    var raw = [
 //                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'},
 //                        {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:'ownerId'},
@@ -1362,7 +1364,7 @@ describe('perform mapping', function () {
 //                        dump(ownerIdentifiers);
 //                        done();
 //                    })
-//                });
+                });
 //
                 it('same owner using map', function (done) {
                     var carRaw1 = {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'};
@@ -1377,16 +1379,7 @@ describe('perform mapping', function () {
                          })
                     });
                 })
-
-
-
             })
-
-
-
-
         });
-
     });
-
 });

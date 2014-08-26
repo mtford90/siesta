@@ -247,7 +247,7 @@ angular.module('restkit.mapping.operation', [])
                             // TODO: Alternative would be to only allow one Store operation at a time.
                             var restObject = cache.get(storeOpts);
                             if (restObject) {
-                                $log.warn('race cond')
+                                $log.warn('race cond');
                                 // The race condition occurred. Use the object created by the other mapping operation
                                 // instead.
                                 self._obj = restObject;
