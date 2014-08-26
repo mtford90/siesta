@@ -97,7 +97,8 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
                         // should ever exist.
                         if (obj != restCache[collection][type][remoteId]) {
-                            var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache';
+                            var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache.' +
+                                ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
                             $log.error(message);
                             throw new RestError(message);
                         }
@@ -153,7 +154,8 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         else {
                             // Something has gone badly wrong here. Two objects should never exist with the same _id
                             if (idCache[obj._id] != obj) {
-                                var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache';
+                                var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache. ' +
+                                    'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
                                 $log.error(message);
                                 throw new RestError(message);
                             }

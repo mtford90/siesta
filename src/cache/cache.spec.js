@@ -155,12 +155,10 @@ describe('cache', function () {
                     if (err) done(err);
                     done();
                 });
-
             });
-
         });
 
-        describe.only('errors', function () {
+        describe('errors', function () {
             it('ignore duplicate inserts if is the same object', function () {
                 var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
                 cache.insert(person);

@@ -400,7 +400,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         Mapping.prototype._new = function (data) {
             var _id = guid();
             var restObject = new RestObject(this);
-            $log.info('New object created _id="' + _id.toString() + '"');
+            $log.info('New object created _id="' + _id.toString() + '"', data);
             restObject._id = _id;
             // Place attributes on the object.
             restObject.__values = data || {};
