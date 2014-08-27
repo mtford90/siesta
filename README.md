@@ -458,6 +458,50 @@ describe.only('block of tests', function () {
 
 Things that don't have a home yet.
 
+### Request Descriptors
+
+```javascript
+// Custom serialiser for cars.
+function carSerialiser(fields, car, done) {
+	var data = {};
+	for (var idx in fields) {
+		var field = serialisableCarFields[idx];
+		if (car[field]) {
+			data[field] = car;
+		}
+	}
+	car.owner.get(function (err, person) {
+		if (err) {
+			done(err);
+		}
+		else {
+			if (person) {
+				data.owner = person.name;
+			}
+			done(null, data);
+		}
+	});
+}
+
+collection.registerRequestDescriptor({
+   path: 'cars/',
+   method: 'POST',
+   mapping: 'Car',
+   data: 'data',
+   serialiser: _.partial(carSerialiser, ['name', 'colour'])
+});
+
+collection.registerRequestDescriptor({
+	path: 'people/',
+	method: 'POST',
+	data: 'data',
+	serialiser: Serialiser.depthSerialiser(1), 
+	// serialiser: Serialiser.depthSerialiser(), 
+	// serialiser: Serialiser.idSerialiser // Default
+});
+```
+
+
 ### RestError
 
 `RestError` is an extension to Javascript's `Error` class.

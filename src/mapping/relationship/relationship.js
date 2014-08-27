@@ -520,14 +520,20 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 if (callback) callback('No local or remote id for relationship "' + name.toString() + '"');
                 return;
             }
-            Store.get(storeQuery, function (err, storedObj) {
-                if (err) {
-                    if (callback) callback(err);
-                }
-                else if (callback) {
-                    callback(null, storedObj);
-                }
-            });
+            if (storeQuery._id) {
+                Store.get(storeQuery, function (err, storedObj) {
+                    if (err) {
+                        if (callback) callback(err);
+                    }
+                    else if (callback) {
+                        callback(null, storedObj);
+                    }
+                });
+            }
+            else if(callback) {
+                callback(null, null);
+            }
+
         };
 
         OneToOneRelationship.prototype.addRelated = function (obj, related, callback) {

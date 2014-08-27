@@ -286,11 +286,36 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             _.partial(this.HTTP, 'GET').apply(this, arguments);
         };
 
-        Collection.prototype.POST = function (method, object) {
-
+        Collection.prototype.POST = function (path, object) {
+            var args = Array.prototype.slice.call(arguments, 2);
+            var callback;
+            var opts = {};
+            if (typeof(args[0]) == 'function') {
+                callback = args[0];
+            }
+            else if (typeof (args[0]) == 'object') {
+                opts = args[0];
+                callback = args[1];
+            }
+            args = Array.prototype.slice.call(args, 2);
+            var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
+            var matchedDescriptor;
+            opts.type = 'POST';
+            opts.url = url;
+            for (var i = 0; i < requestDescriptors.length; i++) {
+                var requestDescriptor = requestDescriptors[i];
+                if (requestDescriptor._matchConfig(opts)) {
+                    matchedDescriptor = requestDescriptor;
+                    break;
+                }
+            }
+            if (matchedDescriptor) {
+                _.partial(this.HTTP, 'POST', path, opts, callback).apply(this, args);
+            }
+            else if (callback) {
+                callback(null, null, null);
+            }
         };
-
-
 
         return Collection;
 
