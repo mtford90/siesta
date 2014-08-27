@@ -228,8 +228,8 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             return mappingObject;
         };
 
-        Collection.prototype.HTTP = function (method, path) {
-            $log.trace('HTTP', this);
+        Collection.prototype._httpResponse = function (method, path) {
+            $log.trace('_httpResponse', this);
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
@@ -304,11 +304,15 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         };
 
         Collection.prototype.GET = function () {
-            _.partial(this.HTTP, 'GET').apply(this, arguments);
+            _.partial(this._httpResponse, 'GET').apply(this, arguments);
         };
 
-        Collection.prototype.POST = function (path, object) {
-            $log.trace('POST', {path: path, object:object});
+        Collection.prototype.POST = function () {
+            _.partial(this._httpRequest, 'POST').apply(this, arguments);
+        };
+
+        Collection.prototype._httpRequest = function (method, path, object) {
+            $log.trace(method, {path: path, object:object});
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
@@ -323,7 +327,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             args = Array.prototype.slice.call(args, 2);
             var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
             var matchedDescriptor;
-            opts.type = 'POST';
+            opts.type = method;
             var baseURL = this.baseURL;
             opts.url = baseURL + path;
             dump(opts);
@@ -344,7 +348,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                     else {
                         opts.data = data;
                         opts.obj = object;
-                        _.partial(self.HTTP, 'POST', path, opts, callback).apply(self, args);
+                        _.partial(self._httpResponse, method, path, opts, callback).apply(self, args);
                     }
                 });
             }
@@ -353,6 +357,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                 callback(null, null, null);
             }
         };
+
 
         return Collection;
 

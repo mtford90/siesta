@@ -550,11 +550,7 @@ describe('request descriptor', function () {
                         })
                     });
                 })
-
-
             })
         })
     })
-
-
 });
