@@ -235,7 +235,7 @@ describe('http!', function () {
         });
     });
 
-    describe.only('PUT', function () {
+    describe('PUT', function () {
         var err, obj, resp;
         beforeEach(function (done) {
             var configureDescriptors = function () {
@@ -265,6 +265,67 @@ describe('http!', function () {
                 var headers = { "Content-Type": "application/json" };
                 var path = "http://mywebsite.co.uk/cars/5/";
                 var method = "PUT";
+                var status = 200;
+                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                carMapping.map({colour: 'red', name: 'Aston Martin', id:'5'}, function (err, _car) {
+                    if (err) done(err);
+                    car = _car;
+                    assert.equal(car.colour, 'red');
+                    assert.equal(car.name, 'Aston Martin');
+                    assert.equal(car.id, '5');
+                    collection.PUT('cars/5/', car, function (_err, _obj, _resp) {
+                        err = _err;
+                        obj = _obj;
+                        resp = _resp;
+                        done();
+                    });
+                    server.respond();
+                });
+            });
+
+            it('no error', function () {
+                assert.notOk(err);
+            });
+
+            it('mapped onto the posted object', function () {
+                assert.equal(obj, car);
+                assert.equal(car.id, '5');
+                assert.equal(car.colour, 'red');
+                assert.equal(car.name, 'Aston Martin');
+            });
+        });
+    });
+
+    describe('PATCH', function () {
+        var err, obj, resp;
+        beforeEach(function (done) {
+            var configureDescriptors = function () {
+                var responseDescriptor = new ResponseDescriptor({
+                    method: 'PATCH',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'PATCH',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+            };
+            configureCollection(configureDescriptors, function () {
+                done();
+            });
+        });
+
+        describe('success', function () {
+            var car;
+            beforeEach(function (done) {
+                console.log(0);
+                var raw = {colour: 'red', name: 'Aston Martin', id:'5'};
+                var headers = { "Content-Type": "application/json" };
+                var path = "http://mywebsite.co.uk/cars/5/";
+                var method = "PATCH";
                 var status = 200;
                 server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
                 carMapping.map({colour: 'red', name: 'Aston Martin', id:'5'}, function (err, _car) {
