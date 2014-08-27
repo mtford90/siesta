@@ -93,7 +93,6 @@ describe('http!', function () {
 
             describe('single', function () {
                 beforeEach(function (done) {
-
                     var raw = {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'};
                     var headers = { "Content-Type": "application/json" };
                     var path = "http://mywebsite.co.uk/cars/5/";
@@ -175,7 +174,6 @@ describe('http!', function () {
 
 
     });
-
     describe('POST', function () {
 
         var err, obj, resp;
@@ -235,6 +233,142 @@ describe('http!', function () {
                 assert.equal(car.colour, 'red');
                 assert.equal(car.name, 'Aston Martin');
             });
+        });
+    });
+
+    describe('OPTIONS', function () {
+        var err, obj, resp;
+        beforeEach(function (done) {
+            var configureDescriptors = function () {
+
+            };
+            configureCollection(configureDescriptors, function () {
+                done();
+            });
+        });
+
+        describe('success', function () {
+            beforeEach(function (done) {
+                var raw = {option: 'something'};
+                var headers = { "Content-Type": "application/json" };
+                var path = "http://mywebsite.co.uk/something/";
+                var method = "OPTIONS";
+                var status = 200;
+                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                collection.OPTIONS('something/', function (_err, _obj, _resp) {
+                    err = _err;
+                    obj = _obj;
+                    resp = _resp;
+                    done();
+                });
+                server.respond();
+            });
+            it('no err', function () {
+                assert.notOk(err);
+            });
+            it('no obj', function () {
+                assert.notOk(obj);
+            });
+            it('resp', function () {
+                assert.ok(resp);
+            })
+        });
+    });
+
+    describe('HEAD', function () {
+        var err, obj, resp;
+        beforeEach(function (done) {
+            var configureDescriptors = function () {
+
+            };
+            configureCollection(configureDescriptors, function () {
+                done();
+            });
+        });
+
+        describe('success', function () {
+            beforeEach(function (done) {
+                var raw = {option: 'something'};
+                var headers = { "Content-Type": "application/json" };
+                var path = "http://mywebsite.co.uk/something/";
+                var method = "HEAD";
+                var status = 200;
+                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                collection.HEAD('something/', function (_err, _obj, _resp) {
+                    err = _err;
+                    obj = _obj;
+                    resp = _resp;
+                    done();
+                });
+                server.respond();
+            });
+            it('no err', function () {
+                assert.notOk(err);
+            });
+            it('no obj', function () {
+                assert.notOk(obj);
+            });
+            it('resp', function () {
+                assert.ok(resp);
+            })
+        });
+    });
+
+    /**
+     * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+     */
+    describe('TRACE', function () {
+        var err, obj, resp;
+        beforeEach(function (done) {
+            var configureDescriptors = function () {
+                var responseDescriptor = new ResponseDescriptor({
+                    method: 'TRACE',
+                    mapping: carMapping,
+                    path: 'cars/'
+                });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'TRACE',
+                    mapping: carMapping,
+                    path: 'cars/'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+            };
+            configureCollection(configureDescriptors, function () {
+                done();
+            });
+        });
+
+        describe('success', function () {
+            var car;
+            beforeEach(function (done) {
+                var raw = {colour: 'red'}; // Trace is supposed to be a reflection of the response body.
+                var headers = { "Content-Type": "message/http" }; // http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
+                var path = "http://mywebsite.co.uk/cars/";
+                var method = "TRACE";
+                var status = 200;
+                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                carMapping.map({colour: 'red'}, function (err, _car) {
+                    car = _car;
+                    collection.TRACE('cars/', _car, function (_err, _obj, _resp) {
+                        err = _err;
+                        obj = _obj;
+                        resp = _resp;
+                        done();
+                    });
+                    server.respond();
+                });
+            });
+            it('no err', function () {
+                assert.notOk(err);
+            });
+            it('obj', function () {
+                assert.ok(obj);
+            });
+            it('resp', function () {
+                assert.equal(resp.jqXHR.responseText, '{"colour":"red"}');
+                assert.ok(resp);
+            })
         });
     });
 });

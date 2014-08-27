@@ -307,6 +307,18 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             _.partial(this._httpResponse, 'GET').apply(this, arguments);
         };
 
+        Collection.prototype.OPTIONS = function () {
+            _.partial(this._httpResponse, 'OPTIONS').apply(this, arguments);
+        };
+
+        Collection.prototype.TRACE = function () {
+            _.partial(this._httpRequest, 'TRACE').apply(this, arguments);
+        };
+
+        Collection.prototype.HEAD = function () {
+            _.partial(this._httpResponse, 'HEAD').apply(this, arguments);
+        };
+
         Collection.prototype.POST = function () {
             _.partial(this._httpRequest, 'POST').apply(this, arguments);
         };
