@@ -352,18 +352,18 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
         RequestDescriptor.prototype._serialise = function (obj, callback) {
+            var self = this;
             $log.trace('_serialise');
             var finished;
             var data = this.serialiser(obj, function (err, data) {
                 if (!finished) {
-                    if (callback) callback(err, data);
+                    if (callback) callback(err, self._embedData(data));
                 }
             });
-            dump(data);
             if (data !== undefined) {
                 $log.trace('serialiser doesnt use a callback');
                 finished = true;
-                if (callback) callback(null, data);
+                if (callback) callback(null, self._embedData(data));
             }
             else {
                 $log.trace('serialiser uses a callback', this.serialiser);

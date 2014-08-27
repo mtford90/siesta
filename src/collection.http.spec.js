@@ -176,7 +176,7 @@ describe('http!', function () {
 
     });
 
-    describe.only('POST', function () {
+    describe('POST', function () {
 
         var err, obj, resp;
 
