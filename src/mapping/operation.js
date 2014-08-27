@@ -1,6 +1,8 @@
 angular.module('restkit.mapping.operation', [])
 
-    .factory('Operation', function () {
+    .factory('Operation', function (jlog) {
+
+        var operationsMonitor = jlog.loggerWithName('Num. Mapping Operations');
 
         var runningOperations = [];
 
@@ -15,13 +17,19 @@ angular.module('restkit.mapping.operation', [])
             });
         }
 
+        Operation._logNumOperations = function () {
+            operationsMonitor.info(this.runningOperations.length.toString());
+        };
+
         Operation.prototype.start = function () {
             runningOperations.push(this);
+            Operation._logNumOperations();
         };
 
         Operation.prototype.finish = function () {
             var idx = runningOperations.indexOf(this);
             runningOperations.splice(idx, 1);
+            Operation._logNumOperations();
         };
 
         Operation.runningOperations = runningOperations;

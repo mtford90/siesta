@@ -338,4 +338,6 @@ angular.module('restkit.descriptor', ['restkit'])
         return ResponseDescriptor;
     })
 
+
+
 ;
