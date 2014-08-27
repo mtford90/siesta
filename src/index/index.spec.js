@@ -26,10 +26,6 @@ describe('indexes', function () {
             assert.equal(i._getName(), 'myCollection_Index_Car_colour_name');
         });
 
-        it('field array as string', function () {
-            var i = new Index('myCollection', 'Car', ['colour', 'name']);
-            assert.equal(i._fieldArrayAsString(), '["colour","name"]');
-        });
 
         it('map func', function () {
             var i = new Index('myCollection', 'Car', ['colour', 'name']);

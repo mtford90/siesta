@@ -1,10 +1,11 @@
 angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDocAdapter'])
 
-    /**
-     * Query and return Fondant objects.
-     */
-    .factory('Query', function (RawQuery, jlog, PouchDocAdapter,RestError) {
+/**
+ * Query and return Fondant objects.
+ */
+    .factory('Query', function (RawQuery, jlog, PouchDocAdapter, RestError) {
         var $log = jlog.loggerWithName('Query');
+
         function Query(mapping, query) {
             this.mapping = mapping;
             this.query = query;
@@ -17,34 +18,27 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                     callback(err);
                 }
                 else {
-//                    try {
-                        $log.debug('got results', results);
-                        var fondantObjects = _.map(results, function (r) {
-                            return PouchDocAdapter.toNew(r);
-                        });
-                        $log.debug('got fondant objects', fondantObjects);
-                        if (callback) callback(null, fondantObjects);
-//                    }
-//                    catch (err) {
-//                        if (err instanceof RestError) {
-//                            if (callback) callback(err);
-//                        }
-//                        else {
-//                            throw err;
-//                        }
-//                    }
-
+                    $log.debug('got results', results);
+                    var fondantObjects = _.map(results, function (r) {
+                        return PouchDocAdapter.toNew(r);
+                    });
+                    $log.debug('got fondant objects', fondantObjects);
+                    if (callback) callback(null, fondantObjects);
                 }
             });
         };
 
+
+
         return Query;
     })
 
-    /**
-     * Query and return raw pouchdb documents.
-     */
-    .factory('RawQuery', function (Index, Pouch, jlog, RestError) {
+
+
+/**
+ * Query and return raw pouchdb documents.
+ */
+    .factory('RawQuery', function (Index, Pouch, jlog, RestError, constructMapFunction) {
 
         var $log = jlog.loggerWithName('RawQuery');
 
@@ -54,33 +48,41 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
             this.query = query;
         }
 
+        function resultsCallback (callback, err, resp) {
+            if (err) {
+                if (callback) callback(err);
+            }
+            else {
+                var results = _.pluck(resp.rows, 'value');
+                if (callback) callback(null, results);
+            }
+        }
+
         RawQuery.prototype.execute = function (callback) {
             var self = this;
             var designDocId = this._getDesignDocName();
+            var indexName = self._getIndexName();
             Pouch.getPouch().get(designDocId, function (err, doc) {
                 if (!err) {
-                    var b = self._getIndexName();
                     var key = self._constructKey();
                     if (!key.length) {
                         key = self.modelName;
                     }
-                    $log.debug('Executing query ' + b + ':' + ' ' + key);
-                    Pouch.getPouch().query(b, {key: key}, function (err, resp) {
-                        if (err) {
-                            if (callback) callback(err);
-                        }
-                        else {
-                            var results = _.pluck(resp.rows, 'value');
-                            $log.debug('Executed query ' + b + ':' + ' ' + key, {results: results, totalRows: resp.total_rows});
-                            if (callback) callback(null, results);
-                        }
-                    });
+                    $log.debug('Executing query ' + indexName + ':' + ' ' + key);
+                    Pouch.getPouch().query(indexName, {key: key}, _.partial(resultsCallback, callback));
                 }
                 else {
                     if (err.status == 404) {
-                        var errorMessage = 'Design doc "' + designDocId.toString() + '" doesnt exist. Do you have an index configured for this query?';
-                        $log.error(errorMessage, self.query);
-                        throw new RestError(errorMessage, {collection: self.collection, type: self.modelName, query: self.query});
+                        $log.warning('Couldnt find index "' + indexName + '" and hence must iterate through every single document.');
+                        var fields = [];
+                        for (var field in self.query) {
+                            if (self.query.hasOwnProperty(field)) {
+                                fields.push(field);
+                            }
+                        }
+                        // TODO: Clean up constructMapFunction so can output both string+func version so don't need eval here.
+                        eval('var mapFunc = ' + constructMapFunction(self.collection, self.modelName, fields));
+                        Pouch.getPouch().query(mapFunc, _.partial(resultsCallback, callback));
                     }
                     else {
                         callback(err);
@@ -88,7 +90,6 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                 }
             })
         };
-
 
         RawQuery.prototype._getFields = function () {
             var fields = [];

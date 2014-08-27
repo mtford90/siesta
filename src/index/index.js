@@ -67,7 +67,7 @@ angular.module('restkit.indexing', ['restkit'])
         };
     })
 
-    .factory('Index', function (Pouch, jlog, RestError) {
+    .factory('Index', function (Pouch, jlog, RestError, constructMapFunction) {
         var $log = jlog.loggerWithName('Index');
 
         function Index(collection, type, fields_or_field) {
@@ -104,57 +104,12 @@ angular.module('restkit.indexing', ['restkit'])
             return  index
         };
 
-        Index.prototype._fieldArrayAsString = function () {
-            var arrContents = _.reduce(this.fields, function (memo, f) {return memo + '"' + f + '",'}, '');
-            arrContents = arrContents.substring(0, arrContents.length - 1);
-            return '[' + arrContents + ']';
-        };
-
         Index.prototype._constructMapFunction = function () {
-            var mapFunc;
-            var onlyEmptyFieldSetSpecified = (this.fields.length == 1 && !this.fields[0].length);
-            var noFieldSetsSpecified = !this.fields.length || onlyEmptyFieldSetSpecified;
-            if (noFieldSetsSpecified) {
-                mapFunc = function (doc) {
-                    var type = "$2";
-                    var collection = "$3";
-                    if (doc.type == type && doc.collection == collection) {
-                        emit(doc.type, doc);
-                    }
-                }.toString();
-            }
-            else {
-                mapFunc = function (doc) {
-                    var type = "$2";
-                    var collection = "$3";
-                    if (doc.type == type && doc.collection == collection) {
-                        var fields = $1;
-                        var aggField = '';
-                        for (var idx in fields) {
-                            //noinspection JSUnfilteredForInLoop
-                            var field = fields[idx];
-                            var value = doc[field];
-                            if (value !== null && value !== undefined) {
-                                aggField += value.toString() + '_';
-                            }
-                            else if (value === null) {
-                                aggField += 'null_';
-                            }
-                            else {
-                                aggField += 'undefined_';
-                            }
-                        }
-                        aggField = aggField.substring(0, aggField.length - 1);
-                        emit(aggField, doc);
-                    }
-                }.toString();
-                var arr = this._fieldArrayAsString();
-                mapFunc = mapFunc.replace('$1', arr);
-            }
             this._validate();
-            mapFunc = mapFunc.replace('$2', this.type);
-            mapFunc = mapFunc.replace('$3', this.collection);
-            return mapFunc;
+            var fields = this.fields;
+            var type = this.type;
+            var collection = this.collection;
+            return constructMapFunction(collection, type, fields);
         };
 
         Index.prototype._validate = function () {

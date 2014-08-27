@@ -52,10 +52,15 @@ describe('query', function () {
             assert.equal(key, 'red_Aston Martin');
         });
 
-        it('execute with no index', function () {
+        it('execute with no rows and no index', function (done) {
             console.log(RawQuery);
-            var q = new RawQuery();
-            assert.throws(_.bind(q.execute, q, 'myCollection', 'Car', {colour: 'red', name: 'Aston Martin'}), RestError);
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+            q.execute(function (err, results) {
+                if (done) done(err);
+                console.log('query results:', results);
+                assert.equal(results.length, 0);
+                done();
+            });
         });
 
         it('execute with index', function (done) {
@@ -90,6 +95,22 @@ describe('query', function () {
                 });
             });
         });
+
+        it('execute without index with rows', function (done) {
+            console.log(RawQuery);
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+            Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
+                if (err) done(err);
+                q.execute(function (err, results) {
+                    if (done) done(err);
+                    console.log('query results:', results);
+                    assert.equal(results.length, 1);
+                    done();
+                });
+            });
+        });
+
+
     });
 
     describe('query', function () {
