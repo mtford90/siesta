@@ -405,7 +405,6 @@ describe('request descriptor', function () {
                         carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz', owner: {id: '123', name: 'Michael Ford'}}, function (err, car) {
                             if (err) done(err);
                             requestDescriptor._serialise(car, function (err, data) {
-                                dump(data);
                                 if (err) done(err);
                                 assert.equal(data.owner, '123');
                                 done();
@@ -540,7 +539,6 @@ describe('request descriptor', function () {
                     carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz', owner: {id: '123', name: 'Michael Ford'}}, function (err, car) {
                         if (err) done(err);
                         requestDescriptor._serialise(car, function (err, data) {
-                            dump(data);
                             if (err) done(err);
                             assert.equal(data.owner, 'Michael Ford');
                             assert.equal(data.name, 'Aston Martin');

@@ -288,7 +288,6 @@ describe('perform mapping', function () {
                         });
 
                         it('person should have car objects', function () {
-                            dump(person.cars);
                             _.each(cars, function (car) {
                                 assert.include(person.cars._id, car._id);
                                 assert.include(person.cars.relatedObject, car);
@@ -352,7 +351,6 @@ describe('perform mapping', function () {
                         });
 
                         it('person should have car objects', function () {
-                            dump(person.cars);
                             _.each(cars, function (car) {
                                 assert.include(person.cars._id, car._id);
                                 assert.include(person.cars.relatedObject, car);
@@ -440,7 +438,6 @@ describe('perform mapping', function () {
                     });
 
                     it('person should have car objects', function () {
-                        dump(person.cars);
                         _.each(cars, function (car) {
                             assert.include(person.cars._id, car._id);
                             assert.include(person.cars.relatedObject, car);
@@ -648,7 +645,6 @@ describe('perform mapping', function () {
                         });
 
                         it('person should have car objects', function () {
-                            dump(person.cars);
                             _.each(cars, function (car) {
                                 assert.include(person.cars._id, car._id);
                                 assert.include(person.cars.relatedObject, car);
@@ -1200,7 +1196,6 @@ describe('perform mapping', function () {
                     owner: ['remoteId1', 'remoteId2'],
                     id: 'carRemoteId'
                 }, function (err, obj) {
-                    dump(err.owner.context);
                     var ownerError = err.owner;
                     assert.ok(ownerError);
                     done();
@@ -1214,7 +1209,6 @@ describe('perform mapping', function () {
                     age: 23,
                     id: 'personRemoteId'
                 }, function (err, obj) {
-                    dump(err, obj);
                     assert.ok(err.car);
                     done();
                 });
@@ -1256,7 +1250,6 @@ describe('perform mapping', function () {
                     owner: ['remoteId1', 'remoteId2'],
                     id: 'carRemoteId'
                 }, function (err, obj) {
-                    dump(err.owner.context);
                     var ownerError = err.owner;
                     assert.ok(ownerError);
                     done();
@@ -1270,7 +1263,6 @@ describe('perform mapping', function () {
                     age: 23,
                     id: 'personRemoteId'
                 }, function (err, obj) {
-                    dump(err, obj);
                     assert.ok(err.cars);
                     done();
                 });

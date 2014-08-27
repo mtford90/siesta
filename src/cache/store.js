@@ -132,7 +132,6 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                 assert(object._id);
                 cache.insert(object);
                 var adapted = PouchDocAdapter.from(object);
-                dump(adapted, '123');
                 Pouch.getPouch().put(adapted, function (err, resp) {
                     if (!err) {
                         object._rev = resp.rev;

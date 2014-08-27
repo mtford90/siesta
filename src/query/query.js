@@ -49,7 +49,6 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         }
 
         function resultsCallback (callback, err, resp) {
-            console.error('resultsCallback');
             if (err) {
                 if (callback) callback(err);
             }

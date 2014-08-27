@@ -244,8 +244,8 @@ describe('http!', function () {
                         server.respond();
                     });
 
-                    it('returns 2 car objects', function () {
-                        assert.notOk(err);
+                    it.only('returns 2 car objects', function () {
+                        assert.notOk(err, 'Error during mapping operation: ' + JSON.stringify(err, null, 4));
                         assert.equal(obj.length, 2);
                         _.each(obj, function (car) {
                             assert.instanceOf(car, RestObject);

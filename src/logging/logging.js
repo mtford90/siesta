@@ -18,7 +18,7 @@ angular.module('logging', [])
         var ll = {
             Pouch: logLevels.warn,
             CollectionRegistry: logLevels.warn,
-            Collection: logLevels.trace,
+            Collection: logLevels.warn,
             Cache: logLevels.warn,
             'Cache.notifications': logLevels.warn,
             Store: logLevels.warn,
@@ -31,9 +31,12 @@ angular.module('logging', [])
             Query: logLevels.warn,
             RawQuery: logLevels.warn,
             MappingOperation: logLevels.warn,
-            Descriptor: logLevels.trace,
+            Descriptor: logLevels.warn,
             BulkMappingOperation: logLevels.warn,
-            DescriptorRegistry: logLevels.trace
+            DescriptorRegistry: logLevels.warn,
+            RestObject: logLevels.warn,
+            PouchDocAdapter: logLevels.warn,
+            'Num. Mapping Operations': logLevels.warn
         };
 
         var t = {};

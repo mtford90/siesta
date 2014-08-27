@@ -121,7 +121,6 @@ describe('serialisers', function () {
                 if (err) done(err);
                 Serialiser.depthSerializer(1)(car, function (err, data) {
                     if (err) done(err);
-                    dump(data);
                     assert.equal(data.colour, car.colour);
                     assert.equal(data.name, car.name);
                     assert.equal(data.id, car.id);
@@ -137,7 +136,6 @@ describe('serialisers', function () {
                 if (err) done(err);
                 Serialiser.depthSerializer(2)(car, function (err, data) {
                     if (err) done(err);
-                    dump(data);
                     assert.equal(data.colour, car.colour);
                     assert.equal(data.name, car.name);
                     assert.equal(data.id, car.id);
