@@ -270,13 +270,14 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
 
         /**
          * Returns this descriptors mapping if the request config matches.
-         * @param config for jquery ajax
-         * @returns {boolean} true if match
+         * @param config
+         * @returns {*}
+         * @private
          */
         Descriptor.prototype._matchConfig = function (config) {
-            var matches = config.type ? this._matchMethod(config.type) : true;
+            var matches = config.type ? this._matchMethod(config.type) : {};
             if (matches) {
-                matches = config.url ? this._matchPath(config.url) : true;
+                matches = config.url ? this._matchPath(config.url) : {};
             }
             if (matches) {
                 $log.trace('matched config');
@@ -303,11 +304,19 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
 
         Descriptor.prototype.match = function (config, data) {
             $log.trace('match', {config: config, data:data, descriptor: this});
-            var matches = this._matchConfig(config);
+            var regexMatches = this._matchConfig(config);
+            var matches = !!regexMatches;
+            var extractedData = false;
             if (matches) {
                 $log.trace('config matches');
-                matches = this._matchData(data);
+                extractedData = this._matchData(data);
+                matches = !!extractedData;
                 if (matches) {
+                    for (var key in regexMatches) {
+                        if (regexMatches.hasOwnProperty(key)) {
+                            extractedData[key] = regexMatches[key];
+                        }
+                    }
                     $log.trace('data matches');
                 }
                 else {
@@ -317,7 +326,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             else {
                 $log.trace('config doesnt match');
             }
-            return matches;
+            return extractedData;
         };
 
         return Descriptor;

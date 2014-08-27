@@ -360,7 +360,6 @@ describe('request descriptor', function () {
                 assert.notEqual(requestDescriptor.serialiser, Serialiser.idSerialiser);
             });
 
-
             describe('built-in', function () {
                 var requestDescriptor;
                 describe('id', function () {
