@@ -1,8 +1,8 @@
 describe('request descriptor', function () {
 
-    var Collection, Descriptor, RestError, DescriptorRegistry,RequestDescriptor, ResponseDescriptor;
+    var Collection, Descriptor, RestError, DescriptorRegistry, RequestDescriptor, ResponseDescriptor, Serialiser, RelationshipType;
 
-    var collection, carMapping;
+    var collection, carMapping, personMapping;
 
     beforeEach(function (done) {
         module('restkit.descriptor', function ($provide) {
@@ -10,21 +10,34 @@ describe('request descriptor', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _Descriptor_, _RestError_, _DescriptorRegistry_, _RequestDescriptor_, _ResponseDescriptor_) {
+        inject(function (_Collection_, _Descriptor_, _RelationshipType_, _RestError_, _DescriptorRegistry_, _RequestDescriptor_, _ResponseDescriptor_, _Serialiser_) {
             Collection = _Collection_;
             Descriptor = _Descriptor_;
             RestError = _RestError_;
             DescriptorRegistry = _DescriptorRegistry_;
             RequestDescriptor = _RequestDescriptor_;
             ResponseDescriptor = _ResponseDescriptor_;
+            Serialiser = _Serialiser_;
+            RelationshipType = _RelationshipType_;
         });
 
         collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
             carMapping = collection.registerMapping('Car', {
                 id: 'id',
-                attributes: ['colour', 'name']
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
+                    }
+                }
             });
+            personMapping = collection.registerMapping('Person', {
+                id: 'id',
+                attributes: ['name'],
+            })
         }, function () {
             done();
         });
@@ -334,6 +347,132 @@ describe('request descriptor', function () {
             }, RestError);
         });
     });
+
+    describe.only('RequestDescriptor', function () {
+        describe('serialisation', function () {
+
+            it('default', function () {
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                assert.equal(requestDescriptor.serialiser, Serialiser.idSerialiser);
+            });
+
+            describe('built-in', function () {
+                var requestDescriptor;
+                describe('id', function () {
+                    beforeEach(function () {
+                        requestDescriptor = new RequestDescriptor({
+                            method: 'POST',
+                            mapping: carMapping,
+                            path: '/cars/(?<id>[0-9])/?',
+                            serialiser: Serialiser.idSerialiser
+                        });
+                    });
+                    it('uses the serialiser', function () {
+                        assert.equal(requestDescriptor.serialiser, Serialiser.idSerialiser);
+                    });
+                    it('serialises', function (done) {
+                        carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz'}, function (err, car) {
+                            if (err) done(err);
+                            requestDescriptor._serialise(car, function (err, data) {
+                                if (err) done(err);
+                                assert.equal(data, car.id);
+                                done();
+                            })
+                        });
+                    });
+                });
+
+                describe('depth', function () {
+                    var requestDescriptor;
+                    beforeEach(function () {
+                        requestDescriptor = new RequestDescriptor({
+                            method: 'POST',
+                            mapping: carMapping,
+                            path: '/cars/(?<id>[0-9])/?',
+                            serialiser: Serialiser.depthSerializer(0)
+                        });
+                    });
+
+                    it('uses the serialiser', function () {
+                        assert.notEqual(requestDescriptor.serialiser, Serialiser.idSerialiser);
+                    });
+
+                    it('serialises at depth', function (done) {
+                        carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz', owner: {id: '123', name: 'Michael Ford'}}, function (err, car) {
+                            if (err) done(err);
+                            requestDescriptor._serialise(car, function (err, data) {
+                                dump(data);
+                                if (err) done(err);
+                                assert.equal(data.owner, '123');
+                                done();
+                            })
+                        });
+                    });
+                });
+
+
+            });
+            describe('custom', function () {
+
+                function carSerialiser(fields, car, done) {
+                    var data = {};
+                    for (var idx in fields) {
+                        var field = fields[idx];
+                        if (car[field]) {
+                            data[field] = car[field];
+                        }
+                    }
+                    car.owner.get(function (err, person) {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            if (person) {
+                                data.owner = person.name;
+                            }
+                            done(null, data);
+                        }
+                    });
+                }
+
+                var requestDescriptor, serialiser;
+
+                beforeEach(function () {
+                    serialiser = _.partial(carSerialiser, ['name']);
+                    requestDescriptor = new RequestDescriptor({
+                        method: 'POST',
+                        mapping: carMapping,
+                        path: '/cars/?',
+                        serialiser: serialiser
+                    });
+                });
+
+                it('uses the custom serialiser', function () {
+                    assert.equal(requestDescriptor.serialiser, serialiser);
+                });
+
+                it('serialises', function (done) {
+                    carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz', owner: {id: '123', name: 'Michael Ford'}}, function (err, car) {
+                        if (err) done(err);
+                        requestDescriptor._serialise(car, function (err, data) {
+                            dump(data);
+                            if (err) done(err);
+                            assert.equal(data.owner, 'Michael Ford');
+                            assert.equal(data.name, 'Aston Martin');
+                            assert.notOk(data.colour);
+                            done();
+                        })
+                    });
+                })
+
+
+            })
+        })
+    })
 
 
 });

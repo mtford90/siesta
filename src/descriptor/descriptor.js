@@ -1,4 +1,4 @@
-angular.module('restkit.descriptor', ['restkit'])
+angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
 
     .factory('DescriptorRegistry', function (assert, jlog) {
 
@@ -313,16 +313,44 @@ angular.module('restkit.descriptor', ['restkit'])
         return Descriptor;
     })
 
-    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog) {
+    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser) {
         function RequestDescriptor(opts) {
             if (!this) {
                 return new RequestDescriptor(opts);
             }
 
             Descriptor.call(this, opts);
+
+
+            if (this._opts.serializer) {
+                this._opts.serialiser = this._opts.serializer;
+            }
+
+            if (!this._opts.serialiser) {
+                this._opts.serialiser = Serialiser.idSerialiser;
+            }
+
+
+            defineSubProperty.call(this, 'serialiser', this._opts);
+            defineSubProperty.call(this, 'serializer', this._opts, 'serialiser');
+
         }
 
         RequestDescriptor.prototype = Object.create(Descriptor.prototype);
+
+        RequestDescriptor.prototype._serialise = function (obj, callback) {
+            var finished;
+            var data = this.serialiser(obj, function (err, data) {
+                if (!finished) {
+                    if (callback) callback(err, data);
+                }
+            });
+            if (data) {
+                finished = true;
+                if (callback) callback(null, data);
+            }
+        };
+
         return RequestDescriptor;
     })
 

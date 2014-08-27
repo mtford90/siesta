@@ -7,7 +7,7 @@ angular.module('restkit.serialiser', ['restkit'])
             // Appease those across the pond
             idSerializer: idSerialiser,
             depthSerializer: function (depth) {
-                return _.partial(depthSerialiser, depth);
+                return  _.partial(depthSerialiser, depth);
             }
         }
     })
@@ -29,8 +29,10 @@ angular.module('restkit.serialiser', ['restkit'])
         var $log = jlog.loggerWithName('depthSerialiser');
 
         function depthSerialiser(depth, obj, done) {
+            $log.trace('depthSerialiser');
             var data = {};
             _.each(obj._fields, function (f) {
+                $log.trace('field', f);
                 if (obj[f]) {
                     data[f] = obj[f];
                 }
@@ -40,11 +42,13 @@ angular.module('restkit.serialiser', ['restkit'])
             var result = {};
             var finished = [];
             _.each(obj._relationshipFields, function (f) {
+                $log.trace('relationshipField', f);
                 var proxy = obj[f];
                 if (proxy.relationship.isForward(obj)) { // By default only forward relationship.
                     $log.debug(f);
                     waiting.push(f);
                     proxy.get(function (err, v) {
+                        $log.trace('proxy.get',f);
                         $log.debug(f, v);
                         if (err) {
                             errors.push(err);

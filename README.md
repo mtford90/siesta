@@ -463,25 +463,25 @@ Things that don't have a home yet.
 ```javascript
 // Custom serialiser for cars.
 function carSerialiser(fields, car, done) {
-	var data = {};
-	for (var idx in fields) {
-		var field = serialisableCarFields[idx];
-		if (car[field]) {
-			data[field] = car;
-		}
-	}
-	car.owner.get(function (err, person) {
-		if (err) {
-			done(err);
-		}
-		else {
-			if (person) {
-				data.owner = person.name;
-			}
-			done(null, data);
-		}
-	});
-}
+     var data = {};
+     for (var idx in fields) {
+         var field = fields[idx];
+         if (car[field]) {
+             data[field] = car[field];
+         }
+     }
+     car.owner.get(function (err, person) {
+         if (err) {
+             done(err);
+         }
+         else {
+             if (person) {
+                 data.owner = person.name;
+             }
+             done(null, data);
+         }
+     });
+ }
 
 collection.registerRequestDescriptor({
    path: 'cars/',

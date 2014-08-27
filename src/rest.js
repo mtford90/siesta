@@ -99,13 +99,23 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
      * Delegate property of an object to another object.
      */
     .factory('defineSubProperty', function () {
-        return function (property, subObj) {
+        return function (property, subObj, innerProperty) {
             return Object.defineProperty(this, property, {
                 get: function () {
-                    return subObj[property];
+                    if (innerProperty) {
+                        return subObj[innerProperty];
+                    }
+                    else {
+                        return subObj[property];
+                    }
                 },
                 set: function (value) {
-                    subObj[property] = value;
+                    if (innerProperty) {
+                        subObj[innerProperty] = value;
+                    }
+                    else {
+                        subObj[property] = value;
+                    }
                 },
                 enumerable: true,
                 configurable: true
