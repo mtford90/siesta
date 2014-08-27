@@ -36,7 +36,7 @@ describe('request descriptor', function () {
             });
             personMapping = collection.registerMapping('Person', {
                 id: 'id',
-                attributes: ['name'],
+                attributes: ['name']
             })
         }, function () {
             done();
@@ -348,7 +348,7 @@ describe('request descriptor', function () {
         });
     });
 
-    describe.only('RequestDescriptor', function () {
+    describe('RequestDescriptor', function () {
         describe('serialisation', function () {
 
             it('default', function () {
@@ -357,7 +357,7 @@ describe('request descriptor', function () {
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
                 });
-                assert.equal(requestDescriptor.serialiser, Serialiser.idSerialiser);
+                assert.notEqual(requestDescriptor.serialiser, Serialiser.idSerialiser);
             });
 
             describe('built-in', function () {

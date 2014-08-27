@@ -374,13 +374,15 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          *
          * @param data Raw data received remotely or otherwise
          * @param callback Called once pouch persistence returns.
+         * @param obj Force mapping to this object
          */
-        Mapping.prototype.map = function (data, callback) {
+        Mapping.prototype.map = function (data, callback, obj) {
             if (Object.prototype.toString.call(data) == '[object Array]') {
                 return this._mapBulk(data, callback);
             }
             else {
                 var op = new MappingOperation(this, data, callback);
+                op._obj = obj;
                 op.start();
                 return op;
             }

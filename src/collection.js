@@ -12,10 +12,28 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
          * @constructor
          */
         function Collection(name, configureCallback, finishedCallback) {
+            if (!this) return new Collection(name, configureCallback, finishedCallback);
             var self = this;
 
             // Name of this API. Used to construct _docId
-            this._name = name;
+            this.__name = name;
+
+            Object.defineProperty(this, '_name', {
+                get: function () {
+                    return self.__name;
+                },
+                set: function (value) {
+                    if (value) {
+                        if (value.length) {
+                            self.__name = value;
+                            return;
+                        }
+                    }
+                    throw new RestError('Collection must have name');
+                },
+                enumerable: true,
+                configurable: true
+            });
 
             // The PouchDB id.
             this._docId = 'Collection_' + this._name;
@@ -135,12 +153,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
 
             }
 
-            /**
-             * @returns {string} A string represention of this API.
-             */
-            function description() {
-                return 'Collection[' + self._name.toString() + ']';
-            }
 
             function finishUp(err) {
                 wrappedCallback(finishedCallback)(err);
@@ -217,10 +229,12 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         };
 
         Collection.prototype.HTTP = function (method, path) {
+            $log.trace('HTTP', this);
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
             var opts = {};
+            var name = this._name;
             if (typeof(args[0]) == 'function') {
                 callback = args[0];
             }
@@ -228,11 +242,11 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                 opts = args[0];
                 callback = args[1];
             }
-            var baseURL = this.baseURL;
-            var url = baseURL + path;
-            $log.debug(url);
             opts.type = method;
-            opts.url = url;
+            if (!opts.url) { // Allow overrides.
+                var baseURL = this.baseURL;
+                opts.url = baseURL + path;
+            }
             opts.success = function (data, textStatus, jqXHR) {
                 var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
                 var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
@@ -258,7 +272,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                                     callback(err, obj, resp);
                                 });
                             }
-                        });
+                        }, opts.obj);
                     }
                     else { // Matched, but no data.
                         $rootScope.$apply(function () {
@@ -267,10 +281,17 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                     }
                 }
                 else if (callback) {
-                    $log.debug('No matched descriptor', {collection: this._name, method: method, path: path});
-                    $rootScope.$apply(function () {
-                        callback(null, null, resp);
-                    });
+                    if (name) {
+                        $log.debug('No matched response descriptor', {collection: name, method: method, path: path});
+                        $rootScope.$apply(function () {
+                            callback(null, null, resp);
+                        });
+                    }
+                    else {
+                        // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
+                        throw new RestError('Unnamed collection');
+                    }
+
                 }
             };
             opts.error = function (jqXHR, textStatus, errorThrown) {
@@ -287,6 +308,8 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         };
 
         Collection.prototype.POST = function (path, object) {
+            $log.trace('POST', {path: path, object:object});
+            var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
             var opts = {};
@@ -301,7 +324,9 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
             var matchedDescriptor;
             opts.type = 'POST';
-            opts.url = url;
+            var baseURL = this.baseURL;
+            opts.url = baseURL + path;
+            dump(opts);
             for (var i = 0; i < requestDescriptors.length; i++) {
                 var requestDescriptor = requestDescriptors[i];
                 if (requestDescriptor._matchConfig(opts)) {
@@ -310,9 +335,21 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                 }
             }
             if (matchedDescriptor) {
-                _.partial(this.HTTP, 'POST', path, opts, callback).apply(this, args);
+                $log.trace('matched descriptor');
+                matchedDescriptor._serialise(object, function (err, data) {
+                    $log.trace('_serialise', {err: err, data: data});
+                    if (err) {
+                        if (callback) callback(err, null, null);
+                    }
+                    else {
+                        opts.data = data;
+                        opts.obj = object;
+                        _.partial(self.HTTP, 'POST', path, opts, callback).apply(self, args);
+                    }
+                });
             }
             else if (callback) {
+                $log.trace('did not match descriptor');
                 callback(null, null, null);
             }
         };

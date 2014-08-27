@@ -17,11 +17,11 @@ angular.module('restkit.serialiser', ['restkit'])
         return function (obj) {
             var idField = obj.mapping.id;
             if (idField) {
-                return obj[idField];
+                return obj[idField] ? obj[idField] : null;
             }
             else {
                 $log.debug('No idfield');
-                return null;
+                return undefined;
             }
         }
     })

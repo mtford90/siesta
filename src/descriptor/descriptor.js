@@ -49,7 +49,11 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         };
 
         DescriptorRegistry.prototype.responseDescriptorsForCollection = function (collection) {
-            return _descriptorsForCollection(this.responseDescriptors, collection);
+            var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
+            if (!descriptorsForCollection.length) {
+                $log.debug('No response descriptors for collection ' , this.responseDescriptors);
+            }
+            return  descriptorsForCollection;
         };
 
         return new DescriptorRegistry();
@@ -274,6 +278,9 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             if (matches) {
                 matches = config.url ? this._matchPath(config.url) : true;
             }
+            if (matches) {
+                $log.trace('matched config');
+            }
             return matches;
         };
 
@@ -287,6 +294,9 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             }
             else {
                 extractedData = data;
+            }
+            if (extractedData) {
+                $log.trace('matched data');
             }
             return extractedData;
         };
@@ -314,6 +324,9 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
     })
 
     .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser) {
+
+        var $log = jlog.loggerWithName('RequestDescriptor');
+
         function RequestDescriptor(opts) {
             if (!this) {
                 return new RequestDescriptor(opts);
@@ -327,7 +340,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             }
 
             if (!this._opts.serialiser) {
-                this._opts.serialiser = Serialiser.idSerialiser;
+                this._opts.serialiser = Serialiser.depthSerializer(0);
             }
 
 
@@ -339,15 +352,21 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
         RequestDescriptor.prototype._serialise = function (obj, callback) {
+            $log.trace('_serialise');
             var finished;
             var data = this.serialiser(obj, function (err, data) {
                 if (!finished) {
                     if (callback) callback(err, data);
                 }
             });
-            if (data) {
+            dump(data);
+            if (data !== undefined) {
+                $log.trace('serialiser doesnt use a callback');
                 finished = true;
                 if (callback) callback(null, data);
+            }
+            else {
+                $log.trace('serialiser uses a callback', this.serialiser);
             }
         };
 

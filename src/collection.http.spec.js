@@ -1,6 +1,6 @@
 describe('http!', function () {
 
-    var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry,RequestDescriptor;
+    var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry,RequestDescriptor, Serialiser;
     var collection, carMapping, personMapping, vitalSignsMapping;
 
     var $rootScope;
@@ -16,7 +16,7 @@ describe('http!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_, _ResponseDescriptor_, _RequestDescriptor_, _DescriptorRegistry_) {
+        inject(function (_Collection_, _Serialiser_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_, _ResponseDescriptor_, _RequestDescriptor_, _DescriptorRegistry_) {
             $rootScope = _$rootScope_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
@@ -25,6 +25,7 @@ describe('http!', function () {
             ResponseDescriptor = _ResponseDescriptor_;
             RequestDescriptor = _RequestDescriptor_;
             DescriptorRegistry = _DescriptorRegistry_;
+            Serialiser = _Serialiser_;
         });
 
         server = sinon.fakeServer.create();
@@ -34,7 +35,6 @@ describe('http!', function () {
     });
 
     function configureCollection(configureDescriptors, callback) {
-        var deferred = Q.defer();
         var configuration = function (err, version) {
             if (err) callback(err);
             personMapping = collection.registerMapping('Person', {
@@ -66,13 +66,7 @@ describe('http!', function () {
             collection.baseURL = 'http://mywebsite.co.uk/';
             configureDescriptors();
         };
-        collection = new Collection('myCollection', configuration, function (err) {
-            if (err) deferred.reject(err);
-            else deferred.resolve();
-        });
-        deferred.promise.then(function () {
-            callback();
-        }, callback);
+        collection = new Collection('myCollection', configuration, callback);
     }
 
     afterEach(function () {
@@ -89,6 +83,7 @@ describe('http!', function () {
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
                 }));
+
             };
             configureCollection(configureDescriptors, done);
         });
@@ -181,30 +176,65 @@ describe('http!', function () {
 
     });
 
-    describe('POST', function () {
+    describe.only('POST', function () {
+
+        var err, obj, resp;
+
         beforeEach(function (done) {
             var configureDescriptors = function () {
-                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                var responseDescriptor = new ResponseDescriptor({
                     method: 'POST',
                     mapping: carMapping,
-                    path: '/cars/?',
-                    data: 'data'
-                }));
-                DescriptorRegistry.registerRequestDescriptor(new RequestDescriptor({
+                    path: 'cars/?'
+                });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
                     method: 'POST',
                     mapping: carMapping,
-                    path: '/cars/?',
-                    data: 'data'
-                }));
+                    path: 'cars/?'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             };
-            configureCollection(configureDescriptors, done);
+            configureCollection(configureDescriptors, function () {
+                done();
+            });
         });
 
-        it('success', function () {
-            var car = carMapping.map({colour: 'red', name: 'Aston Martin'});
+        describe('success', function () {
+            var car;
+            beforeEach(function (done) {
+                console.log(0);
+                var raw = {id: 'remoteId'};
+                var headers = { "Content-Type": "application/json" };
+                var path = "http://mywebsite.co.uk/cars/";
+                var method = "POST";
+                var status = 200;
+                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                carMapping.map({colour: 'red', name: 'Aston Martin'}, function (err, _car) {
+                    if (err) done(err);
+                    car = _car;
+                    assert.equal(car.colour, 'red');
+                    assert.equal(car.name, 'Aston Martin');
+                    collection.POST('cars/', car, function (_err, _obj, _resp) {
+                        err = _err;
+                        obj = _obj;
+                        resp = _resp;
+                        done();
+                    });
+                    server.respond();
+                });
+            });
 
+            it('no error', function () {
+                assert.notOk(err);
+            });
+
+            it('mapped onto the posted object', function () {
+                assert.equal(car, obj);
+                assert.equal(car.id, 'remoteId');
+                assert.equal(car.colour, 'red');
+                assert.equal(car.name, 'Aston Martin');
+            });
         });
-
     });
-
 });
