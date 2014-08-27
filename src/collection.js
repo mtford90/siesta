@@ -216,7 +216,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             return mappingObject;
         };
 
-        Collection.prototype.HTTP = function (method, path, assert) {
+        Collection.prototype.HTTP = function (method, path) {
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
@@ -234,7 +234,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             opts.type = method;
             opts.url = url;
             opts.success = function (data, textStatus, jqXHR) {
-
                 var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
                 var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
                 $log.debug('descriptors', descriptors);
@@ -286,6 +285,12 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         Collection.prototype.GET = function () {
             _.partial(this.HTTP, 'GET').apply(this, arguments);
         };
+
+        Collection.prototype.POST = function (method, object) {
+
+        };
+
+
 
         return Collection;
 

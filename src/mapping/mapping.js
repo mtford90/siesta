@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications', 'restkit.mapping.operation'])
 
-    .factory('Mapping', function (broadcast, Pouch, MappingOperation, BulkMappingOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (cache, broadcast, Pouch, MappingOperation, BulkMappingOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -398,33 +398,58 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
          * @private
          */
         Mapping.prototype._new = function (data) {
+            var self = this;
             var _id = guid();
             var restObject = new RestObject(this);
             $log.info('New object created _id="' + _id.toString() + '"', data);
             restObject._id = _id;
             // Place attributes on the object.
             restObject.__values = data || {};
-            _.each(this._fields, function (field) {
+            var fields = this._fields;
+            var idx = fields.indexOf(this.id);
+            if (idx > -1) {
+                fields.splice(idx, 1);
+            }
+            _.each(fields, function (field) {
                 Object.defineProperty(restObject, field, {
                     get: function () {
                         return restObject.__values[field] || null;
                     },
                     set: function (v) {
+                        var old = restObject.__values[field];
+                        restObject.__values[field] = v;
                         broadcast(restObject, {
                             type: ChangeType.Set,
-                            old: restObject.__values[field],
+                            old: old,
                             new: v,
                             field: field
                         });
                         if (Object.prototype.toString.call(v) === '[object Array]') {
                             wrapArray(v, field, restObject);
                         }
-                        restObject.__values[field] = v;
                     },
                     enumerable: true,
                     configurable: true
                 });
 
+            });
+            Object.defineProperty(restObject, this.id, {
+                get: function () {
+                    return restObject.__values[self.id] || null;
+                },
+                set: function (v) {
+                    var old = restObject.__values[self.id];
+                    restObject.__values[self.id] = v;
+                    broadcast(restObject, {
+                        type: ChangeType.Set,
+                        old: old,
+                        new: v,
+                        field: self.id
+                    });
+                    cache.remoteInsert(restObject, v, old);
+                },
+                enumerable: true,
+                configurable: true
             });
             // Place relationships on the object.
             _.each(this.relationships, function (relationship) {

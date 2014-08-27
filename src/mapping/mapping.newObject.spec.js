@@ -12,12 +12,13 @@ describe('mapping new object', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Index_, _Pouch_, _Indexes_, _RawQuery_, _Mapping_, _RestObject_, _Collection_, _RestError_, _RelationshipType_, _RelatedObjectProxy_) {
+        inject(function (_Pouch_, _RawQuery_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _cache_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             RelatedObjectProxy = _RelatedObjectProxy_;
+            cache = _cache_;
         });
 
         Pouch.reset();
@@ -46,7 +47,41 @@ describe('mapping new object', function () {
             });
         });
 
+        describe('id field', function () {
+            var car;
+            beforeEach(function () {
+                car = carMapping._new();
+            });
+
+            it('should be present', function () {
+                assert.property(car, 'id');
+            });
+
+            describe('in cache', function () {
+                beforeEach(function () {
+                    cache.insert(car);
+                    assert.equal(car, cache.get({_id: car._id}));
+                    car.id = 'newRemoteId';
+                });
+                it('should update cache', function () {
+                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                });
+                it('should remove previous', function () {
+                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                    car.id = 'brandNewRemoteId';
+                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                    assert.notOk(cache.get({id: 'newRemoteId', mapping: car.mapping}))
+                });
+                it('should remove all if set remoteid to null', function () {
+                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                    car.id = null;
+                    assert.notOk(cache.get({id: 'newRemoteId', mapping: car.mapping}))
+                })
+            });
+        })
+
     });
+
 
     describe('relationships', function () {
         var collection, carMapping, personMapping;

@@ -34,6 +34,32 @@ describe('perform mapping', function () {
         })
     });
 
+    describe('no id', function () {
+        beforeEach(function (done) {
+            collection = new Collection('myCollection', function (err, version) {
+                if (err) done(err);
+                carMapping = collection.registerMapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+            }, function (err) {
+                if (err) done(err);
+                done();
+            });
+        });
+        it('xyz', function (done) {
+            var obj;
+            carMapping.map({colour: 'red', name: 'Aston Martin'}, function (err, _obj) {
+                if (err) {
+                    console.error('Error when mapping new car:', err);
+                    done(err);
+                }
+                obj = _obj;
+                done();
+            });
+        })
+    });
+
     describe('no relationships', function () {
         var obj;
 
@@ -596,7 +622,11 @@ describe('perform mapping', function () {
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
-                                    cars: [{id: 'remoteId1'}, {id: 'remoteId2'}, {id: 'remoteId3'}]
+                                    cars: [
+                                        {id: 'remoteId1'},
+                                        {id: 'remoteId2'},
+                                        {id: 'remoteId3'}
+                                    ]
                                 }, function (err, _person) {
                                     if (err) {
                                         console.error('Error mapping person:', err);
@@ -633,7 +663,11 @@ describe('perform mapping', function () {
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
-                                cars: [{id: 'remoteId1'}, {id: 'remoteId2'}, {id: 'remoteId3'}]
+                                cars: [
+                                    {id: 'remoteId1'},
+                                    {id: 'remoteId2'},
+                                    {id: 'remoteId3'}
+                                ]
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
@@ -666,7 +700,11 @@ describe('perform mapping', function () {
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
-                                    cars: [{id: 'remoteId1'}, {id:'remoteId2'}, {id:'remoteId3'}]
+                                    cars: [
+                                        {id: 'remoteId1'},
+                                        {id: 'remoteId2'},
+                                        {id: 'remoteId3'}
+                                    ]
                                 }, function (err, _person) {
                                     if (err) done(err);
                                     person = _person;
@@ -703,7 +741,6 @@ describe('perform mapping', function () {
                 })
 
             });
-
 
 
         });
@@ -1161,7 +1198,7 @@ describe('perform mapping', function () {
                     colour: 'red',
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
-                    id:'carRemoteId'
+                    id: 'carRemoteId'
                 }, function (err, obj) {
                     dump(err.owner.context);
                     var ownerError = err.owner;
@@ -1175,14 +1212,13 @@ describe('perform mapping', function () {
                     name: 'Michael Ford',
                     car: ['remoteId1', 'remoteId2'],
                     age: 23,
-                    id:'personRemoteId'
+                    id: 'personRemoteId'
                 }, function (err, obj) {
                     dump(err, obj);
                     assert.ok(err.car);
                     done();
                 });
             });
-
 
 
         });
@@ -1218,7 +1254,7 @@ describe('perform mapping', function () {
                     colour: 'red',
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
-                    id:'carRemoteId'
+                    id: 'carRemoteId'
                 }, function (err, obj) {
                     dump(err.owner.context);
                     var ownerError = err.owner;
@@ -1232,14 +1268,13 @@ describe('perform mapping', function () {
                     name: 'Michael Ford',
                     cars: 'remoteId1',
                     age: 23,
-                    id:'personRemoteId'
+                    id: 'personRemoteId'
                 }, function (err, obj) {
                     dump(err, obj);
                     assert.ok(err.cars);
                     done();
                 });
             });
-
 
 
         });
@@ -1334,8 +1369,8 @@ describe('perform mapping', function () {
 //                    assert(false, 'need to stop this clobbering the other tests');
                     var ownerId = 'ownerId462345345';
                     var raw = [
-                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:ownerId},
-                        {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:ownerId},
+                        {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: ownerId},
+                        {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: ownerId},
                         {colour: 'green', name: 'Ford', id: "remoteId3", owner: ownerId}
                     ];
                     carMapping._mapBulk(raw, function (err, objs, res) {
@@ -1364,15 +1399,15 @@ describe('perform mapping', function () {
                 it('same owner using map', function (done) {
                     var ownerId = 'ownerId!!!334';
                     var carRaw1 = {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: ownerId};
-                    var carRaw2 = {colour: 'blue', name: 'Lambo', id: "remoteId2", owner:ownerId};
+                    var carRaw2 = {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: ownerId};
                     carMapping.map(carRaw1, function (err, car1) {
-                        if (err) done (err);
-                         carMapping.map(carRaw2, function (err, car2) {
-                             if (err) done (err);
-                             assert.equal(car1.owner._id, car2.owner._id);
-                             assert.equal(car1.owner.relatedObject, car2.owner.relatedObject);
-                             done();
-                         })
+                        if (err) done(err);
+                        carMapping.map(carRaw2, function (err, car2) {
+                            if (err) done(err);
+                            assert.equal(car1.owner._id, car2.owner._id);
+                            assert.equal(car1.owner.relatedObject, car2.owner.relatedObject);
+                            done();
+                        })
                     });
                 })
             })

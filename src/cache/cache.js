@@ -79,7 +79,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
 //            }
 //        });
 
-        function insert(obj, remoteId) {
+        function remoteInsert(obj, remoteId, previousRemoteId) {
             if (obj) {
                 var collection = obj.mapping.collection;
                 if (collection) {
@@ -92,6 +92,9 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                             restCache[collection][type] = {};
                         }
                         $log.debug('Translated cache insert:', {query: {collection: collection, type: type, remoteId: remoteId}, cache: restCache[collection][type]});
+                        if (previousRemoteId) {
+                            restCache[collection][type][previousRemoteId] = null;
+                        }
                         var cachedObject = restCache[collection][type][remoteId];
                         if (!cachedObject) {
                             restCache[collection][type][remoteId] = obj;
@@ -178,7 +181,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                     var idField = obj.idField;
                     var remoteId = obj[idField];
                     if (remoteId) {
-                        insert(obj, remoteId);
+                        remoteInsert(obj, remoteId);
                     }
                     else {
                         $log.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
@@ -188,6 +191,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                     throw new RestError('Only an instance of RestObject can be placed into the object cache.');
                 }
             },
+            remoteInsert: remoteInsert,
             reset: reset
         }
     })

@@ -1,7 +1,7 @@
 describe('http!', function () {
 
-    var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry;
-    var collection, carMapping, personMapping;
+    var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry,RequestDescriptor;
+    var collection, carMapping, personMapping, vitalSignsMapping;
 
     var $rootScope;
     var server;
@@ -16,13 +16,14 @@ describe('http!', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_, _ResponseDescriptor_, _DescriptorRegistry_) {
+        inject(function (_Collection_, _RelationshipType_, _Pouch_, _$rootScope_, _RestObject_, _ResponseDescriptor_, _RequestDescriptor_, _DescriptorRegistry_) {
             $rootScope = _$rootScope_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
             Pouch = _Pouch_;
             RestObject = _RestObject_;
             ResponseDescriptor = _ResponseDescriptor_;
+            RequestDescriptor = _RequestDescriptor_;
             DescriptorRegistry = _DescriptorRegistry_;
         });
 
@@ -31,50 +32,73 @@ describe('http!', function () {
         Pouch.reset();
 
     });
-//
-//    afterEach(function () {
-//        // Restore original server implementation.
-//        server.restore();
-//    });
+
+    function configureCollection(configureDescriptors, callback) {
+        var deferred = Q.defer();
+        var configuration = function (err, version) {
+            if (err) callback(err);
+            personMapping = collection.registerMapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            carMapping = collection.registerMapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
+                    }
+                }
+            });
+            vitalSignsMapping = collection.registerMapping('VitalSigns', {
+                id: 'id',
+                attributes: ['heartRate', 'bloodPressure'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.OneToOne,
+                        reverse: 'vitalSigns'
+                    }
+                }
+            });
+            collection.baseURL = 'http://mywebsite.co.uk/';
+            configureDescriptors();
+        };
+        collection = new Collection('myCollection', configuration, function (err) {
+            if (err) deferred.reject(err);
+            else deferred.resolve();
+        });
+        deferred.promise.then(function () {
+            callback();
+        }, callback);
+    }
+
+    afterEach(function () {
+        // Restore original server implementation.
+        server.restore();
+    });
 
     describe('GET', function () {
-        beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                personMapping = collection.registerMapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age']
-                });
-                carMapping = collection.registerMapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: RelationshipType.ForeignKey,
-                            reverse: 'cars'
-                        }
-                    }
-                });
-                collection.baseURL = 'http://mywebsite.co.uk/';
 
-                var desc = new ResponseDescriptor({
+        beforeEach(function (done) {
+            var configureDescriptors = function () {
+                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
                     method: 'GET',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
-                });
-                DescriptorRegistry.registerResponseDescriptor(desc);
-            }, function (err) {
-                if (err) done(err);
-                done();
-            });
+                }));
+            };
+            configureCollection(configureDescriptors, done);
         });
 
         describe('success', function () {
             var err, obj, resp;
 
-            describe ('single', function () {
+            describe('single', function () {
                 beforeEach(function (done) {
+
                     var raw = {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'};
                     var headers = { "Content-Type": "application/json" };
                     var path = "http://mywebsite.co.uk/cars/5/";
@@ -117,9 +141,12 @@ describe('http!', function () {
                 })
             });
 
-            describe ('multiple', function () {
+            describe('multiple', function () {
                 beforeEach(function (done) {
-                    var raw = [{colour: 'red', name: 'Aston Martin', owner: 'ownerId', id: '5'}, {colour: 'blue', name: 'Bentley', owner:'ownerId', id:'6'}];
+                    var raw = [
+                        {colour: 'red', name: 'Aston Martin', owner: 'ownerId', id: '5'},
+                        {colour: 'blue', name: 'Bentley', owner: 'ownerId', id: '6'}
+                    ];
                     var headers = { "Content-Type": "application/json" };
                     var path = "http://mywebsite.co.uk/cars/5/";
                     var method = "GET";
@@ -151,6 +178,32 @@ describe('http!', function () {
 
         })
 
+
+    });
+
+    describe('POST', function () {
+        beforeEach(function (done) {
+            var configureDescriptors = function () {
+                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: '/cars/?',
+                    data: 'data'
+                }));
+                DescriptorRegistry.registerRequestDescriptor(new RequestDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: '/cars/?',
+                    data: 'data'
+                }));
+            };
+            configureCollection(configureDescriptors, done);
+        });
+
+        it('success', function () {
+            var car = carMapping.map({colour: 'red', name: 'Aston Martin'});
+
+        });
 
     });
 

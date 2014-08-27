@@ -87,7 +87,7 @@ angular.module('restkit.mapping.operation', [])
             var isFinished = this._operations.length == this._finished.length;
             if (isFinished) {
                 this.finish();
-                $log.info('Mapping operation finishing', {obj: this._obj._id});
+                $log.info('Mapping operation finishing', {obj:this.obj ? this._obj._id : null});
                 if (this.completion) {
                     var errors = this.failed ? this._errors : null;
                     if (errors) {
@@ -278,50 +278,66 @@ angular.module('restkit.mapping.operation', [])
                     $log.debug('Can lookup via _id');
                     storeOpts._id = data._id;
                 }
-                $log.info('Checking store');
-                Store.get(storeOpts, function (err, obj) {
-                    if (!err) {
-                        if (!obj) {
-                            var newData = {};
-                            if (remoteIdentifier && idField) {
-                                newData[idField] = remoteIdentifier;
-                            }
-                            // Check the cache just in case we've been beaten to it by another mapping operation.
-                            // The Store will go out to Pouch if it's not in the cache, giving other operations the
-                            // chance to get here first and insert a new object into the store.
-                            // TODO: Alternative would be to only allow one Store operation at a time.
-                            var restObject = cache.get(storeOpts);
-                            if (restObject) {
-                                $log.warn('race cond');
-                                // The race condition occurred. Use the object created by the other mapping operation
-                                // instead.
-                                self._obj = restObject;
-                                self._startMapping();
+                if (remoteIdentifier || data._id) {
+                    $log.info('Checking store');
+                    Store.get(storeOpts, function (err, obj) {
+                        if (!err) {
+                            if (!obj) {
+                                var newData = {};
+                                if (remoteIdentifier && idField) {
+                                    newData[idField] = remoteIdentifier;
+                                }
+                                // Check the cache just in case we've been beaten to it by another mapping operation.
+                                // The Store will go out to Pouch if it's not in the cache, giving other operations the
+                                // chance to get here first and insert a new object into the store.
+                                // TODO: Alternative would be to only allow one Store operation at a time.
+                                var restObject = cache.get(storeOpts);
+                                if (restObject) {
+                                    $log.warn('race cond');
+                                    // The race condition occurred. Use the object created by the other mapping operation
+                                    // instead.
+                                    self._obj = restObject;
+                                    self._startMapping();
+                                }
+                                else {
+                                    restObject = self.mapping._new(newData);
+                                    Store.put(restObject, function (err) {
+                                        if (err) {
+                                            self._errors = err;
+                                            self.checkIfDone();
+                                        }
+                                        else {
+                                            self._obj = restObject;
+                                            self._startMapping();
+                                        }
+                                    });
+                                }
                             }
                             else {
-                                restObject = self.mapping._new(newData);
-                                Store.put(restObject, function (err) {
-                                    if (err) {
-                                        self._errors = err;
-                                        self.checkIfDone();
-                                    }
-                                    else {
-                                        self._obj = restObject;
-                                        self._startMapping();
-                                    }
-                                });
+                                self._obj = obj;
+                                self._startMapping();
                             }
                         }
                         else {
-                            self._obj = obj;
+                            self._errors = err;
+                            self.checkIfDone();
+                        }
+                    });
+                }
+                else {
+                    var restObject = self.mapping._new();
+                    Store.put(restObject, function (err) {
+                        if (err) {
+                            self._errors = err;
+                            self.checkIfDone();
+                        }
+                        else {
+                            self._obj = restObject;
                             self._startMapping();
                         }
-                    }
-                    else {
-                        self._errors = err;
-                        self.checkIfDone();
-                    }
-                });
+                    });
+                }
+
             }
         };
 
