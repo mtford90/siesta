@@ -92,19 +92,34 @@ angular.module('restkit.mapping.operation', [])
          * Check to see if all sub-ops have finished. Call the completion function if finished.
          */
         MappingOperation.prototype.checkIfDone = function () {
+            var self = this;
             var isFinished = this._operations.length == this._finished.length;
             if (isFinished) {
                 this.finish();
-                $log.info('Mapping operation finishing', {obj:this.obj ? this._obj._id : null});
-                if (this.completion) {
-                    var errors = this.failed ? this._errors : null;
-                    if (errors) {
-                        $log.trace('Operation failed', this);
+                function finishUp() {
+                    if (self.completion) {
+                        var errors = self.failed ? self._errors : null;
+                        if (errors) {
+                            $log.trace('Operation failed', self);
+                        }
+                        else {
+                            $log.trace('Operation completed', self);
+                        }
+                        self.completion(errors, self._obj, self._operations);
                     }
-                    else {
-                        $log.trace('Operation completed', this);
-                    }
-                    this.completion(errors, this._obj, this._operations);
+                }
+                $log.info('Mapping operation finishing', {obj: this.obj ? this._obj._id : null});
+
+                if (this._obj) {
+                    this._obj.save(function (err) {
+                        if (err) {
+                            self._errors.save = err;
+                        }
+                        finishUp();
+                    })
+                }
+                else {
+                    finishUp();
                 }
             }
         };
@@ -145,7 +160,7 @@ angular.module('restkit.mapping.operation', [])
                             if (numFinished == arr.length) {
                                 if (!errors.length) {
                                     var proxy = obj[prop];
-                                    $log.debug('Setting relationship '  + prop);
+                                    $log.debug('Setting relationship ' + prop);
                                     proxy.set(mappedArr, function (err) {
                                         if (err) {
                                             $log.debug('Error setting relationship', err);
@@ -408,7 +423,7 @@ angular.module('restkit.mapping.operation', [])
                                 else {
                                     $log.trace('success');
                                 }
-                                self.completion(self.failed ?  self._errors : null, _.pluck(self._results, 'obj'), self._results);
+                                self.completion(self.failed ? self._errors : null, _.pluck(self._results, 'obj'), self._results);
                             }
                         }
                     });

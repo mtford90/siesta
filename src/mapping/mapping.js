@@ -37,6 +37,14 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 configurable: true
             });
 
+            Object.defineProperty(this, 'isDirty', {
+                get: function () {
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
         }
 
         Mapping.prototype.installRelationships = function () {
@@ -412,7 +420,9 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             if (idx > -1) {
                 fields.splice(idx, 1);
             }
+            restObject.__dirtyFields = [];
             _.each(fields, function (field) {
+
                 Object.defineProperty(restObject, field, {
                     get: function () {
                         return restObject.__values[field] || null;
@@ -429,12 +439,19 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         if (Object.prototype.toString.call(v) === '[object Array]') {
                             wrapArray(v, field, restObject);
                         }
+
+                        if (v != old) {
+                            if (restObject.__dirtyFields.indexOf(field) < 0) {
+                                restObject.__dirtyFields.push(field);
+                            }
+                        }
+
                     },
                     enumerable: true,
                     configurable: true
                 });
-
             });
+
             Object.defineProperty(restObject, this.id, {
                 get: function () {
                     return restObject.__values[self.id] || null;
@@ -453,10 +470,14 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 enumerable: true,
                 configurable: true
             });
+
+
+
             // Place relationships on the object.
             _.each(this.relationships, function (relationship) {
                 relationship.contributeToRestObject(restObject);
             });
+
             return restObject;
         };
 
@@ -464,6 +485,8 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         Mapping.prototype.toString = function () {
             return 'Mapping[' + this.type + ']';
         };
+
+
 
         return Mapping;
     })

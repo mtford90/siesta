@@ -38,7 +38,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
 /**
  * Query and return raw pouchdb documents.
  */
-    .factory('RawQuery', function (Index, Pouch, jlog, RestError, constructMapFunction) {
+    .factory('RawQuery', function (Index, Pouch, jlog, RestError, constructMapFunction,constructMapFunction2) {
 
         var $log = jlog.loggerWithName('RawQuery');
 
@@ -49,6 +49,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         }
 
         function resultsCallback (callback, err, resp) {
+            console.error('resultsCallback');
             if (err) {
                 if (callback) callback(err);
             }
@@ -81,7 +82,11 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                             }
                         }
                         // TODO: Clean up constructMapFunction so can output both string+func version so don't need eval here.
+                        // TODO: For some reason constructMapFunction2 (which returns a function) wont work with pouch.
+                        // I'm thinking that pouch probably doesnt support closures in its queries which would mean
+                        // we'd have to stick with eval here.
                         eval('var mapFunc = ' + constructMapFunction(self.collection, self.modelName, fields));
+//                        var mapFunc = constructMapFunction2(self.collection, self.modelName, fields);
                         Pouch.getPouch().query(mapFunc, _.partial(resultsCallback, callback));
                     }
                     else {

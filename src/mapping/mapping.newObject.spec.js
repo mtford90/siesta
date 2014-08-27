@@ -78,7 +78,9 @@ describe('mapping new object', function () {
                     assert.notOk(cache.get({id: 'newRemoteId', mapping: car.mapping}))
                 })
             });
-        })
+        });
+
+
 
     });
 

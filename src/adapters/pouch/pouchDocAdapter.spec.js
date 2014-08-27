@@ -145,6 +145,39 @@ describe('pouch doc adapter', function () {
 
 
     });
+//
+//    // Test that pouch stays in sync with live objects
+//    describe('sync', function () {
+//        var collection, personMapping;
+//
+//
+//        describe('attributes', function () {
+//            beforeEach(function (done) {
+//                collection = new Collection('myCollection', function () {
+//                    personMapping = collection.registerMapping('Person', {
+//                        id: 'id',
+//                        attributes: ['name', 'age']
+//                    });
+//                }, function () {
+//                    done();
+//                });
+//            });
+//
+//            it('when first mapped, should have all the same fields', function (done) {
+//                personMapping.map({name: 'Michael Ford', age: 23}, function (err, person) {
+//                    if (err) done (err);
+//                    Pouch.getPouch().get(person._id, function (err, doc) {
+//                        if (err) done(err);
+//                        assert.equal(doc._id, person._id);
+//                        assert.equal(doc.name, person.name);
+//                        assert.equal(doc.age, person.age);
+//                        done();
+//                    });
+//                });
+//            })
+//        });
+//
+//    })
 
 
 });

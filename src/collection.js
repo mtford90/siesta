@@ -211,8 +211,23 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
 
             init();
 
+            Object.defineProperty(this, 'isDirty', {
+                get: function () {
+                    return false;
+                },
+                enumerable: true,
+                configurable: true
+            });
+
         }
 
+        Object.defineProperty(Collection, 'isDirty', {
+            get: function () {
+                return false;
+            },
+            enumerable: true,
+            configurable: true
+        });
 
         Collection._reset = Pouch.reset;
 

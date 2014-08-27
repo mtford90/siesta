@@ -190,5 +190,46 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
         }
     })
 
+    .factory('constructMapFunction2', function () {
+
+        return function (collection, type, fields) {
+            var mapFunc;
+            var onlyEmptyFieldSetSpecified = (fields.length == 1 && !fields[0].length);
+            var noFieldSetsSpecified = !fields.length || onlyEmptyFieldSetSpecified;
+
+            if (noFieldSetsSpecified) {
+                mapFunc = function (doc) {
+                    if (doc.type == type && doc.collection == collection) {
+                        emit(doc.type, doc);
+                    }
+                };
+            }
+            else {
+                mapFunc = function (doc) {
+                    if (doc.type == type && doc.collection == collection) {
+                        var aggField = '';
+                        for (var idx in fields) {
+                            //noinspection JSUnfilteredForInLoop
+                            var field = fields[idx];
+                            var value = doc[field];
+                            if (value !== null && value !== undefined) {
+                                aggField += value.toString() + '_';
+                            }
+                            else if (value === null) {
+                                aggField += 'null_';
+                            }
+                            else {
+                                aggField += 'undefined_';
+                            }
+                        }
+                        aggField = aggField.substring(0, aggField.length - 1);
+                        emit(aggField, doc);
+                    }
+                };
+            }
+            return mapFunc;
+        }
+    })
+
 
 ;
