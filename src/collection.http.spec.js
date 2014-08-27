@@ -123,7 +123,7 @@ describe('http!', function () {
                 });
             });
 
-            describe.only('multiple', function () {
+            describe('multiple', function () {
                 var err, objs, resp;
 
                 beforeEach(function (done) {
