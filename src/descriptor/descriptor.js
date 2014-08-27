@@ -51,7 +51,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         DescriptorRegistry.prototype.responseDescriptorsForCollection = function (collection) {
             var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
             if (!descriptorsForCollection.length) {
-                $log.debug('No response descriptors for collection ' , this.responseDescriptors);
+                $log.debug('No response descriptors for collection ', this.responseDescriptors);
             }
             return  descriptorsForCollection;
         };
@@ -303,7 +303,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         };
 
         Descriptor.prototype.match = function (config, data) {
-            $log.trace('match', {config: config, data:data, descriptor: this});
+            $log.trace('match', {config: config, data: data, descriptor: this});
             var regexMatches = this._matchConfig(config);
             var matches = !!regexMatches;
             var extractedData = false;
@@ -312,11 +312,24 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
                 extractedData = this._matchData(data);
                 matches = !!extractedData;
                 if (matches) {
-                    for (var key in regexMatches) {
-                        if (regexMatches.hasOwnProperty(key)) {
-                            extractedData[key] = regexMatches[key];
+                    var key;
+                    if (Object.prototype.toString.call(extractedData) === '[object Array]') {
+                        for (key in regexMatches) {
+                            if (regexMatches.hasOwnProperty(key)) {
+                                _.each(extractedData, function (datum) {
+                                    datum[key] = regexMatches[key];
+                                });
+                            }
                         }
                     }
+                    else {
+                        for (key in regexMatches) {
+                            if (regexMatches.hasOwnProperty(key)) {
+                                extractedData[key] = regexMatches[key];
+                            }
+                        }
+                    }
+
                     $log.trace('data matches');
                 }
                 else {
@@ -393,7 +406,6 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         ResponseDescriptor.prototype = Object.create(Descriptor.prototype);
         return ResponseDescriptor;
     })
-
 
 
 ;

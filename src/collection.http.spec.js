@@ -76,49 +76,89 @@ describe('http!', function () {
 
 
     describe('path regex', function () {
-        beforeEach(function (done) {
-            var configureDescriptors = function () {
-                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
-                    method: 'GET',
-                    mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/(?<colour>[a-zA-Z0-9]+)/?'
-                }));
-            };
-            configureCollection(configureDescriptors, done);
-        });
+
 
         describe('check', function () {
 
-            var err, obj, resp;
-
             beforeEach(function (done) {
-                var raw = {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'};
-                var headers = { "Content-Type": "application/json" };
-                var path = "http://mywebsite.co.uk/cars/9/purple/";
-                var method = "GET";
-                var status = 200;
-                server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                collection.GET('cars/9/purple/', function (_err, _obj, _resp) {
-                    err = _err;
-                    obj = _obj;
-                    resp = _resp;
-                    done();
-                });
-                server.respond();
+                var configureDescriptors = function () {
+                    DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                        method: 'GET',
+                        mapping: carMapping,
+                        path: '/cars/(?<id>[0-9])/(?<colour>[a-zA-Z0-9]+)/?'
+                    }));
+                    DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                        method: 'GET',
+                        mapping: carMapping,
+                        path: '/cars/(?<colour>[a-zA-Z0-9]+)/?'
+                    }));
+                };
+                configureCollection(configureDescriptors, done);
             });
 
-            it('should map regex matches onto the object', function () {
-                assert.instanceOf(obj, RestObject);
-                assert.equal(obj.colour, 'purple');
-                assert.equal(obj.name, 'Aston Martin');
-                assert.equal(obj.id, '9');
+            describe('singular', function () {
+                var err, obj, resp;
+
+                beforeEach(function (done) {
+                    var raw = {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'};
+                    var headers = { "Content-Type": "application/json" };
+                    var path = "http://mywebsite.co.uk/cars/9/purple/";
+                    var method = "GET";
+                    var status = 200;
+                    server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                    collection.GET('cars/9/purple/', function (_err, _obj, _resp) {
+                        err = _err;
+                        obj = _obj;
+                        resp = _resp;
+                        done();
+                    });
+                    server.respond();
+                });
+
+                it('should map regex matches onto the object', function () {
+                    assert.instanceOf(obj, RestObject);
+                    assert.equal(obj.colour, 'purple');
+                    assert.equal(obj.name, 'Aston Martin');
+                    assert.equal(obj.id, '9');
+                });
+            });
+
+            describe.only('multiple', function () {
+                var err, objs, resp;
+
+                beforeEach(function (done) {
+                    var raw = [
+                        {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'},
+                        {colour: 'green', name: 'Aston Martin', owner: '093hodhfno', id: '2'},
+                        {colour: 'orange', name: 'Aston Martin', owner: '093hodhfno', id: '1'}
+                    ];
+                    var headers = { "Content-Type": "application/json" };
+                    var path = "http://mywebsite.co.uk/cars/purple/";
+                    var method = "GET";
+                    var status = 200;
+                    server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                    collection.GET('cars/purple/', function (_err, _objs, _resp) {
+                        err = _err;
+                        objs = _objs;
+                        resp = _resp;
+                        done();
+                    });
+                    server.respond();
+                });
+
+                it('should map regex matches onto the object', function () {
+                    assert.notOk(err);
+                    assert.ok(objs.length);
+                    _.each(objs, function (obj) {
+                        assert.equal(obj.colour, 'purple');
+                        assert.equal(obj.name, 'Aston Martin');
+                    });
+
+                });
             });
 
 
         });
-
-
-
     });
 
     describe('verbs', function () {

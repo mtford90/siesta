@@ -501,6 +501,20 @@ collection.registerRequestDescriptor({
 });
 ```
 
+### Response Descriptors
+
+```javascript
+collection.registerRequestDescriptor({
+	path: '/cars/(?<colour>[a-zA-Z0-9]+)/?',
+	method: 'GET',
+	data: 'data'
+});
+
+collection.GET('cars/red/', function (err, objs, resp) {
+	_.each(objs, function (o) {console.log(o.colour)}); // red, red, red ...
+})
+```
+
 
 ### RestError
 
