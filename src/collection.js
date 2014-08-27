@@ -327,7 +327,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             _.partial(this._httpRequest, 'PUT').apply(this, arguments);
         };
 
-        Collection.prototype.PUT = function () {
+        Collection.prototype.PATCH = function () {
             _.partial(this._httpRequest, 'PATCH').apply(this, arguments);
         };
 

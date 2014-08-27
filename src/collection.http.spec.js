@@ -334,7 +334,7 @@ describe('http!', function () {
                     assert.equal(car.colour, 'red');
                     assert.equal(car.name, 'Aston Martin');
                     assert.equal(car.id, '5');
-                    collection.PUT('cars/5/', car, function (_err, _obj, _resp) {
+                    collection.PATCH('cars/5/', car, function (_err, _obj, _resp) {
                         err = _err;
                         obj = _obj;
                         resp = _resp;
