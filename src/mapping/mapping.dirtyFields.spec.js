@@ -588,6 +588,35 @@ describe('dirty fields', function () {
 
                 });
 
+                describe('set', function () {
+
+                    beforeEach(function (done) {
+                        newPerson.cars.set([car], function (err) {
+                            done(err);
+                        });
+                    });
+
+                    assertCarShouldNowBeDirty();
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertCarNoLongerDirty();
+
+                        it('should have persisted the change to the car', function () {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                if (err) done(err);
+                                assert.equal(doc.owner, newPerson._id);
+                            });
+                        });
+
+                    });
+
+                });
+
 
                 describe('remove', function () {
                     beforeEach(function (done) {
@@ -614,18 +643,11 @@ describe('dirty fields', function () {
                         });
 
                     });
-
-
-                })
-
-
-
-
+                });
             });
-
         });
 
-        describe.only('one-to-one', function () {
+        describe('one-to-one', function () {
 
             beforeEach(function (done) {
                 collection = new Collection('myCollection', function (err, version) {
