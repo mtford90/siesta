@@ -100,22 +100,6 @@ describe('dirty fields', function () {
         assertCollectionAndGlobalNoLongerDirty();
     }
 
-    function assertNewPersonNoLongerDirty() {
-        it('new person should no longer be dirty', function () {
-            assert.notOk(newPerson.isDirty);
-        });
-
-        it('new person collection should no longer be dirty', function () {
-            assert.notOk(collection.Person.isDirty);
-        });
-    }
-
-    function assertPreviousPersonNoLongerDirty() {
-        it('previous person should no longer be dirty', function () {
-            assert.notOk(previousPerson.isDirty);
-        });
-    }
-
     function assertCollectionAndGlobalShouldNowBeDirty() {
         it('collection should be dirty', function () {
             assert.ok(collection.isDirty);
@@ -136,22 +120,6 @@ describe('dirty fields', function () {
         });
         assertCollectionAndGlobalShouldNowBeDirty();
 
-    }
-
-    function assertNewPersonShouldNowBeDirty() {
-        it('new person should be dirty', function () {
-            assert.ok(newPerson.isDirty);
-        });
-
-        it('new person mapping should be dirty', function () {
-            assert.ok(collection.Person.isDirty);
-        });
-    }
-
-    function assertPreviousPersonShouldNowBeDirty() {
-        it('previous person should be dirty', function () {
-            assert.ok(previousPerson.isDirty);
-        });
     }
 
     describe('attributes', function () {

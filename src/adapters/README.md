@@ -1,1 +1,0 @@
-An adapter 'adapts' a document to a RestObject, ensuring a single source of truth.

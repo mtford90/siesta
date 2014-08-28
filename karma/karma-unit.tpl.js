@@ -16,6 +16,7 @@ module.exports = function ( karma ) {
       'vendor/angular-mocks/angular-mocks.js',
 
       'src/**/*.js',
+      'test/**/*.js',
 
     ],
     exclude: [
