@@ -28,16 +28,17 @@ angular.module('logging', [])
             Mapping: logLevels.warn,
             ForeignKeyRelationship: logLevels.warn,
             OneToOneRelationship: logLevels.warn,
-            Query: logLevels.warn,
-            RawQuery: logLevels.warn,
+            Query: logLevels.trace,
+            RawQuery: logLevels.trace,
             MappingOperation: logLevels.warn,
             Descriptor: logLevels.warn,
             BulkMappingOperation: logLevels.warn,
             DescriptorRegistry: logLevels.warn,
-            RestObject: logLevels.trace,
+            RestObject: logLevels.warn,
             PouchDocAdapter: logLevels.warn,
             'Num. Mapping Operations': logLevels.warn,
-            PouchDocSync: logLevels.trace
+            PouchDocSync: logLevels.warn,
+            SaveOperation: logLevels.warn
         };
 
         var t = {};

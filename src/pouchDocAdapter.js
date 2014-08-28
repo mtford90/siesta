@@ -45,7 +45,7 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         }
     })
 
-    .factory('PouchDocAdapter', function (CollectionRegistry, RestError, jlog) {
+    .factory('PouchDocAdapter', function (CollectionRegistry, RestError, jlog, cache) {
 
         var $log = jlog.loggerWithName('PouchDocAdapter');
 
@@ -84,13 +84,33 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
 
         function toNew(doc) {
             var mapping = validate(doc);
-            var r = mapping._new();
+            var obj = mapping._new();
             for (var prop in doc) {
                 if (doc.hasOwnProperty(prop)) {
-                    r[prop] = doc[prop];
+                    if (obj._fields.indexOf(prop) > -1) {
+                        obj[prop] = doc[prop];
+                    }
+                    else if (obj._relationshipFields.indexOf(prop) > -1) {
+                        obj[prop]._id = doc[prop];
+                    }
                 }
             }
-            return r;
+            return obj;
+        }
+
+        function toFount(docs) {
+            var mapped = [];
+            for (var i=0; i<docs.length; i++) {
+                var doc = docs[i];
+                var cached = cache.get({_id: doc._id});
+                if (cached) {
+                    mapped[i] = cached;
+                }
+                else {
+                    mapped[i] = toNew(doc);
+                }
+            }
+            return mapped;
         }
 
         /**
@@ -122,6 +142,8 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
             });
             adapted._id = obj._id;
             adapted._rev = obj._rev;
+            adapted.type = obj.mapping.type;
+            adapted.collection = obj.collection;
             return adapted;
         }
 
@@ -129,7 +151,8 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         return {
             toNew: toNew,
             _validate: validate,
-            from: from
+            from: from,
+            toFount: toFount
         }
     })
 

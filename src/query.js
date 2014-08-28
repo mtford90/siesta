@@ -12,6 +12,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         }
 
         Query.prototype.execute = function (callback) {
+            var self = this;
             var rawQuery = new RawQuery(this.mapping.collection, this.mapping.type, this.query);
             rawQuery.execute(function (err, results) {
                 if (err) {
@@ -19,26 +20,19 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                 }
                 else {
                     $log.debug('got results', results);
-                    var fondantObjects = _.map(results, function (r) {
-                        return PouchDocAdapter.toNew(r);
-                    });
-                    $log.debug('got fondant objects', fondantObjects);
-                    if (callback) callback(null, fondantObjects);
+                     if(callback) callback(null, PouchDocAdapter.toFount(results));
                 }
             });
         };
-
-
 
         return Query;
     })
 
 
-
 /**
  * Query and return raw pouchdb documents.
  */
-    .factory('RawQuery', function (Index, Pouch, jlog, RestError, constructMapFunction,constructMapFunction2) {
+    .factory('RawQuery', function (Index, Pouch, jlog, RestError, constructMapFunction, constructMapFunction2) {
 
         var $log = jlog.loggerWithName('RawQuery');
 
@@ -48,7 +42,7 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
             this.query = query;
         }
 
-        function resultsCallback (callback, err, resp) {
+        function resultsCallback(callback, err, resp) {
             if (err) {
                 if (callback) callback(err);
             }

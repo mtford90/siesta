@@ -36,7 +36,7 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
              */
             reset: function () {
                 var dbName = guid();
-                console.log('_reset:', dbName);
+                $log.trace('_reset:', dbName);
                 pouch = new PouchDB(dbName);
             },
 

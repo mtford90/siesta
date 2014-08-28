@@ -123,6 +123,8 @@ describe('pouch doc adapter', function () {
                 assert.equal(adapted.age, 23);
                 assert.equal(adapted.id, 'xyz');
                 assert.equal(adapted._id, person._id);
+                assert.equal(adapted.type, person.mapping.type);
+                assert.equal(adapted.collection, person.collection);
                 done();
             });
         });
@@ -137,6 +139,8 @@ describe('pouch doc adapter', function () {
                     assert.equal(adapted.id, 'xyz123');
                     assert.equal(adapted._id, car._id);
                     assert.equal(adapted.owner, person._id);
+                    assert.equal(adapted.type, person.mapping.type);
+                    assert.equal(adapted.collection, person.collection);
                     done();
                 });
             });

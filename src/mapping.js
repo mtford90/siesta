@@ -11,7 +11,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 get: function () {
                     var fields = [];
                     if (self._opts.id) {
-                        fields.push('id');
+                        fields.push(self._opts.id);
                     }
                     if (self._opts.attributes) {
                         _.each(self._opts.attributes, function (x) {fields.push(x)});
@@ -104,7 +104,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                                 var collectionName = arr[0];
                                 mappingName = arr[1];
                                 var otherCollection = CollectionRegistry[collectionName];
-                                dump(CollectionRegistry);
                                 if (!otherCollection) {
                                     throw new RestError('Collection with name "' + collectionName + '" does not exist.');
                                 }

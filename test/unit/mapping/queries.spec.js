@@ -82,7 +82,6 @@ describe('mapping queries', function () {
         it('get', function (done) {
             mapping.get(4, function (err, car) {
                 if (err) done(err);
-                dump(err, car);
                 assert.ok(car);
                 assert.instanceOf(car, RestObject);
                 assert.equal(car.color, 'red');

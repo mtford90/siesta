@@ -405,7 +405,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             opts.type = method;
             var baseURL = this.baseURL;
             opts.url = baseURL + path;
-            dump(opts);
             for (var i = 0; i < requestDescriptors.length; i++) {
                 var requestDescriptor = requestDescriptors[i];
                 if (requestDescriptor._matchConfig(opts)) {
