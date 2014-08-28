@@ -214,7 +214,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     else {
                         addNewRelated(proxy);
                     }
-                });
+                }, true);
             }
 
             function removeOldRelatedAndThenSetNewRelated(oldRelated) {
@@ -384,7 +384,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             return idx;
         };
 
-        ForeignKeyRelationship.prototype.removeRelated = function (obj, related, callback) {
+        ForeignKeyRelationship.prototype.removeRelated = function (obj, related, callback, reverse) {
             $log.debug('removeRelated');
             var self = this;
             var err;
@@ -412,7 +412,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                                         field: self.reverseName
                                     }
                                 });
-                                self.setRelated(related, null, callback, true);
+                                if (!reverse) {
+                                    self.setRelated(related, null, callback, true);
+                                }
+                                else {
+                                    if (callback) callback();
+                                }
                             }
                             else {
                                 if (callback) callback();
@@ -438,7 +443,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                                 field: self.reverseName
                             }
                         });
-                        self.setRelated(related, null, callback, true);
+                        if (!reverse) {
+                            self.setRelated(related, null, callback, true);
+                        }
+                        else {
+                            if (callback) callback();
+                        }
                     }
                     else {
                         if (callback) callback();
