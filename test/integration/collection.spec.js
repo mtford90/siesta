@@ -5,7 +5,7 @@
  * We then proceed to test various aspects of the system.
  */
 
-describe.only('intercollection relationships', function () {
+describe('intercollection relationships', function () {
 
     var myOfflineCollection;
     var myOnlineCollection;
