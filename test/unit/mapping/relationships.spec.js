@@ -46,11 +46,12 @@ describe('mapping relationships', function () {
                     attributes: ['name', 'age']
                 });
             }, function (err) {
+                console.log('myCollection installed');
                 done(err);
             });
         }
 
-        describe('Valid Foreign Key', function () {
+        describe('Foreign Key', function () {
 
             beforeEach(function (done) {
                 configureAPI(RelationshipType.ForeignKey, function (err) {
@@ -97,7 +98,7 @@ describe('mapping relationships', function () {
 
         });
 
-        describe('Valid OneToOne', function () {
+        describe('OneToOne', function () {
 
             beforeEach(function (done) {
                 configureAPI(RelationshipType.OneToOne, function (err) {
@@ -144,6 +145,64 @@ describe('mapping relationships', function () {
 
 
         });
+
+        describe('Inter-collection', function () {
+            var anotherCollection;
+            var obj;
+
+            beforeEach(function (done) {
+                configureAPI(RelationshipType.ForeignKey, done);
+            });
+
+            afterEach(function () {
+                anotherCollection = undefined;
+                obj = undefined;
+            });
+
+            describe('foreign key', function () {
+                beforeEach(function (done) {
+                    anotherCollection = new Collection('anotherCollection', function (err, version) {
+                        if (err) done(err);
+                        anotherCollection.registerMapping('AnotherMapping', {
+                            attributes: ['field'],
+                            relationships: {
+                                person: {
+                                    mapping: 'myCollection.Person',
+                                    type: RelationshipType.ForeignKey,
+                                    reverse: 'other'
+                                }
+                            }
+                        });
+                    }, function (err) {
+                        if (err) done(err);
+                        anotherCollection['AnotherMapping'].map({field: 5, person: {name: 'Michael', age: 23, id:'xyz'}}, function (err, _obj) {
+                            if (err) done(err);
+                            obj = _obj;
+                            done();
+                        });
+                    });
+                });
+
+                it('installs forward', function () {
+                    var person = obj.person.relatedObject;
+                    assert.instanceOf(person, RestObject);
+                    assert.equal(person.collection, 'myCollection');
+                    assert.equal(person.name, 'Michael');
+                    assert.equal(person.age, 23);
+                });
+
+                it('installs backwards', function () {
+                    var person = obj.person.relatedObject;
+                    assert.include(person.other.relatedObject, obj);
+                });
+
+            });
+
+
+        });
+
+
+
 
     });
 

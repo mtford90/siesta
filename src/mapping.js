@@ -97,6 +97,20 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         var collection = CollectionRegistry[self.collection];
                         $log.debug('collection', CollectionRegistry);
                         var reverseMapping = collection[mappingName];
+
+                        if (!reverseMapping) {
+                            var arr = mappingName.split('.');
+                            if (arr.length == 2) {
+                                var collectionName = arr[0];
+                                mappingName = arr[1];
+                                var otherCollection = CollectionRegistry[collectionName];
+                                dump(CollectionRegistry);
+                                if (!otherCollection) {
+                                    throw new RestError('Collection with name "' + collectionName + '" does not exist.');
+                                }
+                                reverseMapping = otherCollection[mappingName];
+                            }
+                        }
                         if (reverseMapping) {
                             $log.debug('reverseMapping', reverseMapping);
                             var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
