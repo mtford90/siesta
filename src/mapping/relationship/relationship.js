@@ -607,6 +607,9 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
 
 
 
+                    if (proxy.relationship.isForward(obj)) {
+                        obj._markFieldAsDirty(proxy.relationship.name);
+                    }
                     $rootScope.$broadcast(obj.collection + ':' + obj.type, {
                         collection: obj.collection,
                         type: obj.type,
