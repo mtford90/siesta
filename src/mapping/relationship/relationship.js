@@ -191,7 +191,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
 
                     broadCast();
                     if (!reverse) {
-                        self.addRelated(related, obj, callback);
+                        self.addRelated(related, obj, callback, true);
                     }
                     else if (callback) {
                         callback();
@@ -402,7 +402,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                             var idx = self.removeRelatedFromProxy(proxy, related);
                             var removedSomething = idx > -1;
                             if (removedSomething) {
-//                                obj._markFieldAsDirty(proxy.relationship.reverseName);
                                 $rootScope.$broadcast(obj.collection + ':' + obj.type, {
                                     collection: obj.collection,
                                     type: obj.type,
@@ -429,7 +428,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                     var idx = self.removeRelatedFromProxy(proxy, related);
                     var removedSomething = idx > -1;
                     if (removedSomething) {
-//                        obj._markFieldAsDirty(proxy.relationship.reverseName);
                         $rootScope.$broadcast(obj.collection + ':' + obj.type, {
                             collection: obj.collection,
                             type: obj.type,
@@ -457,7 +455,7 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             }
         };
 
-        ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback) {
+        ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback, reverse) {
             var self = this;
             var err;
             if (this.isForward(obj)) {
@@ -479,10 +477,15 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                                     type: ChangeType.Insert,
                                     new: related,
                                     index: proxy.relatedObject.length - 1,
-                                    field: this.reverseName
+                                    field: self.reverseName
                                 }
                             });
-                            callback();
+                            if (!reverse) {
+                                self.setRelated(related, obj, callback, true);
+                            }
+                            else {
+                                callback();
+                            }
                         }
                         else if (callback) {
                             callback(err);
@@ -491,7 +494,6 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                 }
                 else {
                     this.addRelatedToProxy(proxy, related);
-                    if (callback) callback();
                     $rootScope.$broadcast(obj.collection + ':' + obj.type, {
                         collection: obj.collection,
                         type: obj.type,
@@ -502,6 +504,12 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
                             field: this.reverseName
                         }
                     });
+                    if (!reverse) {
+                        self.setRelated(related, obj, callback, true);
+                    }
+                    else {
+                        callback();
+                    }
                 }
             }
             else {

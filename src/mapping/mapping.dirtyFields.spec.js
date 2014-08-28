@@ -566,6 +566,25 @@ describe('dirty fields', function () {
                     });
                 });
 
+                assertCarShouldNowBeDirty();
+
+                describe('save', function () {
+
+                    beforeEach(function (done) {
+                        car.save(done);
+                    });
+
+                    assertCarNoLongerDirty();
+
+                    it('should have persisted the change to the car', function () {
+                        Pouch.getPouch().get(car._id, function (err, doc) {
+                            if (err) done(err);
+                            assert.equal(doc.owner, newPerson._id);
+                        });
+                    });
+
+                })
+
 
             });
 

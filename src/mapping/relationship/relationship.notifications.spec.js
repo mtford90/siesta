@@ -153,6 +153,8 @@ describe('relationship notifications', function () {
                 });
 
                 it('has no old', function () {
+                    dump(carNotif.change.old);
+                    dump(carNotif.change.new);
                     assert.notOk(carNotif.change.old);
                 });
 
