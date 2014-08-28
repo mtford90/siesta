@@ -55,7 +55,7 @@ describe('dirty fields', function () {
         });
     }
 
-    describe.only('attributes', function () {
+    describe('attributes', function () {
 
         describe('standard', function () {
             var doc;
@@ -243,6 +243,24 @@ describe('dirty fields', function () {
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
                     });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours.length, 2);
+                                done();
+                            });
+                        });
+
+                    });
+
                 });
 
                 describe('shift element', function () {
@@ -261,6 +279,24 @@ describe('dirty fields', function () {
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
                     });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours.length, 2);
+                                done();
+                            });
+                        });
+
+                    });
+
                 });
 
                 describe('unshift element', function () {
@@ -279,6 +315,25 @@ describe('dirty fields', function () {
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
                     });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours[0], 'purple');
+                                assert.equal(doc.colours.length, 4);
+                                done();
+                            });
+                        });
+
+                    });
+
                 });
 
                 describe('sort array', function () {
@@ -296,6 +351,26 @@ describe('dirty fields', function () {
 
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
+                    });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours[0], car.colours[0]);
+                                assert.equal(doc.colours[1], car.colours[1]);
+                                assert.equal(doc.colours[2], car.colours[2]);
+                                assert.equal(doc.colours.length, 3);
+                                done();
+                            });
+                        });
+
                     });
 
                 });
@@ -316,6 +391,27 @@ describe('dirty fields', function () {
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
                     });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours[0], car.colours[0]);
+                                assert.equal(doc.colours[1], car.colours[1]);
+                                assert.equal(doc.colours[2], car.colours[2]);
+                                assert.equal(doc.colours.length, 3);
+                                done();
+                            });
+                        });
+
+                    });
+
                 });
 
                 describe('set object at index', function () {
@@ -334,6 +430,25 @@ describe('dirty fields', function () {
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
                     });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours[1], 'purple');
+                                assert.equal(doc.colours[1], car.colours[1]);
+                                done();
+                            });
+                        });
+
+                    });
+
                 });
 
                 describe('splice', function () {
@@ -352,6 +467,25 @@ describe('dirty fields', function () {
                     it('global should be dirty', function () {
                         assert.ok(Collection.isDirty);
                     });
+
+                    describe('save', function () {
+
+                        beforeEach(function (done) {
+                            car.save(done);
+                        });
+
+                        assertNoLongerDirty();
+
+                        it('should have made the change', function (done) {
+                            Pouch.getPouch().get(car._id, function (err, doc) {
+                                assert.equal(doc.colours[1], 'purple');
+                                assert.equal(doc.colours[1], car.colours[1]);
+                                done();
+                            });
+                        });
+
+                    });
+
                 });
 
             });
