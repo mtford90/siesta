@@ -5,18 +5,6 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
 
         var $log = jlog.loggerWithName('Store');
 
-        function processDoc(doc, callback) {
-            try {
-                var restObject = PouchDocAdapter.toNew(doc);
-                cache.insert(restObject);
-                if (callback) callback(null, restObject);
-            }
-            catch (err) {
-                if (callback) {
-                    callback(err);
-                }
-            }
-        }
 
         function get(opts, callback) {
             $log.debug('get', opts);
@@ -39,7 +27,9 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                         }
                         else {
                             Pouch.getPouch().get(opts._id).then(function (doc) {
-                                processDoc(doc, callback);
+                                dump(0);
+                                var docs = PouchDocAdapter.toFount([doc]);
+                                if (callback) callback(null, docs.length ? docs[0] : null);
                             }, wrappedCallback(callback));
                         }
                     }
@@ -66,10 +56,10 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                         var idField = mapping.id;
                         var id = opts[idField];
                         if (id) {
-                            mapping.get(id, function (err, doc) {
+                            mapping.get(id, function (err, obj) {
                                 if (!err) {
-                                    if (doc) {
-                                        processDoc(doc, callback);
+                                    if (obj) {
+                                        callback(null, obj);
                                     }
                                     else {
                                         callback(null, null);
@@ -93,8 +83,6 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                 $log.error(msg, context);
                 wrappedCallback(callback)(new RestError(msg, context));
             }
-
-
         }
 
         function getMultiple(optsArray, callback) {

@@ -40,11 +40,9 @@ describe('pouch doc adapter', function () {
                 var doc = {name: 'Michael', type: 'Person', collection: 'myCollection', age: 23, _id: 'randomId', _rev: 'randomRev'};
                 var obj = PouchDocAdapter.toNew(doc);
                 console.log('obj:', obj);
-                for (var prop in doc) {
-                    if (doc.hasOwnProperty(prop)) {
-                        assert.equal(obj[prop], doc[prop]);
-                    }
-                }
+                assert.equal(obj.name, 'Michael');
+                assert.equal(obj.age, 23);
+                assert.notOk(obj._rev);
                 console.log(obj);
             })
         });
@@ -190,9 +188,9 @@ describe('pouch doc adapter', function () {
                     assert.equal(adapted.name, 'Aston Martin');
                     assert.equal(adapted.id, 'xyz123');
                     assert.equal(adapted._id, car._id);
+                    assert.equal(adapted.type, car.mapping.type);
+                    assert.equal(adapted.collection, car.collection);
                     assert.equal(adapted.owner, person._id);
-                    assert.equal(adapted.type, person.mapping.type);
-                    assert.equal(adapted.collection, person.collection);
                     done();
                 });
             });
