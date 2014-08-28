@@ -55,6 +55,26 @@ describe('dirty fields', function () {
         });
     }
 
+    function assertShouldBeDirty() {
+
+        it('car should be dirty', function () {
+            assert.ok(car.isDirty);
+        });
+
+
+        it('car collection should be dirty', function () {
+            assert.ok(collection.Car.isDirty);
+        });
+
+        it('collection should be dirty', function () {
+            assert.ok(collection.isDirty);
+        });
+
+        it('global should be dirty', function () {
+            assert.ok(Collection.isDirty);
+        });
+    }
+
     describe('attributes', function () {
 
         describe('standard', function () {
@@ -109,9 +129,9 @@ describe('dirty fields', function () {
                     car.name = 'Bentley';
                 });
 
-                it('car should be dirty', function () {
-                    assert.ok(car.isDirty);
-                });
+
+                assertShouldBeDirty();
+
 
                 describe('save', function () {
 
@@ -123,17 +143,7 @@ describe('dirty fields', function () {
 
                 });
 
-                it('car collection should be dirty', function () {
-                    assert.ok(collection.Car.isDirty);
-                });
 
-                it('collection should be dirty', function () {
-                    assert.ok(collection.isDirty);
-                });
-
-                it('global should be dirty', function () {
-                    assert.ok(Collection.isDirty);
-                });
 
             });
         });
@@ -195,17 +205,8 @@ describe('dirty fields', function () {
                         car.colours.push('purple');
                     });
 
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
+                    assertShouldBeDirty();
 
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
 
                     describe('save', function () {
 
@@ -231,18 +232,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.pop();
                     });
-
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
-
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
+                    assertShouldBeDirty();
 
                     describe('save', function () {
 
@@ -268,17 +258,8 @@ describe('dirty fields', function () {
                         car.colours.shift();
                     });
 
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
+                    assertShouldBeDirty();
 
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
 
                     describe('save', function () {
 
@@ -303,18 +284,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.unshift('purple');
                     });
-
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
-
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
+                    assertShouldBeDirty();
 
                     describe('save', function () {
 
@@ -341,17 +311,11 @@ describe('dirty fields', function () {
                         car.colours.sort();
                     });
 
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
 
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
 
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
+                    assertShouldBeDirty();
+
+
 
                     describe('save', function () {
 
@@ -379,18 +343,8 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.reverse();
                     });
+                    assertShouldBeDirty();
 
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
-
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
 
                     describe('save', function () {
 
@@ -419,17 +373,8 @@ describe('dirty fields', function () {
                         car.colours.setObjectAtIndex('purple', 1);
                     });
 
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
+                    assertShouldBeDirty();
 
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
 
                     describe('save', function () {
 
@@ -455,18 +400,8 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.splice(1, 1, 'purple');
                     });
+                    assertShouldBeDirty();
 
-                    it('car collection should be dirty', function () {
-                        assert.ok(collection.Car.isDirty);
-                    });
-
-                    it('collection should be dirty', function () {
-                        assert.ok(collection.isDirty);
-                    });
-
-                    it('global should be dirty', function () {
-                        assert.ok(Collection.isDirty);
-                    });
 
                     describe('save', function () {
 

@@ -41,20 +41,6 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         }
 
         return {
-            // TODO: Possibly use the notifications to keep everything in sync? More disk writes tho... Could get crazy.
-            startSync: function () {
-//                $rootScope.$on('Fount', function (e, n) {
-//                    $log.trace('Received notif', JSON.stringify(n, null, 4));
-//                    var changeType = n.change.type;
-//                    var field = n.change.field;
-//                    var obj = n.obj;
-//                    if (changeType == ChangeType.Set) {
-//                        var id = obj._id;
-//                        var newVal = n.change['new'];
-//                        retryUntilWritten(id, field, newVal);
-//                    }
-//                });
-            },
             retryUntilWrittenMultiple: retryUntilWrittenMultiple
         }
     })
