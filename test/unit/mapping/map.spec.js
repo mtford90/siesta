@@ -206,7 +206,7 @@ describe('perform mapping', function () {
                                 done();
                             })
                         });
-                        it('michael should the car', function (done) {
+                        it('michael should own the car', function (done) {
                             $rootScope.$digest(); // Ensure cache gets updated.
                             person.cars.get(function (err, cars) {
                                 if (err) done(err);
