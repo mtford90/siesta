@@ -1,9 +1,9 @@
 describe('dirty fields', function () {
 
     var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, RestObject, $rootScope, CollectionRegistry;
-    var collection, carMapping;
+    var collection, carMapping, personMapping;
 
-    var car;
+    var car, previousPerson, newPerson;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -38,15 +38,7 @@ describe('dirty fields', function () {
     });
 
 
-    function assertNotDirtyWhenFirstMapped() {
-        it('car should not be dirty when first mapped', function () {
-            assert.notOk(car.isDirty);
-        });
-
-        it('type should not be dirty when first mapped', function () {
-            assert.notOk(collection.Car.isDirty);
-        });
-
+    function assertCollectionAndGlobalNotDirtyWhenFirstMapped() {
         it('collection should not be dirty when first mapped', function () {
             assert.notOk(collection.isDirty);
         });
@@ -56,16 +48,37 @@ describe('dirty fields', function () {
         });
     }
 
-
-    function assertNoLongerDirty() {
-        it('car should no longer be dirty', function () {
+    function assertCarNotDirtyWhenFirstMapped() {
+        it('car should not be dirty when first mapped', function () {
             assert.notOk(car.isDirty);
         });
 
-        it('car collection should no longer be dirty', function () {
+        it('car mapping should not be dirty when first mapped', function () {
             assert.notOk(collection.Car.isDirty);
         });
+        assertCollectionAndGlobalNotDirtyWhenFirstMapped();
 
+    }
+
+    function assertNewPersonNotDirtyWhenFirstMapped() {
+        it('new person should not be dirty when first mapped', function () {
+            assert.notOk(newPerson.isDirty);
+        });
+
+        it('new person mapping should not be dirty when first mapped', function () {
+            assert.notOk(collection.Person.isDirty);
+        });
+        assertCollectionAndGlobalNotDirtyWhenFirstMapped();
+
+    }
+
+    function assertPreviousPersonNotDirtyWhenFirstMapped() {
+        it('previous person should not be dirty when first mapped', function () {
+            assert.notOk(previousPerson.isDirty);
+        });
+    }
+
+    function assertCollectionAndGlobalNoLongerDirty() {
         it('collection should no longer be dirty', function () {
             assert.notOk(collection.isDirty);
         });
@@ -75,22 +88,69 @@ describe('dirty fields', function () {
         });
     }
 
-
-    function assertShouldNowBeDirty() {
-        it('car should be dirty', function () {
-            assert.ok(car.isDirty);
+    function assertCarNoLongerDirty() {
+        it('car should no longer be dirty', function () {
+            assert.notOk(car.isDirty);
         });
 
-        it('car collection should be dirty', function () {
-            assert.ok(collection.Car.isDirty);
+        it('car collection should no longer be dirty', function () {
+            assert.notOk(collection.Car.isDirty);
         });
 
+        assertCollectionAndGlobalNoLongerDirty();
+    }
+
+    function assertNewPersonNoLongerDirty() {
+        it('new person should no longer be dirty', function () {
+            assert.notOk(newPerson.isDirty);
+        });
+
+        it('new person collection should no longer be dirty', function () {
+            assert.notOk(collection.Person.isDirty);
+        });
+    }
+
+    function assertPreviousPersonNoLongerDirty() {
+        it('previous person should no longer be dirty', function () {
+            assert.notOk(previousPerson.isDirty);
+        });
+    }
+
+    function assertCollectionAndGlobalShouldNowBeDirty() {
         it('collection should be dirty', function () {
             assert.ok(collection.isDirty);
         });
 
         it('global should be dirty', function () {
             assert.ok(Collection.isDirty);
+        });
+    }
+
+    function assertCarShouldNowBeDirty() {
+        it('car should be dirty', function () {
+            assert.ok(car.isDirty);
+        });
+
+        it('car mapping should be dirty', function () {
+            assert.ok(collection.Car.isDirty);
+        });
+        assertCollectionAndGlobalShouldNowBeDirty();
+
+    }
+
+    function assertNewPersonShouldNowBeDirty() {
+        it('new person should be dirty', function () {
+            assert.ok(newPerson.isDirty);
+        });
+
+        it('new person mapping should be dirty', function () {
+            assert.ok(collection.Person.isDirty);
+        });
+    }
+
+    function assertPreviousPersonShouldNowBeDirty() {
+        it('previous person should be dirty', function () {
+            assert.ok(previousPerson.isDirty);
         });
     }
 
@@ -120,7 +180,7 @@ describe('dirty fields', function () {
                 });
             });
 
-            assertNotDirtyWhenFirstMapped();
+            assertCarNotDirtyWhenFirstMapped();
 
             it('when first mapped, should have all the same fields', function () {
                 assert.equal(doc._id, car._id);
@@ -135,7 +195,7 @@ describe('dirty fields', function () {
                 });
 
 
-                assertShouldNowBeDirty();
+                assertCarShouldNowBeDirty();
 
 
                 describe('save', function () {
@@ -144,7 +204,7 @@ describe('dirty fields', function () {
                         car.save(done);
                     });
 
-                    assertNoLongerDirty();
+                    assertCarNoLongerDirty();
 
                 });
 
@@ -178,7 +238,7 @@ describe('dirty fields', function () {
                 });
             });
 
-            assertNotDirtyWhenFirstMapped();
+            assertCarNotDirtyWhenFirstMapped();
 
             it('when first mapped, should have all the same fields', function () {
                 assert.equal(doc._id, car._id);
@@ -194,7 +254,7 @@ describe('dirty fields', function () {
                         car.colours.push('purple');
                     });
 
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
                     describe('save', function () {
 
@@ -202,7 +262,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -220,7 +280,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.pop();
                     });
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
                     describe('save', function () {
 
@@ -228,7 +288,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -246,7 +306,7 @@ describe('dirty fields', function () {
                         car.colours.shift();
                     });
 
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -255,7 +315,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -272,7 +332,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.unshift('purple');
                     });
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
                     describe('save', function () {
 
@@ -280,7 +340,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -300,7 +360,7 @@ describe('dirty fields', function () {
                     });
 
 
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -309,7 +369,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -329,7 +389,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.reverse();
                     });
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -338,7 +398,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -359,7 +419,7 @@ describe('dirty fields', function () {
                         car.colours.setObjectAtIndex('purple', 1);
                     });
 
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -368,7 +428,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -386,7 +446,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.splice(1, 1, 'purple');
                     });
-                    assertShouldNowBeDirty();
+                    assertCarShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -395,7 +455,7 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertNoLongerDirty();
+                        assertCarNoLongerDirty();
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -406,7 +466,123 @@ describe('dirty fields', function () {
                         });
                     });
 
+                });
             });
         });
     });
+
+    describe('relationships', function () {
+
+        describe('foreign key', function () {
+            beforeEach(function (done) {
+                collection = new Collection('myCollection', function (err, version) {
+                    if (err) done(err);
+                    carMapping = collection.registerMapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                    personMapping = collection.registerMapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+                }, function (err) {
+                    if (err) done(err);
+                    carMapping.map({name: 'Aston Martin', colour: 'black', owner: 'abcdef'}, function (err, _car) {
+                        if (err) done(err);
+                        car = _car;
+                        previousPerson = car.owner.relatedObject;
+                        personMapping.map({name: 'Michael Ford', age: 23}, function (err, person) {
+                            if (err) done(err);
+                            newPerson = person;
+                            assert.ok(previousPerson);
+                            assert.ok(newPerson);
+                            done();
+                        })
+                    });
+                });
+            });
+
+            assertCarNotDirtyWhenFirstMapped();
+
+            it('should have car fields setup correctly', function (done) {
+                Pouch.getPouch().get(car._id, function (err, doc) {
+                    if (err) done(err);
+                    assert.equal(doc.colour, car.colour);
+                    assert.equal(doc.name, car.name);
+                    assert.equal(doc.owner, previousPerson._id);
+                    done();
+                });
+            });
+
+            it('should have person fields setup correctly', function (done) {
+                Pouch.getPouch().get(previousPerson._id, function (err, doc) {
+                    if (err) done(err);
+                    assert.equal(doc.id, previousPerson.id);
+                    done();
+                });
+            });
+
+            describe('forward', function () {
+
+                beforeEach(function (done) {
+                    car.owner.set(newPerson, function (err) {
+                        done(err);
+                    });
+                });
+
+                assertCarShouldNowBeDirty();
+
+                describe('save', function () {
+
+                    beforeEach(function (done) {
+                        car.save(done);
+                    });
+
+                    assertCarNoLongerDirty();
+
+                    it('should have persisted the change to the car', function () {
+                        Pouch.getPouch().get(car._id, function (err, doc) {
+                            if (err) done(err);
+                            assert.equal(doc.owner, newPerson._id);
+                        });
+                    });
+
+                })
+
+            });
+
+            describe('reverse', function () {
+
+                beforeEach(function (done) {
+                    newPerson.cars.add(car, function (err) {
+                        done(err);
+                    });
+                });
+
+
+            });
+
+        });
+
+        describe('one-to-one', function () {
+
+            describe('forward', function () {
+
+            });
+
+            describe('reverse', function () {
+
+            });
+
+        })
+
+    });
+
 });

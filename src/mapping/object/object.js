@@ -65,9 +65,64 @@ angular.module('restkit.object', ['restkit'])
             return clonedArray;
         };
 
+        /**
+         * If we're clearing a dirty relationship field, we need to clear the reverse also.
+         * @param fields
+         * @param callback
+         * @private
+         */
+        SaveOperation.prototype._clearDirtyRelationshipFields = function (fields, callback) {
+            var self = this;
+            var savingRelationships = [];
+            var errors = [];
+            var results = [];
+
+            function unmarkAsRelated(o, relationship) {
+                if (relationship.isForward(self.object)) {
+                    o._unmarkFieldAsDirty(relationship.reverseName);
+                }
+                else {
+                    o._unmarkFieldAsDirty(relationship.name);
+                }
+            }
+
+            _.each(fields, function (f) {
+                var isRelationship = self.object._fields.indexOf(f) < 0;
+                if (isRelationship) {
+                    savingRelationships.push(f);
+                    var proxy = self.object[f];
+                    var relationship = proxy.relationship;
+                    proxy.get(function (err, related) {
+                        if (!err) {
+                            if (Object.prototype.toString.call(related) === '[object Array]') {
+                                _.each(related, function (o) {
+                                    unmarkAsRelated(o, relationship);
+                                })
+                            }
+                            else {
+                                unmarkAsRelated(related, relationship);
+                            }
+                        }
+                        else {
+                            errors.push(err);
+                        }
+                        results.push({related: related, err: err});
+                        if (savingRelationships.length == results.length) {
+                            if (callback) callback(errors.length ? errors : null, results);
+                        }
+                    });
+
+                }
+            });
+            if (!savingRelationships.length) {
+                if (callback) callback();
+            }
+        };
+
         SaveOperation.prototype._clearDirtyFields = function (fields) {
             $log.trace('_clearDirtyFields', fields);
             this.object._unmarkFieldsAsDirty(fields);
+//            this._clearDirtyRelationshipFields(fields, callback);
         };
 
         SaveOperation.prototype._saveDirtyFields = function () {
@@ -78,18 +133,26 @@ angular.module('restkit.object', ['restkit'])
                 $log.trace('_saveDirtyFields, have dirty fields to save', dirtyFields);
                 var changes = {};
                 _.each(dirtyFields, function (field) {
-                    changes[field] = self.object[field];
+                    var isAttribute = self.object._fields.indexOf(field) > -1;
+                    if (isAttribute) {
+                        changes[field] = self.object[field];
+                    }
+                    else { // Relationship
+                        var proxy = self.object[field];
+                        changes[field] = proxy._id;
+                    }
                 });
                 $log.trace('_saveDirtyFields, changes:', changes);
                 PouchDocSync.retryUntilWrittenMultiple(self.object._id, changes, function (err) {
                     if (err) {
                         $log.error('Error saving object.', err);
+                        self._finish(err);
                     }
                     else {
                         $log.trace('Successfully saved.');
                         self._clearDirtyFields(dirtyFields);
+                        self._finish(err);
                     }
-                    self._finish(err);
                 });
             }
             else {
@@ -199,7 +262,7 @@ angular.module('restkit.object', ['restkit'])
         RestObject.prototype._markFieldsAsDirty = function (fields) {
             var self = this;
             _.each(fields, function (f) {
-                 self._markFieldAsDirty(f);
+                self._markFieldAsDirty(f);
             });
         };
 
