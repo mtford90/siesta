@@ -37,6 +37,26 @@ describe('dirty fields', function () {
         })
     });
 
+
+    function assertNotDirtyWhenFirstMapped() {
+        it('car should not be dirty when first mapped', function () {
+            assert.notOk(car.isDirty);
+        });
+
+        it('type should not be dirty when first mapped', function () {
+            assert.notOk(collection.Car.isDirty);
+        });
+
+        it('collection should not be dirty when first mapped', function () {
+            assert.notOk(collection.isDirty);
+        });
+
+        it('global should not be dirty when first mapped', function () {
+            assert.notOk(Collection.isDirty);
+        });
+    }
+
+
     function assertNoLongerDirty() {
         it('car should no longer be dirty', function () {
             assert.notOk(car.isDirty);
@@ -55,12 +75,11 @@ describe('dirty fields', function () {
         });
     }
 
-    function assertShouldBeDirty() {
 
+    function assertShouldNowBeDirty() {
         it('car should be dirty', function () {
             assert.ok(car.isDirty);
         });
-
 
         it('car collection should be dirty', function () {
             assert.ok(collection.Car.isDirty);
@@ -101,21 +120,7 @@ describe('dirty fields', function () {
                 });
             });
 
-            it('car should not be dirty when first mapped', function () {
-                assert.notOk(car.isDirty);
-            });
-
-            it('type should not be dirty when first mapped', function () {
-                assert.notOk(collection.Car.isDirty);
-            });
-
-            it('collection should not be dirty when first mapped', function () {
-                assert.notOk(collection.isDirty);
-            });
-
-            it('global should not be dirty when first mapped', function () {
-                assert.notOk(Collection.isDirty);
-            });
+            assertNotDirtyWhenFirstMapped();
 
             it('when first mapped, should have all the same fields', function () {
                 assert.equal(doc._id, car._id);
@@ -130,7 +135,7 @@ describe('dirty fields', function () {
                 });
 
 
-                assertShouldBeDirty();
+                assertShouldNowBeDirty();
 
 
                 describe('save', function () {
@@ -144,7 +149,6 @@ describe('dirty fields', function () {
                 });
 
 
-
             });
         });
 
@@ -152,7 +156,6 @@ describe('dirty fields', function () {
         describe('arrays', function () {
 
             var doc;
-
 
             beforeEach(function (done) {
                 collection = new Collection('myCollection', function (err, version) {
@@ -175,21 +178,7 @@ describe('dirty fields', function () {
                 });
             });
 
-            it('car should not be dirty when first mapped', function () {
-                assert.notOk(car.isDirty);
-            });
-
-            it('type should not be dirty when first mapped', function () {
-                assert.notOk(collection.Car.isDirty);
-            });
-
-            it('collection should not be dirty when first mapped', function () {
-                assert.notOk(collection.isDirty);
-            });
-
-            it('global should not be dirty when first mapped', function () {
-                assert.notOk(Collection.isDirty);
-            });
+            assertNotDirtyWhenFirstMapped();
 
             it('when first mapped, should have all the same fields', function () {
                 assert.equal(doc._id, car._id);
@@ -205,8 +194,7 @@ describe('dirty fields', function () {
                         car.colours.push('purple');
                     });
 
-                    assertShouldBeDirty();
-
+                    assertShouldNowBeDirty();
 
                     describe('save', function () {
 
@@ -232,7 +220,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.pop();
                     });
-                    assertShouldBeDirty();
+                    assertShouldNowBeDirty();
 
                     describe('save', function () {
 
@@ -258,7 +246,7 @@ describe('dirty fields', function () {
                         car.colours.shift();
                     });
 
-                    assertShouldBeDirty();
+                    assertShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -284,7 +272,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.unshift('purple');
                     });
-                    assertShouldBeDirty();
+                    assertShouldNowBeDirty();
 
                     describe('save', function () {
 
@@ -312,9 +300,7 @@ describe('dirty fields', function () {
                     });
 
 
-
-                    assertShouldBeDirty();
-
+                    assertShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -343,7 +329,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.reverse();
                     });
-                    assertShouldBeDirty();
+                    assertShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -373,7 +359,7 @@ describe('dirty fields', function () {
                         car.colours.setObjectAtIndex('purple', 1);
                     });
 
-                    assertShouldBeDirty();
+                    assertShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -400,7 +386,7 @@ describe('dirty fields', function () {
                     beforeEach(function () {
                         car.colours.splice(1, 1, 'purple');
                     });
-                    assertShouldBeDirty();
+                    assertShouldNowBeDirty();
 
 
                     describe('save', function () {
@@ -418,17 +404,9 @@ describe('dirty fields', function () {
                                 done();
                             });
                         });
-
                     });
 
-                });
-
             });
-
-
         });
-
-
-    })
-
+    });
 });
