@@ -67,13 +67,7 @@ angular.module('restkit.object', ['restkit'])
 
         SaveOperation.prototype._clearDirtyFields = function (fields) {
             $log.trace('_clearDirtyFields', fields);
-            var self = this;
-            _.each(fields, function (f) {
-                var idx = self.object.__dirtyFields.indexOf(f);
-                if (idx > -1) {
-                    self.object.__dirtyFields.splice(idx, 1);
-                }
-            });
+            this.object._unmarkFieldsAsDirty(fields);
         };
 
         SaveOperation.prototype._saveDirtyFields = function () {
@@ -186,6 +180,47 @@ angular.module('restkit.object', ['restkit'])
             });
         }
 
+        RestObject.prototype._unmarkFieldsAsDirty = function (fields) {
+            var self = this;
+            _.each(fields, function (f) {
+                self._unmarkFieldAsDirty(f);
+            })
+        };
+
+        RestObject.prototype._unmarkFieldAsDirty = function (field) {
+            var idx = this.__dirtyFields.indexOf(field);
+            if (idx > -1) {
+                this.__dirtyFields.splice(idx, 1);
+            }
+            this._markTypeAsDirtyIfNeccessary();
+        };
+
+        RestObject.prototype._markFieldsAsDirty = function (fields) {
+            var self = this;
+            _.each(fields, function (f) {
+                 self._markFieldAsDirty(f);
+            });
+        };
+
+        RestObject.prototype._markFieldAsDirty = function (field) {
+            if (this.__dirtyFields.indexOf(field) < 0) {
+                this.__dirtyFields.push(field);
+            }
+            this._markTypeAsDirtyIfNeccessary();
+        };
+
+        /**
+         * Mark dirty one level up.
+         * @private
+         */
+        RestObject.prototype._markTypeAsDirtyIfNeccessary = function () {
+            if (this.isDirty) {
+                this.mapping._markObjectAsDirty(this);
+            }
+            else {
+                this.mapping._unmarkObjectAsDirty(this);
+            }
+        };
 
         /**
          * Write down any dirty fields to PouchDB.

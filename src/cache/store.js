@@ -1,8 +1,6 @@
 angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAdapter'])
 
-/**
- * Local object store. Mediates between in-memory cache and Pouch.
- */
+
     .factory('Store', function (cache, $q, wrappedCallback, Pouch, PouchDocAdapter, RestError, jlog, assert) {
 
         var $log = jlog.loggerWithName('Store');

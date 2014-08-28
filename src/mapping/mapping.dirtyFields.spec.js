@@ -1,4 +1,4 @@
-describe('dirty fields', function () {
+describe.only('dirty fields', function () {
 
     var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, RestObject, $rootScope,CollectionRegistry;
     var collection, carMapping;
@@ -66,9 +66,9 @@ describe('dirty fields', function () {
             assert.notOk(car.isDirty);
         });
 
-//        it('type should not be dirty when first mapped', function () {
-//            assert.notOk(collection.Car.isDirty);
-//        });
+        it('type should not be dirty when first mapped', function () {
+            assert.notOk(collection.Car.isDirty);
+        });
 //
 //        it('collection should not be dirty when first mapped', function () {
 //            assert.notOk(collection.isDirty);
@@ -104,14 +104,17 @@ describe('dirty fields', function () {
                     assert.notOk(car.isDirty);
                 });
 
+                it('car collection should no longer be dirty', function () {
+                    assert.notOk(collection.Car.isDirty);
+                });
 
             });
 
             // TODO
 
-//            it('car collection should be dirty', function () {
-//                assert.ok(collection.Car.isDirty);
-//            });
+            it('car collection should be dirty', function () {
+                assert.ok(collection.Car.isDirty);
+            });
 //
 //            it('collection should be dirty', function () {
 //                assert.ok(collection.isDirty);

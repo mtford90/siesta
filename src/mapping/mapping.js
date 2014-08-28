@@ -37,15 +37,30 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 configurable: true
             });
 
+            this.__dirtyObjects = [];
+
             Object.defineProperty(this, 'isDirty', {
                 get: function () {
-                    return false;
+                    return !!self.__dirtyObjects.length;
                 },
                 enumerable: true,
                 configurable: true
             });
 
         }
+
+        Mapping.prototype._markObjectAsDirty = function (obj) {
+            if (this.__dirtyObjects.indexOf(obj) < 0) {
+                this.__dirtyObjects.push(obj);
+            }
+        };
+
+        Mapping.prototype._unmarkObjectAsDirty = function (obj) {
+            var idx = this.__dirtyObjects.indexOf(obj);
+            if (idx > -1) {
+                this.__dirtyObjects.splice(idx, 1);
+            }
+        };
 
         Mapping.prototype.installRelationships = function () {
             var self = this;
@@ -442,9 +457,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
                         if (v != old) {
                             jlog.loggerWithName('RestObject').trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '"');
-                            if (restObject.__dirtyFields.indexOf(field) < 0) {
-                                restObject.__dirtyFields.push(field);
-                            }
+                            restObject._markFieldAsDirty(field);
                         }
 
                     },
@@ -486,6 +499,8 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         Mapping.prototype.toString = function () {
             return 'Mapping[' + this.type + ']';
         };
+
+
 
 
 
