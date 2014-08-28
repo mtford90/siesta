@@ -181,13 +181,14 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             function fountPush(push) {
                 var objects = Array.prototype.slice.call(arguments, 1);
                 var res = push.apply(this, objects);
+                restObject._markFieldAsDirty(field);
                 broadcast(restObject, {
                     type: ChangeType.Insert,
                     new: objects,
                     field: field,
                     index: this.length - 1
                 });
-                return  res;
+                return res;
             }
 
             if (array.push.name != 'fountPush') {
@@ -199,6 +200,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 if (this.length) {
                     var old = [this[this.length - 1]];
                     var res = pop.apply(this, objects);
+                    restObject._markFieldAsDirty(field);
                     broadcast(restObject, {
                         type: ChangeType.Remove,
                         old: old,
@@ -221,6 +223,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 if (this.length) {
                     var old = [this[0]];
                     var res = shift.apply(this, objects);
+                    restObject._markFieldAsDirty(field);
                     broadcast(restObject, {
                         type: ChangeType.Remove,
                         old: old,
@@ -241,6 +244,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             function fountUnshift(unshift) {
                 var objects = Array.prototype.slice.call(arguments, 1);
                 var res = unshift.apply(this, objects);
+                restObject._markFieldAsDirty(field);
                 broadcast(restObject, {
                     type: ChangeType.Insert,
                     new: objects,
@@ -294,6 +298,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 var objects = Array.prototype.slice.call(arguments, 1);
                 var res = sort.apply(this, objects);
                 var indexes = computeDiff(this, clone);
+                restObject._markFieldAsDirty(field);
                 broadcast(restObject, {
                     type: ChangeType.Move,
                     field: field,
@@ -311,6 +316,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 var objects = Array.prototype.slice.call(arguments, 1);
                 var res = reverse.apply(this, objects);
                 var indexes = computeDiff(this, clone);
+                restObject._markFieldAsDirty(field);
                 broadcast(restObject, {
                     type: ChangeType.Move,
                     field: field,
@@ -326,6 +332,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             array.setObjectAtIndex = function (obj, index) {
                 var old = this[index];
                 this[index] = obj;
+                restObject._markFieldAsDirty(field);
                 broadcast(restObject, {
                     type: ChangeType.Replace,
                     field: field,
@@ -393,6 +400,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                     })
                 }
                 var res = _.bind(splice, this, index, howMany).apply(this, objects);
+                restObject._markFieldAsDirty(field);
                 broadcast(restObject, changes);
                 return res;
             }
