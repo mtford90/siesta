@@ -236,7 +236,7 @@ describe('http!', function () {
                         var status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
                         collection.GET('cars/5/', function (_err, _obj, _resp) {
-                            err = _err;
+                            if (_err) done(_err);
                             obj = _obj;
                             resp = _resp;
                             done();
@@ -244,8 +244,7 @@ describe('http!', function () {
                         server.respond();
                     });
 
-                    it.only('returns 2 car objects', function () {
-                        assert.notOk(err, 'Error during mapping operation: ' + JSON.stringify(err, null, 4));
+                    it('returns 2 car objects', function () {
                         assert.equal(obj.length, 2);
                         _.each(obj, function (car) {
                             assert.instanceOf(car, RestObject);

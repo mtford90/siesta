@@ -48,10 +48,11 @@ describe('relationship notifications', function () {
         }, function (err) {
             if (err) done(err);
             car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'xyz'});
-            Store.put(car, function (err) {
+
+            car.save(function (err) {
                 if (err) done(err);
                 person = personMapping._new({name: 'Michael Ford', age: 23, id: '12312312'});
-                Store.put(person, function (err) {
+                person.save(function (err) {
                     if (err) done(err);
                     $rootScope.$on('myCollection:Car', function (e, n) {
                         carNotif = n;
@@ -71,6 +72,7 @@ describe('relationship notifications', function () {
                     });
                 });
             });
+
         });
     }
 
@@ -189,9 +191,9 @@ describe('relationship notifications', function () {
             beforeEach(function (done) {
                 anotherCar = carMapping._new({name: 'Lambo', id: 'asq34asdasd', colour: 'yellow'});
                 anotherPerson = personMapping._new({name: 'Robert Manning', id: 'asq34asdasd', age: 52});
-                Store.put(anotherCar, function (err) {
+                anotherCar.save(function (err) {
                     if (err) done(err);
-                    Store.put(anotherPerson, function (err) {
+                    anotherPerson.save(function (err) {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             anotherCarNotif = n;
@@ -214,8 +216,9 @@ describe('relationship notifications', function () {
                             if (err) done(err);
                             $rootScope.$digest();
                         });
-                    });
+                    })
                 });
+
             });
 
             describe('forward notif', function () {

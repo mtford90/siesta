@@ -441,6 +441,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                         }
 
                         if (v != old) {
+                            jlog.loggerWithName('RestObject').trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '"');
                             if (restObject.__dirtyFields.indexOf(field) < 0) {
                                 restObject.__dirtyFields.push(field);
                             }

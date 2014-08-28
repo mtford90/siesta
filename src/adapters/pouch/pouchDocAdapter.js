@@ -57,7 +57,7 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         }
     })
 
-    .factory('PouchDocAdapter', function (RestObject, CollectionRegistry, RestError, jlog, PouchDocSync) {
+    .factory('PouchDocAdapter', function (CollectionRegistry, RestError, jlog) {
 
         var $log = jlog.loggerWithName('PouchDocAdapter');
 
@@ -95,7 +95,8 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         }
 
         function toNew(doc) {
-            var r = new RestObject(validate(doc));
+            var mapping = validate(doc);
+            var r = mapping._new();
             for (var prop in doc) {
                 if (doc.hasOwnProperty(prop)) {
                     r[prop] = doc[prop];
@@ -140,8 +141,7 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         return {
             toNew: toNew,
             _validate: validate,
-            from: from,
-            writeChanges: PouchDocSync.retryUntilWrittenMultiple
+            from: from
         }
     })
 

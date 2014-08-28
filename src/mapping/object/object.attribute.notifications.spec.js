@@ -287,7 +287,7 @@ describe('notifications', function () {
                 beforeEach(function (done) {
                     carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
-                        Store.put(car, function (err) {
+                        car.save(function (err) {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;

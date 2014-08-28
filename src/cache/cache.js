@@ -1,7 +1,7 @@
 angular.module('restkit.cache', ['restkit', 'restkit.object'])
 
 
-    .factory('cache', function (RestObject, RestError, jlog, $rootScope, ChangeType) {
+    .factory('cache', function (RestError, jlog) {
 
         var $log = jlog.loggerWithName('Cache');
 
@@ -162,33 +162,28 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                 return null;
             },
             insert: function (obj) {
-                if (obj instanceof RestObject) {
-                    if (obj._id) {
-                        if (!idCache[obj._id]) {
-                            $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[_id="' + obj._id + '"]');
-                            idCache[obj._id] = obj;
-                        }
-                        else {
-                            // Something has gone badly wrong here. Two objects should never exist with the same _id
-                            if (idCache[obj._id] != obj) {
-                                var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache. ' +
-                                    'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
-                                $log.error(message);
-                                throw new RestError(message);
-                            }
-                        }
-                    }
-                    var idField = obj.idField;
-                    var remoteId = obj[idField];
-                    if (remoteId) {
-                        remoteInsert(obj, remoteId);
+                if (obj._id) {
+                    if (!idCache[obj._id]) {
+                        $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[_id="' + obj._id + '"]');
+                        idCache[obj._id] = obj;
                     }
                     else {
-                        $log.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
+                        // Something has gone badly wrong here. Two objects should never exist with the same _id
+                        if (idCache[obj._id] != obj) {
+                            var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache. ' +
+                                'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
+                            $log.error(message);
+                            throw new RestError(message);
+                        }
                     }
                 }
+                var idField = obj.idField;
+                var remoteId = obj[idField];
+                if (remoteId) {
+                    remoteInsert(obj, remoteId);
+                }
                 else {
-                    throw new RestError('Only an instance of RestObject can be placed into the object cache.');
+                    $log.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
                 }
             },
             remoteInsert: remoteInsert,

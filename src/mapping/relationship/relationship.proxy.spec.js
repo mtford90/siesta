@@ -102,7 +102,7 @@ describe('relationship proxy', function () {
                 var proxy, person, car;
                 beforeEach(function (done) {
                     person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
-                    Store.put(person, function (err) {
+                    person.save(function (err) {
                         if (err) done(err);
                         car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
                         var relationship = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
@@ -126,9 +126,9 @@ describe('relationship proxy', function () {
                 beforeEach(function (done) {
                     person = personMapping._new({name: 'Michael Ford', id: 'asdasd'});
                     car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'asdasd'});
-                    Store.put(person, function (err) {
+                    person.save(function (err) {
                         if (err) done(err);
-                        Store.put(car, function (err) {
+                        car.save(function (err) {
                             if (err) done(err);
                             var relationship = new OneToOneRelationship('owner', 'car', carMapping, personMapping);
                             proxy = new RelatedObjectProxy(relationship, person);
@@ -140,6 +140,7 @@ describe('relationship proxy', function () {
                             });
                         });
                     });
+
                 });
                 it('reverse one to one should populate related object', function () {
                     var related = proxy.relatedObject;
@@ -155,12 +156,12 @@ describe('relationship proxy', function () {
                     if (err) done(err);
                     car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'remoteCarId'});
                     person = personMapping._new({name: 'Michael Ford', age: 23, id: 'remotePersonId'});
-                    Store.put(car, function (err) {
+                    car.save(function (err) {
                         if (err) done(err);
-                        Store.put(person, function (err) {
+                        person.save(function (err) {
                             if (err) done(err);
                             done();
-                        })
+                        });
                     });
                 });
             });
@@ -198,7 +199,7 @@ describe('relationship proxy', function () {
                 var anotherPerson;
                 beforeEach(function (done) {
                     anotherPerson = personMapping._new({name: 'Robbie Mcdonald', age: 18, id: 'remotePersonId2'});
-                    Store.put(anotherPerson, function (err) {
+                    anotherPerson.save(function (err) {
                         if (err) done(err);
                         car.owner.set(person, function (err) {
                             done(err);
