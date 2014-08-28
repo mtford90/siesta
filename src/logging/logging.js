@@ -36,7 +36,8 @@ angular.module('logging', [])
             DescriptorRegistry: logLevels.warn,
             RestObject: logLevels.trace,
             PouchDocAdapter: logLevels.warn,
-            'Num. Mapping Operations': logLevels.warn
+            'Num. Mapping Operations': logLevels.warn,
+            PouchDocSync: logLevels.trace
         };
 
         var t = {};

@@ -78,8 +78,9 @@ angular.module('restkit.object', ['restkit'])
                 $log.trace('_saveDirtyFields, have dirty fields to save', dirtyFields);
                 var changes = {};
                 _.each(dirtyFields, function (field) {
-                    changes[field] = self[field];
+                    changes[field] = self.object[field];
                 });
+                $log.trace('_saveDirtyFields, changes:', changes);
                 PouchDocSync.retryUntilWrittenMultiple(self.object._id, changes, function (err) {
                     if (err) {
                         $log.error('Error saving object.', err);

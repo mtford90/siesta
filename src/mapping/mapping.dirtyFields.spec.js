@@ -1,4 +1,4 @@
-describe.only('dirty fields', function () {
+describe('dirty fields', function () {
 
     var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, RestObject, $rootScope,CollectionRegistry;
     var collection, carMapping;
@@ -76,11 +76,11 @@ describe.only('dirty fields', function () {
             assert.notOk(Collection.isDirty);
         });
 
-//        it('when first mapped, should have all the same fields', function () {
-//            assert.equal(doc._id, car._id);
-//            assert.equal(doc.name, car.name);
-//            assert.equal(doc.colour, car.colour);
-//        });
+        it('when first mapped, should have all the same fields', function () {
+            assert.equal(doc._id, car._id);
+            assert.equal(doc.name, car.name);
+            assert.equal(doc.colour, car.colour);
+        });
 
         describe('change attributes', function () {
 

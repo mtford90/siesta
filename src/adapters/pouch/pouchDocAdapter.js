@@ -5,6 +5,7 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         var $log = jlog.loggerWithName('PouchDocSync');
 
         function retryUntilWrittenMultiple(docId, newValues, callback) {
+
             Pouch.getPouch().get(docId, function (err, doc) {
                 if (err) {
                     var msg = 'Unable to get doc with _id="' + docId + '". This is a serious error and means that ' +
@@ -30,8 +31,9 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
                                 if (callback) callback(err);
                             }
                         }
-                        else if (callback) {
-                            callback();
+                        else {
+                            $log.trace('Successfully persisted changes: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
+                            if (callback) callback();
                         }
                     });
                 }
