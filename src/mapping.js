@@ -27,7 +27,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             defineSubProperty.call(this, 'collection', self._opts);
             defineSubProperty.call(this, 'attributes', self._opts);
 
-            this._relationships = null;
+            this._relationships = [];
 
             Object.defineProperty(this, 'relationships', {
                 get: function () {

@@ -5,7 +5,7 @@
  * We then proceed to test various aspects of the system.
  */
 
-describe('intercollection relationships', function () {
+describe.only('intercollection relationships', function () {
 
     var myOfflineCollection;
     var myOnlineCollection;
@@ -27,6 +27,8 @@ describe('intercollection relationships', function () {
         });
 
         Pouch.reset();
+
+        var finishedCreatingMyOfflineCollection = false;
 
         myOfflineCollection = new Collection('MyOfflineCollection', function () {
 
@@ -68,7 +70,13 @@ describe('intercollection relationships', function () {
 
         }, function (err) {
             if (err) done(err);
+            finishedCreatingMyOfflineCollection = true;
+            if (finishedCreatingMyOnlineCollection) {
+                done();
+            }
         });
+
+        var finishedCreatingMyOnlineCollection = false;
 
         myOnlineCollection = new Collection('MyOnlineCollection', function () {
 
@@ -90,12 +98,15 @@ describe('intercollection relationships', function () {
 
         }, function (err) {
             if (err) done(err);
+            if (finishedCreatingMyOfflineCollection) {
+                done();
+            }
         });
 
     });
 
-//    it('xyz', function () {
-//
-//    });
+    it('xyz', function () {
+
+    });
 
 });

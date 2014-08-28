@@ -197,13 +197,7 @@ describe('mapping relationships', function () {
                 });
 
             });
-
-
         });
-
-
-
-
     });
 
     describe('invalid', function () {

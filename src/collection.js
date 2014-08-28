@@ -99,18 +99,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                             aggError = new RestError('Error installing mappings', {errors: mappingInstallationErrors});
                         }
                         else {
-                            try {
-                                installRelationships();
-                            }
-                            catch (err) {
-                                // Only allow our own internal errors to bubble up.
-                                if (err instanceof RestError) {
-                                    callback(err);
-                                }
-                                else {
-                                    throw err;
-                                }
-                            }
+                            installRelationships();
                         }
                         callback(aggError);
                     }
