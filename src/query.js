@@ -24,10 +24,8 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                 }
             });
         };
-
         return Query;
     })
-
 
 /**
  * Query and return raw pouchdb documents.

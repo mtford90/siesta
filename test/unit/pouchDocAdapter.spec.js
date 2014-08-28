@@ -1,6 +1,6 @@
 describe('pouch doc adapter', function () {
 
-    var Collection, Pouch, PouchDocAdapter, RestError, RelationshipType;
+    var Collection, Pouch, PouchDocAdapter, RestError, RelationshipType, cache, RestObject;
 
     beforeEach(function () {
         module('restkit.pouchDocAdapter', function ($provide) {
@@ -8,12 +8,14 @@ describe('pouch doc adapter', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Collection_, _Pouch_, _PouchDocAdapter_, _RestError_, _RelationshipType_) {
+        inject(function (_Collection_, _Pouch_, _PouchDocAdapter_, _RestError_, _RelationshipType_, _cache_, _RestObject_) {
             Collection = _Collection_;
             Pouch = _Pouch_;
             PouchDocAdapter = _PouchDocAdapter_;
             RestError = _RestError_;
             RelationshipType = _RelationshipType_;
+            cache = _cache_;
+            RestObject = _RestObject_;
         });
 
         Collection._reset();
@@ -45,6 +47,56 @@ describe('pouch doc adapter', function () {
                 }
                 console.log(obj);
             })
+        });
+
+        describe('toFount', function () {
+
+            var collection;
+
+            beforeEach(function (done) {
+                collection = new Collection('MyOnlineCollection', function () {
+
+                    collection.registerMapping('Person', {
+                        id: 'photoId',
+                        attributes: ['height', 'width', 'url']
+                    });
+
+                }, function (err) {
+                    done(err);
+                });
+            });
+
+            it('existing', function (done) {
+                collection.Person.map({name: 'Michael', age: 23}, function (err, person) {
+                    if (err) done(err);
+                    Pouch.getPouch().get(person._id, function (err, doc) {
+                        if (err) done(err);
+                        var objs = PouchDocAdapter.toFount([doc]);
+                        assert.equal(objs.length, 1);
+                        assert.equal(objs[0], person);
+                        done();
+                    });
+                });
+            });
+
+            it('new', function (done) {
+                collection.Person.map({name: 'Michael', age: 23}, function (err, person) {
+                    if (err) done(err);
+                    Pouch.getPouch().get(person._id, function (err, doc) {
+                        doc._id = 'randomid';
+                        doc._rev = 'randomrev';
+                        doc.id = 'randomremoteid';
+                        if (err) done(err);
+                        var objs = PouchDocAdapter.toFount([doc]);
+                        assert.equal(objs.length, 1);
+                        assert.notEqual(objs[0], person);
+                        assert.instanceOf(objs[0], RestObject);
+                        done();
+                    });
+                });
+            });
+
+
         });
 
         describe('validation', function () {
@@ -149,39 +201,6 @@ describe('pouch doc adapter', function () {
 
 
     });
-//
-//    // Test that pouch stays in sync with live objects
-//    describe('sync', function () {
-//        var collection, personMapping;
-//
-//
-//        describe('attributes', function () {
-//            beforeEach(function (done) {
-//                collection = new Collection('myCollection', function () {
-//                    personMapping = collection.registerMapping('Person', {
-//                        id: 'id',
-//                        attributes: ['name', 'age']
-//                    });
-//                }, function () {
-//                    done();
-//                });
-//            });
-//
-//            it('when first mapped, should have all the same fields', function (done) {
-//                personMapping.map({name: 'Michael Ford', age: 23}, function (err, person) {
-//                    if (err) done (err);
-//                    Pouch.getPouch().get(person._id, function (err, doc) {
-//                        if (err) done(err);
-//                        assert.equal(doc._id, person._id);
-//                        assert.equal(doc.name, person.name);
-//                        assert.equal(doc.age, person.age);
-//                        done();
-//                    });
-//                });
-//            })
-//        });
-//
-//    })
 
 
 });
