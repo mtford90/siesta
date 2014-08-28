@@ -227,6 +227,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             if (this.__dirtyMappings.indexOf(mapping) < 0) {
                 this.__dirtyMappings.push(mapping);
             }
+            this._markGlobalAsDirtyIfNeccessary();
         };
 
         Collection.prototype._unmarkMappingAsDirty = function (mapping) {
@@ -234,15 +235,40 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
             if (idx > -1) {
                 this.__dirtyMappings.splice(idx, 1);
             }
+            this._markGlobalAsDirtyIfNeccessary();
         };
+
+        Collection.prototype._markGlobalAsDirtyIfNeccessary = function () {
+            if (this.__dirtyMappings.length) {
+                Collection._markCollectionAsDirty(this);
+            }
+            else {
+                Collection._unmarkCollectionAsDirty(this);
+            }
+        };
+
+        var dirtyCollections = [];
 
         Object.defineProperty(Collection, 'isDirty', {
             get: function () {
-                return false;
+                return !!dirtyCollections.length;
             },
             enumerable: true,
             configurable: true
         });
+
+        Collection._markCollectionAsDirty = function (coll) {
+            if (dirtyCollections.indexOf(coll) < 0) {
+                dirtyCollections.push(coll);
+            }
+        };
+
+        Collection._unmarkCollectionAsDirty = function (coll) {
+            var idx = dirtyCollections.indexOf(coll);
+            if (idx > -1) {
+                dirtyCollections.splice(idx, 1);
+            }
+        };
 
         Collection._reset = Pouch.reset;
 

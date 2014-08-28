@@ -60,8 +60,6 @@ describe.only('dirty fields', function () {
             });
         });
 
-        // TODO
-
         it('car should not be dirty when first mapped', function () {
             assert.notOk(car.isDirty);
         });
@@ -73,10 +71,10 @@ describe.only('dirty fields', function () {
         it('collection should not be dirty when first mapped', function () {
             assert.notOk(collection.isDirty);
         });
-//
-//        it('global should not be dirty when first mapped', function () {
-//            assert.notOk(Collection.isDirty);
-//        });
+
+        it('global should not be dirty when first mapped', function () {
+            assert.notOk(Collection.isDirty);
+        });
 
 //        it('when first mapped, should have all the same fields', function () {
 //            assert.equal(doc._id, car._id);
@@ -112,9 +110,11 @@ describe.only('dirty fields', function () {
                     assert.notOk(collection.isDirty);
                 });
 
-            });
+                it('global should no longer be dirty', function () {
+                    assert.notOk(Collection.isDirty);
+                });
 
-            // TODO
+            });
 
             it('car collection should be dirty', function () {
                 assert.ok(collection.Car.isDirty);
@@ -123,10 +123,10 @@ describe.only('dirty fields', function () {
             it('collection should be dirty', function () {
                 assert.ok(collection.isDirty);
             });
-//
-//            it('global should be dirty', function () {
-//                assert.ok(Collection.isDirty);
-//            });
+
+            it('global should be dirty', function () {
+                assert.ok(Collection.isDirty);
+            });
 
         });
 
