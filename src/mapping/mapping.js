@@ -53,12 +53,24 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             if (this.__dirtyObjects.indexOf(obj) < 0) {
                 this.__dirtyObjects.push(obj);
             }
+            this._markCollectionAsDirtyIfNeccessary();
         };
 
         Mapping.prototype._unmarkObjectAsDirty = function (obj) {
             var idx = this.__dirtyObjects.indexOf(obj);
             if (idx > -1) {
                 this.__dirtyObjects.splice(idx, 1);
+            }
+            this._markCollectionAsDirtyIfNeccessary();
+        };
+
+        Mapping.prototype._markCollectionAsDirtyIfNeccessary = function () {
+            var collection = CollectionRegistry[this.collection];
+            if (this.__dirtyObjects.length) {
+                collection._markMappingAsDirty(this);
+            }
+            else {
+                collection._unmarkMappingAsDirty(this);
             }
         };
 

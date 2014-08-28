@@ -211,15 +211,30 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
 
             init();
 
+            this.__dirtyMappings = [];
+
             Object.defineProperty(this, 'isDirty', {
                 get: function () {
-                    return false;
+                    return !!self.__dirtyMappings.length;
                 },
                 enumerable: true,
                 configurable: true
             });
 
         }
+
+        Collection.prototype._markMappingAsDirty = function (mapping) {
+            if (this.__dirtyMappings.indexOf(mapping) < 0) {
+                this.__dirtyMappings.push(mapping);
+            }
+        };
+
+        Collection.prototype._unmarkMappingAsDirty = function (mapping) {
+            var idx = this.__dirtyMappings.indexOf(mapping);
+            if (idx > -1) {
+                this.__dirtyMappings.splice(idx, 1);
+            }
+        };
 
         Object.defineProperty(Collection, 'isDirty', {
             get: function () {
