@@ -114,57 +114,6 @@ describe('store', function () {
 
     });
 
-    describe('put objects to store', function () {
-
-        describe('store object that has never been stored', function () {
-            var car;
-            beforeEach(function (done) {
-                car = carMapping._new();
-                car.colour = 'red';
-                car.id = 'remoteId';
-                Store.put(car, function (err) {
-                    done(err);
-                });
-            });
-            it('should be in cache', function () {
-                assert.equal(cache.get({_id: car._id}), car);
-            });
-            it('should be in pouch', function (done) {
-                Pouch.getPouch().get(car._id, function (err, doc) {
-                    if (err) done(err);
-                    assert.equal(doc._id, car._id);
-                    done();
-                });
-            });
-            describe('store object that has been stored before', function () {
-                var err;
-                beforeEach(function (done) {
-                    Store.put(car, function (_err) {
-                        done();
-                        err = _err;
-                    });
-                });
-
-                it('should not return an error', function () {
-                    assert.notOk(err);
-                });
-
-                it('should be in cache', function () {
-                    assert.equal(cache.get({_id: car._id}), car);
-                });
-
-                it('should be in pouch', function (done) {
-                    Pouch.getPouch().get(car._id, function (err, doc) {
-                        if (err) done(err);
-                        assert.equal(doc._id, car._id);
-                        done();
-                    });
-                });
-
-            });
-        });
-
-    });
 
 
 });

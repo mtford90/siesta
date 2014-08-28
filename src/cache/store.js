@@ -126,21 +126,7 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
 
         return {
             get: get,
-            getMultiple: getMultiple,
-            put: function (object, callback) {
-                $log.debug('put', object);
-                assert(object._id);
-                cache.insert(object);
-                var adapted = PouchDocAdapter.from(object);
-                Pouch.getPouch().put(adapted, function (err, resp) {
-                    if (!err) {
-                        object._rev = resp.rev;
-                        $log.debug('put success', object);
-
-                    }
-                    if (callback) callback(err);
-                });
-            }
+            getMultiple: getMultiple
         }
     })
 
