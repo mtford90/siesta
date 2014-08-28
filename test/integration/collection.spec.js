@@ -6,7 +6,6 @@
  */
 
 describe('intercollection relationships', function () {
-//describe('intercollection relationships', function () {
 
     var myOfflineCollection;
     var myOnlineCollection;
@@ -124,12 +123,13 @@ describe('intercollection relationships', function () {
 
     function installOnlineFixtures(callback) {
         async.parallel([
-            mapRemoteUsers
-//            mapRemotePhotos
+            mapRemoteUsers,
+            mapRemotePhotos
         ], callback);
     }
 
     describe('local queries against online collection', function () {
+
         beforeEach(function (done) {
             installOnlineFixtures(function (err) {
                 dump(err);
@@ -143,8 +143,6 @@ describe('intercollection relationships', function () {
             });
         });
 
-
-
         it('should return 3 users when run a local all query against users', function (done) {
             console.log('Testing: ', 'should return 3 users when run a local all query against users');
             myOnlineCollection.User.all(function (err, users) {
@@ -153,15 +151,18 @@ describe('intercollection relationships', function () {
                 done();
             });
         });
-//
-//        it('should return 3 photos when run a local all query against photos', function (done) {
-//            console.log('Testing: ', 'should return 3 photos when run a local all query against photos');
-//            myOnlineCollection.Photo.all(function (err, photos) {
-//                if (err) done(err);
-//                assert.equal(photos.length, 3);
-//                done();
-//            });
-//        });
+
+        it('should return 3 photos when run a local all query against photos', function (done) {
+            console.log('Testing: ', 'should return 3 photos when run a local all query against photos');
+            myOnlineCollection.Photo.all(function (err, photos) {
+                if (err) done(err);
+                assert.equal(photos.length, 3);
+                done();
+            });
+        });
+
     });
+
+
 
 });

@@ -23,44 +23,6 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
         }
     })
 
-    .factory('Pouch', function (guid, jlog) {
-
-        var $log = jlog.loggerWithName('Pouch');
-
-        var pouch = PouchDB('Rest');
-        return {
-            /**
-             * Create a randomly named PouchDB instance.
-             * Used for testing purposes.
-             * @private
-             */
-            reset: function () {
-                var dbName = guid();
-                $log.trace('_reset:', dbName);
-                pouch = new PouchDB(dbName);
-            },
-
-            /**
-             * Return the global PouchDB instance.
-             * Used for testing purposes.
-             * @returns {PouchDB}
-             */
-            getPouch: function () {
-                return pouch;
-            }
-        }
-    })
-
-    .factory('CollectionRegistry', function (jlog) {
-        var $log = jlog.loggerWithName('CollectionRegistry');
-        function CollectionRegistry () {}
-        CollectionRegistry.prototype.register = function (collection) {
-            var name = collection._name;
-            $log.debug('register ' + name);
-            this[ name] = collection;
-        };
-        return new CollectionRegistry();
-    })
 
 
 

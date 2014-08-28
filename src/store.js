@@ -5,7 +5,6 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
 
         var $log = jlog.loggerWithName('Store');
 
-
         function get(opts, callback) {
             $log.debug('get', opts);
             var restObject;

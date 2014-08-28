@@ -1,5 +1,18 @@
 angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.descriptor'])
 
+    .factory('CollectionRegistry', function (jlog) {
+        var $log = jlog.loggerWithName('CollectionRegistry');
+
+        function CollectionRegistry() {}
+
+        CollectionRegistry.prototype.register = function (collection) {
+            var name = collection._name;
+            $log.debug('register ' + name);
+            this[ name] = collection;
+        };
+        return new CollectionRegistry();
+    })
+
 
     .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry) {
 
@@ -387,7 +400,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         };
 
         Collection.prototype._httpRequest = function (method, path, object) {
-            $log.trace(method, {path: path, object:object});
+            $log.trace(method, {path: path, object: object});
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;

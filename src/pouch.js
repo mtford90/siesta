@@ -45,6 +45,36 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
         }
     })
 
+
+    .factory('Pouch', function (guid, jlog) {
+
+        var $log = jlog.loggerWithName('Pouch');
+
+        var pouch = PouchDB('Rest');
+        return {
+            /**
+             * Create a randomly named PouchDB instance.
+             * Used for testing purposes.
+             * @private
+             */
+            reset: function () {
+                var dbName = guid();
+                $log.trace('_reset:', dbName);
+                pouch = new PouchDB(dbName);
+            },
+
+            /**
+             * Return the global PouchDB instance.
+             * Used for testing purposes.
+             * @returns {PouchDB}
+             */
+            getPouch: function () {
+                return pouch;
+            }
+        }
+    })
+
+
     .factory('PouchDocAdapter', function (CollectionRegistry, RestError, jlog, cache) {
 
         var $log = jlog.loggerWithName('PouchDocAdapter');
@@ -100,7 +130,7 @@ angular.module('restkit.pouchDocAdapter', ['restkit', 'restkit.object'])
 
         function toFount(docs) {
             var mapped = [];
-            for (var i=0; i<docs.length; i++) {
+            for (var i = 0; i < docs.length; i++) {
                 var doc = docs[i];
                 var cached = cache.get({_id: doc._id});
                 if (cached) {

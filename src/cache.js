@@ -59,26 +59,6 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
             return null;
         }
 
-//        /**
-//         * If an object that we have cached by localId changes its remoteId then we need to know about it
-//         * and update the cache accordingly.
-//         */
-//
-//        $rootScope.$on('Fount', function (e, n) {
-//            var obj = n.obj;
-//            var mapping = n.obj.mapping;
-//            var idField = mapping.id;
-//            if (n.change.type == ChangeType.Set && n.change.field == idField) {
-//                jlog.loggerWithName('Cache.notifications').debug('Cache received Fount notification', n);
-//                if (idCache[obj._id]) {
-//                    insert(obj, n.change.new);
-//                    if (n.change.old) {
-//                        restCache[obj.collection][obj.type][n.change.old] = null;
-//                    }
-//                }
-//            }
-//        });
-
         function remoteInsert(obj, remoteId, previousRemoteId) {
             if (obj) {
                 var collection = obj.mapping.collection;
