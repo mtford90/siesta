@@ -1,0 +1,27 @@
+{
+  "name": "rest-site",
+  "version": "0.0.0",
+  "description": "",
+  "main": "build-site.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build-site": "node ./build-site.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mtford90/rest.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mtford90/rest/issues"
+  },
+  "homepage": "https://github.com/mtford90/rest",
+  "devDependencies": {
+    "less": "~1.7.4",
+    "http-server": "~0.6.1",
+    "exec-sync": "~0.1.6",
+    "mkdirp": "~0.5.0",
+    "watch-glob": "~0.1.3"
+  }
+}
