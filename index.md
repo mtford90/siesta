@@ -17,7 +17,8 @@ title: Fount
 
         <p>Something else, Something else<p>
 
-        <a href="{{ site.baseurl }}/learn.html" class="btn btn-primary btn-lg">Learn more</a>
+
+        <a href="https://github.com/mtford90/rest/releases/download/{{ site.version }}/rest-{{ site.version }}.min.js" class="btn btn-primary btn-lg"><strong>Download {{ site.version }}</strong></a>
 
       </div>
 

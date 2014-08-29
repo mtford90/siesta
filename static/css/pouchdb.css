@@ -401,10 +401,10 @@ cite {
   color: #999999;
 }
 .text-primary {
-  color: #6ccb99;
+  color: #d8ab2e;
 }
 a.text-primary:hover {
-  color: #46be7f;
+  color: #b28c21;
 }
 .text-success {
   color: #3c763d;
@@ -432,10 +432,10 @@ a.text-danger:hover {
 }
 .bg-primary {
   color: #fff;
-  background-color: #6ccb99;
+  background-color: #d8ab2e;
 }
 a.bg-primary:hover {
-  background-color: #46be7f;
+  background-color: #b28c21;
 }
 .bg-success {
   background-color: #dff0d8;
@@ -750,12 +750,12 @@ textarea {
   line-height: inherit;
 }
 a {
-  color: #fa3649;
+  color: #bc7070;
   text-decoration: none;
 }
 a:hover,
 a:focus {
-  color: #de061b;
+  color: #984747;
   text-decoration: underline;
 }
 a:focus {
@@ -853,8 +853,8 @@ samp {
 code {
   padding: 2px 4px;
   font-size: 90%;
-  color: #29754d;
-  background-color: #ddf3e7;
+  color: #5c4811;
+  background-color: #f0dfaf;
   white-space: nowrap;
   border-radius: 4px;
 }
@@ -1835,7 +1835,7 @@ table th[class*="col-"] {
   padding: 6px 12px;
   line-height: 1.42857143;
   text-decoration: none;
-  color: #fa3649;
+  color: #bc7070;
   background-color: #ffffff;
   border: 1px solid #dddddd;
   margin-left: -1px;
@@ -1855,7 +1855,7 @@ table th[class*="col-"] {
 .pagination > li > span:hover,
 .pagination > li > a:focus,
 .pagination > li > span:focus {
-  color: #de061b;
+  color: #984747;
   background-color: #eeeeee;
   border-color: #dddddd;
 }
@@ -1867,8 +1867,8 @@ table th[class*="col-"] {
 .pagination > .active > span:focus {
   z-index: 2;
   color: #ffffff;
-  background-color: #6ccb99;
-  border-color: #6ccb99;
+  background-color: #d8ab2e;
+  border-color: #d8ab2e;
   cursor: default;
 }
 .pagination > .disabled > span,
@@ -2057,7 +2057,7 @@ table th[class*="col-"] {
 .nav .open > a:hover,
 .nav .open > a:focus {
   background-color: none;
-  border-color: #fa3649;
+  border-color: #bc7070;
 }
 .nav .nav-divider {
   height: 1px;
@@ -2150,7 +2150,7 @@ table th[class*="col-"] {
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus {
   color: #ffffff;
-  background-color: #6ccb99;
+  background-color: #d8ab2e;
 }
 .nav-stacked > li {
   float: none;
@@ -2231,8 +2231,8 @@ table th[class*="col-"] {
  **/
 .nav-sidebar > li.active > a,
 .nav-sidebar > li > a:hover {
-  color: #46be7f;
-  border-right: 2px solid #92d8b3;
+  color: #b28c21;
+  border-right: 2px solid #e0bc59;
   padding-right: 10px;
 }
 @media (max-width: 991px) {
@@ -2360,8 +2360,8 @@ fieldset[disabled] .btn-default.active {
 }
 .btn-primary {
   color: #ffffff;
-  background-color: #6ccb99;
-  border-color: #59c48c;
+  background-color: #d8ab2e;
+  border-color: #c79c25;
 }
 .btn-primary:hover,
 .btn-primary:focus,
@@ -2369,8 +2369,8 @@ fieldset[disabled] .btn-default.active {
 .btn-primary.active,
 .open .dropdown-toggle.btn-primary {
   color: #ffffff;
-  background-color: #4ec084;
-  border-color: #3ba66d;
+  background-color: #ba9223;
+  border-color: #94741c;
 }
 .btn-primary:active,
 .btn-primary.active,
@@ -2392,11 +2392,11 @@ fieldset[disabled] .btn-primary:active,
 .btn-primary.disabled.active,
 .btn-primary[disabled].active,
 fieldset[disabled] .btn-primary.active {
-  background-color: #6ccb99;
-  border-color: #59c48c;
+  background-color: #d8ab2e;
+  border-color: #c79c25;
 }
 .btn-primary .badge {
-  color: #6ccb99;
+  color: #d8ab2e;
   background-color: #ffffff;
 }
 .btn-success {
@@ -2564,7 +2564,7 @@ fieldset[disabled] .btn-danger.active {
   background-color: #ffffff;
 }
 .btn-link {
-  color: #fa3649;
+  color: #bc7070;
   font-weight: normal;
   cursor: pointer;
   border-radius: 0;
@@ -2585,7 +2585,7 @@ fieldset[disabled] .btn-link {
 }
 .btn-link:hover,
 .btn-link:focus {
-  color: #de061b;
+  color: #984747;
   text-decoration: underline;
   background-color: transparent;
 }
@@ -2811,191 +2811,226 @@ fieldset[disabled] .btn-twitter.active {
   }
 }
 .highlight pre {
-  background-color: #3f3f3f;
+  color: #333;
+  margin: 0;
   border: none;
+  background-color: white;
   border-radius: 10px;
 }
-.highlight code,
-.highlight pre {
-  color: #ffffff;
-}
-.highlight .hll {
-  background-color: #3e403d;
+.highlight .linenos {
+  padding-right: 5px;
 }
 .highlight .c {
-  color: #75715e;
+  color: #bc7070;
 }
 .highlight .err {
-  color: #960050;
-  background-color: #1e0010;
+  color: #fa9754;
+}
+.highlight .g {
+  color: #7f9f7f;
 }
 .highlight .k {
-  color: #66d9ef;
+  color: #d8ab2e;
 }
 .highlight .l {
-  color: #ae81ff;
+  color: #999999;
 }
 .highlight .n {
-  color: #f8f8f2;
+  color: #555555;
 }
 .highlight .o {
-  color: #f92672;
+  color: #d1bb6f;
+}
+.highlight .x {
+  color: #999999;
 }
 .highlight .p {
-  color: #f8f8f2;
+  color: #41706f;
 }
 .highlight .cm {
-  color: #75715e;
+  color: #7f9f7f;
 }
 .highlight .cp {
-  color: #75715e;
+  color: #7f9f7f;
 }
 .highlight .c1 {
-  color: #75715e;
+  color: #7f9f7f;
 }
 .highlight .cs {
-  color: #75715e;
-}
-.highlight .ge {
-  font-style: italic;
-}
-.highlight .gs {
+  color: #cd0000;
   font-weight: bold;
 }
+.highlight .gd {
+  color: #cd0000;
+}
+.highlight .ge {
+  color: #999;
+  font-style: italic;
+}
+.highlight .gr {
+  color: #ff0000;
+}
+.highlight .gh {
+  color: #c5a948;
+  font-weight: bold;
+}
+.highlight .gi {
+  color: #00cd00;
+}
+.highlight .go {
+  color: #808080;
+}
+.highlight .gp {
+  color: #c5a948;
+  font-weight: bold;
+}
+.highlight .gs {
+  color: #999;
+  font-weight: bold;
+}
+.highlight .gu {
+  color: purple;
+  font-weight: bold;
+}
+.highlight .gt {
+  color: #0040d0;
+}
 .highlight .kc {
-  color: #66d9ef;
+  color: #dca3a3;
 }
 .highlight .kd {
-  color: #66d9ef;
+  color: #c9a846;
 }
 .highlight .kn {
-  color: #f92672;
+  color: #fa9754;
+  font-weight: bold;
 }
 .highlight .kp {
-  color: #66d9ef;
+  color: #cdcf99;
 }
 .highlight .kr {
-  color: #66d9ef;
+  color: #cdcd00;
 }
 .highlight .kt {
-  color: #66d9ef;
+  color: #00cd00;
 }
 .highlight .ld {
-  color: #e6db74;
+  color: #cc9393;
 }
 .highlight .m {
-  color: #ae81ff;
+  color: #8cd0d3;
 }
 .highlight .s {
-  color: #e6db74;
+  color: #777777;
 }
 .highlight .na {
-  color: #a6e22e;
+  color: #8ab990;
 }
 .highlight .nb {
-  color: #f8f8f2;
+  color: #84a8dc;
 }
 .highlight .nc {
-  color: #a6e22e;
+  color: #8ab990;
 }
 .highlight .no {
-  color: #66d9ef;
+  color: #999999;
 }
 .highlight .nd {
-  color: #a6e22e;
+  color: #999999;
 }
 .highlight .ni {
-  color: #f8f8f2;
+  color: #c28182;
 }
 .highlight .ne {
-  color: #a6e22e;
+  color: #c3bf9f;
+  font-weight: bold;
 }
 .highlight .nf {
-  color: #a6e22e;
+  color: #8ab990;
 }
 .highlight .nl {
-  color: #f8f8f2;
+  color: #999999;
 }
 .highlight .nn {
-  color: #f8f8f2;
+  color: #7bb3d8;
 }
 .highlight .nx {
-  color: #6eca97;
+  color: #999999;
 }
 .highlight .py {
-  color: #f8f8f2;
+  color: #999999;
 }
 .highlight .nt {
-  color: #f92672;
+  color: #f95454;
 }
 .highlight .nv {
-  color: #f8f8f2;
+  color: #c5a948;
 }
 .highlight .ow {
-  color: #f92672;
+  color: #d1bb6f;
 }
 .highlight .w {
-  color: #f8f8f2;
+  color: #999999;
 }
 .highlight .mf {
-  color: #ae81ff;
+  color: #8cd0d3;
 }
 .highlight .mh {
-  color: #ae81ff;
+  color: #8cd0d3;
 }
 .highlight .mi {
-  color: #ae81ff;
+  color: #8cd0d3;
 }
 .highlight .mo {
-  color: #ae81ff;
+  color: #8cd0d3;
 }
 .highlight .sb {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .sc {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .sd {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .s2 {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .se {
-  color: #ae81ff;
+  color: #bc7070;
 }
 .highlight .sh {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .si {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .sx {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .sr {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .s1 {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .ss {
-  color: #e6db74;
+  color: #bc7070;
 }
 .highlight .bp {
-  color: #f8f8f2;
+  color: #8ab990;
 }
 .highlight .vc {
-  color: #f8f8f2;
+  color: #84a8dc;
 }
 .highlight .vg {
-  color: #f8f8f2;
+  color: #c5a948;
 }
 .highlight .vi {
-  color: #f8f8f2;
+  color: #ffdd53;
 }
 .highlight .il {
-  color: #ae81ff;
+  color: #8cd0d3;
 }
 header {
   overflow-x: hidden;
