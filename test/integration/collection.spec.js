@@ -5,7 +5,7 @@
  * We then proceed to test various aspects of the system.
  */
 
-describe('intercollection relationships', function () {
+describe.only('intercollection relationships', function () {
 
     var myOfflineCollection;
     var myOnlineCollection;
@@ -65,7 +65,8 @@ describe('intercollection relationships', function () {
             });
 
             myOfflineCollection.registerMapping('User', {
-                attributes: ['username']
+                attributes: ['username'],
+                indexes: ['username']
             });
 
         }, function (err) {
@@ -86,7 +87,8 @@ describe('intercollection relationships', function () {
                 relationships: {
                     createdBy: {
                         mapping: 'User',
-                        type: RelationshipType.ForeignKey
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'photos'
                     }
                 }
             });
@@ -115,9 +117,22 @@ describe('intercollection relationships', function () {
 
     function mapRemotePhotos(callback) {
         myOnlineCollection.Photo.map([
-            {height: 500, width: 500, url:'http://somewhere/image.jpeg',  photoId: '10'},
-            {height: 1500, width: 1500, url:'http://somewhere/image2.jpeg',  photoId: '11'},
-            {height: 500, width: 750, url:'http://somewhere/image3.jpeg', photoId: '12'}
+            {height: 500, width: 500, url: 'http://somewhere/image.jpeg', photoId: '10', createdBy: '1'},
+            {height: 1500, width: 1500, url: 'http://somewhere/image2.jpeg', photoId: '11', createdBy: '1'},
+            {height: 500, width: 750, url: 'http://somewhere/image3.jpeg', photoId: '12', createdBy: '2'}
+        ], callback);
+    }
+
+    function mapOfflineUsers(callback) {
+        myOfflineCollection.User.map([
+            {username: 'mike'},
+            {username: 'gaz'}
+        ], callback);
+    }
+
+    function installOfflineFixtures(callback) {
+        async.parallel([
+            mapOfflineUsers
         ], callback);
     }
 
@@ -128,41 +143,112 @@ describe('intercollection relationships', function () {
         ], callback);
     }
 
-    describe('local queries against online collection', function () {
+    describe('local queries', function () {
 
         beforeEach(function (done) {
             installOnlineFixtures(function (err) {
-                dump(err);
                 if (err) done(err);
-                Pouch.getPouch().query(function (doc) {
-                    emit(doc._id, doc);
-                }, function (err, resp) {
-                    dump(JSON.stringify(resp.rows, null, 4));
+                installOfflineFixtures(done);
+            });
+        });
+
+        describe('offline', function () {
+            it('should return mike when querying for him', function (done) {
+                myOfflineCollection.User.query({username: 'mike'}, function (err, users) {
+                    if (err) done(err);
+                    assert.equal(users.length, 1);
+                    assert.equal(users[0].username, 'mike');
+                    done();
+                });
+            });
+        });
+
+        describe('online', function () {
+            it('should return 3 users when run a local all query against users', function (done) {
+                myOnlineCollection.User.all(function (err, users) {
+                    if (err) done(err);
+                    assert.equal(users.length, 3);
+                    done();
+                });
+            });
+
+            it('should return 3 photos when run a local all query against photos', function (done) {
+                myOnlineCollection.Photo.all(function (err, photos) {
+                    if (err) done(err);
+                    assert.equal(photos.length, 3);
+                    done();
+                });
+            });
+
+            it('should return 2 photos with height 500', function (done) {
+                myOnlineCollection.Photo.query({height: 500}, function (err, photos) {
+                    if (err) done(err);
+                    assert.equal(photos.length, 2);
+                    _.each(photos, function (p) {
+                        assert.equal(p.height, 500);
+                    });
+                    done();
+                });
+            });
+
+            it('should return 1 photo with height 500, width, 750', function (done) {
+                myOnlineCollection.Photo.query({height: 500, width: 750}, function (err, photos) {
+                    if (err) done(err);
+                    assert.equal(photos.length, 1);
+                    assert.equal(photos[0].height, 500);
+                    assert.equal(photos[0].width, 750);
+                    done();
+                });
+            });
+
+            it('should be able to query by remote identifier', function (done) {
+                myOnlineCollection.User.get('1', function (err, user) {
+                    if (err) done(err);
+                    assert.equal(user.userId, '1');
                     done();
                 })
-            });
-        });
+            })
 
-        it('should return 3 users when run a local all query against users', function (done) {
-            console.log('Testing: ', 'should return 3 users when run a local all query against users');
-            myOnlineCollection.User.all(function (err, users) {
-                if (err) done(err);
-                assert.equal(users.length, 3);
-                done();
-            });
-        });
 
-        it('should return 3 photos when run a local all query against photos', function (done) {
-            console.log('Testing: ', 'should return 3 photos when run a local all query against photos');
-            myOnlineCollection.Photo.all(function (err, photos) {
-                if (err) done(err);
-                assert.equal(photos.length, 3);
-                done();
-            });
         });
-
     });
 
+    describe('relationship mappings', function () {
 
+        beforeEach(function (done) {
+            installOnlineFixtures(done);
+        });
+
+
+
+        describe('online', function () {
+            function assertNumPhotos(userId, numPhotos, done) {
+                myOnlineCollection.User.get(userId, function (err, user) {
+                    if (err) done(err);
+                    assert.equal(user.userId, userId);
+                    user.photos.get(function (err, photos) {
+                        if (err) done(err);
+                        assert.equal(photos ? photos.length : 0, numPhotos);
+                        done();
+                    });
+                })
+            }
+
+            it('user with id 1 should have 2 photos', function (done) {
+                assertNumPhotos('1', 2, done);
+            });
+
+            it('user with id 2 should have 1 photo', function (done) {
+                assertNumPhotos('2', 1, done);
+            });
+
+            it('user with id 2 should have 1 photo', function (done) {
+                assertNumPhotos('3', 0, done);
+            });
+
+        });
+
+
+    });
 
 });
