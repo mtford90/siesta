@@ -28,35 +28,35 @@ var collection = new Collection('Github');
 
 collection.baseURL = 'https://api.github.com/repos/';
 
-collection.mapping('Event', 
-  {
-      attributes: ['type', 'public', 'owner'],
-      relationships: {
-          repo: {
-              mapping: 'Repo',
-              type: RelationshipType.ForeignKey,
-              reverse: 'events'
-          }
-      }
-  }
-);
+collection.configure(function () {
+    this.mapping('Event', 
+    {
+        attributes: ['type', 'public', 'owner'],
+        relationships: {
+            repo: {
+                mapping: 'Repo',
+                type: RelationshipType.ForeignKey,
+                reverse: 'events'
+            }
+        }
+    });
+    this.mapping('Repo', { attributes: ['name', 'url'] });
+    this.response({
+        path: '/(?<owner>[a-ZA-Z0-9]+)/[a-ZA-Z0-9]+/?',
+        method: 'GET',
+        mapping: 'Event'
+    });
+}).then(query);
 
-collection.mapping('Repo', { attributes: ['name', 'url'] });
-
-collection.response({
-    path: '/(?<owner>[a-ZA-Z0-9]+)/[a-ZA-Z0-9]+/?',
-    method: 'GET',
-    mapping: 'Event'
-});
-
-// Get remote events for the 'rest' repo and map onto the object graph.
-collection.GET('/mtford90/rest', function (err, events) {
+function query() {
+    // Get remote events for the 'rest' repo and map onto the object graph.
+    collection.GET('/mtford90/rest', function (err, events) {
     // Get the repo from local storage.
     collection.Repo.query({name: 'rest'}, function (err, repo) {
         assert.equal(repo.events, events);
         assert.equal(repo.owner, 'mtford90');
     });
-});
+}
 {% endhighlight %}
 
       </div>
