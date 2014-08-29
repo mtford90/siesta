@@ -261,7 +261,7 @@ h6,
 .h4,
 .h5,
 .h6 {
-  font-family: "Lato", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.1;
   color: inherit;
@@ -691,7 +691,7 @@ address {
   border-radius: 50%;
   border: 1px solid;
   font-size: 26.25px;
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: Inconsolata, Consolas, "Courier New", monospace;
   text-align: center;
   line-height: 35px;
 }
@@ -735,7 +735,7 @@ html {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Raleway", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.42857143;
   color: #555555;
@@ -819,10 +819,12 @@ p:empty {
   display: none;
 }
 .intro,
-.infoblocks,
-.icons,
-.footer {
+.footer,
+.blog {
   padding: 20px 0 30px;
+}
+.icons {
+  padding-bottom: 38px;
 }
 .page-head {
   padding: 10px 0 20px;
@@ -832,7 +834,7 @@ article {
 }
 .page-head,
 .intro,
-.blog,
+.icons,
 .footer {
   background-color: #eeeeee;
 }
@@ -846,7 +848,7 @@ code,
 kbd,
 pre,
 samp {
-  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-family: Inconsolata, Consolas, "Courier New", monospace;
 }
 code {
   padding: 2px 4px;
@@ -2998,7 +3000,8 @@ fieldset[disabled] .btn-twitter.active {
 header {
   overflow-x: hidden;
   position: relative;
-  padding: 25px 0;
+  padding-top: 25px;
+  padding-bottom: 23px;
   border-bottom: 2px solid;
   border-color: #c8c8c8;
   background-color: #ffffff;

@@ -9,16 +9,13 @@ module.exports = function (grunt) {
             options: {
                 livereload: true
             },
-            /**
-             * When changes detected in sass files, we use compass to build, minify and build
-             */
             less: {
                 files: ['static/less/**/*.less'],
-                tasks: ['less:dev']
+                tasks: ['build']
             },
             jekyll: {
-                files: ['*.md', '_includes/*.html', '_data/*.yml', 'layouts/*.html', '_posts/*.md', 'blog/*.html', '_config.yml'],
-                tasks: ['jekyll:build']
+                files: ['*.md', '_includes/*.html', '_data/*.yml', '_layouts/*.html', '_posts/*.md', 'blog/*.html', '_config.yml'],
+                tasks: ['build']
             }
         },
         less: {
