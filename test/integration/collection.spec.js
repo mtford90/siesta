@@ -5,7 +5,7 @@
  * We then proceed to test various aspects of the system.
  */
 
-describe.only('intercollection relationships', function () {
+describe('intercollection relationships', function () {
 
     var myOfflineCollection;
     var myOnlineCollection;
@@ -219,8 +219,6 @@ describe.only('intercollection relationships', function () {
             installOnlineFixtures(done);
         });
 
-
-
         describe('online', function () {
             function assertNumPhotos(userId, numPhotos, done) {
                 myOnlineCollection.User.get(userId, function (err, user) {
@@ -247,7 +245,6 @@ describe.only('intercollection relationships', function () {
             });
 
         });
-
 
     });
 
