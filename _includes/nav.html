@@ -1,1 +1,12 @@
-<li><a href="{{ site.baseurl }}/learn.html">About</a></li>
+<li id="learn"><a href="{{ site.baseurl }}/learn.html">About</a></li>
+<li id="concepts"><a  href="{{ site.baseurl }}/concepts.html">Concepts</a></li>
+
+<script>
+// Set active class. Bit of a hack.
+var loc = window.location;
+var splt = new String(loc).split('/');
+var page = splt[splt.length-1];
+var ident = page.split('.')[0];
+var d = document.getElementById(ident);
+d.className = d.className + ' active';
+</script>
