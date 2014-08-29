@@ -4,12 +4,12 @@ title: PouchDB, the JavaScript Database that Syncs!
 ---
 
 <div class="intro">
-
+ 
   <div class="container">
-
+    
     <div class="row">
 
-      <div class='col-sm-6'>
+      <div class='col-sm-6'>     
 
         <h1>The Database that Syncs!</h1>
 
@@ -22,8 +22,8 @@ title: PouchDB, the JavaScript Database that Syncs!
 
       </div>
 
-      <div class='col-sm-6'>
-
+      <div class='col-sm-6'> 
+   
 {% highlight js %}
 var db = new PouchDB('dbname');
 

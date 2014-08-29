@@ -16,7 +16,7 @@ unless there is an error, and further arguments specify the result.
 Note that only identifiers and string literals are case-sensitive.
 
 ### Language Syntax
-
+ 
  * [Select](#select)
  * [Where](#where)
  * [Group By](#groupBy)
