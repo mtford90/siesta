@@ -6,20 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ page.title }}</title>
     <link rel="stylesheet" href="{{ site.baseurl }}/static/css/pouchdb.css"/>
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-42479701-1']);
-        _gaq.push(['_trackPageview']);
-
-        (function () {
-            var ga = document.createElement('script');
-            ga.type = 'text/javascript';
-            ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(ga, s);
-        })();
-    </script>
     <link href='http://fonts.googleapis.com/css?family=Raleway:400,200,300,700|Inconsolata:400,700' rel='stylesheet'
           type='text/css'>
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon"/>
@@ -32,7 +18,8 @@
     <div class="container">
 
         <a class="logo" href="{{ site.baseurl }}/">
-            <span class='logo-type'>rest</span>
+            <img src="{{ site.baseurl}}/static/img/hat.png">
+            <span class='logo-type'>Siesta</span>
         </a>
 
         <ul class='nav nav-header nav-pills'>
@@ -44,9 +31,6 @@
             </li>
             <li>
                 <a class='btn btn-link btn-lg' href="{{ site.baseurl }}/learn.html">Learn</a>
-            </li>
-            <li>
-                <a class='btn btn-link btn-lg' href="http://github.com/mtford90/rest/">Github</a>
             </li>
         </ul>
 
@@ -158,7 +142,8 @@
     </div>
 
 </footer>
-<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
-<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 </body>
 </html>
