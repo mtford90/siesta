@@ -212,7 +212,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
             opts.success = function (data, textStatus, jqXHR) {
                 var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
                 var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
-                $log.debug('descriptors', descriptors);
                 var matchedDescriptor;
                 var extractedData;
 
@@ -225,7 +224,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                     }
                 }
                 if (matchedDescriptor) {
-                    $log.trace('matched descriptor', matchedDescriptor);
                     if (typeof(extractedData) == 'object') {
                         var mapping = matchedDescriptor.mapping;
                         mapping.map(extractedData, function (err, obj) {
@@ -244,7 +242,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                 }
                 else if (callback) {
                     if (name) {
-                        $log.debug('No matched response descriptor', {collection: name, method: method, path: path});
                         $rootScope.$apply(function () {
                             callback(null, null, resp);
                         });
@@ -294,7 +291,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
         };
 
         Collection.prototype._httpRequest = function (method, path, object) {
-            $log.trace(method, {path: path, object: object});
+//            $log.trace(method + {path: path, object: object});
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
@@ -320,7 +317,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                 }
             }
             if (matchedDescriptor) {
-                $log.trace('matched descriptor');
+                $log.trace('Matched descriptor: ' + matchedDescriptor._dump(true));
                 matchedDescriptor._serialise(object, function (err, data) {
                     $log.trace('_serialise', {err: err, data: data});
                     if (err) {
@@ -334,9 +331,19 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                 });
             }
             else if (callback) {
-                $log.trace('did not match descriptor');
+                $log.trace('Did not match descriptor');
                 callback(null, null, null);
             }
+        };
+
+        Collection.prototype._dump = function (asJson) {
+            var obj = {};
+            obj.installed = this.installed;
+            obj.docId = this._docId;
+            obj.name = this._name;
+            obj.baseURL = this.baseURL;
+            obj.dirtyMappings = _.pluck(this.__dirtyMappings, 'type');
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
 
         return Collection;

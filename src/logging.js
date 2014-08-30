@@ -17,9 +17,9 @@ angular.module('logging', [])
     .factory('jlogConfig', function (logLevels) {
         var ll = {
             Pouch: logLevels.warn,
-            CollectionRegistry: logLevels.warn,
-            Collection: logLevels.warn,
-            Cache: logLevels.trace,
+            CollectionRegistry: logLevels.trace,
+            Collection: logLevels.trace,
+            Cache: logLevels.warn,
             'Cache.notifications': logLevels.warn,
             Store: logLevels.warn,
             Indexes: logLevels.warn,

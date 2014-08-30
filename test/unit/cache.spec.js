@@ -1,4 +1,4 @@
-describe.only('cache!!!!!', function () {
+describe('cache!!!!!', function () {
 
     var Collection, cache, RestObject, Mapping, $rootScope, RestError;
 

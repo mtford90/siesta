@@ -252,5 +252,13 @@ describe('dump', function () {
         });
     });
 
+    it('collection', function () {
+        var obj = collection._dump();
+        dump(obj);
+        var str = collection._dump(true);
+        dump(str);
+        assert.equal(typeof(str), 'string');
+    })
+
 
 });

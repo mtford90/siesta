@@ -1,4 +1,4 @@
-describe('collection setup', function () {
+describe.only('collection setup', function () {
 
     var Collection, RelationshipType, Pouch, RestObject, ResponseDescriptor, DescriptorRegistry, RequestDescriptor, Serialiser;
 
