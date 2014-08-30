@@ -37,11 +37,11 @@ describe('http!', function () {
     function configureCollection(configureDescriptors, callback) {
         var configuration = function (err, version) {
             if (err) callback(err);
-            personMapping = collection.registerMapping('Person', {
+            personMapping = collection.mapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            carMapping = collection.registerMapping('Car', {
+            carMapping = collection.mapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -52,7 +52,7 @@ describe('http!', function () {
                     }
                 }
             });
-            vitalSignsMapping = collection.registerMapping('VitalSigns', {
+            vitalSignsMapping = collection.mapping('VitalSigns', {
                 id: 'id',
                 attributes: ['heartRate', 'bloodPressure'],
                 relationships: {

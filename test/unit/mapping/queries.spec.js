@@ -30,7 +30,7 @@ describe('mapping queries', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection', function (err) {
                 if (err) done(err);
-                mapping = collection.registerMapping('Car', {
+                mapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['color', 'name']
                 });

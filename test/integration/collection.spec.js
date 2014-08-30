@@ -32,7 +32,7 @@ describe('intercollection relationships', function () {
 
         myOfflineCollection = new Collection('MyOfflineCollection', function () {
 
-            myOfflineCollection.registerMapping('Folder', {
+            myOfflineCollection.mapping('Folder', {
                 attributes: ['name'],
                 relationships: {
                     createdBy: {
@@ -43,7 +43,7 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOfflineCollection.registerMapping('DownloadedPhoto', {
+            myOfflineCollection.mapping('DownloadedPhoto', {
                 attributes: ['creationDate'],
                 relationships: {
                     createdBy: {
@@ -64,7 +64,7 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOfflineCollection.registerMapping('User', {
+            myOfflineCollection.mapping('User', {
                 attributes: ['username'],
                 indexes: ['username']
             });
@@ -81,7 +81,7 @@ describe('intercollection relationships', function () {
 
         myOnlineCollection = new Collection('MyOnlineCollection', function () {
 
-            myOnlineCollection.registerMapping('Photo', {
+            myOnlineCollection.mapping('Photo', {
                 id: 'photoId',
                 attributes: ['height', 'width', 'url'],
                 relationships: {
@@ -93,7 +93,7 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOnlineCollection.registerMapping('User', {
+            myOnlineCollection.mapping('User', {
                 id: 'userId',
                 attributes: ['username', 'name']
             });

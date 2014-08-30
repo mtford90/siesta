@@ -30,11 +30,11 @@ describe('foreign key relationship', function () {
 
         collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = collection.registerMapping('Car', {
+            carMapping = collection.mapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            personMapping = collection.registerMapping('Person', {
+            personMapping = collection.mapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });

@@ -26,10 +26,10 @@ describe('serialisers', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection', function (err) {
                 if (err) done(err);
-                personMapping = collection.registerMapping('Person', {
+                personMapping = collection.mapping('Person', {
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.registerMapping('Car', {
+                carMapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -71,7 +71,7 @@ describe('serialisers', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection', function (err) {
                 if (err) done(err);
-                personMapping = collection.registerMapping('Person', {
+                personMapping = collection.mapping('Person', {
                     attributes: ['name', 'age'],
                     id: 'id',
                     relationships: {
@@ -82,7 +82,7 @@ describe('serialisers', function () {
                         }
                     }
                 });
-                carMapping = collection.registerMapping('Car', {
+                carMapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -93,7 +93,7 @@ describe('serialisers', function () {
                         }
                     }
                 });
-                vitalSignsMapping = collection.registerMapping('VitalSigns', {
+                vitalSignsMapping = collection.mapping('VitalSigns', {
                     id: 'id',
                     attributes: ['heartRate', 'bloodPressure']
                 });

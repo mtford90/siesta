@@ -119,7 +119,7 @@ describe('query', function () {
         it('asdasd', function (done) {
             collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                mapping = collection.registerMapping('Person', {
+                mapping = collection.mapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });

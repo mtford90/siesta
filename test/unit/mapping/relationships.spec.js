@@ -30,7 +30,7 @@ describe('mapping relationships', function () {
         function configureAPI(type, done) {
             collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = collection.registerMapping('Car', {
+                carMapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -41,7 +41,7 @@ describe('mapping relationships', function () {
                         }
                     }
                 });
-                personMapping = collection.registerMapping('Person', {
+                personMapping = collection.mapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -163,7 +163,7 @@ describe('mapping relationships', function () {
                 beforeEach(function (done) {
                     anotherCollection = new Collection('anotherCollection', function (err, version) {
                         if (err) done(err);
-                        anotherCollection.registerMapping('AnotherMapping', {
+                        anotherCollection.mapping('AnotherMapping', {
                             attributes: ['field'],
                             relationships: {
                                 person: {
@@ -205,7 +205,7 @@ describe('mapping relationships', function () {
             var carMapping;
             var collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = collection.registerMapping('Car', {
+                carMapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -232,7 +232,7 @@ describe('mapping relationships', function () {
             var carMapping, personMapping;
             var collection = new Collection('myCollection', function (err, version) {
                 if (err) done(err);
-                carMapping = collection.registerMapping('Car', {
+                carMapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -243,7 +243,7 @@ describe('mapping relationships', function () {
                         }
                     }
                 });
-                personMapping = collection.registerMapping('Person', {
+                personMapping = collection.mapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });

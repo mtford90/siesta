@@ -23,8 +23,12 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
         }
     })
 
-
-
+    // Global entry points into Siesta.
+    .factory('Siesta', function (Collection) {
+        return {
+            Collection: Collection
+        }
+    })
 
     .factory('RestError', function () {
         /**

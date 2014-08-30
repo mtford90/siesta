@@ -39,7 +39,7 @@ describe('notifications', function () {
                 notif = null;
                 collection = new Collection('myCollection', function (err) {
                     if (err) done(err);
-                    carMapping = collection.registerMapping('Car', {
+                    carMapping = collection.mapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
@@ -113,7 +113,7 @@ describe('notifications', function () {
             beforeEach(function (done) {
                 collection = new Collection('myCollection', function (err) {
                     if (err) done(err);
-                    carMapping = collection.registerMapping('Car', {
+                    carMapping = collection.mapping('Car', {
                         id: 'id',
                         attributes: ['colours', 'name']
                     });

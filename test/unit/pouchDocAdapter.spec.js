@@ -26,7 +26,7 @@ describe('pouch doc adapter', function () {
             var collection;
             beforeEach(function (done) {
                 collection = new Collection('myCollection', function () {
-                    collection.registerMapping('Person', {
+                    collection.mapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
                         indexes: ['name', 'age']
@@ -54,7 +54,7 @@ describe('pouch doc adapter', function () {
             beforeEach(function (done) {
                 collection = new Collection('MyOnlineCollection', function () {
 
-                    collection.registerMapping('Person', {
+                    collection.mapping('Person', {
                         id: 'photoId',
                         attributes: ['height', 'width', 'url']
                     });
@@ -122,7 +122,7 @@ describe('pouch doc adapter', function () {
 
             it('valid', function (done) {
                 var collection = new Collection('myCollection', function () {
-                    collection.registerMapping('Person', {
+                    collection.mapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
                         indexes: ['name', 'age']
@@ -144,12 +144,12 @@ describe('pouch doc adapter', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection', function () {
-                personMapping = collection.registerMapping('Person', {
+                personMapping = collection.mapping('Person', {
                     id: 'id',
                     attributes: ['name', 'age'],
                     indexes: ['name', 'age']
                 });
-                carMapping = collection.registerMapping('Car', {
+                carMapping = collection.mapping('Car', {
                     id: 'id',
                     attributes: ['name', 'colour'],
                     relationships: {

@@ -129,11 +129,11 @@ describe('cache', function () {
             inject(function (DescriptorRegistry, ResponseDescriptor, RelationshipType) {
                 collection = new Collection('myCollection', function (err, version) {
                     if (err) done(err);
-                    personMapping = collection.registerMapping('Person', {
+                    personMapping = collection.mapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = collection.registerMapping('Car', {
+                    carMapping = collection.mapping('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {

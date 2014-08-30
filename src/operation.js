@@ -1,4 +1,98 @@
-angular.module('restkit.mapping.operation', [])
+angular.module('restkit.mapping.operation', ['logging'])
+
+    .factory('CompositeOperation', function (BaseOperation, jlog) {
+
+        var $log = jlog.loggerWithName('CompositeOperation');
+
+        function CompositeOperation (name, operations, completionCallback) {
+            if (!this) return new CompositeOperation;
+            var self = this;
+            this.operations = operations;
+
+            var work = function (done) {
+                _.each(self.operations, function (op) {
+                    if (op.name) {
+                        $log.trace('Starting operation with name "' + op.name + '"');
+                    }
+                    else {
+                        $log.trace('Starting unnamed operation');
+                    }
+                    op.completionCallback = function () {
+                        if (op.name) {
+                            $log.trace('Finished operation with name "' + op.name + '"');
+                        }
+                        else {
+                            $log.trace('Finished unnamed operation');
+                        }
+                        if (self._allOperationsCompleted) {
+                            $log.trace('Operations have finished');
+                            var errors = _.pluck(self.operations, 'error');
+                            var results = _.pluck(self.operations, 'result');
+                            done(_.some(errors) ? errors : null, _.some(results) ? results : null);
+                        }
+                        else {
+                            $log.trace('Waiting for operations to finish');
+                        }
+                    };
+                    op.start();
+                });
+            };
+
+            Object.defineProperty(this, '_allOperationsCompleted', {
+                get: function () {
+                    var obj = _.pluck(self.operations, 'completed');
+                    return _.all(obj);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            BaseOperation.call(this, name, work, completionCallback);
+        }
+
+        CompositeOperation.prototype = Object.create(BaseOperation.prototype);
+
+        return CompositeOperation;
+
+    })
+
+    .factory('BaseOperation', function () {
+
+        function BaseOperation (name, work, completionCallback) {
+            if (!this) return new BaseOperation(name, work, completionCallback);
+            var self = this;
+            this.name = name;
+            this.work = work;
+            this.error = null;
+            this.completed = false;
+            this.result = null;
+            this.running = false;
+            this.completionCallback = completionCallback;
+            Object.defineProperty(this, 'failed', {
+                get: function () {
+                    return !!self.error;
+                },
+                enumerable: true,
+                configurable: true
+            });
+        }
+
+        BaseOperation.prototype.start = function () {
+            this.running = true;
+            var self = this;
+            this.work(function (err, payload) {
+                self.result = payload;
+                self.error = err;
+                self.completed = true;
+                self.running = false;
+                if (self.completionCallback) {
+                    self.completionCallback.call(this);
+                }
+            });
+        };
+
+        return BaseOperation;
+    })
 
     .factory('Operation', function (jlog) {
 

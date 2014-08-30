@@ -30,7 +30,7 @@ describe('relationship notifications', function () {
         collection = new Collection('myCollection', function (err) {
             if (err) done(err);
 
-            carMapping = collection.registerMapping('Car', {
+            carMapping = collection.mapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -41,7 +41,7 @@ describe('relationship notifications', function () {
                     }
                 }
             });
-            personMapping = collection.registerMapping('Person', {
+            personMapping = collection.mapping('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });

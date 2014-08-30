@@ -21,7 +21,7 @@ describe('store', function () {
         Collection._reset();
         collection = new Collection('myCollection', function (err, version) {
             if (err) done(err);
-            carMapping = collection.registerMapping('Car', {
+            carMapping = collection.mapping('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });

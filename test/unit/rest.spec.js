@@ -98,7 +98,7 @@ describe('rest', function () {
 
             beforeEach(function (done) {
                 collection = configureAPI(done, function () {
-                    collection.registerMapping('Person', {
+                    collection.mapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
@@ -107,7 +107,7 @@ describe('rest', function () {
 
             describe('raw mapping to Mapping object', function () {
                 function assertMapping(collection) {
-                    var rawMapping = collection._mappings.Person;
+                    var rawMapping = collection._rawMappings.Person;
                     assert.ok(rawMapping);
                     var mappingObj = collection.Person;
                     console.log('mappingObj:', mappingObj);
@@ -146,8 +146,8 @@ describe('rest', function () {
                     var a = new Collection('myCollection', function (err, version) {
                         if (err) done(err);
                     }, function () {
-                        console.log(a._mappings);
-                        assert.ok(a._mappings.Person);
+                        console.log(a._rawMappings);
+                        assert.ok(a._rawMappings.Person);
                         done();
                     });
                 })
@@ -157,7 +157,7 @@ describe('rest', function () {
         describe('indexing', function () {
             beforeEach(function (done) {
                 collection = configureAPI(done, function () {
-                    collection.registerMapping('Person', {
+                    collection.mapping('Person', {
                         id: 'id',
                         attributes: ['name', 'age'],
                         indexes: ['name', 'age']
