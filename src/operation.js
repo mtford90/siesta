@@ -10,6 +10,7 @@ angular.module('restkit.mapping.operation', ['logging'])
             this.operations = operations;
 
             var work = function (done) {
+                $log.trace('Starting ' + self._numOperationsRemaining.toString() + ' operations');
                 _.each(self.operations, function (op) {
                     if (op.name) {
                         $log.trace('Starting operation with name "' + op.name + '"');
@@ -24,24 +25,29 @@ angular.module('restkit.mapping.operation', ['logging'])
                         else {
                             $log.trace('Finished unnamed operation');
                         }
-                        if (self._allOperationsCompleted) {
+                        var numOperationsRemaining = self._numOperationsRemaining;
+                        if (!numOperationsRemaining) {
                             $log.trace('Operations have finished');
                             var errors = _.pluck(self.operations, 'error');
                             var results = _.pluck(self.operations, 'result');
                             done(_.some(errors) ? errors : null, _.some(results) ? results : null);
                         }
                         else {
-                            $log.trace('Waiting for operations to finish');
+                            $log.trace('Waiting for ' + numOperationsRemaining.toString() + ' operations to finish');
                         }
                     };
                     op.start();
                 });
             };
 
-            Object.defineProperty(this, '_allOperationsCompleted', {
+            Object.defineProperty(this, '_numOperationsRemaining', {
                 get: function () {
-                    var obj = _.pluck(self.operations, 'completed');
-                    return _.all(obj);
+                    return _.reduce(self.operations, function (memo, op) {
+                        if (op.completed) {
+                            return memo + 0;
+                        }
+                        return memo + 1;
+                    }, 0);
                 },
                 enumerable: true,
                 configurable: true
@@ -52,15 +58,38 @@ angular.module('restkit.mapping.operation', ['logging'])
 
         CompositeOperation.prototype = Object.create(BaseOperation.prototype);
 
+        CompositeOperation.prototype._dump = function (asJson) {
+            var self = this;
+            var obj = {
+                name: this.name,
+                purpose: this.purpose,
+                error: this.error,
+                completed: this.completed,
+                failed: this.failed,
+                running: this.running,
+                completedOperations: _.reduce(self.operations, function (memo, op) {
+                    if (op.completed) {
+                        memo.push(op._dump());
+                    }
+                    return memo;
+                }, []),
+                uncompletedOperations: _.reduce(self.operations, function (memo, op) {
+                    if (!op.completed) {
+                        memo.push(op._dump());
+                    }
+                    return memo;
+                }, [])
+            };
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
+        };
+
         return CompositeOperation;
 
     })
 
     .factory('BaseOperation', function (jlog) {
 
-        var operationsMonitor = jlog.loggerWithName('Num. Mapping Operations');
-
-        var runningOperations = [];
+        var $log = jlog.loggerWithName('BaseOperation');
 
         function BaseOperation(name, work, completionCallback) {
             if (!this) return new BaseOperation(name, work, completionCallback);
@@ -72,6 +101,7 @@ angular.module('restkit.mapping.operation', ['logging'])
             this.result = null;
             this.running = false;
             this.completionCallback = completionCallback;
+            this.purpose = '';
             Object.defineProperty(this, 'failed', {
                 get: function () {
                     return !!self.error;
@@ -82,45 +112,38 @@ angular.module('restkit.mapping.operation', ['logging'])
         }
 
         BaseOperation.prototype.start = function () {
-            runningOperations.push(this);
-            BaseOperation._logNumOperations();
-            this.running = true;
-            var self = this;
-            this.work(function (err, payload) {
-                self.result = payload;
-                self.error = err;
-                self.completed = true;
-                self.running = false;
-                var idx = runningOperations.indexOf(this);
-                runningOperations.splice(idx, 1);
-                BaseOperation._logNumOperations();
-                if (self.completionCallback) {
-                    self.completionCallback.call(this);
-                }
-            });
+            if (!this.running && !this.completed) {
+                $log.trace('Starting operation with name "' + this.name + '"');
+                this.running = true;
+                var self = this;
+                this.work(function (err, payload) {
+                    self.result = payload;
+                    self.error = err;
+                    self.completed = true;
+                    self.running = false;
+                    $log.trace('Finished operation with name "' + this.name + '"');
+                    if (self.completionCallback) {
+                        self.completionCallback.call(this);
+                    }
+                });
+            }
+            else {
+                $log.warn('Start called twice on operation');
+                dump(new Error().stack);
+            }
         };
 
-        BaseOperation._logNumOperations = function () {
-            operationsMonitor.info(this.runningOperations.length.toString());
+        BaseOperation.prototype._dump = function (asJson) {
+            var obj = {
+                purpose: this.purpose,
+                name: this.name,
+                error: this.error,
+                completed: this.completed,
+                failed: this.failed,
+                running: this.running
+            };
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
-
-        Object.defineProperty(BaseOperation, 'operationsAreRunning', {
-            get: function () {
-                return !!runningOperations.length;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        BaseOperation.runningOperations = runningOperations;
-
-        Object.defineProperty(BaseOperation, 'operationsAreRunning', {
-            get: function () {
-                return !!runningOperations.length;
-            },
-            enumerable: true,
-            configurable: true
-        });
 
         return BaseOperation;
     })
@@ -142,16 +165,22 @@ angular.module('restkit.mapping.operation', ['logging'])
                 return new MappingOperation(mapping, data, completion);
             }
             var self = this;
-
+            this.mapping = mapping;
+            this.data = data;
+            this._obj = null;
+            this._errors = {};
+            this.operations = [];
+            this._finished = [];
 
             var work = function (done) {
+                this._done = done;
                 var data = self.data;
                 var remoteIdentifier;
                 var idField;
                 if (!self._obj) {
                     if (data instanceof RestObject) {
                         self._obj = data;
-                        this.checkIfDone(done);
+                        this.checkIfDone();
                     }
                     else {
                         var storeOpts = {};
@@ -177,7 +206,6 @@ angular.module('restkit.mapping.operation', ['logging'])
                             storeOpts._id = data._id;
                         }
                         if (remoteIdentifier || data._id) {
-                            $log.info('Checking store');
                             Store.get(storeOpts, function (err, obj) {
                                 if (!err) {
                                     if (!obj) {
@@ -194,30 +222,30 @@ angular.module('restkit.mapping.operation', ['logging'])
                                             // The race condition occurred. Use the object created by the other mapping operation
                                             // instead.
                                             self._obj = restObject;
-                                            self._startMapping(done);
+                                            self._startMapping();
                                         }
                                         else {
                                             restObject = self.mapping._new(newData);
                                             restObject.save(function (err) {
                                                 if (err) {
                                                     self._errors = err;
-                                                    self.checkIfDone(done);
+                                                    self.checkIfDone();
                                                 }
                                                 else {
                                                     self._obj = restObject;
-                                                    self._startMapping(done);
+                                                    self._startMapping();
                                                 }
                                             });
                                         }
                                     }
                                     else {
                                         self._obj = obj;
-                                        self._startMapping(done);
+                                        self._startMapping();
                                     }
                                 }
                                 else {
                                     self._errors = err;
-                                    self.checkIfDone(done);
+                                    self.checkIfDone();
                                 }
                             });
                         }
@@ -226,11 +254,11 @@ angular.module('restkit.mapping.operation', ['logging'])
                             restObject.save(function (err) {
                                 if (err) {
                                     self._errors = err;
-                                    self.checkIfDone(done);
+                                    self.checkIfDone();
                                 }
                                 else {
                                     self._obj = restObject;
-                                    self._startMapping(done);
+                                    self._startMapping();
                                 }
                             });
 
@@ -239,32 +267,14 @@ angular.module('restkit.mapping.operation', ['logging'])
                     }
                 }
                 else {
-                    self._startMapping(done);
+                    self._startMapping();
                 }
             };
 
-            BaseOperation.call(this, 'MappingOperation', work, function () {
-                if (completion) completion(self.failed ? self._errors : null, self._obj, self._operations);
-            });
 
-            this.mapping = mapping;
-            this.data = data;
-            this._obj = null;
-            this._errors = {};
-            this._operations = [];
-            this._finished = [];
-            Object.defineProperty(this, 'failed', {
-                get: function () {
-                    for (var prop in self._errors) {
-                        if (self._errors.hasOwnProperty(prop)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                },
-                enumerable: true,
-                configurable: true
-            });
+            BaseOperation.call(this, 'MappingOperation', work, completion);
+
+
         }
 
         MappingOperation.prototype = Object.create(BaseOperation.prototype);
@@ -273,9 +283,9 @@ angular.module('restkit.mapping.operation', ['logging'])
         /**
          * Check to see if all sub-ops have finished. Call the completion function if finished.
          */
-        MappingOperation.prototype.checkIfDone = function (done) {
+        MappingOperation.prototype.checkIfDone = function () {
             var self = this;
-            var isFinished = this._operations.length == this._finished.length;
+            var isFinished = this.operations.length == this._finished.length;
             if (isFinished) {
                 $log.info('Mapping operation finishing', {obj: this.obj ? this._obj._id : null});
                 if (this._obj) {
@@ -283,16 +293,30 @@ angular.module('restkit.mapping.operation', ['logging'])
                         if (err) {
                             self._errors.save = err;
                         }
-                        done();
+                        var isError = false;
+                        for (var prop in self._errors) {
+                            if (self._errors.hasOwnProperty(prop)) {
+                                isError = true;
+                                break;
+                            }
+                        }
+                        self._done(isError ? self._errors : null, self._obj);
                     })
                 }
                 else {
-                    done();
+                    var isError = false;
+                    for (var prop in self._errors) {
+                        if (self._errors.hasOwnProperty(prop)) {
+                            isError = true;
+                            break;
+                        }
+                    }
+                    self._done(isError ? self._errors : null, self._obj);
                 }
             }
         };
 
-        MappingOperation.prototype._mapArray = function (prop, arr, done) {
+        MappingOperation.prototype._mapArray = function (prop, arr) {
             $log.trace('_mapArray', {prop: prop, arr: arr, op: this});
             var self = this;
             var obj = this._obj;
@@ -316,10 +340,10 @@ angular.module('restkit.mapping.operation', ['logging'])
                 // Need to use an IEFE as i+item are mutable and the operations are completed async.
                 for (var i = 0; i < arr.length; i++) {
                     (function (i, item) {
-                        var subOperation = new MappingOperation(reverseMapping, item, function (err, related) {
-                            $log.info('Mapping operation completed.', {prop: prop, related: related._id, obj: obj._id});
+                        var subOperation = new MappingOperation(reverseMapping, item, function () {
+                            var err = subOperation.error;
                             if (!err) {
-                                mappedArr[i] = related;
+                                mappedArr[i] = subOperation._obj;
                             }
                             else {
                                 errors.push(err);
@@ -331,20 +355,22 @@ angular.module('restkit.mapping.operation', ['logging'])
                                     $log.debug('Setting relationship ' + prop);
                                     proxy.set(mappedArr, function (err) {
                                         if (err) {
-                                            $log.debug('Error setting relationship', err);
+                                            $log.debug('Error setting relationship "' + prop + '"', err);
                                             self._errors[prop] = err;
+                                            dump(self._errors);
                                         }
                                         else {
-                                            $log.debug('Successfully set relationship');
+                                            $log.debug('Successfully set relationship', prop);
+                                            dump(self._errors);
                                         }
                                         self._finished.push(arrayOperations);
-                                        self.checkIfDone(done);
+                                        self.checkIfDone();
                                     })
                                 }
                                 else {
                                     self._errors[prop] = errors;
                                     self._finished.push(arrayOperations);
-                                    self.checkIfDone(done);
+                                    self.checkIfDone();
                                 }
                             }
                         });
@@ -352,17 +378,15 @@ angular.module('restkit.mapping.operation', ['logging'])
                         subOperation.start();
                     })(i, arr[i]);
                 }
-                self._operations.push(arrayOperations);
+                self.operations.push(arrayOperations);
             }
         };
 
         MappingOperation.prototype._mapAttribute = function (prop, val) {
-            $log.trace('_mapAttribute', {prop: prop, val: val, op: this});
             this._obj[prop] = val;
         };
 
-        MappingOperation.prototype._mapRelationship = function (prop, val, done) {
-            $log.trace('_mapRelationship', {prop: prop, val: val, op: this});
+        MappingOperation.prototype._mapRelationship = function (prop, val) {
             var self = this;
             var obj = this._obj;
             var relationship = obj[prop].relationship;
@@ -374,24 +398,28 @@ angular.module('restkit.mapping.operation', ['logging'])
             else {
                 reverseMapping = relationship.mapping;
             }
-            var subOperation = new MappingOperation(reverseMapping, val, function (err, related) {
+            var subOperation = new MappingOperation(reverseMapping, val, function () {
+                var err = subOperation.error;
                 if (err) {
                     self._errors[prop] = err;
                     self._finished.push(subOperation);
-                    self.checkIfDone(done);
+                    self.checkIfDone();
                 }
                 else {
+                    var related = subOperation._obj;
                     var proxy = self._obj[prop];
                     proxy.set(related, function (err) {
                         if (err) {
                             self._errors[prop] = err;
                         }
+                        else {
+                        }
                         self._finished.push(subOperation);
-                        self.checkIfDone(done);
+                        self.checkIfDone();
                     })
                 }
             });
-            this._operations.push(subOperation);
+            this.operations.push(subOperation);
             subOperation.start();
         };
 
@@ -407,21 +435,22 @@ angular.module('restkit.mapping.operation', ['logging'])
          * Kick off the mapping.
          * @private
          */
-        MappingOperation.prototype._startMapping = function (done) {
-            $log.info('Mapping operation starting', {obj: this._obj._id});
+        MappingOperation.prototype._startMapping = function () {
             var data = this.data;
+            $log.info('Mapping operation starting', {obj: this._obj._id, data: data});
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
+                    $log.trace('Checking "' + prop + '"');
                     var val = data[prop];
                     if (Object.prototype.toString.call(val) == '[object Array]') {
-                        this._mapArray(prop, val, done);
+                        this._mapArray(prop, val);
                     }
                     else {
                         if (this._isAttribute(prop)) {
                             this._mapAttribute(prop, val);
                         }
                         else if (this._isRelationship(prop)) {
-                            this._mapRelationship(prop, val, done);
+                            this._mapRelationship(prop, val);
                         }
                         else {
                             $log.debug('No such property ' + prop.toString());
@@ -430,72 +459,22 @@ angular.module('restkit.mapping.operation', ['logging'])
                 }
             }
             // If no relationships etc, no sub-ops will be spawned.
-            this.checkIfDone(done);
+            this.checkIfDone();
+        };
+
+        MappingOperation.prototype._dump = function (asJson) {
+            var obj = {};
+            obj.name = this.name;
+            obj.purpose = this.purpose;
+            obj.data = this.data;
+            obj.obj = this._obj ? this._obj._dump() : null;
+            obj.completed = this.completed;
+            obj.errors = this._errors;
+            obj.mapping = this.mapping.type;
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
 
         return MappingOperation;
-    })
-
-    .factory('BulkMappingOperation', function (MappingOperation, jlog, $rootScope, BaseOperation) {
-        var $log = jlog.loggerWithName('BulkMappingOperation');
-
-        function BulkMappingOperation(mapping, data, completion) {
-            if (!this) {
-                return new BulkMappingOperation(mapping, data, completion);
-            }
-            var self = this;
-
-            var work = function (done) {
-                var data = self.data;
-                for (var i = 0; i < data.length; i++) {
-                    (function (idx) {
-                        var op = new MappingOperation(self.mapping, data[idx], function (err, obj) {
-                            if (err) {
-                                self._errors.push(err);
-                            }
-                            else {
-                                self._results[idx] = {err: err, obj: obj, raw: data[idx]};
-                            }
-                            self._finished.push(op);
-                            if (self._finished.length == self._operations.length) {
-                                if (self.failed) {
-                                    $log.trace('fail');
-                                }
-                                else {
-                                    $log.trace('success');
-                                }
-                                done();
-                            }
-                        });
-                        self._operations.push(op);
-                        op.start();
-                    })(i);
-                }
-            };
-
-            BaseOperation.call(this, 'Bulk Mapping Operation', work, function () {
-                completion(self.failed ? self._errors : null, _.pluck(self._results, 'obj'), self._results);
-            });
-
-            this.mapping = mapping;
-            this.data = data;
-            this._operations = [];
-            this._results = [];
-            this._errors = [];
-            this._finished = [];
-            Object.defineProperty(this, 'failed', {
-                get: function () {
-                    return !!self._errors.length;
-                },
-                enumerable: true,
-                configurable: true
-            });
-        }
-
-        BulkMappingOperation.prototype = Object.create(BaseOperation.prototype);
-
-
-        return BulkMappingOperation;
     })
 
 ;

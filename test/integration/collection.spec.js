@@ -12,7 +12,6 @@ describe('intercollection relationships', function () {
 
     var $rootScope, Collection, Pouch, RelationshipType;
 
-
     beforeEach(function (done) {
         module('restkit', function ($provide) {
             $provide.value('$log', console);
@@ -107,6 +106,7 @@ describe('intercollection relationships', function () {
     });
 
     function mapRemoteUsers(callback) {
+        console.log('mapRemoteUsers');
         myOnlineCollection.User.map([
             {username: 'mtford', name: 'Michael Ford', userId: '1'},
             {username: 'blahblah', name: 'Blah Blah', userId: '2'},
@@ -115,6 +115,7 @@ describe('intercollection relationships', function () {
     }
 
     function mapRemotePhotos(callback) {
+        console.log('mapRemotePhotos');
         myOnlineCollection.Photo.map([
             {height: 500, width: 500, url: 'http://somewhere/image.jpeg', photoId: '10', createdBy: '1'},
             {height: 1500, width: 1500, url: 'http://somewhere/image2.jpeg', photoId: '11', createdBy: '1'},
@@ -123,6 +124,7 @@ describe('intercollection relationships', function () {
     }
 
     function mapOfflineUsers(callback) {
+        console.log('mapOfflineUsers');
         myOfflineCollection.User.map([
             {username: 'mike'},
             {username: 'gaz'}
@@ -141,6 +143,8 @@ describe('intercollection relationships', function () {
             mapRemotePhotos
         ], callback);
     }
+
+
 
     describe('local queries', function () {
 

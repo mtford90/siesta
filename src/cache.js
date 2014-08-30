@@ -167,7 +167,42 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                 }
             },
             remoteInsert: remoteInsert,
-            reset: reset
+            reset: reset,
+            _dump: function (asJson) {
+                var dumpedIdCache = {};
+                var dumpedRestCache = {};
+                for (var id in idCache) {
+                    if (idCache.hasOwnProperty(id)) {
+                        dumpedIdCache[id] = idCache[id]._dump()
+                    }
+                }
+                for (var coll in restCache) {
+                    if (restCache.hasOwnProperty(coll)) {
+                        var dumpedCollCache = {};
+                        dumpedRestCache[coll] = dumpedCollCache;
+                        var collCache = restCache[coll];
+                        for (var mapping in collCache) {
+                            if (collCache.hasOwnProperty(mapping)) {
+                                var dumpedMappingCache = {};
+                                dumpedCollCache[mapping] = dumpedMappingCache;
+                                var mappingCache = collCache[mapping];
+                                for (var remoteId in mappingCache) {
+                                    if (mappingCache.hasOwnProperty(remoteId)) {
+                                        if (mappingCache[remoteId]) {
+                                            dumpedMappingCache[remoteId] = mappingCache[remoteId]._dump();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                var dumped = {
+                    idCache: dumpedIdCache,
+                    restCache: dumpedRestCache
+                };
+                return asJson ? JSON.stringify(dumped, null, 4) : dumped;
+            }
         }
     })
 

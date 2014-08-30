@@ -121,6 +121,10 @@ angular.module('restkit.indexing', ['restkit'])
             }
         };
 
+        Index.prototype._dump = function () {
+            return this._getName();
+        };
+
         Index.prototype._getName = function () {
             this._validate();
             var appendix = _.reduce(this.fields, function (memo, field) {return memo + '_' + field}, '');

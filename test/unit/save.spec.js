@@ -46,12 +46,6 @@ describe('saving at different levelss', function () {
 
     });
 
-    afterEach(function () {
-        inject(function (BaseOperation) {
-            // If operations are still running after a test, they are going to interfere with other tests.
-            assert.notOk(BaseOperation.operationsAreRunning);
-        });
-    });
 
     it('should save at object level', function (done) {
         carMapping.map([
@@ -77,22 +71,22 @@ describe('saving at different levelss', function () {
         });
     });
 
-//    it('should save at mapping level', function (done) {
-//        carMapping.map([
-//            {colour: 'black', name: 'Aston Martin'},
-//            {colour: 'blue', name: 'Aston Martin'},
-//            {colour: 'red', name: 'Aston Martin'}
-//        ], function (err, cars) {
-//            if (err) done(err);
-//            carMapping.save(function (err) {
-//                if (err) done(err);
-//                _.each(cars, function (c) {
-//                    c.colour = 'purple';
-//                    assert.notOk(c.isDirty);
-//                });
-//            })
-//        });
-//    });
+    it('should save at mapping level', function (done) {
+        carMapping.map([
+            {colour: 'black', name: 'Aston Martin'},
+            {colour: 'blue', name: 'Aston Martin'},
+            {colour: 'red', name: 'Aston Martin'}
+        ], function (err, cars) {
+            if (err) done(err);
+            carMapping.save(function (err) {
+                if (err) done(err);
+                _.each(cars, function (c) {
+                    c.colour = 'purple';
+                    assert.notOk(c.isDirty);
+                });
+            })
+        });
+    });
 
 
 });

@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications', 'restkit.mapping.operation'])
 
-    .factory('Mapping', function (cache, broadcast, Pouch, MappingOperation, BulkMappingOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (cache, broadcast, Pouch, MappingOperation, CompositeOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -445,15 +445,46 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
                 return this._mapBulk(data, callback);
             }
             else {
-                var op = new MappingOperation(this, data, callback);
+                var op = new MappingOperation(this, data, function () {
+                    var err = op.error;
+                    if (err) {
+                        if (callback) callback(err);
+                    }
+                    else if (callback) {
+                        callback(null, op._obj, op.operations);
+                    }
+                });
                 op._obj = obj;
                 op.start();
                 return op;
             }
         };
 
+
         Mapping.prototype._mapBulk = function (data, callback) {
-            var op = new BulkMappingOperation(this, data, callback);
+            var self = this;
+            var operations = _.map(data, function (datum) {
+                return new MappingOperation(self, datum);
+            });
+            var op = new CompositeOperation('Bulk Mapping', operations, function (err) {
+                dump(new Error().stack);
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    var objects = _.pluck(operations, '_obj');
+                    var res = _.map(operations, function (op) {
+                        return {
+                            err: op.error,
+                            obj: op._obj,
+                            raw: op.data,
+                            op: op
+                        }
+                    });
+                    callback(null, objects, res);
+                }
+
+            });
             op.start();
             return op;
         };
@@ -527,7 +558,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             });
 
 
-
             // Place relationships on the object.
             _.each(this.relationships, function (relationship) {
                 relationship.contributeToRestObject(restObject);
@@ -537,12 +567,26 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         };
 
 
+        Mapping.prototype._dump = function (asJSON) {
+            var dumped = {};
+            dumped.name = this.type;
+            dumped.attributes = this.attributes;
+            dumped.id = this.id;
+            dumped.collection = this.collection;
+            dumped.relationships = _.map(this.relationships, function (r) {
+                if (r.isForward(this)) {
+                    return r.name;
+                }
+                else {
+                    return r.reverseName;
+                }
+            });
+            return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
+        };
+
         Mapping.prototype.toString = function () {
             return 'Mapping[' + this.type + ']';
         };
-
-
-
 
 
         return Mapping;
@@ -578,7 +622,6 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         return MappingError;
     })
-
 
 
 ;

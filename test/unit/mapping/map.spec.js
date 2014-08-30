@@ -27,12 +27,6 @@ describe('perform mapping', function () {
 
     });
 
-    afterEach(function () {
-        inject(function (BaseOperation) {
-            // If operations are still running after a test, they are going to interfere with other tests.
-            assert.notOk(BaseOperation.operationsAreRunning);
-        })
-    });
 
     describe('no id', function () {
         beforeEach(function (done) {
@@ -196,6 +190,9 @@ describe('perform mapping', function () {
                         });
                         it('owner of car should be michael', function (done) {
                             $rootScope.$digest(); // Ensure cache gets updated.
+                            dump(car.owner);
+                            dump(person);
+                            assert.equal(car.owner._id, person._id);
                             car.owner.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);

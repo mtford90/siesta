@@ -1,8 +1,6 @@
-angular.module('restkit.object', ['restkit'])
+angular.module('restkit.object', ['restkit', 'restkit.mapping.operation'])
 
-    .factory('SaveOperation', function (cache, PouchDocSync, Pouch, PouchDocAdapter, jlog) {
-        var saveOperations = {};
-        var runningSaveOperations = {};
+    .factory('SaveOperation', function (cache, PouchDocSync, Pouch, PouchDocAdapter, jlog, BaseOperation) {
 
         var $log = jlog.loggerWithName('SaveOperation');
 
@@ -17,25 +15,33 @@ angular.module('restkit.object', ['restkit'])
          */
         function SaveOperation(object, callback) {
             if (!this) return new SaveOperation(object, callback);
-            this.object = object;
+            var self = this;
+
+
+            var work = function (done) {
+                this._completion = done;
+                self._start();
+            };
+
+            BaseOperation.call(this, 'Save Operation', work, function () {
+                self.callback(self.error, self);
+            });
+
             this.callback = callback;
+            this.object = object;
         }
 
+        SaveOperation.prototype = Object.create(BaseOperation.prototype);
+
         SaveOperation.prototype._finish = function (err) {
-            var operations = saveOperations[this.object._id];
-            runningSaveOperations[this.object._id] = null;
             if (err) {
                 $log.trace('Error during save operation for id="' + this.object._id + '"', err);
             }
             else {
                 $log.trace('Finished save operation for id="' + this.object._id + '"');
             }
-            if (this.callback) {
-                this.callback(err, self);
-            }
-            if (operations.length) {
-                var nextOp = operations.pop();
-                nextOp.start();
+            if (this._completion) {
+                this._completion(err);
             }
         };
 
@@ -164,12 +170,6 @@ angular.module('restkit.object', ['restkit'])
         SaveOperation.prototype._start = function () {
             $log.trace('Starting save operation for id="' + this.object._id + '"');
             var id = this.object._id;
-            var ops = saveOperations[id];
-            var idx = ops.indexOf(this);
-            if (idx > -1) {
-                ops.splice(idx, 1);
-            }
-            runningSaveOperations[ id] = this;
             if (cache.get({_id: id})) {
                 this._saveDirtyFields();
             }
@@ -178,16 +178,18 @@ angular.module('restkit.object', ['restkit'])
             }
         };
 
-        SaveOperation.prototype.start = function () {
-            var id = this.object._id;
-            if (!saveOperations[id]) saveOperations[id] = [];
-            var ops = saveOperations[id];
-            if (runningSaveOperations[id]) {
-                ops.push(this);
-            }
-            else {
-                this._start();
-            }
+        SaveOperation.prototype._dump = function (asJson) {
+            var obj = {
+                name: this.name,
+                purpose: this.purpose,
+                error: this.error,
+                completed: this.completed,
+                failed: this.failed,
+                running: this.running,
+                obj: this.object ? this.object._dump() : null
+
+            };
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
 
         return SaveOperation
@@ -197,11 +199,9 @@ angular.module('restkit.object', ['restkit'])
         var $log = jlog.loggerWithName('RestObject');
 
         function RestObject(mapping) {
-
             if (!this) {
                 return new RestObject(mapping);
             }
-
             var self = this;
             this.mapping = mapping;
             Object.defineProperty(this, 'idField', {
@@ -295,6 +295,48 @@ angular.module('restkit.object', ['restkit'])
             var op = new SaveOperation(this, callback);
             op.start();
         };
+
+        /**
+         * Human readable dump of this object
+         * @returns {*}
+         * @private
+         */
+        RestObject.prototype._dump = function (asJson) {
+            var self = this;
+            var cleanObj = {};
+            cleanObj.mapping = this.mapping.type;
+            cleanObj.collection = this.collection;
+            cleanObj._id = this._id;
+            cleanObj = _.reduce(this._fields, function (memo, f) {
+                if (self[f]) {
+                    memo[f] = self[f];
+                }
+                return memo;
+            }, cleanObj);
+            cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
+                if (self[f]) {
+                    if (self[f].hasOwnProperty('_id')) {
+                        if (Object.prototype.toString.call(self[f]) === '[object Array]') {
+                            if (self[f].length) {
+                                memo[f] = _.map(self[f], function (proxy) {return proxy._id});
+                            }
+                        }
+                        else if (self[f]._id) {
+                            memo[f] = self[f]._id;
+                        }
+                    }
+                    else {
+                        memo[f] = self[f];
+                    }
+                }
+                return memo;
+            }, cleanObj);
+
+
+            return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
+        };
+
+
 
         return RestObject;
     })

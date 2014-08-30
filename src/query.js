@@ -11,9 +11,12 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
             this.query = query;
         }
 
+        Query.prototype._rawQuery = function () {
+            return new RawQuery(this.mapping.collection, this.mapping.type, this.query);
+        };
+
         Query.prototype.execute = function (callback) {
-            var self = this;
-            var rawQuery = new RawQuery(this.mapping.collection, this.mapping.type, this.query);
+            var rawQuery = this._rawQuery();
             rawQuery.execute(function (err, results) {
                 if (err) {
                     callback(err);
@@ -23,6 +26,10 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
                      if(callback) callback(null, PouchDocAdapter.toFount(results));
                 }
             });
+        };
+
+        Query.prototype._dump = function (asJson) {
+            return this._rawQuery()._dump(asJson);
         };
         return Query;
     })
@@ -125,6 +132,16 @@ angular.module('restkit.query', ['restkit', 'restkit.indexing', 'restkit.pouchDo
         RawQuery.prototype._getIndexName = function () {
             var i = new Index(this.collection, this.modelName, this._getFields());
             return i._getName();
+        };
+
+        RawQuery.prototype._dump = function (asJson) {
+            var obj = {};
+            obj.collection = this.collection;
+            obj.mapping = this.modelName;
+            obj.query = this.query;
+            obj.index = this._getIndexName();
+            obj.designDoc = this._getDesignDocName();
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
 
         return RawQuery;

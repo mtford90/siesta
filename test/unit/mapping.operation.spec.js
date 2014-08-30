@@ -33,16 +33,9 @@ describe('operations', function () {
                     op.work = function (done) {setTimeout(function () {done()}, 50)};
                     op.start();
                 });
-                it('should be one running operation', function () {
-                    assert.equal(Operation.runningOperations.length, 1);
-                });
 
                 it('operation should be running', function () {
                     assert.ok(op.running);
-                });
-
-                it('operations should be running', function () {
-                    assert.ok(Operation.operationsAreRunning);
                 });
 
 
@@ -59,13 +52,6 @@ describe('operations', function () {
                     assert.notOk(op.running);
                 });
 
-                it('should no longer be any running operations', function () {
-                    assert.notOk(Operation.runningOperations.length);
-                });
-
-                it('operations should not be running', function () {
-                    assert.notOk(Operation.operationsAreRunning);
-                });
             });
 
 

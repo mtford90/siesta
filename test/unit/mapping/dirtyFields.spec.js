@@ -30,13 +30,6 @@ describe('dirty fields', function () {
 
     });
 
-    afterEach(function () {
-        inject(function (BaseOperation) {
-            // If operations are still running after a test, they are going to interfere with other tests.
-            assert.notOk(BaseOperation.operationsAreRunning);
-        })
-    });
-
 
     function assertCollectionAndGlobalNotDirtyWhenFirstMapped() {
         it('collection should not be dirty when first mapped', function () {
@@ -468,8 +461,8 @@ describe('dirty fields', function () {
                         personMapping.map({name: 'Michael Ford', age: 23}, function (err, person) {
                             if (err) done(err);
                             newPerson = person;
-                            assert.ok(previousPerson);
-                            assert.ok(newPerson);
+                            assert.ok(previousPerson, 'previousPerson');
+                            assert.ok(newPerson, 'newPerson');
                             done();
                         })
                     });

@@ -74,6 +74,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
                 return new Descriptor(opts);
             }
 
+            this._rawOpts = $.extend(true, {}, opts);
             this._opts = opts;
 
             // Convert path string into XRegExp if not already.
@@ -439,6 +440,35 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             }
         };
 
+        RequestDescriptor.prototype._dump = function (asJson) {
+            var obj = {};
+            obj.methods = this.method;
+            obj.mapping = this.mapping.type;
+            obj.path = this._rawOpts.path;
+            var serialiser;
+            if (typeof(this._rawOpts.serialiser) == 'function') {
+                serialiser = 'function () { ... }'
+            }
+            else {
+                serialiser = this._rawOpts.serialiser;
+            }
+            obj.serialiser = serialiser;
+            var transforms = {};
+            for (var f in this.transforms) {
+                if (this.transforms.hasOwnProperty(f)) {
+                    var transform = this.transforms[f];
+                    if (typeof(transform) == 'function') {
+                        transforms[f] = 'function () { ... }'
+                    }
+                    else {
+                        transforms[f] = this.transforms[f];
+                    }
+                }
+            }
+            obj.transforms = transforms;
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
+        };
+
         return RequestDescriptor;
     })
 
@@ -466,6 +496,27 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
                 this._transformData(extractedData);
             }
             return extractedData;
+        };
+
+        ResponseDescriptor.prototype._dump = function (asJson) {
+            var obj = {};
+            obj.methods = this.method;
+            obj.mapping = this.mapping.type;
+            obj.path = this._rawOpts.path;
+            var transforms = {};
+            for (var f in this.transforms) {
+                if (this.transforms.hasOwnProperty(f)) {
+                    var transform = this.transforms[f];
+                    if (typeof(transform) == 'function') {
+                        transforms[f] = 'function () { ... }'
+                    }
+                    else {
+                        transforms[f] = this.transforms[f];
+                    }
+                }
+            }
+            obj.transforms = transforms;
+            return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
 
         return ResponseDescriptor;

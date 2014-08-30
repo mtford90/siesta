@@ -117,6 +117,19 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             })
         };
 
+        Relationship.prototype._dump = function (asJSON) {
+            var obj = {};
+            obj.forward = {
+                name: this.name,
+                mapping: this.mapping.type
+            };
+            obj.reverse = {
+                name: this.reverseName,
+                mapping: this.reverseMapping.type
+            };
+            return asJSON ? JSON.stringify(obj, null, 4) : obj;
+        };
+
         return Relationship;
     })
 
