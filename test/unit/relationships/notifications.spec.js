@@ -1,6 +1,6 @@
 describe('relationship notifications', function () {
 
-    var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType;
+    var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, $rootScope, Store, ChangeType, Relationship;
     var collection, carMapping, personMapping;
     var car, person, carNotif, personNotif;
 
@@ -13,7 +13,7 @@ describe('relationship notifications', function () {
             $provide.value('$log', console);
             $provide.value('$q', Q);
         });
-        inject(function (_Pouch_, _RawQuery_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _Store_, _ChangeType_) {
+        inject(function (_Pouch_, _RawQuery_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _Store_, _ChangeType_, _Relationship_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
             Collection = _Collection_;
@@ -22,6 +22,7 @@ describe('relationship notifications', function () {
             $rootScope = _$rootScope_;
             Store = _Store_;
             ChangeType = _ChangeType_;
+            Relationship = _Relationship_;
         });
         Pouch.reset();
     }
@@ -70,16 +71,40 @@ describe('relationship notifications', function () {
                     });
                 });
             });
-            });
-
+        });
 
     }
 
+    describe('reverse names', function () {
+        var collection, carMapping, personMapping;
+        beforeEach(function (done) {
+            setupModules();
+            var collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+        it('no reverse name specified', function () {
+            var r = new Relationship('owner', null, carMapping, personMapping);
+            assert.equal(r.reverseName, 'reverse_owner');
+        });
+        it('reverse name specified', function () {
+            var r = new Relationship('owner', 'cars', carMapping, personMapping);
+            assert.equal(r.reverseName, 'cars');
+        });
+    });
 
     describe('OneToOne', function () {
 
         beforeEach(function (done) {
             setupModules();
+
             setupFixtures(RelationshipType.OneToOne, 'car', done);
         });
 
@@ -301,7 +326,7 @@ describe('relationship notifications', function () {
                     var n = notifications[i];
                     var objMatches = true;
                     if (opts.obj) {
-                        objMatches =opts.obj == n.obj
+                        objMatches = opts.obj == n.obj
                     }
                     if (objMatches) {
                         var changeMatches = true;
@@ -369,12 +394,12 @@ describe('relationship notifications', function () {
             });
 
             it('sends out notification for old car', function () {
-                assertCarNotification({change: {type: ChangeType.Set, new: null, field:'owner', old:person}, obj: car});
+                assertCarNotification({change: {type: ChangeType.Set, new: null, field: 'owner', old: person}, obj: car});
             });
 
             it('sends out notifications for new cars', function () {
                 _.each(newCars, function (newCar) {
-                    assertCarNotification({change: {type: ChangeType.Set, new: person, field:'owner', old:null}, obj: newCar});
+                    assertCarNotification({change: {type: ChangeType.Set, new: person, field: 'owner', old: null}, obj: newCar});
                 });
             });
 

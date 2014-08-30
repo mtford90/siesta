@@ -58,9 +58,20 @@ angular.module('restkit.relationship', ['restkit', 'restkit.store'])
             if (!this) {
                 return new Relationship(name, reverseName, mapping, reverseMapping);
             }
+            var self = this;
             this.mapping = mapping;
             this.name = name;
-            this.reverseName = reverseName;
+            this._reverseName = reverseName;
+            Object.defineProperty(this, 'reverseName', {
+                get: function () {
+                    if (self._reverseName) {
+                        return self._reverseName;
+                    }
+                    else {
+                        return 'reverse_' + self.name;
+                    }
+                }
+            });
             this.reverseMapping = reverseMapping;
         }
 

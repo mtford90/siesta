@@ -1,6 +1,6 @@
 describe('mapping relationships', function () {
 
-    var Pouch, RestObject, Collection, RestError, RelationshipType;
+    var Pouch, RestObject, Collection, RestError, RelationshipType, Relationship;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -23,6 +23,7 @@ describe('mapping relationships', function () {
         Pouch.reset();
 
     });
+
 
     describe('valid', function () {
         var collection, carMapping, personMapping;
