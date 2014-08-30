@@ -31,9 +31,9 @@ describe('dirty fields', function () {
     });
 
     afterEach(function () {
-        inject(function (Operation) {
+        inject(function (BaseOperation) {
             // If operations are still running after a test, they are going to interfere with other tests.
-            assert.notOk(Operation.operationsAreRunning);
+            assert.notOk(BaseOperation.operationsAreRunning);
         })
     });
 
@@ -708,5 +708,7 @@ describe('dirty fields', function () {
         })
 
     });
+
+
 
 });

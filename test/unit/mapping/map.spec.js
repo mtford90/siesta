@@ -28,9 +28,9 @@ describe('perform mapping', function () {
     });
 
     afterEach(function () {
-        inject(function (Operation) {
+        inject(function (BaseOperation) {
             // If operations are still running after a test, they are going to interfere with other tests.
-            assert.notOk(Operation.operationsAreRunning);
+            assert.notOk(BaseOperation.operationsAreRunning);
         })
     });
 
@@ -68,7 +68,10 @@ describe('perform mapping', function () {
             });
             collection.install(function (err) {
                 if (err) done(err);
-                carMapping.map({colour: 'red', name: 'Aston Martin', id: 'dfadf'}, function (err, _obj) {
+                carMapping.map({colour: 'red', name: 'Aston Martin', id: 'dfadf'}, function (err, _obj)
+                {
+                    dump({err: err, obj: _obj});
+
                     if (err) {
                         console.error('Error when mapping new car:', err);
                         done(err);

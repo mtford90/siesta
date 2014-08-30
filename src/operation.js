@@ -4,7 +4,7 @@ angular.module('restkit.mapping.operation', ['logging'])
 
         var $log = jlog.loggerWithName('CompositeOperation');
 
-        function CompositeOperation (name, operations, completionCallback) {
+        function CompositeOperation(name, operations, completionCallback) {
             if (!this) return new CompositeOperation;
             var self = this;
             this.operations = operations;
@@ -56,9 +56,13 @@ angular.module('restkit.mapping.operation', ['logging'])
 
     })
 
-    .factory('BaseOperation', function () {
+    .factory('BaseOperation', function (jlog) {
 
-        function BaseOperation (name, work, completionCallback) {
+        var operationsMonitor = jlog.loggerWithName('Num. Mapping Operations');
+
+        var runningOperations = [];
+
+        function BaseOperation(name, work, completionCallback) {
             if (!this) return new BaseOperation(name, work, completionCallback);
             var self = this;
             this.name = name;
@@ -78,6 +82,8 @@ angular.module('restkit.mapping.operation', ['logging'])
         }
 
         BaseOperation.prototype.start = function () {
+            runningOperations.push(this);
+            BaseOperation._logNumOperations();
             this.running = true;
             var self = this;
             this.work(function (err, payload) {
@@ -85,50 +91,20 @@ angular.module('restkit.mapping.operation', ['logging'])
                 self.error = err;
                 self.completed = true;
                 self.running = false;
+                var idx = runningOperations.indexOf(this);
+                runningOperations.splice(idx, 1);
+                BaseOperation._logNumOperations();
                 if (self.completionCallback) {
                     self.completionCallback.call(this);
                 }
             });
         };
 
-        return BaseOperation;
-    })
-
-    .factory('Operation', function (jlog) {
-
-        var operationsMonitor = jlog.loggerWithName('Num. Mapping Operations');
-
-        var runningOperations = [];
-
-        function Operation() {
-            if (!this) return new Operation();
-            Object.defineProperty(this, 'running', {
-                get: function () {
-                    return runningOperations.indexOf(this) > -1
-                },
-                enumerable: true,
-                configurable: true
-            });
-        }
-
-        Operation._logNumOperations = function () {
+        BaseOperation._logNumOperations = function () {
             operationsMonitor.info(this.runningOperations.length.toString());
         };
 
-        Operation.prototype.start = function () {
-            runningOperations.push(this);
-            Operation._logNumOperations();
-        };
-
-        Operation.prototype.finish = function () {
-            var idx = runningOperations.indexOf(this);
-            runningOperations.splice(idx, 1);
-            Operation._logNumOperations();
-        };
-
-        Operation.runningOperations = runningOperations;
-
-        Object.defineProperty(Operation, 'operationsAreRunning', {
+        Object.defineProperty(BaseOperation, 'operationsAreRunning', {
             get: function () {
                 return !!runningOperations.length;
             },
@@ -136,10 +112,21 @@ angular.module('restkit.mapping.operation', ['logging'])
             configurable: true
         });
 
-        return Operation;
+        BaseOperation.runningOperations = runningOperations;
+
+        Object.defineProperty(BaseOperation, 'operationsAreRunning', {
+            get: function () {
+                return !!runningOperations.length;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        return BaseOperation;
     })
 
-    .factory('MappingOperation', function (jlog, RestObject, Store, cache, Operation) {
+
+    .factory('MappingOperation', function (jlog, RestObject, Store, cache, BaseOperation) {
 
         var $log = jlog.loggerWithName('MappingOperation');
 
@@ -154,13 +141,114 @@ angular.module('restkit.mapping.operation', ['logging'])
             if (!this) {
                 return new MappingOperation(mapping, data, completion);
             }
-
-            Operation.call(this);
-
             var self = this;
+
+
+            var work = function (done) {
+                var data = self.data;
+                var remoteIdentifier;
+                var idField;
+                if (!self._obj) {
+                    if (data instanceof RestObject) {
+                        self._obj = data;
+                        this.checkIfDone(done);
+                    }
+                    else {
+                        var storeOpts = {};
+                        idField = self.mapping.id;
+                        if (typeof(data) == 'object') {
+                            remoteIdentifier = data[idField];
+                        }
+                        else {
+                            // Here we assume that the data given is a remote identifier.
+                            $log.trace('Assuming remote identifier');
+                            remoteIdentifier = data;
+                            self.data = {};
+                            self.data[idField] = data;
+                            data = self.data;
+                        }
+                        if (remoteIdentifier) {
+                            $log.debug('Can lookup via remote id');
+                            storeOpts[idField] = remoteIdentifier;
+                            storeOpts.mapping = self.mapping;
+                        }
+                        if (data._id) {
+                            $log.debug('Can lookup via _id');
+                            storeOpts._id = data._id;
+                        }
+                        if (remoteIdentifier || data._id) {
+                            $log.info('Checking store');
+                            Store.get(storeOpts, function (err, obj) {
+                                if (!err) {
+                                    if (!obj) {
+                                        var newData = {};
+                                        if (remoteIdentifier && idField) {
+                                            newData[idField] = remoteIdentifier;
+                                        }
+                                        // Check the cache just in case we've been beaten to it by another mapping operation.
+                                        // The Store will go out to Pouch if it's not in the cache, giving other operations the
+                                        // chance to get here first and insert a new object into the store.
+                                        // TODO: Alternative would be to only allow one Store operation at a time.
+                                        var restObject = cache.get(storeOpts);
+                                        if (restObject) {
+                                            // The race condition occurred. Use the object created by the other mapping operation
+                                            // instead.
+                                            self._obj = restObject;
+                                            self._startMapping(done);
+                                        }
+                                        else {
+                                            restObject = self.mapping._new(newData);
+                                            restObject.save(function (err) {
+                                                if (err) {
+                                                    self._errors = err;
+                                                    self.checkIfDone(done);
+                                                }
+                                                else {
+                                                    self._obj = restObject;
+                                                    self._startMapping(done);
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else {
+                                        self._obj = obj;
+                                        self._startMapping(done);
+                                    }
+                                }
+                                else {
+                                    self._errors = err;
+                                    self.checkIfDone(done);
+                                }
+                            });
+                        }
+                        else {
+                            var restObject = self.mapping._new();
+                            restObject.save(function (err) {
+                                if (err) {
+                                    self._errors = err;
+                                    self.checkIfDone(done);
+                                }
+                                else {
+                                    self._obj = restObject;
+                                    self._startMapping(done);
+                                }
+                            });
+
+                        }
+
+                    }
+                }
+                else {
+                    self._startMapping(done);
+                }
+            };
+
+            BaseOperation.call(this, 'MappingOperation', work, function () {
+                if (completion) completion(self.failed ? self._errors : null, self._obj, self._operations);
+            });
+
             this.mapping = mapping;
             this.data = data;
-            this.completion = completion;
             this._obj = null;
             this._errors = {};
             this._operations = [];
@@ -179,46 +267,32 @@ angular.module('restkit.mapping.operation', ['logging'])
             });
         }
 
-        MappingOperation.prototype = Object.create(Operation.prototype);
+        MappingOperation.prototype = Object.create(BaseOperation.prototype);
 
 
         /**
          * Check to see if all sub-ops have finished. Call the completion function if finished.
          */
-        MappingOperation.prototype.checkIfDone = function () {
+        MappingOperation.prototype.checkIfDone = function (done) {
             var self = this;
             var isFinished = this._operations.length == this._finished.length;
             if (isFinished) {
-                this.finish();
-                function finishUp() {
-                    if (self.completion) {
-                        var errors = self.failed ? self._errors : null;
-                        if (errors) {
-                            $log.trace('Operation failed', self);
-                        }
-                        else {
-                            $log.trace('Operation completed', self);
-                        }
-                        self.completion(errors, self._obj, self._operations);
-                    }
-                }
                 $log.info('Mapping operation finishing', {obj: this.obj ? this._obj._id : null});
-
                 if (this._obj) {
                     this._obj.save(function (err) {
                         if (err) {
                             self._errors.save = err;
                         }
-                        finishUp();
+                        done();
                     })
                 }
                 else {
-                    finishUp();
+                    done();
                 }
             }
         };
 
-        MappingOperation.prototype._mapArray = function (prop, arr) {
+        MappingOperation.prototype._mapArray = function (prop, arr, done) {
             $log.trace('_mapArray', {prop: prop, arr: arr, op: this});
             var self = this;
             var obj = this._obj;
@@ -264,13 +338,13 @@ angular.module('restkit.mapping.operation', ['logging'])
                                             $log.debug('Successfully set relationship');
                                         }
                                         self._finished.push(arrayOperations);
-                                        self.checkIfDone();
+                                        self.checkIfDone(done);
                                     })
                                 }
                                 else {
                                     self._errors[prop] = errors;
                                     self._finished.push(arrayOperations);
-                                    self.checkIfDone();
+                                    self.checkIfDone(done);
                                 }
                             }
                         });
@@ -287,7 +361,7 @@ angular.module('restkit.mapping.operation', ['logging'])
             this._obj[prop] = val;
         };
 
-        MappingOperation.prototype._mapRelationship = function (prop, val) {
+        MappingOperation.prototype._mapRelationship = function (prop, val, done) {
             $log.trace('_mapRelationship', {prop: prop, val: val, op: this});
             var self = this;
             var obj = this._obj;
@@ -304,7 +378,7 @@ angular.module('restkit.mapping.operation', ['logging'])
                 if (err) {
                     self._errors[prop] = err;
                     self._finished.push(subOperation);
-                    self.checkIfDone();
+                    self.checkIfDone(done);
                 }
                 else {
                     var proxy = self._obj[prop];
@@ -313,7 +387,7 @@ angular.module('restkit.mapping.operation', ['logging'])
                             self._errors[prop] = err;
                         }
                         self._finished.push(subOperation);
-                        self.checkIfDone();
+                        self.checkIfDone(done);
                     })
                 }
             });
@@ -333,21 +407,21 @@ angular.module('restkit.mapping.operation', ['logging'])
          * Kick off the mapping.
          * @private
          */
-        MappingOperation.prototype._startMapping = function () {
+        MappingOperation.prototype._startMapping = function (done) {
             $log.info('Mapping operation starting', {obj: this._obj._id});
             var data = this.data;
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
                     var val = data[prop];
                     if (Object.prototype.toString.call(val) == '[object Array]') {
-                        this._mapArray(prop, val);
+                        this._mapArray(prop, val, done);
                     }
                     else {
                         if (this._isAttribute(prop)) {
                             this._mapAttribute(prop, val);
                         }
                         else if (this._isRelationship(prop)) {
-                            this._mapRelationship(prop, val);
+                            this._mapRelationship(prop, val, done);
                         }
                         else {
                             $log.debug('No such property ' + prop.toString());
@@ -356,128 +430,55 @@ angular.module('restkit.mapping.operation', ['logging'])
                 }
             }
             // If no relationships etc, no sub-ops will be spawned.
-            this.checkIfDone();
-        };
-
-        /**
-         * Kick off the operation.
-         */
-        MappingOperation.prototype.start = function () {
-            Operation.prototype.start.call(this); // super call
-            var self = this;
-            var data = this.data;
-            var remoteIdentifier;
-            var idField;
-            if (!this._obj) {
-                if (data instanceof RestObject) {
-                    this._obj = data;
-                    this.checkIfDone();
-                }
-                else {
-                    var storeOpts = {};
-                    idField = this.mapping.id;
-                    if (typeof(data) == 'object') {
-                        remoteIdentifier = data[idField];
-                    }
-                    else {
-                        // Here we assume that the data given is a remote identifier.
-                        $log.trace('Assuming remote identifier');
-                        remoteIdentifier = data;
-                        this.data = {};
-                        this.data[idField] = data;
-                        data = this.data;
-                    }
-                    if (remoteIdentifier) {
-                        $log.debug('Can lookup via remote id');
-                        storeOpts[idField] = remoteIdentifier;
-                        storeOpts.mapping = this.mapping;
-                    }
-                    if (data._id) {
-                        $log.debug('Can lookup via _id');
-                        storeOpts._id = data._id;
-                    }
-                    if (remoteIdentifier || data._id) {
-                        $log.info('Checking store');
-                        Store.get(storeOpts, function (err, obj) {
-                            if (!err) {
-                                if (!obj) {
-                                    var newData = {};
-                                    if (remoteIdentifier && idField) {
-                                        newData[idField] = remoteIdentifier;
-                                    }
-                                    // Check the cache just in case we've been beaten to it by another mapping operation.
-                                    // The Store will go out to Pouch if it's not in the cache, giving other operations the
-                                    // chance to get here first and insert a new object into the store.
-                                    // TODO: Alternative would be to only allow one Store operation at a time.
-                                    var restObject = cache.get(storeOpts);
-                                    if (restObject) {
-                                        // The race condition occurred. Use the object created by the other mapping operation
-                                        // instead.
-                                        self._obj = restObject;
-                                        self._startMapping();
-                                    }
-                                    else {
-                                        restObject = self.mapping._new(newData);
-                                        restObject.save(function (err) {
-                                            if (err) {
-                                                self._errors = err;
-                                                self.checkIfDone();
-                                            }
-                                            else {
-                                                self._obj = restObject;
-                                                self._startMapping();
-                                            }
-                                        });
-                                    }
-                                }
-                                else {
-                                    self._obj = obj;
-                                    self._startMapping();
-                                }
-                            }
-                            else {
-                                self._errors = err;
-                                self.checkIfDone();
-                            }
-                        });
-                    }
-                    else {
-                        var restObject = self.mapping._new();
-                        restObject.save(function (err) {
-                            if (err) {
-                                self._errors = err;
-                                self.checkIfDone();
-                            }
-                            else {
-                                self._obj = restObject;
-                                self._startMapping();
-                            }
-                        });
-
-                    }
-
-                }
-            }
-            else {
-                self._startMapping();
-            }
+            this.checkIfDone(done);
         };
 
         return MappingOperation;
     })
 
-    .factory('BulkMappingOperation', function (MappingOperation, jlog, $rootScope, Operation) {
+    .factory('BulkMappingOperation', function (MappingOperation, jlog, $rootScope, BaseOperation) {
         var $log = jlog.loggerWithName('BulkMappingOperation');
 
         function BulkMappingOperation(mapping, data, completion) {
             if (!this) {
                 return new BulkMappingOperation(mapping, data, completion);
             }
-            Operation.call(this);
             var self = this;
+
+            var work = function (done) {
+                var data = self.data;
+                for (var i = 0; i < data.length; i++) {
+                    (function (idx) {
+                        var op = new MappingOperation(self.mapping, data[idx], function (err, obj) {
+                            if (err) {
+                                self._errors.push(err);
+                            }
+                            else {
+                                self._results[idx] = {err: err, obj: obj, raw: data[idx]};
+                            }
+                            self._finished.push(op);
+                            if (self._finished.length == self._operations.length) {
+                                if (self.failed) {
+                                    $log.trace('fail');
+                                }
+                                else {
+                                    $log.trace('success');
+                                }
+                                done();
+                            }
+                        });
+                        self._operations.push(op);
+                        op.start();
+                    })(i);
+                }
+            };
+
+            BaseOperation.call(this, 'Bulk Mapping Operation', work, function () {
+                completion(self.failed ? self._errors : null, _.pluck(self._results, 'obj'), self._results);
+            });
+
             this.mapping = mapping;
             this.data = data;
-            this.completion = completion;
             this._operations = [];
             this._results = [];
             this._errors = [];
@@ -491,41 +492,8 @@ angular.module('restkit.mapping.operation', ['logging'])
             });
         }
 
-        BulkMappingOperation.prototype = Object.create(Operation.prototype);
+        BulkMappingOperation.prototype = Object.create(BaseOperation.prototype);
 
-        BulkMappingOperation.prototype.start = function () {
-            Operation.prototype.start.call(this); // super clal
-            $log.trace('start');
-            var self = this;
-            var data = this.data;
-            for (var i = 0; i < data.length; i++) {
-                (function (idx) {
-                    var op = new MappingOperation(self.mapping, data[idx], function (err, obj) {
-                        if (err) {
-                            self._errors.push(err);
-                        }
-                        else {
-                            self._results[idx] = {err: err, obj: obj, raw: data[idx]};
-                        }
-                        self._finished.push(op);
-                        if (self._finished.length == self._operations.length) {
-                            this.finish();
-                            if (self.completion) {
-                                if (self.failed) {
-                                    $log.trace('fail');
-                                }
-                                else {
-                                    $log.trace('success');
-                                }
-                                self.completion(self.failed ? self._errors : null, _.pluck(self._results, 'obj'), self._results);
-                            }
-                        }
-                    });
-                    self._operations.push(op);
-                    op.start();
-                })(i);
-            }
-        };
 
         return BulkMappingOperation;
     })

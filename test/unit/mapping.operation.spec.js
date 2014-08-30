@@ -12,9 +12,9 @@ describe('operations', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (Pouch, _Operation_, _Collection_, _RelationshipType_) {
+        inject(function (Pouch, _BaseOperation_, _Collection_, _RelationshipType_) {
             Pouch.reset();
-            Operation = _Operation_;
+            Operation = _BaseOperation_;
             Collection = _Collection_;
             RelationshipType = _RelationshipType_;
         });
@@ -30,6 +30,7 @@ describe('operations', function () {
 
             describe('start', function () {
                 beforeEach(function () {
+                    op.work = function (done) {setTimeout(function () {done()}, 50)};
                     op.start();
                 });
                 it('should be one running operation', function () {
@@ -44,22 +45,26 @@ describe('operations', function () {
                     assert.ok(Operation.operationsAreRunning);
                 });
 
-                describe('finish', function () {
-                    beforeEach(function () {
-                        op.finish();
-                    });
 
-                    it('operation should no longer be running', function () {
-                        assert.notOk(op.running);
-                    });
+            });
 
-                    it('should no longer be any running operations', function () {
-                        assert.notOk(Operation.runningOperations.length);
-                    });
+            describe('finish', function () {
+                beforeEach(function (done) {
+                    op.work = function (done) {setTimeout(function () {done()}, 50)};
+                    op.completionCallback = done;
+                    op.start();
+                });
 
-                    it('operations should not be running', function () {
-                        assert.notOk(Operation.operationsAreRunning);
-                    });
+                it('operation should no longer be running', function () {
+                    assert.notOk(op.running);
+                });
+
+                it('should no longer be any running operations', function () {
+                    assert.notOk(Operation.runningOperations.length);
+                });
+
+                it('operations should not be running', function () {
+                    assert.notOk(Operation.operationsAreRunning);
                 });
             });
 
