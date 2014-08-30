@@ -336,8 +336,6 @@ describe('request descriptor', function () {
     });
 
     describe('errors', function () {
-
-
         it('no mapping', function () {
             assert.throws(function () {
                 new Descriptor({data: 'data'})
@@ -347,7 +345,6 @@ describe('request descriptor', function () {
 
     describe('RequestDescriptor', function () {
         describe('serialisation', function () {
-
             it('default', function () {
                 var requestDescriptor = new RequestDescriptor({
                     method: 'POST',
@@ -359,6 +356,7 @@ describe('request descriptor', function () {
 
             describe('built-in', function () {
                 var requestDescriptor;
+
                 describe('id', function () {
                     beforeEach(function () {
                         requestDescriptor = new RequestDescriptor({
@@ -408,6 +406,65 @@ describe('request descriptor', function () {
                             })
                         });
                     });
+                });
+
+                describe('transforms', function () {
+                    var requestDescriptor;
+
+                    it('key paths', function () {
+                        requestDescriptor = new RequestDescriptor({
+                            mapping: carMapping,
+                            transforms: {
+                                'colour': 'path.to.colour'
+                            }
+                        });
+                        var data = {colour: 'red'};
+                        requestDescriptor._transformData(data);
+                        assert.notOk(data.colour);
+                        assert.equal(data.path.to.colour, 'red');
+                    });
+
+                    it('key', function () {
+                        requestDescriptor = new RequestDescriptor({
+                            mapping: carMapping,
+                            transforms: {
+                                'colour': 'color'
+                            }
+                        });
+                        var data = {colour: 'red'};
+                        requestDescriptor._transformData(data);
+                        assert.notOk(data.colour);
+                        assert.equal(data.color, 'red');
+                    });
+
+                    describe('during serialisation', function () {
+                        beforeEach(function () {
+                            requestDescriptor = new RequestDescriptor({
+                                method: 'POST',
+                                mapping: carMapping,
+                                path: '/cars/(?<id>[0-9])/?',
+                                serialiser: Serialiser.depthSerializer(0),
+                                transforms: {
+                                    'colour': 'path.to.colour'
+                                }
+                            });
+                        });
+
+                        it('performs transform', function (done) {
+                            carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz', owner: {id: '123', name: 'Michael Ford'}}, function (err, car) {
+                                if (err) done(err);
+                                requestDescriptor._serialise(car, function (err, data) {
+                                    if (err) done(err);
+                                    assert.equal(data.owner, '123');
+                                    assert.equal(data.name, 'Aston Martin');
+                                    assert.notOk(data.colour);
+                                    assert.equal(data.path.to.colour, 'red');
+                                    done();
+                                });
+                            });
+                        });
+                    });
+
                 });
 
 

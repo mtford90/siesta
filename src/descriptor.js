@@ -368,10 +368,37 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
 
             defineSubProperty.call(this, 'serialiser', this._opts);
             defineSubProperty.call(this, 'serializer', this._opts, 'serialiser');
+            defineSubProperty.call(this, 'transforms', this._opts);
 
         }
 
         RequestDescriptor.prototype = Object.create(Descriptor.prototype);
+
+        RequestDescriptor.prototype._transformData = function (data) {
+            var transforms = this.transforms;
+            for (var attr in transforms) {
+                if (transforms.hasOwnProperty(attr)) {
+                    if (data[attr]) {
+                        var split = transforms[attr].split('.');
+                        var val = data[attr];
+                        delete data[attr];
+                        if (split.length == 1) {
+                            data[split[0]] = val;
+                        }
+                        else {
+                            data[split[0]] = {};
+                            var newVal = data[split[0]];
+                            for (var i=1;i<split.length-1;i++) {
+                                var newAttr = split[i];
+                                newVal[newAttr] = {};
+                                newVal = newVal[newAttr];
+                            }
+                            newVal[split[split.length-1]] = val;
+                        }
+                    }
+                }
+            }
+        };
 
         RequestDescriptor.prototype._serialise = function (obj, callback) {
             var self = this;
@@ -379,12 +406,14 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             var finished;
             var data = this.serialiser(obj, function (err, data) {
                 if (!finished) {
+                    self._transformData(data);
                     if (callback) callback(err, self._embedData(data));
                 }
             });
             if (data !== undefined) {
                 $log.trace('serialiser doesnt use a callback');
                 finished = true;
+                self._transformData(data);
                 if (callback) callback(null, self._embedData(data));
             }
             else {
