@@ -27,10 +27,10 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
         function getViaLocalId(localId) {
             var obj = idCache[localId];
             if (obj) {
-                $log.debug('Cache hit on _id "' + localId.toString() + '"');
+                $log.debug('Local cache hit: ' + obj._dump(true));
             }
             else {
-                $log.debug('Cache miss on _id "' + localId.toString() + '"');
+                $log.debug('Local cache miss: ' + localId);
             }
             return  obj;
         }
@@ -38,24 +38,21 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
         function getViaRemoteId(remoteId, opts) {
             var type = opts.mapping.type;
             var collection = opts.mapping.collection;
-            var desc = collection.toString() + ':' + type.toString() + '[' + opts.mapping.id + '="' + remoteId + '"]';
             var collectionCache = restCache[collection];
             if (collectionCache) {
                 var typeCache = restCache[collection][type];
                 if (typeCache) {
-                    $log.debug('Translated cache query:', {query: {collection: collection, type: type, remoteId: remoteId}, cached: typeCache});
                     var obj = typeCache[remoteId];
                     if (obj) {
-                        $log.debug('Cache hit on ' + desc);
+                        $log.debug('Remote cache hit: ' + obj._dump(true));
                     }
                     else {
-                        $log.debug('Cache miss on ' + desc);
-                        $log.debug('Current state of cache:', typeCache);
+                        $log.debug('Remote cache miss: ' + remoteId);
                     }
                     return  obj;
                 }
             }
-            $log.debug('Cache miss on ' + desc, {cache: collectionCache});
+            $log.debug('Remote cache miss: ' + remoteId);
             return null;
         }
 
@@ -71,14 +68,14 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                         if (!restCache[collection][type]) {
                             restCache[collection][type] = {};
                         }
-                        $log.debug('Translated cache insert:', {query: {collection: collection, type: type, remoteId: remoteId}, cache: restCache[collection][type]});
                         if (previousRemoteId) {
                             restCache[collection][type][previousRemoteId] = null;
                         }
                         var cachedObject = restCache[collection][type][remoteId];
                         if (!cachedObject) {
                             restCache[collection][type][remoteId] = obj;
-                            $log.debug('insert ' + obj.collection + ':' + obj.type + '[' + obj.mapping.id + '="' + remoteId + '"]', {cache: restCache[collection][type]});
+                            $log.debug('Remote cache insert: ' + obj._dump(true));
+                            $log.trace('Remote cache now looks like: ' + remoteDump(true))
                         }
                         else {
                             // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
@@ -90,7 +87,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                                 throw new RestError(message);
                             }
                             else {
-                                $log.debug('Object has already been inserted.', restCache[collection][type]);
+                                $log.debug('Object has already been inserted: ' + obj._dump(true));
                             }
 
                         }
@@ -109,6 +106,51 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
                 throw new RestError(msg);
             }
 
+        }
+
+        function remoteDump(asJson) {
+            var dumpedRestCache = {};
+            for (var coll in restCache) {
+                if (restCache.hasOwnProperty(coll)) {
+                    var dumpedCollCache = {};
+                    dumpedRestCache[coll] = dumpedCollCache;
+                    var collCache = restCache[coll];
+                    for (var mapping in collCache) {
+                        if (collCache.hasOwnProperty(mapping)) {
+                            var dumpedMappingCache = {};
+                            dumpedCollCache[mapping] = dumpedMappingCache;
+                            var mappingCache = collCache[mapping];
+                            for (var remoteId in mappingCache) {
+                                if (mappingCache.hasOwnProperty(remoteId)) {
+                                    if (mappingCache[remoteId]) {
+                                        dumpedMappingCache[remoteId] = mappingCache[remoteId]._dump();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return asJson ? JSON.stringify(dumpedRestCache, null, 4) : dumpedRestCache;
+
+        }
+
+        function localDump(asJson) {
+            var dumpedIdCache = {};
+            for (var id in idCache) {
+                if (idCache.hasOwnProperty(id)) {
+                    dumpedIdCache[id] = idCache[id]._dump()
+                }
+            }
+            return asJson ? JSON.stringify(dumpedIdCache, null, 4) : dumpedIdCache;
+        }
+
+        function dump (asJson) {
+            var dumped = {
+                idCache: localDump(),
+                restCache: remoteDump()
+            };
+            return asJson ? JSON.stringify(dumped, null, 4) : dumped;
         }
 
         return {
@@ -144,8 +186,9 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
             insert: function (obj) {
                 if (obj._id) {
                     if (!idCache[obj._id]) {
-                        $log.debug('Cache insert ' + obj.collection + ':' + obj.type + '[_id="' + obj._id + '"]');
+                        $log.debug('Local cache insert: ' + obj._dump(true));
                         idCache[obj._id] = obj;
+                        $log.trace('Local cache now looks like: ' + localDump(true));
                     }
                     else {
                         // Something has gone badly wrong here. Two objects should never exist with the same _id
@@ -168,41 +211,7 @@ angular.module('restkit.cache', ['restkit', 'restkit.object'])
             },
             remoteInsert: remoteInsert,
             reset: reset,
-            _dump: function (asJson) {
-                var dumpedIdCache = {};
-                var dumpedRestCache = {};
-                for (var id in idCache) {
-                    if (idCache.hasOwnProperty(id)) {
-                        dumpedIdCache[id] = idCache[id]._dump()
-                    }
-                }
-                for (var coll in restCache) {
-                    if (restCache.hasOwnProperty(coll)) {
-                        var dumpedCollCache = {};
-                        dumpedRestCache[coll] = dumpedCollCache;
-                        var collCache = restCache[coll];
-                        for (var mapping in collCache) {
-                            if (collCache.hasOwnProperty(mapping)) {
-                                var dumpedMappingCache = {};
-                                dumpedCollCache[mapping] = dumpedMappingCache;
-                                var mappingCache = collCache[mapping];
-                                for (var remoteId in mappingCache) {
-                                    if (mappingCache.hasOwnProperty(remoteId)) {
-                                        if (mappingCache[remoteId]) {
-                                            dumpedMappingCache[remoteId] = mappingCache[remoteId]._dump();
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                var dumped = {
-                    idCache: dumpedIdCache,
-                    restCache: dumpedRestCache
-                };
-                return asJson ? JSON.stringify(dumped, null, 4) : dumped;
-            }
+            _dump: dump
         }
     })
 

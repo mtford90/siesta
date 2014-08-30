@@ -1,8 +1,10 @@
-describe('cache', function () {
+describe.only('cache!!!!!', function () {
 
     var Collection, cache, RestObject, Mapping, $rootScope, RestError;
 
     var mapping;
+
+
 
     beforeEach(function (done) {
         module('restkit.cache', function ($provide) {
@@ -54,9 +56,6 @@ describe('cache', function () {
             cache.insert(r);
 
             var restCache = cache._restCache();
-            console.log('restCache:', restCache);
-            console.log('type:', r.type);
-            console.log('collection:', r.collection);
             assert.equal(r, restCache[r.collection][r.type][r.id]);
         });
 
@@ -67,34 +66,8 @@ describe('cache', function () {
             r.customId = 'dsfsd';
             cache.insert(r);
             var restCache = cache._restCache();
-            console.log('restCache:', restCache);
-            console.log('type:', r.type);
-            console.log('collection:', r.collection);
             assert.equal(r, restCache[r.collection][r.type][r.customId]);
         });
-
-//        describe('remote id set after insertion', function () {
-//            it('never had a remote id', function () {
-//                var r = mapping._new();
-//                r._id = 'xyz123';
-//                cache.insert(r);
-//                r.id = '5678';
-//                var restCache = cache._restCache();
-//                $rootScope.$digest();
-//                assert.equal(restCache[r.collection][r.type][r.id], r);
-//            });
-//            it('changed remote id', function () {
-//                var r = mapping._new();
-//                r._id = 'xyz123';
-//                r.id = '5678';
-//                cache.insert(r);
-//                r.id = '1000';
-//                var restCache = cache._restCache();
-//                $rootScope.$digest();
-//                assert.equal(restCache[r.collection][r.type][r.id], r);
-//                assert.notOk(restCache[r.collection][r.type]['5678']);
-//            });
-//        })
 
     });
 

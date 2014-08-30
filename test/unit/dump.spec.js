@@ -1,4 +1,4 @@
-describe.only('dump', function () {
+describe('dump', function () {
 
     var Operation, Collection, RelationshipType, Index, Query, RawQuery, RequestDescriptor, ResponseDescriptor, Serialiser, cache;
     var collection, carMapping, personMapping;
