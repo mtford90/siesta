@@ -437,6 +437,57 @@ describe('request descriptor', function () {
                         assert.equal(data.color, 'red');
                     });
 
+                    it('function with return val', function () {
+                        requestDescriptor = new RequestDescriptor({
+                            mapping: carMapping,
+                            transforms: {
+                                'colour': function (val) {
+                                    var newVal = val;
+                                    if (val == 'red') {
+                                        newVal = 'blue';
+                                    }
+                                    return newVal;
+                                }
+                            }
+                        });
+                        var data = {colour: 'red'};
+                        requestDescriptor._transformData(data);
+                        assert.equal(data.colour, 'blue');
+                    });
+
+                    it('function with return val and key', function () {
+                        requestDescriptor = new RequestDescriptor({
+                            mapping: carMapping,
+                            transforms: {
+                                'colour': function (val) {
+                                    var newVal = val;
+                                    if (val == 'red') {
+                                        newVal = 'blue';
+                                    }
+                                    return ['color', newVal];
+                                }
+                            }
+                        });
+                        var data = {colour: 'red'};
+                        requestDescriptor._transformData(data);
+                        assert.notOk(data.colour);
+                        assert.equal(data.color, 'blue');
+                    });
+
+                    it('invalid', function () {
+                        requestDescriptor = new RequestDescriptor({
+                            mapping: carMapping,
+                            transforms: {
+                                'colour': {wtf: {is: 'this'}}
+                            }
+                        });
+                        var data = {colour: 'red'};
+                        assert.throws(function () {
+                            requestDescriptor._transformData(data);
+
+                        }, RestError);
+                    });
+
                     describe('during serialisation', function () {
                         beforeEach(function () {
                             requestDescriptor = new RequestDescriptor({

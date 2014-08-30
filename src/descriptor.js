@@ -345,7 +345,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         return Descriptor;
     })
 
-    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser) {
+    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser, RestError) {
 
         var $log = jlog.loggerWithName('RequestDescriptor');
 
@@ -379,21 +379,37 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             for (var attr in transforms) {
                 if (transforms.hasOwnProperty(attr)) {
                     if (data[attr]) {
-                        var split = transforms[attr].split('.');
+                        var transform = transforms[attr];
                         var val = data[attr];
-                        delete data[attr];
-                        if (split.length == 1) {
-                            data[split[0]] = val;
+                        if (typeof(transform) == 'string') {
+                            var split = transform.split('.');
+                            delete data[attr];
+                            if (split.length == 1) {
+                                data[split[0]] = val;
+                            }
+                            else {
+                                data[split[0]] = {};
+                                var newVal = data[split[0]];
+                                for (var i=1;i<split.length-1;i++) {
+                                    var newAttr = split[i];
+                                    newVal[newAttr] = {};
+                                    newVal = newVal[newAttr];
+                                }
+                                newVal[split[split.length-1]] = val;
+                            }
+                        }
+                        else if (typeof(transform) == 'function') {
+                            var transformed = transform(val);
+                            if (Object.prototype.toString.call(transformed) === '[object Array]') {
+                                delete data[attr];
+                                data[transformed[0]] = transformed[1];
+                            }
+                            else {
+                                data[attr] = transformed;
+                            }
                         }
                         else {
-                            data[split[0]] = {};
-                            var newVal = data[split[0]];
-                            for (var i=1;i<split.length-1;i++) {
-                                var newAttr = split[i];
-                                newVal[newAttr] = {};
-                                newVal = newVal[newAttr];
-                            }
-                            newVal[split[split.length-1]] = val;
+                            throw new RestError('Invalid transformer');
                         }
                     }
                 }
