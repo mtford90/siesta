@@ -28,13 +28,12 @@ describe('mapping queries', function () {
     describe('queries', function () {
         var collection, mapping;
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err) {
-                if (err) done(err);
-                mapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['color', 'name']
-                });
-            }, function (err) {
+            collection = new Collection('myCollection');
+            mapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['color', 'name']
+            });
+            collection.install(function (err) {
                 if (err) done(err);
                 Pouch.getPouch().bulkDocs([
                     {
@@ -55,6 +54,8 @@ describe('mapping queries', function () {
                     done(err);
                 });
             });
+
+
         });
 
         it('all', function (done) {

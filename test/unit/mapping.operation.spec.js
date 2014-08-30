@@ -72,26 +72,26 @@ describe('operations', function () {
         var carMapping, personMapping, collection;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: RelationshipType.ForeignKey,
-                            reverse: 'cars'
-                        }
+            collection = new Collection('myCollection');
+
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
                     }
-                });
-                personMapping = collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age']
-                });
-            }, function (err) {
-                done(err);
+                }
             });
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+
+            collection.install(done);
+
         });
 
 
@@ -106,8 +106,8 @@ describe('operations', function () {
 
         it('bulk', function (done) {
             var op = carMapping.map([
-                {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner:'ownerId'},
-                {colour: 'blue', name: 'chevy', id: 'remoteId2', owner:'ownerId'}
+                {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: 'ownerId'},
+                {colour: 'blue', name: 'chevy', id: 'remoteId2', owner: 'ownerId'}
             ], function (err, obj) {
                 if (err) done(err);
                 assert.notOk(op.running);

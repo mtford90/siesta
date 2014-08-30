@@ -36,13 +36,10 @@ describe('indexes', function () {
             }
 
             var rawMap = i._constructMapFunction();
-            console.log('rawMap', rawMap);
             eval('var mapFunc = ' + rawMap);
             mapFunc({type: 'Car', colour: 'red', name: 'Aston Martin', collection:'myCollection'});
-            console.log('emissions:', emissions);
             assert.equal(1, emissions.length);
             var emission = emissions[0];
-            console.log('emission:', emission);
             assert.equal(emission.id, 'red_Aston Martin')
         });
 

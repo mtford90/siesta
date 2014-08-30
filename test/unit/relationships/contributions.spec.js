@@ -29,23 +29,21 @@ describe('relationship contributions', function () {
 
         Collection._reset();
 
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-            dogMapping = collection.mapping('Dog', {
-                id: 'id',
-                attributes: ['name', 'age', 'breed']
-            });
-        }, function (err) {
-            done(err);
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
         });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        dogMapping = collection.mapping('Dog', {
+            id: 'id',
+            attributes: ['name', 'age', 'breed']
+        });
+        collection.install(done);
+
     });
 
     it('should contribute to an object belonging to the forward mapping', function () {

@@ -25,15 +25,13 @@ describe('pouch doc adapter', function () {
         describe('new', function () {
             var collection;
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function () {
-                    collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age'],
-                        indexes: ['name', 'age']
-                    });
-                }, function () {
-                    done();
+                collection = new Collection('myCollection');
+                collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age'],
+                    indexes: ['name', 'age']
                 });
+                collection.install(done);
             });
 
             it('absorbs properties', function () {
@@ -52,16 +50,12 @@ describe('pouch doc adapter', function () {
             var collection;
 
             beforeEach(function (done) {
-                collection = new Collection('MyOnlineCollection', function () {
-
-                    collection.mapping('Person', {
-                        id: 'photoId',
-                        attributes: ['height', 'width', 'url']
-                    });
-
-                }, function (err) {
-                    done(err);
+                collection = new Collection('MyOnlineCollection');
+                collection.mapping('Person', {
+                    id: 'photoId',
+                    attributes: ['height', 'width', 'url']
                 });
+                collection.install(done);
             });
 
             it('existing', function (done) {
@@ -103,7 +97,9 @@ describe('pouch doc adapter', function () {
             });
 
             it('No type field', function (done) {
-                new Collection('myCollection', null, function () {
+                var collection = new Collection('myCollection');
+                collection.install(function (err) {
+                    if (err) done(err);
                     assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {collection: 'myCollection'}), RestError);
                     done();
                 });
@@ -114,20 +110,23 @@ describe('pouch doc adapter', function () {
             });
 
             it('non existent type', function (done) {
-                new Collection('myCollection', null, function () {
+                var collection = new Collection('myCollection');
+                collection.install(function (err) {
+                    if (err) done(err);
                     assert.throw(_.bind(PouchDocAdapter._validate, PouchDocAdapter, {collection: 'myCollection', type: 'Car'}), RestError);
                     done();
                 });
             });
 
             it('valid', function (done) {
-                var collection = new Collection('myCollection', function () {
-                    collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age'],
-                        indexes: ['name', 'age']
-                    });
-                }, function () {
+                var collection = new Collection('myCollection');
+                collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age'],
+                    indexes: ['name', 'age']
+                });
+                collection.install(function (err) {
+                    if (err) done(err);
                     var mapping = PouchDocAdapter._validate({name: 'Michael', type: 'Person', collection: 'myCollection', age: 23});
                     console.log('mapping:', mapping);
                     assert.ok(mapping);
@@ -143,26 +142,24 @@ describe('pouch doc adapter', function () {
         var collection, personMapping, carMapping;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function () {
-                personMapping = collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age'],
-                    indexes: ['name', 'age']
-                });
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['name', 'colour'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: RelationshipType.ForeignKey,
-                            reverse: 'cars'
-                        }
-                    }
-                });
-            }, function (err) {
-                done(err)
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age'],
+                indexes: ['name', 'age']
             });
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['name', 'colour'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
+                    }
+                }
+            });
+            collection.install(done);
         });
 
         it('should convert objects with no relationships successfully', function (done) {

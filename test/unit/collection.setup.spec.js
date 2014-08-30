@@ -27,7 +27,7 @@ describe('collection setup', function () {
         Pouch.reset();
     });
 
-    describe('configure using configure function', function () {
+    describe('install', function () {
         var collection;
         beforeEach(function (done) {
             collection = new Collection('MyCollection');
@@ -38,29 +38,53 @@ describe('collection setup', function () {
             assert.notOk(collection.installed);
         });
 
-        describe('configure', function () {
-
+        describe('configure without mappings', function () {
             it('eventually finishes', function (done) {
                 collection.install(function (err) {
                     if (err) done(err);
+                    done();
                 });
             });
 
             it('raises an error if trying to configure twice', function (done) {
-                collection.configure(function (err) {
+                collection.install(function (err) {
                     if (err) done(err);
-                    collection.configure(function (err) {
+                    collection.install(function (err) {
                         assert.ok(err);
                         done();
                     })
                 });
             });
-
         });
-    });
 
-    describe('attempts to configure without using the configure callback', function () {
-        // TODO
-    })
+        describe('configure with mappings', function () {
+            it('eventually finishes', function (done) {
+                collection.mapping('mapping1', {
+                    id: 'id',
+                    attributes: ['attr1', 'attr2']
+                });
+                collection.mapping('mapping2', {
+                    id: 'id',
+                    attributes: ['attr1', 'attr2', 'attr3']
+                });
+                collection.install(function (err) {
+                    if (err) done(err);
+                    done();
+                });
+            });
+
+            it('raises an error if trying to configure twice', function (done) {
+                collection.install(function (err) {
+                    if (err) done(err);
+                    collection.install(function (err) {
+                        assert.ok(err);
+                        done();
+                    })
+                });
+            });
+        });
+
+
+    });
 
 });

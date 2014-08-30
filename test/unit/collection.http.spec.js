@@ -34,39 +34,36 @@ describe('http!', function () {
 
     });
 
-    function configureCollection(configureDescriptors, callback) {
-        var configuration = function (err, version) {
-            if (err) callback(err);
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name'],
-                relationships: {
-                    owner: {
-                        mapping: 'Person',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'cars'
-                    }
+    function configureCollection(callback) {
+        collection = new Collection('myCollection');
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name'],
+            relationships: {
+                owner: {
+                    mapping: 'Person',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'cars'
                 }
-            });
-            vitalSignsMapping = collection.mapping('VitalSigns', {
-                id: 'id',
-                attributes: ['heartRate', 'bloodPressure'],
-                relationships: {
-                    owner: {
-                        mapping: 'Person',
-                        type: RelationshipType.OneToOne,
-                        reverse: 'vitalSigns'
-                    }
+            }
+        });
+        vitalSignsMapping = collection.mapping('VitalSigns', {
+            id: 'id',
+            attributes: ['heartRate', 'bloodPressure'],
+            relationships: {
+                owner: {
+                    mapping: 'Person',
+                    type: RelationshipType.OneToOne,
+                    reverse: 'vitalSigns'
                 }
-            });
-            collection.baseURL = 'http://mywebsite.co.uk/';
-            configureDescriptors();
-        };
-        collection = new Collection('myCollection', configuration, callback);
+            }
+        });
+        collection.baseURL = 'http://mywebsite.co.uk/';
+        collection.install(callback);
     }
 
     afterEach(function () {
@@ -81,19 +78,18 @@ describe('http!', function () {
         describe('check', function () {
 
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-                    DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
-                        method: 'GET',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/(?<colour>[a-zA-Z0-9]+)/?'
-                    }));
-                    DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
-                        method: 'GET',
-                        mapping: carMapping,
-                        path: '/cars/(?<colour>[a-zA-Z0-9]+)/?'
-                    }));
-                };
-                configureCollection(configureDescriptors, done);
+
+                configureCollection(done);
+                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                    method: 'GET',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/(?<colour>[a-zA-Z0-9]+)/?'
+                }));
+                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                    method: 'GET',
+                    mapping: carMapping,
+                    path: '/cars/(?<colour>[a-zA-Z0-9]+)/?'
+                }));
             });
 
             describe('singular', function () {
@@ -167,14 +163,13 @@ describe('http!', function () {
         describe('GET', function () {
 
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-                    DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
-                        method: 'GET',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
-                    }));
-                };
-                configureCollection(configureDescriptors, done);
+
+                configureCollection(done);
+                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                    method: 'GET',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                }));
             });
 
             describe('success', function () {
@@ -266,23 +261,19 @@ describe('http!', function () {
         describe('POST', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-                    var responseDescriptor = new ResponseDescriptor({
-                        method: 'POST',
-                        mapping: carMapping,
-                        path: 'cars/?'
-                    });
-                    DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                    var requestDescriptor = new RequestDescriptor({
-                        method: 'POST',
-                        mapping: carMapping,
-                        path: 'cars/?'
-                    });
-                    DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                };
-                configureCollection(configureDescriptors, function () {
-                    done();
+                configureCollection(done);
+                var responseDescriptor = new ResponseDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: 'cars/?'
                 });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'POST',
+                    mapping: carMapping,
+                    path: 'cars/?'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {
@@ -326,23 +317,19 @@ describe('http!', function () {
         describe('PUT', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-                    var responseDescriptor = new ResponseDescriptor({
-                        method: 'PUT',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
-                    });
-                    DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                    var requestDescriptor = new RequestDescriptor({
-                        method: 'PUT',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
-                    });
-                    DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                };
-                configureCollection(configureDescriptors, function () {
-                    done();
+                configureCollection(done);
+                var responseDescriptor = new ResponseDescriptor({
+                    method: 'PUT',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
                 });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'PUT',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {
@@ -387,23 +374,19 @@ describe('http!', function () {
         describe('PATCH', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-                    var responseDescriptor = new ResponseDescriptor({
-                        method: 'PATCH',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
-                    });
-                    DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                    var requestDescriptor = new RequestDescriptor({
-                        method: 'PATCH',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
-                    });
-                    DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                };
-                configureCollection(configureDescriptors, function () {
-                    done();
+                var responseDescriptor = new ResponseDescriptor({
+                    method: 'PATCH',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
                 });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'PATCH',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                configureCollection(done);
             });
 
             describe('success', function () {
@@ -448,12 +431,7 @@ describe('http!', function () {
         describe('OPTIONS', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-
-                };
-                configureCollection(configureDescriptors, function () {
-                    done();
-                });
+                configureCollection(done);
             });
 
             describe('success', function () {
@@ -487,12 +465,7 @@ describe('http!', function () {
         describe('HEAD', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-
-                };
-                configureCollection(configureDescriptors, function () {
-                    done();
-                });
+                configureCollection(done);
             });
 
             describe('success', function () {
@@ -529,23 +502,19 @@ describe('http!', function () {
         describe('TRACE', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var configureDescriptors = function () {
-                    var responseDescriptor = new ResponseDescriptor({
-                        method: 'TRACE',
-                        mapping: carMapping,
-                        path: 'cars/'
-                    });
-                    DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                    var requestDescriptor = new RequestDescriptor({
-                        method: 'TRACE',
-                        mapping: carMapping,
-                        path: 'cars/'
-                    });
-                    DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                };
-                configureCollection(configureDescriptors, function () {
-                    done();
+                configureCollection(done);
+                var responseDescriptor = new ResponseDescriptor({
+                    method: 'TRACE',
+                    mapping: carMapping,
+                    path: 'cars/'
                 });
+                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new RequestDescriptor({
+                    method: 'TRACE',
+                    mapping: carMapping,
+                    path: 'cars/'
+                });
+                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {

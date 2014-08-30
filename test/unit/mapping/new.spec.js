@@ -29,15 +29,12 @@ describe('mapping new object', function () {
         var collection, carMapping;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name']
-                });
-            }, function () {
-                done();
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
             });
+            collection.install(done);
         });
 
         it('valid', function () {
@@ -89,27 +86,23 @@ describe('mapping new object', function () {
         var collection, carMapping, personMapping;
 
         function configureAPI(type, reverseName, done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: type,
-                            reverse: reverseName
-                        }
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: type,
+                        reverse: reverseName
                     }
-                });
-                personMapping = collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['age', 'name']
-                });
-            }, function () {
-                done();
+                }
             });
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['age', 'name']
+            });
+            collection.install(done);
         }
 
         beforeEach(function (done) {
@@ -129,8 +122,6 @@ describe('mapping new object', function () {
             });
 
         });
-
-
 
     });
 

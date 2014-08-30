@@ -1,4 +1,4 @@
-angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.descriptor'])
+angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.mapping.operation', 'restkit.descriptor'])
 
     .factory('CollectionRegistry', function (jlog) {
         var $log = jlog.loggerWithName('CollectionRegistry');
@@ -14,7 +14,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
     })
 
 
-    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry, $q) {
+    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry, $q, CompositeOperation, BaseOperation) {
 
         var $log = jlog.loggerWithName('Collection');
 
@@ -48,7 +48,9 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
          * @param callback
          */
         Collection.prototype.install = function (callback) {
+            var self = this;
             if (!this.installed) {
+                CollectionRegistry.register(self);
                 var mappingsToInstall = [];
                 for (var name in this._mappings) {
                     if (this._mappings.hasOwnProperty(name)) {
@@ -57,6 +59,63 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
                     }
                 }
                 $log.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
+                if (mappingsToInstall.length) {
+                    var operations = _.map(mappingsToInstall, function (m) {
+                        return new BaseOperation('Install Mapping', _.bind(m.install, m));
+                    });
+                    var op = new CompositeOperation('Install Mappings');
+                    op.operations = operations;
+                    op.completionCallback = function () {
+                        if (op.failed) {
+                            callback(op.error);
+                        }
+                        else {
+                            self.installed = true;
+                            var errors = [];
+                            _.each(mappingsToInstall, function (m) {
+                                $log.info('Installing relationships for mapping with name "' + m.type + '"');
+                                try {
+                                    m.installRelationships();
+                                }
+                                catch (err) {
+                                    if (err instanceof RestError) {
+                                        errors.push(err);
+                                    }
+                                    else {
+                                        throw err;
+                                    }
+                                }
+                            });
+                            _.each(mappingsToInstall, function (m) {
+                                $log.info('Installing reverse relationships for mapping with name "' + m.type + '"');
+                                try {
+                                    m.installReverseRelationships();
+                                }
+                                catch (err) {
+                                    if (err instanceof RestError) {
+                                        errors.push(err);
+                                    }
+                                    else {
+                                        throw err;
+                                    }
+                                }
+                            });
+                            var err;
+                            if (errors.length == 1) {
+                                 err = errors[0];
+                            }
+                            else if (errors.length) {
+                                err = errors;
+                            }
+                            callback(err);
+                        }
+                    };
+                    op.start();
+                }
+                else {
+                    self.installed = true;
+                    callback();
+                }
             }
             else {
                 if (callback) callback(new RestError('Collection "' + this._name + '" has already been installed'));
@@ -115,7 +174,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         Collection._getPouch = Pouch.getPouch;
 
         /*
-        Registration
+         Registration
          */
         Collection.prototype.mapping = function (name, mapping) {
             this._rawMappings[name] = mapping;
@@ -129,7 +188,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.des
         };
 
         /*
-        HTTP Requests
+         HTTP Requests
          */
         Collection.prototype._httpResponse = function (method, path) {
             $log.trace('_httpResponse', this);

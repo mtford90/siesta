@@ -26,7 +26,6 @@ angular.module('restkit.store', ['restkit', 'restkit.cache', 'restkit.pouchDocAd
                         }
                         else {
                             Pouch.getPouch().get(opts._id).then(function (doc) {
-                                dump(0);
                                 var docs = PouchDocAdapter.toFount([doc]);
                                 if (callback) callback(null, docs.length ? docs[0] : null);
                             }, wrappedCallback(callback));

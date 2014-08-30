@@ -66,12 +66,18 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
         Mapping.prototype._markCollectionAsDirtyIfNeccessary = function () {
             var collection = CollectionRegistry[this.collection];
-            if (this.__dirtyObjects.length) {
-                collection._markMappingAsDirty(this);
+            if (collection) {
+                if (this.__dirtyObjects.length) {
+                    collection._markMappingAsDirty(this);
+                }
+                else {
+                    collection._unmarkMappingAsDirty(this);
+                }
             }
             else {
-                collection._unmarkMappingAsDirty(this);
+                throw new RestError('Collection "' + this.collection + '" does not exist.');
             }
+
         };
 
         Mapping.prototype.installRelationships = function () {
@@ -126,9 +132,11 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
         Mapping.prototype.installReverseRelationships = function () {
             _.each(this.relationships, function (r) {
                 var reverseMapping = r.reverseMapping;
+                $log.debug('Configuring reverse relationship "' + r.reverseName + '" on ' + reverseMapping.type);
                 if (reverseMapping.relationships.indexOf(r) < 0) {
                     reverseMapping.relationships.push(r);
                 }
+                $log.debug(reverseMapping.type + ' now has relationships:', reverseMapping.relationships);
             });
         };
 

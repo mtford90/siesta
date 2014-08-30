@@ -28,42 +28,39 @@ describe('relationship proxy', function () {
 
         Collection._reset();
 
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-        }, function (err) {
-            done(err);
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
         });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        collection.install(done);
+
     });
 
     function configureAPI(type, reverseName, done) {
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name'],
-                relationships: {
-                    owner: {
-                        mapping: 'Person',
-                        type: type,
-                        reverse: reverseName
-                    }
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name'],
+            relationships: {
+                owner: {
+                    mapping: 'Person',
+                    type: type,
+                    reverse: reverseName
                 }
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-        }, function (err) {
-            done(err);
+            }
         });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        collection.install(done);
+
+
     }
 
 

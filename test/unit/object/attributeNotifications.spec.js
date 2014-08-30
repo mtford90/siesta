@@ -37,13 +37,12 @@ describe('notifications', function () {
 
             beforeEach(function (done) {
                 notif = null;
-                collection = new Collection('myCollection', function (err) {
-                    if (err) done(err);
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name']
-                    });
-                }, function (err) {
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                collection.install(function (err) {
                     if (err) done(err);
                     carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
@@ -69,7 +68,6 @@ describe('notifications', function () {
                         car.colour = 'blue';
                         $rootScope.$digest();
                     });
-
                 });
 
             });
@@ -111,16 +109,12 @@ describe('notifications', function () {
 
         describe('array notifications', function () {
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err) {
-                    if (err) done(err);
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colours', 'name']
-                    });
-                }, function (err) {
-                    done(err);
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colours', 'name']
                 });
-
+                collection.install(done);
             });
 
             describe('push', function () {
@@ -130,7 +124,6 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            console.log('notif', notif);
                             done();
                         });
                         console.log('colours', car.colours);
@@ -183,7 +176,7 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            console.log('notif', notif);
+
                             done();
                         });
                         console.log('colours', car.colours);
@@ -236,7 +229,7 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            console.log('notif', notif);
+
                             done();
                         });
                         console.log('colours', car.colours);
@@ -291,7 +284,6 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
-                                console.log('notif', notif);
                                 done();
                             });
                             console.log('colours', car.colours);
@@ -345,7 +337,7 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            console.log('notif', notif);
+
                             done();
                         });
                         car.colours.sort();
@@ -395,7 +387,7 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            console.log('notif', notif);
+
                             done();
                         });
                         car.colours.reverse();
@@ -445,7 +437,7 @@ describe('notifications', function () {
                         if (err) done(err);
                         $rootScope.$on('myCollection:Car', function (e, n) {
                             notif = n;
-                            console.log('notif', notif);
+
                             done();
                         });
                         car.colours.setObjectAtIndex('purple', 1);
@@ -502,7 +494,7 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
-                                console.log('notif', notif);
+
                                 done();
                             });
                             car.colours.splice(1, 0, 'purple');
@@ -551,7 +543,7 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
-                                console.log('notif', notif);
+
                                 done();
                             });
                             car.colours.splice(1, 1, 'purple');
@@ -606,7 +598,7 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
-                                console.log('notif', notif);
+
                                 done();
                             });
                             car.colours.splice(1, 2);
@@ -654,7 +646,7 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
-                                console.log('notif', notif);
+
                                 done();
                             });
                             car.colours.splice(1, 2, 'purple');
@@ -717,7 +709,7 @@ describe('notifications', function () {
                             if (err) done(err);
                             $rootScope.$on('myCollection:Car', function (e, n) {
                                 notif = n;
-                                console.log('notif', notif);
+
                                 done();
                             });
                             car.colours.splice(1, 2, 'purple', 'yellow', 'indigo');

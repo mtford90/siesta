@@ -156,7 +156,7 @@ describe('operations!!!', function () {
 
     });
 
-    describe.only('CompositeOperation', function () {
+    describe('CompositeOperation', function () {
         var op;
 
         beforeEach(function () {

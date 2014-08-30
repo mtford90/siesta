@@ -30,46 +30,45 @@ describe('intercollection relationships', function () {
 
         var finishedCreatingMyOfflineCollection = false;
 
-        myOfflineCollection = new Collection('MyOfflineCollection', function () {
-
-            myOfflineCollection.mapping('Folder', {
-                attributes: ['name'],
-                relationships: {
-                    createdBy: {
-                        mapping: 'User',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'folders'
-                    }
+        myOfflineCollection = new Collection('MyOfflineCollection');
+        myOfflineCollection.mapping('Folder', {
+            attributes: ['name'],
+            relationships: {
+                createdBy: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'folders'
                 }
-            });
+            }
+        });
 
-            myOfflineCollection.mapping('DownloadedPhoto', {
-                attributes: ['creationDate'],
-                relationships: {
-                    createdBy: {
-                        mapping: 'User',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'files'
-                    },
-                    folder: {
-                        mapping: 'Folder',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'files'
-                    },
-                    photo: {
-                        mapping: 'MyOnlineCollection.Photo',
-                        type: RelationshipType.OneToOne,
-                        reverse: 'file'
-                    }
+        myOfflineCollection.mapping('DownloadedPhoto', {
+            attributes: ['creationDate'],
+            relationships: {
+                createdBy: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'files'
+                },
+                folder: {
+                    mapping: 'Folder',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'files'
+                },
+                photo: {
+                    mapping: 'MyOnlineCollection.Photo',
+                    type: RelationshipType.OneToOne,
+                    reverse: 'file'
                 }
-            });
+            }
+        });
 
-            myOfflineCollection.mapping('User', {
-                attributes: ['username'],
-                indexes: ['username']
-            });
+        myOfflineCollection.mapping('User', {
+            attributes: ['username'],
+            indexes: ['username']
+        });
 
-        }, function (err) {
+        myOfflineCollection.install(function (err) {
             if (err) done(err);
             finishedCreatingMyOfflineCollection = true;
             if (finishedCreatingMyOnlineCollection) {
@@ -79,26 +78,26 @@ describe('intercollection relationships', function () {
 
         var finishedCreatingMyOnlineCollection = false;
 
-        myOnlineCollection = new Collection('MyOnlineCollection', function () {
+        myOnlineCollection = new Collection('MyOnlineCollection');
 
-            myOnlineCollection.mapping('Photo', {
-                id: 'photoId',
-                attributes: ['height', 'width', 'url'],
-                relationships: {
-                    createdBy: {
-                        mapping: 'User',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'photos'
-                    }
+        myOnlineCollection.mapping('Photo', {
+            id: 'photoId',
+            attributes: ['height', 'width', 'url'],
+            relationships: {
+                createdBy: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'photos'
                 }
-            });
+            }
+        });
 
-            myOnlineCollection.mapping('User', {
-                id: 'userId',
-                attributes: ['username', 'name']
-            });
+        myOnlineCollection.mapping('User', {
+            id: 'userId',
+            attributes: ['username', 'name']
+        });
 
-        }, function (err) {
+        myOnlineCollection.install(function (err) {
             if (err) done(err);
             if (finishedCreatingMyOfflineCollection) {
                 done();

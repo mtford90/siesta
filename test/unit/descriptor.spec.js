@@ -21,28 +21,25 @@ describe('request descriptor', function () {
             RelationshipType = _RelationshipType_;
         });
 
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name'],
-                relationships: {
-                    owner: {
-                        mapping: 'Person',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'cars'
-                    }
-                }
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name']
-            })
-        }, function () {
-            done();
-        });
-
         Collection._reset();
+
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name'],
+            relationships: {
+                owner: {
+                    mapping: 'Person',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'cars'
+                }
+            }
+        });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name']
+        });
+        collection.install(done);
     });
 
     describe('matching', function () {

@@ -1,6 +1,6 @@
 describe('mapping relationships', function () {
 
-    var Pouch,  RestObject, Collection, RestError, RelationshipType;
+    var Pouch, RestObject, Collection, RestError, RelationshipType;
 
     beforeEach(function () {
         module('restkit.mapping', function ($provide) {
@@ -28,27 +28,23 @@ describe('mapping relationships', function () {
         var collection, carMapping, personMapping;
 
         function configureAPI(type, done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: type,
-                            reverse: 'cars'
-                        }
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: type,
+                        reverse: 'cars'
                     }
-                });
-                personMapping = collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age']
-                });
-            }, function (err) {
-                console.log('myCollection installed');
-                done(err);
+                }
             });
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
         }
 
         describe('Foreign Key', function () {
@@ -161,26 +157,28 @@ describe('mapping relationships', function () {
 
             describe('foreign key', function () {
                 beforeEach(function (done) {
-                    anotherCollection = new Collection('anotherCollection', function (err, version) {
-                        if (err) done(err);
-                        anotherCollection.mapping('AnotherMapping', {
-                            attributes: ['field'],
-                            relationships: {
-                                person: {
-                                    mapping: 'myCollection.Person',
-                                    type: RelationshipType.ForeignKey,
-                                    reverse: 'other'
-                                }
+                    anotherCollection = new Collection('anotherCollection');
+
+                    anotherCollection.mapping('AnotherMapping', {
+                        attributes: ['field'],
+                        relationships: {
+                            person: {
+                                mapping: 'myCollection.Person',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'other'
                             }
-                        });
-                    }, function (err) {
+                        }
+                    });
+
+                    anotherCollection.install(function (err) {
                         if (err) done(err);
-                        anotherCollection['AnotherMapping'].map({field: 5, person: {name: 'Michael', age: 23, id:'xyz'}}, function (err, _obj) {
+                        anotherCollection['AnotherMapping'].map({field: 5, person: {name: 'Michael', age: 23, id: 'xyz'}}, function (err, _obj) {
                             if (err) done(err);
                             obj = _obj;
                             done();
                         });
                     });
+
                 });
 
                 it('installs forward', function () {
@@ -202,61 +200,47 @@ describe('mapping relationships', function () {
 
     describe('invalid', function () {
         it('No such mapping', function (done) {
-            var carMapping;
-            var collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'asd',
-                            type: RelationshipType.ForeignKey,
-                            reverse: 'cars'
-                        }
-                    }
-                });
-            }, function (err) {
-                if (err) {
-                    if (err instanceof RestError) {
-                        done()
-                    }
-                    else {
-                        done(err);
+            var collection = new Collection('myCollection');
+            collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'asd',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
                     }
                 }
+            });
+            collection.install(function (err) {
+                assert.instanceOf(err, RestError);
+                done();
             });
         });
 
         it('No such relationship type', function (done) {
-            var carMapping, personMapping;
-            var collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: 'invalidtype',
-                            reverse: 'cars'
-                        }
-                    }
-                });
-                personMapping = collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age']
-                });
-            }, function (err) {
-                if (err) {
-                    if (err instanceof RestError) {
-                        done()
-                    }
-                    else {
-                        done(err);
+            var collection = new Collection('myCollection');
+            collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: 'invalidtype',
+                        reverse: 'cars'
                     }
                 }
             });
+            collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+
+            collection.install(function (err) {
+                assert.instanceOf(err, RestError);
+                done();
+            });
+
         });
     });
 

@@ -27,25 +27,23 @@ describe('relationship notifications', function () {
     }
 
     function setupFixtures(relationshipType, reverseName, done) {
-        collection = new Collection('myCollection', function (err) {
-            if (err) done(err);
-
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name'],
-                relationships: {
-                    owner: {
-                        mapping: 'Person',
-                        type: relationshipType,
-                        reverse: reverseName
-                    }
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name'],
+            relationships: {
+                owner: {
+                    mapping: 'Person',
+                    type: relationshipType,
+                    reverse: reverseName
                 }
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-        }, function (err) {
+            }
+        });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        collection.install(function (err) {
             if (err) done(err);
             car = carMapping._new({colour: 'red', name: 'Aston Martin', id: 'xyz'});
 
@@ -72,8 +70,9 @@ describe('relationship notifications', function () {
                     });
                 });
             });
+            });
 
-        });
+
     }
 
 

@@ -36,16 +36,13 @@ describe('perform mapping', function () {
 
     describe('no id', function () {
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name']
-                });
-            }, function (err) {
-                if (err) done(err);
-                done();
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
             });
+            collection.install(done);
+
         });
         it('xyz', function (done) {
             var obj;
@@ -64,13 +61,12 @@ describe('perform mapping', function () {
         var obj;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name']
-                });
-            }, function (err) {
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(function (err) {
                 if (err) done(err);
                 carMapping.map({colour: 'red', name: 'Aston Martin', id: 'dfadf'}, function (err, _obj) {
                     if (err) {
@@ -81,6 +77,7 @@ describe('perform mapping', function () {
                     done();
                 });
             });
+
         });
 
         describe('new', function () {
@@ -154,27 +151,23 @@ describe('perform mapping', function () {
         describe('foreign key', function () {
             var personMapping;
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.ForeignKey,
-                                reverse: 'cars'
-                            }
-                        }
-                    });
-                }, function (err) {
-                    if (err) done(err);
-                    done();
+                collection = new Collection('myCollection');
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                collection.install(done);
             });
 
             // TODO: DRY up the below.
@@ -744,27 +737,25 @@ describe('perform mapping', function () {
         describe('one-to-one', function () {
             var personMapping;
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.OneToOne,
-                                reverse: 'car'
-                            }
-                        }
-                    });
-                }, function (err) {
-                    if (err) done(err);
-                    done();
+                collection = new Collection('myCollection');
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.OneToOne,
+                            reverse: 'car'
+                        }
+                    }
+                });
+                collection.install(done);
+
+
             });
 
             // TODO: DRY up the below tests.
@@ -1166,27 +1157,23 @@ describe('perform mapping', function () {
 
             var personMapping;
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.OneToOne,
-                                reverse: 'car'
-                            }
-                        }
-                    });
-                }, function (err) {
-                    if (err) done(err);
-                    done();
+                collection = new Collection('myCollection');
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.OneToOne,
+                            reverse: 'car'
+                        }
+                    }
+                });
+                collection.install(done);
             });
 
             it('assign array to scalar relationship', function (done) {
@@ -1220,27 +1207,23 @@ describe('perform mapping', function () {
 
             var personMapping;
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.ForeignKey,
-                                reverse: 'cars'
-                            }
-                        }
-                    });
-                }, function (err) {
-                    if (err) done(err);
-                    done();
+                collection = new Collection('myCollection');
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                collection.install(done);
             });
 
             it('assign array to scalar relationship', function (done) {
@@ -1294,15 +1277,12 @@ describe('perform mapping', function () {
 
             describe('no relationships', function () {
                 beforeEach(function (done) {
-                    collection = new Collection('myCollection', function (err, version) {
-                        if (err) done(err);
-                        carMapping = collection.mapping('Car', {
-                            id: 'id',
-                            attributes: ['colour', 'name']
-                        });
-                    }, function (err) {
-                        done(err);
+                    collection = new Collection('myCollection');
+                    carMapping = collection.mapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name']
                     });
+                    collection.install(done);
                 });
 
                 it('all valid', function (done) {
@@ -1335,26 +1315,23 @@ describe('perform mapping', function () {
                 var personMapping;
 
                 beforeEach(function (done) {
-                    collection = new Collection('myCollection', function (err, version) {
-                        if (err) done(err);
-                        personMapping = collection.mapping('Person', {
-                            id: 'id',
-                            attributes: ['name', 'age']
-                        });
-                        carMapping = collection.mapping('Car', {
-                            id: 'id',
-                            attributes: ['colour', 'name'],
-                            relationships: {
-                                owner: {
-                                    mapping: 'Person',
-                                    type: RelationshipType.ForeignKey,
-                                    reverse: 'cars'
-                                }
-                            }
-                        });
-                    }, function (err) {
-                        done(err);
+                    collection = new Collection('myCollection');
+                    personMapping = collection.mapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
                     });
+                    carMapping = collection.mapping('Car', {
+                        id: 'id',
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.ForeignKey,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                    collection.install(done);
                 });
 
                 it('same owner using _mapBulk', function (done) {

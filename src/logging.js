@@ -28,8 +28,8 @@ angular.module('logging', [])
             Mapping: logLevels.warn,
             ForeignKeyRelationship: logLevels.warn,
             OneToOneRelationship: logLevels.warn,
-            Query: logLevels.trace,
-            RawQuery: logLevels.trace,
+            Query: logLevels.warn,
+            RawQuery: logLevels.warn,
             MappingOperation: logLevels.warn,
             Descriptor: logLevels.warn,
             BulkMappingOperation: logLevels.warn,
@@ -38,7 +38,11 @@ angular.module('logging', [])
             PouchDocAdapter: logLevels.warn,
             'Num. Mapping Operations': logLevels.warn,
             PouchDocSync: logLevels.warn,
-            SaveOperation: logLevels.warn
+            SaveOperation: logLevels.warn,
+            CompositeOperation: logLevels.warn,
+            BaseOperation: logLevels.warn,
+            RequestDescriptor: logLevels.warn,
+            depthSerialiser: logLevels.warn
         };
 
         var t = {};

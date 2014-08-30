@@ -24,25 +24,22 @@ describe('serialisers', function () {
 
     describe('id serialiser', function () {
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err) {
-                if (err) done(err);
-                personMapping = collection.mapping('Person', {
-                    attributes: ['name', 'age']
-                });
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: RelationshipType.ForeignKey,
-                            reverse: 'cars'
-                        }
-                    }
-                });
-            }, function (err) {
-                done(err);
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                attributes: ['name', 'age']
             });
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
+                    }
+                }
+            });
+            collection.install(done);
         });
         it('should return the id if has one', function (done) {
             carMapping.map({colour: 'red', name: 'Aston Martin', id: 5}, function (err, car) {
@@ -69,37 +66,36 @@ describe('serialisers', function () {
 
     describe('depth serialiser', function () {
         beforeEach(function (done) {
-            collection = new Collection('myCollection', function (err) {
-                if (err) done(err);
-                personMapping = collection.mapping('Person', {
-                    attributes: ['name', 'age'],
-                    id: 'id',
-                    relationships: {
-                        vitalSigns: {
-                            mapping: 'VitalSigns',
-                            type: RelationshipType.OneToOne,
-                            reverse: 'person'
-                        }
+            collection = new Collection('myCollection');
+
+            personMapping = collection.mapping('Person', {
+                attributes: ['name', 'age'],
+                id: 'id',
+                relationships: {
+                    vitalSigns: {
+                        mapping: 'VitalSigns',
+                        type: RelationshipType.OneToOne,
+                        reverse: 'person'
                     }
-                });
-                carMapping = collection.mapping('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: RelationshipType.ForeignKey,
-                            reverse: 'cars'
-                        }
-                    }
-                });
-                vitalSignsMapping = collection.mapping('VitalSigns', {
-                    id: 'id',
-                    attributes: ['heartRate', 'bloodPressure']
-                });
-            }, function (err) {
-                done(err);
+                }
             });
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars'
+                    }
+                }
+            });
+            vitalSignsMapping = collection.mapping('VitalSigns', {
+                id: 'id',
+                attributes: ['heartRate', 'bloodPressure']
+            });
+            collection.install(done);
+
         });
 
         it('depth 0', function (done) {

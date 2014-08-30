@@ -117,13 +117,12 @@ describe('query', function () {
         var collection, mapping;
 
         it('asdasd', function (done) {
-            collection = new Collection('myCollection', function (err, version) {
-                if (err) done(err);
-                mapping = collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age']
-                });
-            }, function (err) {
+            collection = new Collection('myCollection');
+            mapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(function (err) {
                 if (err) done(err);
                 Pouch.getPouch().post({type: 'Person', age: 23, collection: 'myCollection', name: 'Michael'}, function (err, resp) {
                     if (err) done(err);
@@ -143,7 +142,6 @@ describe('query', function () {
 
                     });
                 });
-
             });
 
 

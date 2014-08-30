@@ -128,13 +128,12 @@ describe('dirty fields', function () {
             var doc;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name']
-                    });
-                }, function (err) {
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                collection.install(function (err) {
                     if (err) done(err);
                     carMapping.map({name: 'Aston Martin', colour: 'black'}, function (err, _car) {
                         if (err) done(err);
@@ -146,6 +145,7 @@ describe('dirty fields', function () {
                         });
                     });
                 });
+
             });
 
             assertCarNotDirtyWhenFirstMapped();
@@ -186,13 +186,13 @@ describe('dirty fields', function () {
             var doc;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colours', 'name']
-                    });
-                }, function (err) {
+
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colours', 'name']
+                });
+                collection.install(function (err) {
                     if (err) done(err);
                     carMapping.map({name: 'Aston Martin', colours: ['black', 'red', 'green']}, function (err, _car) {
                         if (err) done(err);
@@ -443,24 +443,23 @@ describe('dirty fields', function () {
 
         describe('foreign key', function () {
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.ForeignKey,
-                                reverse: 'cars'
-                            }
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars'
                         }
-                    });
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                }, function (err) {
+                    }
+                });
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                collection.install(function (err) {
                     if (err) done(err);
                     carMapping.map({name: 'Aston Martin', colour: 'black', owner: 'abcdef'}, function (err, _car) {
                         if (err) done(err);
@@ -618,24 +617,23 @@ describe('dirty fields', function () {
         describe('one-to-one', function () {
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.OneToOne,
-                                reverse: 'car'
-                            }
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.OneToOne,
+                            reverse: 'car'
                         }
-                    });
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                }, function (err) {
+                    }
+                });
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                collection.install(function (err) {
                     if (err) done(err);
                     carMapping.map({name: 'Aston Martin', colour: 'black', owner: 'abcdef'}, function (err, _car) {
                         if (err) done(err);
@@ -650,6 +648,7 @@ describe('dirty fields', function () {
                         })
                     });
                 });
+
             });
 
             describe('forward', function () {

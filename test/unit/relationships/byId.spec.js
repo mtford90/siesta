@@ -23,18 +23,18 @@ describe('relationship proxy byid', function () {
 
         Collection._reset();
 
-        collection = new Collection('myCollection', function (err, version) {
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
+        });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        collection.install(function (err) {
             if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-        }, function (err) {
-            if (err) done(err);
+
             carMapping.map({colour: 'blue', name:'Aston Martin', id:'fgs'}, function (err, _car) {
                 if (err) done(err);
                 car = _car;
@@ -46,6 +46,8 @@ describe('relationship proxy byid', function () {
 
             });
         });
+
+
 
     });
 

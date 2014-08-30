@@ -3,22 +3,6 @@ describe('rest', function () {
     var Collection, CollectionRegistry;
     var collection;
 
-    function configureAPI(done, callback) {
-        console.log('configureAPI');
-        var configCalled = false;
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            assert.notOk(version);
-            collection.version = 1;
-            if (callback) callback();
-            configCalled = true;
-        }, function () {
-            assert.ok(configCalled, 'configuration function should be called');
-            done();
-        });
-        return collection;
-    }
-
     beforeEach(function () {
         module('restkit', function ($provide) {
             $provide.value('$log', console);
@@ -35,60 +19,15 @@ describe('rest', function () {
 
     describe('Create Basic Rest API', function () {
 
-        beforeEach(configureAPI);
+        beforeEach(function (done) {
+            collection = new Collection('myCollection');
+            collection.install(done);
+        });
 
         it('global access', function () {
             assert.equal(CollectionRegistry.myCollection, collection);
         });
 
-        describe('persistence', function () {
-            it('version is set', function (done) {
-                Collection._getPouch().get(collection._docId, function (err, doc) {
-                    if (err) done(err);
-                    assert.equal(doc.version, collection.version);
-                    done();
-                });
-            });
-
-            it('_doc is set and is of same revision', function (done) {
-                Collection._getPouch().get(collection._docId, function (err, doc) {
-                    if (err) done(err);
-                    assert.equal(doc._rev, collection._doc._rev);
-                    done();
-                });
-            });
-        });
-
-        describe('reconfiguration', function () {
-            var collectionAgain;
-            var newVersion = 2;
-
-            beforeEach(function (done) {
-                var configCalled = false;
-                console.log('collectionAgain');
-                collectionAgain = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    assert.equal(version, 1);
-                    assert.equal(collectionAgain.version, 1);
-                    collectionAgain.version = newVersion;
-                    configCalled = true;
-                }, function () {
-                    assert.ok(configCalled, 'configuration function should be called');
-                    done();
-                });
-            });
-
-            describe('persistence', function () {
-                it('version is updated', function (done) {
-                    Collection._getPouch().get(collectionAgain._docId, function (err, doc) {
-                        console.log('doc:', doc);
-                        if (err) done(err);
-                        assert.equal(doc.version, newVersion);
-                        done();
-                    });
-                });
-            });
-        });
     });
 
     describe('Object mapping registration', function () {
@@ -97,12 +36,12 @@ describe('rest', function () {
         describe('basic', function () {
 
             beforeEach(function (done) {
-                collection = configureAPI(done, function () {
-                    collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
+                collection = new Collection('myCollection');
+                collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
+                collection.install(done);
             });
 
             describe('raw mapping to Mapping object', function () {
@@ -122,49 +61,10 @@ describe('rest', function () {
                 it('mappings', function () {
                     assertMapping(collection);
                 });
-                it('reconfig', function (done) {
-                    var a = new Collection('myCollection', function (err, version) {
-                        if (err) done(err);
-                    }, function () {
-                        assertMapping(a);
-                        done();
-                    });
-                })
             });
 
-            describe('persistence', function () {
-                it('version is updated', function (done) {
-                    Collection._getPouch().get(collection._docId, function (err, doc) {
-                        if (err) done(err);
-                        assert.ok(doc.mappings.Person);
-
-                        done();
-                    });
-                });
-                it('reconfig', function (done) {
-                    console.log('reconfig');
-                    var a = new Collection('myCollection', function (err, version) {
-                        if (err) done(err);
-                    }, function () {
-                        console.log(a._rawMappings);
-                        assert.ok(a._rawMappings.Person);
-                        done();
-                    });
-                })
-            });
         });
 
-        describe('indexing', function () {
-            beforeEach(function (done) {
-                collection = configureAPI(done, function () {
-                    collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age'],
-                        indexes: ['name', 'age']
-                    });
-                });
-            });
-        });
 
     })
 

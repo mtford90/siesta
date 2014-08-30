@@ -28,17 +28,16 @@ describe('foreign key relationship', function () {
 
         Collection._reset();
 
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            personMapping = collection.mapping('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-        }, function (err) {
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
+        });
+        personMapping = collection.mapping('Person', {
+            id: 'id',
+            attributes: ['name', 'age']
+        });
+        collection.install(function (err) {
             if (err) done(err);
             personMapping.map({name: 'Michael Ford', id: 'asdasd'}, function (err, _person) {
                 if (err) done(err);
@@ -56,6 +55,7 @@ describe('foreign key relationship', function () {
                 });
             });
         });
+
     });
 
     describe('get', function () {

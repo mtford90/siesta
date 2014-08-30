@@ -127,34 +127,30 @@ describe('cache', function () {
 
         beforeEach(function (done) {
             inject(function (DescriptorRegistry, ResponseDescriptor, RelationshipType) {
-                collection = new Collection('myCollection', function (err, version) {
-                    if (err) done(err);
-                    personMapping = collection.mapping('Person', {
-                        id: 'id',
-                        attributes: ['name', 'age']
-                    });
-                    carMapping = collection.mapping('Car', {
-                        id: 'id',
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: RelationshipType.ForeignKey,
-                                reverse: 'cars'
-                            }
-                        }
-                    });
-                    collection.baseURL = 'http://mywebsite.co.uk/';
-                    var desc = new ResponseDescriptor({
-                        method: 'GET',
-                        mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
-                    });
-                    DescriptorRegistry.registerResponseDescriptor(desc);
-                }, function (err) {
-                    if (err) done(err);
-                    done();
+                collection = new Collection('myCollection');
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
                 });
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                collection.baseURL = 'http://mywebsite.co.uk/';
+                var desc = new ResponseDescriptor({
+                    method: 'GET',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                DescriptorRegistry.registerResponseDescriptor(desc);
+                collection.install(done);
             });
         });
 

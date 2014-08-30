@@ -19,15 +19,12 @@ describe('store', function () {
             Pouch = _Pouch_;
         });
         Collection._reset();
-        collection = new Collection('myCollection', function (err, version) {
-            if (err) done(err);
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-        }, function () {
-            done();
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
         });
+        collection.install(done);
     });
 
     describe('get', function () {
