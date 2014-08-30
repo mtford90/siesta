@@ -654,5 +654,116 @@ describe('request descriptor', function () {
                 })
             })
         })
-    })
+    });
+
+    describe('ResponseDescriptor', function () {
+
+        describe('transforms', function () {
+            var responseDescriptor;
+            it('key paths', function () {
+                responseDescriptor = new ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: {
+                        'colour': 'path.to.colour'
+                    }
+                });
+                var data = {colour: 'red'};
+                responseDescriptor._transformData(data);
+                assert.notOk(data.colour);
+                assert.equal(data.path.to.colour, 'red');
+            });
+
+            it('key', function () {
+                responseDescriptor = new ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: {
+                        'colour': 'color'
+                    }
+                });
+                var data = {colour: 'red'};
+                responseDescriptor._transformData(data);
+                assert.notOk(data.colour);
+                assert.equal(data.color, 'red');
+            });
+
+            it('function with return val', function () {
+                responseDescriptor = new ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: {
+                        'colour': function (val) {
+                            var newVal = val;
+                            if (val == 'red') {
+                                newVal = 'blue';
+                            }
+                            return newVal;
+                        }
+                    }
+                });
+                var data = {colour: 'red'};
+                responseDescriptor._transformData(data);
+                assert.equal(data.colour, 'blue');
+            });
+
+            it('function with return val and key', function () {
+                responseDescriptor = new ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: {
+                        'colour': function (val) {
+                            var newVal = val;
+                            if (val == 'red') {
+                                newVal = 'blue';
+                            }
+                            return ['color', newVal];
+                        }
+                    }
+                });
+                var data = {colour: 'red'};
+                responseDescriptor._transformData(data);
+                assert.notOk(data.colour);
+                assert.equal(data.color, 'blue');
+            });
+
+            it('invalid', function () {
+                responseDescriptor = new ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: {
+                        'colour': {wtf: {is: 'this'}}
+                    }
+                });
+                var data = {colour: 'red'};
+                assert.throws(function () {
+                    responseDescriptor._transformData(data);
+
+                }, RestError);
+            });
+
+        });
+
+        describe('transforms during deserialisation', function () {
+            var responseDescriptor;
+
+            beforeEach(function () {
+                responseDescriptor = new ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: {
+                        'colour': 'color'
+                    }
+                });
+            });
+
+            it('transforms during extractData', function () {
+                var extracted = responseDescriptor._extractData({colour: 'red'});
+                assert.equal(extracted.color, 'red');
+                assert.notOk(extracted.colour);
+            });
+            it('transforms during matchData', function () {
+                var extracted = responseDescriptor._matchData({colour: 'red'});
+                assert.equal(extracted.color, 'red');
+                assert.notOk(extracted.colour);
+            });
+        });
+
+    });
+
+
 });

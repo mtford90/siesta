@@ -56,6 +56,8 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             return  descriptorsForCollection;
         };
 
+
+
         return new DescriptorRegistry();
     })
 
@@ -166,6 +168,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             defineSubProperty.call(this, 'method', this._opts);
             defineSubProperty.call(this, 'mapping', this._opts);
             defineSubProperty.call(this, 'data', this._opts);
+            defineSubProperty.call(this, 'transforms', this._opts);
         }
 
         Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
@@ -342,39 +345,7 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             return extractedData;
         };
 
-        return Descriptor;
-    })
-
-    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser, RestError) {
-
-        var $log = jlog.loggerWithName('RequestDescriptor');
-
-        function RequestDescriptor(opts) {
-            if (!this) {
-                return new RequestDescriptor(opts);
-            }
-
-            Descriptor.call(this, opts);
-
-
-            if (this._opts.serializer) {
-                this._opts.serialiser = this._opts.serializer;
-            }
-
-            if (!this._opts.serialiser) {
-                this._opts.serialiser = Serialiser.depthSerializer(0);
-            }
-
-
-            defineSubProperty.call(this, 'serialiser', this._opts);
-            defineSubProperty.call(this, 'serializer', this._opts, 'serialiser');
-            defineSubProperty.call(this, 'transforms', this._opts);
-
-        }
-
-        RequestDescriptor.prototype = Object.create(Descriptor.prototype);
-
-        RequestDescriptor.prototype._transformData = function (data) {
+        Descriptor.prototype._transformData = function (data) {
             var transforms = this.transforms;
             for (var attr in transforms) {
                 if (transforms.hasOwnProperty(attr)) {
@@ -416,6 +387,37 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
             }
         };
 
+        return Descriptor;
+    })
+
+    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser, RestError) {
+
+        var $log = jlog.loggerWithName('RequestDescriptor');
+
+        function RequestDescriptor(opts) {
+            if (!this) {
+                return new RequestDescriptor(opts);
+            }
+
+            Descriptor.call(this, opts);
+
+
+            if (this._opts.serializer) {
+                this._opts.serialiser = this._opts.serializer;
+            }
+
+            if (!this._opts.serialiser) {
+                this._opts.serialiser = Serialiser.depthSerializer(0);
+            }
+
+
+            defineSubProperty.call(this, 'serialiser', this._opts);
+            defineSubProperty.call(this, 'serializer', this._opts, 'serialiser');
+
+        }
+
+        RequestDescriptor.prototype = Object.create(Descriptor.prototype);
+
         RequestDescriptor.prototype._serialise = function (obj, callback) {
             var self = this;
             $log.trace('_serialise');
@@ -449,6 +451,23 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         }
 
         ResponseDescriptor.prototype = Object.create(Descriptor.prototype);
+
+        ResponseDescriptor.prototype._extractData = function (data) {
+            var extractedData = Descriptor.prototype._extractData.call(this, data);
+            if (extractedData) {
+                this._transformData(extractedData);
+            }
+            return extractedData;
+        };
+
+        ResponseDescriptor.prototype._matchData = function (data) {
+            var extractedData = Descriptor.prototype._matchData.call(this, data);
+            if (extractedData) {
+                this._transformData(extractedData);
+            }
+            return extractedData;
+        };
+
         return ResponseDescriptor;
     })
 
