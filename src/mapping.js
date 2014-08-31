@@ -581,9 +581,7 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             else {
                 if (callback) callback();
             }
-
         };
-
 
         Mapping.prototype._dump = function (asJSON) {
             var dumped = {};

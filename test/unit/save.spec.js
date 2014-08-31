@@ -94,5 +94,28 @@ describe('saving at different levelss', function () {
         });
     });
 
+    it.only('should save at collection level', function (done) {
+        carMapping.map([
+            {colour: 'black', name: 'Aston Martin'},
+            {colour: 'blue', name: 'Aston Martin'},
+            {colour: 'red', name: 'Aston Martin'}
+        ], function (err, cars) {
+            if (err) done(err);
+            _.each(cars, function (c) {
+                c.colour = 'purple';
+                assert.ok(c.isDirty);
+            });
+            collection.save(function (err) {
+                if (err) done(err);
+                _.each(cars, function (c) {
+                    c.colour = 'purple';
+                    assert.notOk(c.isDirty);
+                });
+                done();
+            });
+
+        });
+    });
+
 
 });

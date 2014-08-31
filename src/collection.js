@@ -14,7 +14,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
     })
 
 
-    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry, $q, CompositeOperation, BaseOperation) {
+    .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry, $q, CompositeOperation, BaseOperation, SaveOperation) {
 
         var $log = jlog.loggerWithName('Collection');
         var httpLog = jlog.loggerWithName('HTTP');
@@ -103,7 +103,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                             });
                             var err;
                             if (errors.length == 1) {
-                                 err = errors[0];
+                                err = errors[0];
                             }
                             else if (errors.length) {
                                 err = errors;
@@ -173,6 +173,27 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
         Collection._reset = Pouch.reset;
 
         Collection._getPouch = Pouch.getPouch;
+
+        Collection.prototype.save = function (callback) {
+            var dirtyMappings = this.__dirtyMappings;
+            var dirtyObjects = _.reduce(dirtyMappings, function (memo, m) {
+                _.each(m.__dirtyObjects, function (o) {memo.push(o)});
+                return memo;
+            }, []);
+            if (dirtyObjects.length) {
+                var saveOperations = _.map(dirtyObjects, function (obj) {
+                    return new SaveOperation(obj);
+                });
+                var op = new CompositeOperation('Save at mapping level', saveOperations, function () {
+                    if (callback) callback(op.error ? op.error : null);
+                });
+                op.start();
+                return op;
+            }
+            else if (callback) {
+                callback();
+            }
+        };
 
         /*
          Registration
