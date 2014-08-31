@@ -292,7 +292,6 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         Descriptor.prototype._matchData = function (data) {
             var extractedData = null;
             if (this.data) {
-                $log.trace('path specified');
                 if (data) {
                     extractedData = this._extractData(data);
                 }
@@ -307,7 +306,6 @@ angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
         };
 
         Descriptor.prototype.match = function (config, data) {
-            $log.trace('match', {config: config, data: data, descriptor: this});
             var regexMatches = this._matchConfig(config);
             var matches = !!regexMatches;
             var extractedData = false;

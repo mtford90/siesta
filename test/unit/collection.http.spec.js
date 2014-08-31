@@ -165,11 +165,7 @@ describe('http!', function () {
             beforeEach(function (done) {
 
                 configureCollection(done);
-                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
-                    method: 'GET',
-                    mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
-                }));
+
             });
 
             describe('success', function () {
@@ -177,6 +173,11 @@ describe('http!', function () {
 
                 describe('single', function () {
                     beforeEach(function (done) {
+                        DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                            method: 'GET',
+                            mapping: carMapping,
+                            path: '/cars/(?<id>[0-9])/?'
+                        }));
                         var raw = {colour: 'red', name: 'Aston Martin', owner: '093hodhfno', id: '5'};
                         var headers = { "Content-Type": "application/json" };
                         var path = "http://mywebsite.co.uk/cars/5/";
@@ -221,16 +222,21 @@ describe('http!', function () {
 
                 describe('multiple', function () {
                     beforeEach(function (done) {
+                        DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                            method: 'GET',
+                            mapping: carMapping,
+                            path: '/cars/?'
+                        }));
                         var raw = [
                             {colour: 'red', name: 'Aston Martin', owner: 'ownerId', id: '5'},
                             {colour: 'blue', name: 'Bentley', owner: 'ownerId', id: '6'}
                         ];
                         var headers = { "Content-Type": "application/json" };
-                        var path = "http://mywebsite.co.uk/cars/5/";
+                        var path = "http://mywebsite.co.uk/cars/";
                         var method = "GET";
                         var status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                        collection.GET('cars/5/', function (_err, _obj, _resp) {
+                        collection.GET('cars/', function (_err, _obj, _resp) {
                             if (_err) done(_err);
                             obj = _obj;
                             resp = _resp;

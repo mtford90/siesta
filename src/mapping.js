@@ -1,6 +1,6 @@
 angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query', 'restkit.relationship', 'restkit.notifications', 'restkit.mapping.operation'])
 
-    .factory('Mapping', function (cache, broadcast, Pouch, MappingOperation, CompositeOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
+    .factory('Mapping', function (cache, broadcast, Pouch, MappingOperation, SaveOperation, CompositeOperation, $rootScope, ChangeType, Indexes, Query, defineSubProperty, guid, CollectionRegistry, RestObject, jlog, RestError, RelationshipType, ForeignKeyRelationship, OneToOneRelationship, PouchDocAdapter, Store) {
 
         var $log = jlog.loggerWithName('Mapping');
 
@@ -462,12 +462,12 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
 
 
         Mapping.prototype._mapBulk = function (data, callback) {
+            $log.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
             var self = this;
             var operations = _.map(data, function (datum) {
                 return new MappingOperation(self, datum);
             });
             var op = new CompositeOperation('Bulk Mapping', operations, function (err) {
-                dump(new Error().stack);
                 if (err) {
                     callback(err);
                 }
@@ -564,6 +564,24 @@ angular.module('restkit.mapping', ['restkit.indexing', 'restkit', 'restkit.query
             });
 
             return restObject;
+        };
+
+        Mapping.prototype.save = function (callback) {
+            var dirtyObjects = this.__dirtyObjects;
+            if (dirtyObjects.length) {
+                var saveOperations = _.map(dirtyObjects, function (obj) {
+                    return new SaveOperation(obj);
+                });
+                var op = new CompositeOperation('Save at mapping level', saveOperations, function () {
+                    if (callback) callback(op.error ? op.error : null);
+                });
+                op.start();
+                return op;
+            }
+            else {
+                if (callback) callback();
+            }
+
         };
 
 

@@ -17,8 +17,8 @@ angular.module('logging', [])
     .factory('jlogConfig', function (logLevels) {
         var ll = {
             Pouch: logLevels.warn,
-            CollectionRegistry: logLevels.trace,
-            Collection: logLevels.trace,
+            CollectionRegistry: logLevels.warn,
+            Collection: logLevels.warn,
             Cache: logLevels.warn,
             'Cache.notifications': logLevels.warn,
             Store: logLevels.warn,
@@ -32,7 +32,8 @@ angular.module('logging', [])
             RawQuery: logLevels.warn,
             MappingOperation: logLevels.warn,
             Descriptor: logLevels.warn,
-            BulkMappingOperation: logLevels.warn,
+            RequestDescriptor: logLevels.warn,
+            ResponseDescriptor: logLevels.warn,
             DescriptorRegistry: logLevels.warn,
             RestObject: logLevels.warn,
             PouchDocAdapter: logLevels.warn,
@@ -40,8 +41,8 @@ angular.module('logging', [])
             SaveOperation: logLevels.warn,
             CompositeOperation: logLevels.warn,
             BaseOperation: logLevels.warn,
-            RequestDescriptor: logLevels.warn,
-            depthSerialiser: logLevels.warn
+            depthSerialiser: logLevels.warn,
+            HTTP: logLevels.warn
         };
 
         var t = {};

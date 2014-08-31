@@ -17,7 +17,6 @@ angular.module('restkit.object', ['restkit', 'restkit.mapping.operation'])
             if (!this) return new SaveOperation(object, callback);
             var self = this;
 
-
             var work = function (done) {
                 this._completion = done;
                 self._start();

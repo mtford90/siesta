@@ -12,29 +12,16 @@ angular.module('restkit.mapping.operation', ['logging'])
             var work = function (done) {
                 $log.trace('Starting ' + self._numOperationsRemaining.toString() + ' operations');
                 _.each(self.operations, function (op) {
-                    if (op.name) {
-                        $log.trace('Starting operation with name "' + op.name + '"');
-                    }
-                    else {
-                        $log.trace('Starting unnamed operation');
-                    }
+                    $log.trace('Starting operation: ' + op._dump(true));
                     op.completionCallback = function () {
-                        if (op.name) {
-                            $log.trace('Finished operation with name "' + op.name + '"');
-                        }
-                        else {
-                            $log.trace('Finished unnamed operation');
-                        }
+                        $log.trace('Finished operation: ' + op._dump(true));
                         var numOperationsRemaining = self._numOperationsRemaining;
                         if (!numOperationsRemaining) {
-                            $log.trace('Operations have finished');
                             var errors = _.pluck(self.operations, 'error');
                             var results = _.pluck(self.operations, 'result');
                             done(_.some(errors) ? errors : null, _.some(results) ? results : null);
                         }
-                        else {
-                            $log.trace('Waiting for ' + numOperationsRemaining.toString() + ' operations to finish');
-                        }
+                        $log.trace('CompositeOperation state: ' + self._dump(true));
                     };
                     op.start();
                 });
@@ -113,7 +100,7 @@ angular.module('restkit.mapping.operation', ['logging'])
 
         BaseOperation.prototype.start = function () {
             if (!this.running && !this.completed) {
-                $log.trace('Starting operation with name "' + this.name + '"');
+                $log.trace('Starting operation: ' + this._dump(true));
                 this.running = true;
                 var self = this;
                 this.work(function (err, payload) {
@@ -121,7 +108,7 @@ angular.module('restkit.mapping.operation', ['logging'])
                     self.error = err;
                     self.completed = true;
                     self.running = false;
-                    $log.trace('Finished operation with name "' + this.name + '"');
+                    $log.trace('Finished operation: ' + self._dump(true));
                     if (self.completionCallback) {
                         self.completionCallback.call(this);
                     }
@@ -286,12 +273,18 @@ angular.module('restkit.mapping.operation', ['logging'])
         MappingOperation.prototype.checkIfDone = function () {
             var self = this;
             var isFinished = this.operations.length == this._finished.length;
+
             if (isFinished) {
-                $log.info('Mapping operation finishing', {obj: this.obj ? this._obj._id : null});
+                $log.trace('Mapping operation finishing: ' + this._dump(true));
                 if (this._obj) {
+                    $log.trace('Saving the mapped object: ' + this._obj._dump(true));
                     this._obj.save(function (err) {
                         if (err) {
                             self._errors.save = err;
+                            $log.trace('Error saving the mapped object: ' + self._obj._dump(true));
+                        }
+                        else {
+                            $log.trace('Saved the mapped object: ' + self._obj._dump(true));
                         }
                         var isError = false;
                         for (var prop in self._errors) {
@@ -313,6 +306,9 @@ angular.module('restkit.mapping.operation', ['logging'])
                     }
                     self._done(isError ? self._errors : null, self._obj);
                 }
+            }
+            else {
+                $log.info('Current mapping operation state: ' + this._dump(true));
             }
         };
 
@@ -387,6 +383,7 @@ angular.module('restkit.mapping.operation', ['logging'])
         };
 
         MappingOperation.prototype._mapRelationship = function (prop, val) {
+
             var self = this;
             var obj = this._obj;
             var relationship = obj[prop].relationship;
@@ -437,7 +434,7 @@ angular.module('restkit.mapping.operation', ['logging'])
          */
         MappingOperation.prototype._startMapping = function () {
             var data = this.data;
-            $log.info('Mapping operation starting', {obj: this._obj._id, data: data});
+            $log.trace('Mapping operation starting: ' + this._dump(true));
             for (var prop in data) {
                 if (data.hasOwnProperty(prop)) {
                     $log.trace('Checking "' + prop + '"');
@@ -464,13 +461,26 @@ angular.module('restkit.mapping.operation', ['logging'])
 
         MappingOperation.prototype._dump = function (asJson) {
             var obj = {};
-            obj.name = this.name;
-            obj.purpose = this.purpose;
-            obj.data = this.data;
-            obj.obj = this._obj ? this._obj._dump() : null;
-            obj.completed = this.completed;
-            obj.errors = this._errors;
-            obj.mapping = this.mapping.type;
+//            obj.name = this.name;
+//            obj.purpose = this.purpose;
+//            obj.data = this.data;
+//            obj.obj = this._obj ? this._obj._dump() : null;
+//            obj.completed = this.completed;
+//            obj.errors = this._errors;
+//            obj.mapping = this.mapping.type;
+//            obj.running = this.running;
+//            obj.completedSuboperations = _.reduce(this.operations, function (memo, op) {
+//                 if (op.completed) {
+//                     memo.push(op);
+//                 }
+//                return memo;
+//            }, []);
+//            obj.incompleteSuboperations = _.reduce(this.operations, function (memo, op) {
+//                if (!op.completed) {
+//                    memo.push(op);
+//                }
+//                return memo;
+//            }, []);
             return asJson ? JSON.stringify(obj, null, 4) : obj;
         };
 

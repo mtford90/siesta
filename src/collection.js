@@ -17,6 +17,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
     .factory('Collection', function (wrappedCallback, jlog, Mapping, Pouch, CollectionRegistry, RestError, $http, $rootScope, DescriptorRegistry, $q, CompositeOperation, BaseOperation) {
 
         var $log = jlog.loggerWithName('Collection');
+        var httpLog = jlog.loggerWithName('HTTP');
 
         /**
          * @param name
@@ -191,7 +192,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
          HTTP Requests
          */
         Collection.prototype._httpResponse = function (method, path) {
-            $log.trace('_httpResponse', this);
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
@@ -210,6 +210,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                 opts.url = baseURL + path;
             }
             opts.success = function (data, textStatus, jqXHR) {
+                httpLog.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
                 var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
                 var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
                 var matchedDescriptor;
@@ -224,6 +225,7 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
                     }
                 }
                 if (matchedDescriptor) {
+                    $log.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
                     if (typeof(extractedData) == 'object') {
                         var mapping = matchedDescriptor.mapping;
                         mapping.map(extractedData, function (err, obj) {
@@ -291,7 +293,6 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
         };
 
         Collection.prototype._httpRequest = function (method, path, object) {
-//            $log.trace(method + {path: path, object: object});
             var self = this;
             var args = Array.prototype.slice.call(arguments, 2);
             var callback;
