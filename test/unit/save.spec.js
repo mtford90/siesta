@@ -1,6 +1,6 @@
 describe('saving at different levelss', function () {
 
-    var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, RestObject, $rootScope, CollectionRegistry;
+    var Pouch, RawQuery, Collection, RelationshipType, RelatedObjectProxy, RestObject, $rootScope, CollectionRegistry, Siesta;
     var collection, carMapping, personMapping;
 
     var car, previousPerson, newPerson;
@@ -11,7 +11,7 @@ describe('saving at different levelss', function () {
             $provide.value('$q', Q);
         });
 
-        inject(function (_Pouch_, _RawQuery_, _RestObject_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _CollectionRegistry_) {
+        inject(function (_Pouch_, _RawQuery_, _Siesta_, _RestObject_, _Collection_, _RelationshipType_, _RelatedObjectProxy_, _$rootScope_, _CollectionRegistry_) {
             Pouch = _Pouch_;
             RawQuery = _RawQuery_;
             Collection = _Collection_;
@@ -20,6 +20,7 @@ describe('saving at different levelss', function () {
             RestObject = _RestObject_;
             $rootScope = _$rootScope_;
             CollectionRegistry = _CollectionRegistry_;
+            Siesta = _Siesta_;
         });
 
         Pouch.reset();
@@ -46,76 +47,182 @@ describe('saving at different levelss', function () {
 
     });
 
-
-    it('should save at object level', function (done) {
-        carMapping.map([
-            {colour: 'black', name: 'Aston Martin'},
-            {colour: 'blue', name: 'Aston Martin'},
-            {colour: 'red', name: 'Aston Martin'}
-        ], function (err, cars) {
-            if (err) done(err);
-            _.each(cars, function (c) {
-                c.colour = 'purple';
-                assert(c.isDirty);
-            });
-            var finishedSaving = function (err) {
-                assert.notOk(err);
+    describe('object level', function () {
+        var cars;
+        beforeEach(function (done) {
+            carMapping.map([
+                {colour: 'black', name: 'Aston Martin'},
+                {colour: 'blue', name: 'Aston Martin'},
+                {colour: 'red', name: 'Aston Martin'}
+            ], function (err, _cars) {
+                if (err) done(err);
+                cars = _cars;
                 _.each(cars, function (c) {
-                    assert.notOk(c.isDirty);
+                    c.colour = 'purple';
+                    assert(c.isDirty);
                 });
-                done();
-            };
-            async.parallel(_.map(cars, function (c) {
-                return _.bind(c.save, c)
-            }), finishedSaving);
+                assert.ok(carMapping.isDirty);
+                assert.ok(collection.isDirty);
+                assert.ok(Siesta.isDirty);
+                assert.ok(Collection.isDirty);
+                async.parallel(_.map(cars, function (c) {
+                    return _.bind(c.save, c)
+                }), done);
+            });
+        });
+
+        it('objects should not be dirty', function () {
+            _.each(cars, function (c) {
+                assert.notOk(c.isDirty);
+            });
+        });
+
+        it('mapping should not be dirty', function () {
+            assert.notOk(carMapping.isDirty);
+        });
+
+        it('collection should not be dirty', function () {
+            assert.notOk(collection.isDirty);
+        });
+
+        it('Collection should not be dirty', function () {
+            assert.notOk(Collection.isDirty);
+        });
+
+        it('global should not be dirty', function () {
+            assert.notOk(Siesta.isDirty);
         });
     });
 
-    it('should save at mapping level', function (done) {
-        carMapping.map([
-            {colour: 'black', name: 'Aston Martin'},
-            {colour: 'blue', name: 'Aston Martin'},
-            {colour: 'red', name: 'Aston Martin'}
-        ], function (err, cars) {
-            if (err) done(err);
-            _.each(cars, function (c) {
-                c.colour = 'purple';
-                assert.ok(c.isDirty);
-            });
-            carMapping.save(function (err) {
+    describe('save at mapping level', function () {
+        var cars;
+        beforeEach(function (done) {
+            carMapping.map([
+                {colour: 'black', name: 'Aston Martin'},
+                {colour: 'blue', name: 'Aston Martin'},
+                {colour: 'red', name: 'Aston Martin'}
+            ], function (err, cars) {
                 if (err) done(err);
                 _.each(cars, function (c) {
                     c.colour = 'purple';
-                    assert.notOk(c.isDirty);
+                    assert.ok(c.isDirty);
                 });
-                done();
+                assert.ok(carMapping.isDirty);
+                assert.ok(collection.isDirty);
+                assert.ok(Siesta.isDirty);
+                assert.ok(Collection.isDirty);
+                carMapping.save(done);
             });
+        });
 
+        it('objects should not be dirty', function () {
+            _.each(cars, function (c) {
+                assert.notOk(c.isDirty);
+            });
+        });
+
+        it('mapping should not be dirty', function () {
+            assert.notOk(carMapping.isDirty);
+        });
+
+        it('collection should not be dirty', function () {
+            assert.notOk(collection.isDirty);
+        });
+
+        it('Collection should not be dirty', function () {
+            assert.notOk(Collection.isDirty);
+        });
+
+        it('global should not be dirty', function () {
+            assert.notOk(Siesta.isDirty);
         });
     });
 
-    it.only('should save at collection level', function (done) {
-        carMapping.map([
-            {colour: 'black', name: 'Aston Martin'},
-            {colour: 'blue', name: 'Aston Martin'},
-            {colour: 'red', name: 'Aston Martin'}
-        ], function (err, cars) {
-            if (err) done(err);
-            _.each(cars, function (c) {
-                c.colour = 'purple';
-                assert.ok(c.isDirty);
-            });
-            collection.save(function (err) {
+    describe('save at collection level', function () {
+        var cars;
+        beforeEach(function (done) {
+            carMapping.map([
+                {colour: 'black', name: 'Aston Martin'},
+                {colour: 'blue', name: 'Aston Martin'},
+                {colour: 'red', name: 'Aston Martin'}
+            ], function (err, cars) {
                 if (err) done(err);
                 _.each(cars, function (c) {
                     c.colour = 'purple';
-                    assert.notOk(c.isDirty);
+                    assert.ok(c.isDirty);
                 });
-                done();
-            });
+                assert.ok(carMapping.isDirty);
+                assert.ok(collection.isDirty);
+                assert.ok(Siesta.isDirty);
+                assert.ok(Collection.isDirty);
+                collection.save(done);
 
+            });
+        });
+
+        it('objects should not be dirty', function () {
+            _.each(cars, function (c) {
+                assert.notOk(c.isDirty);
+            });
+        });
+
+        it('mapping should not be dirty', function () {
+            assert.notOk(carMapping.isDirty);
+        });
+
+        it('collection should not be dirty', function () {
+            assert.notOk(collection.isDirty);
+        });
+
+        it('Collection should not be dirty', function () {
+            assert.notOk(Collection.isDirty);
+        });
+
+        it('global should not be dirty', function () {
+            assert.notOk(Siesta.isDirty);
         });
     });
+
+    describe('save at global level', function () {
+        var cars;
+        beforeEach(function (done) {
+            carMapping.map([
+                {colour: 'black', name: 'Aston Martin'},
+                {colour: 'blue', name: 'Aston Martin'},
+                {colour: 'red', name: 'Aston Martin'}
+            ], function (err, cars) {
+                if (err) done(err);
+                _.each(cars, function (c) {
+                    c.colour = 'purple';
+                    assert.ok(c.isDirty);
+                });
+                Siesta.save(done);
+            });
+        });
+        it('objects should not be dirty', function () {
+            _.each(cars, function (c) {
+                assert.notOk(c.isDirty);
+            });
+        });
+
+        it('mapping should not be dirty', function () {
+            assert.notOk(carMapping.isDirty);
+        });
+
+        it('collection should not be dirty', function () {
+            assert.notOk(collection.isDirty);
+        });
+
+        it('Collection should not be dirty', function () {
+            assert.notOk(Collection.isDirty);
+        });
+
+        it('global should not be dirty', function () {
+            assert.notOk(Siesta.isDirty);
+        });
+    });
+
+
 
 
 });

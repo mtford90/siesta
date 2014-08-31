@@ -1,4 +1,4 @@
-angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
+angular.module('restkit', ['logging', 'restkit.mapping', 'restkit.collection'])
 
     .factory('guid', function () {
         return (function () {
@@ -24,10 +24,50 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
     })
 
     // Global entry points into Siesta.
-    .factory('Siesta', function (Collection) {
-        return {
-            Collection: Collection
-        }
+    .factory('Siesta', function (Collection, CollectionRegistry, SaveOperation, CompositeOperation) {
+        var siesta = {
+            Collection: Collection,
+            save: function (callback) {
+                var dirtyCollections = [];
+                for (var collName in CollectionRegistry) {
+                    if (CollectionRegistry.hasOwnProperty(collName)) {
+                        var coll = CollectionRegistry[collName];
+                        if (coll.isDirty) dirtyCollections.push(coll);
+                    }
+                }
+                var dirtyMappings = _.reduce(dirtyCollections, function (memo, c) {
+                    _.each(c.__dirtyMappings, function (m) {
+                        memo.push(m);
+                    });
+                    return memo;
+                }, []);
+                var dirtyObjects = _.reduce(dirtyMappings, function (memo, m) {
+                    _.each(m.__dirtyObjects, function (o) {memo.push(o)});
+                    return memo;
+                }, []);
+                if (dirtyObjects.length) {
+                    var saveOperations = _.map(dirtyObjects, function (obj) {
+                        return new SaveOperation(obj);
+                    });
+                    var op = new CompositeOperation('Save at mapping level', saveOperations, function () {
+                        if (callback) callback(op.error ? op.error : null);
+                    });
+                    op.start();
+                    return op;
+                }
+                else if (callback) {
+                    callback();
+                }
+            }
+        };
+        Object.defineProperty(siesta, 'isDirty', {
+            get: function () {
+                return Collection.isDirty
+            },
+            configurable: true,
+            enumerable: true
+        });
+        return  siesta;
     })
 
     .factory('RestError', function () {
@@ -61,9 +101,9 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
         return RestError;
     })
 
-    /**
-     * Delegate property of an object to another object.
-     */
+/**
+ * Delegate property of an object to another object.
+ */
     .factory('defineSubProperty', function () {
         return function (property, subObj, innerProperty) {
             return Object.defineProperty(this, property, {
@@ -97,12 +137,13 @@ angular.module('restkit', ['logging', 'restkit.mapping','restkit.collection'])
                 throw new RestError(message, context);
             }
         }
+
         return assert;
     })
 
     .factory('constructMapFunction', function () {
 
-        function arrayAsString (arr) {
+        function arrayAsString(arr) {
             var arrContents = _.reduce(arr, function (memo, f) {return memo + '"' + f + '",'}, '');
             arrContents = arrContents.substring(0, arrContents.length - 1);
             return '[' + arrContents + ']';

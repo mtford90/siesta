@@ -174,6 +174,11 @@ angular.module('restkit.collection', ['logging', 'restkit.mapping', 'restkit.map
 
         Collection._getPouch = Pouch.getPouch;
 
+        /**
+         * Save all dirty objects across all mappings in this collection.
+         * @param callback
+         * @returns {CompositeOperation}
+         */
         Collection.prototype.save = function (callback) {
             var dirtyMappings = this.__dirtyMappings;
             var dirtyObjects = _.reduce(dirtyMappings, function (memo, m) {
