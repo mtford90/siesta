@@ -1,524 +1,333 @@
-angular.module('restkit.descriptor', ['restkit', 'restkit.serialiser'])
+var log = require('../node_modules/operations/src/log');
+var Logger = log.loggerWithName('Descriptor');
+Logger.setLevel(log.Level.warn);
+var RestError = require('./error').RestError;
+var XRegExp = require('xregexp').XRegExp;
+var assert = require('./misc').assert;
+var defineSubProperty = require('./misc').defineSubProperty;
+var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
+var extend = require('extend');
 
-    .factory('DescriptorRegistry', function (assert, jlog) {
+// The XRegExp object has these properties that we want to ignore when matching.
+var ignore = ['index', 'input'];
 
-        var $log = jlog.loggerWithName('DescriptorRegistry');
 
-        function DescriptorRegistry() {
-            if (!this) {
-                return new DescriptorRegistry(opts);
-            }
-            this.requestDescriptors = {};
-            this.responseDescriptors = {};
+function Descriptor(opts) {
+    if (!this) {
+        return new Descriptor(opts);
+    }
+
+    this._rawOpts = extend(true, {}, opts);
+    this._opts = opts;
+
+    // Convert path string into XRegExp if not already.
+    if (this._opts.path) {
+        if (!(this._opts.path instanceof XRegExp)) {
+            this._opts.path = XRegExp(this._opts.path);
         }
+    }
+    else {
+        this._opts.path = '';
+    }
 
-        function _registerDescriptor(descriptors, descriptor) {
-            var mapping = descriptor.mapping;
-            var collection = mapping.collection;
-            assert(mapping);
-            assert(collection);
-            assert(typeof(collection) == 'string');
-            if (!descriptors[collection]) {
-                descriptors[collection] = [];
-            }
-            descriptors[collection].push(descriptor);
+    // Convert wildcards into methods and ensure is an array of uppercase methods.
+    if (this._opts.method) {
+        if (this._opts.method == '*' || this._opts.method.indexOf('*') > -1) {
+            this._opts.method = this.httpMethods;
         }
-
-        DescriptorRegistry.prototype.registerRequestDescriptor = function (requestDescriptor) {
-            _registerDescriptor(this.requestDescriptors, requestDescriptor);
-        };
-
-        DescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
-            $log.trace('registerResponseDescriptor');
-            _registerDescriptor(this.responseDescriptors, responseDescriptor);
-        };
-
-        function _descriptorsForCollection(descriptors, collection) {
-            var descriptorsForCollection;
-            if (typeof(collection) == 'string') {
-                descriptorsForCollection = descriptors[collection] || [];
-            }
-            else {
-                descriptorsForCollection = (descriptors[collection._name] || []);
-            }
-            return descriptorsForCollection;
+        else if (typeof(this._opts.method) == 'string') {
+            this._opts.method = [this._opts.method];
         }
+    }
+    else {
+        this._opts.method = this.httpMethods;
+    }
+    this._opts.method = _.map(this._opts.method, function (x) {return x.toUpperCase()});
 
-        DescriptorRegistry.prototype.requestDescriptorsForCollection = function (collection) {
-            return _descriptorsForCollection(this.requestDescriptors, collection);
-        };
-
-        DescriptorRegistry.prototype.responseDescriptorsForCollection = function (collection) {
-            var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
-            if (!descriptorsForCollection.length) {
-                $log.debug('No response descriptors for collection ', this.responseDescriptors);
-            }
-            return  descriptorsForCollection;
-        };
-
-
-
-        return new DescriptorRegistry();
-    })
-
-    .factory('Descriptor', function (defineSubProperty, CollectionRegistry, RestError, DescriptorRegistry, assert, jlog) {
-
-        var $log = jlog.loggerWithName('Descriptor');
-
-        // The XRegExp object has these properties that we want to ignore when matching.
-        var ignore = ['index', 'input'];
-
-
-        function Descriptor(opts) {
-            if (!this) {
-                return new Descriptor(opts);
-            }
-
-            this._rawOpts = $.extend(true, {}, opts);
-            this._opts = opts;
-
-            // Convert path string into XRegExp if not already.
-            if (this._opts.path) {
-                if (!(this._opts.path instanceof XRegExp)) {
-                    this._opts.path = XRegExp(this._opts.path);
+    // Mappings can be passed as the actual mapping object or as a string (with API specified too)
+    if (this._opts.mapping) {
+        if (typeof(this._opts.mapping) == 'string') {
+            if (this._opts.collection) {
+                var collection;
+                if (typeof(this._opts.collection) == 'string') {
+                    collection = CollectionRegistry[this._opts.collection];
                 }
-            }
-            else {
-                this._opts.path = '';
-            }
-
-            // Convert wildcards into methods and ensure is an array of uppercase methods.
-            if (this._opts.method) {
-                if (this._opts.method == '*' || this._opts.method.indexOf('*') > -1) {
-                    this._opts.method = this.httpMethods;
+                else {
+                    collection = this._opts.collection;
                 }
-                else if (typeof(this._opts.method) == 'string') {
-                    this._opts.method = [this._opts.method];
-                }
-            }
-            else {
-                this._opts.method = this.httpMethods;
-            }
-            this._opts.method = _.map(this._opts.method, function (x) {return x.toUpperCase()});
-
-            // Mappings can be passed as the actual mapping object or as a string (with API specified too)
-            if (this._opts.mapping) {
-                if (typeof(this._opts.mapping) == 'string') {
-                    if (this._opts.collection) {
-                        var collection;
-                        if (typeof(this._opts.collection) == 'string') {
-                            collection = CollectionRegistry[this._opts.collection];
-                        }
-                        else {
-                            collection = this._opts.collection;
-                        }
-                        if (collection) {
-                            var actualMapping = collection[this._opts.mapping];
-                            if (actualMapping) {
-                                this._opts.mapping = actualMapping;
-                            }
-                            else {
-                                throw new RestError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts, descriptor: this});
-                            }
-                        }
-                        else {
-                            throw new RestError('Collection ' + this._opts.collection + ' does not exist', {opts: opts, descriptor: this});
-                        }
+                if (collection) {
+                    var actualMapping = collection[this._opts.mapping];
+                    if (actualMapping) {
+                        this._opts.mapping = actualMapping;
                     }
                     else {
-                        throw new RestError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts, descriptor: this});
+                        throw new RestError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts, descriptor: this});
                     }
+                }
+                else {
+                    throw new RestError('Collection ' + this._opts.collection + ' does not exist', {opts: opts, descriptor: this});
                 }
             }
             else {
-                throw new RestError('Descriptors must be initialised with a mapping', {opts: opts, descriptor: this});
+                throw new RestError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts, descriptor: this});
             }
+        }
+    }
+    else {
+        throw new RestError('Descriptors must be initialised with a mapping', {opts: opts, descriptor: this});
+    }
 
-            // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
-            // otherwise leave as string or undefined.
-            var data = this._opts.data;
-            if (data) {
-                if (data.length) {
-                    var root;
-                    var arr = data.split('.');
-                    if (arr.length == 1) {
-                        root = arr[0];
+    // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
+    // otherwise leave as string or undefined.
+    var data = this._opts.data;
+    if (data) {
+        if (data.length) {
+            var root;
+            var arr = data.split('.');
+            if (arr.length == 1) {
+                root = arr[0];
+            }
+            else {
+                var obj = {};
+                root = obj;
+                var previousKey = arr[0];
+                for (var i = 1; i < arr.length; i++) {
+                    var key = arr[i];
+                    if (i == (arr.length - 1)) {
+                        obj[previousKey] = key;
                     }
                     else {
-                        var obj = {};
-                        root = obj;
-                        var previousKey = arr[0];
-                        for (var i = 1; i < arr.length; i++) {
-                            var key = arr[i];
-                            if (i == (arr.length - 1)) {
-                                obj[previousKey] = key;
-                            }
-                            else {
-                                var newVar = {};
-                                obj[previousKey] = newVar;
-                                obj = newVar;
-                                previousKey = key;
-                            }
-                        }
+                        var newVar = {};
+                        obj[previousKey] = newVar;
+                        obj = newVar;
+                        previousKey = key;
                     }
-                    this._opts.data = root;
                 }
             }
-
-            defineSubProperty.call(this, 'path', this._opts);
-            defineSubProperty.call(this, 'method', this._opts);
-            defineSubProperty.call(this, 'mapping', this._opts);
-            defineSubProperty.call(this, 'data', this._opts);
-            defineSubProperty.call(this, 'transforms', this._opts);
+            this._opts.data = root;
         }
+    }
 
-        Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
+    defineSubProperty.call(this, 'path', this._opts);
+    defineSubProperty.call(this, 'method', this._opts);
+    defineSubProperty.call(this, 'mapping', this._opts);
+    defineSubProperty.call(this, 'data', this._opts);
+    defineSubProperty.call(this, 'transforms', this._opts);
+}
 
-        Descriptor.prototype._matchPath = function (path) {
-            var match = XRegExp.exec(path, this.path);
-            var matched = null;
-            if (match) {
-                matched = {};
-                for (var prop in match) {
-                    if (match.hasOwnProperty(prop)) {
-                        if (isNaN(parseInt(prop)) && ignore.indexOf(prop) < 0) {
-                            matched[prop] = match[prop];
-                        }
-                    }
+Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
+
+Descriptor.prototype._matchPath = function (path) {
+    var match = XRegExp.exec(path, this.path);
+    var matched = null;
+    if (match) {
+        matched = {};
+        for (var prop in match) {
+            if (match.hasOwnProperty(prop)) {
+                if (isNaN(parseInt(prop)) && ignore.indexOf(prop) < 0) {
+                    matched[prop] = match[prop];
                 }
             }
-            return matched;
-        };
+        }
+    }
+    return matched;
+};
 
-        Descriptor.prototype._matchMethod = function (method) {
-            for (var i = 0; i < this.method.length; i++) {
-                if (method.toUpperCase() == this.method[i]) {
-                    return true;
-                }
-            }
-            return false;
-        };
+Descriptor.prototype._matchMethod = function (method) {
+    for (var i = 0; i < this.method.length; i++) {
+        if (method.toUpperCase() == this.method[i]) {
+            return true;
+        }
+    }
+    return false;
+};
 
-        /**
-         * Bury obj as far down in data as poss.
-         * @param obj
-         * @param data keypath object
-         * @returns {*}
-         */
-        function bury(obj, data) {
-            var root = data;
-            var keys = Object.keys(data);
+/**
+ * Bury obj as far down in data as poss.
+ * @param obj
+ * @param data keypath object
+ * @returns {*}
+ */
+function bury(obj, data) {
+    var root = data;
+    var keys = Object.keys(data);
+    assert(keys.length == 1);
+    var key = keys[0];
+    var curr = data;
+    while (!(typeof(curr[key]) == 'string')) {
+        curr = curr[key];
+        keys = Object.keys(curr);
+        assert(keys.length == 1);
+        key = keys[0];
+    }
+    var newParent = curr[key];
+    var newObj = {};
+    curr[key] = newObj;
+    newObj[newParent] = obj;
+    return root;
+}
+
+Descriptor.prototype._embedData = function (data) {
+    if (this.data) {
+        var nested;
+        if (typeof(this.data) == 'string') {
+            nested = {};
+            nested[this.data] = data;
+        }
+        else {
+            nested = bury(data, extend(true, {}, this.data));
+        }
+        return nested;
+    }
+    else {
+        return data;
+    }
+};
+
+Descriptor.prototype._extractData = function (data) {
+    Logger.debug('_extractData', data);
+    if (this.data) {
+        if (typeof(this.data) == 'string') {
+            return data[this.data];
+        }
+        else {
+            var keys = Object.keys(this.data);
             assert(keys.length == 1);
-            var key = keys[0];
-            var curr = data;
-            while (!(typeof(curr[key]) == 'string')) {
-                curr = curr[key];
-                keys = Object.keys(curr);
+            var currTheirs = data;
+            var currOurs = this.data;
+            while (typeof(currOurs) != 'string') {
+                console.log(currOurs, currTheirs);
+                keys = Object.keys(currOurs);
                 assert(keys.length == 1);
-                key = keys[0];
+                var key = keys[0];
+                currOurs = currOurs[key];
+                currTheirs = currTheirs[key];
+                if (!currTheirs) {
+                    break;
+                }
             }
-            var newParent = curr[key];
-            var newObj = {};
-            curr[key] = newObj;
-            newObj[newParent] = obj;
-            return root;
+            console.log(currOurs, currTheirs);
+            return currTheirs ? currTheirs[currOurs] : null;
         }
+    }
+    else {
+        return data;
+    }
+};
 
-        Descriptor.prototype._embedData = function (data) {
-            if (this.data) {
-                var nested;
-                if (typeof(this.data) == 'string') {
-                    nested = {};
-                    nested[this.data] = data;
-                }
-                else {
-                    nested = bury(data, $.extend(true, {}, this.data));
-                }
-                return nested;
-            }
-            else {
-                return data;
-            }
-        };
+/**
+ * Returns this descriptors mapping if the request config matches.
+ * @param config
+ * @returns {*}
+ * @private
+ */
+Descriptor.prototype._matchConfig = function (config) {
+    var matches = config.type ? this._matchMethod(config.type) : {};
+    if (matches) {
+        matches = config.url ? this._matchPath(config.url) : {};
+    }
+    if (matches) {
+        Logger.trace('matched config');
+    }
+    return matches;
+};
 
-        Descriptor.prototype._extractData = function (data) {
-            $log.debug('_extractData', data);
-            if (this.data) {
-                if (typeof(this.data) == 'string') {
-                    return data[this.data];
-                }
-                else {
-                    var keys = Object.keys(this.data);
-                    assert(keys.length == 1);
-                    var currTheirs = data;
-                    var currOurs = this.data;
-                    while (typeof(currOurs) != 'string') {
-                        console.log(currOurs, currTheirs);
-                        keys = Object.keys(currOurs);
-                        assert(keys.length == 1);
-                        var key = keys[0];
-                        currOurs = currOurs[key];
-                        currTheirs = currTheirs[key];
-                        if (!currTheirs) {
-                            break;
-                        }
+Descriptor.prototype._matchData = function (data) {
+    var extractedData = null;
+    if (this.data) {
+        if (data) {
+            extractedData = this._extractData(data);
+        }
+    }
+    else {
+        extractedData = data;
+    }
+    if (extractedData) {
+        Logger.trace('matched data');
+    }
+    return extractedData;
+};
+
+Descriptor.prototype.match = function (config, data) {
+    var regexMatches = this._matchConfig(config);
+    var matches = !!regexMatches;
+    var extractedData = false;
+    if (matches) {
+        Logger.trace('config matches');
+        extractedData = this._matchData(data);
+        matches = !!extractedData;
+        if (matches) {
+            var key;
+            if (Object.prototype.toString.call(extractedData) === '[object Array]') {
+                for (key in regexMatches) {
+                    if (regexMatches.hasOwnProperty(key)) {
+                        _.each(extractedData, function (datum) {
+                            datum[key] = regexMatches[key];
+                        });
                     }
-                    console.log(currOurs, currTheirs);
-                    return currTheirs ? currTheirs[currOurs] : null;
                 }
             }
             else {
-                return data;
-            }
-        };
-
-        /**
-         * Returns this descriptors mapping if the request config matches.
-         * @param config
-         * @returns {*}
-         * @private
-         */
-        Descriptor.prototype._matchConfig = function (config) {
-            var matches = config.type ? this._matchMethod(config.type) : {};
-            if (matches) {
-                matches = config.url ? this._matchPath(config.url) : {};
-            }
-            if (matches) {
-                $log.trace('matched config');
-            }
-            return matches;
-        };
-
-        Descriptor.prototype._matchData = function (data) {
-            var extractedData = null;
-            if (this.data) {
-                if (data) {
-                    extractedData = this._extractData(data);
+                for (key in regexMatches) {
+                    if (regexMatches.hasOwnProperty(key)) {
+                        extractedData[key] = regexMatches[key];
+                    }
                 }
             }
-            else {
-                extractedData = data;
-            }
-            if (extractedData) {
-                $log.trace('matched data');
-            }
-            return extractedData;
-        };
 
-        Descriptor.prototype.match = function (config, data) {
-            var regexMatches = this._matchConfig(config);
-            var matches = !!regexMatches;
-            var extractedData = false;
-            if (matches) {
-                $log.trace('config matches');
-                extractedData = this._matchData(data);
-                matches = !!extractedData;
-                if (matches) {
-                    var key;
-                    if (Object.prototype.toString.call(extractedData) === '[object Array]') {
-                        for (key in regexMatches) {
-                            if (regexMatches.hasOwnProperty(key)) {
-                                _.each(extractedData, function (datum) {
-                                    datum[key] = regexMatches[key];
-                                });
-                            }
-                        }
+            Logger.trace('data matches');
+        }
+        else {
+            Logger.trace('data doesnt match');
+        }
+    }
+    else {
+        Logger.trace('config doesnt match');
+    }
+    return extractedData;
+};
+
+Descriptor.prototype._transformData = function (data) {
+    var transforms = this.transforms;
+    for (var attr in transforms) {
+        if (transforms.hasOwnProperty(attr)) {
+            if (data[attr]) {
+                var transform = transforms[attr];
+                var val = data[attr];
+                if (typeof(transform) == 'string') {
+                    var split = transform.split('.');
+                    delete data[attr];
+                    if (split.length == 1) {
+                        data[split[0]] = val;
                     }
                     else {
-                        for (key in regexMatches) {
-                            if (regexMatches.hasOwnProperty(key)) {
-                                extractedData[key] = regexMatches[key];
-                            }
+                        data[split[0]] = {};
+                        var newVal = data[split[0]];
+                        for (var i = 1; i < split.length - 1; i++) {
+                            var newAttr = split[i];
+                            newVal[newAttr] = {};
+                            newVal = newVal[newAttr];
                         }
+                        newVal[split[split.length - 1]] = val;
                     }
-
-                    $log.trace('data matches');
+                }
+                else if (typeof(transform) == 'function') {
+                    var transformed = transform(val);
+                    if (Object.prototype.toString.call(transformed) === '[object Array]') {
+                        delete data[attr];
+                        data[transformed[0]] = transformed[1];
+                    }
+                    else {
+                        data[attr] = transformed;
+                    }
                 }
                 else {
-                    $log.trace('data doesnt match');
+                    throw new RestError('Invalid transformer');
                 }
             }
-            else {
-                $log.trace('config doesnt match');
-            }
-            return extractedData;
-        };
-
-        Descriptor.prototype._transformData = function (data) {
-            var transforms = this.transforms;
-            for (var attr in transforms) {
-                if (transforms.hasOwnProperty(attr)) {
-                    if (data[attr]) {
-                        var transform = transforms[attr];
-                        var val = data[attr];
-                        if (typeof(transform) == 'string') {
-                            var split = transform.split('.');
-                            delete data[attr];
-                            if (split.length == 1) {
-                                data[split[0]] = val;
-                            }
-                            else {
-                                data[split[0]] = {};
-                                var newVal = data[split[0]];
-                                for (var i=1;i<split.length-1;i++) {
-                                    var newAttr = split[i];
-                                    newVal[newAttr] = {};
-                                    newVal = newVal[newAttr];
-                                }
-                                newVal[split[split.length-1]] = val;
-                            }
-                        }
-                        else if (typeof(transform) == 'function') {
-                            var transformed = transform(val);
-                            if (Object.prototype.toString.call(transformed) === '[object Array]') {
-                                delete data[attr];
-                                data[transformed[0]] = transformed[1];
-                            }
-                            else {
-                                data[attr] = transformed;
-                            }
-                        }
-                        else {
-                            throw new RestError('Invalid transformer');
-                        }
-                    }
-                }
-            }
-        };
-
-        return Descriptor;
-    })
-
-    .factory('RequestDescriptor', function (DescriptorRegistry, Descriptor, jlog, defineSubProperty, Serialiser, RestError) {
-
-        var $log = jlog.loggerWithName('RequestDescriptor');
-
-        function RequestDescriptor(opts) {
-            if (!this) {
-                return new RequestDescriptor(opts);
-            }
-
-            Descriptor.call(this, opts);
-
-
-            if (this._opts.serializer) {
-                this._opts.serialiser = this._opts.serializer;
-            }
-
-            if (!this._opts.serialiser) {
-                this._opts.serialiser = Serialiser.depthSerializer(0);
-            }
-
-
-            defineSubProperty.call(this, 'serialiser', this._opts);
-            defineSubProperty.call(this, 'serializer', this._opts, 'serialiser');
-
         }
-
-        RequestDescriptor.prototype = Object.create(Descriptor.prototype);
-
-        RequestDescriptor.prototype._serialise = function (obj, callback) {
-            var self = this;
-            $log.trace('_serialise');
-            var finished;
-            var data = this.serialiser(obj, function (err, data) {
-                if (!finished) {
-                    self._transformData(data);
-                    if (callback) callback(err, self._embedData(data));
-                }
-            });
-            if (data !== undefined) {
-                $log.trace('serialiser doesnt use a callback');
-                finished = true;
-                self._transformData(data);
-                if (callback) callback(null, self._embedData(data));
-            }
-            else {
-                $log.trace('serialiser uses a callback', this.serialiser);
-            }
-        };
-
-        RequestDescriptor.prototype._dump = function (asJson) {
-            var obj = {};
-            obj.methods = this.method;
-            obj.mapping = this.mapping.type;
-            obj.path = this._rawOpts.path;
-            var serialiser;
-            if (typeof(this._rawOpts.serialiser) == 'function') {
-                serialiser = 'function () { ... }'
-            }
-            else {
-                serialiser = this._rawOpts.serialiser;
-            }
-            obj.serialiser = serialiser;
-            var transforms = {};
-            for (var f in this.transforms) {
-                if (this.transforms.hasOwnProperty(f)) {
-                    var transform = this.transforms[f];
-                    if (typeof(transform) == 'function') {
-                        transforms[f] = 'function () { ... }'
-                    }
-                    else {
-                        transforms[f] = this.transforms[f];
-                    }
-                }
-            }
-            obj.transforms = transforms;
-            return asJson ? JSON.stringify(obj, null, 4) : obj;
-        };
-
-        return RequestDescriptor;
-    })
-
-    .factory('ResponseDescriptor', function (DescriptorRegistry, Descriptor, jlog) {
-        function ResponseDescriptor(opts) {
-            if (!this) {
-                return new ResponseDescriptor(opts);
-            }
-            Descriptor.call(this, opts);
-        }
-
-        ResponseDescriptor.prototype = Object.create(Descriptor.prototype);
-
-        ResponseDescriptor.prototype._extractData = function (data) {
-            var extractedData = Descriptor.prototype._extractData.call(this, data);
-            if (extractedData) {
-                this._transformData(extractedData);
-            }
-            return extractedData;
-        };
-
-        ResponseDescriptor.prototype._matchData = function (data) {
-            var extractedData = Descriptor.prototype._matchData.call(this, data);
-            if (extractedData) {
-                this._transformData(extractedData);
-            }
-            return extractedData;
-        };
-
-        ResponseDescriptor.prototype._dump = function (asJson) {
-            var obj = {};
-            obj.methods = this.method;
-            obj.mapping = this.mapping.type;
-            obj.path = this._rawOpts.path;
-            var transforms = {};
-            for (var f in this.transforms) {
-                if (this.transforms.hasOwnProperty(f)) {
-                    var transform = this.transforms[f];
-                    if (typeof(transform) == 'function') {
-                        transforms[f] = 'function () { ... }'
-                    }
-                    else {
-                        transforms[f] = this.transforms[f];
-                    }
-                }
-            }
-            obj.transforms = transforms;
-            return asJson ? JSON.stringify(obj, null, 4) : obj;
-        };
-
-        return ResponseDescriptor;
-    })
+    }
+};
 
 
-;
+exports.Descriptor = Descriptor;

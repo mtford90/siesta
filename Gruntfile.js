@@ -1,35 +1,15 @@
 module.exports = function (grunt) {
 
-    /**
-     * Load required Grunt tasks. These are installed based on the versions listed
-     * in `package.json` when you do `npm install` in this directory.
-     */
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
 
-    /**
-     * Load in our build configuration file.
-     */
     var userConfig = require('./build.config.js');
 
     var license = require('fs').readFileSync('LICENSE');
 
-    /**
-     * This is the configuration object Grunt uses to give each plugin its
-     * instructions.
-     */
     var taskConfig = {
-        /**
-         * We read in our `package.json` file so we can access the package name and
-         * version. It's already there, so we don't repeat ourselves here.
-         */
         pkg: grunt.file.readJSON("package.json"),
 
-        /**
-         * The banner is the comment that is placed at the top of our compiled
-         * source files. It is first processed as a Grunt template, where the `<%=`
-         * pairs are evaluated based on this very configuration object.
-         */
         meta: {
             banner: '/**\n' +
                 ' * <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -41,52 +21,30 @@ module.exports = function (grunt) {
                 ' */\n'
         },
 
-        /**
-         * Creates a changelog on a new version.
-         */
-        changelog: {
+        browserify: {
             options: {
-                dest: 'CHANGELOG.md',
-                template: 'changelog.tpl'
+                browserifyOptions : {
+                    debug: true
+                },
+                debug: true
+            },
+            build: {
+                files: {
+                    '<%= build_dir %>/siesta.js': ['index.js']
+                }
+            },
+            test: {
+                files: {
+                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js']
+                }
             }
         },
 
-        /**
-         * Increments the version number, etc.
-         */
-        bump: {
-            options: {
-                files: [
-                    "package.json",
-                    "bower.json"
-                ],
-                commit: false,
-                commitMessage: 'chore(release): v%VERSION%',
-                commitFiles: [
-                    "package.json",
-                    "client/bower.json"
-                ],
-                createTag: false,
-                tagName: 'v%VERSION%',
-                tagMessage: 'Version %VERSION%',
-                push: false,
-                pushTo: 'origin'
-            }
-        },
-
-        /**
-         * The directories to delete when `grunt clean` is executed.
-         */
         clean: {
             build: '<%= build_dir %>',
             compile: '<%= compile_dir %>'
         },
 
-        /**
-         * The `copy` task just copies files from A to B. We use it here to copy
-         * our project assets (images, fonts, etc.) and javascripts into
-         * `build_dir`, and then to copy the assets to `compile_dir`.
-         */
         copy: {
             build_appjs: {
                 files: [
@@ -111,15 +69,7 @@ module.exports = function (grunt) {
 
         },
 
-        /**
-         * `grunt concat` concatenates multiple source files into a single file.
-         */
         concat: {
-
-            /**
-             * The `compile_js` target is the concatenation of our application source
-             * code and all specified vendor source code into a single file.
-             */
             compile_js: {
                 options: {
                     banner: '<%= meta.banner %>'
@@ -137,10 +87,6 @@ module.exports = function (grunt) {
             }
         },
 
-        /**
-         * `ng-min` annotates the sources before minifying. That is, it allows us
-         * to code without the array syntax.
-         */
         ngmin: {
             compile: {
                 files: [
@@ -154,9 +100,6 @@ module.exports = function (grunt) {
             }
         },
 
-        /**
-         * Minify the sources!
-         */
         uglify: {
             compile: {
                 options: {
@@ -183,10 +126,6 @@ module.exports = function (grunt) {
             }
         },
 
-        /**
-         * This task compiles the karma template so that changes to its file array
-         * don't have to be managed manually.
-         */
         karmaconfig: {
             unit: {
                 dir: '<%= build_dir %>',
@@ -197,120 +136,84 @@ module.exports = function (grunt) {
             }
         },
 
-
-        /**
-         * And for rapid development, we have a watch set up that checks to see if
-         * any of the files listed below change, and then to execute the listed
-         * tasks when they do. This just saves us from having to type "grunt" into
-         * the command-line every time we want to see what we're working on; we can
-         * instead just leave "grunt watch" running in a background terminal. Set it
-         * and forget it, as Ron Popeil used to tell us.
-         *
-         * But we don't need the same thing to happen for all the files.
-         */
         delta: {
-            /**
-             * By default, we want the Live Reload to work for all tasks; this is
-             * overridden in some tasks (like this file) where browser resources are
-             * unaffected. It runs by default on port 35729, which your browser
-             * plugin should auto-detect.
-             */
             options: {
                 livereload: true
             },
 
-            /**
-             * When the Gruntfile changes, we just want to lint it. In fact, when
-             * your Gruntfile changes, it will automatically be reloaded!
-             */
             gruntfile: {
                 files: 'Gruntfile.js',
-                tasks: [],
-                options: {
-                    livereload: false
-                }
+                tasks: [ 'browserify:test', 'karma:unit:run' ]
             },
 
-            /**
-             * When our JavaScript source files change, we want to run lint them and
-             * run our unit tests.
-             */
             jssrc: {
                 files: [
                     '<%= app_files.js %>'
                 ],
-                tasks: [  'karma:unit:run', 'copy:build_appjs' ]
+                tasks: [  'browserify:test', 'karma:unit:run' ]
             },
 
-            /**
-             * When a JavaScript unit test file changes, we only want to lint it and
-             * run the unit tests. We don't want to do any live reloading.
-             */
+            index: {
+                files: [
+                    '<%= test_dir %>/index.tpl.html'
+                ],
+                tasks: ['index']
+            },
+
             jsunit: {
                 files: [
-                    '<%= app_files.jsunit %>'
+                    '<%= test_dir %>/**/*.js'
                 ],
-//                tasks: [ 'jshint:test', 'karma:unit:run' ],
-                tasks: [ 'karma:unit:run' ],
-                options: {
-                    livereload: false
-                }
+                tasks: [  'browserify:test', 'karma:unit:run' ]
             }
 
+        },
 
+        mocha: {
+            test: {
+                src: ['etest/index.html']
+            }
+        },
+
+        mochaTest: {
+            test: {
+                options: {
+                    reporter: 'spec'
+                },
+                src: [
+                    '<%= test_dir %>/**/*.spec.js'
+                ]
+            }
+        },
+
+        index: {
+            build: {
+                dir: '<%= test_dir %>',
+                src: [
+                    '<%= test_dir %>/**/*.spec.js'
+
+                ]
+            }
         }
 
     };
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
-    /**
-     * In order to make it safe to just compile or copy *only* what was changed,
-     * we need to ensure we are starting from a clean, fresh build. So we rename
-     * the `watch` task to `delta` (that's why the configuration var above is
-     * `delta`) and then add a new task called `watch` that does a clean build
-     * before watching for changes.
-     */
     grunt.renameTask('watch', 'delta');
-    grunt.registerTask('watch', [ 'build', 'karma:unit', 'delta' ]);
-
-
-    /**
-     * The default task is to build and compile.
-     */
     grunt.registerTask('default', [ 'build', 'compile' ]);
 
-    /**
-     * The `build` task gets your app ready to run for development and testing.
-     */
+    grunt.registerTask('watch', [ 'build', 'karma:unit', 'delta' ]);
+
     grunt.registerTask('build', [
         'clean',
-        'copy:build_appjs',
-        'copy:build_vendorjs',
+        'browserify:test',
         'karmaconfig',
         'karma:continuous'
     ]);
 
-    /**
-     * Same thing.
-     */
-    grunt.registerTask('test', [
-        'build'
-    ]);
-
-    grunt.registerTask('build-no-test', [
-        'clean',
-        'copy:build_appjs',
-        'copy:build_vendorjs',
-        'karmaconfig'
-    ]);
 
 
-
-    /**
-     * The `compile` task gets your app ready for deployment by concatenating and
-     * minifying your code.
-     */
     grunt.registerTask('compile', [
         'cssmin',
         'ngmin',
@@ -318,21 +221,30 @@ module.exports = function (grunt) {
         'uglify'
     ]);
 
-    /**
-     * A utility function to get all app JavaScript sources.
-     */
     function filterForJS(files) {
         return files.filter(function (file) {
             return file.match(/\.js$/);
         });
     }
 
+    grunt.registerMultiTask('index', 'Process index.html template', function () {
+        var dirRE = new RegExp('^(' + grunt.config('build_dir') + '|' + grunt.config('compile_dir') + ')\/', 'g');
+        var jsFiles = filterForJS(this.filesSrc).map(function (file) {
+            return '../' + file.replace(dirRE, '');
+        });
 
-    /**
-     * In order to avoid having to specify manually the files needed for karma to
-     * run, we use grunt to manage the list for us. The `karma/*` files are
-     * compiled as grunt templates for use by Karma. Yay!
-     */
+        grunt.file.copy('etest/index.tpl.html', this.data.dir + '/index.html', {
+            process: function (contents, path) {
+                return grunt.template.process(contents, {
+                    data: {
+                        specs: jsFiles
+                    }
+                });
+            }
+        });
+
+    });
+
     grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
         var jsFiles = filterForJS(this.filesSrc);
         var process = function (contents, path) {

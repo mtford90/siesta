@@ -8,13 +8,17 @@
     "type": "git",
     "url": "git@github.com:mtford90/rest"
   },
+    "main": "index.js",
   "dependencies": {
     "qs": "~0.6.6",
     "url": "~0.10.1",
     "jstream": "~0.2.7",
     "querystring": "~0.2.0",
     "eventvat": "~0.2.1",
-    "pouchdb": "~2.2.3"
+    "pouchdb": "~3.0.3",
+    "operations": "~0.1.2",
+    "underscore": "~1.7.0",
+    "extend": "~1.3.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -50,6 +54,16 @@
     "q": "~1.0.1",
     "sinon": "~1.10.3",
     "chai-things": "~0.2.0",
-    "karma-chai-things": "~0.1.3"
+    "karma-chai-things": "~0.1.3",
+    "browserify": "~5.11.0",
+    "grunt-browserify": "~3.0.0",
+    "jquery": "~2.1.1",
+    "async": "~0.9.0",
+    "grunt-mocha-phantomjs": "~0.6.0",
+    "grunt-mocha": "~0.4.11",
+    "memdown": "~0.10.2",
+    "karma-safari-launcher": "~0.1.1",
+    "karma-browserify": "~0.2.1",
+    "karma-sourcemap-loader": "~0.2.0"
   }
 }
