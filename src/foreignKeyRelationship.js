@@ -62,12 +62,13 @@ ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback, 
     var previouslyRelatedObject;
 
     function addNewRelated(proxy) {
-        Logger.debug('addNewRelated');
 
         function broadCast() {
             var field = proxy.relationship.isForward(obj) ? proxy.relationship.name : proxy.relationship.reverseName;
             obj._markFieldAsDirty(field);
-            notificationCentre.emit(obj.collection + ':' + obj.type, {
+            var notifName = obj.collection + ':' + obj.type;
+            dump('emit', notifName);
+            notificationCentre.emit(notifName, {
                 collection: obj.collection,
                 type: obj.type,
                 obj: obj,
@@ -375,7 +376,9 @@ ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback, 
             proxy.get(function (err) {
                 if (!err) {
                     self.addRelatedToProxy(proxy, related);
-                    notificationCentre.emit(obj.collection + ':' + obj.type, {
+                    var notificationName = obj.collection + ':' + obj.type;
+                    dump('emit', notificationName);
+                    notificationCentre.emit(notificationName, {
                         collection: obj.collection,
                         type: obj.type,
                         change: {

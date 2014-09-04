@@ -84,7 +84,8 @@ OneToOneRelationship.prototype.setRelated = function (obj, related, callback, re
             if (proxy.relationship.isForward(obj)) {
                 obj._markFieldAsDirty(proxy.relationship.name);
             }
-            notificationCentre.emit(obj.collection + ':' + obj.type, {
+            var notifName = obj.collection + ':' + obj.type;
+            notificationCentre.emit(notifName, {
                 collection: obj.collection,
                 type: obj.type,
                 change: {
