@@ -12,7 +12,6 @@ var OneToOneRelationship = require('./oneToOneRelationship').OneToOneRelationshi
 var Query = require('./query').Query;
 var index = require('./index');
 var Index = index.Index;
-var ChangeType = require('./changeType').ChangeType;
 var BaseOperation = require('./baseOperation').BaseOperation;
 var CompositeOperation = require('./baseOperation').CompositeOperation;
 var MappingOperation = require('./mappingOperation').MappingOperation;
@@ -21,6 +20,10 @@ var RestObject = require('./object').RestObject;
 var guid = require('./misc').guid;
 var cache = require('./cache');
 var extend = require('extend');
+
+var ChangeType = require('./ChangeType').ChangeType;
+var notificationCentre = require('./notificationCentre').notificationCentre;
+
 
 function Mapping(opts) {
     var self = this;
@@ -208,6 +211,21 @@ Mapping.prototype._validate = function () {
 };
 
 
+function broadcast(obj, change) {
+    var payload = {
+        collection: obj.collection,
+        type: obj.type,
+        obj: obj,
+        change: change
+    };
+    var mappingNotif = obj.collection + ':' + obj.type;
+    notificationCentre.emit(mappingNotif, payload);
+    var collectioNotif = obj.collection;
+    notificationCentre.emit(collectioNotif, payload);
+    var genericNotif = 'Fount';
+    notificationCentre.emit(genericNotif, payload);
+}
+
 /**
  * Wraps the methods of a javascript array object so that notifications are sent
  * on calls.
@@ -221,12 +239,12 @@ function wrapArray(array, field, restObject) {
         var objects = Array.prototype.slice.call(arguments, 1);
         var res = push.apply(this, objects);
         restObject._markFieldAsDirty(field);
-//        broadcast(restObject, {
-//            type: ChangeType.Insert,
-//            new: objects,
-//            field: field,
-//            index: this.length - 1
-//        });
+        broadcast(restObject, {
+            type: ChangeType.Insert,
+            new: objects,
+            field: field,
+            index: this.length - 1
+        });
         return res;
     }
 
@@ -240,12 +258,12 @@ function wrapArray(array, field, restObject) {
             var old = [this[this.length - 1]];
             var res = pop.apply(this, objects);
             restObject._markFieldAsDirty(field);
-//            broadcast(restObject, {
-//                type: ChangeType.Remove,
-//                old: old,
-//                field: field,
-//                index: this.length
-//            });
+            broadcast(restObject, {
+                type: ChangeType.Remove,
+                old: old,
+                field: field,
+                index: this.length
+            });
             return  res;
         }
         else {
@@ -263,12 +281,12 @@ function wrapArray(array, field, restObject) {
             var old = [this[0]];
             var res = shift.apply(this, objects);
             restObject._markFieldAsDirty(field);
-//            broadcast(restObject, {
-//                type: ChangeType.Remove,
-//                old: old,
-//                field: field,
-//                index: 0
-//            });
+            broadcast(restObject, {
+                type: ChangeType.Remove,
+                old: old,
+                field: field,
+                index: 0
+            });
             return  res;
         }
         else {
@@ -284,12 +302,12 @@ function wrapArray(array, field, restObject) {
         var objects = Array.prototype.slice.call(arguments, 1);
         var res = unshift.apply(this, objects);
         restObject._markFieldAsDirty(field);
-//        broadcast(restObject, {
-//            type: ChangeType.Insert,
-//            new: objects,
-//            field: field,
-//            index: 0
-//        });
+        broadcast(restObject, {
+            type: ChangeType.Insert,
+            new: objects,
+            field: field,
+            index: 0
+        });
         return res;
     }
 
@@ -338,11 +356,11 @@ function wrapArray(array, field, restObject) {
         var res = sort.apply(this, objects);
         var indexes = computeDiff(this, clone);
         restObject._markFieldAsDirty(field);
-//        broadcast(restObject, {
-//            type: ChangeType.Move,
-//            field: field,
-//            indexes: indexes
-//        });
+        broadcast(restObject, {
+            type: ChangeType.Move,
+            field: field,
+            indexes: indexes
+        });
         return res;
     }
 
@@ -356,11 +374,11 @@ function wrapArray(array, field, restObject) {
         var res = reverse.apply(this, objects);
         var indexes = computeDiff(this, clone);
         restObject._markFieldAsDirty(field);
-//        broadcast(restObject, {
-//            type: ChangeType.Move,
-//            field: field,
-//            indexes: indexes
-//        });
+        broadcast(restObject, {
+            type: ChangeType.Move,
+            field: field,
+            indexes: indexes
+        });
         return res;
     }
 
@@ -372,13 +390,13 @@ function wrapArray(array, field, restObject) {
         var old = this[index];
         this[index] = obj;
         restObject._markFieldAsDirty(field);
-//        broadcast(restObject, {
-//            type: ChangeType.Replace,
-//            field: field,
-//            index: index,
-//            old: old,
-//            new: obj
-//        });
+        broadcast(restObject, {
+            type: ChangeType.Replace,
+            field: field,
+            index: index,
+            old: old,
+            new: obj
+        });
     };
 
     function fountSplice(splice, index, howMany) {
@@ -440,7 +458,7 @@ function wrapArray(array, field, restObject) {
         }
         var res = _.bind(splice, this, index, howMany).apply(this, objects);
         restObject._markFieldAsDirty(field);
-//        broadcast(restObject, changes);
+        broadcast(restObject, changes);
         return res;
     }
 
@@ -535,12 +553,12 @@ Mapping.prototype._new = function (data) {
             set: function (v) {
                 var old = restObject.__values[field];
                 restObject.__values[field] = v;
-//                broadcast(restObject, {
-//                    type: ChangeType.Set,
-//                    old: old,
-//                    new: v,
-//                    field: field
-//                });
+                broadcast(restObject, {
+                    type: ChangeType.Set,
+                    old: old,
+                    new: v,
+                    field: field
+                });
                 if (Object.prototype.toString.call(v) === '[object Array]') {
                     wrapArray(v, field, restObject);
                 }
@@ -563,12 +581,12 @@ Mapping.prototype._new = function (data) {
         set: function (v) {
             var old = restObject.__values[self.id];
             restObject.__values[self.id] = v;
-//            broadcast(restObject, {
-//                type: ChangeType.Set,
-//                old: old,
-//                new: v,
-//                field: self.id
-//            });
+            broadcast(restObject, {
+                type: ChangeType.Set,
+                old: old,
+                new: v,
+                field: self.id
+            });
             cache.remoteInsert(restObject, v, old);
         },
         enumerable: true,

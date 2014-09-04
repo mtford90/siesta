@@ -2,7 +2,8 @@ var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('ForeignKeyRelationship');
 Logger.setLevel(log.Level.warn);
 
-
+var ChangeType = require('./ChangeType').ChangeType;
+var notificationCentre = require('./notificationCentre').notificationCentre;
 var Relationship = require('./relationship').Relationship;
 var RestError = require('./error').RestError;
 var Store = require('./store');
@@ -66,17 +67,17 @@ ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback, 
         function broadCast() {
             var field = proxy.relationship.isForward(obj) ? proxy.relationship.name : proxy.relationship.reverseName;
             obj._markFieldAsDirty(field);
-//            $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                collection: obj.collection,
-//                type: obj.type,
-//                obj: obj,
-//                change: {
-//                    type: ChangeType.Set,
-//                    old: previouslyRelatedObject,
-//                    new: related,
-//                    field: self.name
-//                }
-//            });
+            notificationCentre.emit(obj.collection + ':' + obj.type, {
+                collection: obj.collection,
+                type: obj.type,
+                obj: obj,
+                change: {
+                    type: ChangeType.Set,
+                    old: previouslyRelatedObject,
+                    new: related,
+                    field: self.name
+                }
+            });
         }
 
         if (related) {
@@ -181,17 +182,17 @@ ForeignKeyRelationship.prototype.setRelated = function (obj, related, callback, 
             function setRelated() {
                 proxy._id = _.pluck(related, '_id');
                 proxy.relatedObject = related;
-//                $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                    collection: obj.collection,
-//                    type: obj.type,
-//                    obj: obj,
-//                    change: {
-//                        type: ChangeType.Set,
-//                        old: previous,
-//                        new: related,
-//                        field: self.reverseName
-//                    }
-//                });
+                notificationCentre.emit(obj.collection + ':' + obj.type, {
+                    collection: obj.collection,
+                    type: obj.type,
+                    obj: obj,
+                    change: {
+                        type: ChangeType.Set,
+                        old: previous,
+                        new: related,
+                        field: self.reverseName
+                    }
+                });
                 // Reverse
                 if (related.length) {
                     var errs = [];
@@ -296,16 +297,16 @@ ForeignKeyRelationship.prototype.removeRelated = function (obj, related, callbac
                     var idx = self.removeRelatedFromProxy(proxy, related);
                     var removedSomething = idx > -1;
                     if (removedSomething) {
-//                        $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                            collection: obj.collection,
-//                            type: obj.type,
-//                            change: {
-//                                type: ChangeType.Remove,
-//                                index: idx,
-//                                old: related,
-//                                field: self.reverseName
-//                            }
-//                        });
+                        notificationCentre.emit(obj.collection + ':' + obj.type, {
+                            collection: obj.collection,
+                            type: obj.type,
+                            change: {
+                                type: ChangeType.Remove,
+                                index: idx,
+                                old: related,
+                                field: self.reverseName
+                            }
+                        });
                         if (!reverse) {
                             self.setRelated(related, null, callback, true);
                         }
@@ -327,16 +328,16 @@ ForeignKeyRelationship.prototype.removeRelated = function (obj, related, callbac
             var idx = self.removeRelatedFromProxy(proxy, related);
             var removedSomething = idx > -1;
             if (removedSomething) {
-//                $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                    collection: obj.collection,
-//                    type: obj.type,
-//                    change: {
-//                        type: ChangeType.Remove,
-//                        index: idx,
-//                        old: related,
-//                        field: self.reverseName
-//                    }
-//                });
+                notificationCentre.emit(obj.collection + ':' + obj.type, {
+                    collection: obj.collection,
+                    type: obj.type,
+                    change: {
+                        type: ChangeType.Remove,
+                        index: idx,
+                        old: related,
+                        field: self.reverseName
+                    }
+                });
                 if (!reverse) {
                     self.setRelated(related, null, callback, true);
                 }
@@ -374,16 +375,16 @@ ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback, 
             proxy.get(function (err) {
                 if (!err) {
                     self.addRelatedToProxy(proxy, related);
-//                    $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                        collection: obj.collection,
-//                        type: obj.type,
-//                        change: {
-//                            type: ChangeType.Insert,
-//                            new: related,
-//                            index: proxy.relatedObject.length - 1,
-//                            field: self.reverseName
-//                        }
-//                    });
+                    notificationCentre.emit(obj.collection + ':' + obj.type, {
+                        collection: obj.collection,
+                        type: obj.type,
+                        change: {
+                            type: ChangeType.Insert,
+                            new: related,
+                            index: proxy.relatedObject.length - 1,
+                            field: self.reverseName
+                        }
+                    });
                     if (!reverse) {
                         self.setRelated(related, obj, callback, true);
                     }
@@ -398,16 +399,16 @@ ForeignKeyRelationship.prototype.addRelated = function (obj, related, callback, 
         }
         else {
             this.addRelatedToProxy(proxy, related);
-//            $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                collection: obj.collection,
-//                type: obj.type,
-//                change: {
-//                    type: ChangeType.Insert,
-//                    new: related,
-//                    index: proxy.relatedObject.length - 1,
-//                    field: this.reverseName
-//                }
-//            });
+            notificationCentre.emit(obj.collection + ':' + obj.type, {
+                collection: obj.collection,
+                type: obj.type,
+                change: {
+                    type: ChangeType.Insert,
+                    new: related,
+                    index: proxy.relatedObject.length - 1,
+                    field: this.reverseName
+                }
+            });
             if (!reverse) {
                 self.setRelated(related, obj, callback, true);
             }

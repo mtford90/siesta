@@ -2,11 +2,12 @@ var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('OneToOneRelationship');
 Logger.setLevel(log.Level.warn);
 
-
 var relationship = require('./relationship');
 var Relationship = relationship.Relationship;
 var RestError = require('./error').RestError;
 var Store = require('./store');
+var ChangeType = require('./ChangeType').ChangeType;
+var notificationCentre = require('./notificationCentre').notificationCentre;
 
 function OneToOneRelationship(name, reverseName, mapping, reverseMapping) {
     if (!this) {
@@ -83,16 +84,15 @@ OneToOneRelationship.prototype.setRelated = function (obj, related, callback, re
             if (proxy.relationship.isForward(obj)) {
                 obj._markFieldAsDirty(proxy.relationship.name);
             }
-//            $rootScope.$broadcast(obj.collection + ':' + obj.type, {
-//                collection: obj.collection,
-//                type: obj.type,
-//                change: {
-//                    type: ChangeType.Set,
-//                    old: previouslyRelatedObject,
-//                    new: related
-//                }
-//            });
-
+            notificationCentre.emit(obj.collection + ':' + obj.type, {
+                collection: obj.collection,
+                type: obj.type,
+                change: {
+                    type: ChangeType.Set,
+                    old: previouslyRelatedObject,
+                    new: related
+                }
+            });
             if (!reverse) { // Avoid infinite recursion.
                 if (related) {
                     self.setRelated(related, obj, callback, true);

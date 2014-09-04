@@ -1,7 +1,6 @@
-
 var log = require('../vendor/operations.js/src/log');
-var HttpLogger =  log.loggerWithName('HTTP');
-var Logger  = log.loggerWithName('Collection');
+var HttpLogger = log.loggerWithName('HTTP');
+var Logger = log.loggerWithName('Collection');
 Logger.setLevel(log.Level.warn);
 HttpLogger.setLevel(log.Level.warn);
 
@@ -268,23 +267,17 @@ Collection.prototype._httpResponse = function (method, path) {
                 var mapping = matchedDescriptor.mapping;
                 mapping.map(extractedData, function (err, obj) {
                     if (callback) {
-//                        $rootScope.$apply(function () {
-                            callback(err, obj, resp);
-//                        });
+                        callback(err, obj, resp);
                     }
                 }, opts.obj);
             }
             else { // Matched, but no data.
-//                $rootScope.$apply(function () {
-                    callback(null, true, resp);
-//                });
+                callback(null, true, resp);
             }
         }
         else if (callback) {
             if (name) {
-//                $rootScope.$apply(function () {
-                    callback(null, null, resp);
-//                });
+                callback(null, null, resp);
             }
             else {
                 // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
@@ -294,10 +287,8 @@ Collection.prototype._httpResponse = function (method, path) {
         }
     };
     opts.error = function (jqXHR, textStatus, errorThrown) {
-//        $rootScope.$apply(function () {
-            var resp = {jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown};
-            if (callback) callback(resp, null, resp);
-//        });
+        var resp = {jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown};
+        if (callback) callback(resp, null, resp);
     };
     $.ajax(opts);
 };

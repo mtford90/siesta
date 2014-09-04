@@ -1,9 +1,7 @@
 
 var s = require('../index');
+
 var assert = require('chai').assert;
-
-dump(s);
-
 var notificationCentre = require('../src/notificationCentre').notificationCentre;
 
 describe('Notification Centre', function () {
@@ -29,20 +27,7 @@ describe('Notification Centre', function () {
         });
     });
 
-    describe('siesta', function () {
-        it('on', function () {
-            assert.equal(notificationCentre.on, s.on);
-        });
-        it('addListener', function () {
-            assert.equal(notificationCentre.addListener, s.addListener);
-        });
-        it('removeListener', function () {
-            assert.equal(notificationCentre.removeListener, s.removeListener);
-        });
-        it('once', function () {
-            assert.equal(notificationCentre.once, s.once);
-        });
-    })
+
 
 
 

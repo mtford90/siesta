@@ -60,10 +60,10 @@ siesta.reset = function (inMemory, callback) {
     pouch.reset(inMemory, callback);
 };
 
-siesta.on = notificationCentre.on;
-siesta.addListener = notificationCentre.addListener;
-siesta.removeListener = notificationCentre.removeListener;
-siesta.once = notificationCentre.once;
+siesta.on = _.bind(notificationCentre.on, notificationCentre);
+siesta.addListener = _.bind(notificationCentre.addListener, notificationCentre);
+siesta.removeListener = _.bind(notificationCentre.removeListener, notificationCentre);
+siesta.once = _.bind(notificationCentre.once, notificationCentre);
 
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {
