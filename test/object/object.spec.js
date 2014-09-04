@@ -4,11 +4,9 @@ var s = require('../../index')
 describe('object!!', function () {
 
 
+    var RestObject = require('../../src/object').RestObject;
 
-    var
-        RestObject = s.RestObject
-        , Mapping = s.Mapping;
-
+    var Mapping = require('../../src/mapping').Mapping;
 
 
     beforeEach(function () {

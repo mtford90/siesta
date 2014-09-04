@@ -5,11 +5,15 @@ var s = require('../index')
 describe('pouch doc adapter', function () {
 
 
-    var Collection = s.Collection
-        , Pouch = s.Pouch
-        , RestError = s.RestError
-        , RelationshipType = s.RelationshipType
-        , RestObject = s.RestObject;
+    var Collection =  require('../src/collection').Collection;
+
+        var Pouch =  require('../src/pouch');
+
+        var RestError =  require('../src/error').RestError;
+        var RelationshipType =  require('../src/relationship').RelationshipType;
+
+        var RestObject =  require('../src/object').RestObject;
+;
 
     beforeEach(function () {
         s.reset(true);

@@ -3,14 +3,11 @@ var s = require('../index')
 
 describe('serialisers', function () {
 
-
-
-    var Collection = s.Collection
-        , RelationshipType = s.RelationshipType
-        , Serialiser = s.serialiser;
+    var Collection = require('../src/collection').Collection;
+    var RelationshipType = require('../src/relationship').RelationshipType;
+    var Serialiser = require('../src/serialiser');
 
     var collection, carMapping, personMapping, vitalSignsMapping;
-
 
 
     beforeEach(function () {

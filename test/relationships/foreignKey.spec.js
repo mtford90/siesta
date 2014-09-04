@@ -4,8 +4,10 @@ var s = require('../../index')
 describe('foreign key relationship', function () {
 
 
-    var Collection = s.Collection
-        , ForeignKeyRelationship = s.ForeignKeyRelationship
+    var Collection =  require('../../src/collection').Collection;
+
+        var ForeignKeyRelationship =  require('../../src/foreignKeyRelationship').ForeignKeyRelationship;
+
         ;
     var collection, carMapping, personMapping;
     var person, car;

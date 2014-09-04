@@ -4,7 +4,8 @@ var s = require('../index')
 
 describe('collection setup', function () {
 
-    var Collection = s.Collection;
+    var Collection =  require('../src/collection').Collection;
+;
 
     beforeEach(function () {
         s.reset(true);

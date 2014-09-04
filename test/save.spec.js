@@ -5,10 +5,8 @@ var s = require('../index')
 describe('saving at different levels', function () {
 
 
-
-    var Pouch = s.Pouch
-        , Collection = s.Collection;
-
+    var Pouch = require('../src/pouch');
+    var Collection = require('../src/collection').Collection;
     var collection, carMapping;
 
     var car, doc;

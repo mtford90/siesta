@@ -2,10 +2,12 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping new object', function () {
-    var Collection = s.Collection
-        , RelationshipType = s.RelationshipType
-        , RelatedObjectProxy = s.RelatedObjectProxy
-        , cache = s.cache;
+    var Collection =  require('../../src/collection').Collection;
+
+        var RelationshipType =  require('../../src/relationship').RelationshipType;
+        var RelatedObjectProxy =  require('../../src/relationship').RelatedObjectProxy;
+
+        var cache =  require('../../src/cache');
 
     beforeEach(function () {
         s.reset(true);

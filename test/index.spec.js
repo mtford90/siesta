@@ -5,9 +5,9 @@ var s = require('../index')
 describe('indexes', function () {
 
 
-    var Index = s.Index
-        , Pouch = s.Pouch
-        , index = s.index;
+    var Index = require('../src/index').Index;
+    var Pouch = require('../src/pouch');
+    var index = require('../src/index');
 
     beforeEach(function () {
         s.reset(true);

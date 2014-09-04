@@ -3,20 +3,20 @@ var s = require('../index')
 
 describe('dump', function () {
 
-    var Collection = s.Collection
-        , RelationshipType = s.RelationshipType
-        , Index = s.Index
-        , Query = s.Query
-        , RawQuery = s.RawQuery
-        , RequestDescriptor = s.RequestDescriptor
-        , ResponseDescriptor = s.ResponseDescriptor
-        , Serialiser = s.serialiser
-        , BaseOperation = s.BaseOperation
-        , CompositeOperation = s.CompositeOperation
-        , SaveOperation = s.SaveOperation
-        , MappingOperation = s.MappingOperation
-        , cache = s.cache;
+    var Collection = require('../src/collection').Collection;
 
+    var RelationshipType = require('../src/relationship').RelationshipType;
+    var Index = require('../src/index').Index;
+    var Query = require('../src/query').Query;
+    var RawQuery = require('../src/rawQuery').RawQuery;
+    var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
+    var ResponseDescriptor = require('../src/responseDescriptor').ResponseDescriptor;
+    var Serialiser = require('../src/serialiser');
+    var BaseOperation = require('../src/baseOperation').BaseOperation;
+    var CompositeOperation = require('../src/baseOperation').CompositeOperation;
+    var SaveOperation = require('../src/saveOperation').SaveOperation;
+    var MappingOperation = require('../src/mappingOperation').MappingOperation;
+    var cache = require('../src/cache');
     var collection, carMapping, personMapping;
 
 
@@ -44,7 +44,6 @@ describe('dump', function () {
 
             collection.install(done);
         });
-
 
 
     });

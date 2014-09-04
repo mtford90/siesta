@@ -2,7 +2,7 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping validation', function () {
-    var Mapping = s.Mapping;
+    var Mapping =  require('../../src/mapping').Mapping;
 
     beforeEach(function () {
         s.reset(true);

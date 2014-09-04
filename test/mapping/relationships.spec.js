@@ -5,12 +5,16 @@ describe('mapping relationships', function () {
 
 
 
-    var  RestObject = s.RestObject
-        , Collection = s.Collection
-        , RestError = s.RestError
-        , RelationshipType = s.RelationshipType
-        , ForeignKeyRelationship = s.ForeignKeyRelationship
-        , OneToOneRelationship = s.OneToOneRelationship;
+    var RestObject =  require('../../src/object').RestObject;
+
+        var Collection =  require('../../src/collection').Collection;
+        var RestError =  require('../../src/error').RestError;
+        var RelationshipType =  require('../../src/relationship').RelationshipType;
+
+        var ForeignKeyRelationship =  require('../../src/foreignKeyRelationship').ForeignKeyRelationship;
+
+       var OneToOneRelationship =  require('../../src/oneToOneRelationship').OneToOneRelationship;
+
 
     beforeEach(function () {
         s.reset(true);

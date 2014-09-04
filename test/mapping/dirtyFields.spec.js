@@ -4,9 +4,9 @@ describe('dirty fields', function () {
     var s = require('../../index')
         , assert = require('chai').assert;
 
-    var Pouch = s.Pouch
-        , Collection = s.Collection
-        , RelationshipType = s.RelationshipType;
+    var Pouch =  require('../../src/pouch');
+    var Collection =  require('../../src/collection').Collection;
+    var RelationshipType =  require('../../src/relationship').RelationshipType;
 
     var collection, carMapping, personMapping;
 

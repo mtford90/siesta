@@ -8,8 +8,8 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-var Collection = s.Collection
-    , RelationshipType = s.RelationshipType;
+var Collection =  require('../../src/collection').Collection;
+var RelationshipType =  require('../../src/relationship').RelationshipType;
 
 describe('intercollection relationships', function () {
 

@@ -4,12 +4,13 @@ var s = require('../index')
 
 describe('http!', function () {
 
-    var Collection = s.Collection
-        , RelationshipType = s.RelationshipType
-        , RestObject = s.RestObject
-        , ResponseDescriptor = s.ResponseDescriptor
-        , DescriptorRegistry = s.DescriptorRegistry
-        , RequestDescriptor = s.RequestDescriptor;
+    var Collection = require('../src/collection').Collection;
+    var RelationshipType = require('../src/relationship').RelationshipType;
+    var RestObject = require('../src/object').RestObject;
+    var ResponseDescriptor = require('../src/responseDescriptor').ResponseDescriptor;
+    var DescriptorRegistry = require('../src/descriptorRegistry').DescriptorRegistry;
+    var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
+
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 

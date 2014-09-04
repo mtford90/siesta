@@ -2,8 +2,8 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping!', function () {
-    var Index = s.Index
-        , Mapping = s.Mapping;
+    var Index = require('../../src/index').Index;
+    var Mapping = require('../../src/mapping').Mapping;
 
     beforeEach(function () {
         s.reset(true);

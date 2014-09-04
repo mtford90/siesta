@@ -2,9 +2,10 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping queries', function () {
-    var Pouch = s.Pouch
-        , RestObject = s.RestObject
-        , Collection = s.Collection;
+
+    var Pouch = require('../../src/pouch');
+    var RestObject = require('../../src/object').RestObject;
+    var Collection = require('../../src/collection').Collection;
 
     beforeEach(function () {
         s.reset(true);

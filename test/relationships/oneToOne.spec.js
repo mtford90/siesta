@@ -2,11 +2,15 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('relationship', function () {
-    var Mapping = s.Mapping
-        , RestObject = s.RestObject
-        , cache = s.cache
-        , OneToOneRelationship = s.OneToOneRelationship
-        , RelatedObjectProxy = s.RelatedObjectProxy;
+    var Mapping =  require('../../src/mapping').Mapping;
+
+    var RestObject = require('../../src/object').RestObject;
+
+    var cache = require('../../src/cache');
+
+    var OneToOneRelationship = require('../../src/oneToOneRelationship').OneToOneRelationship;
+
+    var RelatedObjectProxy = require('../../src/relationship').RelatedObjectProxy;
 
     beforeEach(function () {
         s.reset(true);

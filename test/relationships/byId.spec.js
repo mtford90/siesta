@@ -3,10 +3,9 @@ var s = require('../../index')
 
 describe('relationship proxy byid', function () {
 
+    var Collection = require('../../src/collection').Collection;
+    var Relationship = require('../../src/relationship').Relationship;
 
-    var Collection = s.Collection
-        , Relationship = s.Relationship
-        ;
     var collection, carMapping, personMapping;
     var car, person;
 

@@ -2,11 +2,11 @@ var s = require('../index')
     , assert = require('chai').assert;
 
 describe('store', function () {
-    var Store = s.Store
-        , Pouch = s.Pouch
-        , RestObject = s.RestObject
-        , Collection = s.Collection
-        , cache = s.cache;
+    var Store =  require('../src/store');
+    var Pouch = require('../src/pouch');
+    var RestObject = require('../src/object').RestObject;
+    var Collection = require('../src/collection').Collection;
+    var cache = require('../src/cache');
 
     var carMapping, collection;
 
@@ -107,7 +107,6 @@ describe('store', function () {
         });
 
     });
-
 
 
 });

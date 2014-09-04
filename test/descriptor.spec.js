@@ -3,16 +3,14 @@ var s = require('../index')
 
 describe('request descriptor', function () {
 
-
-    var Collection = s.Collection
-        , Descriptor = s.Descriptor
-        , RestError = s.RestError
-        , DescriptorRegistry = s.DescriptorRegistry
-        , RequestDescriptor = s.RequestDescriptor
-        , ResponseDescriptor = s.ResponseDescriptor
-        , Serialiser = s.serialiser
-        , RelationshipType = s.RelationshipType
-        ;
+    var Collection = require('../src/collection').Collection;
+    var Descriptor = require('../src/descriptor').Descriptor;
+    var RestError = require('../src/error').RestError;
+    var DescriptorRegistry = require('../src/descriptorRegistry').DescriptorRegistry;
+    var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
+    var ResponseDescriptor = require('../src/responseDescriptor').ResponseDescriptor;
+    var Serialiser = require('../src/serialiser');
+    var RelationshipType = require('../src/relationship').RelationshipType;
 
     var collection, carMapping, personMapping;
 

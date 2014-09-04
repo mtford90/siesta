@@ -3,11 +3,11 @@ var s = require('../../index')
 
 describe('relationship proxy', function () {
 
-    var Collection = s.Collection
-        , ForeignKeyRelationship = s.ForeignKeyRelationship
-        , OneToOneRelationship = s.OneToOneRelationship
-        , RelationshipType = s.RelationshipType
-        , RelatedObjectProxy = s.RelatedObjectProxy;
+    var Collection = require('../../src/collection').Collection;
+    var ForeignKeyRelationship = require('../../src/foreignKeyRelationship').ForeignKeyRelationship;
+    var OneToOneRelationship = require('../../src/oneToOneRelationship').OneToOneRelationship;
+    var RelationshipType = require('../../src/relationship').RelationshipType;
+    var RelatedObjectProxy = require('../../src/relationship').RelatedObjectProxy;
     var collection, carMapping, personMapping;
 
     beforeEach(function (done) {

@@ -1,13 +1,10 @@
-
 var s = require('../index')
     , assert = require('chai').assert;
 
 describe('operations!!!', function () {
 
-
-
-    var BaseOperation = s.BaseOperation
-        , CompositeOperation = s.CompositeOperation;
+    var BaseOperation =  require('../src/baseOperation').BaseOperation;
+    var CompositeOperation = require('../src/baseOperation').CompositeOperation;
 
     beforeEach(function () {
         s.reset(true);
@@ -147,8 +144,6 @@ describe('operations!!!', function () {
             });
 
 
-
-
         });
 
 
@@ -191,9 +186,9 @@ describe('operations!!!', function () {
 
             beforeEach(function () {
                 op.operations = [
-                    new BaseOperation('op1', function(c) {setTimeout(function () {c();}, 50)}),
-                    new BaseOperation('op2', function(c) {setTimeout(function () {c();}, 50)}),
-                    new BaseOperation('op3', function(c) {setTimeout(function () {c();}, 50)})
+                    new BaseOperation('op1', function (c) {setTimeout(function () {c();}, 50)}),
+                    new BaseOperation('op2', function (c) {setTimeout(function () {c();}, 50)}),
+                    new BaseOperation('op3', function (c) {setTimeout(function () {c();}, 50)})
                 ];
                 op.start();
             });
@@ -224,9 +219,9 @@ describe('operations!!!', function () {
             describe('no errors', function () {
                 beforeEach(function (done) {
                     op.operations = [
-                        new BaseOperation('op1', function(c) {setTimeout(function () {c(null, 'res1');}, 50)}),
-                        new BaseOperation('op2', function(c) {setTimeout(function () {c(null, 'res2');}, 50)}),
-                        new BaseOperation('op3', function(c) {setTimeout(function () {c(null, 'res3');}, 50)})
+                        new BaseOperation('op1', function (c) {setTimeout(function () {c(null, 'res1');}, 50)}),
+                        new BaseOperation('op2', function (c) {setTimeout(function () {c(null, 'res2');}, 50)}),
+                        new BaseOperation('op3', function (c) {setTimeout(function () {c(null, 'res3');}, 50)})
                     ];
                     op.completionCallback = done;
                     op.start();
@@ -259,9 +254,9 @@ describe('operations!!!', function () {
             describe('all errors', function () {
                 beforeEach(function (done) {
                     op.operations = [
-                        new BaseOperation('op1', function(c) {setTimeout(function () {c('error1');}, 50)}),
-                        new BaseOperation('op2', function(c) {setTimeout(function () {c('error2');}, 50)}),
-                        new BaseOperation('op3', function(c) {setTimeout(function () {c('error3');}, 50)})
+                        new BaseOperation('op1', function (c) {setTimeout(function () {c('error1');}, 50)}),
+                        new BaseOperation('op2', function (c) {setTimeout(function () {c('error2');}, 50)}),
+                        new BaseOperation('op3', function (c) {setTimeout(function () {c('error3');}, 50)})
                     ];
                     op.completionCallback = done;
                     op.start();
@@ -295,9 +290,9 @@ describe('operations!!!', function () {
             describe('some errors', function () {
                 beforeEach(function (done) {
                     op.operations = [
-                        new BaseOperation('op1', function(c) {setTimeout(function () {c('error1');}, 50)}),
-                        new BaseOperation('op2', function(c) {setTimeout(function () {c(null, 'res1');}, 50)}),
-                        new BaseOperation('op3', function(c) {setTimeout(function () {c('error2');}, 50)})
+                        new BaseOperation('op1', function (c) {setTimeout(function () {c('error1');}, 50)}),
+                        new BaseOperation('op2', function (c) {setTimeout(function () {c(null, 'res1');}, 50)}),
+                        new BaseOperation('op3', function (c) {setTimeout(function () {c('error2');}, 50)})
                     ];
                     op.completionCallback = done;
                     op.start();
@@ -332,13 +327,10 @@ describe('operations!!!', function () {
             });
 
 
-
-
         });
 
 
     });
-
 
 
 });

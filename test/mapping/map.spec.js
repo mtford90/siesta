@@ -3,10 +3,13 @@ var s = require('../../index')
 
 describe('perform mapping', function () {
 
-    var Pouch = s.Pouch
-        , Collection = s.Collection
-        , RelationshipType = s.RelationshipType
-        , RestObject = s.RestObject;
+    var Pouch =  require('../../src/pouch');
+
+        var Collection =  require('../../src/collection').Collection;
+        var RelationshipType =  require('../../src/relationship').RelationshipType;
+
+        var RestObject =  require('../../src/object').RestObject;
+;
 
     var collection, carMapping, personMapping;
 

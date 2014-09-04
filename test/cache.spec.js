@@ -6,13 +6,13 @@ describe('cache', function () {
 
 
 
-    var RestObject = siesta.RestObject
-        , Collection = siesta.Collection
-        , ResponseDescriptor = siesta.ResponseDescriptor
-        , DescriptorRegistry = siesta.DescriptorRegistry
-        , RelationshipType = siesta.RelationshipType
-        , Mapping = siesta.Mapping
-        , cache = siesta.cache;
+    var RestObject =  require('../src/object').RestObject;
+    var Collection =  require('../src/collection').Collection;
+    var ResponseDescriptor =  require('../src/responseDescriptor').ResponseDescriptor;
+    var DescriptorRegistry =  require('../src/descriptorRegistry').DescriptorRegistry;
+    var RelationshipType =  require('../src/relationship').RelationshipType;
+    var Mapping =  require('../src/mapping').Mapping;
+    var cache =  require('../src/cache');
 
     beforeEach(function (done) {
         siesta.reset(true, function () {

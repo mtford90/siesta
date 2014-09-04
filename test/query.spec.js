@@ -6,12 +6,17 @@ describe('query', function () {
 
 
 
-    var Index = s.Index
-        , Pouch = s.Pouch
-        , RawQuery = s.RawQuery
-        , Query = s.Query
-        , Collection = s.Collection
-        , RestObject = s.RestObject
+    var Index =  require('../src/index').Index;
+
+        var Pouch =  require('../src/pouch');
+
+        var RawQuery =  require('../src/rawQuery').RawQuery;
+
+        var Query =  require('../src/query').Query;
+
+        var Collection =  require('../src/collection').Collection;
+        var RestObject =  require('../src/object').RestObject;
+
         ;
 
 

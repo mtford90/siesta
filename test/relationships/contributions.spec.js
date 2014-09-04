@@ -2,10 +2,13 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('relationship contributions', function () {
-    var Collection = s.Collection
-        , RestError = s.RestError
-        , ForeignKeyRelationship = s.ForeignKeyRelationship
-        , RelatedObjectProxy = s.RelatedObjectProxy
+    var Collection =  require('../../src/collection').Collection;
+
+        var RestError =  require('../../src/error').RestError;
+        var ForeignKeyRelationship =  require('../../src/foreignKeyRelationship').ForeignKeyRelationship;
+
+        var RelatedObjectProxy =  require('../../src/relationship').RelatedObjectProxy;
+
         ;
 
     var collection, carMapping, personMapping, dogMapping;

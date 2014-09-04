@@ -7,8 +7,10 @@ describe('rest', function () {
 
 
 
-    var Collection = s.Collection
-        , CollectionRegistry = s.CollectionRegistry;
+    var Collection =  require('../src/collection').Collection;
+
+        var CollectionRegistry =  require('../src/collectionRegistry').CollectionRegistry;
+
     var collection;
 
 

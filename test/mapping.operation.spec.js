@@ -1,15 +1,13 @@
-
 var s = require('../index')
     , assert = require('chai').assert;
 
 describe('mapping operations', function () {
 
 
+    var Operation =  require('../src/baseOperation').BaseOperation;
+    var Collection = require('../src/collection').Collection;
+    var RelationshipType = require('../src/relationship').RelationshipType;
 
-
-    var Operation = s.BaseOperation
-        , Collection = s.Collection
-        , RelationshipType = s.RelationshipType;
 
     beforeEach(function () {
         s.reset(true);
