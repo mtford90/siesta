@@ -1,7 +1,7 @@
 var wrappedCallback = require('./misc').wrappedCallback;
 var PouchAdapter = require('./pouch');
 var RestError = require('./error').RestError;
-var log = require('../node_modules/operations/src/log');
+var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
 

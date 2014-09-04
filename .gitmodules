@@ -1,0 +1,3 @@
+[submodule "vendor/operations.js"]
+	path = vendor/operations.js
+	url = git@github.com:mtford90/operations.js.git

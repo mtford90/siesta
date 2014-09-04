@@ -1,9 +1,10 @@
-var operations = require('operations');
+//var operations = require('vendor/operations.js/src/index.js');
+
 
 var siesta = {
-    Operation: operations.Operation,
-    OperationQueue: operations.OperationQueue,
-    Logger: require('./node_modules/operations/src/log'),
+//    Operation: operations.Operation,
+//    OperationQueue: operations.OperationQueue,
+    Logger: require('./vendor/operations.js/src/log'),
     RestError: require('./src/error').RestError,
     cache: require('./src/cache'),
     DescriptorRegistry: require('./src/descriptorRegistry').DescriptorRegistry,

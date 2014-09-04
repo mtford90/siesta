@@ -16,7 +16,6 @@
     "querystring": "~0.2.0",
     "eventvat": "~0.2.1",
     "pouchdb": "~3.0.3",
-    "operations": "~0.1.2",
     "underscore": "~1.7.0",
     "extend": "~1.3.0"
   },

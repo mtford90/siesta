@@ -4,7 +4,7 @@ var BaseOperation = baseOperation.BaseOperation;
 var CompositeOperation = baseOperation.CompositeOperation;
 var Store = require('./store');
 var RestObject = require('./object').RestObject;
-var log = require('../node_modules/operations/src/log');
+var log = require('../vendor/operations.js/src/log');
 
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);

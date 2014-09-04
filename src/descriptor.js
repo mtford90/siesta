@@ -1,4 +1,4 @@
-var log = require('../node_modules/operations/src/log');
+var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Descriptor');
 Logger.setLevel(log.Level.warn);
 var RestError = require('./error').RestError;

@@ -1,6 +1,5 @@
 var s = require('../index')
-    , assert = require('chai').assert
-    , _ = require('underscore');
+    , assert = require('chai').assert;
 
 
 describe('saving at different levels', function () {

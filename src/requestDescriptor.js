@@ -1,6 +1,6 @@
 var Descriptor = require('./descriptor').Descriptor;
 var defineSubProperty = require('./misc').defineSubProperty;
-var log = require('../node_modules/operations/src/log');
+var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('RequestDescriptor');
 Logger.setLevel(log.Level.warn);
 

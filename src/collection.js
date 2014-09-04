@@ -1,5 +1,5 @@
 
-var log = require('../node_modules/operations/src/log');
+var log = require('../vendor/operations.js/src/log');
 var HttpLogger =  log.loggerWithName('HTTP');
 var Logger  = log.loggerWithName('Collection');
 Logger.setLevel(log.Level.warn);

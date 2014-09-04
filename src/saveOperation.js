@@ -1,4 +1,4 @@
-var log = require('../node_modules/operations/src/log');
+var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('SaveOperation');
 Logger.setLevel(log.Level.warn);
 

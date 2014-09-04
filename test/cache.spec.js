@@ -1,13 +1,10 @@
-var s = require('../index')
-    , assert = require('chai').assert
-    , _ = require('underscore');
-
+var siesta = require('../index');
+var assert = require('chai').assert;
 
 describe('cache', function () {
     var mapping;
 
-    var siesta = require('../index');
-    var assert = require('chai').assert;
+
 
     var RestObject = siesta.RestObject
         , Collection = siesta.Collection
