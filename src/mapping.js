@@ -23,7 +23,7 @@ var extend = require('extend');
 var ChangeType = require('./ChangeType').ChangeType;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 
-
+var ArrayObserver = require('observe-js').ArrayObserver;
 
 
 function Mapping(opts) {
@@ -227,247 +227,31 @@ function broadcast(obj, change) {
     notificationCentre.emit(genericNotif, payload);
 }
 
-/**
- * Wraps the methods of a javascript array object so that notifications are sent
- * on calls.
- *
- * @param array the array we have wrapping
- * @param field name of the field
- * @param restObject the object to which this array is a property
- */
+///**
+// * Wraps the methods of a javascript array object so that notifications are sent
+// * on calls.
+// *
+// * @param array the array we have wrapping
+// * @param field name of the field
+// * @param restObject the object to which this array is a property
+// */
+//
+
 function wrapArray(array, field, restObject) {
-    function fountPush(push) {
-        var objects = Array.prototype.slice.call(arguments, 1);
-        var res = push.apply(this, objects);
-        restObject._markFieldAsDirty(field);
-        broadcast(restObject, {
-            type: ChangeType.Insert,
-            new: objects,
-            field: field,
-            index: this.length - 1
-        });
-        return res;
+    if (!array.observer) {
+        array.observer = new ArrayObserver(array);
     }
-
-    if (array.push.name != 'fountPush') {
-        array.push = _.bind(fountPush, array, array.push);
-    }
-
-    function fountPop(pop) {
-        var objects = Array.prototype.slice.call(arguments, 1);
-        if (this.length) {
-            var old = [this[this.length - 1]];
-            var res = pop.apply(this, objects);
-            restObject._markFieldAsDirty(field);
+    array.observer.open(function (splices) {
+        splices.forEach(function (splice) {
             broadcast(restObject, {
-                type: ChangeType.Remove,
-                old: old,
                 field: field,
-                index: this.length
+                type: ChangeType.Splice,
+                index: splice.index,
+                addedCount: splice.addedCount,
+                removed: splice.removed
             });
-            return  res;
-        }
-        else {
-            return pop.apply(this, objects);
-        }
-    }
-
-    if (array.pop.name != 'fountPop') {
-        array.pop = _.bind(fountPop, array, array.pop);
-    }
-
-    function fountShift(shift) {
-        var objects = Array.prototype.slice.call(arguments, 1);
-        if (this.length) {
-            var old = [this[0]];
-            var res = shift.apply(this, objects);
-            restObject._markFieldAsDirty(field);
-            broadcast(restObject, {
-                type: ChangeType.Remove,
-                old: old,
-                field: field,
-                index: 0
-            });
-            return  res;
-        }
-        else {
-            return shift.apply(this, objects);
-        }
-    }
-
-    if (array.shift.name != 'fountShift') {
-        array.shift = _.bind(fountShift, array, array.shift);
-    }
-
-    function fountUnshift(unshift) {
-        var objects = Array.prototype.slice.call(arguments, 1);
-        var res = unshift.apply(this, objects);
-        restObject._markFieldAsDirty(field);
-        broadcast(restObject, {
-            type: ChangeType.Insert,
-            new: objects,
-            field: field,
-            index: 0
         });
-        return res;
-    }
-
-    if (array.unshift.name != 'fountUnshift') {
-        array.unshift = _.bind(fountUnshift, array, array.unshift);
-    }
-
-    function Swap(oldIndex, newIndex) {
-        this.oldIndex = oldIndex;
-        this.newIndex = newIndex;
-    }
-
-    function computeDiff(arr, otherArr) {
-        var indexes = [];
-        indexes.in = _.bind(function (other) {
-            //noinspection JSPotentiallyInvalidUsageOfThis
-            for (var i = 0; i < this.length; i++) {
-                var thisObj = this[i];
-                if (thisObj.oldIndex == other.oldIndex && thisObj.newIndex == other.newIndex) {
-                    return true;
-                }
-                if (thisObj.newIndex == other.oldIndex && thisObj.oldIndex == other.newIndex) {
-                    return true;
-                }
-            }
-            return false;
-        }, indexes);
-
-        for (var i = 0; i < arr.length; i++) {
-            var obj = arr[i];
-            var newIndex = i;
-            var oldIndex = otherArr.indexOf(obj);
-            if (newIndex != oldIndex) {
-                var swap = new Swap(oldIndex, newIndex);
-                if (!indexes.in(swap)) {
-                    indexes.push(swap);
-                }
-            }
-        }
-        return indexes;
-    }
-
-    function fountSort(sort) {
-        var clone = extend(true, [], this);
-        var objects = Array.prototype.slice.call(arguments, 1);
-        var res = sort.apply(this, objects);
-        var indexes = computeDiff(this, clone);
-        restObject._markFieldAsDirty(field);
-        broadcast(restObject, {
-            type: ChangeType.Move,
-            field: field,
-            indexes: indexes
-        });
-        return res;
-    }
-
-    if (array.sort.name != 'fountSort') {
-        array.sort = _.bind(fountSort, array, array.sort);
-    }
-
-    function fountReverse(reverse) {
-        var clone = extend(true, [], this);
-        var objects = Array.prototype.slice.call(arguments, 1);
-        var res = reverse.apply(this, objects);
-        var indexes = computeDiff(this, clone);
-        restObject._markFieldAsDirty(field);
-        broadcast(restObject, {
-            type: ChangeType.Move,
-            field: field,
-            indexes: indexes
-        });
-        return res;
-    }
-
-    if (array.reverse.name != 'fountReverse') {
-        array.reverse = _.bind(fountReverse, array, array.reverse);
-    }
-
-    array.setObjectAtIndex = function (obj, index) {
-        var old = this[index];
-        this[index] = obj;
-        restObject._markFieldAsDirty(field);
-        broadcast(restObject, {
-            type: ChangeType.Replace,
-            field: field,
-            index: index,
-            old: old,
-            new: obj
-        });
-    };
-
-    function fountSplice(splice, index, howMany) {
-        var self = this;
-        var objects = Array.prototype.slice.call(arguments, 3);
-        var removals = [];
-        var replacements = [];
-        var insertions = [];
-        for (var i = index; i < index + Math.max(howMany, objects.length); i++) {
-            var relativeIndex = i - index;
-            var newObject;
-            if (objects.length && relativeIndex < objects.length && relativeIndex < howMany) { // Replacement
-                var oldObject = this[i];
-                newObject = objects[relativeIndex];
-                replacements.push({index: index, oldObject: this[i], newObject: newObject});
-                Logger.debug('Replacement', oldObject, newObject);
-            }
-            else if (objects.length && relativeIndex < objects.length) { // Insertion
-                newObject = objects[relativeIndex];
-                insertions.push({index: i, newObject: newObject});
-                Logger.debug('Insertion', i, newObject);
-            }
-            else if (relativeIndex < howMany) { // Deletion
-                Logger.debug('Deletion');
-                removals.push(i);
-            }
-        }
-        var changes = [];
-        var old;
-        var newObjs;
-        if (removals.length) {
-            old = _.map(removals, function (i) { return self[i]});
-            changes.push({
-                type: ChangeType.Remove,
-                index: removals[0],
-                old: old,
-                field: field
-            })
-        }
-        if (replacements.length) {
-            old = _.pluck(replacements, 'oldObject');
-            newObjs = _.pluck(replacements, 'newObject');
-            changes.push({
-                type: ChangeType.Replace,
-                field: field,
-                index: replacements[0].index,
-                old: old,
-                new: newObjs
-            })
-        }
-        if (insertions.length) {
-            newObjs = _.pluck(insertions, 'newObject');
-            changes.push({
-                type: ChangeType.Insert,
-                field: field,
-                index: insertions[0].index,
-                new: newObjs
-            })
-        }
-        var res = _.bind(splice, this, index, howMany).apply(this, objects);
-        restObject._markFieldAsDirty(field);
-        broadcast(restObject, changes);
-        return res;
-    }
-
-    if (array.splice.name != 'fountSplice') {
-        array.splice = _.bind(fountSplice, array, array.splice);
-    }
-
-
+    })
 }
 
 /**
