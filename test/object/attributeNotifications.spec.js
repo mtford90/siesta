@@ -121,7 +121,6 @@ describe('notifications', function () {
                             notif = n;
                             done();
                         });
-                        console.log('colours', car.colours);
                         car.colours.push('green');
 
                     });
@@ -151,7 +150,7 @@ describe('notifications', function () {
 
                 it('changeDict contains new value', function () {
                     var change = notif.change;
-                    console.log('new:', change.new);
+
                     assert.equal(change.new.length, 1);
                     assert.include(change.new, 'green');
                 });
@@ -174,7 +173,7 @@ describe('notifications', function () {
 
                             done();
                         });
-                        console.log('colours', car.colours);
+
                         car.colours.pop();
 
                     });
@@ -204,7 +203,7 @@ describe('notifications', function () {
 
                 it('changeDict contains old value', function () {
                     var change = notif.change;
-                    console.log('old:', change.old);
+
                     assert.equal(change.old.length, 1);
                     assert.include(change.old, 'blue');
                 });
@@ -227,7 +226,7 @@ describe('notifications', function () {
 
                             done();
                         });
-                        console.log('colours', car.colours);
+
                         car.colours.shift();
 
                     });
@@ -258,7 +257,7 @@ describe('notifications', function () {
 
                 it('changeDict contains old value', function () {
                     var change = notif.change;
-                    console.log('old:', change.old);
+
                     assert.equal(change.old.length, 1);
                     assert.include(change.old, 'red');
                 });
@@ -281,7 +280,7 @@ describe('notifications', function () {
                                 notif = n;
                                 done();
                             });
-                            console.log('colours', car.colours);
+
                             car.colours.unshift('green');
 
                         });
@@ -313,7 +312,7 @@ describe('notifications', function () {
 
                 it('changeDict contains new value', function () {
                     var change = notif.change;
-                    console.log('new:', change.new);
+
                     assert.equal(change.new.length, 1);
                     assert.include(change.new, 'green');
                 });
@@ -364,7 +363,7 @@ describe('notifications', function () {
 
                 it('changeDict contains indexes', function () {
                     var change = notif.change;
-                    console.log('indexes', change.indexes);
+
                     assert.equal(change.indexes.length, 1);
                 });
 
@@ -414,7 +413,7 @@ describe('notifications', function () {
 
                 it('changeDict contains indexes', function () {
                     var change = notif.change;
-                    console.log('indexes', change.indexes);
+
                     assert.equal(change.indexes.length, 1);
                 });
 

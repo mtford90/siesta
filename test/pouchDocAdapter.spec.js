@@ -35,11 +35,9 @@ describe('pouch doc adapter', function () {
             it('absorbs properties', function () {
                 var doc = {name: 'Michael', type: 'Person', collection: 'myCollection', age: 23, _id: 'randomId', _rev: 'randomRev'};
                 var obj = Pouch.toNew(doc);
-                console.log('obj:', obj);
                 assert.equal(obj.name, 'Michael');
                 assert.equal(obj.age, 23);
                 assert.notOk(obj._rev);
-                console.log(obj);
             })
         });
 
@@ -126,7 +124,6 @@ describe('pouch doc adapter', function () {
                 collection.install(function (err) {
                     if (err) done(err);
                     var mapping = Pouch._validate({name: 'Michael', type: 'Person', collection: 'myCollection', age: 23});
-                    console.log('mapping:', mapping);
                     assert.ok(mapping);
                     done();
                 });

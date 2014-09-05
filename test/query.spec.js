@@ -27,14 +27,12 @@ describe('query', function () {
 
     describe('raw query', function () {
         it('design doc name', function () {
-            console.log(RawQuery);
             var name = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'})._getDesignDocName();
             assert.equal(name, '_design/myCollection_Index_Car_colour_name');
         });
 
 
         it('fields', function () {
-            console.log(RawQuery);
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             var fields = q._getFields();
             assert.include(fields, 'colour');
@@ -42,32 +40,28 @@ describe('query', function () {
         });
 
         it('construct key', function () {
-            console.log(RawQuery);
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             var key = q._constructKey();
             assert.equal(key, 'red_Aston Martin');
         });
 
         it('execute with no rows and no index', function (done) {
-            console.log(RawQuery);
+            this.timeout(5000); // Can take quite a long time sometimes.
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             q.execute(function (err, results) {
                 if (done) done(err);
-                console.log('query results:', results);
                 assert.equal(results.length, 0);
                 done();
             });
         });
 
         it('execute with index', function (done) {
-            console.log(RawQuery);
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             var i = new Index('myCollection', 'Car', ['colour', 'name']);
             i.install(function (err) {
                 if (err) done(err);
                 q.execute(function (err, results) {
                     if (done) done(err);
-                    console.log('query results:', results);
                     assert.equal(results.length, 0);
                     done();
                 });
@@ -75,7 +69,6 @@ describe('query', function () {
         });
 
         it('execute with index with rows', function (done) {
-            console.log(RawQuery);
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             var i = new Index('myCollection', 'Car', ['colour', 'name']);
             i.install(function (err) {
@@ -84,7 +77,6 @@ describe('query', function () {
                     if (err) done(err);
                     q.execute(function (err, results) {
                         if (done) done(err);
-                        console.log('query results:', results);
                         assert.equal(results.length, 1);
                         done();
                     });
@@ -93,13 +85,12 @@ describe('query', function () {
         });
 
         it('execute without index with rows', function (done) {
-            console.log(RawQuery);
+            this.timeout(5000); // Can take quite a long time sometimes.
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
                 if (err) done(err);
                 q.execute(function (err, results) {
                     if (done) done(err);
-                    console.log('query results:', results);
                     assert.equal(results.length, 1);
                     done();
                 });

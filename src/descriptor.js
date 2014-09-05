@@ -196,7 +196,6 @@ Descriptor.prototype._extractData = function (data) {
             var currTheirs = data;
             var currOurs = this.data;
             while (typeof(currOurs) != 'string') {
-                console.log(currOurs, currTheirs);
                 keys = Object.keys(currOurs);
                 assert(keys.length == 1);
                 var key = keys[0];
@@ -206,7 +205,6 @@ Descriptor.prototype._extractData = function (data) {
                     break;
                 }
             }
-            console.log(currOurs, currTheirs);
             return currTheirs ? currTheirs[currOurs] : null;
         }
     }

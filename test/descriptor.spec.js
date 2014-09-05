@@ -85,7 +85,6 @@ describe('request descriptor', function () {
             });
             it('match against single', function () {
                 function assertMatchMethod(r) {
-                    console.log(r._matchMethod);
                     assert.ok(r._matchMethod('POST'));
                     assert.ok(r._matchMethod('post'));
                     assert.ok(r._matchMethod('PoSt'));
@@ -157,7 +156,6 @@ describe('request descriptor', function () {
             it('if > length 1, should return n level deep object', function () {
                 var r = new Descriptor({data: 'path.to.data', mapping: carMapping});
                 var extractData = r._embedData(data);
-                console.log('yo', extractData);
                 assert.equal(data, extractData.path.to.data);
             });
         });

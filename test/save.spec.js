@@ -73,10 +73,6 @@ describe('saving at different levels', function () {
         });
 
         it('Collection should not be dirty', function () {
-            console.log(Collection.__dirtyCollections.length);
-            console.log(Collection.isDirty);
-
-            console.log('dirty mappings', JSON.stringify(_.map(Collection.__dirtyCollections, function (m) {return m._dump()}), null, 4));
             assert.notOk(Collection.isDirty);
         });
 

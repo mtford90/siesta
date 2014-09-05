@@ -51,7 +51,6 @@ describe('rest', function () {
                     var rawMapping = collection._rawMappings.Person;
                     assert.ok(rawMapping);
                     var mappingObj = collection.Person;
-                    console.log('mappingObj:', mappingObj);
                     assert.equal(mappingObj.type, 'Person');
                     assert.equal(mappingObj.id, 'id');
                     assert.equal(mappingObj.collection, 'myCollection');

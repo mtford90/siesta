@@ -16,7 +16,6 @@ describe('mapping validation', function () {
                 collection: 'myCollection'
             });
             var errors = m._validate();
-            console.log('errors:', errors);
             assert.equal(1, errors.length);
         });
         it('no collection', function () {
@@ -26,7 +25,6 @@ describe('mapping validation', function () {
                 type: 'Car'
             });
             var errors = m._validate();
-            console.log('errors:', errors);
             assert.equal(1, errors.length);
         });
     });

@@ -11,7 +11,6 @@ describe('store', function () {
     var carMapping, collection;
 
     beforeEach(function (done) {
-        console.log('resetting');
         s.reset(true);
         collection = new Collection('myCollection');
         carMapping = collection.mapping('Car', {
@@ -32,7 +31,6 @@ describe('store', function () {
             cache.insert(restObject);
             Store.get({_id: pouchId}, function (err, doc) {
                 if (err)done(err);
-                console.log('doc:', doc);
                 assert.equal(doc, restObject);
                 done();
             });
@@ -44,7 +42,6 @@ describe('store', function () {
                 if (err) done(err);
                 Store.get({_id: pouchid}, function (err, doc) {
                     if (err) done(err);
-                    console.log('doc:', doc);
                     done();
                 });
             });
@@ -57,7 +54,6 @@ describe('store', function () {
                 if (err) done(err);
                 Store.get({id: remoteId, mapping: carMapping}, function (err, doc) {
                     if (err) done(err);
-                    console.log('doc:', doc);
                     done();
                 });
             });
@@ -85,7 +81,6 @@ describe('store', function () {
                     {_id: 'localId3'}
                 ], function (err, docs) {
                     if (err) done(err);
-                    console.log('docs:', docs);
                     _.each(docs, function (d) {
                         assert.instanceOf(d, RestObject);
                     });
@@ -96,7 +91,6 @@ describe('store', function () {
             it('get should proxy to getMultiple if _id is an array', function (done) {
                 Store.get({_id: ['localId1', 'localId2', 'localId3']}, function (err, docs) {
                     if (err) done(err);
-                    console.log('docs:', docs);
                     _.each(docs, function (d) {
                         assert.instanceOf(d, RestObject);
                     });

@@ -43,15 +43,12 @@ describe('indexes', function () {
         it('pouchdb index', function (done) {
             var i = new Index('myCollection', 'Car', ['colour', 'name']);
             var view = i._constructPouchDbView();
-            console.log('view:', view);
             Pouch.getPouch().put(view, function (err, resp) {
                 if (err) done(err);
-                console.log('put index response:', resp);
                 Pouch.getPouch().post({type: 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err, resp) {
                     if (err) done(err);
                     Pouch.getPouch().query(i._getName(), {key: 'red_Aston Martin'}, function (err, resp) {
                         if (err) done(err);
-                        console.log('query response:', resp);
                         assert.equal(resp.total_rows, 1);
                         done();
                     });
@@ -81,7 +78,6 @@ describe('indexes', function () {
 
         it('indexes', function () {
             var indexes = index._constructIndexes('myCollection', 'Car', ['field1', 'field2', 'field3']);
-            console.log('indexes', indexes);
             assert.equal(8, indexes.length);
             _.each(indexes, function (i) {assert.ok(i.install)});
         });

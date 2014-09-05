@@ -35,7 +35,7 @@ describe('perform mapping', function () {
             var obj;
             carMapping.map({colour: 'red', name: 'Aston Martin'}, function (err, _obj) {
                 if (err) {
-                    console.error('Error when mapping new car:', err);
+
                     done(err);
                 }
                 obj = _obj;
@@ -59,7 +59,7 @@ describe('perform mapping', function () {
                 {
 
                     if (err) {
-                        console.error('Error when mapping new car:', err);
+
                         done(err);
                     }
                     obj = _obj;
@@ -171,7 +171,7 @@ describe('perform mapping', function () {
                                 person = _person;
                                 carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
                                     if (err) {
-                                        console.error('Error when mapping car object', err);
+
                                         done(err);
                                     }
                                     car = _car;
@@ -203,7 +203,7 @@ describe('perform mapping', function () {
                         var car;
                         beforeEach(function (done) {
                             carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
-                                console.error('done!!!!!!');
+
                                 if (err) done(err);
                                 car = _car;
                                 done();
@@ -237,30 +237,27 @@ describe('perform mapping', function () {
                             ];
                             carMapping._mapBulk(raw, function (err, objs, res) {
                                 if (err) {
-                                    console.error('Error bulk mapping cars:', err);
                                     done(err);
                                 }
                                 else {
-                                    console.log('Successfully mapped cars');
+                                    cars = objs;
+                                    personMapping.map({
+                                        name: 'Michael Ford',
+                                        age: 23,
+                                        id: 'personRemoteId',
+                                        cars: ['remoteId1', 'remoteId2', 'remoteId3']
+                                    }, function (err, _person) {
+                                        if (err) {
+                                            done(err);
+                                        }
+                                        else {
+                                            person = _person;
+                                            done();
+                                        }
+
+                                    });
                                 }
-                                cars = objs;
-                                console.log('Mapping person');
-                                personMapping.map({
-                                    name: 'Michael Ford',
-                                    age: 23,
-                                    id: 'personRemoteId',
-                                    cars: ['remoteId1', 'remoteId2', 'remoteId3']
-                                }, function (err, _person) {
-                                    if (err) {
-                                        console.error('Error mapping person:', err);
-                                        done(err);
-                                    }
-                                    else {
-                                        console.log('Successfully mapped person');
-                                    }
-                                    person = _person;
-                                    done();
-                                });
+
                             });
                         });
 
@@ -439,7 +436,7 @@ describe('perform mapping', function () {
                             person = _person;
                             carMapping.map({name: 'Bentley', colour: 'black', owner: {_id: person._id}, id: 'carRemoteId'}, function (err, _car) {
                                 if (err) {
-                                    console.error('Error when mapping car object', err);
+
                                     done(err);
                                 }
                                 car = _car;
@@ -474,14 +471,12 @@ describe('perform mapping', function () {
                         ];
                         carMapping._mapBulk(raw, function (err, objs, res) {
                             if (err) {
-                                console.error('Error bulk mapping cars:', err);
+
                                 done(err);
                             }
                             else {
-                                console.log('Successfully mapped cars');
                             }
                             cars = objs;
-                            console.log('Mapping person');
                             personMapping.map({
                                 name: 'Michael Ford',
                                 age: 23,
@@ -489,11 +484,9 @@ describe('perform mapping', function () {
                                 cars: _.map(cars, function (car) {return {_id: car._id}})
                             }, function (err, _person) {
                                 if (err) {
-                                    console.error('Error mapping person:', err);
                                     done(err);
                                 }
                                 else {
-                                    console.log('Successfully mapped person');
                                 }
                                 person = _person;
                                 done();
@@ -527,7 +520,6 @@ describe('perform mapping', function () {
                                 person = _person;
                                 carMapping.map({name: 'Bentley', colour: 'black', owner: {id: 'personRemoteId123'}, id: 'carRemoteId'}, function (err, _car) {
                                     if (err) {
-                                        console.error('Error when mapping car object', err);
                                         done(err);
                                     }
                                     car = _car;
@@ -590,14 +582,14 @@ describe('perform mapping', function () {
                             ];
                             carMapping._mapBulk(raw, function (err, objs, res) {
                                 if (err) {
-                                    console.error('Error bulk mapping cars:', err);
+
                                     done(err);
                                 }
                                 else {
-                                    console.log('Successfully mapped cars');
+
                                 }
                                 cars = objs;
-                                console.log('Mapping person');
+
                                 personMapping.map({
                                     name: 'Michael Ford',
                                     age: 23,
@@ -609,11 +601,11 @@ describe('perform mapping', function () {
                                     ]
                                 }, function (err, _person) {
                                     if (err) {
-                                        console.error('Error mapping person:', err);
+
                                         done(err);
                                     }
                                     else {
-                                        console.log('Successfully mapped person');
+
                                     }
                                     person = _person;
                                     done();
@@ -760,7 +752,7 @@ describe('perform mapping', function () {
                                 person = _person;
                                 carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId', owner: 'personRemoteId'}, function (err, _car) {
                                     if (err) {
-                                        console.error('Error when mapping car object', err);
+
                                         done(err);
                                     }
                                     car = _car;
@@ -818,7 +810,7 @@ describe('perform mapping', function () {
                         beforeEach(function (done) {
                             carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId'}, function (err, _car) {
                                 if (err) {
-                                    console.error('Error when mapping car object', err);
+
                                     done(err);
                                 }
                                 car = _car;
@@ -883,7 +875,7 @@ describe('perform mapping', function () {
                                 person = _person;
                                 carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId', owner: {id: 'personRemoteId'}}, function (err, _car) {
                                     if (err) {
-                                        console.error('Error when mapping car object', err);
+
                                         done(err);
                                     }
                                     car = _car;
@@ -940,7 +932,7 @@ describe('perform mapping', function () {
                         beforeEach(function (done) {
                             carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId'}, function (err, _car) {
                                 if (err) {
-                                    console.error('Error when mapping car object', err);
+
                                     done(err);
                                 }
                                 car = _car;
@@ -1004,7 +996,7 @@ describe('perform mapping', function () {
                             person = _person;
                             carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId', owner: {_id: person._id}}, function (err, _car) {
                                 if (err) {
-                                    console.error('Error when mapping car object', err);
+
                                     done(err);
                                 }
                                 car = _car;
@@ -1035,7 +1027,7 @@ describe('perform mapping', function () {
                     beforeEach(function (done) {
                         carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId'}, function (err, _car) {
                             if (err) {
-                                console.error('Error when mapping car object', err);
+
                                 done(err);
                             }
                             car = _car;
@@ -1075,7 +1067,7 @@ describe('perform mapping', function () {
                             person = _person;
                             carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId', owner: person}, function (err, _car) {
                                 if (err) {
-                                    console.error('Error when mapping car object', err);
+
                                     done(err);
                                 }
                                 car = _car;
@@ -1106,7 +1098,7 @@ describe('perform mapping', function () {
                     beforeEach(function (done) {
                         carMapping.map({name: 'Bentley', colour: 'black', id: 'carRemoteId'}, function (err, _car) {
                             if (err) {
-                                console.error('Error when mapping car object', err);
+
                                 done(err);
                             }
                             car = _car;

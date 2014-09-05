@@ -273,7 +273,6 @@ describe('http!', function () {
             describe('success', function () {
                 var car;
                 beforeEach(function (done) {
-                    console.log(0);
                     var raw = {id: 'remoteId'};
                     var headers = { "Content-Type": "application/json" };
                     var path = "http://mywebsite.co.uk/cars/";
@@ -329,7 +328,6 @@ describe('http!', function () {
             describe('success', function () {
                 var car;
                 beforeEach(function (done) {
-                    console.log(0);
                     var raw = {colour: 'red', name: 'Aston Martin', id: '5'};
                     var headers = { "Content-Type": "application/json" };
                     var path = "http://mywebsite.co.uk/cars/5/";
@@ -386,7 +384,6 @@ describe('http!', function () {
             describe('success', function () {
                 var car;
                 beforeEach(function (done) {
-                    console.log(0);
                     var raw = {colour: 'red', name: 'Aston Martin', id: '5'};
                     var headers = { "Content-Type": "application/json" };
                     var path = "http://mywebsite.co.uk/cars/5/";
