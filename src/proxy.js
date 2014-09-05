@@ -142,12 +142,8 @@ function OneToOneProxy(opts) {
 
 OneToOneProxy.prototype = Object.create(NewObjectProxy.prototype);
 
-OneToOneProxy.prototype.clear = function () {
-    this._id = null;
-    this.related = null;
-};
 
-OneToOneProxy.prototype.set = function (obj, callback, reverse, clear) {
+OneToOneProxy.prototype.set = function (obj, callback, reverse) {
     var self = this;
     var reverseName = this.isForward ? this.reverseName : this.forwardName;
     var setterName = ('set' + capitaliseFirstLetter(reverseName));

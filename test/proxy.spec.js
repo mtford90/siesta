@@ -337,8 +337,10 @@ describe.only('new object proxy', function () {
             });
 
             describe('pre-existing', function () {
+
                 var anotherPerson, anotherPersonProxy;
-                beforeEach(function () {
+
+                beforeEach(function (){
                     anotherPerson = new RestObject(personMapping);
                     anotherPerson._id = 'abc';
                     anotherPersonProxy = new OneToOneProxy({
@@ -348,61 +350,98 @@ describe.only('new object proxy', function () {
                         forwardName: 'owner'
                     });
                     anotherPersonProxy.install(anotherPerson);
-                    car.owner = anotherPerson;
-                });
-                describe('forward', function () {
-                    it('should set forward', function () {
-                        car.owner = person;
-                        assert.equal(car.owner, person);
-                        assert.equal(carProxy._id, person._id);
-                        assert.equal(carProxy.related, person);
-                    });
-
-                    it('should set reverse', function () {
-                        car.owner = person;
-                        assert.equal(person.cars, car);
-                        assert.equal(personProxy._id, car._id);
-                        assert.equal(personProxy.related, car);
-                    });
-
-                    it('should clear the old', function () {
-                        car.owner = person;
-                        assert.instanceOf(anotherPerson.cars, Fault);
-                        assert.notOk(anotherPersonProxy._id);
-                        assert.notOk(anotherPersonProxy.related);
-                    })
+                    cache.insert(anotherPerson);
+                    cache.insert(person);
+                    cache.insert(car);
                 });
 
-                describe('backwards', function () {
-                    it('should set forward', function () {
-                        person.cars = car;
-                        assert.equal(person.cars, car);
-                        assert.equal(personProxy._id, car._id);
-                        assert.equal(personProxy.related, car);
+                function testPrexisting() {
+                    describe('forward', function () {
+                        it('should set forward', function () {
+                            car.owner = person;
+                            assert.equal(car.owner, person);
+                            assert.equal(carProxy._id, person._id);
+                            assert.equal(carProxy.related, person);
+                        });
 
+                        it('should set reverse', function () {
+                            car.owner = person;
+                            assert.equal(person.cars, car);
+                            assert.equal(personProxy._id, car._id);
+                            assert.equal(personProxy.related, car);
+                        });
+
+                        it('should clear the old', function () {
+                            car.owner = person;
+                            assert.instanceOf(anotherPerson.cars, Fault);
+                            assert.notOk(anotherPersonProxy._id);
+                            assert.notOk(anotherPersonProxy.related);
+                        })
                     });
+                    describe('backwards', function () {
+                        it('should set forward', function () {
+                            person.cars = car;
+                            assert.equal(person.cars, car);
+                            assert.equal(personProxy._id, car._id);
+                            assert.equal(personProxy.related, car);
 
-                    it('should set reverse', function () {
-                        person.cars = car;
-                        assert.equal(car.owner, person);
-                        assert.equal(carProxy._id, person._id);
-                        assert.equal(carProxy.related, person);
+                        });
+
+                        it('should set reverse', function () {
+                            person.cars = car;
+                            assert.equal(car.owner, person);
+                            assert.equal(carProxy._id, person._id);
+                            assert.equal(carProxy.related, person);
+                        });
+
+                        it('should clear the old', function () {
+                            person.cars = car;
+                            assert.instanceOf(anotherPerson.cars, Fault);
+                            assert.notOk(anotherPersonProxy._id);
+                            assert.notOk(anotherPersonProxy.related);
+                        })
                     });
+                }
 
-                    it('should clear the old', function () {
-                        person.cars = car;
-                        assert.instanceOf(anotherPerson.cars, Fault);
-                        assert.notOk(anotherPersonProxy._id);
-                        assert.notOk(anotherPersonProxy.related);
-                    })
+                describe('no fault', function(){
+                    beforeEach(function (){
+                        car.owner = anotherPerson;
+                    });
+                    testPrexisting();
                 });
+
+                describe('fault', function(){
+                    beforeEach(function (){
+                        carProxy._id = anotherPerson._id;
+                        anotherPersonProxy._id = car._id;
+                    });
+                    testPrexisting();
+                });
+
+                describe('forward fault only', function(){
+                    beforeEach(function (){
+                        carProxy._id = anotherPerson._id;
+                        anotherPersonProxy._id = car._id;
+                        anotherPersonProxy.related = car;
+                    });
+                    testPrexisting();
+                });
+
+                describe('reverse fault only', function(){
+                    beforeEach(function (){
+                        carProxy._id = anotherPerson._id;
+                        carProxy.related = anotherPerson;
+                        anotherPersonProxy._id = car._id;
+                    });
+                    testPrexisting();
+                });
+
 
             });
         })
 
 
     });
-
 
 
 });
