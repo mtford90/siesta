@@ -1,12 +1,13 @@
 var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , SaveOperation = require('./src/saveOperation').SaveOperation
-    , CompositeOperation = require('./src/baseOperation').CompositeOperation
     , DescriptorRegistry = require('./src/descriptorRegistry').DescriptorRegistry
     , Collection = require('./src/collection').Collection
     , cache = require('./src/cache')
     , index = require('./src/index')
     , pouch = require('./src/pouch')
-    , notificationCentre = require('./src/notificationCentre').notificationCentre;
+    , notificationCentre = require('./src/notificationCentre').notificationCentre
+    , Operation = require('./vendor/operations.js/src/operation').Operation;
+
 
 var siesta;
 if (typeof module != 'undefined') {
@@ -39,7 +40,7 @@ siesta.save = function save(callback) {
         var saveOperations = _.map(dirtyObjects, function (obj) {
             return new SaveOperation(obj);
         });
-        var op = new CompositeOperation('Save at mapping level', saveOperations, function () {
+        var op = new Operation('Save at mapping level', saveOperations, function () {
             if (callback) callback(op.error ? op.error : null);
         });
         op.start();

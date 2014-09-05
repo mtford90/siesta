@@ -99,7 +99,9 @@ RestObject.prototype._markTypeAsDirtyIfNeccessary = function () {
  */
 RestObject.prototype.save = function (callback) {
     Logger.trace('save');
-    var op = new SaveOperation(this, callback);
+    var op = new SaveOperation(this, function () {
+        if (callback) callback(op.error, op);
+    });
     op.start();
 };
 

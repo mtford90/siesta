@@ -8,6 +8,7 @@ var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 var BaseOperation = require('./baseOperation').BaseOperation;
 var SaveOperation = require('./saveOperation').SaveOperation;
+var Operation = require('../vendor/operations.js/src/operation').Operation;
 var CompositeOperation = require('./baseOperation').CompositeOperation;
 var RestError = require('./error').RestError;
 var Mapping = require('./mapping').Mapping;
@@ -188,7 +189,7 @@ Collection._getPouch = Pouch.getPouch;
 /**
  * Save all dirty objects across all mappings in this collection.
  * @param callback
- * @returns {CompositeOperation}
+ * @returns {Operation}
  */
 Collection.prototype.save = function (callback) {
     var dirtyMappings = this.__dirtyMappings;
@@ -200,7 +201,7 @@ Collection.prototype.save = function (callback) {
         var saveOperations = _.map(dirtyObjects, function (obj) {
             return new SaveOperation(obj);
         });
-        var op = new CompositeOperation('Save at mapping level', saveOperations, function () {
+        var op = new Operation('Save at mapping level', saveOperations, function () {
             if (callback) callback(op.error ? op.error : null);
         });
         op.start();

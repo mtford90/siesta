@@ -12,8 +12,8 @@ var OneToOneRelationship = require('./oneToOneRelationship').OneToOneRelationshi
 var Query = require('./query').Query;
 var index = require('./index');
 var Index = index.Index;
-var BaseOperation = require('./baseOperation').BaseOperation;
 var CompositeOperation = require('./baseOperation').CompositeOperation;
+var Operation = require('../vendor/operations.js/src/operation').Operation;
 var MappingOperation = require('./mappingOperation').MappingOperation;
 var SaveOperation = require('./saveOperation').SaveOperation;
 var RestObject = require('./object').RestObject;
@@ -608,7 +608,7 @@ Mapping.prototype.save = function (callback) {
         var saveOperations = _.map(dirtyObjects, function (obj) {
             return new SaveOperation(obj);
         });
-        var op = new CompositeOperation('Save at mapping level', saveOperations, function () {
+        var op = new Operation('Save at mapping level', saveOperations, function () {
             if (callback) callback(op.error ? op.error : null);
         });
         op.start();

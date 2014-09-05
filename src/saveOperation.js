@@ -2,7 +2,8 @@ var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('SaveOperation');
 Logger.setLevel(log.Level.warn);
 
-var BaseOperation = require('./baseOperation').BaseOperation;
+var Operation = require('../vendor/operations.js/src/operation').Operation;
+
 var pouch = require('./pouch');
 var cache = require('./cache');
 
@@ -11,12 +12,12 @@ var cache = require('./cache');
  * This avoids conflicts.
  *
  * @param object
- * @param callback
+ * @param completion
  * @returns {SaveOperation}
  * @constructor
  */
-function SaveOperation(object, callback) {
-    if (!this) return new SaveOperation(object, callback);
+function SaveOperation(object, completion) {
+    if (!this) return new SaveOperation(object, completion);
     var self = this;
 
     var work = function (done) {
@@ -24,15 +25,14 @@ function SaveOperation(object, callback) {
         self._start();
     };
 
-    BaseOperation.call(this, 'Save Operation', work, function () {
-        self.callback(self.error, self);
-    });
-
-    this.callback = callback;
+    Operation.call(this);
+    this.work = work;
+    this.name = 'Save Operation';
+    this.completion = completion;
     this.object = object;
 }
 
-SaveOperation.prototype = Object.create(BaseOperation.prototype);
+SaveOperation.prototype = Object.create(Operation.prototype);
 
 SaveOperation.prototype._finish = function (err) {
     if (err) {
@@ -72,64 +72,10 @@ SaveOperation.prototype._getDirtyFields = function () {
     return clonedArray;
 };
 
-/**
- * If we're clearing a dirty relationship field, we need to clear the reverse also.
- * @param fields
- * @param callback
- * @private
- */
-SaveOperation.prototype._clearDirtyRelationshipFields = function (fields, callback) {
-    var self = this;
-    var savingRelationships = [];
-    var errors = [];
-    var results = [];
-
-    function unmarkAsRelated(o, relationship) {
-        if (relationship.isForward(self.object)) {
-            o._unmarkFieldAsDirty(relationship.reverseName);
-        }
-        else {
-            o._unmarkFieldAsDirty(relationship.name);
-        }
-    }
-
-    _.each(fields, function (f) {
-        var isRelationship = self.object._fields.indexOf(f) < 0;
-        if (isRelationship) {
-            savingRelationships.push(f);
-            var proxy = self.object[f];
-            var relationship = proxy.relationship;
-            proxy.get(function (err, related) {
-                if (!err) {
-                    if (Object.prototype.toString.call(related) === '[object Array]') {
-                        _.each(related, function (o) {
-                            unmarkAsRelated(o, relationship);
-                        })
-                    }
-                    else {
-                        unmarkAsRelated(related, relationship);
-                    }
-                }
-                else {
-                    errors.push(err);
-                }
-                results.push({related: related, err: err});
-                if (savingRelationships.length == results.length) {
-                    if (callback) callback(errors.length ? errors : null, results);
-                }
-            });
-
-        }
-    });
-    if (!savingRelationships.length) {
-        if (callback) callback();
-    }
-};
 
 SaveOperation.prototype._clearDirtyFields = function (fields) {
     Logger.trace('_clearDirtyFields', fields);
     this.object._unmarkFieldsAsDirty(fields);
-//            this._clearDirtyRelationshipFields(fields, callback);
 };
 
 SaveOperation.prototype._saveDirtyFields = function () {
