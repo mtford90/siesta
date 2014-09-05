@@ -6,10 +6,8 @@ HttpLogger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
-var BaseOperation = require('./baseOperation').BaseOperation;
 var SaveOperation = require('./saveOperation').SaveOperation;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
-var CompositeOperation = require('./baseOperation').CompositeOperation;
 var RestError = require('./error').RestError;
 var Mapping = require('./mapping').Mapping;
 var Pouch = require('./pouch');
@@ -58,11 +56,10 @@ Collection.prototype.install = function (callback) {
         Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
         if (mappingsToInstall.length) {
             var operations = _.map(mappingsToInstall, function (m) {
-                return new BaseOperation('Install Mapping', _.bind(m.install, m));
+                return new Operation('Install Mapping', _.bind(m.install, m));
             });
-            var op = new CompositeOperation('Install Mappings');
-            op.operations = operations;
-            op.completionCallback = function () {
+            var op = new Operation('Install Mappings', operations);
+            op.completion = function () {
                 if (op.failed) {
                     callback(op.error);
                 }

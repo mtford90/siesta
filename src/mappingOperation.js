@@ -1,10 +1,8 @@
-var baseOperation = require('./baseOperation');
 
-var BaseOperation = baseOperation.BaseOperation;
-var CompositeOperation = baseOperation.CompositeOperation;
 var Store = require('./store');
 var RestObject = require('./object').RestObject;
 var log = require('../vendor/operations.js/src/log');
+var Operation = require('../vendor/operations.js/src/operation').Operation;
 
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
@@ -132,13 +130,14 @@ function MappingOperation(mapping, data, completion) {
     };
 
 
-    BaseOperation.call(this, 'MappingOperation', work, completion);
-
+    Operation.call(this);
+    this.name = 'Mapping Operation';
+    this.work = work;
+    this.completion = completion;
 
 }
 
-MappingOperation.prototype = Object.create(BaseOperation.prototype);
-
+MappingOperation.prototype = Object.create(Operation.prototype);
 
 /**
  * Check to see if all sub-ops have finished. Call the completion function if finished.

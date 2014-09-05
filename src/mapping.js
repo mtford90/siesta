@@ -12,7 +12,6 @@ var OneToOneRelationship = require('./oneToOneRelationship').OneToOneRelationshi
 var Query = require('./query').Query;
 var index = require('./index');
 var Index = index.Index;
-var CompositeOperation = require('./baseOperation').CompositeOperation;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var MappingOperation = require('./mappingOperation').MappingOperation;
 var SaveOperation = require('./saveOperation').SaveOperation;
@@ -503,7 +502,7 @@ Mapping.prototype._mapBulk = function (data, callback) {
     var operations = _.map(data, function (datum) {
         return new MappingOperation(self, datum);
     });
-    var op = new CompositeOperation('Bulk Mapping', operations, function (err) {
+    var op = new Operation('Bulk Mapping', operations, function (err) {
         if (err) {
             callback(err);
         }

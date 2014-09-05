@@ -3,13 +3,13 @@ var s = require('../../index')
 
 describe('perform mapping', function () {
 
-    var Pouch =  require('../../src/pouch');
+    var Pouch = require('../../src/pouch');
 
-        var Collection =  require('../../src/collection').Collection;
-        var RelationshipType =  require('../../src/relationship').RelationshipType;
+    var Collection = require('../../src/collection').Collection;
+    var RelationshipType = require('../../src/relationship').RelationshipType;
 
-        var RestObject =  require('../../src/object').RestObject;
-;
+    var RestObject = require('../../src/object').RestObject;
+    ;
 
     var collection, carMapping, personMapping;
 
@@ -35,7 +35,6 @@ describe('perform mapping', function () {
             var obj;
             carMapping.map({colour: 'red', name: 'Aston Martin'}, function (err, _obj) {
                 if (err) {
-
                     done(err);
                 }
                 obj = _obj;
@@ -55,11 +54,8 @@ describe('perform mapping', function () {
             });
             collection.install(function (err) {
                 if (err) done(err);
-                carMapping.map({colour: 'red', name: 'Aston Martin', id: 'dfadf'}, function (err, _obj)
-                {
-
+                carMapping.map({colour: 'red', name: 'Aston Martin', id: 'dfadf'}, function (err, _obj) {
                     if (err) {
-
                         done(err);
                     }
                     obj = _obj;

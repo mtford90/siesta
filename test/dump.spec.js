@@ -12,8 +12,6 @@ describe('dump', function () {
     var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
     var ResponseDescriptor = require('../src/responseDescriptor').ResponseDescriptor;
     var Serialiser = require('../src/serialiser');
-    var BaseOperation = require('../src/baseOperation').BaseOperation;
-    var CompositeOperation = require('../src/baseOperation').CompositeOperation;
     var SaveOperation = require('../src/saveOperation').SaveOperation;
     var MappingOperation = require('../src/mappingOperation').MappingOperation;
     var cache = require('../src/cache');
@@ -205,29 +203,6 @@ describe('dump', function () {
         var obj = m._dump();
         console.log(obj);
         var str = m._dump(true);
-        console.log(str);
-        assert.equal(typeof(str), 'string');
-    });
-
-    it('base operation', function () {
-        var o = new BaseOperation('asdasd');
-        var obj = o._dump();
-        console.log(obj);
-        var str = o._dump(true);
-        console.log(str);
-        assert.equal(typeof(str), 'string');
-    });
-
-    it('composite operation', function () {
-        var operations = [
-            new BaseOperation('1'),
-            new BaseOperation('2'),
-            new BaseOperation('3')
-        ];
-        var o = new CompositeOperation('Composite', operations);
-        var obj = o._dump();
-        console.log(obj);
-        var str = o._dump(true);
         console.log(str);
         assert.equal(typeof(str), 'string');
     });
