@@ -6,6 +6,64 @@ RelationshipType = {
     OneToOne: 'OneToOne'
 };
 
+function Fault(proxy, relationship) {
+    this.proxy = proxy;
+    this.relationship = relationship;
+    this.object = null;
+    Object.defineProperty(this, 'isFault',  {
+        get: function () {
+            return true;
+        },
+        enumerable: true,
+        configurable: true
+    });
+}
+
+Fault.prototype.add = function (){};
+Fault.prototype.remove = function (){};
+Fault.prototype.get = function (){};
+Fault.prototype.set = function (){};
+
+
+function NewObjectProxy(relationship) {
+    if (!this) return new NewObjectProxy(relationship);
+    this.relationship = relationship;
+    this.fault = new Fault(this, relationship);
+    this.object = null;
+}
+
+function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+NewObjectProxy.prototype.install = function (obj){
+    var self = this;
+    var name = this.relationship.name;
+    this.object = obj;
+    this.fault.object = obj;
+
+    Object.defineProperty(obj, name, {
+        get: function () {
+            if (self.related) {
+                return self.related;
+            }
+            else {
+                return self.fault;
+            }
+        },
+        set: function () {
+
+        },
+        configurable: true,
+        enumerable: true
+    });
+
+};
+
+
+
+
 function RelatedObjectProxy(relationship, object) {
     this.relationship = relationship;
     this.object = object;
@@ -125,6 +183,9 @@ Relationship.prototype._dump = function (asJSON) {
 exports.Relationship = Relationship;
 exports.RelatedObjectProxy = RelatedObjectProxy;
 exports.RelationshipType = RelationshipType;
+exports.NewObjectProxy = NewObjectProxy;
+exports.Fault = Fault;
+
 
 
 

@@ -551,23 +551,81 @@ personMapping = collection.registerMapping('Person', {
 A `Car` object will have the following properties due to this relationship.
 
 ```javascript
-Car.owner._id; // Locally unique identifier for the Person that this car belongs to.
-Car.owner.relatedObject; // The Person object itself (if has been fetched).
+// Create some new objects to play with.
+var person = personMapping.map({name: 'Michael'});
+var car = carMapping.map({name: 'Bentley', colour: 'Black'});
+var anotherCar = carMapping.map({name: 'Bentley', colour:'Grey'});
 
-// Fetches the owner of the car using ownerId. Note that this does not fetch from the remote source.
-Car.owner.get(function (err, owner) { 
-    // Car.owner.relatedObject will now be populated if no error.
-}); 
+// Relationships on new objects will not be faults as all in memory.
+console.log(car.owner.isFault); // false
+console.log(anotherCar.owner.isFault); // false
+console.log(person.cars.isFault); // false
 
-Car.owner.set(person, function (err) {
-	// Called once persisted.
-});
+person.cars.push(car);
 
-Person.cars.set([car1, car2], function (err) {
-	// Called once persisted.
-});
+console.log(person.cars); // [Car{name: Bentley, colour: Black}]
+
+console.log(car.owner === person); // true
+
+anotherCar.owner = person;
+
+console.log(person.cars); // [Car{name: Bentley, colour: Black}, Car{name: Bentley, colour: Grey}]
 ```
 
+However what if we had faults?
+```javascript
+var person = var person = personMapping.map({name: 'Michael', id:5});
+var car = carMapping.map({name: 'Bentley', colour: 'Black', id:6});
+car.owner = person;
+car.save();
+
+// Local identifiers are automatically assigned.
+console.log(car._id); // "abc"
+console.log(person._id); // "xyz"
+
+// ...
+// The app is closed and then reopened.
+// ...
+
+personMapping.all(function (err, people) {
+	carMapping.all(function (err, cars) {
+		var person = people[0];
+		var car = cars[0];
+		
+		console.log(person.cars.isFault); // true
+		console.log(person.cars); // Fault{}
+		console.log(person.cars._id); // ["abc"]
+		
+		console.log(car.owner.isFault); // true
+		console.log(car.owner); // Fault{}
+		console.log(car.owner._id); // xyz
+		
+		// We can clear a fault by performing a get.
+		car.owner.get(function (err, person) {
+			console.log(car.owner == person); // true
+			console.log(car.owner.isFault); // false
+			
+			// The cars side of the relationship is still at fault however.
+			console.log(person.cars.isFault); // true
+			
+			var anotherCar = carMapping.map({name: 'Bentley', colour: 'Grey', id:7}); 
+			console.log(anotherCar._id); // "123"
+			anotherCar.owner = person;
+						
+			// Still a fault!
+			console.log(person.cars.isFault); // true
+			console.log(person.cars._id); // ["abc", "123"];
+			console.log(person.cars); // Fault{}
+			
+			person.cars.get(function (err, cars) {
+				console.log(cars[0] === car); // true
+				console.log(cars[1] === anotherCar); // true
+				console.log(person.cars.isFault); // false
+			});
+		});
+	}
+});
+```
 
 ### HTTP
 
@@ -661,3 +719,15 @@ collection.DELETE('people/' + person.id, person, opts, function (err) {
     }
 });
 ```
+
+## Concepts
+
+### Object Mapping
+
+### Persitence
+
+### Single Source of Truth
+
+### Faults
+
+### Descriptors
