@@ -1,64 +1,134 @@
 var RestError = require('./error').RestError;
 var Store = require('./store');
 
+var defineSubProperty = require('./misc').defineSubProperty;
+
 RelationshipType = {
     ForeignKey: 'ForeignKey',
     OneToOne: 'OneToOne'
 };
 
 function Fault(proxy, relationship) {
+    var self = this;
     this.proxy = proxy;
-    this.relationship = relationship;
-    this.object = null;
     Object.defineProperty(this, 'isFault',  {
         get: function () {
-            return true;
+            return self.proxy.isFault;
         },
         enumerable: true,
         configurable: true
     });
 }
 
-Fault.prototype.add = function (){};
-Fault.prototype.remove = function (){};
-Fault.prototype.get = function (){};
-Fault.prototype.set = function (){};
+
+Fault.prototype.get = function () {
+    this.proxy.get.apply(this.proxy, arguments);
+};
+
+Fault.prototype.set = function () {
+    this.proxy.set.apply(this.proxy, arguments);
+};
 
 
-function NewObjectProxy(relationship) {
-    if (!this) return new NewObjectProxy(relationship);
-    this.relationship = relationship;
-    this.fault = new Fault(this, relationship);
-    this.object = null;
-}
-
-function capitaliseFirstLetter(string)
-{
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-NewObjectProxy.prototype.install = function (obj){
+function NewObjectProxy(opts) {
+    this._opts = opts;
+    if (!this) return new NewObjectProxy(opts);
     var self = this;
-    var name = this.relationship.name;
-    this.object = obj;
-    this.fault.object = obj;
-
-    Object.defineProperty(obj, name, {
+    this.fault = new Fault(this);
+    this.object = null;
+    this._id = null;
+    this.relatedObject = null;
+    Object.defineProperty(this, 'isFault',  {
         get: function () {
-            if (self.related) {
-                return self.related;
+            if (self._id) {
+                return !self.relatedObject;
+            }
+            return false;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    defineSubProperty.call(this, 'reverseMapping', this._opts);
+    defineSubProperty.call(this, 'forwardMapping', this._opts);
+    defineSubProperty.call(this, 'forwardName', this._opts);
+    defineSubProperty.call(this, 'reverseName', this._opts);
+    Object.defineProperty(this, 'isReverse', {
+        get: function () {
+            if (self.object) {
+                return self.object.mapping == self.reverseMapping;
             }
             else {
-                return self.fault;
+                throw new RestError('Cannot use proxy until installed')
             }
         },
-        set: function () {
-
-        },
-        configurable: true,
-        enumerable: true
+        enumerable: true,
+        configurable: true
     });
+    Object.defineProperty(this, 'isForward', {
+        get: function () {
+            if (self.object) {
+                return self.object.mapping == self.forwardMapping;
+            }
+            else {
+                throw new RestError('Cannot use proxy until installed')
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+}
 
+NewObjectProxy.prototype.getName = function () {
+    var name;
+    if (this.isReverse) {
+        name = this.reverseName;
+    }
+    else if (this.isForward) {
+        name = this.forwardName;
+    }
+    else {
+        throw new RestError('Incompatible relationship');
+    }
+    return name;
+};
+
+NewObjectProxy.prototype.install = function (obj) {
+    if (obj) {
+        if (!this.object) {
+            this.object = obj;
+            var self = this;
+            var name = this.getName();
+            Object.defineProperty(obj, name, {
+                get: function () {
+                    if (self.related) {
+                        return self.related;
+                    }
+                    else {
+                        return self.fault;
+                    }
+                },
+                set: function () {
+                    self.set(obj);
+                },
+                configurable: true,
+                enumerable: true
+            });
+        }
+        else {
+            throw new RestError('Already installed.');
+        }
+    }
+    else {
+        throw new RestError('No object passed to relationship install');
+    }
+};
+
+NewObjectProxy.prototype.set = function (obj) {
+    throw new RestError('Must subclass NewObjectProxy');
+};
+
+NewObjectProxy.prototype.get = function (callback) {
+    throw new RestError('Must subclass NewObjectProxy');
 };
 
 function RelatedObjectProxy(relationship, object) {

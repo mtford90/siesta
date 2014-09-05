@@ -1,13 +1,13 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe('new object proxy', function () {
+describe.only('new object proxy', function () {
 
     var NewObjectProxy = require('../src/relationship').NewObjectProxy;
     var Mapping = require('../src/mapping').Mapping;
     var RestObject = require('../src/object').RestObject;
-    var Relationship = require('../src/relationship').Relationship;
     var Fault = require('../src/relationship').Fault;
+    var RestError = require('../src/error').RestError;
 
     var carMapping, personMapping;
 
@@ -27,32 +27,185 @@ describe('new object proxy', function () {
         });
     });
 
-    describe('installation', function () {
-        var car, person, relationship, proxy;
+    describe('generic', function () {
+        describe('installation', function () {
+            var car, person, relationship, proxy;
 
-        beforeEach(function () {
-            person = new RestObject(personMapping);
-            relationship = new Relationship('owner', 'cars', carMapping, personMapping);
-            proxy = new NewObjectProxy(relationship);
+            beforeEach(function () {
+                proxy = new NewObjectProxy({
+                    reverseMapping: personMapping,
+                    forwardMapping: carMapping,
+                    reverseName: 'cars',
+                    forwardName: 'owner'
+                });
+                car = new RestObject(carMapping);
+                person = new RestObject(personMapping);
+            });
+
+            it('throws an error if try to install twice', function () {
+                proxy.install(car);
+                assert.throws(function () {
+                    proxy.install(car);
+                }, RestError);
+            });
+
+            it('isReverse throws an error if proxy not installed', function () {
+                assert.throws(function () {
+                    proxy.isForward;
+                }, RestError);
+            });
+
+            it('isReverse throws an error if proxy not installed', function () {
+                assert.throws(function () {
+                    proxy.isForward;
+                }, RestError);
+            });
+
+            describe('forward installation', function () {
+                beforeEach(function () {
+                    proxy.install(car);
+                });
+
+                describe('faults', function () {
+                    it('is forward', function () {
+                        assert.ok(proxy.isForward);
+                    });
+
+                    it('is not reverse', function () {
+                        assert.notOk(proxy.isReverse);
+                    });
+
+                    describe('no relationship', function () {
+                        it('is a fault object', function () {
+                            assert.instanceOf(car.owner, Fault);
+                        });
+
+                        it('is not faulted, as no relationship set', function () {
+                            assert.notOk(car.owner.isFault);
+                        });
+                    });
+
+                    describe('relationship, faulted', function () {
+                        beforeEach(function () {
+                            proxy._id = 'xyz';
+                        });
+
+                        it('is a fault object', function () {
+                            assert.instanceOf(car.owner, Fault);
+                        });
+
+                        it('is faulted, as relationship set', function () {
+                            assert.ok(car.owner.isFault);
+                        });
+                    });
+
+                    describe('relationship, faulted', function () {
+                        beforeEach(function () {
+                            proxy._id = 'xyz';
+                            proxy.related = new RestObject(personMapping);
+                            proxy.related._id = 'xyz';
+                        });
+
+                        it('is a fault object', function () {
+                            assert.equal(car.owner, proxy.related);
+                        });
+
+                        it('is not faulted, as relationship set and related assigned', function () {
+                            assert.notOk(car.owner.isFault);
+                        });
+                    })
+                });
+            });
+
+            describe('reverse installation', function () {
+                beforeEach(function () {
+                    proxy.install(person);
+                });
+
+                describe('faults', function () {
+                    it('is reerse', function () {
+                        assert.ok(proxy.isReverse);
+                    });
+
+                    it('is not forward', function () {
+                        assert.notOk(proxy.isForward);
+                    });
+
+                    describe('no relationship', function () {
+                        it('is a fault object', function () {
+                            assert.instanceOf(person.cars, Fault);
+                        });
+
+                        it('is not faulted, as no relationship set', function () {
+                            assert.notOk(person.cars.isFault);
+                        });
+                    });
+
+                    describe('relationship, faulted', function () {
+                        beforeEach(function () {
+                            proxy._id = ['xyz'];
+                        });
+
+                        it('is a fault object', function () {
+                            assert.instanceOf(person.cars, Fault);
+                        });
+
+                        it('is faulted, as relationship set', function () {
+                            assert.ok(person.cars.isFault);
+                        });
+                    });
+
+                    describe('relationship, faulted', function () {
+                        beforeEach(function () {
+                            proxy._id = 'xyz';
+                            proxy.related = [new RestObject(carMapping)];
+                            proxy.related[0]._id = 'xyz';
+                        });
+
+                        it('is a fault object', function () {
+                            assert.equal(person.cars[0], proxy.related[0]);
+                        });
+
+                        it('is not faulted, as relationship set and related assigned', function () {
+                            assert.notOk(person.cars.isFault);
+                        });
+                    })
+                });
+            });
         });
 
-        describe('forward installation', function () {
+        describe('subclass', function () {
+            var car, person, proxy;
+
             beforeEach(function () {
+                proxy = new NewObjectProxy({
+                    reverseMapping: personMapping,
+                    forwardMapping: carMapping,
+                    reverseName: 'cars',
+                    forwardName: 'owner'
+                });
                 car = new RestObject(carMapping);
+                person = new RestObject(personMapping);
                 proxy.install(car);
             });
 
-            it('is a fault', function () {
-                assert.instanceOf(car.owner, Fault);
-                assert.ok(car.owner.isFault);
+            it('set should fail if not subclasses', function () {
+                assert.throws(function () {
+                    car.owner = person;
+                }, RestError);
+                assert.throws(function () {
+                    car.owner.set(person);
+                }, RestError);
+            });
+
+            it('get should fail if not subclasses', function () {
+                assert.throws(function () {
+                    car.owner.get(function () {
+
+                    })
+                }, RestError);
             })
-
-            it('installs a set function', function () {
-
-            })
-
-        });
-
+        })
 
     });
 

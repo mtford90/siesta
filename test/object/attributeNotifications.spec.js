@@ -103,7 +103,7 @@ describe('notifications', function () {
 
         });
 
-        describe.only('array notifications', function () {
+        describe('array notifications', function () {
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
                 carMapping = collection.mapping('Car', {
