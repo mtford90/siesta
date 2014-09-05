@@ -113,6 +113,24 @@ describe('notifications', function () {
                 collection.install(done);
             });
 
+            it('sends notifications for all levels', function (done) {
+                var notifs = [];
+                carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
+                    car = _car;
+                    if (err) done(err);
+                    var listener = function (n) {
+                        notifs.push(n);
+                        if (notifs.length >= 3) {
+                            done();
+                        }
+                    };
+                    s.once('myCollection:Car', listener);
+                    s.once('myCollection', listener);
+                    s.once('Fount', listener);
+                    car.colours.push('green');
+                });
+            });
+
             describe('push', function () {
                 beforeEach(function (done) {
                     carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
