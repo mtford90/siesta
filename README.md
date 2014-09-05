@@ -219,15 +219,13 @@ collection.get('cars/', {page_size: 5}).then(function (cars) {
 
 ### Notifications
 
-Notifications are sent via `$rootScope` for a variety of situations.
-
 #### HTTP Requests
 
 The notification looks as follows:
 
 ```javascript
 {
-	 name: 'POST MyCollection Car',
+	name: 'POST MyCollection Car',
     type: 'Car',
     collection: 'MyCollection',
     obj: Object{}, // The object in question
@@ -242,17 +240,17 @@ Here are some examples:
 ```javascript
 
 // Sent on sending of POST request to server for any object.
-$rootScope.on('POST', function (notification) {
+siesta.on('POST', function (notification) {
     console.log(notification);
 });
 
 // Sent on sending of POST request to server of a Car.
-$rootScope.on('POST MyCollection Car', function (notification) {
+siesta.on('POST MyCollection Car', function (notification) {
     console.log(notification);
 });
 
 // Sent on successful response of POST of a Car.
-$rootScope.on('POST MyCollection Car success', function (notification) {
+siesta.on('POST MyCollection Car success', function (notification) {
     console.log(notification);
 });
 
@@ -264,146 +262,49 @@ Notifications are also sent when fields on particular objects have changed e.g. 
 mapping or after a local modification.
 
 ```javascript
-$rootScope.on('Car', function (notification) {
+siesta.on('Car', function (notification) {
     console.log(notification);
     /*
        LOG: {
              name: 'Car', // Name of the notification
-             object: {  // The object that has been posted to the server.
-                 colour: 'blue', 
-                 owner: function getter() { ... } 
-             },
+             object: Car{},
+             type: 'Car',
+             collection: 'MyCollection',
              changes: [{
-                 type: 'updated',
+                 type: 'set',
                  key: 'colour',
                  old: 'red',
                  new: 'blue'
              }]
         }
     */
-    // Relationships are not neccessarilly cached and may be stored on
-    // disk instead hence the use of a getter function.
-    notification.object.owner.get(function (err, person) {
-        console.log(person);
-    });
 });
 ```
 
-### Schema Migrations
-
-Schema migrations are rudimentary at the moment. If you detect a change in version when setting
-up the Rest collection you can either delete all the data and start from scratch:
+This also works for array-type attributes:
 
 ```javascript
-var collection = new Collection('MyCollection', function (err, version) {
-    if (!err) {
-        if (version) {
-            if (version !== MY_VERSION) {
-                collection.reset();
-            }
+var car = myCollection.Car.map({colours: ['red'], name: 'Ford'});
+
+siesta.on('Car', function () {
+    /*
+       LOG: {
+             name: 'Car', // Name of the notification
+             object: Car{},
+             type: 'Car',
+             collection: 'MyCollection',
+             changes: [{
+                 type: 'insert',
+                 key: 'colour',
+                 new: 'blue'
+             }]
         }
-        doFirstTimeSetup();
-    }
-    else {
-        handleError(err);
-    }
+    */
 });
+
+car.push('blue');
 ```
 
-or you could implement a migration scheme:
-
-```javascript
-var collection = new Collection('MyCollection', function (err, version) {
-    if (!err) {
-        if (!version) {
-            doFirstTimeSetup();
-            collection.setVersion(THIRD_VERSION);
-        }
-        if (version < SECOND_VERSION) {
-            addSomeMappings();
-            collection.setVersion(SECOND_VERSION);
-        }
-        if (version < THIRD_VERSION) {
-            addSomeIndexes(); 
-            collection.setVersion(THIRD_VERSION);
-        }
-        // ... and so on.
-    }
-    else {
-        handleError(err);
-    }
-});
-```
-
-The problem with this is that things could quickly get out of hand. I would suggest having a migrations
-module like follows:
-
-```javascript
-angular.module('myApp.rest.migrations')
-
-    .factory('applyMigrations', function (migrations, fromScratch) {
-        return function (collection) {
-            if (!collection.version) {
-                fromScratch(collection);
-            }
-            else {
-                _.each(migrations, function (migration) {
-                    if (collection.version < migration.version) {
-                        migration.apply(collection);
-                        collection.version = migration.version;
-                    }
-                });
-            }
-        }
-    })
-
-    .factory('migrations', function (Migration1, Migration2) {
-        return [Migration1, Migration2];
-    })
-    
-    .factory('fromScratch', function () {
-        return function (collection) {
-            // First time setup.
-        };
-    })
-    
-    .factory('Migration1', function () {
-        return {
-            version: 1,
-            apply: function () {
-                // Add mappings, indexes, change data etc
-            };
-        }
-    })    
-    
-    .factory('Migration2', function () {
-        return {
-            version: 2,
-            apply: function () {
-                // Add some more mappings, indexes, change data etc
-            };
-        }
-    })
-```
-
-and then when you setup the Rest collection:
-
-```javascript
-var collection = new Collection('MyCollection', function (err, version) {
-    if (!err) {
-        applyMigrations(collection);
-    }
-    else {
-        handleError(err);
-    }
-});
-```
-
-### Database synchronisation
-
-We can synchronise with CouchDB instances thanks to the use of PouchDB behind the scenes.
-
-TODO
 
 ## Recipes
 
@@ -414,6 +315,16 @@ Useful stuff that can be done with the combination of <rest> and the underlying 
 ### Custom Views
 
 TODO: Install custom PouchDB views. Useful for analysis of data etc.
+
+### Database synchronisation
+
+We can synchronise with CouchDB instances thanks to the use of PouchDB behind the scenes.
+
+TODO
+
+### Subclassing RestObject
+
+TODO: Pass constructor or name of constructor to the mapping?
 
 ## Contributing
 
@@ -438,20 +349,6 @@ During development it's useful to watch for changes and execute tests automatica
 
 ```bash
 grunt watch
-```
-
-Note that with mocha we can use `only` to run an individual test/block of tests:
-
-```
-it.only('test', function () {
-    // Do test.
-});
-
-describe.only('block of tests', function () {
-    it('...', function () {
-        // ...
-    });
-});
 ```
 
 ## To Sort
@@ -731,3 +628,5 @@ collection.DELETE('people/' + person.id, person, opts, function (err) {
 ### Faults
 
 ### Descriptors
+
+### Dirtyness

@@ -24,6 +24,8 @@ var ChangeType = require('./ChangeType').ChangeType;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 
 
+
+
 function Mapping(opts) {
     var self = this;
     this._opts = opts;

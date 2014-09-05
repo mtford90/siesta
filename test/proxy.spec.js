@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe.only('new object proxy', function () {
+describe('new object proxy', function () {
 
     var NewObjectProxy = require('../src/relationship').NewObjectProxy;
     var Mapping = require('../src/mapping').Mapping;

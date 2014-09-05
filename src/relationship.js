@@ -61,9 +61,6 @@ NewObjectProxy.prototype.install = function (obj){
 
 };
 
-
-
-
 function RelatedObjectProxy(relationship, object) {
     this.relationship = relationship;
     this.object = object;
@@ -185,7 +182,3 @@ exports.RelatedObjectProxy = RelatedObjectProxy;
 exports.RelationshipType = RelationshipType;
 exports.NewObjectProxy = NewObjectProxy;
 exports.Fault = Fault;
-
-
-
-

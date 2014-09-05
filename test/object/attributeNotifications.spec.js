@@ -99,7 +99,6 @@ describe('notifications', function () {
                 assert.equal(change.new, 'blue');
             });
 
-
         });
 
         describe('array notifications', function () {
