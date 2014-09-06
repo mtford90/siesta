@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('RestObject');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var SaveOperation = require('./saveOperation').SaveOperation;
@@ -74,9 +74,11 @@ RestObject.prototype._markFieldsAsDirty = function (fields) {
 };
 
 RestObject.prototype._markFieldAsDirty = function (field) {
+    Logger.trace('_markFieldAsDirty', field);
     if (this.__dirtyFields.indexOf(field) < 0) {
         this.__dirtyFields.push(field);
     }
+    Logger.trace('__dirtyFields', this.__dirtyFields);
     this._markTypeAsDirtyIfNeccessary();
 };
 

@@ -1,7 +1,7 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe.only('perform mapping', function () {
+describe('perform mapping', function () {
 
     var Pouch = require('../../src/pouch');
 
@@ -1287,7 +1287,6 @@ describe.only('perform mapping', function () {
                 });
 
                 it('same owner using _mapBulk', function (done) {
-//                    assert(false, 'need to stop this clobbering the other tests');
                     var ownerId = 'ownerId462345345';
                     var raw = [
                         {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: ownerId},

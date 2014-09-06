@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -19,9 +19,9 @@ var cache = require('./cache');
 var extend = require('extend');
 
 var ChangeType = require('./ChangeType').ChangeType;
-var notificationCentre = require('./notificationCentre').notificationCentre;
+var wrapArray = require('./notificationCentre').wrapArray;
+var broadcast = require('./notificationCentre').broadcast;
 
-var ArrayObserver = require('observe-js').ArrayObserver;
 
 
 var ForeignKeyProxy = require('./proxy').ForeignKeyProxy;
@@ -208,47 +208,7 @@ Mapping.prototype._validate = function () {
 };
 
 
-function broadcast(obj, change) {
-    var payload = {
-        collection: obj.collection,
-        type: obj.type,
-        obj: obj,
-        change: change
-    };
-    var mappingNotif = obj.collection + ':' + obj.type;
-    notificationCentre.emit(mappingNotif, payload);
-    var collectioNotif = obj.collection;
-    notificationCentre.emit(collectioNotif, payload);
-    var genericNotif = 'Fount';
-    notificationCentre.emit(genericNotif, payload);
-}
 
-///**
-// * Wraps the methods of a javascript array object so that notifications are sent
-// * on calls.
-// *
-// * @param array the array we have wrapping
-// * @param field name of the field
-// * @param restObject the object to which this array is a property
-// */
-//
-
-function wrapArray(array, field, restObject) {
-    if (!array.observer) {
-        array.observer = new ArrayObserver(array);
-    }
-    array.observer.open(function (splices) {
-        splices.forEach(function (splice) {
-            broadcast(restObject, {
-                field: field,
-                type: ChangeType.Splice,
-                index: splice.index,
-                addedCount: splice.addedCount,
-                removed: splice.removed
-            });
-        });
-    })
-}
 
 /**
  * Map data into Fount.
@@ -326,7 +286,6 @@ Mapping.prototype._new = function (data) {
     }
     restObject.__dirtyFields = [];
     _.each(fields, function (field) {
-
         Object.defineProperty(restObject, field, {
             get: function () {
                 return restObject.__values[field] || null;
@@ -345,7 +304,7 @@ Mapping.prototype._new = function (data) {
                 }
 
                 if (v != old) {
-                    Logger.trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '" as just changed to ' + v);
+                    log.loggerWithName('RestObject').trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '" as just changed to ' + v);
                     restObject._markFieldAsDirty(field);
                 }
 

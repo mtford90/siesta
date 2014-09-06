@@ -2,12 +2,12 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping new object', function () {
-    var Collection =  require('../../src/collection').Collection;
+    var Collection = require('../../src/collection').Collection;
 
-        var RelationshipType =  require('../../src/relationship').RelationshipType;
-        var RelatedObjectProxy =  require('../../src/relationship').RelatedObjectProxy;
+    var RelationshipType = require('../../src/relationship').RelationshipType;
+    var ForeignKeyProxy = require('../../src/proxy').ForeignKeyProxy;
 
-        var cache =  require('../../src/cache');
+    var cache = require('../../src/cache');
 
     beforeEach(function () {
         s.reset(true);
@@ -101,12 +101,12 @@ describe('mapping new object', function () {
 
             it('installs forward related object proxy', function () {
                 var carObject = carMapping._new();
-                assert.instanceOf(carObject.owner, RelatedObjectProxy);
+                assert.instanceOf(carObject.ownerProxy, ForeignKeyProxy);
             });
 
             it('installs reverse related object proxy', function () {
                 var personObject = personMapping._new();
-                assert.instanceOf(personObject.cars, RelatedObjectProxy);
+                assert.instanceOf(personObject.carsProxy, ForeignKeyProxy);
             });
 
         });

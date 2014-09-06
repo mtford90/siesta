@@ -82,6 +82,7 @@ function MappingOperation(mapping, data, completion) {
                                     self._startMapping();
                                 }
                                 else {
+                                    dump('_new!!', newData);
                                     restObject = self.mapping._new(newData);
                                     restObject.save(function (err) {
                                         if (err) {
@@ -218,7 +219,7 @@ MappingOperation.prototype._mapArray = function (prop, arr) {
                     numFinished++;
                     if (numFinished == arr.length) {
                         if (!errors.length) {
-                            var proxy = obj[prop];
+                            var proxy = obj[prop + 'Proxy'];
                             Logger.debug('Setting relationship ' + prop);
                             proxy.set(mappedArr, function (err) {
                                 if (err) {

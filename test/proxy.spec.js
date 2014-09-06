@@ -10,25 +10,25 @@ describe('new object proxy', function () {
     var RestObject = require('../src/object').RestObject;
     var Fault = require('../src/proxy').Fault;
     var RestError = require('../src/error').RestError;
+    var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
 
     var carMapping, personMapping;
 
+    var collection;
 
-    beforeEach(function () {
+    beforeEach(function (done) {
         s.reset(true);
-        carMapping = new Mapping({
-            type: 'Car',
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
             id: 'id',
-            attributes: ['colour', 'name'],
-            collection: 'myCollection'
+            attributes: ['colour', 'name']
         });
-        personMapping = new Mapping({
-            type: 'Person',
+        personMapping = new Mapping('Person', {
             id: 'id',
-            attributes: ['name', 'age'],
-            collection: 'myCollection'
+            attributes: ['name', 'age']
         });
+        collection.install(done);
     });
 
     describe('generic', function () {

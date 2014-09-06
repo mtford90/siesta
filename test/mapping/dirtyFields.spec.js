@@ -12,8 +12,8 @@ describe('dirty fields', function () {
 
     var car, previousPerson, newPerson;
 
-    beforeEach(function (done) {
-        s.reset(true, done);
+    beforeEach(function () {
+        s.reset(true);
     });
 
     function assertCollectionAndGlobalNotDirtyWhenFirstMapped() {
@@ -157,6 +157,7 @@ describe('dirty fields', function () {
                     carMapping.map({name: 'Aston Martin', colours: ['black', 'red', 'green']}, function (err, _car) {
                         if (err) done(err);
                         car = _car;
+                        assert.ok(car.colours.observer);
                         Pouch.getPouch().get(car._id, function (err, _doc) {
                             if (err) done(err);
                             doc = _doc;
@@ -178,8 +179,9 @@ describe('dirty fields', function () {
 
             describe('change attributes', function () {
                 describe('push element', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
                         car.colours.push('purple');
+                        setTimeout(done);
                     });
 
                     assertCarShouldNowBeDirty();
@@ -205,8 +207,9 @@ describe('dirty fields', function () {
                 });
 
                 describe('pop element', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
                         car.colours.pop();
+                        setTimeout(done);
                     });
                     assertCarShouldNowBeDirty();
 
@@ -230,8 +233,9 @@ describe('dirty fields', function () {
                 });
 
                 describe('shift element', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
                         car.colours.shift();
+                        setTimeout(done);
                     });
 
                     assertCarShouldNowBeDirty();
@@ -257,8 +261,9 @@ describe('dirty fields', function () {
                 });
 
                 describe('unshift element', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
                         car.colours.unshift('purple');
+                        setTimeout(done);
                     });
                     assertCarShouldNowBeDirty();
 
@@ -283,8 +288,9 @@ describe('dirty fields', function () {
                 });
 
                 describe('sort array', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
                         car.colours.sort();
+                        setTimeout(done);
                     });
 
 
@@ -314,8 +320,9 @@ describe('dirty fields', function () {
                 });
 
                 describe('reverse array', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
                         car.colours.reverse();
+                        setTimeout(done);
                     });
                     assertCarShouldNowBeDirty();
 
@@ -343,8 +350,9 @@ describe('dirty fields', function () {
                 });
 
                 describe('set object at index', function () {
-                    beforeEach(function () {
-                        car.colours.setObjectAtIndex('purple', 1);
+                    beforeEach(function (done) {
+                        car.colours[1] = 'purple';
+                        setTimeout(done);
                     });
 
                     assertCarShouldNowBeDirty();
@@ -371,11 +379,26 @@ describe('dirty fields', function () {
                 });
 
                 describe('splice', function () {
-                    beforeEach(function () {
+                    beforeEach(function (done) {
+                        assert.ok(car.colours.observer);
                         car.colours.splice(1, 1, 'purple');
+                        setTimeout(done);
                     });
-                    assertCarShouldNowBeDirty();
 
+                    it('car should be dirty', function () {
+                        assert.ok(car.isDirty);
+                    });
+
+                    it('car mapping should be dirty', function () {
+                        assert.ok(collection.Car.isDirty);
+                    });
+                    it('collection should be dirty', function () {
+                        assert.ok(collection.isDirty);
+                    });
+
+                    it('global should be dirty', function () {
+                        assert.ok(Collection.isDirty);
+                    });
 
                     describe('save', function () {
 
@@ -383,7 +406,21 @@ describe('dirty fields', function () {
                             car.save(done);
                         });
 
-                        assertCarNoLongerDirty();
+                        it('car should no longer be dirty', function () {
+                            assert.notOk(car.isDirty);
+                        });
+
+                        it('car collection should no longer be dirty', function () {
+                            assert.notOk(collection.Car.isDirty);
+                        });
+
+                        it('collection should no longer be dirty', function () {
+                            assert.notOk(collection.isDirty);
+                        });
+
+                        it('global should no longer be dirty', function () {
+                            assert.notOk(Collection.isDirty);
+                        });
 
                         it('should have made the change', function (done) {
                             Pouch.getPouch().get(car._id, function (err, doc) {
@@ -424,7 +461,7 @@ describe('dirty fields', function () {
                     carMapping.map({name: 'Aston Martin', colour: 'black', owner: 'abcdef'}, function (err, _car) {
                         if (err) done(err);
                         car = _car;
-                        previousPerson = car.owner.relatedObject;
+                        previousPerson = car.owner;
                         personMapping.map({name: 'Michael Ford', age: 23}, function (err, person) {
                             if (err) done(err);
                             newPerson = person;
@@ -436,11 +473,25 @@ describe('dirty fields', function () {
                 });
             });
 
-            assertCarNotDirtyWhenFirstMapped();
+            it('car should not be dirty when first mapped', function () {
+                assert.notOk(car.isDirty);
+            });
+
+            it('car mapping should not be dirty when first mapped', function () {
+                assert.notOk(collection.Car.isDirty);
+            });
+            it('collection should not be dirty when first mapped', function () {
+                assert.notOk(collection.isDirty);
+            });
+
+            it('global should not be dirty when first mapped', function () {
+                assert.notOk(Collection.isDirty);
+            });
 
             it('should have car fields setup correctly', function (done) {
                 Pouch.getPouch().get(car._id, function (err, doc) {
                     if (err) done(err);
+                    dump(doc);
                     assert.equal(doc.colour, car.colour);
                     assert.equal(doc.name, car.name);
                     assert.equal(doc.owner, previousPerson._id);
@@ -456,122 +507,148 @@ describe('dirty fields', function () {
                 });
             });
 
-            describe('forward', function () {
-
-                beforeEach(function (done) {
-                    car.owner.set(newPerson, function (err) {
-                        done(err);
-                    });
-                });
-
-                assertCarShouldNowBeDirty();
-
-                describe('save', function () {
-
-                    beforeEach(function (done) {
-                        car.save(done);
-                    });
-
-                    assertCarNoLongerDirty();
-
-                    it('should have persisted the change to the car', function () {
-                        Pouch.getPouch().get(car._id, function (err, doc) {
-                            if (err) done(err);
-                            assert.equal(doc.owner, newPerson._id);
-                        });
-                    });
-
-                })
-
-            });
-
-            describe('reverse', function () {
-
-                describe('add', function () {
-                    beforeEach(function (done) {
-                        newPerson.cars.add(car, function (err) {
-                            done(err);
-                        });
-                    });
-
-                    assertCarShouldNowBeDirty();
-
-                    describe('save', function () {
-
-                        beforeEach(function (done) {
-                            car.save(done);
-                        });
-
-                        assertCarNoLongerDirty();
-
-                        it('should have persisted the change to the car', function () {
-                            Pouch.getPouch().get(car._id, function (err, doc) {
-                                if (err) done(err);
-                                assert.equal(doc.owner, newPerson._id);
-                            });
-                        });
-
-                    });
-
-                });
-
-                describe('set', function () {
-
-                    beforeEach(function (done) {
-                        newPerson.cars.set([car], function (err) {
-                            done(err);
-                        });
-                    });
-
-                    assertCarShouldNowBeDirty();
-
-                    describe('save', function () {
-
-                        beforeEach(function (done) {
-                            car.save(done);
-                        });
-
-                        assertCarNoLongerDirty();
-
-                        it('should have persisted the change to the car', function () {
-                            Pouch.getPouch().get(car._id, function (err, doc) {
-                                if (err) done(err);
-                                assert.equal(doc.owner, newPerson._id);
-                            });
-                        });
-
-                    });
-
-                });
-
-
-                describe('remove', function () {
-                    beforeEach(function (done) {
-                        previousPerson.cars.remove(car, function (err) {
-                            done(err);
-                        })
-                    });
-
-                    assertCarShouldNowBeDirty();
-
-                    describe('save', function () {
-
-                        beforeEach(function (done) {
-                            car.save(done);
-                        });
-
-                        assertCarNoLongerDirty();
-
-                        it('should have persisted the change to the car', function () {
-                            Pouch.getPouch().get(car._id, function (err, doc) {
-                                if (err) done(err);
-                                assert.notOk(doc.owner);
-                            });
-                        });
-
-                    });
-                });
-            });
+//            describe('forward', function () {
+//
+//                beforeEach(function (done) {
+//                    car.ownerProxy.set(newPerson, function (err) {
+//                        done(err);
+//                    });
+//                });
+//
+//                it('car should be dirty', function () {
+//                    assert.ok(car.isDirty);
+//                });
+//
+//                it('car mapping should be dirty', function () {
+//                    assert.ok(collection.Car.isDirty);
+//                });
+//                it('collection should be dirty', function () {
+//                    assert.ok(collection.isDirty);
+//                });
+//
+//                it('global should be dirty', function () {
+//                    assert.ok(Collection.isDirty);
+//                });
+//
+//                describe('save', function () {
+//
+//                    beforeEach(function (done) {
+//                        car.save(done);
+//                    });
+//
+//                    it('car should no longer be dirty', function () {
+//                        assert.notOk(car.isDirty);
+//                    });
+//
+//                    it('car collection should no longer be dirty', function () {
+//                        assert.notOk(collection.Car.isDirty);
+//                    });
+//
+//                    it('collection should no longer be dirty', function () {
+//                        assert.notOk(collection.isDirty);
+//                    });
+//
+//                    it('global should no longer be dirty', function () {
+//                        assert.notOk(Collection.isDirty);
+//                    });
+//
+//                    it('should have persisted the change to the car', function () {
+//                        Pouch.getPouch().get(car._id, function (err, doc) {
+//                            if (err) done(err);
+//                            assert.equal(doc.owner, newPerson._id);
+//                        });
+//                    });
+//
+//                })
+//
+//            });
+//
+//            describe('reverse', function () {
+//
+//                describe('add', function () {
+//                    beforeEach(function (done) {
+//                        newPerson.cars.push(car);
+//                        setTimeout(done);
+//                    });
+//
+//                    assertCarShouldNowBeDirty();
+//
+//                    describe('save', function () {
+//
+//                        beforeEach(function (done) {
+//                            car.save(done);
+//                        });
+//
+//                        assertCarNoLongerDirty();
+//
+//                        it('should have persisted the change to the car', function () {
+//                            Pouch.getPouch().get(car._id, function (err, doc) {
+//                                if (err) done(err);
+//                                assert.equal(doc.owner, newPerson._id);
+//                            });
+//                        });
+//
+//                    });
+//
+//                });
+//
+//                describe('set', function () {
+//
+//                    beforeEach(function (done) {
+//                        newPerson.carsProxy.set([car], function (err) {
+//                            done(err);
+//                        });
+//                    });
+//
+//                    assertCarShouldNowBeDirty();
+//
+//                    describe('save', function () {
+//
+//                        beforeEach(function (done) {
+//                            car.save(done);
+//                        });
+//
+//                        assertCarNoLongerDirty();
+//
+//                        it('should have persisted the change to the car', function () {
+//                            Pouch.getPouch().get(car._id, function (err, doc) {
+//                                if (err) done(err);
+//                                assert.equal(doc.owner, newPerson._id);
+//                            });
+//                        });
+//
+//                    });
+//
+//                });
+//
+//
+//                describe('remove', function () {
+//                    beforeEach(function (done) {
+//                        var idx = previousPerson.cars.indexOf(car);
+//                        previousPerson.splice(idx, 1);
+//                        setTimeout(done);
+//                    });
+//
+//                    assertCarShouldNowBeDirty();
+//
+//                    describe('save', function () {
+//
+//                        beforeEach(function (done) {
+//                            car.save(done);
+//                        });
+//
+//                        assertCarNoLongerDirty();
+//
+//                        it('should have persisted the change to the car', function () {
+//                            Pouch.getPouch().get(car._id, function (err, doc) {
+//                                if (err) done(err);
+//                                assert.notOk(doc.owner);
+//                            });
+//                        });
+//
+//                    });
+//                });
+//            });
         });
 
         describe('one-to-one', function () {
@@ -598,7 +675,7 @@ describe('dirty fields', function () {
                     carMapping.map({name: 'Aston Martin', colour: 'black', owner: 'abcdef'}, function (err, _car) {
                         if (err) done(err);
                         car = _car;
-                        previousPerson = car.owner.relatedObject;
+                        previousPerson = car.owner;
                         personMapping.map({name: 'Michael Ford', age: 23}, function (err, person) {
                             if (err) done(err);
                             newPerson = person;
@@ -613,7 +690,7 @@ describe('dirty fields', function () {
 
             describe('forward', function () {
                 beforeEach(function (done) {
-                    car.owner.set(newPerson, function (err) {
+                    car.ownerProxy.set(newPerson, function (err) {
                         done(err);
                     });
                 });
@@ -640,7 +717,7 @@ describe('dirty fields', function () {
 
             describe('reverse', function () {
                 beforeEach(function (done) {
-                    newPerson.car.set(car, function (err) {
+                    newPerson.carProxy.set(car, function (err) {
                         done(err);
                     });
                 });
@@ -653,7 +730,21 @@ describe('dirty fields', function () {
                         car.save(done);
                     });
 
-                    assertCarNoLongerDirty();
+                    it('car should no longer be dirty', function () {
+                        assert.notOk(car.isDirty);
+                    });
+
+                    it('car collection should no longer be dirty', function () {
+                        assert.notOk(collection.Car.isDirty);
+                    });
+
+                    it('collection should no longer be dirty', function () {
+                        assert.notOk(collection.isDirty);
+                    });
+
+                    it('global should no longer be dirty', function () {
+                        assert.notOk(Collection.isDirty);
+                    });
 
                     it('should have persisted the change to the car', function () {
                         Pouch.getPouch().get(car._id, function (err, doc) {

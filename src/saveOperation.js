@@ -7,6 +7,8 @@ var Operation = require('../vendor/operations.js/src/operation').Operation;
 var pouch = require('./pouch');
 var cache = require('./cache');
 
+var Platform = require('observe-js').Platform;
+
 /**
  * Persists an object. Ensures that only one save operation per object is running at a time.
  * This avoids conflicts.
@@ -91,8 +93,16 @@ SaveOperation.prototype._saveDirtyFields = function () {
                 changes[field] = self.object[field];
             }
             else { // Relationship
-                var proxy = self.object[field];
-                changes[field] = proxy._id;
+                var proxyField = (field + 'Proxy');
+                dump (proxyField);
+                var proxy = self.object[ proxyField];
+                    dump(self.object);
+                if (proxy) {
+                    changes[field] = proxy._id;
+                }
+                else {
+                    throw 'err';
+                }
             }
         });
         Logger.trace('_saveDirtyFields, changes:', changes);
@@ -116,12 +126,19 @@ SaveOperation.prototype._saveDirtyFields = function () {
 
 SaveOperation.prototype._start = function () {
     Logger.trace('Starting save operation for id="' + this.object._id + '"');
-    var id = this.object._id;
+    var self = this;
+    var id = self.object._id;
     if (cache.get({_id: id})) {
-        this._saveDirtyFields();
+        // If Object.observe does not exist, this performs a fake micro task which will force
+        // fields to be marked as dirty.
+        Platform.performMicrotaskCheckpoint();
+        // Wait for end of microtask to ensure fields are marked as dirty by observer.
+        setTimeout(function (){
+            self._saveDirtyFields();
+        });
     }
     else {
-        this._initialSave();
+        self._initialSave();
     }
 };
 

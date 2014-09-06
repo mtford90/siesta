@@ -6,7 +6,10 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , index = require('./src/index')
     , pouch = require('./src/pouch')
     , notificationCentre = require('./src/notificationCentre').notificationCentre
-    , Operation = require('./vendor/operations.js/src/operation').Operation;
+    , Operation = require('./vendor/operations.js/src/operation').Operation
+    , log = require('./vendor/operations.js/src/log');
+
+Operation.logLevel = log.Level.warn;
 
 
 var siesta;

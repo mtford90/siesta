@@ -243,13 +243,9 @@ describe('http!', function () {
                     it('maps owner onto same obj', function () {
                         assert.equal(obj[0].owner._id, obj[1].owner._id);
                         assert.equal(obj[0].owner.relatedObject, obj[1].owner.relatedObject);
-                    })
-                })
-
-
-            })
-
-
+                    });
+                });
+            });
         });
 
         describe('POST', function () {

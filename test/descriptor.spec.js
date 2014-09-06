@@ -603,7 +603,7 @@ describe('request descriptor', function () {
                             data[field] = car[field];
                         }
                     }
-                    car.owner.get(function (err, person) {
+                    car.ownerProxy.get(function (err, person) {
                         if (err) {
                             done(err);
                         }

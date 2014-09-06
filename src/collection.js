@@ -1,7 +1,7 @@
 var log = require('../vendor/operations.js/src/log');
 var HttpLogger = log.loggerWithName('HTTP');
 var Logger = log.loggerWithName('Collection');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 HttpLogger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;

@@ -1,13 +1,13 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
+var Pouch = require('../src/pouch');
+var Collection = require('../src/collection').Collection;
+var collection, carMapping;
+
+var Platform = require('observe-js').Platform;
 
 describe('saving at different levels', function () {
-
-
-    var Pouch = require('../src/pouch');
-    var Collection = require('../src/collection').Collection;
-    var collection, carMapping;
 
     var car, doc;
 
@@ -210,4 +210,62 @@ describe('saving at different levels', function () {
         });
     });
 
+});
+
+// Ensure that observe.js is being used correctly (e.g. save waits until end of microtask).
+describe('save arrays', function () {
+
+    var car, doc;
+
+    beforeEach(function (done) {
+        s.reset(true);
+
+        collection = new Collection('myCollection');
+        carMapping = collection.mapping('Car', {
+            id: 'id',
+            attributes: ['colours', 'name']
+        });
+
+        collection.install(function (err) {
+            if (err) done(err);
+            carMapping.map({name: 'Aston Martin', colours: ['black', 'yellow']}, function (err, _car) {
+                if (err) done(err);
+                car = _car;
+                Pouch.getPouch().get(car._id, function (err, _doc) {
+                    if (err) done(err);
+                    doc = _doc;
+                    done();
+                });
+            });
+        });
+
+    });
+
+    it('is not dirty until end of micro task', function (done) {
+        car.colours.push('green');
+        assert.notOk(car.isDirty);
+        Platform.performMicrotaskCheckpoint();
+        setTimeout(function () {
+            assert.ok(car.isDirty);
+            done();
+        });
+    });
+
+    it('xyz', function (done) {
+        car.colours.push('green');
+        assert.notOk(car.isDirty);
+        car.save(function () {
+            Pouch.getPouch().get(car._id, function (err, _doc) {
+                if (err) done(err);
+                assert.include(_doc.colours, 'green');
+                done();
+            });
+        });
+    })
+
+    describe('save foreign key arrays', function () {
+        it ('xyz', function () {
+            assert.fail();
+        })
+    })
 });
