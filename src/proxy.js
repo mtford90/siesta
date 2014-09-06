@@ -3,6 +3,8 @@ var Store = require('./store');
 
 var defineSubProperty = require('./misc').defineSubProperty;
 
+var Operation = require('../vendor/operations.js/src/operation').Operation;
+
 function Fault(proxy, relationship) {
     var self = this;
     this.proxy = proxy;
@@ -112,6 +114,7 @@ NewObjectProxy.prototype.install = function (obj) {
             });
             obj[ ('get' + capitaliseFirstLetter(name))] = _.bind(this.get, this);
             obj[ ('set' + capitaliseFirstLetter(name))] = _.bind(this.set, this);
+            obj[name + 'Proxy'] = this;
         }
         else {
             throw new RestError('Already installed.');
@@ -141,7 +144,6 @@ function OneToOneProxy(opts) {
 }
 
 OneToOneProxy.prototype = Object.create(NewObjectProxy.prototype);
-
 
 OneToOneProxy.prototype.set = function (obj, callback, reverse) {
     var self = this;
@@ -216,6 +218,245 @@ OneToOneProxy.prototype.get = function (callback) {
     }
 };
 
+function ForeignKeyProxy(opts) {
+    if (!this) return new ForeignKeyProxy(opts);
+    NewObjectProxy.call(this, opts);
+}
+
+ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
+
+ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
+    var self = this;
+    var reverseName = this.isForward ? this.reverseName : this.forwardName;
+    var setterName = ('set' + capitaliseFirstLetter(reverseName));
+    var splicerName = 'splice' + capitaliseFirstLetter(reverseName);
+    var reverseProxyName = reverseName + 'Proxy';
+
+    if (obj) {
+
+        clearCurrentlyRelated(function (err) {
+            if (err) {
+                callback(err);
+            }
+            else {
+                _set();
+            }
+        });
+    }
+    else {
+        _set();
+    }
+
+    function _set() {
+        if (self.isForward) {
+            if (!reverse) {
+                removeReverse(function (err) {
+                    if (!err) {
+                        setForward();
+                        if (obj) {
+                            var identifiers = obj[reverseProxyName]._id;
+                            var length = identifiers ? identifiers.length : 0;
+                            if (length === null || length === undefined) throw 'wtf!';
+                            obj[splicerName](length, 0, [self.object], null, true);
+                        }
+                    }
+                    if (callback)callback(err);
+                });
+            }
+            else {
+                setForward();
+                if (obj) {
+                    var identifiers = obj[reverseProxyName]._id;
+                    var length = identifiers ? identifiers.length : 0;
+                    if (length === null || length === undefined) throw 'wtf!';
+                    obj[splicerName](length, 0, [self.object], null, true);
+                }
+                if (callback) callback();
+            }
+        }
+        else {
+            setReverse(function (err) {
+                if (!err) {
+                    self._id = [];
+                    if (obj) {
+                        _.each(obj, function (o) {
+                            self._id.push(o._id);
+                            o[setterName](self.object, null, true);
+                        })
+                    }
+                    self.related = obj;
+                    if (callback) callback();
+                }
+                else if (callback) {
+                    callback(err);
+                }
+            });
+
+        }
+    }
+
+    /**
+     * If the relation is set, then we need to set the reverse relations
+     * to null (or remove in the forward foreign key case.
+     * @param c callback, called when cleared.
+     */
+    function clearCurrentlyRelated(c) {
+        if (self.isForward) {
+            removeReverse(c);
+        }
+        else {
+            setReverse(c);
+        }
+    }
+
+    /**
+     * Remove the object from the reverse foreign key
+     * @param c
+     */
+    function removeReverse(c) {
+        function _removeReverse(related) {
+            var identifiers = related[reverseName + 'Proxy']._id;
+            if (identifiers) {
+                var idx = identifiers.indexOf(self.object._id);
+                related[splicerName](idx, 1, [], null, true);
+            }
+        }
+
+        if (self.isFault) {
+            self.get(function (err, related) {
+                if (!err) {
+                    _removeReverse(related);
+                }
+                c(err);
+            });
+        }
+        else if (self.related) {
+            _removeReverse(self.related);
+            c();
+        }
+        else {
+            c();
+        }
+    }
+
+    function setReverse(c) {
+        function _setReverse(related) {
+            _.each(related, function (r) {
+                r[setterName](obj, null, true);
+            });
+        }
+
+        if (self.isFault) {
+            self.get(function (err, related) {
+                if (!err) {
+                    _setReverse(related);
+                }
+                c(err);
+            });
+        }
+        else if (self.related) {
+            _setReverse(self.related);
+            c();
+        }
+        else {
+            c();
+        }
+    }
+
+    function setForward() {
+        if (obj) {
+            self._id = obj._id;
+            self.related = obj;
+        }
+        else {
+            self._id = null;
+            self.related = null;
+        }
+    }
+};
+
+ForeignKeyProxy.prototype.get = function (callback) {
+    var self = this;
+    if (this._id) {
+        Store.get({_id: this._id}, function (err, stored) {
+            if (err) {
+                if (callback) callback(err);
+            }
+            else {
+                self.related = stored;
+                if (callback) callback(null, stored);
+            }
+        })
+    }
+};
+
+
+ForeignKeyProxy.prototype._splice = function (idx, numRemove, add, callback, reverse) {
+    if (this.isReverse) {
+        Logger.trace('_splice', idx, numRemove, add);
+        if (idx !== undefined && idx !== null && idx > -1) {
+            var toRemove = [];
+            console.error('hi', this.related);
+            for (var i = idx; i < idx + numRemove; i++) {
+                toRemove.push(this.related[i]);
+            }
+            if (!this.related) {
+                this.related = [];
+            }
+            if (!this._id) {
+                this._id = [];
+            }
+            var splice = _.partial(this.related.splice, idx, numRemove);
+            splice.apply(this.related, add);
+            splice.apply(this._id, _.pluck(add, '_id'));
+            var setterName = ('set' + capitaliseFirstLetter(this.forwardName));
+            _.each(toRemove, function (removed) {
+//        dump(setterName, toRemove);
+                removed[setterName](null, null, true);
+            });
+            if (!reverse) {
+                _.each(add, function (added) {
+                    added[setterName](this.object, null, true);
+                });
+            }
+            if (callback) callback();
+        }
+        else {
+            throw new RestError('Must specify an index');
+        }
+    }
+    else {
+        throw new RestError('Cannot splice forward foreign key relationship');
+    }
+
+};
+
+ForeignKeyProxy.prototype.splice = function (idx, numRemove, add, callback, reverse) {
+    var args = arguments;
+    var self = this;
+    if (this.isFault) {
+        this.get(function (err) {
+            if (err) {
+                if (callback) callback(err);
+            }
+            else {
+                self._splice.apply(self, args);
+            }
+        })
+    }
+    else {
+        this._splice.apply(this, arguments);
+    }
+};
+
+ForeignKeyProxy.prototype.install = function (obj) {
+    NewObjectProxy.prototype.install.call(this, obj);
+    if (this.isReverse) {
+        obj[ ('splice' + capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
+    }
+};
+
 exports.NewObjectProxy = NewObjectProxy;
 exports.OneToOneProxy = OneToOneProxy;
+exports.ForeignKeyProxy = ForeignKeyProxy;
 exports.Fault = Fault;
