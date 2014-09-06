@@ -261,11 +261,6 @@ describe('save arrays', function () {
                 done();
             });
         });
-    })
-
-    describe('save foreign key arrays', function () {
-        it ('xyz', function () {
-            assert.fail();
-        })
-    })
+    });
+    
 });
