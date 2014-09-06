@@ -1,4 +1,3 @@
-
 var Store = require('./store');
 var RestObject = require('./object').RestObject;
 var log = require('../vendor/operations.js/src/log');
@@ -192,14 +191,14 @@ MappingOperation.prototype._mapArray = function (prop, arr) {
         this._mapAttribute(prop, arr);
     }
     else { // Reverse foreign key or many to many. We need to map all elements in the array.
-        var relationship = obj[prop].relationship;
-        var isForward = relationship.isForward(obj);
+        var proxy = obj[prop + 'Proxy'];
+        var isForward = proxy.isForward;
         var reverseMapping;
         if (isForward) {
-            reverseMapping = relationship.reverseMapping;
+            reverseMapping = proxy.reverseMapping;
         }
         else {
-            reverseMapping = relationship.mapping;
+            reverseMapping = proxy.forwardMapping;
         }
         var mappedArr = [];
         var errors = [];
@@ -253,17 +252,16 @@ MappingOperation.prototype._mapAttribute = function (prop, val) {
 };
 
 MappingOperation.prototype._mapRelationship = function (prop, val) {
-
     var self = this;
     var obj = this._obj;
-    var relationship = obj[prop].relationship;
-    var isForward = relationship.isForward(obj);
+    var proxy = obj[prop + 'Proxy'];
+    var isForward = proxy.isForward;
     var reverseMapping;
     if (isForward) {
-        reverseMapping = relationship.reverseMapping;
+        reverseMapping = proxy.reverseMapping;
     }
     else {
-        reverseMapping = relationship.mapping;
+        reverseMapping = proxy.forwardMapping;
     }
     var subOperation = new MappingOperation(reverseMapping, val, function () {
         var err = subOperation.error;
@@ -274,7 +272,7 @@ MappingOperation.prototype._mapRelationship = function (prop, val) {
         }
         else {
             var related = subOperation._obj;
-            var proxy = self._obj[prop];
+            var proxy = self._obj[prop + 'Proxy'];
             proxy.set(related, function (err) {
                 if (err) {
                     self._errors[prop] = err;

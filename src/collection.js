@@ -1,7 +1,7 @@
 var log = require('../vendor/operations.js/src/log');
 var HttpLogger = log.loggerWithName('HTTP');
 var Logger = log.loggerWithName('Collection');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 HttpLogger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -80,20 +80,22 @@ Collection.prototype.install = function (callback) {
                             }
                         }
                     });
-                    _.each(mappingsToInstall, function (m) {
-                        Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
-                        try {
-                            m.installReverseRelationships();
-                        }
-                        catch (err) {
-                            if (err instanceof RestError) {
-                                errors.push(err);
+                    if (!errors.length) {
+                        _.each(mappingsToInstall, function (m) {
+                            Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
+                            try {
+                                m.installReverseRelationships();
                             }
-                            else {
-                                throw err;
+                            catch (err) {
+                                if (err instanceof RestError) {
+                                    errors.push(err);
+                                }
+                                else {
+                                    throw err;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                     var err;
                     if (errors.length == 1) {
                         err = errors[0];

@@ -1,7 +1,7 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe('perform mapping', function () {
+describe.only('perform mapping', function () {
 
     var Pouch = require('../../src/pouch');
 
@@ -178,8 +178,8 @@ describe('perform mapping', function () {
 
                         it('owner of car should be michael', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            assert.equal(car.owner._id, person._id);
-                            car.owner.get(function (err, owner) {
+                            assert.equal(car.owner, person);
+                            car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
@@ -187,7 +187,7 @@ describe('perform mapping', function () {
                         });
                         it('michael should own the car', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            person.cars.get(function (err, cars) {
+                            person.carsProxy.get(function (err, cars) {
                                 if (err) done(err);
                                 assert.include(cars, car);
                                 done();
@@ -207,10 +207,10 @@ describe('perform mapping', function () {
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, person) {
+                            car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.cars.get(function (err, cars) {
+                                person.carsProxy.get(function (err, cars) {
                                     if (err) done(err);
                                     assert.equal(cars.length, 1);
                                     assert.include(cars, car);
@@ -259,14 +259,13 @@ describe('perform mapping', function () {
 
                         it('cars should have person as their owner', function () {
                             _.each(cars, function (car) {
-                                assert.equal(car.owner._id, person._id);
+                                assert.equal(car.owner, person);
                             })
                         });
 
                         it('person should have car objects', function () {
                             _.each(cars, function (car) {
-                                assert.include(person.cars._id, car._id);
-                                assert.include(person.cars.relatedObject, car);
+                                assert.include(person.cars, car);
                             })
                         });
                     });
@@ -287,11 +286,11 @@ describe('perform mapping', function () {
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function (done) {
-                            person.cars.get(function (err, cars) {
+                            person.carsProxy.get(function (err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function (car) {
-                                    assert.equal(car.owner._id, person._id);
+                                    assert.equal(car.owner, person);
                                 })
                             });
                         })
@@ -322,23 +321,22 @@ describe('perform mapping', function () {
 
                         it('cars should have person as their owner', function () {
                             _.each(cars, function (car) {
-                                assert.equal(car.owner._id, person._id);
+                                assert.equal(car.owner, person);
                             })
                         });
 
                         it('person should have car objects', function () {
                             _.each(cars, function (car) {
-                                assert.include(person.cars._id, car._id);
-                                assert.include(person.cars.relatedObject, car);
+                                assert.include(person.cars, car);
                             })
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function (done) {
-                            person.cars.get(function (err, cars) {
+                            person.carsProxy.get(function (err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function (car) {
-                                    assert.equal(car.owner._id, person._id);
+                                    assert.equal(car.owner, person);
                                 })
                             });
                         })
@@ -365,16 +363,14 @@ describe('perform mapping', function () {
                         });
                     });
                     it('owner of car should be michael', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        car.owner.get(function (err, owner) {
+                        car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should the car', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        person.cars.get(function (err, cars) {
+                        person.carsProxy.get(function (err, cars) {
                             if (err) done(err);
                             assert.include(cars, car);
                             done();
@@ -409,14 +405,13 @@ describe('perform mapping', function () {
 
                     it('cars should have person as their owner', function () {
                         _.each(cars, function (car) {
-                            assert.equal(car.owner._id, person._id);
+                            assert.equal(car.owner, person);
                         })
                     });
 
                     it('person should have car objects', function () {
                         _.each(cars, function (car) {
-                            assert.include(person.cars._id, car._id);
-                            assert.include(person.cars.relatedObject, car);
+                            assert.include(person.cars, car);
                         })
                     });
                 })
@@ -442,7 +437,7 @@ describe('perform mapping', function () {
                     });
                     it('owner of car should be michael', function (done) {
 //                        $rootScope.$digest(); // Ensure cache gets updated.
-                        car.owner.get(function (err, owner) {
+                        car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
@@ -450,7 +445,7 @@ describe('perform mapping', function () {
                     });
                     it('michael should the car', function (done) {
 //                        $rootScope.$digest(); // Ensure cache gets updated.
-                        person.cars.get(function (err, cars) {
+                        person.carsProxy.get(function (err, cars) {
                             if (err) done(err);
                             assert.include(cars, car);
                             done();
@@ -492,14 +487,13 @@ describe('perform mapping', function () {
 
                     it('cars should have person as their owner', function () {
                         _.each(cars, function (car) {
-                            assert.equal(car.owner._id, person._id);
+                            assert.equal(car.owner, person);
                         })
                     });
 
                     it('person should have car objects', function () {
                         _.each(cars, function (car) {
-                            assert.include(person.cars._id, car._id);
-                            assert.include(person.cars.relatedObject, car);
+                            assert.include(person.cars, car);
                         })
                     });
                 })
@@ -524,16 +518,14 @@ describe('perform mapping', function () {
                             });
                         });
                         it('owner of car should be michael', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, owner) {
+                            car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should the car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            person.cars.get(function (err, cars) {
+                            person.carsProxy.get(function (err, cars) {
                                 if (err) done(err);
                                 assert.include(cars, car);
                                 done();
@@ -551,11 +543,10 @@ describe('perform mapping', function () {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, person) {
+                            car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.cars.get(function (err, cars) {
+                                person.carsProxy.get(function (err, cars) {
                                     if (err) done(err);
                                     assert.equal(cars.length, 1);
                                     assert.include(cars, car);
@@ -611,14 +602,13 @@ describe('perform mapping', function () {
 
                         it('cars should have person as their owner', function () {
                             _.each(cars, function (car) {
-                                assert.equal(car.owner._id, person._id);
+                                assert.equal(car.owner, person);
                             })
                         });
 
                         it('person should have car objects', function () {
                             _.each(cars, function (car) {
-                                assert.include(person.cars._id, car._id);
-                                assert.include(person.cars.relatedObject, car);
+                                assert.include(person.cars, car);
                             })
                         });
                     });
@@ -643,11 +633,11 @@ describe('perform mapping', function () {
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function (done) {
-                            person.cars.get(function (err, cars) {
+                            person.carsProxy.get(function (err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function (car) {
-                                    assert.equal(car.owner._id, person._id);
+                                    assert.equal(car.owner, person);
                                 })
                             });
                         })
@@ -682,23 +672,22 @@ describe('perform mapping', function () {
 
                         it('cars should have person as their owner', function () {
                             _.each(cars, function (car) {
-                                assert.equal(car.owner._id, person._id);
+                                assert.equal(car.owner, person);
                             })
                         });
 
                         it('person should have car objects', function () {
                             _.each(cars, function (car) {
-                                assert.include(person.cars._id, car._id);
-                                assert.include(person.cars.relatedObject, car);
+                                assert.include(person.cars, car);
                             })
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function (done) {
-                            person.cars.get(function (err, cars) {
+                            person.carsProxy.get(function (err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function (car) {
-                                    assert.equal(car.owner._id, person._id);
+                                    assert.equal(car.owner, person);
                                 })
                             });
                         })
@@ -760,7 +749,7 @@ describe('perform mapping', function () {
                         });
                         it('owner of car should be michael', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, owner) {
+                            car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
@@ -768,7 +757,7 @@ describe('perform mapping', function () {
                         });
                         it('michael should own the car', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            person.car.get(function (err, personsCar) {
+                            person.carProxy.get(function (err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -787,10 +776,10 @@ describe('perform mapping', function () {
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, person) {
+                            car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.car.get(function (err, personsCar) {
+                                person.carProxy.get(function (err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -818,16 +807,14 @@ describe('perform mapping', function () {
                             });
                         });
                         it('owner of car should be michael', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, owner) {
+                            car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            person.car.get(function (err, personsCar) {
+                            person.carProxy.get(function (err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -846,10 +833,10 @@ describe('perform mapping', function () {
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, person) {
+                            car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.car.get(function (err, personsCar) {
+                                person.carProxy.get(function (err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -881,16 +868,14 @@ describe('perform mapping', function () {
                             });
                         });
                         it('owner of car should be michael', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, owner) {
+                            car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            person.car.get(function (err, personsCar) {
+                            person.carProxy.get(function (err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -908,11 +893,10 @@ describe('perform mapping', function () {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, person) {
+                            car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.car.get(function (err, personsCar) {
+                                person.carProxy.get(function (err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -940,16 +924,14 @@ describe('perform mapping', function () {
                             });
                         });
                         it('owner of car should be michael', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, owner) {
+                            car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
-                            person.car.get(function (err, personsCar) {
+                            person.carProxy.get(function (err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -968,10 +950,10 @@ describe('perform mapping', function () {
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
 //                            $rootScope.$digest(); // Ensure cache gets updated.
-                            car.owner.get(function (err, person) {
+                            car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.car.get(function (err, personsCar) {
+                                person.carProxy.get(function (err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -1002,16 +984,14 @@ describe('perform mapping', function () {
                         });
                     });
                     it('owner of car should be michael', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        car.owner.get(function (err, owner) {
+                        car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        person.car.get(function (err, personsCar) {
+                        person.carProxy.get(function (err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1035,16 +1015,14 @@ describe('perform mapping', function () {
                         });
                     });
                     it('owner of car should be michael', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        car.owner.get(function (err, owner) {
+                        car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        person.car.get(function (err, personsCar) {
+                        person.carProxy.get(function (err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1073,16 +1051,14 @@ describe('perform mapping', function () {
                         });
                     });
                     it('owner of car should be michael', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        car.owner.get(function (err, owner) {
+                        car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        person.car.get(function (err, personsCar) {
+                        person.carProxy.get(function (err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1106,16 +1082,14 @@ describe('perform mapping', function () {
                         });
                     });
                     it('owner of car should be michael', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        car.owner.get(function (err, owner) {
+                        car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
-                        person.car.get(function (err, personsCar) {
+                        person.carProxy.get(function (err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1335,7 +1309,7 @@ describe('perform mapping', function () {
                             assert.include(_.pluck(res, 'raw'), r);
                         });
                         var ownerIdentifiers = _.map(objs, function (o) {
-                            return o.owner._id;
+                            return o.ownerProxy._id;
                         });
                         assert.equal(ownerIdentifiers[0], ownerIdentifiers[1]);
                         assert.equal(ownerIdentifiers[1], ownerIdentifiers[2]);
@@ -1351,8 +1325,7 @@ describe('perform mapping', function () {
                         if (err) done(err);
                         carMapping.map(carRaw2, function (err, car2) {
                             if (err) done(err);
-                            assert.equal(car1.owner._id, car2.owner._id);
-                            assert.equal(car1.owner.relatedObject, car2.owner.relatedObject);
+                            assert.equal(car1.owner, car2.owner);
                             done();
                         })
                     });

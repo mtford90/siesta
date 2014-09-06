@@ -115,6 +115,10 @@ NewObjectProxy.prototype.install = function (obj) {
             obj[ ('get' + capitaliseFirstLetter(name))] = _.bind(this.get, this);
             obj[ ('set' + capitaliseFirstLetter(name))] = _.bind(this.set, this);
             obj[name + 'Proxy'] = this;
+            if (!obj._proxies) {
+                obj._proxies = [];
+            }
+            obj._proxies.push(this);
         }
         else {
             throw new RestError('Already installed.');
@@ -146,6 +150,14 @@ function OneToOneProxy(opts) {
 OneToOneProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 OneToOneProxy.prototype.set = function (obj, callback, reverse) {
+
+    if (obj) {
+        if (Object.prototype.toString.call(obj) == '[object Array]') {
+            callback(new RestError('Cannot assign array to one to one relationship'));
+            return;
+        }
+    }
+
     var self = this;
     var reverseName = this.isForward ? this.reverseName : this.forwardName;
     var setterName = ('set' + capitaliseFirstLetter(reverseName));
@@ -227,6 +239,23 @@ ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
     var self = this;
+
+    // Validate first.
+    if (obj) {
+        if (this.isForward) {
+            if (Object.prototype.toString.call(obj) == '[object Array]') {
+                callback(new RestError('Cannot assign array to forward side of foreign key relationship'));
+                return;
+            }
+        }
+        else {
+            if (Object.prototype.toString.call(obj) != '[object Array]') {
+                callback(new RestError('Cannot assign single to reverse side of foreign key relationship'));
+                return;
+            }
+        }
+    }
+
     var reverseName = this.isForward ? this.reverseName : this.forwardName;
     var setterName = ('set' + capitaliseFirstLetter(reverseName));
     var splicerName = 'splice' + capitaliseFirstLetter(reverseName);

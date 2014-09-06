@@ -444,7 +444,7 @@ describe('new object proxy', function () {
     });
 
 
-    describe.only('foreign key', function () {
+    describe('foreign key', function () {
         var carProxy, personProxy;
         var car, person;
 

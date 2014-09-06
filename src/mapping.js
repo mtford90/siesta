@@ -1,14 +1,12 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var RestError = require('./error').RestError;
 var relationship = require('./relationship');
 var RelationshipType = relationship.RelationshipType;
-var ForeignKeyRelationship = require('./foreignKeyRelationship').ForeignKeyRelationship;
-var OneToOneRelationship = require('./oneToOneRelationship').OneToOneRelationship;
 var Query = require('./query').Query;
 var index = require('./index');
 var Index = index.Index;
@@ -24,6 +22,10 @@ var ChangeType = require('./ChangeType').ChangeType;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 
 var ArrayObserver = require('observe-js').ArrayObserver;
+
+
+var ForeignKeyProxy = require('./proxy').ForeignKeyProxy;
+var OneToOneProxy = require('./proxy').OneToOneProxy;
 
 
 function Mapping(opts) {
@@ -48,16 +50,11 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'id', self._opts);
     defineSubProperty.call(this, 'collection', self._opts);
     defineSubProperty.call(this, 'attributes', self._opts);
+    defineSubProperty.call(this, 'relationships', self._opts);
 
-    this._relationships = [];
-
-    Object.defineProperty(this, 'relationships', {
-        get: function () {
-            return self._relationships;
-        },
-        enumerable: true,
-        configurable: true
-    });
+    if (!this.relationships) {
+        this.relationships = [];
+    }
 
     this.__dirtyObjects = [];
 
@@ -110,56 +107,55 @@ Mapping.prototype.installRelationships = function () {
             Logger.debug(self.type + ': configuring relationship ' + name);
             if (self._opts.relationships.hasOwnProperty(name)) {
                 var relationship = self._opts.relationships[name];
-                var relationshipClass;
-                if (relationship.type == RelationshipType.ForeignKey) {
-                    relationshipClass = ForeignKeyRelationship;
-                }
-                else if (relationship.type == RelationshipType.OneToOne) {
-                    relationshipClass = OneToOneRelationship;
-                }
-                else {
-                    throw new RestError('Unknown relationship type "' + relationship.type.toString() + '"');
-                }
-                var mappingName = relationship.mapping;
-                Logger.debug('reverseMappingName', mappingName);
-                var collection = CollectionRegistry[self.collection];
-                Logger.debug('collection', CollectionRegistry);
-                var reverseMapping = collection[mappingName];
+                if (relationship.type == RelationshipType.ForeignKey ||
+                    relationship.type == RelationshipType.OneToOne) {
+                    var mappingName = relationship.mapping;
+                    Logger.debug('reverseMappingName', mappingName);
+                    var collection = CollectionRegistry[self.collection];
+                    Logger.debug('collection', CollectionRegistry);
+                    var reverseMapping = collection[mappingName];
 
-                if (!reverseMapping) {
-                    var arr = mappingName.split('.');
-                    if (arr.length == 2) {
-                        var collectionName = arr[0];
-                        mappingName = arr[1];
-                        var otherCollection = CollectionRegistry[collectionName];
-                        if (!otherCollection) {
-                            throw new RestError('Collection with name "' + collectionName + '" does not exist.');
+                    if (!reverseMapping) {
+                        var arr = mappingName.split('.');
+                        if (arr.length == 2) {
+                            var collectionName = arr[0];
+                            mappingName = arr[1];
+                            var otherCollection = CollectionRegistry[collectionName];
+                            if (!otherCollection) {
+                                throw new RestError('Collection with name "' + collectionName + '" does not exist.');
+                            }
+                            reverseMapping = otherCollection[mappingName];
                         }
-                        reverseMapping = otherCollection[mappingName];
+                    }
+
+                    Logger.debug('reverseMapping', reverseMapping);
+                    if (reverseMapping) {
+                        relationship.reverseMapping = reverseMapping;
+                        relationship.forwardMapping = this;
+                        relationship.forwardName = name;
+                        relationship.reverseName = relationship.reverse;
+                    }
+                    else {
+                        throw new RestError('Mapping with name "' + mappingName.toString() + '" does not exist');
                     }
                 }
-                if (reverseMapping) {
-                    Logger.debug('reverseMapping', reverseMapping);
-                    var relationshipObj = new relationshipClass(name, relationship.reverse, self, reverseMapping);
-                    self._relationships.push(relationshipObj);
-                }
                 else {
-                    throw new RestError('Mapping with name "' + mappingName.toString() + '" does not exist');
+                    throw new RestError('Relationship type ' + relationship.type  + ' does not exist');
                 }
+
             }
         }
     }
 };
 
 Mapping.prototype.installReverseRelationships = function () {
-    _.each(this.relationships, function (r) {
-        var reverseMapping = r.reverseMapping;
-        Logger.debug('Configuring reverse relationship "' + r.reverseName + '" on ' + reverseMapping.type);
-        if (reverseMapping.relationships.indexOf(r) < 0) {
-            reverseMapping.relationships.push(r);
+    for (var forwardName in this.relationships) {
+        if (this.relationships.hasOwnProperty(forwardName)) {
+            var relationship = this.relationships[forwardName];
+            var reverseMapping = relationship.reverseMapping;
+            reverseMapping.relationships[relationship.reverseName] = relationship;
         }
-        Logger.debug(reverseMapping.type + ' now has relationships:', reverseMapping.relationships);
-    });
+    }
 };
 
 Mapping.prototype.query = function (query, callback) {
@@ -378,12 +374,24 @@ Mapping.prototype._new = function (data) {
         configurable: true
     });
 
-
     // Place relationships on the object.
-    _.each(this.relationships, function (relationship) {
-        relationship.contributeToRestObject(restObject);
-    });
 
+    for (var name in this.relationships) {
+        var proxy;
+        if (this.relationships.hasOwnProperty(name)) {
+            var relationship = this.relationships[name];
+            if (relationship.type == RelationshipType.ForeignKey) {
+                proxy = new ForeignKeyProxy(relationship);
+            }
+            else if (relationship.type == RelationshipType.OneToOne) {
+                proxy = new OneToOneProxy(relationship);
+            }
+            else {
+                throw new RestError('No such relationship type: ' + relationship.type);
+            }
+        }
+        proxy.install(restObject);
+    }
     return restObject;
 };
 
@@ -460,7 +468,7 @@ function arrayAsString(arr) {
 }
 
 
-function constructMapFunction (collection, type, fields) {
+function constructMapFunction(collection, type, fields) {
     var mapFunc;
     var onlyEmptyFieldSetSpecified = (fields.length == 1 && !fields[0].length);
     var noFieldSetsSpecified = !fields.length || onlyEmptyFieldSetSpecified;
@@ -509,7 +517,7 @@ function constructMapFunction (collection, type, fields) {
 }
 
 
-function constructMapFunction2 (collection, type, fields) {
+function constructMapFunction2(collection, type, fields) {
     var mapFunc;
     var onlyEmptyFieldSetSpecified = (fields.length == 1 && !fields[0].length);
     var noFieldSetsSpecified = !fields.length || onlyEmptyFieldSetSpecified;

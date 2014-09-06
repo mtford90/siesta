@@ -23,12 +23,12 @@ function RestObject(mapping) {
     defineSubProperty.call(this, '_fields', this.mapping);
     Object.defineProperty(this, '_relationshipFields', {
         get: function () {
-            return _.map(self.mapping.relationships, function (r) {
-                if (r.isForward(self)) {
-                    return r.name;
+            return _.map(self._proxies, function (p) {
+                if (p.isForward) {
+                    return p.forwardName;
                 }
                 else {
-                    return r.reverseName;
+                    return p.reverseName;
                 }
             });
         },
@@ -113,33 +113,33 @@ RestObject.prototype.save = function (callback) {
 RestObject.prototype._dump = function (asJson) {
     var self = this;
     var cleanObj = {};
-    cleanObj.mapping = this.mapping.type;
-    cleanObj.collection = this.collection;
-    cleanObj._id = this._id;
-    cleanObj = _.reduce(this._fields, function (memo, f) {
-        if (self[f]) {
-            memo[f] = self[f];
-        }
-        return memo;
-    }, cleanObj);
-    cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
-        if (self[f]) {
-            if (self[f].hasOwnProperty('_id')) {
-                if (Object.prototype.toString.call(self[f]) === '[object Array]') {
-                    if (self[f].length) {
-                        memo[f] = _.map(self[f], function (proxy) {return proxy._id});
-                    }
-                }
-                else if (self[f]._id) {
-                    memo[f] = self[f]._id;
-                }
-            }
-            else {
-                memo[f] = self[f];
-            }
-        }
-        return memo;
-    }, cleanObj);
+//    cleanObj.mapping = this.mapping.type;
+//    cleanObj.collection = this.collection;
+//    cleanObj._id = this._id;
+//    cleanObj = _.reduce(this._fields, function (memo, f) {
+//        if (self[f]) {
+//            memo[f] = self[f];
+//        }
+//        return memo;
+//    }, cleanObj);
+//    cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
+//        if (self[f]) {
+//            if (self[f].hasOwnProperty('_id')) {
+//                if (Object.prototype.toString.call(self[f]) === '[object Array]') {
+//                    if (self[f].length) {
+//                        memo[f] = _.map(self[f], function (proxy) {return proxy._id});
+//                    }
+//                }
+//                else if (self[f]._id) {
+//                    memo[f] = self[f]._id;
+//                }
+//            }
+//            else {
+//                memo[f] = self[f];
+//            }
+//        }
+//        return memo;
+//    }, cleanObj);
 
 
     return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;

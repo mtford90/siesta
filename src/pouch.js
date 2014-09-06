@@ -148,14 +148,12 @@ function from(obj) {
             adapted[f] = v;
         }
     });
-    _.each(mapping.relationships, function (r) {
-        Logger.trace('relationship', r);
+    _.each(obj._proxies, function (p) {
         // Only forward relationships are stored in the database.
-        if (r.isForward(obj)) {
-            var name = r.name;
-            var proxy = obj[name];
-            if (proxy._id) {
-                adapted[name] = proxy._id;
+        if (p.isForward) {
+            var name = p.name;
+            if (p._id) {
+                adapted[name] = p._id;
             }
         }
     });
