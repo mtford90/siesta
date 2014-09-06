@@ -8,8 +8,8 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-var Collection =  require('../../src/collection').Collection;
-var RelationshipType =  require('../../src/relationship').RelationshipType;
+var Collection = require('../../src/collection').Collection;
+var RelationshipType = require('../../src/relationship').RelationshipType;
 
 describe('intercollection relationships', function () {
 
@@ -134,7 +134,6 @@ describe('intercollection relationships', function () {
     }
 
 
-
     describe('local queries', function () {
 
         beforeEach(function (done) {
@@ -216,7 +215,9 @@ describe('intercollection relationships', function () {
                 myOnlineCollection.User.get(userId, function (err, user) {
                     if (err) done(err);
                     assert.equal(user.userId, userId);
-                    user.photos.get(function (err, photos) {
+                    console.log(1);
+                    user.photosProxy.get(function (err, photos) {
+                        console.log(2);
                         if (err) done(err);
                         assert.equal(photos ? photos.length : 0, numPhotos);
                         done();
@@ -228,11 +229,11 @@ describe('intercollection relationships', function () {
                 assertNumPhotos('1', 2, done);
             });
 
-            it('user with id 2 should have 1 photo', function (done) {
+            it('user with id 2 should have 1 photo...', function (done) {
                 assertNumPhotos('2', 1, done);
             });
 
-            it('user with id 2 should have 1 photo', function (done) {
+            it('user with id 3 should have no photos', function (done) {
                 assertNumPhotos('3', 0, done);
             });
 

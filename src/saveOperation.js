@@ -94,9 +94,7 @@ SaveOperation.prototype._saveDirtyFields = function () {
             }
             else { // Relationship
                 var proxyField = (field + 'Proxy');
-                dump (proxyField);
                 var proxy = self.object[ proxyField];
-                    dump(self.object);
                 if (proxy) {
                     changes[field] = proxy._id;
                 }
@@ -133,7 +131,7 @@ SaveOperation.prototype._start = function () {
         // fields to be marked as dirty.
         Platform.performMicrotaskCheckpoint();
         // Wait for end of microtask to ensure fields are marked as dirty by observer.
-        setTimeout(function (){
+        setTimeout(function () {
             self._saveDirtyFields();
         });
     }

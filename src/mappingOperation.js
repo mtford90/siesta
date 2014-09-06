@@ -4,7 +4,7 @@ var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.info);
 
 
 var cache = require('./cache');
@@ -82,7 +82,6 @@ function MappingOperation(mapping, data, completion) {
                                     self._startMapping();
                                 }
                                 else {
-                                    dump('_new!!', newData);
                                     restObject = self.mapping._new(newData);
                                     restObject.save(function (err) {
                                         if (err) {
@@ -149,7 +148,7 @@ MappingOperation.prototype.checkIfDone = function () {
     if (isFinished) {
         Logger.trace('Mapping operation finishing: ' + this._dump(true));
         if (this._obj) {
-            Logger.trace('Saving the mapped object: ' + this._obj._dump(true));
+            Logger.info('Saving the mapped object: ' + this._obj._dump(true));
             this._obj.save(function (err) {
                 if (err) {
                     self._errors.save = err;
@@ -178,9 +177,6 @@ MappingOperation.prototype.checkIfDone = function () {
             }
             self._done(isError ? self._errors : null, self._obj);
         }
-    }
-    else {
-        Logger.info('Current mapping operation state: ' + this._dump(true));
     }
 };
 
@@ -253,6 +249,7 @@ MappingOperation.prototype._mapAttribute = function (prop, val) {
 };
 
 MappingOperation.prototype._mapRelationship = function (prop, val) {
+    Logger.info('_mapRelationship' + JSON.stringify({prop: prop, val: val}, null, 4));
     var self = this;
     var obj = this._obj;
     var proxy = obj[prop + 'Proxy'];

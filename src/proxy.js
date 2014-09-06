@@ -425,6 +425,9 @@ ForeignKeyProxy.prototype.get = function (callback) {
             }
         })
     }
+    else if (callback) {
+        callback(null, null);
+    }
 };
 
 

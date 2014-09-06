@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.info);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;

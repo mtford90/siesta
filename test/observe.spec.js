@@ -54,7 +54,6 @@ describe('observer', function () {
         var arr = [2, 1, 3];
         var observer = new ArrayObserver(arr);
         observer.open(function (splices) {
-            dump(splices);
             done();
         });
         arr.sort();

@@ -488,10 +488,9 @@ describe('dirty fields', function () {
                 assert.notOk(Collection.isDirty);
             });
 
-            it('should have car fields setup correctly', function (done) {
+            it.only('should have car fields setup correctly', function (done) {
                 Pouch.getPouch().get(car._id, function (err, doc) {
                     if (err) done(err);
-                    dump(doc);
                     assert.equal(doc.colour, car.colour);
                     assert.equal(doc.name, car.name);
                     assert.equal(doc.owner, previousPerson._id);

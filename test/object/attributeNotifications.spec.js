@@ -40,21 +40,18 @@ describe('notifications', function () {
                         car = _car;
                         if (err) done(err);
                         s.once('myCollection:Car', function (n) {
-                            dump(n.change.new);
                             notif = n;
                             if (notif && genericNotif && collectionNotif) {
                                 done();
                             }
                         });
                         s.once('myCollection', function (n) {
-                            dump(n.change.new);
                             collectionNotif = n;
                             if (notif && genericNotif && collectionNotif) {
                                 done();
                             }
                         });
                         s.once('Fount', function (n) {
-                            dump(n.change.new);
                             genericNotif = n;
                             if (notif && genericNotif && collectionNotif) {
                                 done();
@@ -334,7 +331,6 @@ describe('notifications', function () {
                 it('notif contains change', function () {
                     var removalNotif;
                     var addNotif;
-                    dump(notifs);
                     _.each(notifs, function (notif) {
                         var change = notif.change;
                         assert.equal(change.field, 'colours');

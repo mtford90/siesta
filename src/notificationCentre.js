@@ -35,7 +35,6 @@ function wrapArray(array, field, restObject) {
         array.observer = new ArrayObserver(array);
     }
     array.observer.open(function (splices) {
-        log.loggerWithName('observer').trace('observer');
         var fieldIsAttribute = restObject._fields.indexOf(field) > -1;
         if (fieldIsAttribute) {
             restObject._markFieldAsDirty(field);

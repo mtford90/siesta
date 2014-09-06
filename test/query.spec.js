@@ -46,7 +46,7 @@ describe('query', function () {
         });
 
         it('execute with no rows and no index', function (done) {
-            this.timeout(5000); // Can take quite a long time sometimes.
+            this.timeout(10000); // Can take quite a long time sometimes.
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             q.execute(function (err, results) {
                 if (done) done(err);
@@ -85,7 +85,7 @@ describe('query', function () {
         });
 
         it('execute without index with rows', function (done) {
-            this.timeout(5000); // Can take quite a long time sometimes.
+            this.timeout(10000); // Can take quite a long time sometimes.
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
             Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
                 if (err) done(err);

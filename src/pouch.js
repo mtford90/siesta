@@ -151,7 +151,7 @@ function from(obj) {
     _.each(obj._proxies, function (p) {
         // Only forward relationships are stored in the database.
         if (p.isForward) {
-            var name = p.name;
+            var name = p.forwardName;
             if (p._id) {
                 adapted[name] = p._id;
             }
