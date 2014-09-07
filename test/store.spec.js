@@ -42,7 +42,6 @@ describe('store', function () {
                 if (err) done(err);
                 Store.get({_id: pouchid}, function (err, obj) {
                     if (err) done(err);
-                    dump(obj);
                     var cachedObject = cache.get({_id: obj._id});
                     try {
                         assert.equal(cachedObject, obj);

@@ -476,7 +476,6 @@ ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added, reve
     });
     if (!reverse) {
         _.each(added, function (a) {
-            console.log('reverse', a._id);
             a[setterName](self.object, null, true);
         });
     }

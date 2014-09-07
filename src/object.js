@@ -4,6 +4,9 @@ Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var SaveOperation = require('./saveOperation').SaveOperation;
+var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
+
+var queues = {};
 
 function RestObject(mapping) {
     if (!this) {
@@ -105,10 +108,18 @@ RestObject.prototype._markTypeAsDirtyIfNeccessary = function () {
 RestObject.prototype.save = function (callback) {
     if (Logger.trace.isEnabled)
         Logger.trace('save');
-    var op = new SaveOperation(this, function () {
+    var op = new SaveOperation(this);
+    op.onCompletion(function () {
         if (callback) callback(op.error, op);
     });
-    op.start();
+    var localId = this._id;
+    var queue = queues[localId];
+    if (!queue) {
+        queue = new OperationQueue('RestObject[' + localId.toString() + ']', 1);
+        queues[localId] = queue;
+        queue.start();
+    }
+    queue.addOperation(op);
 };
 
 /**
@@ -152,3 +163,16 @@ RestObject.prototype._dump = function (asJson) {
 };
 
 exports.RestObject = RestObject;
+exports.dumpSaveQueues = function () {
+    var dumped = {};
+    for (var id in queues) {
+        if (queues.hasOwnProperty(id)) {
+            var queue = queues[id];
+            dumped[id] = {
+                numRunning: queue.numRunningOperations,
+                queued: queue._queuedOperations.length
+            };
+        }
+    }
+    return dumped;
+};

@@ -9,6 +9,7 @@ describe('perform mapping', function () {
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     var RestObject = require('../../src/object').RestObject;
+    var d = require('../../src/object').dumpSaveQueues;
     var cache = require('../../src/cache');
 
     var collection, carMapping, personMapping;
@@ -1445,6 +1446,7 @@ describe('perform mapping', function () {
                 });
                 collection.install(done);
             });
+
 
             describe('via remote id', function () {
                 beforeEach(function (done) {

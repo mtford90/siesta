@@ -9,6 +9,7 @@ var cache = require('./cache');
 
 var Platform = require('observe-js').Platform;
 
+
 /**
  * Persists an object. Ensures that only one save operation per object is running at a time.
  * This avoids conflicts.
@@ -45,9 +46,8 @@ SaveOperation.prototype._finish = function (err) {
         if (Logger.trace.isEnabled)
             Logger.trace('Finished save operation for id="' + this.object._id + '"');
     }
-    if (this._completion) {
-        this._completion(err);
-    }
+
+    this._completion(err);
 };
 
 SaveOperation.prototype._initialSave = function () {
@@ -83,8 +83,8 @@ SaveOperation.prototype._clearDirtyFields = function (fields) {
 };
 
 SaveOperation.prototype._saveDirtyFields = function () {
-    if (Logger.trace.isEnabled)
-        Logger.trace('_saveDirtyFields');
+    if (Logger.debug.isEnabled)
+        Logger.debug('_saveDirtyFields');
     var self = this;
     var dirtyFields = this._getDirtyFields();
     if (dirtyFields.length) {
@@ -123,8 +123,8 @@ SaveOperation.prototype._saveDirtyFields = function () {
         });
     }
     else {
-        if (Logger.trace.isEnabled)
-            Logger.trace('_saveDirtyFields, no dirty fields to save');
+        if (Logger.debug.isEnabled)
+            Logger.debug('_saveDirtyFields, no dirty fields to save');
         self._finish();
     }
 };

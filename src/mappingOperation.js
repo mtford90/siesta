@@ -185,6 +185,12 @@ MappingOperation.prototype.checkIfDone = function () {
             self._done(isError ? self._errors : null, self._obj);
         }
     }
+    else {
+        if (Logger.info.isEnabled) {
+            var numOperationsReamining = this.operations.length - this._finished.length;
+            Logger.info(numOperationsReamining.toString() + ' remaining');
+        }
+    }
 };
 
 MappingOperation.prototype._mapArray = function (prop, arr) {
@@ -341,8 +347,8 @@ MappingOperation.prototype._startMapping = function () {
 
 MappingOperation.prototype._dump = function (asJson) {
     var obj = {};
-//            obj.name = this.name;
-//            obj.purpose = this.purpose;
+    obj.name = this.name;
+    obj.purpose = this.purpose;
 //            obj.data = this.data;
 //            obj.obj = this._obj ? this._obj._dump() : null;
 //            obj.completed = this.completed;

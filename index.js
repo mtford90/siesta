@@ -7,9 +7,11 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , pouch = require('./src/pouch')
     , notificationCentre = require('./src/notificationCentre').notificationCentre
     , Operation = require('./vendor/operations.js/src/operation').Operation
+    , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , log = require('./vendor/operations.js/src/log');
 
 Operation.logLevel = log.Level.warn;
+OperationQueue.logLevel = log.Level.warn;
 
 
 var siesta;

@@ -263,6 +263,7 @@ Mapping.prototype._mapBulk = function (data, callback) {
         }
 
     });
+    op.logLevel = log.Level.trace;
     op.start();
     return op;
 };
