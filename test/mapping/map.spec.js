@@ -154,7 +154,7 @@ describe('perform mapping', function () {
                 collection.install(done);
             });
 
-            describe('faulted', function () {
+            describe('faulted relationship', function () {
                 var person, car;
 
                 beforeEach(function (done) {
@@ -1116,7 +1116,7 @@ describe('perform mapping', function () {
 
     });
 
-    describe('caveats', function (){
+    describe('caveats', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection');
             carMapping = collection.mapping('Car', {
@@ -1395,7 +1395,7 @@ describe('perform mapping', function () {
                 collection.install(done);
             });
 
-            describe('via remote id', function (){
+            describe('via remote id', function () {
                 beforeEach(function (done) {
                     personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
                         if (err) done(err);
@@ -1406,7 +1406,7 @@ describe('perform mapping', function () {
                             {colour: 'green', name: 'Ford', id: "remoteId3", owner: 'personRemoteId'}
                         ];
                         carMapping._mapBulk(raw, function (err, objs, res) {
-                            if(err) {
+                            if (err) {
                                 done(err);
                             }
                             cars = objs;
@@ -1418,8 +1418,106 @@ describe('perform mapping', function () {
 
                 it('should have mapped onto Michael', function () {
                     assert.equal(cars.length, 3);
-                    assert.equal(cars[0].owner,cars[1].owner);
-                    assert.equal(cars[1].owner,cars[2].owner);
+                    assert.equal(cars[0].owner, cars[1].owner);
+                    assert.equal(cars[1].owner, cars[2].owner);
+                });
+
+            });
+
+
+            describe('bulk bulk', function () {
+                beforeEach(function (done) {
+                    cars = [];
+                    personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
+                        if (err) done(err);
+                        cache.reset();
+                        var raw1 = [
+                            {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: 'personRemoteId'},
+                            {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: 'personRemoteId'},
+                            {colour: 'green', name: 'Ford', id: "remoteId3", owner: 'personRemoteId'}
+                        ];
+                        carMapping._mapBulk(raw1, function (err, objs, res) {
+                            if (err) {
+                                done(err);
+                            }
+                            _.each(objs, function (o) {
+                                cars.push(o);
+                            });
+                            if (cars.length == 9) {
+                                done();
+                            }
+                        });
+                        var raw2 = [
+                            {colour: 'red', name: 'Peauget', id: 'remoteId4', owner: 'personRemoteId'},
+                            {colour: 'blue', name: 'Chevy', id: "remoteId5", owner: 'personRemoteId'},
+                            {colour: 'green', name: 'Ford', id: "remoteId6", owner: 'personRemoteId'}
+                        ];
+                        carMapping._mapBulk(raw2, function (err, objs, res) {
+                            if (err) {
+                                done(err);
+                            }
+                            _.each(objs, function (o) {
+                                cars.push(o);
+                            });
+                            if (cars.length == 9) {
+                                done();
+                            }
+                        });
+                        var raw3 = [
+                            {colour: 'red', name: 'Ferarri', id: 'remoteId7', owner: 'personRemoteId'},
+                            {colour: 'blue', name: 'Volvo', id: "remoteId8", owner: 'personRemoteId'},
+                            {colour: 'green', name: 'Dodge', id: "remoteId9", owner: 'personRemoteId'}
+                        ];
+                        carMapping._mapBulk(raw3, function (err, objs, res) {
+                            if (err) {
+                                done(err);
+                            }
+                            _.each(objs, function (o) {
+                                cars.push(o);
+                            });
+                            console.log(cars.length);
+                            if (cars.length == 9) {
+                                done();
+                            }
+                        });
+
+                    });
+                });
+
+                it('should have mapped onto Michael', function () {
+                    assert.equal(cars.length, 9);
+                    for (var i=0;i<8;i++) {
+                        assert.equal(cars[i].owner, cars[i+1].owner);
+                    }
+                });
+
+            });
+
+            describe('via nested remote id', function () {
+                beforeEach(function (done) {
+                    personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
+                        if (err) done(err);
+                        cache.reset();
+                        var raw = [
+                            {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: {id: 'personRemoteId'}},
+                            {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: {id: 'personRemoteId'}},
+                            {colour: 'green', name: 'Ford', id: "remoteId3", owner: {id: 'personRemoteId'}}
+                        ];
+                        carMapping._mapBulk(raw, function (err, objs, res) {
+                            if (err) {
+                                done(err);
+                            }
+                            cars = objs;
+                            done();
+                        });
+
+                    });
+                });
+
+                it('should have mapped onto Michael', function () {
+                    assert.equal(cars.length, 3);
+                    assert.equal(cars[0].owner, cars[1].owner);
+                    assert.equal(cars[1].owner, cars[2].owner);
                 });
 
             })
