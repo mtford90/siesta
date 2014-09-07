@@ -65,6 +65,7 @@ describe('perform mapping', function () {
 
         });
 
+
         describe('new', function () {
 
             it('returns a restobject', function () {
@@ -88,7 +89,7 @@ describe('perform mapping', function () {
             });
         });
 
-        describe('existing', function () {
+        describe('existing in cache', function () {
 
             describe('via id', function () {
                 var newObj;
@@ -128,6 +129,56 @@ describe('perform mapping', function () {
                 });
             });
         });
+
+        describe('existing in pouch', function () {
+
+            describe('via id', function () {
+                var newObj;
+                beforeEach(function (done) {
+                    cache.reset();
+                    carMapping.map({colour: 'blue', id: 'dfadf'}, function (err, obj) {
+                        if (err) done(err);
+                        newObj = obj;
+                        done();
+                    });
+                });
+
+                it('should be mapped onto the old object', function () {
+                    assert.equal(newObj._id, obj._id);
+                });
+
+                it('should have the new colour', function () {
+                    assert.equal(newObj.colour, 'blue');
+                });
+                it('obj removed from cache should not have the new colour', function () {
+                    assert.notEqual(obj.colour, 'blue');
+                });
+            });
+
+            describe('via _id', function () {
+                var newObj;
+                beforeEach(function (done) {
+                    cache.reset();
+                    carMapping.map({colour: 'blue', _id: obj._id}, function (err, obj) {
+                        if (err) done(err);
+                        newObj = obj;
+                        done();
+                    });
+                });
+
+                it('should be mapped onto the old object', function () {
+                    assert.equal(newObj._id, obj._id);
+                });
+
+                it('should have the new colour', function () {
+                    assert.equal(newObj.colour, 'blue');
+                });
+                it('obj removed from cache should not have the new colour', function () {
+                    assert.notEqual(obj.colour, 'blue');
+                });
+            });
+        });
+
 
     });
 
@@ -1520,8 +1571,42 @@ describe('perform mapping', function () {
                     assert.equal(cars[1].owner, cars[2].owner);
                 });
 
-            })
+            });
 
+            describe.only('via nested remote id with changes', function () {
+                this.timeout(5000);
+                beforeEach(function (done) {
+                    personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
+                        if (err) done(err);
+                        cache.reset();
+                        var raw = [
+                            {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: {id: 'personRemoteId'}},
+                            {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: {id: 'personRemoteId', name:'Bob'}},
+                            {colour: 'green', name: 'Ford', id: "remoteId3", owner: {id: 'personRemoteId'}}
+                        ];
+                        carMapping._mapBulk(raw, function (err, objs, res) {
+                            if (err) {
+                                done(err);
+                            }
+                            cars = objs;
+                            done();
+                        });
+
+                    });
+                });
+
+                it('should have mapped onto Michael', function () {
+                    assert.equal(cars.length, 3);
+                    assert.equal(cars[0].owner, cars[1].owner);
+                    assert.equal(cars[1].owner, cars[2].owner);
+                });
+                it('should have changed the name', function () {
+                    assert.equal(cars[0].owner.name, 'Bob');
+                    assert.equal(cars[1].owner.name, 'Bob');
+                    assert.equal(cars[2].owner.name, 'Bob');
+                });
+
+            })
 
         });
     });
