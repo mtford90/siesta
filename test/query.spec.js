@@ -46,13 +46,14 @@ describe('query', function () {
         });
 
         it('execute with no rows and no index', function (done) {
-            this.timeout(10000); // Can take quite a long time sometimes.
-            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
-            q.execute(function (err, results) {
-                if (done) done(err);
-                assert.equal(results.length, 0);
-                done();
-            });
+            assert.fail('todo');
+//            this.timeout(10000); // Can take quite a long time sometimes.
+//            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+//            q.execute(function (err, results) {
+//                if (done) done(err);
+//                assert.equal(results.length, 0);
+//                done();
+//            });
         });
 
         it('execute with index', function (done) {
@@ -85,16 +86,17 @@ describe('query', function () {
         });
 
         it('execute without index with rows', function (done) {
-            this.timeout(10000); // Can take quite a long time sometimes.
-            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
-            Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
-                if (err) done(err);
-                q.execute(function (err, results) {
-                    if (done) done(err);
-                    assert.equal(results.length, 1);
-                    done();
-                });
-            });
+            assert.fail('todo');
+//            this.timeout(10000); // Can take quite a long time sometimes.
+//            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+//            Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
+//                if (err) done(err);
+//                q.execute(function (err, results) {
+//                    if (done) done(err);
+//                    assert.equal(results.length, 1);
+//                    done();
+//                });
+//            });
         });
 
 

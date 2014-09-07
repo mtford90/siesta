@@ -647,6 +647,7 @@ describe('new object proxy', function () {
                         carProxy._id = anotherPerson._id;
                         anotherPersonProxy._id = [car._id];
                         anotherPersonProxy.related = [car];
+                        anotherPersonProxy._wrapArray(anotherPersonProxy.related);
                     });
                     testPrexisting();
                 });

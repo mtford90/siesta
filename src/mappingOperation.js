@@ -4,7 +4,7 @@ var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.info);
+Logger.setLevel(log.Level.warn);
 
 
 var cache = require('./cache');
@@ -249,7 +249,7 @@ MappingOperation.prototype._mapAttribute = function (prop, val) {
 };
 
 MappingOperation.prototype._mapRelationship = function (prop, val) {
-    Logger.info('_mapRelationship' + JSON.stringify({prop: prop, val: val}, null, 4));
+//    Logger.info('_mapRelationship' + JSON.stringify({prop: prop, val: val}, null, 4));
     var self = this;
     var obj = this._obj;
     var proxy = obj[prop + 'Proxy'];

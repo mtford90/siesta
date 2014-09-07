@@ -115,33 +115,33 @@ RestObject.prototype.save = function (callback) {
 RestObject.prototype._dump = function (asJson) {
     var self = this;
     var cleanObj = {};
-    cleanObj.mapping = this.mapping.type;
-    cleanObj.collection = this.collection;
-    cleanObj._id = this._id;
-    cleanObj = _.reduce(this._fields, function (memo, f) {
-        if (self[f]) {
-            memo[f] = self[f];
-        }
-        return memo;
-    }, cleanObj);
-    cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
-        if (self[f + 'Proxy']) {
-            if (self[f + 'Proxy'].hasOwnProperty('_id')) {
-                if (Object.prototype.toString.call(self[f + 'Proxy']._id) === '[object Array]') {
-                    if (self[f].length) {
-                        memo[f] = self[f + 'Proxy']._id;
-                    }
-                }
-                else if (self[f + 'Proxy']._id) {
-                    memo[f] = self[f + 'Proxy']._id;
-                }
-            }
-            else {
-                memo[f] = self[f];
-            }
-        }
-        return memo;
-    }, cleanObj);
+//    cleanObj.mapping = this.mapping.type;
+//    cleanObj.collection = this.collection;
+//    cleanObj._id = this._id;
+//    cleanObj = _.reduce(this._fields, function (memo, f) {
+//        if (self[f]) {
+//            memo[f] = self[f];
+//        }
+//        return memo;
+//    }, cleanObj);
+//    cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
+//        if (self[f + 'Proxy']) {
+//            if (self[f + 'Proxy'].hasOwnProperty('_id')) {
+//                if (Object.prototype.toString.call(self[f + 'Proxy']._id) === '[object Array]') {
+//                    if (self[f].length) {
+//                        memo[f] = self[f + 'Proxy']._id;
+//                    }
+//                }
+//                else if (self[f + 'Proxy']._id) {
+//                    memo[f] = self[f + 'Proxy']._id;
+//                }
+//            }
+//            else {
+//                memo[f] = self[f];
+//            }
+//        }
+//        return memo;
+//    }, cleanObj);
 
 
     return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;

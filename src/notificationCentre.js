@@ -33,28 +33,29 @@ function broadcast(obj, change) {
 function wrapArray(array, field, restObject) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
-    }
-    array.observer.open(function (splices) {
-        var fieldIsAttribute = restObject._fields.indexOf(field) > -1;
-        if (fieldIsAttribute) {
-            restObject._markFieldAsDirty(field);
-        }
-        else {
-            var proxy = restObject[field + 'Proxy'];
-            if (proxy.isForward) {
+        array.observer.open(function (splices) {
+            var fieldIsAttribute = restObject._fields.indexOf(field) > -1;
+            if (fieldIsAttribute) {
                 restObject._markFieldAsDirty(field);
             }
-        }
-        splices.forEach(function (splice) {
-            broadcast(restObject, {
-                field: field,
-                type: ChangeType.Splice,
-                index: splice.index,
-                addedCount: splice.addedCount,
-                removed: splice.removed
+            else {
+                var proxy = restObject[field + 'Proxy'];
+                if (proxy.isForward) {
+                    restObject._markFieldAsDirty(field);
+                }
+            }
+            splices.forEach(function (splice) {
+                broadcast(restObject, {
+                    field: field,
+                    type: ChangeType.Splice,
+                    index: splice.index,
+                    addedCount: splice.addedCount,
+                    removed: splice.removed
+                });
             });
-        });
-    })
+        })
+    }
+
 }
 
 exports.notificationCentre = notificationCentre;

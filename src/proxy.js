@@ -5,6 +5,7 @@ var defineSubProperty = require('./misc').defineSubProperty;
 
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var wrapArray = require('./notificationCentre').wrapArray;
+var ArrayObserver = require('observe-js').ArrayObserver;
 
 function Fault(proxy, relationship) {
     var self = this;
@@ -83,7 +84,7 @@ NewObjectProxy.prototype.getName = function () {
         name = this.forwardName;
     }
     else {
-        throw new RestError('Incompatible relationship');
+        throw new RestError('Incompatible relationship: ' + this.object.type + ' ,' + JSON.stringify(this._opts, null, 4));
     }
     return name;
 };
@@ -140,7 +141,7 @@ NewObjectProxy.prototype.get = function (callback) {
 
 var log = require('../vendor/operations.js/src/log');
 
-var Logger = log.loggerWithName('OneToOneProxy');
+var Logger = log.loggerWithName('Proxy');
 Logger.setLevel(log.Level.warn);
 
 
@@ -215,6 +216,7 @@ OneToOneProxy.prototype.set = function (obj, callback, reverse) {
             self.related = null;
         }
         if (self.isForward) {
+            dump('marking as dirty: ', self.forwardName);
             self.object._markFieldAsDirty(self.forwardName);
         }
     }
@@ -243,6 +245,7 @@ function ForeignKeyProxy(opts) {
 ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
+    console.log(1);
     var self = this;
 
     // Validate first.
@@ -318,7 +321,7 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
                         })
                     }
                     self.related = obj;
-                    wrapArray(self.related, self.reverseName, self.object);
+                    self._wrapArray(self.related);
                     if (callback) callback();
                 }
                 else if (callback) {
@@ -406,6 +409,9 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
             self._id = null;
             self.related = null;
         }
+        if (self.isForward) {
+            self.object._markFieldAsDirty(self.forwardName);
+        }
     }
 };
 
@@ -418,8 +424,8 @@ ForeignKeyProxy.prototype.get = function (callback) {
             }
             else {
                 self.related = stored;
-                if (Object.prototype.toString.call(self.related) == '[object Array]') {
-                    wrapArray(self.related, self.getName(), self.object);
+                if (Object.prototype.toString.call(stored) == '[object Array]') {
+                    self._wrapArray(stored);
                 }
                 if (callback) callback(null, stored);
             }
@@ -430,35 +436,79 @@ ForeignKeyProxy.prototype.get = function (callback) {
     }
 };
 
+ForeignKeyProxy.prototype._initRelated = function () {
+    if (!this.related) {
+        this.related = [];
+        this._wrapArray(this.related);
+    }
+    if (!this._id) {
+        this._id = [];
+    }
+};
 
-ForeignKeyProxy.prototype._splice = function (idx, numRemove, add, callback, reverse) {
+ForeignKeyProxy.prototype._wrapArray = function (arr) {
+    var self = this;
+    wrapArray(arr, this.reverseName, this.object);
+    if (!arr.foreignKeyObserver) {
+        arr.foreignKeyObserver = new ArrayObserver(arr);
+        var observerFunction = function (splices) {
+            Logger.debug('observe');
+            splices.forEach(function (splice) {
+                var added = [];
+                var numAdded = splice.addedCount;
+                var idx = splice.index;
+                for (var i = idx; i < idx + numAdded; i++) {
+                    added.push(self.related[i]);
+                }
+                self._applyReverseOfSplice(splice.removed, added, false);
+            });
+        };
+        arr.foreignKeyObserver.open(observerFunction);
+    }
+};
+
+ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added, reverse) {
+    Logger.debug('_applyReverseOfSplice', reverse);
+    var self = this;
+    var setterName = ('set' + capitaliseFirstLetter(this.forwardName));
+    _.each(removed, function (removed) {
+        removed[setterName](null, null, true);
+    });
+    if (!reverse) {
+        _.each(added, function (a) {
+            console.log('reverse', a._id);
+            a[setterName](self.object, null, true);
+        });
+    }
+};
+
+ForeignKeyProxy.prototype._makeChangesToRelatedWithoutObservations = function (f) {
+//    if (!this.related.foreignKeyObserver) {
+//        throw RestError('xyz');
+//    }
+    this.related.foreignKeyObserver.close();
+    this.related.foreignKeyObserver = null;
+    f();
+    this._wrapArray(this.related);
+};
+
+ForeignKeyProxy.prototype._splice = function (idx, numRemove, added, callback, reverse) {
     var self = this;
     if (this.isReverse) {
-        Logger.trace('_splice', idx, numRemove, add);
+        Logger.debug('_splice', idx, reverse);
         if (idx !== undefined && idx !== null && idx > -1) {
-            var toRemove = [];
+            var removed = [];
             for (var i = idx; i < idx + numRemove; i++) {
-                toRemove.push(this.related[i]);
+                removed.push(this.related[i]);
             }
-            if (!this.related) {
-                this.related = [];
-                wrapArray(this.related, this.reverseName, this.object);
-            }
-            if (!this._id) {
-                this._id = [];
-            }
+            self._initRelated();
             var splice = _.partial(this.related.splice, idx, numRemove);
-            splice.apply(this.related, add);
-            splice.apply(this._id, _.pluck(add, '_id'));
-            var setterName = ('set' + capitaliseFirstLetter(this.forwardName));
-            _.each(toRemove, function (removed) {
-                removed[setterName](null, null, true);
+            // Otherwise infinite recursion via observations.
+            this._makeChangesToRelatedWithoutObservations(function () {
+                splice.apply(self.related, added);
+                splice.apply(self._id, _.pluck(added, '_id'));
             });
-            if (!reverse) {
-                _.each(add, function (added) {
-                    added[setterName](self.object, null, true);
-                });
-            }
+            this._applyReverseOfSplice(removed, added, reverse);
             if (callback) callback();
         }
         else {
@@ -493,6 +543,7 @@ ForeignKeyProxy.prototype.install = function (obj) {
     NewObjectProxy.prototype.install.call(this, obj);
     if (this.isReverse) {
         obj[ ('splice' + capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
+
     }
 };
 
