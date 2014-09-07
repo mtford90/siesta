@@ -343,13 +343,7 @@ describe('notifications', function () {
                         }
                     });
 
-//
-//
-//
-//                    assert.equal(change.index, 0);
-//                    assert.equal(change.removed.length, 1);
-//                    assert.include(change.removed, 'red');
-//                    assert.equal(change.addedCount, 0);
+
                 });
             });
         });

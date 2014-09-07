@@ -40,9 +40,17 @@ describe('store', function () {
             var pouchid = 'pouchId';
             Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid}, function (err, doc) {
                 if (err) done(err);
-                Store.get({_id: pouchid}, function (err, doc) {
+                Store.get({_id: pouchid}, function (err, obj) {
                     if (err) done(err);
-                    done();
+                    dump(obj);
+                    var cachedObject = cache.get({_id: obj._id});
+                    try {
+                        assert.equal(cachedObject, obj);
+                        done();
+                    }
+                    catch (err){
+                        done(err);
+                    }
                 });
             });
         });

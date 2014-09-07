@@ -9,7 +9,7 @@ describe('perform mapping', function () {
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     var RestObject = require('../../src/object').RestObject;
-    ;
+    var cache = require('../../src/cache');
 
     var collection, carMapping, personMapping;
 
@@ -127,7 +127,7 @@ describe('perform mapping', function () {
                     assert.equal(newObj.colour, 'blue');
                 });
             });
-        })
+        });
 
     });
 
@@ -154,7 +154,30 @@ describe('perform mapping', function () {
                 collection.install(done);
             });
 
-            // TODO: DRY up the below.
+            describe('faulted', function () {
+                var person, car;
+
+                beforeEach(function (done) {
+                    personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err, _person) {
+                        if (err) done(err);
+                        cache.reset();
+                        carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
+                            if (err) {
+                                done(err);
+                            }
+                            car = _car;
+                            person = car.owner;
+                            done();
+                        });
+                    });
+                });
+
+                it('should have mapped onto Michael', function () {
+                    assert.equal(person.name, 'Michael Ford');
+                    assert.equal(person.age, 23);
+                });
+
+            });
 
             describe('remote id', function () {
 
@@ -177,7 +200,6 @@ describe('perform mapping', function () {
                         });
 
                         it('owner of car should be michael', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             assert.equal(car.owner, person);
                             car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
@@ -186,7 +208,6 @@ describe('perform mapping', function () {
                             })
                         });
                         it('michael should own the car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             person.carsProxy.get(function (err, cars) {
                                 if (err) done(err);
                                 assert.include(cars, car);
@@ -206,7 +227,6 @@ describe('perform mapping', function () {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
@@ -436,7 +456,6 @@ describe('perform mapping', function () {
                         });
                     });
                     it('owner of car should be michael', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
                         car.ownerProxy.get(function (err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
@@ -444,7 +463,6 @@ describe('perform mapping', function () {
                         })
                     });
                     it('michael should the car', function (done) {
-//                        $rootScope.$digest(); // Ensure cache gets updated.
                         person.carsProxy.get(function (err, cars) {
                             if (err) done(err);
                             assert.include(cars, car);
@@ -748,7 +766,6 @@ describe('perform mapping', function () {
 
                         });
                         it('owner of car should be michael', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             car.ownerProxy.get(function (err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
@@ -756,7 +773,6 @@ describe('perform mapping', function () {
                             })
                         });
                         it('michael should own the car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             person.carProxy.get(function (err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
@@ -775,7 +791,6 @@ describe('perform mapping', function () {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
@@ -832,7 +847,6 @@ describe('perform mapping', function () {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
@@ -949,7 +963,6 @@ describe('perform mapping', function () {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function (done) {
-//                            $rootScope.$digest(); // Ensure cache gets updated.
                             car.ownerProxy.get(function (err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
@@ -1103,6 +1116,26 @@ describe('perform mapping', function () {
 
     });
 
+    describe('caveats', function (){
+        beforeEach(function (done) {
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(done);
+        });
+
+        it('mapping an attribute that doesnt exist', function (done) {
+            carMapping.map({colour: 'red', name: 'aston martin', extraneous: 'blah'}, function (err, car) {
+                if (err) done(err);
+                assert.notOk(car.extraneous);
+                done();
+            });
+        });
+
+    });
+
     describe('errors', function () {
 
         describe('one-to-one', function () {
@@ -1210,23 +1243,29 @@ describe('perform mapping', function () {
 
     describe('bulk', function () {
 
-//        it('should redirect arrays to _mapBulk when passed to map', function (done) {
-//            var raw = [
-//                {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
-//                {colour: 'blue', name: 'Lambo', id: "remoteId2"},
-//                {colour: 'green', name: 'Ford', id: "remoteId3"}
-//            ];
-//            sinon.stub(carMapping, '_mapBulk', function (_, callback) {
-//                callback();
-//            });
-//            carMapping.map(raw, function () {
-//                sinon.assert.calledWith(carMapping._mapBulk, raw);
-//                done();
-//            })
-//        });
+        it('should redirect arrays to _mapBulk when passed to map', function (done) {
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(done);
+            var raw = [
+                {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
+                {colour: 'blue', name: 'Lambo', id: "remoteId2"},
+                {colour: 'green', name: 'Ford', id: "remoteId3"}
+            ];
+            sinon.stub(carMapping, '_mapBulk', function (_, callback) {
+                callback();
+            });
+            console.log(1);
+            carMapping.map(raw, function () {
+                sinon.assert.calledWith(carMapping._mapBulk, raw);
+                done();
+            })
+        });
 
         describe('new', function () {
-
             describe('no relationships', function () {
                 beforeEach(function (done) {
                     collection = new Collection('myCollection');
@@ -1262,7 +1301,6 @@ describe('perform mapping', function () {
                     })
                 });
             });
-
             describe('foreign key', function () {
                 var personMapping;
 
@@ -1330,6 +1368,63 @@ describe('perform mapping', function () {
                     });
                 })
             })
+        });
+
+        describe('faulted relationships', function () {
+            var cars;
+
+            var personMapping;
+
+            beforeEach(function (done) {
+                collection = new Collection('myCollection');
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                collection.install(done);
+            });
+
+            describe('via remote id', function (){
+                beforeEach(function (done) {
+                    personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
+                        if (err) done(err);
+                        cache.reset();
+                        var raw = [
+                            {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: 'personRemoteId'},
+                            {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: 'personRemoteId'},
+                            {colour: 'green', name: 'Ford', id: "remoteId3", owner: 'personRemoteId'}
+                        ];
+                        carMapping._mapBulk(raw, function (err, objs, res) {
+                            if(err) {
+                                done(err);
+                            }
+                            cars = objs;
+                            done();
+                        });
+
+                    });
+                });
+
+                it('should have mapped onto Michael', function () {
+                    assert.equal(cars.length, 3);
+                    assert.equal(cars[0].owner,cars[1].owner);
+                    assert.equal(cars[1].owner,cars[2].owner);
+                });
+
+            })
+
+
         });
     });
 });

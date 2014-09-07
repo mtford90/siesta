@@ -49,9 +49,9 @@ SaveOperation.prototype._finish = function (err) {
 };
 
 SaveOperation.prototype._initialSave = function () {
-    Logger.trace('_initialSave');
     var self = this;
     var object = this.object;
+    Logger.info('_initialSave: ' + object._dump(true));
     cache.insert(object);
     var adapted = pouch.from(object);
     var dirtyFields = this._getDirtyFields();

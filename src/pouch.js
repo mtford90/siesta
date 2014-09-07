@@ -108,13 +108,14 @@ function validate(doc) {
 function toNew(doc) {
     var mapping = validate(doc);
     var obj = mapping._new();
+    obj._id = doc._id;
     for (var prop in doc) {
         if (doc.hasOwnProperty(prop)) {
             if (obj._fields.indexOf(prop) > -1) {
                 obj[prop] = doc[prop];
             }
             else if (obj._relationshipFields.indexOf(prop) > -1) {
-                obj[prop]._id = doc[prop];
+                obj[prop + 'Proxy']._id = doc[prop];
             }
         }
     }
@@ -125,12 +126,14 @@ function toFount(docs) {
     var mapped = [];
     for (var i = 0; i < docs.length; i++) {
         var doc = docs[i];
-        var cached = cache.get({_id: doc._id});
+        var opts = {_id: doc._id};
+        var cached = cache.get(opts);
         if (cached) {
             mapped[i] = cached;
         }
         else {
             mapped[i] = toNew(doc);
+            cache.insert(mapped[i]);
         }
     }
     return mapped;

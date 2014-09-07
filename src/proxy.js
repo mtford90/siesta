@@ -216,7 +216,6 @@ OneToOneProxy.prototype.set = function (obj, callback, reverse) {
             self.related = null;
         }
         if (self.isForward) {
-            dump('marking as dirty: ', self.forwardName);
             self.object._markFieldAsDirty(self.forwardName);
         }
     }

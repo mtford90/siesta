@@ -273,7 +273,13 @@ Mapping.prototype._mapBulk = function (data, callback) {
  */
 Mapping.prototype._new = function (data) {
     var self = this;
-    var _id = guid();
+    var _id;
+    if (data) {
+         _id = data._id ? data._id : guid();
+    }
+    else {
+        _id = guid();
+    }
     var restObject = new RestObject(this);
     Logger.info('New object created _id="' + _id.toString() + '"', data);
     restObject._id = _id;
