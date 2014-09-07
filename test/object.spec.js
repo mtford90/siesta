@@ -1,10 +1,10 @@
-var s = require('../../index')
+var s = require('../index')
     , assert = require('chai').assert;
 
 describe('object!!', function () {
 
-    var RestObject = require('../../src/object').RestObject;
-    var Mapping = require('../../src/mapping').Mapping;
+    var RestObject = require('../src/object').RestObject;
+    var Mapping = require('../src/mapping').Mapping;
 
     var mapping;
 

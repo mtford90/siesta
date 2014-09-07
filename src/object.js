@@ -53,6 +53,8 @@ function RestObject(mapping) {
         enumerable: true,
         configurable: true
     });
+
+    this.isFault = false;
 }
 
 RestObject.prototype._unmarkFieldsAsDirty = function (fields) {

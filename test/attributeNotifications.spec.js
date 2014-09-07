@@ -1,10 +1,10 @@
-var s = require('../../index')
+var s = require('../index')
     , assert = require('chai').assert;
 
 describe('notifications', function () {
 
-    var Collection = require('../../src/collection').Collection
-        , ChangeType = require('../../src/changeType').ChangeType;
+    var Collection = require('../src/collection').Collection
+        , ChangeType = require('../src/changeType').ChangeType;
 
     beforeEach(function () {
         s.reset(true);
@@ -63,7 +63,6 @@ describe('notifications', function () {
                 });
 
             });
-
 
 
             it('notif contains type', function () {
@@ -199,12 +198,7 @@ describe('notifications', function () {
                     assert.equal(change.removed.length, 1);
                     assert.include(change.removed, 'blue');
                     assert.equal(change.addedCount, 0);
-
                 });
-
-
-
-
             });
 
             describe('shift', function () {
@@ -214,14 +208,10 @@ describe('notifications', function () {
                         if (err) done(err);
                         s.once('myCollection:Car', function (n) {
                             notif = n;
-
                             done();
                         });
-
                         car.colours.shift();
-
                     });
-
                 });
 
                 it('notif contains type', function () {
