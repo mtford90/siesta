@@ -215,9 +215,7 @@ describe('intercollection relationships', function () {
                 myOnlineCollection.User.get(userId, function (err, user) {
                     if (err) done(err);
                     assert.equal(user.userId, userId);
-                    console.log(1);
                     user.photosProxy.get(function (err, photos) {
-                        console.log(2);
                         if (err) done(err);
                         assert.equal(photos ? photos.length : 0, numPhotos);
                         done();

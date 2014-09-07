@@ -245,7 +245,6 @@ function ForeignKeyProxy(opts) {
 ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
-    console.log(1);
     var self = this;
 
     // Validate first.
