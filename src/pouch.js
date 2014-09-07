@@ -36,7 +36,8 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
                     }
                 }
                 else {
-                    Logger.trace('Successfully persisted changes: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Successfully persisted changes: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
                     if (callback) callback();
                 }
             });
@@ -140,13 +141,16 @@ function toFount(docs) {
 }
 
 function from(obj) {
-    Logger.trace('from', {obj: obj});
+    if (Logger.trace.isEnabled)
+        Logger.trace('from', {obj: obj});
     var mapping = obj.mapping;
     var adapted = {};
     _.each(mapping._fields, function (f) {
-        Logger.trace('field', f);
+        if (Logger.trace.isEnabled)
+            Logger.trace('field', f);
         var v = obj[f];
-        Logger.trace(f + '=', v);
+        if (Logger.trace.isEnabled)
+            Logger.trace(f + '=', v);
         if (v) {
             adapted[f] = v;
         }

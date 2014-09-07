@@ -3,23 +3,25 @@ var Logger = log.loggerWithName('Serialiser');
 Logger.setLevel(log.Level.warn);
 
 
-
-function idSerialiser (obj) {
+function idSerialiser(obj) {
     var idField = obj.mapping.id;
     if (idField) {
         return obj[idField] ? obj[idField] : null;
     }
     else {
-        Logger.debug('No idfield');
+        if (Logger.debug.isEnabled)
+            Logger.debug('No idfield');
         return undefined;
     }
 }
 
 function depthSerialiser(depth, obj, done) {
-    Logger.trace('depthSerialiser');
+    if (Logger.trace.isEnabled)
+        Logger.trace('depthSerialiser');
     var data = {};
     _.each(obj._fields, function (f) {
-        Logger.trace('field', f);
+        if (Logger.trace.isEnabled)
+            Logger.trace('field', f);
         if (obj[f]) {
             data[f] = obj[f];
         }
@@ -29,14 +31,18 @@ function depthSerialiser(depth, obj, done) {
     var result = {};
     var finished = [];
     _.each(obj._relationshipFields, function (f) {
-        Logger.trace('relationshipField', f);
+        if (Logger.trace.isEnabled)
+            Logger.trace('relationshipField', f);
         var proxy = obj[f + 'Proxy'];
         if (proxy.isForward) { // By default only forward relationship.
-            Logger.debug(f);
+            if (Logger.debug.isEnabled)
+                Logger.debug(f);
             waiting.push(f);
             proxy.get(function (err, v) {
-                Logger.trace('proxy.get',f);
-                Logger.debug(f, v);
+                if (Logger.trace.isEnabled)
+                    Logger.trace('proxy.get', f);
+                if (Logger.debug.isEnabled)
+                    Logger.debug(f, v);
                 if (err) {
                     errors.push(err);
                     finished.push(f);
@@ -68,7 +74,8 @@ function depthSerialiser(depth, obj, done) {
                     }
                 }
                 else {
-                    Logger.debug('no value for ' + f);
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('no value for ' + f);
                     finished.push(f);
                     result[f] = {err: err, v: v};
                     if ((waiting.length == finished.length) && done) {
@@ -82,7 +89,6 @@ function depthSerialiser(depth, obj, done) {
         if (done) done(null, data, {});
     }
 }
-
 
 
 exports.depthSerialiser = function (depth) {

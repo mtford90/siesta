@@ -185,7 +185,8 @@ Descriptor.prototype._embedData = function (data) {
 };
 
 Descriptor.prototype._extractData = function (data) {
-    Logger.debug('_extractData', data);
+    if (Logger.debug.isEnabled)
+        Logger.debug('_extractData', data);
     if (this.data) {
         if (typeof(this.data) == 'string') {
             return data[this.data];
@@ -225,7 +226,8 @@ Descriptor.prototype._matchConfig = function (config) {
         matches = config.url ? this._matchPath(config.url) : {};
     }
     if (matches) {
-        Logger.trace('matched config');
+        if (Logger.trace.isEnabled)
+            Logger.trace('matched config');
     }
     return matches;
 };

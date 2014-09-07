@@ -47,19 +47,22 @@ function MappingOperation(mapping, data, completion) {
                 }
                 else {
                     // Here we assume that the data given is a remote identifier.
-                    Logger.trace('Assuming remote identifier');
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Assuming remote identifier');
                     remoteIdentifier = data;
                     self.data = {};
                     self.data[idField] = data;
                     data = self.data;
                 }
                 if (remoteIdentifier) {
-                    Logger.debug('Can lookup via remote id');
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('Can lookup via remote id');
                     storeOpts[idField] = remoteIdentifier;
                     storeOpts.mapping = self.mapping;
                 }
                 if (data._id) {
-                    Logger.debug('Can lookup via _id');
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('Can lookup via _id');
                     storeOpts._id = data._id;
                 }
                 if (remoteIdentifier || data._id) {
@@ -146,16 +149,20 @@ MappingOperation.prototype.checkIfDone = function () {
     var isFinished = this.operations.length == this._finished.length;
 
     if (isFinished) {
-        Logger.trace('Mapping operation finishing: ' + this._dump(true));
+        if (Logger.trace.isEnabled)
+            Logger.trace('Mapping operation finishing: ' + this._dump(true));
         if (this._obj) {
-            Logger.info('Saving the mapped object: ' + this._obj._dump(true));
+            if (Logger.info.isEnabled)
+                Logger.info('Saving the mapped object: ' + this._obj._dump(true));
             this._obj.save(function (err) {
                 if (err) {
                     self._errors.save = err;
-                    Logger.trace('Error saving the mapped object: ' + self._obj._dump(true));
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Error saving the mapped object: ' + self._obj._dump(true));
                 }
                 else {
-                    Logger.trace('Saved the mapped object: ' + self._obj._dump(true));
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Saved the mapped object: ' + self._obj._dump(true));
                 }
                 var isError = false;
                 for (var prop in self._errors) {
@@ -181,7 +188,8 @@ MappingOperation.prototype.checkIfDone = function () {
 };
 
 MappingOperation.prototype._mapArray = function (prop, arr) {
-    Logger.trace('_mapArray', {prop: prop, arr: arr, op: this});
+    if (Logger.trace.isEnabled)
+        Logger.trace('_mapArray', {prop: prop, arr: arr, op: this});
     var self = this;
     var obj = this._obj;
     if (this._isAttribute(prop)) {
@@ -216,14 +224,17 @@ MappingOperation.prototype._mapArray = function (prop, arr) {
                     if (numFinished == arr.length) {
                         if (!errors.length) {
                             var proxy = obj[prop + 'Proxy'];
-                            Logger.debug('Setting relationship ' + prop);
+                            if (Logger.debug.isEnabled)
+                                Logger.debug('Setting relationship ' + prop);
                             proxy.set(mappedArr, function (err) {
                                 if (err) {
-                                    Logger.debug('Error setting relationship "' + prop + '"', err);
+                                    if (Logger.debug.isEnabled)
+                                        Logger.debug('Error setting relationship "' + prop + '"', err);
                                     self._errors[prop] = err;
                                 }
                                 else {
-                                    Logger.debug('Successfully set relationship', prop);
+                                    if (Logger.debug.isEnabled)
+                                        Logger.debug('Successfully set relationship', prop);
                                 }
                                 self._finished.push(arrayOperations);
                                 self.checkIfDone();
@@ -300,10 +311,12 @@ MappingOperation.prototype._isRelationship = function (prop) {
  */
 MappingOperation.prototype._startMapping = function () {
     var data = this.data;
-    Logger.trace('Mapping operation starting: ' + this._dump(true));
+    if (Logger.trace.isEnabled)
+        Logger.trace('Mapping operation starting: ' + this._dump(true));
     for (var prop in data) {
         if (data.hasOwnProperty(prop)) {
-            Logger.trace('Checking "' + prop + '"');
+            if (Logger.trace.isEnabled)
+                Logger.trace('Checking "' + prop + '"');
             var val = data[prop];
             if (Object.prototype.toString.call(val) == '[object Array]') {
                 this._mapArray(prop, val);
@@ -316,7 +329,8 @@ MappingOperation.prototype._startMapping = function () {
                     this._mapRelationship(prop, val);
                 }
                 else {
-                    Logger.debug('No such property ' + prop.toString());
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('No such property ' + prop.toString());
                 }
             }
         }

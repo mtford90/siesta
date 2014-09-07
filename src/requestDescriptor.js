@@ -32,7 +32,8 @@ RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
 RequestDescriptor.prototype._serialise = function (obj, callback) {
     var self = this;
-    Logger.trace('_serialise');
+    if (Logger.trace.isEnabled)
+        Logger.trace('_serialise');
     var finished;
     var data = this.serialiser(obj, function (err, data) {
         if (!finished) {
@@ -41,13 +42,15 @@ RequestDescriptor.prototype._serialise = function (obj, callback) {
         }
     });
     if (data !== undefined) {
-        Logger.trace('serialiser doesnt use a callback');
+        if (Logger.trace.isEnabled)
+            Logger.trace('serialiser doesnt use a callback');
         finished = true;
         self._transformData(data);
         if (callback) callback(null, self._embedData(data));
     }
     else {
-        Logger.trace('serialiser uses a callback', this.serialiser);
+        if (Logger.trace.isEnabled)
+            Logger.trace('serialiser uses a callback', this.serialiser);
     }
 };
 

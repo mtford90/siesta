@@ -42,7 +42,8 @@ function RestObject(mapping) {
         get: function () {
             var isDirty = self.__dirtyFields.length > 0;
             if (isDirty) {
-                Logger.trace('id="' + self._id + '" is dirty', self.__dirtyFields);
+                if (Logger.trace.isEnabled)
+                    Logger.trace('id="' + self._id + '" is dirty', self.__dirtyFields);
             }
             return  isDirty;
         },
@@ -74,11 +75,13 @@ RestObject.prototype._markFieldsAsDirty = function (fields) {
 };
 
 RestObject.prototype._markFieldAsDirty = function (field) {
-    Logger.trace('_markFieldAsDirty', field);
+    if (Logger.trace.isEnabled)
+        Logger.trace('_markFieldAsDirty', field);
     if (this.__dirtyFields.indexOf(field) < 0) {
         this.__dirtyFields.push(field);
     }
-    Logger.trace('__dirtyFields', this.__dirtyFields);
+    if (Logger.trace.isEnabled)
+        Logger.trace('__dirtyFields', this.__dirtyFields);
     this._markTypeAsDirtyIfNeccessary();
 };
 
@@ -100,7 +103,8 @@ RestObject.prototype._markTypeAsDirtyIfNeccessary = function () {
  * @param callback Called when completed
  */
 RestObject.prototype.save = function (callback) {
-    Logger.trace('save');
+    if (Logger.trace.isEnabled)
+        Logger.trace('save');
     var op = new SaveOperation(this, function () {
         if (callback) callback(op.error, op);
     });

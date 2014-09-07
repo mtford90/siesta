@@ -450,7 +450,8 @@ ForeignKeyProxy.prototype._wrapArray = function (arr) {
     if (!arr.foreignKeyObserver) {
         arr.foreignKeyObserver = new ArrayObserver(arr);
         var observerFunction = function (splices) {
-            Logger.debug('observe');
+            if (Logger.debug.isEnabled)
+                Logger.debug('observe');
             splices.forEach(function (splice) {
                 var added = [];
                 var numAdded = splice.addedCount;
@@ -466,7 +467,8 @@ ForeignKeyProxy.prototype._wrapArray = function (arr) {
 };
 
 ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added, reverse) {
-    Logger.debug('_applyReverseOfSplice', reverse);
+    if (Logger.debug.isEnabled)
+        Logger.debug('_applyReverseOfSplice', reverse);
     var self = this;
     var setterName = ('set' + capitaliseFirstLetter(this.forwardName));
     _.each(removed, function (removed) {
@@ -493,7 +495,8 @@ ForeignKeyProxy.prototype._makeChangesToRelatedWithoutObservations = function (f
 ForeignKeyProxy.prototype._splice = function (idx, numRemove, added, callback, reverse) {
     var self = this;
     if (this.isReverse) {
-        Logger.debug('_splice', idx, reverse);
+        if (Logger.debug.isEnabled)
+            Logger.debug('_splice', idx, reverse);
         if (idx !== undefined && idx !== null && idx > -1) {
             var removed = [];
             for (var i = idx; i < idx + numRemove; i++) {

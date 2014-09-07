@@ -9,7 +9,6 @@ var Index = index.Index;
 var Pouch = require('./pouch');
 
 
-
 function RawQuery(collection, modelName, query) {
     this.collection = collection;
     this.modelName = modelName;
@@ -36,7 +35,8 @@ RawQuery.prototype.execute = function (callback) {
             if (!key.length) {
                 key = self.modelName;
             }
-            Logger.debug('Executing query ' + indexName + ':' + ' ' + key);
+            if (Logger.debug.isEnabled)
+                Logger.debug('Executing query ' + indexName + ':' + ' ' + key);
             Pouch.getPouch().query(indexName, {key: key}, _.partial(resultsCallback, callback));
         }
         else {

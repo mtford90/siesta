@@ -23,7 +23,6 @@ var wrapArray = require('./notificationCentre').wrapArray;
 var broadcast = require('./notificationCentre').broadcast;
 
 
-
 var ForeignKeyProxy = require('./proxy').ForeignKeyProxy;
 var OneToOneProxy = require('./proxy').OneToOneProxy;
 
@@ -104,15 +103,18 @@ Mapping.prototype.installRelationships = function () {
     self._relationships = [];
     if (self._opts.relationships) {
         for (var name in self._opts.relationships) {
-            Logger.debug(self.type + ': configuring relationship ' + name);
+            if (Logger.debug.isEnabled)
+                Logger.debug(self.type + ': configuring relationship ' + name);
             if (self._opts.relationships.hasOwnProperty(name)) {
                 var relationship = self._opts.relationships[name];
                 if (relationship.type == RelationshipType.ForeignKey ||
                     relationship.type == RelationshipType.OneToOne) {
                     var mappingName = relationship.mapping;
-                    Logger.debug('reverseMappingName', mappingName);
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('reverseMappingName', mappingName);
                     var collection = CollectionRegistry[self.collection];
-                    Logger.debug('collection', CollectionRegistry);
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('collection', CollectionRegistry);
                     var reverseMapping = collection[mappingName];
 
                     if (!reverseMapping) {
@@ -127,8 +129,8 @@ Mapping.prototype.installRelationships = function () {
                             reverseMapping = otherCollection[mappingName];
                         }
                     }
-
-                    Logger.debug('reverseMapping', reverseMapping);
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('reverseMapping', reverseMapping);
                     if (reverseMapping) {
                         relationship.reverseMapping = reverseMapping;
                         relationship.forwardMapping = this;
@@ -140,7 +142,7 @@ Mapping.prototype.installRelationships = function () {
                     }
                 }
                 else {
-                    throw new RestError('Relationship type ' + relationship.type  + ' does not exist');
+                    throw new RestError('Relationship type ' + relationship.type + ' does not exist');
                 }
 
             }
@@ -208,8 +210,6 @@ Mapping.prototype._validate = function () {
 };
 
 
-
-
 /**
  * Map data into Fount.
  *
@@ -239,7 +239,8 @@ Mapping.prototype.map = function (data, callback, obj) {
 
 
 Mapping.prototype._mapBulk = function (data, callback) {
-    Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
+    if (Logger.trace.isEnabled)
+        Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
     var self = this;
     var operations = _.map(data, function (datum) {
         return new MappingOperation(self, datum);
@@ -275,13 +276,14 @@ Mapping.prototype._new = function (data) {
     var self = this;
     var _id;
     if (data) {
-         _id = data._id ? data._id : guid();
+        _id = data._id ? data._id : guid();
     }
     else {
         _id = guid();
     }
     var restObject = new RestObject(this);
-    Logger.info('New object created _id="' + _id.toString() + '"', data);
+    if (Logger.info.isEnabled)
+        Logger.info('New object created _id="' + _id.toString() + '"', data);
     restObject._id = _id;
     // Place attributes on the object.
     restObject.__values = data || {};
@@ -310,7 +312,9 @@ Mapping.prototype._new = function (data) {
                 }
 
                 if (v != old) {
-                    log.loggerWithName('RestObject').trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '" as just changed to ' + v);
+                    var logger = log.loggerWithName('RestObject');
+                    if (logger.trace.isEnabled)
+                        logger.trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '" as just changed to ' + v);
                     restObject._markFieldAsDirty(field);
                 }
 

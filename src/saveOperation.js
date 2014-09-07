@@ -38,10 +38,12 @@ SaveOperation.prototype = Object.create(Operation.prototype);
 
 SaveOperation.prototype._finish = function (err) {
     if (err) {
-        Logger.trace('Error during save operation for id="' + this.object._id + '"', err);
+        if (Logger.trace.isEnabled)
+            Logger.trace('Error during save operation for id="' + this.object._id + '"', err);
     }
     else {
-        Logger.trace('Finished save operation for id="' + this.object._id + '"');
+        if (Logger.trace.isEnabled)
+            Logger.trace('Finished save operation for id="' + this.object._id + '"');
     }
     if (this._completion) {
         this._completion(err);
@@ -51,7 +53,8 @@ SaveOperation.prototype._finish = function (err) {
 SaveOperation.prototype._initialSave = function () {
     var self = this;
     var object = this.object;
-    Logger.info('_initialSave: ' + object._dump(true));
+    if (Logger.info.isEnabled)
+        Logger.info('_initialSave: ' + object._dump(true));
     cache.insert(object);
     var adapted = pouch.from(object);
     var dirtyFields = this._getDirtyFields();
@@ -74,16 +77,19 @@ SaveOperation.prototype._getDirtyFields = function () {
 };
 
 SaveOperation.prototype._clearDirtyFields = function (fields) {
-    Logger.trace('_clearDirtyFields', fields);
+    if (Logger.trace.isEnabled)
+        Logger.trace('_clearDirtyFields', fields);
     this.object._unmarkFieldsAsDirty(fields);
 };
 
 SaveOperation.prototype._saveDirtyFields = function () {
-    Logger.trace('_saveDirtyFields');
+    if (Logger.trace.isEnabled)
+        Logger.trace('_saveDirtyFields');
     var self = this;
     var dirtyFields = this._getDirtyFields();
     if (dirtyFields.length) {
-        Logger.debug('_saveDirtyFields, have dirty fields to save for id="' + self.object._id + '"', dirtyFields);
+        if (Logger.debug.isEnabled)
+            Logger.debug('_saveDirtyFields, have dirty fields to save for id="' + self.object._id + '"', dirtyFields);
         var changes = {};
         _.each(dirtyFields, function (field) {
             var isAttribute = self.object._fields.indexOf(field) > -1;
@@ -101,27 +107,31 @@ SaveOperation.prototype._saveDirtyFields = function () {
                 }
             }
         });
-        Logger.debug('_saveDirtyFields, writing changes for _id="' + self.object._id + '"', changes);
+        if (Logger.debug.isEnabled)
+            Logger.debug('_saveDirtyFields, writing changes for _id="' + self.object._id + '"', changes);
         pouch.retryUntilWrittenMultiple(self.object._id, changes, function (err) {
             if (err) {
                 Logger.error('Error saving object.', err);
                 self._finish(err);
             }
             else {
-                Logger.trace('Successfully saved.');
+                if (Logger.trace.isEnabled)
+                    Logger.trace('Successfully saved.');
                 self._clearDirtyFields(dirtyFields);
                 self._finish(err);
             }
         });
     }
     else {
-        Logger.trace('_saveDirtyFields, no dirty fields to save');
+        if (Logger.trace.isEnabled)
+            Logger.trace('_saveDirtyFields, no dirty fields to save');
         self._finish();
     }
 };
 
 SaveOperation.prototype._start = function () {
-    Logger.trace('Starting save operation for id="' + this.object._id + '"');
+    if (Logger.trace.isEnabled)
+        Logger.trace('Starting save operation for id="' + this.object._id + '"');
     var self = this;
     var id = self.object._id;
     if (cache.get({_id: id})) {

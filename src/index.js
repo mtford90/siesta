@@ -50,7 +50,8 @@ function installIndexes(collection, modelName, fields, callback) {
             }
             numCompleted++;
             if (numCompleted == indexes.length) {
-                Logger.info('Successfully installed all indexes');
+                if (Logger.info.isEnabled)
+                    Logger.info('Successfully installed all indexes');
                 callback(errors.length ? errors : null);
             }
         });
@@ -124,11 +125,13 @@ Index.prototype.install = function (callback) {
     var self = this;
     var constructPouchDbView = this._constructPouchDbView();
     var indexName = this._getName();
-    Logger.debug('Installing Index: ' + indexName, constructPouchDbView);
+    if (Logger.debug.isEnabled)
+        Logger.debug('Installing Index: ' + indexName, constructPouchDbView);
     Pouch.getPouch().put(constructPouchDbView, function (err, resp) {
         if (err) {
             if (err.status === 409) {
-                Logger.debug(indexName + ' already installed');
+                if (Logger.debug.isEnabled)
+                    Logger.debug(indexName + ' already installed');
                 err = null;
             }
         }

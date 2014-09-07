@@ -53,7 +53,8 @@ Collection.prototype.install = function (callback) {
                 mappingsToInstall.push(mapping);
             }
         }
-        Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
+        if (Logger.info.isEnabled)
+            Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
         if (mappingsToInstall.length) {
             var operations = _.map(mappingsToInstall, function (m) {
                 return new Operation('Install Mapping', _.bind(m.install, m));
@@ -67,7 +68,8 @@ Collection.prototype.install = function (callback) {
                     self.installed = true;
                     var errors = [];
                     _.each(mappingsToInstall, function (m) {
-                        Logger.info('Installing relationships for mapping with name "' + m.type + '"');
+                        if (Logger.info.isEnabled)
+                            Logger.info('Installing relationships for mapping with name "' + m.type + '"');
                         try {
                             m.installRelationships();
                         }
@@ -82,7 +84,8 @@ Collection.prototype.install = function (callback) {
                     });
                     if (!errors.length) {
                         _.each(mappingsToInstall, function (m) {
-                            Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
+                            if (Logger.info.isEnabled)
+                                Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
                             try {
                                 m.installReverseRelationships();
                             }
@@ -247,7 +250,8 @@ Collection.prototype._httpResponse = function (method, path) {
         opts.url = baseURL + path;
     }
     opts.success = function (data, textStatus, jqXHR) {
-        HttpLogger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
+        if (HttpLogger.trace.isEnabled)
+            HttpLogger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
         var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
         var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
         var matchedDescriptor;
@@ -262,7 +266,8 @@ Collection.prototype._httpResponse = function (method, path) {
             }
         }
         if (matchedDescriptor) {
-            Logger.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
+            if (Logger.trace.isEnabled)
+                Logger.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
             if (typeof(extractedData) == 'object') {
                 var mapping = matchedDescriptor.mapping;
                 mapping.map(extractedData, function (err, obj) {
@@ -347,9 +352,11 @@ Collection.prototype._httpRequest = function (method, path, object) {
         }
     }
     if (matchedDescriptor) {
-        Logger.trace('Matched descriptor: ' + matchedDescriptor._dump(true));
+        if (Logger.trace.isEnabled)
+            Logger.trace('Matched descriptor: ' + matchedDescriptor._dump(true));
         matchedDescriptor._serialise(object, function (err, data) {
-            Logger.trace('_serialise', {err: err, data: data});
+            if (Logger.trace.isEnabled)
+                Logger.trace('_serialise', {err: err, data: data});
             if (err) {
                 if (callback) callback(err, null, null);
             }
@@ -361,7 +368,8 @@ Collection.prototype._httpRequest = function (method, path, object) {
         });
     }
     else if (callback) {
-        Logger.trace('Did not match descriptor');
+        if (Logger.trace.isEnabled)
+            Logger.trace('Did not match descriptor');
         callback(null, null, null);
     }
 };

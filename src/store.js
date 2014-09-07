@@ -8,7 +8,8 @@ Logger.setLevel(log.Level.warn);
 var cache = require('./cache');
 
 function get(opts, callback) {
-    Logger.debug('get', opts);
+    if (Logger.debug.isEnabled)
+        Logger.debug('get', opts);
     var restObject;
     if (opts._id) {
         if (Object.prototype.toString.call(opts._id) === '[object Array]') {
@@ -18,7 +19,8 @@ function get(opts, callback) {
         else {
             restObject = cache.get(opts);
             if (restObject) {
-                Logger.debug('Had cached object', {opts: opts, obj: restObject});
+                if (Logger.debug.isEnabled)
+                    Logger.debug('Had cached object', {opts: opts, obj: restObject});
                 wrappedCallback(callback)(null, restObject);
             }
             else {
@@ -49,7 +51,8 @@ function get(opts, callback) {
         else {
             restObject = cache.get(opts);
             if (restObject) {
-                Logger.debug('Had cached object', {opts: opts, obj: restObject});
+                if (Logger.debug.isEnabled)
+                    Logger.debug('Had cached object', {opts: opts, obj: restObject});
                 wrappedCallback(callback)(null, restObject);
             }
             else {

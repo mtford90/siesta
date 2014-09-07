@@ -30,7 +30,8 @@ DescriptorRegistry.prototype.registerRequestDescriptor = function (requestDescri
 };
 
 DescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
-    Logger.trace('registerResponseDescriptor');
+    if (Logger.trace.isEnabled)
+        Logger.trace('registerResponseDescriptor');
     _registerDescriptor(this.responseDescriptors, responseDescriptor);
 };
 
@@ -52,7 +53,8 @@ DescriptorRegistry.prototype.requestDescriptorsForCollection = function (collect
 DescriptorRegistry.prototype.responseDescriptorsForCollection = function (collection) {
     var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
     if (!descriptorsForCollection.length) {
-        Logger.debug('No response descriptors for collection ', this.responseDescriptors);
+        if (Logger.debug.isEnabled)
+            Logger.debug('No response descriptors for collection ', this.responseDescriptors);
     }
     return  descriptorsForCollection;
 };

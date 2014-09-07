@@ -23,7 +23,8 @@ Query.prototype.execute = function (callback) {
             callback(err);
         }
         else {
-            Logger.debug('got results', results);
+            if (Logger.debug.isEnabled)
+                Logger.debug('got results', results);
             if (callback) callback(null, Pouch.toFount(results));
         }
     });
