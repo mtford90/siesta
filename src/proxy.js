@@ -276,9 +276,12 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
             if (!err) {
                 setForward();
                 if (obj) {
-                    var identifiers = obj[reverseProxyName]._id;
-                    var length = identifiers ? identifiers.length : 0;
-                    obj[splicerName](length, 0, [self.object], null, true);
+                    if (!reverse) {
+                        var identifiers = obj[reverseProxyName]._id;
+                        var length = identifiers ? identifiers.length : 0;
+                        dump('length', length);
+                        obj[splicerName](length, 0, [self.object], null, true);
+                    }
                 }
             }
             if (callback)callback(err);
@@ -286,17 +289,36 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
 
     }
     else {
+        dump('setReverse');
         setReverse(function (err) {
             if (!err) {
+                var oldId = self._id;
+                var oldRelated = self.related;
                 self._id = [];
                 if (obj) {
                     _.each(obj, function (o) {
                         self._id.push(o._id);
                         o[setterName](self.object, null, true);
-                    })
+                    });
                 }
                 self.related = obj;
                 self._wrapArray(self.related);
+                var old;
+                if (oldRelated) {
+                    old = oldRelated
+                }
+                else if (oldId) {
+                    old = oldId;
+                }
+                else {
+                    old = null;
+                }
+                broadcast(self.object, {
+                    type: ChangeType.Set,
+                    old: old,
+                    new: obj,
+                    field: self.reverseName
+                });
                 if (callback) callback();
             }
             else if (callback) {
@@ -312,6 +334,7 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
      */
     function removeReverse(c) {
         function _removeReverse(related) {
+            dump('_removeReverse', reverseName, related.name);
             var identifiers = related[reverseName + 'Proxy']._id;
             if (identifiers) {
                 var idx = identifiers.indexOf(self.object._id);
@@ -445,6 +468,16 @@ ForeignKeyProxy.prototype._wrapArray = function (arr) {
                     added.push(self.related[i]);
                 }
                 self._applyReverseOfSplice(splice.removed, added);
+                dump('howdy');
+                splices.forEach(function (splice) {
+                    broadcast(self.object, {
+                        field: self.reverseName,
+                        type: ChangeType.Splice,
+                        index: splice.index,
+                        addedCount: splice.addedCount,
+                        removed: splice.removed
+                    });
+                });
             });
         };
         arr.foreignKeyObserver.open(observerFunction);
@@ -459,15 +492,12 @@ ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added) {
     _.each(removed, function (removed) {
         removed[setterName](null, null, true);
     });
-        _.each(added, function (a) {
-            a[setterName](self.object, null, true);
-        });
+    _.each(added, function (a) {
+        a[setterName](self.object, null, true);
+    });
 };
 
 ForeignKeyProxy.prototype._makeChangesToRelatedWithoutObservations = function (f) {
-//    if (!this.related.foreignKeyObserver) {
-//        throw RestError('xyz');
-//    }
     this.related.foreignKeyObserver.close();
     this.related.foreignKeyObserver = null;
     f();
@@ -477,6 +507,7 @@ ForeignKeyProxy.prototype._makeChangesToRelatedWithoutObservations = function (f
 ForeignKeyProxy.prototype._splice = function (idx, numRemove, added, callback, reverse) {
     var self = this;
     if (this.isReverse) {
+        dump('_splice', idx, this.object.name);
         if (Logger.debug.isEnabled)
             Logger.debug('_splice', idx, reverse);
         if (idx !== undefined && idx !== null && idx > -1) {
@@ -490,6 +521,13 @@ ForeignKeyProxy.prototype._splice = function (idx, numRemove, added, callback, r
             this._makeChangesToRelatedWithoutObservations(function () {
                 splice.apply(self.related, added);
                 splice.apply(self._id, _.pluck(added, '_id'));
+                broadcast(self.object, {
+                    field: self.reverseName,
+                    type: ChangeType.Splice,
+                    index: idx,
+                    addedCount: added.length,
+                    removed: removed
+                });
             });
             if (!reverse) {
                 this._applyReverseOfSplice(removed, added, reverse);
