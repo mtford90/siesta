@@ -4,8 +4,11 @@ var Store = require('./store');
 var defineSubProperty = require('./misc').defineSubProperty;
 
 var Operation = require('../vendor/operations.js/src/operation').Operation;
-var wrapArray = require('./notificationCentre').wrapArray;
+var notificationCentre = require('./notificationCentre');
+var broadcast = notificationCentre.broadcast;
+var wrapArray = notificationCentre.wrapArray;
 var ArrayObserver = require('observe-js').ArrayObserver;
+var ChangeType = require('./changeType').ChangeType;
 
 function Fault(proxy, relationship) {
     var self = this;
@@ -267,82 +270,41 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
     var splicerName = 'splice' + capitaliseFirstLetter(reverseName);
     var reverseProxyName = reverseName + 'Proxy';
 
-    if (obj) {
-        clearCurrentlyRelated(function (err) {
-            if (err) {
-                callback(err);
-            }
-            else {
-                _set();
-            }
-        });
-    }
-    else {
-        _set();
-    }
 
-    function _set() {
-        if (self.isForward) {
-            if (!reverse) {
-                removeReverse(function (err) {
-                    if (!err) {
-                        setForward();
-                        if (obj) {
-                            var identifiers = obj[reverseProxyName]._id;
-                            var length = identifiers ? identifiers.length : 0;
-                            if (length === null || length === undefined) throw 'wtf!';
-                            obj[splicerName](length, 0, [self.object], null, true);
-                        }
-                    }
-                    if (callback)callback(err);
-                });
-            }
-            else {
+    if (self.isForward) {
+        removeReverse(function (err) {
+            if (!err) {
                 setForward();
                 if (obj) {
                     var identifiers = obj[reverseProxyName]._id;
                     var length = identifiers ? identifiers.length : 0;
-                    if (length === null || length === undefined) throw 'wtf!';
                     obj[splicerName](length, 0, [self.object], null, true);
                 }
+            }
+            if (callback)callback(err);
+        });
+
+    }
+    else {
+        setReverse(function (err) {
+            if (!err) {
+                self._id = [];
+                if (obj) {
+                    _.each(obj, function (o) {
+                        self._id.push(o._id);
+                        o[setterName](self.object, null, true);
+                    })
+                }
+                self.related = obj;
+                self._wrapArray(self.related);
                 if (callback) callback();
             }
-        }
-        else {
-            setReverse(function (err) {
-                if (!err) {
-                    self._id = [];
-                    if (obj) {
-                        _.each(obj, function (o) {
-                            self._id.push(o._id);
-                            o[setterName](self.object, null, true);
-                        })
-                    }
-                    self.related = obj;
-                    self._wrapArray(self.related);
-                    if (callback) callback();
-                }
-                else if (callback) {
-                    callback(err);
-                }
-            });
-
-        }
+            else if (callback) {
+                callback(err);
+            }
+        });
     }
 
-    /**
-     * If the relation is set, then we need to set the reverse relations
-     * to null (or remove in the forward foreign key case.
-     * @param c callback, called when cleared.
-     */
-    function clearCurrentlyRelated(c) {
-        if (self.isForward) {
-            removeReverse(c);
-        }
-        else {
-            setReverse(c);
-        }
-    }
 
     /**
      * Remove the object from the reverse foreign key
@@ -375,23 +337,28 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
     }
 
     function setReverse(c) {
-        function _setReverse(related) {
-            _.each(related, function (r) {
-                r[setterName](obj, null, true);
-            });
-        }
+        if (!reverse) {
+            function _setReverse(related) {
+                _.each(related, function (r) {
+                    r[setterName](self.object, null, true);
+                });
+            }
 
-        if (self.isFault) {
-            self.get(function (err, related) {
-                if (!err) {
-                    _setReverse(related);
-                }
-                c(err);
-            });
-        }
-        else if (self.related) {
-            _setReverse(self.related);
-            c();
+            if (self.isFault) {
+                self.get(function (err, related) {
+                    if (!err) {
+                        _setReverse(related);
+                    }
+                    c(err);
+                });
+            }
+            else if (self.related) {
+                _setReverse(self.related);
+                c();
+            }
+            else {
+                c();
+            }
         }
         else {
             c();
@@ -399,6 +366,8 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
     }
 
     function setForward() {
+        var oldId = self._id;
+        var oldRelated = self.related;
         if (obj) {
             self._id = obj._id;
             self.related = obj;
@@ -410,6 +379,22 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
         if (self.isForward) {
             self.object._markFieldAsDirty(self.forwardName);
         }
+        var old;
+        if (oldRelated) {
+            old = oldRelated;
+        }
+        else if (oldId) {
+            old = oldId;
+        }
+        else {
+            old = null;
+        }
+        broadcast(self.object, {
+            type: ChangeType.Set,
+            old: old,
+            new: obj,
+            field: self.forwardName
+        })
     }
 };
 
@@ -459,14 +444,14 @@ ForeignKeyProxy.prototype._wrapArray = function (arr) {
                 for (var i = idx; i < idx + numAdded; i++) {
                     added.push(self.related[i]);
                 }
-                self._applyReverseOfSplice(splice.removed, added, false);
+                self._applyReverseOfSplice(splice.removed, added);
             });
         };
         arr.foreignKeyObserver.open(observerFunction);
     }
 };
 
-ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added, reverse) {
+ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added) {
     if (Logger.debug.isEnabled)
         Logger.debug('_applyReverseOfSplice', reverse);
     var self = this;
@@ -474,11 +459,9 @@ ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added, reve
     _.each(removed, function (removed) {
         removed[setterName](null, null, true);
     });
-    if (!reverse) {
         _.each(added, function (a) {
             a[setterName](self.object, null, true);
         });
-    }
 };
 
 ForeignKeyProxy.prototype._makeChangesToRelatedWithoutObservations = function (f) {
@@ -508,11 +491,15 @@ ForeignKeyProxy.prototype._splice = function (idx, numRemove, added, callback, r
                 splice.apply(self.related, added);
                 splice.apply(self._id, _.pluck(added, '_id'));
             });
-            this._applyReverseOfSplice(removed, added, reverse);
+            if (!reverse) {
+                this._applyReverseOfSplice(removed, added, reverse);
+            }
             if (callback) callback();
         }
         else {
-            throw new RestError('Must specify an index');
+            var sg = 'Must specify an index';
+            Logger.error(sg, idx);
+            throw new RestError(sg);
         }
     }
     else {

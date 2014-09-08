@@ -1,13 +1,13 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe.only('relationship notifications', function () {
+describe('relationship notifications', function () {
 
     var Collection = require('../src/collection').Collection
         , ChangeType = require('../src/changeType').ChangeType
         , RelationshipType = require('../src/relationship').RelationshipType
         , notificationCentre = require('../src/notificationCentre').notificationCentre
-    ;
+        ;
 
     beforeEach(function () {
         s.reset(true);
@@ -56,19 +56,79 @@ describe.only('relationship notifications', function () {
 
     });
 
-    describe('forward', function () {
-        beforeEach(function (done) {
-            notificationCentre.once('myCollection:Car', function () {
-                done();
+    describe('no fault', function () {
+
+        var notif;
+
+        describe('forward', function () {
+            describe('already exists', function () {
+
+                var anotherPerson;
+
+                beforeEach(function (done) {
+                    personMapping.map({name: 'Bob'}, function (err, _anotherPerson) {
+                        if (err) done(err);
+                        anotherPerson = _anotherPerson;
+                        car.owner = anotherPerson;
+                        notificationCentre.once('myCollection:Car', function (n) {
+                            notif = n;
+                            done();
+                        });
+                        car.owner = person;
+                    });
+
+
+                });
+
+                it('change is of type set', function () {
+                    assert.equal(notif.change.type, ChangeType.Set);
+                });
+
+                it('has old', function () {
+                    assert.equal(notif.change.old, anotherPerson);
+                });
+
+                it('new is the new owner', function () {
+                    assert.equal(notif.change.new, person);
+                });
+
+                it('field is owner', function () {
+                    assert.equal(notif.change.field, 'owner');
+                });
+
+            });
+
+            describe('doesnt exist', function () {
+                beforeEach(function (done) {
+                    notificationCentre.once('myCollection:Car', function (n) {
+                        notif = n;
+                        done();
+                    });
+                    car.owner = person;
+                });
+                it('change is of type set', function () {
+                    assert.equal(notif.change.type, ChangeType.Set);
+                });
+
+                it('has no old', function () {
+                    assert.notOk(notif.change.old);
+                });
+
+                it('new is the new owner', function () {
+                    assert.equal(notif.change.new, person);
+                });
+
+                it('field is owner', function () {
+                    assert.equal(notif.change.field, 'owner');
+                });
             });
         });
 
 
-        it('xyz', function () {
-        });
+
+
+
     });
-
-
 
 
 });
