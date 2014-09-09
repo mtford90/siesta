@@ -12,7 +12,7 @@ title: Fount
 <hr/>
 <h3>Features</h3>
 <hr/>
-<p><img src="/static/img/app-thumbs.png" alt="alt text" class="img-responsive pull-right"
+<p><img src="static/img/app-thumbs.png" alt="alt text" class="img-responsive pull-right"
         style="margin-bottom:20px;"></p>
 <ul>
     <li>100% Mobile Responsive</li>
