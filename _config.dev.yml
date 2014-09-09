@@ -1,7 +1,8 @@
 highlighter: pygments
 markdown: redcarpet
-baseurl: 
-version: 3.0.2
+baseurl:
+title: SIESTA
+version: 0.1
 paginate: 5
 paginate_path: "blog/page:num"
 exclude: ['node_modules', 'Gruntfile.js']

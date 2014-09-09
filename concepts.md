@@ -1,10 +1,13 @@
 ---
-layout: 2ColLeft
+layout: Getting_Started
 title: Concepts
-sidebar: nav.html
+sidebar: nav2.html
 ---
 
-Explanation of concepts and terminology used in Siesta.
+## Concepts
 
-{% include anchor.html class="h3" title="Single source of truth" hash="single_source_of_truth" %}
+The below is a description of various concepts and terminology used in this library and its documentation.
 
+* Object mapping
+* Single source of truth
+* Descriptor
