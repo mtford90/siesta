@@ -24,7 +24,7 @@ module.exports = function (grunt) {
                     paths: ['static/less']
                 },
                 files: {
-                    'static/css/pouchdb.css': 'static/less/pouchdb/pouchdb.less'
+                    'static/css/main.css': 'static/less/daux-blue.less'
                 }
             }
         }, 
