@@ -123,7 +123,7 @@ Collection.prototype.install = function (callback) {
 
 Collection.prototype._finaliseInstallation = function (err, callback) {
     if (!err) {
-        this.installed= true;
+        this.installed = true;
         var index = require('../index');
         index[this._name] = this;
     }
@@ -223,18 +223,59 @@ Collection.prototype.save = function (callback) {
     }
 };
 
+
+Collection.prototype._mapping = function (name, mapping) {
+    if (name) {
+        this._rawMappings[name] = mapping;
+        var opts = extend(true, {}, mapping);
+        opts.type = name;
+        opts.collection = this._name;
+        var mappingObject = new Mapping(opts);
+        this._mappings[name] = mappingObject;
+        this[name] = mappingObject;
+        return mappingObject;
+    }
+    else {
+        throw new RestError('No name specified when creating mapping');
+    }
+};
+
 /*
  Registration
  */
-Collection.prototype.mapping = function (name, mapping) {
-    this._rawMappings[name] = mapping;
-    var opts = extend(true, {}, mapping);
-    opts.type = name;
-    opts.collection = this._name;
-    var mappingObject = new Mapping(opts);
-    this._mappings[name] = mappingObject;
-    this[name] = mappingObject;
-    return mappingObject;
+Collection.prototype.mapping = function () {
+    var self = this;
+    if (arguments.length) {
+        var name;
+        var mappings;
+        var isArray = false;
+        if (typeof arguments[0] == 'string') {
+            name = arguments[0];
+            mappings = [arguments[1]];
+        }
+        else if (Object.prototype.toString.call(arguments[0]) == '[object Array]') {
+            isArray = true;
+            mappings = arguments[0];
+        }
+        else if (typeof arguments[0] == 'object') {
+            mappings = Array.prototype.slice.call(arguments, 0);
+        }
+        if (name) {
+            return this._mapping(name, mappings[0]);
+        }
+        else {
+            var processedMappings = _.map(mappings, function (m) {
+                return self._mapping(m.name, m);
+            });
+            if (processedMappings.length == 1 && !isArray) {
+                return processedMappings[0];
+            }
+            else {
+                return processedMappings;
+            }
+        }
+    }
+    return null;
 };
 
 /*

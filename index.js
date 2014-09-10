@@ -10,7 +10,7 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , log = require('./vendor/operations.js/src/log');
 
-Operation.logLevel = log.Level.warn;
+Operation.logLevel = log.Level.info;
 OperationQueue.logLevel = log.Level.warn;
 
 
