@@ -41,31 +41,40 @@ function MappingOperation(mapping, data, completion) {
             }
             else {
                 var storeOpts = {};
-                idField = self.mapping.id;
-                if (typeof(data) == 'object') {
-                    remoteIdentifier = data[idField];
+                var shouldGoToStore = false;
+                if (self.mapping.singleton) {
+                    storeOpts.mapping = self.mapping;
+                    shouldGoToStore = true;
                 }
                 else {
-                    // Here we assume that the data given is a remote identifier.
-                    if (Logger.trace.isEnabled)
-                        Logger.trace('Assuming remote identifier');
-                    remoteIdentifier = data;
-                    self.data = {};
-                    self.data[idField] = data;
-                    data = self.data;
+                    idField = self.mapping.id;
+                    if (typeof(data) == 'object') {
+                        remoteIdentifier = data[idField];
+                    }
+                    else {
+                        // Here we assume that the data given is a remote identifier.
+                        if (Logger.trace.isEnabled)
+                            Logger.trace('Assuming remote identifier');
+                        remoteIdentifier = data;
+                        self.data = {};
+                        self.data[idField] = data;
+                        data = self.data;
+                    }
+                    if (remoteIdentifier) {
+                        if (Logger.debug.isEnabled)
+                            Logger.debug('Can lookup via remote id');
+                        storeOpts[idField] = remoteIdentifier;
+                        storeOpts.mapping = self.mapping;
+                    }
+                    if (data._id) {
+                        if (Logger.debug.isEnabled)
+                            Logger.debug('Can lookup via _id');
+                        storeOpts._id = data._id;
+                    }
+                    shouldGoToStore = remoteIdentifier || data._id;
                 }
-                if (remoteIdentifier) {
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('Can lookup via remote id');
-                    storeOpts[idField] = remoteIdentifier;
-                    storeOpts.mapping = self.mapping;
-                }
-                if (data._id) {
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('Can lookup via _id');
-                    storeOpts._id = data._id;
-                }
-                if (remoteIdentifier || data._id) {
+
+                if (shouldGoToStore) {
                     Store.get(storeOpts, function (err, obj) {
                         if (!err) {
                             if (!obj) {

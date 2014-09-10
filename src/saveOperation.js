@@ -6,6 +6,9 @@ var Operation = require('../vendor/operations.js/src/operation').Operation;
 
 var pouch = require('./pouch');
 var cache = require('./cache');
+var store = require('./store');
+
+var RestError = require('./error').RestError;
 
 var Platform = require('observe-js').Platform;
 
@@ -83,68 +86,89 @@ SaveOperation.prototype._clearDirtyFields = function (fields) {
 };
 
 SaveOperation.prototype._saveDirtyFields = function () {
-    if (Logger.debug.isEnabled)
-        Logger.debug('_saveDirtyFields');
     var self = this;
-    var dirtyFields = this._getDirtyFields();
-    if (dirtyFields.length) {
+    // If Object.observe does not exist, this performs a fake micro task which will force
+    // fields to be marked as dirty.
+    Platform.performMicrotaskCheckpoint();
+    // Wait for end of microtask to ensure fields are marked as dirty by observer.
+    setTimeout(function () {
         if (Logger.debug.isEnabled)
-            Logger.debug('_saveDirtyFields, have dirty fields to save for id="' + self.object._id + '"', dirtyFields);
-        var changes = {};
-        _.each(dirtyFields, function (field) {
-            var isAttribute = self.object._fields.indexOf(field) > -1;
-            if (isAttribute) {
-                changes[field] = self.object[field];
-            }
-            else { // Relationship
-                var proxyField = (field + 'Proxy');
-                var proxy = self.object[ proxyField];
-                if (proxy) {
-                    changes[field] = proxy._id;
+            Logger.debug('_saveDirtyFields');
+        var dirtyFields = self._getDirtyFields();
+        if (dirtyFields.length) {
+            if (Logger.debug.isEnabled)
+                Logger.debug('_saveDirtyFields, have dirty fields to save for id="' + self.object._id + '"', dirtyFields);
+            var changes = {};
+            _.each(dirtyFields, function (field) {
+                var isAttribute = self.object._fields.indexOf(field) > -1;
+                if (isAttribute) {
+                    changes[field] = self.object[field];
+                }
+                else { // Relationship
+                    var proxyField = (field + 'Proxy');
+                    var proxy = self.object[ proxyField];
+                    if (proxy) {
+                        changes[field] = proxy._id;
+                    }
+                    else {
+                        throw 'err';
+                    }
+                }
+            });
+            if (Logger.debug.isEnabled)
+                Logger.debug('_saveDirtyFields, writing changes for _id="' + self.object._id + '"', changes);
+            pouch.retryUntilWrittenMultiple(self.object._id, changes, function (err) {
+                if (err) {
+                    Logger.error('Error saving object.', err);
+                    self._finish(err);
                 }
                 else {
-                    throw 'err';
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Successfully saved.');
+                    self._clearDirtyFields(dirtyFields);
+                    self._finish(err);
                 }
-            }
-        });
-        if (Logger.debug.isEnabled)
-            Logger.debug('_saveDirtyFields, writing changes for _id="' + self.object._id + '"', changes);
-        pouch.retryUntilWrittenMultiple(self.object._id, changes, function (err) {
-            if (err) {
-                Logger.error('Error saving object.', err);
-                self._finish(err);
-            }
-            else {
-                if (Logger.trace.isEnabled)
-                    Logger.trace('Successfully saved.');
-                self._clearDirtyFields(dirtyFields);
-                self._finish(err);
-            }
-        });
-    }
-    else {
-        if (Logger.debug.isEnabled)
-            Logger.debug('_saveDirtyFields, no dirty fields to save');
-        self._finish();
-    }
+            });
+        }
+        else {
+            if (Logger.debug.isEnabled)
+                Logger.debug('_saveDirtyFields, no dirty fields to save');
+            self._finish();
+        }
+    });
+
 };
 
 SaveOperation.prototype._start = function () {
+    var self = this;
     if (Logger.trace.isEnabled)
         Logger.trace('Starting save operation for id="' + this.object._id + '"');
-    var self = this;
-    var id = self.object._id;
-    if (cache.get({_id: id})) {
-        // If Object.observe does not exist, this performs a fake micro task which will force
-        // fields to be marked as dirty.
-        Platform.performMicrotaskCheckpoint();
-        // Wait for end of microtask to ensure fields are marked as dirty by observer.
-        setTimeout(function () {
-            self._saveDirtyFields();
+    if (this.object.mapping.singleton) {
+        this.object.mapping.get(function (err, obj) {
+            if (err) {
+                self._finish(err);
+            }
+            else if (obj) {
+                if (obj == self.object) {
+                    self._saveDirtyFields();
+                }
+                else {
+                    self._finish(new RestError('A singleton already exists!'))
+                }
+            }
+            else if (!obj) {
+                self._initialSave();
+            }
         });
     }
     else {
-        self._initialSave();
+        var id = self.object._id;
+        if (cache.get({_id: id})) {
+            self._saveDirtyFields();
+        }
+        else {
+            self._initialSave();
+        }
     }
 };
 

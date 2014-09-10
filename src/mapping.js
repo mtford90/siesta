@@ -51,6 +51,7 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'attributes', self._opts);
     defineSubProperty.call(this, 'relationships', self._opts);
     defineSubProperty.call(this, 'subclass', self._opts);
+    defineSubProperty.call(this, 'singleton', self._opts);
 
     if (!this.relationships) {
         this.relationships = [];
@@ -190,22 +191,44 @@ Mapping.prototype.query = function (query, callback) {
     q.execute(callback);
 };
 
-Mapping.prototype.get = function (id, callback) {
-    var opts = {};
-    opts[this.id] = id;
-    var q = new Query(this, opts);
-    q.execute(function (err, rows) {
-        var obj = null;
-        if (!err && rows.length) {
-            if (rows.length > 1) {
-                err = 'More than one object with id=' + id.toString();
-            }
-            else {
-                obj = rows[0];
-            }
+Mapping.prototype.get = function (idOrCallback, callback) {
+    if (this.singleton) {
+        if (typeof idOrCallback == 'function') {
+            callback = idOrCallback;
         }
-        if (callback) callback(err, obj);
-    });
+        this.all(function (err, objs) {
+            if (err) if (callback) callback(callback(err));
+            if (objs.length > 1) {
+                throw new RestError('Somehow more than one object has been created for a singleton mapping! ' +
+                    'This is a serious error, please file a bug report.');
+            }
+            else if (objs.length) {
+                if (callback) callback(null, objs[0]);
+            }
+            else if (callback) {
+                dump(objs);
+                callback(null, null);
+            }
+        });
+    }
+    else {
+        var opts = {};
+        opts[this.id] = idOrCallback;
+        var q = new Query(this, opts);
+        q.execute(function (err, rows) {
+            var obj = null;
+            if (!err && rows.length) {
+                if (rows.length > 1) {
+                    err = 'More than one object with id=' + idOrCallback.toString();
+                }
+                else {
+                    obj = rows[0];
+                }
+            }
+            if (callback) callback(err, obj);
+        });
+    }
+
 };
 
 Mapping.prototype.all = function (callback) {

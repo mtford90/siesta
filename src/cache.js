@@ -35,6 +35,32 @@ function getViaLocalId(localId) {
     return  obj;
 }
 
+function getSingleton(mapping) {
+    var type = mapping.type;
+    var collection = mapping.collection;
+    var collectionCache = restCache[collection];
+    if (collectionCache) {
+        var typeCache = collectionCache[type];
+        if (typeCache) {
+            var objs = [];
+            for (var prop in typeCache) {
+                if (typeCache.hasOwnProperty(prop)) {
+                    objs.push(typeCache[prop]);
+                }
+            }
+            if (objs.length > 1) {
+                throw RestError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
+                    'Either a mapping has been modified after objects have already been created, or something has gone' +
+                    'very wrong. Please file a bug report if the latter.');
+            }
+            else if (objs.length) {
+                return objs[0];
+            }
+        }
+    }
+    return null;
+}
+
 function getViaRemoteId(remoteId, opts) {
     var type = opts.mapping.type;
     var collection = opts.mapping.collection;
@@ -189,7 +215,12 @@ function get(opts) {
     else if (opts.mapping) {
         idField = opts.mapping.id;
         remoteId = opts[idField];
-        return getViaRemoteId(remoteId, opts);
+        if (remoteId) {
+            return getViaRemoteId(remoteId, opts);
+        }
+        else if (opts.mapping.singleton) {
+            return getSingleton(opts.mapping);
+        }
     }
     Logger.warn('Invalid opts to cache', {opts: opts});
     return null;

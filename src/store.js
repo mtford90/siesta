@@ -57,26 +57,32 @@ function get(opts, callback) {
             }
             else {
                 var mapping = opts.mapping;
-                var idField = mapping.id;
-                var id = opts[idField];
-                if (id) {
-                    mapping.get(id, function (err, obj) {
-                        if (!err) {
-                            if (obj) {
-                                callback(null, obj);
-                            }
-                            else {
-                                callback(null, null);
-                            }
-                        }
-                        else {
-                            callback(err);
-                        }
-                    });
+                if (mapping.singleton) {
+                    mapping.get(callback);
                 }
                 else {
-                    wrappedCallback(callback)(new RestError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
+                    var idField = mapping.id;
+                    var id = opts[idField];
+                    if (id) {
+                        mapping.get(id, function (err, obj) {
+                            if (!err) {
+                                if (obj) {
+                                    callback(null, obj);
+                                }
+                                else {
+                                    callback(null, null);
+                                }
+                            }
+                            else {
+                                callback(err);
+                            }
+                        });
+                    }
+                    else {
+                        wrappedCallback(callback)(new RestError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
+                    }
                 }
+
             }
         }
     }
