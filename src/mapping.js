@@ -50,6 +50,7 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'collection', self._opts);
     defineSubProperty.call(this, 'attributes', self._opts);
     defineSubProperty.call(this, 'relationships', self._opts);
+    defineSubProperty.call(this, 'subclass', self._opts);
 
     if (!this.relationships) {
         this.relationships = [];
@@ -65,7 +66,31 @@ function Mapping(opts) {
         configurable: true
     });
 
+    this._validateSubclass();
+
 }
+
+/**
+ * Ensure that any subclasses passed to the mapping are valid and working correctly.
+ * @private
+ */
+Mapping.prototype._validateSubclass = function () {
+    if (this.subclass && this.subclass !== RestObject) {
+        var obj = new this.subclass(this);
+        if (!obj.mapping) {
+            throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
+                'Did you call super?');
+        }
+        if (!obj.save && !obj._markFieldAsDirty) {
+            throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
+                'Did you configure the prototype correctly?');
+        }
+        if (this.subclass.prototype == RestObject.prototype) {
+            throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
+                'You should use Object.create on RestObject prototype.');
+        }
+    }
+};
 
 Mapping.prototype._markObjectAsDirty = function (obj) {
     if (this.__dirtyObjects.indexOf(obj) < 0) {
@@ -282,7 +307,13 @@ Mapping.prototype._new = function (data) {
     else {
         _id = guid();
     }
-    var restObject = new RestObject(this);
+    var restObject;
+    if (this.subclass) {
+        restObject = new this.subclass(this);
+    }
+    else {
+        restObject = new RestObject(this);
+    }
     if (Logger.info.isEnabled)
         Logger.info('New object created _id="' + _id.toString() + '"', data);
     restObject._id = _id;

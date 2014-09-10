@@ -34,7 +34,6 @@ function wrapArray(array, field, restObject) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
         array.observer.open(function (splices) {
-            dump('wrapArray', restObject.name);
             var fieldIsAttribute = restObject._fields.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 restObject._markFieldAsDirty(field);
