@@ -39,6 +39,14 @@ describe('collection setup', function () {
                     })
                 });
             });
+
+            it('is accessible in the siesta object', function (done) {
+                collection.install(function (err) {
+                    if (err) done(err);
+                    assert.equal(s.MyCollection, collection);
+                    done();
+                });
+            });
         });
 
         describe('configure with mappings', function () {

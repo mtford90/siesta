@@ -62,7 +62,7 @@ Collection.prototype.install = function (callback) {
             var op = new Operation('Install Mappings', operations);
             op.completion = function () {
                 if (op.failed) {
-                    callback(op.error);
+                    self._finaliseInstallation(op.error, callback);
                 }
                 else {
                     self.installed = true;
@@ -106,19 +106,28 @@ Collection.prototype.install = function (callback) {
                     else if (errors.length) {
                         err = errors;
                     }
-                    callback(err);
+                    self._finaliseInstallation(err, callback);
                 }
             };
             op.start();
         }
         else {
-            self.installed = true;
-            callback();
+            self._finaliseInstallation(null, callback);
         }
     }
     else {
-        if (callback) callback(new RestError('Collection "' + this._name + '" has already been installed'));
+        var err = new RestError('Collection "' + this._name + '" has already been installed');
+        self._finaliseInstallation(err, callback);
     }
+};
+
+Collection.prototype._finaliseInstallation = function (err, callback) {
+    if (!err) {
+        this.installed= true;
+        var index = require('../index');
+        index[this._name] = this;
+    }
+    if (callback) callback(err);
 };
 
 Collection.prototype._markMappingAsDirty = function (mapping) {
