@@ -7,7 +7,7 @@ var Operation = require('../vendor/operations.js/src/operation').Operation;
 var notificationCentre = require('./notificationCentre');
 var broadcast = notificationCentre.broadcast;
 var wrapArray = notificationCentre.wrapArray;
-var ArrayObserver = require('observe-js').ArrayObserver;
+var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 var ChangeType = require('./changeType').ChangeType;
 
 function Fault(proxy, relationship) {

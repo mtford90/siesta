@@ -10,7 +10,7 @@ var store = require('./store');
 
 var RestError = require('./error').RestError;
 
-var Platform = require('observe-js').Platform;
+var Platform = require('../vendor/observe-js/src/observe').Platform;
 
 
 /**

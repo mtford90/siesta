@@ -1,3 +1,9 @@
 [submodule "vendor/operations.js"]
 	path = vendor/operations.js
 	url = git@github.com:mtford90/operations.js.git
+[submodule "vendor/jquery.custom.js"]
+	path = vendor/jquery.custom.js
+	url = https://github.com/mtford90/jquery.custom.js
+[submodule "vendor/observe-js"]
+	path = vendor/observe-js
+	url = https://github.com/mtford90/observe-js

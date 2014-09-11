@@ -5,7 +5,7 @@ var Pouch = require('../src/pouch');
 var Collection = require('../src/collection').Collection;
 var collection, carMapping;
 
-var Platform = require('observe-js').Platform;
+var Platform = require('../vendor/observe-js/src/observe').Platform;
 
 describe('saving at different levels', function () {
 

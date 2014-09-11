@@ -7,7 +7,7 @@ var s = require('../index')
 
 describe('observer', function () {
 
-    var ArrayObserver = require('observe-js').ArrayObserver;
+    var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 
     it('indexes', function (done) {
         var arr = [1, 2, 3];
