@@ -3,16 +3,9 @@ var s = require('../index')
 
 
 describe('rest', function () {
-
-
-
-
-    var Collection =  require('../src/collection').Collection;
-
-        var CollectionRegistry =  require('../src/collectionRegistry').CollectionRegistry;
-
+    var Collection = require('../src/collection').Collection;
+    var CollectionRegistry = require('../src/collectionRegistry').CollectionRegistry;
     var collection;
-
 
 
     beforeEach(function () {

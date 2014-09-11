@@ -69,7 +69,7 @@ describe('perform mapping', function () {
 
         describe('new', function () {
 
-            it('returns a restobject', function () {
+            it('returns a model', function () {
                 assert.instanceOf(obj, SiestaModel);
             });
 

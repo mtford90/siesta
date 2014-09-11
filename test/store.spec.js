@@ -25,13 +25,13 @@ describe('store', function () {
 
 
         it('already cached', function (done) {
-            var restObject = new SiestaModel(carMapping);
+            var model = new SiestaModel(carMapping);
             var pouchId = 'pouchId';
-            restObject._id = pouchId;
-            cache.insert(restObject);
+            model._id = pouchId;
+            cache.insert(model);
             Store.get({_id: pouchId}, function (err, doc) {
                 if (err)done(err);
-                assert.equal(doc, restObject);
+                assert.equal(doc, model);
                 done();
             });
         });

@@ -69,15 +69,15 @@ describe('cache', function () {
             assert.equal(returned, r);
         });
         it('by rest id', function () {
-            var r = new SiestaModel(mapping);
-            r.id = 'dsfsd';
-            r._id = 'xyz';
-            cache.insert(r);
+            var model = new SiestaModel(mapping);
+            model.id = 'dsfsd';
+            model._id = 'xyz';
+            cache.insert(model);
             var returned = cache.get({
                 mapping: mapping,
                 id: 'dsfsd'
             });
-            assert.equal(returned, r);
+            assert.equal(returned, model);
         });
     });
 
