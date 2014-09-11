@@ -7,6 +7,8 @@ HttpLogger.setLevel(log.Level.warn);
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 var SaveOperation = require('./saveOperation').SaveOperation;
+var RequestDescriptor = require('./requestDescriptor').RequestDescriptor;
+var ResponseDescriptor = require('./responseDescriptor').ResponseDescriptor;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('./error').RestError;
 var Mapping = require('./mapping').Mapping;
@@ -412,6 +414,48 @@ Collection.prototype._httpRequest = function (method, path, object) {
             Logger.trace('Did not match descriptor');
         callback(null, null, null);
     }
+};
+
+function requestDescriptor(opts) {
+    var requestDescriptor = new RequestDescriptor(opts);
+    DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+    return requestDescriptor;
+}
+
+function responseDescriptor(opts) {
+    var responseDescriptor = new ResponseDescriptor(opts);
+    DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+    return responseDescriptor;
+}
+
+Collection.prototype._descriptor = function (registrationFunc) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (args.length) {
+        if (args.length == 1) {
+            if (Object.prototype.toString.call(args[0]) == '[object Array]') {
+                return _.map(args[0], function (d) {
+                    return registrationFunc(d);
+                });
+            }
+            else {
+                return registrationFunc(args[0]);
+            }
+        }
+        else {
+            return _.map(args, function (d) {
+                return registrationFunc(d);
+            });
+        }
+    }
+    return null;
+};
+
+Collection.prototype.requestDescriptor = function () {
+    return _.partial(this._descriptor, requestDescriptor).apply(this, arguments);
+};
+
+Collection.prototype.responseDescriptor = function () {
+    return _.partial(this._descriptor, responseDescriptor).apply(this, arguments);
 };
 
 Collection.prototype._dump = function (asJson) {

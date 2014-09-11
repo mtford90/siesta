@@ -145,6 +145,142 @@ describe('collection setup', function () {
 
         });
 
+        describe('configure with descriptors', function () {
+            var mapping1, mapping2;
+            beforeEach(function () {
+                mapping1 = collection.mapping('mapping1', {
+                    id: 'id',
+                    attributes: ['attr1', 'attr2']
+                });
+                mapping2 = collection.mapping({
+                    name: 'mapping2',
+                    id: 'id',
+                    attributes: ['attr1', 'attr2', 'attr3']
+                });
+            });
+            describe('request descriptor', function () {
+                it('single', function (done) {
+                    var requestDescriptor1 = collection.requestDescriptor({
+                        method: 'POST',
+                        mapping: mapping1,
+                        path: '/path/(?<id>[0-9])/?'
+                    });
+                    var requestDescriptor2 = collection.requestDescriptor({
+                        method: 'POST',
+                        mapping: mapping2,
+                        path: '/path/(?<id>[0-9])/?'
+                    });
+                    collection.install(function (err) {
+                        if (err) {
+                            done(err);
+                        }
+                        assert.equal(requestDescriptor1.mapping, mapping1);
+                        assert.equal(requestDescriptor2.mapping, mapping2);
+                        done();
+                    })
+                });
+                it('vararg', function (done) {
+                    var requestDescriptors = collection.requestDescriptor({
+                        method: 'POST',
+                        mapping: mapping1,
+                        path: '/path/(?<id>[0-9])/?'
+                    }, {
+                        method: 'POST',
+                        mapping: mapping2,
+                        path: '/path/(?<id>[0-9])/?'
+                    });
+                    collection.install(function (err) {
+                        if (err) {
+                            done(err);
+                        }
+                        assert.equal(requestDescriptors[0].mapping, mapping1);
+                        assert.equal(requestDescriptors[1].mapping, mapping2);
+                        done();
+                    })
+                });
+                it('array', function (done) {
+                    var requestDescriptors = collection.requestDescriptor([{
+                        method: 'POST',
+                        mapping: mapping1,
+                        path: '/path/(?<id>[0-9])/?'
+                    }, {
+                        method: 'POST',
+                        mapping: mapping2,
+                        path: '/path/(?<id>[0-9])/?'
+                    }]);
+                    collection.install(function (err) {
+                        if (err) {
+                            done(err);
+                        }
+                        assert.equal(requestDescriptors[0].mapping, mapping1);
+                        assert.equal(requestDescriptors[1].mapping, mapping2);
+                        done();
+                    })
+                });
+            });
+            describe('response descriptor', function () {
+                it('single', function (done) {
+                    var responseDescriptor1 = collection.responseDescriptor({
+                        method: 'POST',
+                        mapping: mapping1,
+                        path: '/path/(?<id>[0-9])/?'
+                    });
+                    var responseDescriptor2 = collection.responseDescriptor({
+                        method: 'POST',
+                        mapping: mapping2,
+                        path: '/path/(?<id>[0-9])/?'
+                    });
+                    collection.install(function (err) {
+                        if (err) {
+                            done(err);
+                        }
+                        assert.equal(responseDescriptor1.mapping, mapping1);
+                        assert.equal(responseDescriptor2.mapping, mapping2);
+                        done();
+                    })
+                });
+                it('vararg', function (done) {
+                    var responseDescriptors = collection.responseDescriptor({
+                        method: 'POST',
+                        mapping: mapping1,
+                        path: '/path/(?<id>[0-9])/?'
+                    }, {
+                        method: 'POST',
+                        mapping: mapping2,
+                        path: '/path/(?<id>[0-9])/?'
+                    });
+                    collection.install(function (err) {
+                        if (err) {
+                            done(err);
+                        }
+                        assert.equal(responseDescriptors[0].mapping, mapping1);
+                        assert.equal(responseDescriptors[1].mapping, mapping2);
+                        done();
+                    })
+                });
+                it('array', function (done) {
+                    var responseDescriptors = collection.responseDescriptor([{
+                        method: 'POST',
+                        mapping: mapping1,
+                        path: '/path/(?<id>[0-9])/?'
+                    }, {
+                        method: 'POST',
+                        mapping: mapping2,
+                        path: '/path/(?<id>[0-9])/?'
+                    }]);
+                    collection.install(function (err) {
+                        if (err) {
+                            done(err);
+                        }
+                        assert.equal(responseDescriptors[0].mapping, mapping1);
+                        assert.equal(responseDescriptors[1].mapping, mapping2);
+                        done();
+                    })
+                });
+            });
+
+        });
+
 
     });
 
