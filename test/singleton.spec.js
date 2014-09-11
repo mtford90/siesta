@@ -3,7 +3,7 @@ var s = require('../index')
 
 describe('singleton', function () {
 
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
     var store = require('../src/store');
@@ -11,10 +11,10 @@ describe('singleton', function () {
     var collection, carMapping;
 
     function CarObject() {
-        RestObject.apply(this, arguments);
+        SiestaModel.apply(this, arguments);
     }
 
-    CarObject.prototype = Object.create(RestObject.prototype);
+    CarObject.prototype = Object.create(SiestaModel.prototype);
 
     beforeEach(function (done) {
         s.reset(true);

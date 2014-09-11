@@ -6,7 +6,7 @@ describe('cache', function () {
 
 
 
-    var RestObject =  require('../src/object').RestObject;
+    var SiestaModel =  require('../src/object').SiestaModel;
     var Collection =  require('../src/collection').Collection;
     var ResponseDescriptor =  require('../src/responseDescriptor').ResponseDescriptor;
     var DescriptorRegistry =  require('../src/descriptorRegistry').DescriptorRegistry;
@@ -30,14 +30,14 @@ describe('cache', function () {
 
     describe('insertion', function () {
         it('by pouch id', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             r._id = 'dsfsd';
             cache.insert(r);
             assert.equal(r, cache._idCache()[r._id]);
         });
 
         it('by default id', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             r.id = 'dsfsd';
             cache.insert(r);
 
@@ -48,7 +48,7 @@ describe('cache', function () {
         it('by custom id', function () {
             var m = mapping;
             m.id = 'customId';
-            var r = new RestObject(m);
+            var r = new SiestaModel(m);
             r.customId = 'dsfsd';
             cache.insert(r);
             var restCache = cache._restCache();
@@ -59,7 +59,7 @@ describe('cache', function () {
 
     describe('get', function () {
         it('by pouch id', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             r.id = 'dsfsd';
             cache.insert(r);
             var returned = cache.get({
@@ -69,7 +69,7 @@ describe('cache', function () {
             assert.equal(returned, r);
         });
         it('by rest id', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             r.id = 'dsfsd';
             r._id = 'xyz';
             cache.insert(r);
@@ -121,7 +121,7 @@ describe('cache', function () {
             it('cant insert object with same _id', function () {
                 var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
                 cache.insert(person);
-                var duplicateObject = new RestObject();
+                var duplicateObject = new SiestaModel();
                 duplicateObject._id = person._id;
                 assert.throws(function () {
                     cache.insert(duplicateObject);

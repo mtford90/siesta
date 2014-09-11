@@ -3,7 +3,7 @@ var s = require('../index')
 
 describe('object!!', function () {
 
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
     var Mapping = require('../src/mapping').Mapping;
 
     var mapping;
@@ -21,17 +21,17 @@ describe('object!!', function () {
     describe('fields', function (){
 
         it('idField', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             assert.equal(r.idField, 'id');
         });
 
         it('type field', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             assert.equal(r.type, 'Car');
         });
 
         it('collection field', function () {
-            var r = new RestObject(mapping);
+            var r = new SiestaModel(mapping);
             assert.equal(r.collection, 'myCollection');
         });
     });

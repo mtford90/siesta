@@ -7,7 +7,7 @@ describe('new object proxy', function () {
     var OneToOneProxy = require('../src/proxy').OneToOneProxy;
     var ForeignKeyProxy = require('../src/proxy').ForeignKeyProxy;
     var Mapping = require('../src/mapping').Mapping;
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
     var Fault = require('../src/proxy').Fault;
     var RestError = require('../src/error').RestError;
     var Collection = require('../src/collection').Collection;
@@ -42,8 +42,8 @@ describe('new object proxy', function () {
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                car = new RestObject(carMapping);
-                person = new RestObject(personMapping);
+                car = new SiestaModel(carMapping);
+                person = new SiestaModel(personMapping);
             });
 
             it('throws an error if try to install twice', function () {
@@ -113,7 +113,7 @@ describe('new object proxy', function () {
                     describe('relationship, faulted', function () {
                         beforeEach(function () {
                             proxy._id = 'xyz';
-                            proxy.related = new RestObject(personMapping);
+                            proxy.related = new SiestaModel(personMapping);
                             proxy.related._id = 'xyz';
                         });
 
@@ -170,7 +170,7 @@ describe('new object proxy', function () {
                     describe('relationship, faulted', function () {
                         beforeEach(function () {
                             proxy._id = 'xyz';
-                            proxy.related = [new RestObject(carMapping)];
+                            proxy.related = [new SiestaModel(carMapping)];
                             proxy.related[0]._id = 'xyz';
                         });
 
@@ -196,8 +196,8 @@ describe('new object proxy', function () {
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                car = new RestObject(carMapping);
-                person = new RestObject(personMapping);
+                car = new SiestaModel(carMapping);
+                person = new SiestaModel(personMapping);
                 proxy.install(car);
             });
 
@@ -239,10 +239,10 @@ describe('new object proxy', function () {
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                car = new RestObject(carMapping);
+                car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
-                person = new RestObject(personMapping);
+                person = new SiestaModel(personMapping);
                 person._id = '123';
                 personProxy.install(person);
                 cache.insert(person);
@@ -291,10 +291,10 @@ describe('new object proxy', function () {
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                car = new RestObject(carMapping);
+                car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
-                person = new RestObject(personMapping);
+                person = new SiestaModel(personMapping);
                 person._id = '123';
                 personProxy.install(person);
             });
@@ -342,7 +342,7 @@ describe('new object proxy', function () {
                 var anotherPerson, anotherPersonProxy;
 
                 beforeEach(function () {
-                    anotherPerson = new RestObject(personMapping);
+                    anotherPerson = new SiestaModel(personMapping);
                     anotherPerson._id = 'abc';
                     anotherPersonProxy = new OneToOneProxy({
                         reverseMapping: personMapping,
@@ -462,10 +462,10 @@ describe('new object proxy', function () {
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                car = new RestObject(carMapping);
+                car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
-                person = new RestObject(personMapping);
+                person = new SiestaModel(personMapping);
                 person._id = '123';
                 personProxy.install(person);
                 cache.insert(person);
@@ -514,10 +514,10 @@ describe('new object proxy', function () {
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                car = new RestObject(carMapping);
+                car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
-                person = new RestObject(personMapping);
+                person = new SiestaModel(personMapping);
                 person._id = '123';
                 personProxy.install(person);
             });
@@ -566,7 +566,7 @@ describe('new object proxy', function () {
                 var anotherPerson, anotherPersonProxy;
 
                 beforeEach(function () {
-                    anotherPerson = new RestObject(personMapping);
+                    anotherPerson = new SiestaModel(personMapping);
                     anotherPerson._id = 'abc';
                     anotherPersonProxy = new ForeignKeyProxy({
                         reverseMapping: personMapping,

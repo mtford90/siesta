@@ -322,7 +322,7 @@ We can synchronise with CouchDB instances thanks to the use of PouchDB behind th
 
 TODO
 
-### Subclassing RestObject
+### Subclassing SiestaModel
 
 TODO: Pass constructor or name of constructor to the mapping?
 

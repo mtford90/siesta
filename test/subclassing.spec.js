@@ -3,7 +3,7 @@ var s = require('../index')
 
 describe('subclassing', function () {
 
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
     var RestError = require('../src/error').RestError;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
@@ -11,10 +11,10 @@ describe('subclassing', function () {
     var collection, carMapping;
 
     function CarObject () {
-        RestObject.apply(this, arguments);
+        SiestaModel.apply(this, arguments);
     }
 
-    CarObject.prototype = Object.create(RestObject.prototype);
+    CarObject.prototype = Object.create(SiestaModel.prototype);
 
     beforeEach(function (done) {
         s.reset(true);
@@ -33,18 +33,18 @@ describe('subclassing', function () {
         assert.instanceOf(car, CarObject);
     });
 
-    it('should instantiate with RestObject if not present', function () {
+    it('should instantiate with SiestaModel if not present', function () {
         carMapping = collection.mapping('Car', {
             id: 'id',
             attributes: ['colour', 'name']
         });
         var car = carMapping._new({colour: 'red', name:'Aston Martin'});
-        assert.instanceOf(car, RestObject);
+        assert.instanceOf(car, SiestaModel);
     });
 
     it('should throw an error if setup prototype, but do not call super', function () {
         function CarObject() {}
-        CarObject.prototype = Object.create(RestObject.prototype);
+        CarObject.prototype = Object.create(SiestaModel.prototype);
         assert.throws(function () {
             carMapping = collection.mapping('Car', {
                 id: 'id',
@@ -56,7 +56,7 @@ describe('subclassing', function () {
 
     it('should throw an error if call super but do not setup prototype', function () {
         function CarObject() {
-            RestObject.apply(this, arguments);
+            SiestaModel.apply(this, arguments);
         }
         assert.throws(function () {
             carMapping = collection.mapping('Car', {
@@ -81,9 +81,9 @@ describe('subclassing', function () {
 
     it('should throw an error if do not use a new instance of the prototype, as this is an anti-pattern', function () {
         function CarObject() {
-            RestObject.apply(this, arguments);
+            SiestaModel.apply(this, arguments);
         }
-        CarObject.prototype = RestObject.prototype;
+        CarObject.prototype = SiestaModel.prototype;
         assert.throws(function () {
             carMapping = collection.mapping('Car', {
                 id: 'id',

@@ -9,7 +9,7 @@ describe('query', function () {
     var RawQuery = require('../src/rawQuery').RawQuery;
     var Query = require('../src/query').Query;
     var Collection = require('../src/collection').Collection;
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
 ;
 
 
@@ -112,7 +112,7 @@ describe('query', function () {
                         try {
                             assert.ok(objs.length);
                             _.each(objs, function (obj) {
-                                assert.instanceOf(obj, RestObject);
+                                assert.instanceOf(obj, SiestaModel);
                             });
                             done();
                         }

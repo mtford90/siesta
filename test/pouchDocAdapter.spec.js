@@ -12,7 +12,7 @@ describe('pouch doc adapter', function () {
         var RestError =  require('../src/error').RestError;
         var RelationshipType =  require('../src/relationship').RelationshipType;
 
-        var RestObject =  require('../src/object').RestObject;
+        var SiestaModel =  require('../src/object').SiestaModel;
 ;
 
     beforeEach(function () {
@@ -78,7 +78,7 @@ describe('pouch doc adapter', function () {
                         var objs = Pouch.toSiesta([doc]);
                         assert.equal(objs.length, 1);
                         assert.notEqual(objs[0], person);
-                        assert.instanceOf(objs[0], RestObject);
+                        assert.instanceOf(objs[0], SiestaModel);
                         done();
                     });
                 });

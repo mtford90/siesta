@@ -8,7 +8,7 @@ describe('perform mapping', function () {
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
-    var RestObject = require('../../src/object').RestObject;
+    var SiestaModel = require('../../src/object').SiestaModel;
     var d = require('../../src/object').dumpSaveQueues;
     var cache = require('../../src/cache');
 
@@ -70,7 +70,7 @@ describe('perform mapping', function () {
         describe('new', function () {
 
             it('returns a restobject', function () {
-                assert.instanceOf(obj, RestObject);
+                assert.instanceOf(obj, SiestaModel);
             });
 
             it('has the right fields', function () {

@@ -4,7 +4,7 @@ var s = require('../index')
 describe('store', function () {
     var Store =  require('../src/store');
     var Pouch = require('../src/pouch');
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
 
@@ -25,7 +25,7 @@ describe('store', function () {
 
 
         it('already cached', function (done) {
-            var restObject = new RestObject(carMapping);
+            var restObject = new SiestaModel(carMapping);
             var pouchId = 'pouchId';
             restObject._id = pouchId;
             cache.insert(restObject);
@@ -89,7 +89,7 @@ describe('store', function () {
                 ], function (err, docs) {
                     if (err) done(err);
                     _.each(docs, function (d) {
-                        assert.instanceOf(d, RestObject);
+                        assert.instanceOf(d, SiestaModel);
                     });
                     done();
                 });
@@ -99,7 +99,7 @@ describe('store', function () {
                 Store.get({_id: ['localId1', 'localId2', 'localId3']}, function (err, docs) {
                     if (err) done(err);
                     _.each(docs, function (d) {
-                        assert.instanceOf(d, RestObject);
+                        assert.instanceOf(d, SiestaModel);
                     });
                     done();
                 });

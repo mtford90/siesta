@@ -6,7 +6,7 @@ describe('http!', function () {
 
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
-    var RestObject = require('../src/object').RestObject;
+    var SiestaModel = require('../src/object').SiestaModel;
     var ResponseDescriptor = require('../src/responseDescriptor').ResponseDescriptor;
     var DescriptorRegistry = require('../src/descriptorRegistry').DescriptorRegistry;
     var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
@@ -100,7 +100,7 @@ describe('http!', function () {
                 });
 
                 it('should map regex matches onto the object', function () {
-                    assert.instanceOf(obj, RestObject);
+                    assert.instanceOf(obj, SiestaModel);
                     assert.equal(obj.colour, 'purple');
                     assert.equal(obj.name, 'Aston Martin');
                     assert.equal(obj.id, '9');
@@ -201,7 +201,7 @@ describe('http!', function () {
                     });
 
                     it('returns a car object', function () {
-                        assert.instanceOf(obj, RestObject);
+                        assert.instanceOf(obj, SiestaModel);
                         assert.equal(obj.colour, 'red');
                         assert.equal(obj.name, 'Aston Martin');
                         assert.equal(obj.id, '5');
@@ -236,7 +236,7 @@ describe('http!', function () {
                     it('returns 2 car objects', function () {
                         assert.equal(obj.length, 2);
                         _.each(obj, function (car) {
-                            assert.instanceOf(car, RestObject);
+                            assert.instanceOf(car, SiestaModel);
                         })
                     });
 

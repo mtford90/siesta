@@ -4,7 +4,7 @@ var s = require('../../index')
 describe('mapping relationships', function () {
 
 
-    var RestObject = require('../../src/object').RestObject;
+    var SiestaModel = require('../../src/object').SiestaModel;
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
@@ -75,7 +75,7 @@ describe('mapping relationships', function () {
 
             it('installs forward', function () {
                 var person = obj.person;
-                assert.instanceOf(person, RestObject);
+                assert.instanceOf(person, SiestaModel);
                 assert.equal(person.collection, 'myCollection');
                 assert.equal(person.name, 'Michael');
                 assert.equal(person.age, 23);

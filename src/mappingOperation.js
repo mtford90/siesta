@@ -1,5 +1,5 @@
 var Store = require('./store');
-var RestObject = require('./object').RestObject;
+var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 
@@ -34,7 +34,7 @@ function MappingOperation(mapping, data, completion) {
         var remoteIdentifier;
         var idField;
         if (!self._obj) {
-            if (data instanceof RestObject) {
+            if (data instanceof SiestaModel) {
                 self._obj = data;
                 //noinspection JSPotentiallyInvalidUsageOfThis
                 this.checkIfDone();

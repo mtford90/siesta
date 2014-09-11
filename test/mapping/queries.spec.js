@@ -4,7 +4,7 @@ var s = require('../../index')
 describe('mapping queries', function () {
 
     var Pouch = require('../../src/pouch');
-    var RestObject = require('../../src/object').RestObject;
+    var SiestaModel = require('../../src/object').SiestaModel;
     var Collection = require('../../src/collection').Collection;
 
     beforeEach(function () {
@@ -49,7 +49,7 @@ describe('mapping queries', function () {
                 if (err) done(err);
                 assert.equal(cars.length, 2);
                 _.each(cars, function (car) {
-                    assert.instanceOf(car, RestObject);
+                    assert.instanceOf(car, SiestaModel);
                 });
                 done();
             });
@@ -60,7 +60,7 @@ describe('mapping queries', function () {
                 if (err) done(err);
                 assert.equal(cars.length, 1);
                 _.each(cars, function (car) {
-                    assert.instanceOf(car, RestObject);
+                    assert.instanceOf(car, SiestaModel);
                 });
                 done();
             });
@@ -70,7 +70,7 @@ describe('mapping queries', function () {
             mapping.get(4, function (err, car) {
                 if (err) done(err);
                 assert.ok(car);
-                assert.instanceOf(car, RestObject);
+                assert.instanceOf(car, SiestaModel);
                 assert.equal(car.color, 'red');
                 done();
             });

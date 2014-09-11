@@ -82,7 +82,7 @@ Relationship.prototype.isReverse = function (obj) {
     return obj.mapping === this.reverseMapping;
 };
 
-Relationship.prototype.contributeToRestObject = function (obj) {
+Relationship.prototype.contributeToSiestaModel = function (obj) {
     if (this.isForward(obj)) {
         obj[this.name] = new RelatedObjectProxy(this, obj);
     }

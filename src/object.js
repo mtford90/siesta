@@ -1,5 +1,5 @@
 var log = require('../vendor/operations.js/src/log');
-var Logger = log.loggerWithName('RestObject');
+var Logger = log.loggerWithName('SiestaModel');
 Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
@@ -8,9 +8,9 @@ var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue
 
 var queues = {};
 
-function RestObject(mapping) {
+function SiestaModel(mapping) {
     if (!this) {
-        return new RestObject(mapping);
+        return new SiestaModel(mapping);
     }
     var self = this;
     this.mapping = mapping;
@@ -57,14 +57,14 @@ function RestObject(mapping) {
     this.isFault = false;
 }
 
-RestObject.prototype._unmarkFieldsAsDirty = function (fields) {
+SiestaModel.prototype._unmarkFieldsAsDirty = function (fields) {
     var self = this;
     _.each(fields, function (f) {
         self._unmarkFieldAsDirty(f);
     })
 };
 
-RestObject.prototype._unmarkFieldAsDirty = function (field) {
+SiestaModel.prototype._unmarkFieldAsDirty = function (field) {
     var idx = this.__dirtyFields.indexOf(field);
     if (idx > -1) {
         this.__dirtyFields.splice(idx, 1);
@@ -72,14 +72,14 @@ RestObject.prototype._unmarkFieldAsDirty = function (field) {
     this._markTypeAsDirtyIfNeccessary();
 };
 
-RestObject.prototype._markFieldsAsDirty = function (fields) {
+SiestaModel.prototype._markFieldsAsDirty = function (fields) {
     var self = this;
     _.each(fields, function (f) {
         self._markFieldAsDirty(f);
     });
 };
 
-RestObject.prototype._markFieldAsDirty = function (field) {
+SiestaModel.prototype._markFieldAsDirty = function (field) {
     if (Logger.trace.isEnabled)
         Logger.trace('_markFieldAsDirty', field);
     if (this.__dirtyFields.indexOf(field) < 0) {
@@ -94,7 +94,7 @@ RestObject.prototype._markFieldAsDirty = function (field) {
  * Mark dirty one level up.
  * @private
  */
-RestObject.prototype._markTypeAsDirtyIfNeccessary = function () {
+SiestaModel.prototype._markTypeAsDirtyIfNeccessary = function () {
     if (this.isDirty) {
         this.mapping._markObjectAsDirty(this);
     }
@@ -107,7 +107,7 @@ RestObject.prototype._markTypeAsDirtyIfNeccessary = function () {
  * Write down any dirty fields to PouchDB.
  * @param callback Called when completed
  */
-RestObject.prototype.save = function (callback) {
+SiestaModel.prototype.save = function (callback) {
     if (Logger.trace.isEnabled)
         Logger.trace('save');
     var op = new SaveOperation(this);
@@ -117,7 +117,7 @@ RestObject.prototype.save = function (callback) {
     var localId = this._id;
     var queue = queues[localId];
     if (!queue) {
-        queue = new OperationQueue('RestObject[' + localId.toString() + ']', 1);
+        queue = new OperationQueue('SiestaModel[' + localId.toString() + ']', 1);
         queues[localId] = queue;
         queue.start();
     }
@@ -129,7 +129,7 @@ RestObject.prototype.save = function (callback) {
  * @returns {*}
  * @private
  */
-RestObject.prototype._dump = function (asJson) {
+SiestaModel.prototype._dump = function (asJson) {
     var self = this;
     var cleanObj = {};
     cleanObj.mapping = this.mapping.type;
@@ -164,7 +164,7 @@ RestObject.prototype._dump = function (asJson) {
     return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
 };
 
-exports.RestObject = RestObject;
+exports.SiestaModel = SiestaModel;
 exports.dumpSaveQueues = function () {
     var dumped = {};
     for (var id in queues) {

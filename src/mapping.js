@@ -13,7 +13,7 @@ var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var MappingOperation = require('./mappingOperation').MappingOperation;
 var SaveOperation = require('./saveOperation').SaveOperation;
-var RestObject = require('./object').RestObject;
+var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
 var cache = require('./cache');
 var extend = require('extend');
@@ -76,7 +76,7 @@ function Mapping(opts) {
  * @private
  */
 Mapping.prototype._validateSubclass = function () {
-    if (this.subclass && this.subclass !== RestObject) {
+    if (this.subclass && this.subclass !== SiestaModel) {
         var obj = new this.subclass(this);
         if (!obj.mapping) {
             throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
@@ -86,9 +86,9 @@ Mapping.prototype._validateSubclass = function () {
             throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
                 'Did you configure the prototype correctly?');
         }
-        if (this.subclass.prototype == RestObject.prototype) {
+        if (this.subclass.prototype == SiestaModel.prototype) {
             throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
-                'You should use Object.create on RestObject prototype.');
+                'You should use Object.create on SiestaModel prototype.');
         }
     }
 };
@@ -317,8 +317,8 @@ Mapping.prototype._mapBulk = function (data, callback) {
 };
 
 /**
- * Convert raw data into a RestObject
- * @returns {RestObject}
+ * Convert raw data into a SiestaModel
+ * @returns {SiestaModel}
  * @private
  */
 Mapping.prototype._new = function (data) {
@@ -335,7 +335,7 @@ Mapping.prototype._new = function (data) {
         restObject = new this.subclass(this);
     }
     else {
-        restObject = new RestObject(this);
+        restObject = new SiestaModel(this);
     }
     if (Logger.info.isEnabled)
         Logger.info('New object created _id="' + _id.toString() + '"', data);
@@ -367,7 +367,7 @@ Mapping.prototype._new = function (data) {
                 }
 
                 if (v != old) {
-                    var logger = log.loggerWithName('RestObject');
+                    var logger = log.loggerWithName('SiestaModel');
                     if (logger.trace.isEnabled)
                         logger.trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '" as just changed to ' + v);
                     restObject._markFieldAsDirty(field);
