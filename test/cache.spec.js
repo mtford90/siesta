@@ -33,7 +33,7 @@ describe('cache', function () {
             var r = new SiestaModel(mapping);
             r._id = 'dsfsd';
             cache.insert(r);
-            assert.equal(r, cache._idCache()[r._id]);
+            assert.equal(r, cache._localCache()[r._id]);
         });
 
         it('by default id', function () {
@@ -41,7 +41,7 @@ describe('cache', function () {
             r.id = 'dsfsd';
             cache.insert(r);
 
-            var restCache = cache._restCache();
+            var restCache = cache._remoteCache();
             assert.equal(r, restCache[r.collection][r.type][r.id]);
         });
 
@@ -51,7 +51,7 @@ describe('cache', function () {
             var r = new SiestaModel(m);
             r.customId = 'dsfsd';
             cache.insert(r);
-            var restCache = cache._restCache();
+            var restCache = cache._remoteCache();
             assert.equal(r, restCache[r.collection][r.type][r.customId]);
         });
 

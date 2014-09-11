@@ -7,23 +7,23 @@ var RestError = require('./error').RestError;
  * Cache by pouch _id.
  * @type {{}}
  */
-var idCache = {};
+var localCache = {};
 
 /**
  * Cache by type and whatever id was specified in the mapping.
  * @type {{}}
  */
-var restCache = {};
+var remoteCache = {};
 
 function reset() {
-    restCache = {};
-    idCache = {};
+    remoteCache = {};
+    localCache = {};
 }
 
 reset();
 
 function getViaLocalId(localId) {
-    var obj = idCache[localId];
+    var obj = localCache[localId];
     if (obj) {
         if (Logger.debug.isEnabled)
             Logger.debug('Local cache hit: ' + obj._dump(true));
@@ -38,7 +38,7 @@ function getViaLocalId(localId) {
 function getSingleton(mapping) {
     var type = mapping.type;
     var collection = mapping.collection;
-    var collectionCache = restCache[collection];
+    var collectionCache = remoteCache[collection];
     if (collectionCache) {
         var typeCache = collectionCache[type];
         if (typeCache) {
@@ -64,9 +64,9 @@ function getSingleton(mapping) {
 function getViaRemoteId(remoteId, opts) {
     var type = opts.mapping.type;
     var collection = opts.mapping.collection;
-    var collectionCache = restCache[collection];
+    var collectionCache = remoteCache[collection];
     if (collectionCache) {
-        var typeCache = restCache[collection][type];
+        var typeCache = remoteCache[collection][type];
         if (typeCache) {
             var obj = typeCache[remoteId];
             if (obj) {
@@ -89,20 +89,20 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
     if (obj) {
         var collection = obj.mapping.collection;
         if (collection) {
-            if (!restCache[collection]) {
-                restCache[collection] = {};
+            if (!remoteCache[collection]) {
+                remoteCache[collection] = {};
             }
             var type = obj.mapping.type;
             if (type) {
-                if (!restCache[collection][type]) {
-                    restCache[collection][type] = {};
+                if (!remoteCache[collection][type]) {
+                    remoteCache[collection][type] = {};
                 }
                 if (previousRemoteId) {
-                    restCache[collection][type][previousRemoteId] = null;
+                    remoteCache[collection][type][previousRemoteId] = null;
                 }
-                var cachedObject = restCache[collection][type][remoteId];
+                var cachedObject = remoteCache[collection][type][remoteId];
                 if (!cachedObject) {
-                    restCache[collection][type][remoteId] = obj;
+                    remoteCache[collection][type][remoteId] = obj;
                     if (Logger.debug.isEnabled)
                         Logger.debug('Remote cache insert: ' + obj._dump(true));
                     if (Logger.trace.isEnabled)
@@ -142,11 +142,11 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
 
 function remoteDump(asJson) {
     var dumpedRestCache = {};
-    for (var coll in restCache) {
-        if (restCache.hasOwnProperty(coll)) {
+    for (var coll in remoteCache) {
+        if (remoteCache.hasOwnProperty(coll)) {
             var dumpedCollCache = {};
             dumpedRestCache[coll] = dumpedCollCache;
-            var collCache = restCache[coll];
+            var collCache = remoteCache[coll];
             for (var mapping in collCache) {
                 if (collCache.hasOwnProperty(mapping)) {
                     var dumpedMappingCache = {};
@@ -169,9 +169,9 @@ function remoteDump(asJson) {
 
 function localDump(asJson) {
     var dumpedIdCache = {};
-    for (var id in idCache) {
-        if (idCache.hasOwnProperty(id)) {
-            dumpedIdCache[id] = idCache[id]._dump()
+    for (var id in localCache) {
+        if (localCache.hasOwnProperty(id)) {
+            dumpedIdCache[id] = localCache[id]._dump()
         }
     }
     return asJson ? JSON.stringify(dumpedIdCache, null, 4) : dumpedIdCache;
@@ -185,12 +185,12 @@ function dump(asJson) {
     return asJson ? JSON.stringify(dumped, null, 4) : dumped;
 }
 
-function _restCache() {
-    return restCache
+function _remoteCache() {
+    return remoteCache
 }
 
-function _idCache() {
-    return idCache;
+function _localCache() {
+    return localCache;
 }
 
 function get(opts) {
@@ -229,16 +229,16 @@ function get(opts) {
 
 function insert(obj) {
     if (obj._id) {
-        if (!idCache[obj._id]) {
+        if (!localCache[obj._id]) {
             if (Logger.debug.isEnabled)
                 Logger.debug('Local cache insert: ' + obj._dump(true));
-            idCache[obj._id] = obj;
+            localCache[obj._id] = obj;
             if (Logger.trace.isEnabled)
                 Logger.trace('Local cache now looks like: ' + localDump(true));
         }
         else {
             // Something has gone badly wrong here. Two objects should never exist with the same _id
-            if (idCache[obj._id] != obj) {
+            if (localCache[obj._id] != obj) {
                 var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache. ' +
                     'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
                 Logger.error(message);
@@ -267,8 +267,8 @@ function dump(asJson) {
 }
 
 
-exports._restCache = _restCache;
-exports._idCache = _idCache;
+exports._remoteCache = _remoteCache;
+exports._localCache = _localCache;
 exports.get = get;
 exports.insert = insert;
 exports.remoteInsert = remoteInsert;
