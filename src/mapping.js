@@ -259,7 +259,7 @@ Mapping.prototype._validate = function () {
 
 
 /**
- * Map data into Fount.
+ * Map data into Siesta.
  *
  * @param data Raw data received remotely or otherwise
  * @param callback Called once pouch persistence returns.

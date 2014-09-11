@@ -1,6 +1,6 @@
-Fount
+Siesta
 ====
-Fount is inspired by:
+Siesta is inspired by:
 
 * CoreData
     * Single source of truth
@@ -526,7 +526,7 @@ personMapping.all(function (err, people) {
 
 ### HTTP
 
-Below are some example HTTP requests. The responses from these requests are passed through the descriptors and mapped into Fount.
+Below are some example HTTP requests. The responses from these requests are passed through the descriptors and mapped into Siesta.
 
 #### GET
 

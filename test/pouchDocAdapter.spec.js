@@ -41,7 +41,7 @@ describe('pouch doc adapter', function () {
             })
         });
 
-        describe('toFount', function () {
+        describe('toSiesta', function () {
 
             var collection;
 
@@ -59,7 +59,7 @@ describe('pouch doc adapter', function () {
                     if (err) done(err);
                     Pouch.getPouch().get(person._id, function (err, doc) {
                         if (err) done(err);
-                        var objs = Pouch.toFount([doc]);
+                        var objs = Pouch.toSiesta([doc]);
                         assert.equal(objs.length, 1);
                         assert.equal(objs[0], person);
                         done();
@@ -75,7 +75,7 @@ describe('pouch doc adapter', function () {
                         doc._rev = 'randomrev';
                         doc.id = 'randomremoteid';
                         if (err) done(err);
-                        var objs = Pouch.toFount([doc]);
+                        var objs = Pouch.toSiesta([doc]);
                         assert.equal(objs.length, 1);
                         assert.notEqual(objs[0], person);
                         assert.instanceOf(objs[0], RestObject);

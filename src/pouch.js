@@ -123,7 +123,7 @@ function toNew(doc) {
     return obj;
 }
 
-function toFount(docs) {
+function toSiesta(docs) {
     var mapped = [];
     for (var i = 0; i < docs.length; i++) {
         var doc = docs[i];
@@ -174,7 +174,7 @@ function from(obj) {
 exports.toNew = toNew;
 exports._validate = validate;
 exports.from = from;
-exports.toFount = toFount;
+exports.toSiesta = toSiesta;
 exports.retryUntilWrittenMultiple = retryUntilWrittenMultiple;
 exports.reset = reset;
 exports.getPouch = getPouch;

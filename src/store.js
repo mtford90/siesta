@@ -30,7 +30,7 @@ function get(opts, callback) {
                 }
                 else {
                     PouchAdapter.getPouch().get(opts._id).then(function (doc) {
-                        var docs = PouchAdapter.toFount([doc]);
+                        var docs = PouchAdapter.toSiesta([doc]);
 
                         if (callback) callback(null, docs.length ? docs[0] : null);
                     }, wrappedCallback(callback));

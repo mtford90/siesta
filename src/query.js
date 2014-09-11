@@ -25,7 +25,7 @@ Query.prototype.execute = function (callback) {
         else {
             if (Logger.debug.isEnabled)
                 Logger.debug('got results', results);
-            if (callback) callback(null, Pouch.toFount(results));
+            if (callback) callback(null, Pouch.toSiesta(results));
         }
     });
 };

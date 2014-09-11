@@ -51,7 +51,7 @@ describe('notifications', function () {
                                 done();
                             }
                         });
-                        s.once('Fount', function (n) {
+                        s.once('Siesta', function (n) {
                             genericNotif = n;
                             if (notif && genericNotif && collectionNotif) {
                                 done();
@@ -122,7 +122,7 @@ describe('notifications', function () {
                     };
                     s.once('myCollection:Car', listener);
                     s.once('myCollection', listener);
-                    s.once('Fount', listener);
+                    s.once('Siesta', listener);
                     car.colours.push('green');
                 });
             });

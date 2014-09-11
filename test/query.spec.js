@@ -1,23 +1,16 @@
-
 var s = require('../index')
     , assert = require('chai').assert;
 
 describe('query', function () {
 
 
-
-    var Index =  require('../src/index').Index;
-
-        var Pouch =  require('../src/pouch');
-
-        var RawQuery =  require('../src/rawQuery').RawQuery;
-
-        var Query =  require('../src/query').Query;
-
-        var Collection =  require('../src/collection').Collection;
-        var RestObject =  require('../src/object').RestObject;
-
-        ;
+    var Index = require('../src/index').Index;
+    var Pouch = require('../src/pouch');
+    var RawQuery = require('../src/rawQuery').RawQuery;
+    var Query = require('../src/query').Query;
+    var Collection = require('../src/collection').Collection;
+    var RestObject = require('../src/object').RestObject;
+;
 
 
     beforeEach(function () {
@@ -45,16 +38,15 @@ describe('query', function () {
             assert.equal(key, 'red_Aston Martin');
         });
 
-//        it('execute with no rows and no index', function (done) {
-//            assert.fail('todo');
-////            this.timeout(10000); // Can take quite a long time sometimes.
-////            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
-////            q.execute(function (err, results) {
-////                if (done) done(err);
-////                assert.equal(results.length, 0);
-////                done();
-////            });
-//        });
+        it('execute with no rows and no index', function (done) {
+            this.timeout(10000); // Can take quite a long time sometimes.
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+            q.execute(function (err, results) {
+                if (done) done(err);
+                assert.equal(results.length, 0);
+                done();
+            });
+        });
 
         it('execute with index', function (done) {
             var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
@@ -85,19 +77,18 @@ describe('query', function () {
             });
         });
 
-//        it('execute without index with rows', function (done) {
-//            assert.fail('todo');
-////            this.timeout(10000); // Can take quite a long time sometimes.
-////            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
-////            Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
-////                if (err) done(err);
-////                q.execute(function (err, results) {
-////                    if (done) done(err);
-////                    assert.equal(results.length, 1);
-////                    done();
-////                });
-////            });
-//        });
+        it('execute without index with rows', function (done) {
+            this.timeout(10000); // Can take quite a long time sometimes.
+            var q = new RawQuery('myCollection', 'Car', {colour: 'red', name: 'Aston Martin'});
+            Pouch.getPouch().post({'type': 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err) {
+                if (err) done(err);
+                q.execute(function (err, results) {
+                    if (done) done(err);
+                    assert.equal(results.length, 1);
+                    done();
+                });
+            });
+        });
 
 
     });

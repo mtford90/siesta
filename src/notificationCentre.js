@@ -16,7 +16,7 @@ function broadcast(obj, change) {
     notificationCentre.emit(mappingNotif, payload);
     var collectioNotif = obj.collection;
     notificationCentre.emit(collectioNotif, payload);
-    var genericNotif = 'Fount';
+    var genericNotif = 'Siesta';
     notificationCentre.emit(genericNotif, payload);
 }
 
