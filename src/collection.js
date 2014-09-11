@@ -240,43 +240,33 @@ Collection.prototype._mapping = function (name, mapping) {
     }
 };
 
-/*
- Registration
- */
 Collection.prototype.mapping = function () {
     var self = this;
     if (arguments.length) {
-        var name;
-        var mappings;
-        var isArray = false;
-        if (typeof arguments[0] == 'string') {
-            name = arguments[0];
-            mappings = [arguments[1]];
-        }
-        else if (Object.prototype.toString.call(arguments[0]) == '[object Array]') {
-            isArray = true;
-            mappings = arguments[0];
-        }
-        else if (typeof arguments[0] == 'object') {
-            mappings = Array.prototype.slice.call(arguments, 0);
-        }
-        if (name) {
-            return this._mapping(name, mappings[0]);
-        }
-        else {
-            var processedMappings = _.map(mappings, function (m) {
-                return self._mapping(m.name, m);
-            });
-            if (processedMappings.length == 1 && !isArray) {
-                return processedMappings[0];
+        if (arguments.length == 1) {
+            if (Object.prototype.toString.call(arguments[0]) == '[object Array]') {
+                return _.map(arguments[0], function (m) {
+                    return self._mapping(m.name, m);
+                });
             }
             else {
-                return processedMappings;
+                return this._mapping(arguments[0].name, arguments[0]);
+            }
+        }
+        else {
+            if (typeof arguments[0] == 'string') {
+                return this._mapping(arguments[0], arguments[1]);
+            }
+            else {
+                return _.map(arguments, function (m) {
+                    return self._mapping(m.name, m);
+                });
             }
         }
     }
     return null;
 };
+
 
 /*
  HTTP Requests

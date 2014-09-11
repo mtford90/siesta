@@ -105,7 +105,7 @@ describe('collection setup', function () {
                 }, RestError);
             });
 
-            it('vararg', function () {
+            it('vararg', function (done) {
                 var mappings = collection.mapping({
                     name: 'mapping1',
                     id: 'id',
@@ -123,7 +123,7 @@ describe('collection setup', function () {
                 });
             });
 
-            it('array', function () {
+            it('array', function (done) {
                 var mappings = collection.mapping([{
                     name: 'mapping1',
                     id: 'id',
