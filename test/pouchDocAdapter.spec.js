@@ -19,7 +19,7 @@ describe('pouch doc adapter', function () {
         s.reset(true);
     });
 
-    describe('from pouch to fount', function () {
+    describe('from pouch to siesta', function () {
         describe('new', function () {
             var collection;
             beforeEach(function (done) {
@@ -132,7 +132,7 @@ describe('pouch doc adapter', function () {
         });
     });
 
-    describe('from fount to pouch', function () {
+    describe('from siesta to pouch', function () {
 
         var collection, personMapping, carMapping;
 
