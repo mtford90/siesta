@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('RawQuery');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.debug);
 
 
 var mapping = require('./mapping');
@@ -8,6 +8,8 @@ var index = require('./index');
 var Index = index.Index;
 var Pouch = require('./pouch');
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
+
+
 
 
 function RawQuery(collection, modelName, query) {

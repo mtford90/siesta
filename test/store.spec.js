@@ -2,7 +2,7 @@ var s = require('../index')
     , assert = require('chai').assert;
 
 describe('store', function () {
-    var Store =  require('../src/store');
+    var Store = require('../src/store');
     var Pouch = require('../src/pouch');
     var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
@@ -47,7 +47,7 @@ describe('store', function () {
                         assert.equal(cachedObject, obj);
                         done();
                     }
-                    catch (err){
+                    catch (err) {
                         done(err);
                     }
                 });
@@ -68,42 +68,147 @@ describe('store', function () {
 
         describe('multiple', function () {
 
-            beforeEach(function (done) {
-                Pouch.getPouch().bulkDocs(
-                    [
-                        {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
-                        {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
-                        {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
-                    ],
-                    function (err) {
-                        done(err);
-                    }
-                );
+            describe('getMultiple', function () {
+
+                describe('not cached', function () {
+                    beforeEach(function (done) {
+                        Pouch.getPouch().bulkDocs(
+                            [
+                                {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
+                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
+                                {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
+                            ],
+                            function (err) {
+                                done(err);
+                            }
+                        );
+                    });
+                    it('getMultiple should return multiple', function (done) {
+                        Store.getMultiple([
+                            {_id: 'localId1'},
+                            {_id: 'localId2'},
+                            {_id: 'localId3'}
+                        ], function (err, docs) {
+                            if (err) done(err);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        });
+                    });
+
+                    it('get should proxy to getMultiple if _id is an array', function (done) {
+                        Store.get({_id: ['localId1', 'localId2', 'localId3']}, function (err, docs) {
+                            if (err) done(err);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        });
+                    });
+
+
+                });
+
             });
 
-            it('getMultiple should return multiple', function (done) {
-                Store.getMultiple([
-                    {_id: 'localId1'},
-                    {_id: 'localId2'},
-                    {_id: 'localId3'}
-                ], function (err, docs) {
-                    if (err) done(err);
-                    _.each(docs, function (d) {
-                        assert.instanceOf(d, SiestaModel);
+            describe('getMultipleLocal', function () {
+
+                describe('not cached', function () {
+
+                    beforeEach(function (done) {
+                        Pouch.getPouch().bulkDocs(
+                            [
+                                {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
+                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
+                                {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
+                            ],
+                            function (err) {
+                                done(err);
+                            }
+                        );
                     });
-                    done();
+
+                    it('xyz', function (done) {
+                        Store.getMultipleLocal(['localId1', 'localId2', 'localId3'], function (err, docs) {
+                            if (err) done(err);
+                            assert.equal(docs.length, 3);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        })
+                    })
                 });
+
+
+                describe('cached', function () {
+
+                    var cars;
+
+                    beforeEach(function (done) {
+                        carMapping.map([
+                            {colour: 'red', id: 'remoteId1'},
+                            {colour: 'blue', id: 'remoteId1'},
+                            {colour: 'green', id: 'remoteId1'}
+                        ], function (err, _cars) {
+                            if (err) done(err);
+                            cars = _cars;
+                            done();
+                        });
+                    });
+
+                    it('xyz', function (done) {
+                        Store.getMultipleLocal(_.pluck(cars, '_id'), function (err, docs) {
+                            if (err) done(err);
+                            assert.equal(docs.length, 3);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        })
+                    })
+                });
+
+                describe('partially cached', function () {
+                    var cars;
+
+                    beforeEach(function (done) {
+                        carMapping.map([
+                            {colour: 'red', id: 'remoteId1'},
+                            {colour: 'green', id: 'remoteId1'}
+                        ], function (err, _cars) {
+                            if (err) done(err);
+                            cars = _cars;
+                            Pouch.getPouch().bulkDocs(
+                                [
+                                    {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
+                                ],
+                                function (err) {
+                                    done(err);
+                                }
+                            );
+                        });
+                    });
+
+                    it('xyz', function (done) {
+                        var localIdentifiers = _.pluck(cars, '_id');
+                        localIdentifiers.push('localId2');
+                        Store.getMultipleLocal(localIdentifiers, function (err, docs) {
+                            if (err) done(err);
+                            assert.equal(docs.length, 3);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        })
+                    })
+
+
+                });
+
             });
 
-            it('get should proxy to getMultiple if _id is an array', function (done) {
-                Store.get({_id: ['localId1', 'localId2', 'localId3']}, function (err, docs) {
-                    if (err) done(err);
-                    _.each(docs, function (d) {
-                        assert.instanceOf(d, SiestaModel);
-                    });
-                    done();
-                });
-            });
 
         });
 

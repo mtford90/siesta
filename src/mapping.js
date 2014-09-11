@@ -27,6 +27,10 @@ var ForeignKeyProxy = require('./proxy').ForeignKeyProxy;
 var OneToOneProxy = require('./proxy').OneToOneProxy;
 
 
+var PerformanceMonitor = require('./performance').PerformanceMonitor;
+
+
+
 function Mapping(opts) {
     var self = this;
     this._opts = opts;
@@ -192,22 +196,28 @@ Mapping.prototype.query = function (query, callback) {
 };
 
 Mapping.prototype.get = function (idOrCallback, callback) {
+    var m = new PerformanceMonitor('Mapping.get');
+    m.start();
+    function finish(err, res) {
+        m.end();
+        if (callback) callback(err, res);
+    }
+
     if (this.singleton) {
         if (typeof idOrCallback == 'function') {
             callback = idOrCallback;
         }
         this.all(function (err, objs) {
-            if (err) if (callback) callback(callback(err));
+            if (err) finish(err);
             if (objs.length > 1) {
                 throw new RestError('Somehow more than one object has been created for a singleton mapping! ' +
                     'This is a serious error, please file a bug report.');
             }
             else if (objs.length) {
-                if (callback) callback(null, objs[0]);
+                finish(null, objs[0]);
             }
-            else if (callback) {
-                dump(objs);
-                callback(null, null);
+            else {
+                finish(null, objs[0]);
             }
         });
     }
@@ -225,7 +235,7 @@ Mapping.prototype.get = function (idOrCallback, callback) {
                     obj = rows[0];
                 }
             }
-            if (callback) callback(err, obj);
+            finish(err, obj);
         });
     }
 
@@ -289,11 +299,14 @@ Mapping.prototype.map = function (data, callback, obj) {
 Mapping.prototype._mapBulk = function (data, callback) {
     if (Logger.trace.isEnabled)
         Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
+    var m = new PerformanceMonitor('_mapBulk');
+
     var self = this;
     var operations = _.map(data, function (datum) {
         return new MappingOperation(self, datum);
     });
     var op = new Operation('Bulk Mapping', operations, function (err) {
+        m.end();
         if (err) {
             callback(err);
         }
@@ -312,6 +325,7 @@ Mapping.prototype._mapBulk = function (data, callback) {
 
     });
     op.logLevel = log.Level.trace;
+    m.start();
     op.start();
     return op;
 };
