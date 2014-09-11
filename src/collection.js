@@ -15,6 +15,8 @@ var Mapping = require('./mapping').Mapping;
 var Pouch = require('./pouch');
 var extend = require('extend');
 
+var $ = require('../vendor/zepto').$;
+
 
 /**
  * @param name

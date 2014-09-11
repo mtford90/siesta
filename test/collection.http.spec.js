@@ -2,7 +2,8 @@ var s = require('../index')
     , assert = require('chai').assert;
 
 
-describe('http!', function () {
+
+describe.only('http!', function () {
 
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
