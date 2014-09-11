@@ -18,7 +18,8 @@
     "querystring": "~0.2.0",
     "underscore": "~1.7.0",
     "url": "~0.10.1",
-    "xregexp": "^2.0.0"
+    "xregexp": "^2.0.0",
+    "async": "~0.9.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

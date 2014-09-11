@@ -44,17 +44,42 @@ function SiestaModel(mapping) {
     Object.defineProperty(this, 'isDirty', {
         get: function () {
             var isDirty = self.__dirtyFields.length > 0;
-            if (isDirty) {
-                if (Logger.trace.isEnabled)
-                    Logger.trace('id="' + self._id + '" is dirty', self.__dirtyFields);
-            }
-            return  isDirty;
+            return  isDirty || !self.isSaved;
         },
         enumerable: true,
         configurable: true
     });
 
     this.isFault = false;
+
+    Object.defineProperty(this, 'isSaved', {
+        get: function () {
+            return !!self._rev;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    this.__rev = null;
+
+    Object.defineProperty(this, '_rev', {
+        get: function () {
+            return self.__rev;
+        },
+        set: function (v) {
+            var wasDirty = self.isDirty;
+            self.__rev = v;
+            var isDirty = self.isDirty;
+            if (wasDirty && !isDirty) {
+                self.mapping._unmarkObjectAsDirty(self);
+            }
+            else if (!wasDirty && isDirty) {
+                self.mapping._markObjectAsDirty(self);
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
 }
 
 SiestaModel.prototype._unmarkFieldsAsDirty = function (fields) {

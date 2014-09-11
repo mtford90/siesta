@@ -9,7 +9,6 @@ var cache = require('./cache');
 var pouch = new PouchDB('siesta', {adapter: 'memory'});
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
-
     getPouch().get(docId, function (err, doc) {
         if (err) {
             var msg = 'Unable to get doc with _id="' + docId + '". This is a serious error and means that ' +
@@ -38,7 +37,7 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
                 else {
                     if (Logger.trace.isEnabled)
                         Logger.trace('Successfully persisted changes: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
-                    if (callback) callback();
+                    if (callback) callback(null, resp._rev);
                 }
             });
         }
@@ -110,6 +109,8 @@ function toNew(doc) {
     var mapping = validate(doc);
     var obj = mapping._new();
     obj._id = doc._id;
+    obj._rev = doc._rev;
+    obj.isSaved = true;
     for (var prop in doc) {
         if (doc.hasOwnProperty(prop)) {
             if (obj._fields.indexOf(prop) > -1) {

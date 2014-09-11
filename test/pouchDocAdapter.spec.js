@@ -38,6 +38,7 @@ describe('pouch doc adapter', function () {
                 assert.equal(obj.name, 'Michael');
                 assert.equal(obj.age, 23);
                 assert.notOk(obj._rev);
+                assert.ok(obj.isSaved);
             })
         });
 

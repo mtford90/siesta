@@ -1,7 +1,7 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe('mapping relationships', function () {
+describe('intercoll relationships', function () {
 
 
     var SiestaModel = require('../../src/object').SiestaModel;
@@ -66,8 +66,12 @@ describe('mapping relationships', function () {
                     if (err) done(err);
                     anotherCollection['AnotherMapping'].map({field: 5, person: {name: 'Michael', age: 23, id: 'xyz'}}, function (err, _obj) {
                         if (err) done(err);
-                        obj = _obj;
-                        done();
+                        _obj.save(function (err) {
+                            if (err) done(err);
+                            obj = _obj;
+                            done();
+                        })
+
                     });
                 });
 

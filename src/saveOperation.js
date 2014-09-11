@@ -68,6 +68,7 @@ SaveOperation.prototype._initialSave = function () {
     pouch.getPouch().put(adapted, function (err, resp) {
         if (!err) {
             object._rev = resp.rev;
+            object.isSaved = true;
             self._clearDirtyFields(dirtyFields);
             m.end();
         }
@@ -124,7 +125,7 @@ SaveOperation.prototype._saveDirtyFields = function () {
             });
             if (Logger.debug.isEnabled)
                 Logger.debug('_saveDirtyFields, writing changes for _id="' + self.object._id + '"', changes);
-            pouch.retryUntilWrittenMultiple(self.object._id, changes, function (err) {
+            pouch.retryUntilWrittenMultiple(self.object._id, changes, function (err, _rev) {
                 if (err) {
                     Logger.error('Error saving object.', err);
                     self._finish(err);
@@ -134,6 +135,7 @@ SaveOperation.prototype._saveDirtyFields = function () {
                         Logger.trace('Successfully saved.');
                     self._clearDirtyFields(dirtyFields);
                     m.end();
+                    self.object._rev = _rev;
                     self._finish(err);
                 }
             });
@@ -170,8 +172,12 @@ SaveOperation.prototype._start = function () {
         });
     }
     else {
-        var id = self.object._id;
-        if (cache.get({_id: id})) {
+        if (self.object.isSaved) {
+            var id = self.object._id;
+            var cached = cache.get({_id: id});
+            if (!cached) {
+                throw new RestError('An object is saved but it isnt in the cache. This is a serious error, please file a bug report.');
+            }
             self._saveDirtyFields();
         }
         else {

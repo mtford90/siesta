@@ -45,7 +45,7 @@ describe('performance', function () {
             Repo.map(json, function (err, repos) {
                 done(err);
             });
-        })
+        });
     })
 
 

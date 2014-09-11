@@ -9,6 +9,8 @@ Logger.setLevel(log.Level.warn);
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 
+var async = require('async');
+
 var cache = require('./cache');
 
 /**
@@ -101,17 +103,8 @@ function MappingOperation(mapping, data, completion) {
                                     self._startMapping();
                                 }
                                 else {
-                                    siestaModel = self.mapping._new(newData);
-                                    siestaModel.save(function (err) {
-                                        if (err) {
-                                            self._errors = err;
-                                            self.checkIfDone();
-                                        }
-                                        else {
-                                            self._obj = siestaModel;
-                                            self._startMapping();
-                                        }
-                                    });
+                                    self._obj = self.mapping._new(newData);
+                                    self._startMapping();
                                 }
                             }
                             else {
@@ -126,18 +119,8 @@ function MappingOperation(mapping, data, completion) {
                     });
                 }
                 else {
-                    var siestaModel = self.mapping._new();
-                    siestaModel.save(function (err) {
-                        if (err) {
-                            self._errors = err;
-                            self.checkIfDone();
-                        }
-                        else {
-                            self._obj = siestaModel;
-                            self._startMapping();
-                        }
-                    });
-
+                    self._obj = self.mapping._new();
+                    self._startMapping();
                 }
 
             }
@@ -167,39 +150,14 @@ MappingOperation.prototype.checkIfDone = function () {
     if (isFinished) {
         if (Logger.trace.isEnabled)
             Logger.trace('Mapping operation finishing: ' + this._dump(true));
-        if (this._obj) {
-            if (Logger.info.isEnabled)
-                Logger.info('Saving the mapped object: ' + this._obj._dump(true));
-            this._obj.save(function (err) {
-                if (err) {
-                    self._errors.save = err;
-                    if (Logger.trace.isEnabled)
-                        Logger.trace('Error saving the mapped object: ' + self._obj._dump(true));
-                }
-                else {
-                    if (Logger.trace.isEnabled)
-                        Logger.trace('Saved the mapped object: ' + self._obj._dump(true));
-                }
-                var isError = false;
-                for (var prop in self._errors) {
-                    if (self._errors.hasOwnProperty(prop)) {
-                        isError = true;
-                        break;
-                    }
-                }
-                self._done(isError ? self._errors : null, self._obj);
-            })
-        }
-        else {
-            var isError = false;
-            for (var prop in self._errors) {
-                if (self._errors.hasOwnProperty(prop)) {
-                    isError = true;
-                    break;
-                }
+        var isError = false;
+        for (var prop in self._errors) {
+            if (self._errors.hasOwnProperty(prop)) {
+                isError = true;
+                break;
             }
-            self._done(isError ? self._errors : null, self._obj);
         }
+        self._done(isError ? self._errors : null, self._obj);
     }
     else {
         if (Logger.info.isEnabled) {
@@ -386,4 +344,89 @@ MappingOperation.prototype._dump = function (asJson) {
     return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 
+function BulkMappingOperation(mapping, data, completion) {
+    var self = this;
+    this.mapping = mapping;
+    this.data = data;
+
+    function work(done) {
+        var categories = self._categoriseData();
+        var newObjects = categories.newObjects;
+        async.parallel([
+            function (callback) {
+                var localIdentifiers = _.pluck(categories.localLookups, '_id');
+//                dump(localIdentifiers)
+                Store.getMultipleLocal(localIdentifiers, function (err, objects) {
+                    if (!err) {
+                        for (var i = 0; i < localIdentifiers.length; i++) {
+                            var object = objects[i];
+                            var localId = localIdentifiers[i];
+                            var datum = categories.localLookupsById[localId];
+                            if (object) {
+
+                            }
+                            else {
+                                newObjects.push(datum);
+                            }
+                        }
+                    }
+                    callback(err);
+                });
+            },
+            function (callback) {
+                callback(null);
+            }
+        ], function (errors, results) {
+            if (errors) {
+                done(errors);
+            }
+            else {
+                done(null);
+            }
+        })
+    }
+
+    Operation.call(this);
+    this.name = 'Mapping Operation';
+    this.work = work;
+    this.completion = completion;
+}
+
+BulkMappingOperation.prototype = Object.create(Operation.prototype);
+
+BulkMappingOperation.prototype._categoriseData = function () {
+    var localLookups = [];
+    var remoteLookups = [];
+    var newObjects = [];
+
+    var localLookupsById = {};
+    var remoteLookupsById = {};
+
+    var data = this.data;
+
+    for (var i = 0; i < data.length; i++) {
+        var datum = data[i];
+        if (datum._id) {
+            localLookups.push(datum);
+            localLookupsById[datum._id] = datum;
+        }
+        else if (datum[this.mapping.id]) {
+            remoteLookups.push(datum);
+            var remoteId = datum[this.mapping.id];
+            remoteLookupsById[remoteId] = datum;
+        }
+        else {
+            newObjects.push(datum);
+        }
+    }
+    return {
+        localLookups: localLookups,
+        remoteLookups: remoteLookups,
+        newObjects: newObjects,
+        remoteLookupsById: remoteLookupsById,
+        localLookupsById: localLookupsById
+    }
+};
+
 exports.MappingOperation = MappingOperation;
+exports.BulkMappingOperation = BulkMappingOperation;

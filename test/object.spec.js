@@ -34,6 +34,12 @@ describe('object!!', function () {
             var r = new SiestaModel(mapping);
             assert.equal(r.collection, 'myCollection');
         });
+
+        it('type field', function () {
+            var r = new SiestaModel(mapping);
+            assert.notOk(r.isSaved);
+        });
+
     });
 
 });

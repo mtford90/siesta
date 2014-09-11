@@ -7,6 +7,109 @@ var collection, carMapping;
 
 var Platform = require('../vendor/observe-js/src/observe').Platform;
 
+describe('initial save', function () {
+
+    var car;
+
+    describe('empty object', function () {
+        beforeEach(function (done) {
+            s.reset(true);
+
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+
+            collection.install(function (err) {
+                if (err) done(err);
+                carMapping.map({}, function (err, _car) {
+                    if (err) done(err);
+                    car = _car;
+                    done();
+                });
+            });
+
+        });
+
+        it('should be dirty', function () {
+            assert.ok(car.isDirty);
+        });
+
+        it('mapping should be dirty', function () {
+            assert.ok(carMapping.isDirty);
+        });
+
+        it('collection should be dirty', function () {
+            assert.ok(collection.isDirty);
+        });
+
+        it('global should be dirty', function () {
+            assert.ok(s.isDirty);
+        });
+
+        it('should not be saved', function () {
+            assert.notOk(car.isSaved);
+        });
+    });
+
+    describe('object with data', function () {
+        beforeEach(function (done) {
+            s.reset(true);
+
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+
+            collection.install(function (err) {
+                if (err) done(err);
+                carMapping.map({name: 'Aston Martin', colour: 'black'}, function (err, _car) {
+                    if (err) done(err);
+                    car = _car;
+                    done();
+                });
+            });
+
+        });
+
+        it('not saved initially', function () {
+            assert.notOk(car.isSaved);
+        });
+
+        it('is dirty initially', function () {
+            assert.ok(car.isDirty);
+        });
+
+        it('mapping should be dirty', function () {
+            assert.ok(carMapping.isDirty);
+        });
+
+        it('collection should be dirty', function () {
+            assert.ok(collection.isDirty);
+        });
+
+        it('global should be dirty', function () {
+            assert.ok(s.isDirty);
+        });
+
+        it('is saved after save called', function (done) {
+            car.save(function (err) {
+                if (err) done(err);
+                assert.ok(car.isSaved);
+                assert.notOk(car.isDirty);
+                Pouch.getPouch().get(car._id, function (err, doc) {
+                    if (err) done(err);
+                    assert.equal(doc._id, car._id);
+                    done();
+                });
+            });
+        });
+    })
+
+});
+
 describe('saving at different levels', function () {
 
     var car, doc;
@@ -25,11 +128,17 @@ describe('saving at different levels', function () {
             carMapping.map({name: 'Aston Martin', colour: 'black'}, function (err, _car) {
                 if (err) done(err);
                 car = _car;
-                Pouch.getPouch().get(car._id, function (err, _doc) {
+                assert.notOk(car.isSaved);
+                car.save(function (err) {
                     if (err) done(err);
-                    doc = _doc;
-                    done();
+                    assert.ok(car.isSaved);
+                    Pouch.getPouch().get(car._id, function (err, _doc) {
+                        if (err) done(err);
+                        doc = _doc;
+                        done();
+                    });
                 });
+
             });
         });
 
