@@ -6,6 +6,8 @@ var Operation = require('../vendor/operations.js/src/operation').Operation;
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
 
+var PerformanceMonitor = require('./performance').PerformanceMonitor;
+
 
 var cache = require('./cache');
 
@@ -29,7 +31,12 @@ function MappingOperation(mapping, data, completion) {
     this._finished = [];
 
     var work = function (done) {
-        this._done = done;
+        var m = new PerformanceMonitor('Mapping Operation');
+        m.start();
+        this._done = function (err) {
+            m.end();
+            done(err);
+        };
         var data = self.data;
         var remoteIdentifier;
         var idField;

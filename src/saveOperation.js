@@ -12,6 +12,8 @@ var RestError = require('./error').RestError;
 
 var Platform = require('../vendor/observe-js/src/observe').Platform;
 
+var PerformanceMonitor = require('./performance').PerformanceMonitor;
+
 
 /**
  * Persists an object. Ensures that only one save operation per object is running at a time.
@@ -55,6 +57,8 @@ SaveOperation.prototype._finish = function (err) {
 
 SaveOperation.prototype._initialSave = function () {
     var self = this;
+    var m = new PerformanceMonitor('Initial Save');
+    m.start();
     var object = this.object;
     if (Logger.info.isEnabled)
         Logger.info('_initialSave: ' + object._dump(true));
@@ -65,6 +69,7 @@ SaveOperation.prototype._initialSave = function () {
         if (!err) {
             object._rev = resp.rev;
             self._clearDirtyFields(dirtyFields);
+            m.end();
         }
         self._finish(err);
     });
@@ -94,6 +99,8 @@ SaveOperation.prototype._saveDirtyFields = function () {
     setTimeout(function () {
         if (Logger.debug.isEnabled)
             Logger.debug('_saveDirtyFields');
+        var m = new PerformanceMonitor('Save Dirty Fields');
+        m.start();
         var dirtyFields = self._getDirtyFields();
         if (dirtyFields.length) {
             if (Logger.debug.isEnabled)
@@ -126,6 +133,7 @@ SaveOperation.prototype._saveDirtyFields = function () {
                     if (Logger.trace.isEnabled)
                         Logger.trace('Successfully saved.');
                     self._clearDirtyFields(dirtyFields);
+                    m.end();
                     self._finish(err);
                 }
             });

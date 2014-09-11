@@ -7,6 +7,7 @@ var mapping = require('./mapping');
 var index = require('./index');
 var Index = index.Index;
 var Pouch = require('./pouch');
+var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 
 function RawQuery(collection, modelName, query) {
@@ -26,10 +27,17 @@ function resultsCallback(callback, err, resp) {
 }
 
 RawQuery.prototype.execute = function (callback) {
+    var m = new PerformanceMonitor('Raw Query');
+    m.start();
     var self = this;
     var designDocId = this._getDesignDocName();
     var indexName = self._getIndexName();
     Pouch.getPouch().get(designDocId, function (err) {
+        var partialCallback = _.partial(resultsCallback, callback);
+        function finish(err, docs) {
+            m.end();
+            partialCallback(err, docs);
+        }
         if (!err) {
             var key = self._constructKey();
             if (!key.length) {
@@ -37,7 +45,7 @@ RawQuery.prototype.execute = function (callback) {
             }
             if (Logger.debug.isEnabled)
                 Logger.debug('Executing query ' + indexName + ':' + ' ' + key);
-            Pouch.getPouch().query(indexName, {key: key}, _.partial(resultsCallback, callback));
+            Pouch.getPouch().query(indexName, {key: key}, finish);
         }
         else {
             if (err.status == 404) {
@@ -55,10 +63,10 @@ RawQuery.prototype.execute = function (callback) {
                 eval('var mapFunc = ' + mapping.constructMapFunction(self.collection, self.modelName, fields));
 //                        var mapFunc = constructMapFunction2(self.collection, self.modelName, fields);
                 //noinspection JSUnresolvedVariable
-                Pouch.getPouch().query(mapFunc, _.partial(resultsCallback, callback));
+                Pouch.getPouch().query(mapFunc, finish);
             }
             else {
-                callback(err);
+                finish(err);
             }
         }
     })

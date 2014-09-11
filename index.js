@@ -8,6 +8,7 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , notificationCentre = require('./src/notificationCentre').notificationCentre
     , Operation = require('./vendor/operations.js/src/operation').Operation
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
+    , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log');
 
 Operation.logLevel = log.Level.warn;
@@ -19,8 +20,7 @@ if (typeof module != 'undefined') {
     siesta = module.exports;
 }
 else {
-    window.siesta = {};
-    siesta = window.siesta;
+    siesta = {};
 }
 
 siesta.save = function save(callback) {
@@ -71,6 +71,9 @@ siesta.addListener = _.bind(notificationCentre.addListener, notificationCentre);
 siesta.removeListener = _.bind(notificationCentre.removeListener, notificationCentre);
 siesta.once = _.bind(notificationCentre.once, notificationCentre);
 
+siesta.Collection = Collection;
+siesta.RelationshipType = RelationshipType;
+
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {
         return Collection.isDirty
@@ -80,5 +83,7 @@ Object.defineProperty(siesta, 'isDirty', {
 });
 
 
-
+if (typeof window != 'undefined') {
+    window.siesta = siesta;
+}
 

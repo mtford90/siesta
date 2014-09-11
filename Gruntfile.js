@@ -69,44 +69,10 @@ module.exports = function (grunt) {
 
         },
 
-        concat: {
-            compile_js: {
-                options: {
-                    banner: '<%= meta.banner %>'
-                },
-                src: [
-                    '<%= vendor_files.js %>',
-                    '<%= build_dir %>/browserified/**/*.js',
-                    'module.prefix',
-                    '<%= build_dir %>/src/**/*.js',
-                    '<%= html2js.app.dest %>',
-                    '<%= html2js.common.dest %>',
-                    'module.suffix'
-                ],
-                dest: '<%= compile_dir %>/assets/<%= pkg.name %>-<%= pkg.version %>.min.js'
-            }
-        },
-
-        ngmin: {
-            compile: {
-                files: [
-                    {
-                        src: [ '<%= app_files.js %>' ],
-                        cwd: '<%= build_dir %>',
-                        dest: '<%= build_dir %>',
-                        expand: true
-                    }
-                ]
-            }
-        },
-
         uglify: {
             compile: {
-                options: {
-                    banner: '<%= meta.banner %>'
-                },
                 files: {
-                    '<%= concat.compile_js.dest %>': '<%= concat.compile_js.dest %>'
+                    '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js'
                 }
             }
         },
@@ -215,9 +181,7 @@ module.exports = function (grunt) {
 
 
     grunt.registerTask('compile', [
-        'cssmin',
-        'ngmin',
-        'concat:compile_js',
+        'browserify:build',
         'uglify'
     ]);
 

@@ -7,6 +7,8 @@ var Pouch = require('./pouch');
 var RawQuery = require('./rawQuery').RawQuery;
 
 
+
+
 function Query(mapping, query) {
     this.mapping = mapping;
     this.query = query;

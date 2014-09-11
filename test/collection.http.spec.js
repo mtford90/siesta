@@ -3,7 +3,7 @@ var s = require('../index')
 
 
 
-describe.only('http!', function () {
+describe('http!', function () {
 
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;

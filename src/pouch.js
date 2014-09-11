@@ -6,7 +6,7 @@ var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var RestError = require('./error').RestError;
 var guid = require('./misc').guid;
 var cache = require('./cache');
-var pouch;
+var pouch = new PouchDB('siesta');
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
 
