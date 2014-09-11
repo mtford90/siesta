@@ -12,7 +12,7 @@ var index = require('./index');
 var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var MappingOperation = require('./mappingOperation').MappingOperation;
-var SaveOperation = require('./saveOperation').SaveOperation;
+var saveOperation = require('./saveOperation');
 var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
 var cache = require('./cache');
@@ -28,8 +28,6 @@ var OneToOneProxy = require('./proxy').OneToOneProxy;
 
 
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
-
-
 
 function Mapping(opts) {
     var self = this;
@@ -256,6 +254,25 @@ Mapping.prototype.install = function (callback) {
     }
 };
 
+//Mapping.prototype._installRemoteLocalView = function (callback) {
+//    var indexName = this.type + '_remote_id';
+//    var views = {};
+//    var map = function (doc) {
+//        if (doc.type == '$1') {
+//
+//        }
+//    };
+//    views[indexName] = {
+//        map: function (doc) {
+//
+//        }
+//    };
+//    var myIndex = {
+//        _id: '_design/' + indexName,
+//        views: views
+//    };
+//};
+
 Mapping.prototype._validate = function () {
     var errors = [];
     if (!this.type) {
@@ -437,7 +454,7 @@ Mapping.prototype.save = function (callback) {
     var dirtyObjects = this.__dirtyObjects;
     if (dirtyObjects.length) {
         var saveOperations = _.map(dirtyObjects, function (obj) {
-            return new SaveOperation(obj);
+            return new saveOperation.SaveOperation(obj);
         });
         var op = new Operation('Save at mapping level', saveOperations, function () {
             if (callback) callback(op.error ? op.error : null);

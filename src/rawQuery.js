@@ -5,10 +5,9 @@ Logger.setLevel(log.Level.debug);
 
 var mapping = require('./mapping');
 var index = require('./index');
-var Index = index.Index;
+var Index = require('./index').Index;
 var Pouch = require('./pouch');
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
-
 
 
 
@@ -105,12 +104,13 @@ RawQuery.prototype._constructKey = function () {
 };
 
 RawQuery.prototype._getDesignDocName = function () {
-    var i = new Index(this.collection, this.modelName, this._getFields());
+    dump(index);
+    var i = new index.Index(this.collection, this.modelName, this._getFields());
     return i._getDesignDocName();
 };
 
 RawQuery.prototype._getIndexName = function () {
-    var i = new Index(this.collection, this.modelName, this._getFields());
+    var i = new index.Index(this.collection, this.modelName, this._getFields());
     return i._getName();
 };
 

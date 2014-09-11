@@ -140,8 +140,6 @@ describe('store', function () {
                         })
                     })
                 });
-
-
                 describe('cached', function () {
 
                     var cars;
@@ -149,8 +147,8 @@ describe('store', function () {
                     beforeEach(function (done) {
                         carMapping.map([
                             {colour: 'red', id: 'remoteId1'},
-                            {colour: 'blue', id: 'remoteId1'},
-                            {colour: 'green', id: 'remoteId1'}
+                            {colour: 'blue', id: 'remoteId2'},
+                            {colour: 'green', id: 'remoteId3'}
                         ], function (err, _cars) {
                             if (err) done(err);
                             cars = _cars;
@@ -169,14 +167,13 @@ describe('store', function () {
                         })
                     })
                 });
-
                 describe('partially cached', function () {
                     var cars;
 
                     beforeEach(function (done) {
                         carMapping.map([
                             {colour: 'red', id: 'remoteId1'},
-                            {colour: 'green', id: 'remoteId1'}
+                            {colour: 'green', id: 'remoteId3'}
                         ], function (err, _cars) {
                             if (err) done(err);
                             cars = _cars;
@@ -208,6 +205,99 @@ describe('store', function () {
                 });
 
             });
+
+            describe('getMultipleRemote', function () {
+                describe('not cached', function () {
+
+                    beforeEach(function (done) {
+                        Pouch.getPouch().bulkDocs(
+                            [
+                                {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
+                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
+                                {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
+                            ],
+                            function (err) {
+                                done(err);
+                            }
+                        );
+                    });
+
+                    it('xyz', function (done) {
+                        Store.getMultipleRemote(['remoteId1', 'remoteId2', 'remoteId3'], carMapping, function (err, docs) {
+                            if (err) done(err);
+                            assert.equal(docs.length, 3);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        })
+                    })
+                });
+                describe('cached', function () {
+
+                    var cars;
+
+                    beforeEach(function (done) {
+                        carMapping.map([
+                            {colour: 'red', id: 'remoteId1'},
+                            {colour: 'blue', id: 'remoteId2'},
+                            {colour: 'green', id: 'remoteId3'}
+                        ], function (err, _cars) {
+                            if (err) done(err);
+                            cars = _cars;
+                            done();
+                        });
+                    });
+
+                    it('xyz', function (done) {
+                        Store.getMultipleRemote(_.pluck(cars, 'id'), carMapping, function (err, docs) {
+                            if (err) done(err);
+                            assert.equal(docs.length, 3);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        })
+                    })
+
+
+                });
+                describe('partially cached', function () {
+                    var cars;
+
+                    beforeEach(function (done) {
+                        carMapping.map([
+                            {colour: 'red', id: 'remoteId1'},
+                            {colour: 'green', id: 'remoteId3'}
+                        ], function (err, _cars) {
+                            if (err) done(err);
+                            cars = _cars;
+                            Pouch.getPouch().bulkDocs(
+                                [
+                                    {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
+                                ],
+                                function (err) {
+                                    done(err);
+                                }
+                            );
+                        });
+                    });
+
+                    it('xyz', function (done) {
+                        Store.getMultipleRemote(['remoteId1', 'remoteId2', 'remoteId3'], carMapping, function (err, docs) {
+                            if (err) done(err);
+                            assert.equal(docs.length, 3);
+                            _.each(docs, function (d) {
+                                assert.instanceOf(d, SiestaModel);
+                            });
+                            done();
+                        })
+                    })
+
+
+                });
+
+            })
 
 
         });

@@ -1,5 +1,6 @@
 var wrappedCallback = require('./misc').wrappedCallback;
 var PouchAdapter = require('./pouch');
+var Index = require('./index').Index;
 var RestError = require('./error').RestError;
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Store');
@@ -140,6 +141,7 @@ exports.getMultiple = getMultiple;
 exports.getMultipleLocal = function (localIdentifiers, callback) {
     var m = new PerformanceMonitor('Store getMultipleLocal');
     m.start();
+
     var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({_id: _id});
         if (obj) {
@@ -183,4 +185,60 @@ exports.getMultipleLocal = function (localIdentifiers, callback) {
     else {
         finish();
     }
+};
+
+exports.getMultipleRemote = function (remoteIdentifiers, mapping, callback) {
+
+    var m = new PerformanceMonitor('Store getMultipleRemote');
+    m.start();
+
+    var results = _.reduce(remoteIdentifiers, function (memo, id) {
+        var cacheQuery = {mapping: mapping};
+        cacheQuery[mapping.id] = id;
+        var obj = cache.get(cacheQuery);
+        if (obj) {
+            memo.cached[id] = obj;
+        }
+        else {
+            memo.notCached.push(id);
+        }
+        return memo;
+    }, {cached: {}, notCached: []});
+
+    function finish(err) {
+        if (callback) {
+            if (err) {
+                callback(err);
+            }
+            else {
+                callback(null, _.map(remoteIdentifiers, function (id) {
+                    return results.cached[id];
+                }));
+            }
+        }
+    }
+
+    if (results.notCached.length) {
+        var i = new Index(mapping.collection, mapping.type, [mapping.id]);
+        var name = i._getName();
+        PouchAdapter.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
+            if (err) {
+                finish(err);
+            }
+            else {
+                var rows = _.pluck(docs.rows, 'doc');
+                var models = PouchAdapter.toSiesta(rows);
+                _.each(models, function (model) {
+                    var remoteId = model[mapping.id];
+                    results.cached[remoteId] = model;
+                });
+                finish();
+            }
+        });
+    }
+    else {
+        finish();
+    }
+
+
 };

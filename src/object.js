@@ -3,7 +3,7 @@ var Logger = log.loggerWithName('SiestaModel');
 Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
-var SaveOperation = require('./saveOperation').SaveOperation;
+var saveOperation = require('./saveOperation');
 var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
 
 var queues = {};
@@ -110,7 +110,7 @@ SiestaModel.prototype._markTypeAsDirtyIfNeccessary = function () {
 SiestaModel.prototype.save = function (callback) {
     if (Logger.trace.isEnabled)
         Logger.trace('save');
-    var op = new SaveOperation(this);
+    var op = new saveOperation.SaveOperation(this);
     op.onCompletion(function () {
         if (callback) callback(op.error, op);
     });
