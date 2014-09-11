@@ -41,8 +41,8 @@ describe('cache', function () {
             r.id = 'dsfsd';
             cache.insert(r);
 
-            var restCache = cache._remoteCache();
-            assert.equal(r, restCache[r.collection][r.type][r.id]);
+            var remoteCache = cache._remoteCache();
+            assert.equal(r, remoteCache[r.collection][r.type][r.id]);
         });
 
         it('by custom id', function () {
@@ -51,8 +51,8 @@ describe('cache', function () {
             var r = new SiestaModel(m);
             r.customId = 'dsfsd';
             cache.insert(r);
-            var restCache = cache._remoteCache();
-            assert.equal(r, restCache[r.collection][r.type][r.customId]);
+            var remoteCache = cache._remoteCache();
+            assert.equal(r, remoteCache[r.collection][r.type][r.customId]);
         });
 
     });

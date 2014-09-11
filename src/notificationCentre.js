@@ -30,15 +30,15 @@ function broadcast(obj, change) {
 // */
 //
 
-function wrapArray(array, field, restObject) {
+function wrapArray(array, field, siestaModel) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
         array.observer.open(function (splices) {
-            var fieldIsAttribute = restObject._fields.indexOf(field) > -1;
+            var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
             if (fieldIsAttribute) {
-                restObject._markFieldAsDirty(field);
+                siestaModel._markFieldAsDirty(field);
                 splices.forEach(function (splice) {
-                    broadcast(restObject, {
+                    broadcast(siestaModel, {
                         field: field,
                         type: ChangeType.Splice,
                         index: splice.index,
@@ -48,9 +48,9 @@ function wrapArray(array, field, restObject) {
                 });
             }
             else {
-                var proxy = restObject[field + 'Proxy'];
+                var proxy = siestaModel[field + 'Proxy'];
                 if (proxy.isForward) {
-                    restObject._markFieldAsDirty(field);
+                    siestaModel._markFieldAsDirty(field);
                 }
             }
         })

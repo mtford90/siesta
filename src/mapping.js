@@ -330,47 +330,47 @@ Mapping.prototype._new = function (data) {
     else {
         _id = guid();
     }
-    var restObject;
+    var siestaModel;
     if (this.subclass) {
-        restObject = new this.subclass(this);
+        siestaModel = new this.subclass(this);
     }
     else {
-        restObject = new SiestaModel(this);
+        siestaModel = new SiestaModel(this);
     }
     if (Logger.info.isEnabled)
         Logger.info('New object created _id="' + _id.toString() + '"', data);
-    restObject._id = _id;
+    siestaModel._id = _id;
     // Place attributes on the object.
-    restObject.__values = data || {};
+    siestaModel.__values = data || {};
     var fields = this._fields;
     var idx = fields.indexOf(this.id);
     if (idx > -1) {
         fields.splice(idx, 1);
     }
-    restObject.__dirtyFields = [];
+    siestaModel.__dirtyFields = [];
     _.each(fields, function (field) {
-        Object.defineProperty(restObject, field, {
+        Object.defineProperty(siestaModel, field, {
             get: function () {
-                return restObject.__values[field] || null;
+                return siestaModel.__values[field] || null;
             },
             set: function (v) {
-                var old = restObject.__values[field];
-                restObject.__values[field] = v;
-                broadcast(restObject, {
+                var old = siestaModel.__values[field];
+                siestaModel.__values[field] = v;
+                broadcast(siestaModel, {
                     type: ChangeType.Set,
                     old: old,
                     new: v,
                     field: field
                 });
                 if (Object.prototype.toString.call(v) === '[object Array]') {
-                    wrapArray(v, field, restObject);
+                    wrapArray(v, field, siestaModel);
                 }
 
                 if (v != old) {
                     var logger = log.loggerWithName('SiestaModel');
                     if (logger.trace.isEnabled)
-                        logger.trace('Marking "' + field + '" as dirty for _id="' + restObject._id + '" as just changed to ' + v);
-                    restObject._markFieldAsDirty(field);
+                        logger.trace('Marking "' + field + '" as dirty for _id="' + siestaModel._id + '" as just changed to ' + v);
+                    siestaModel._markFieldAsDirty(field);
                 }
 
             },
@@ -379,20 +379,20 @@ Mapping.prototype._new = function (data) {
         });
     });
 
-    Object.defineProperty(restObject, this.id, {
+    Object.defineProperty(siestaModel, this.id, {
         get: function () {
-            return restObject.__values[self.id] || null;
+            return siestaModel.__values[self.id] || null;
         },
         set: function (v) {
-            var old = restObject.__values[self.id];
-            restObject.__values[self.id] = v;
-            broadcast(restObject, {
+            var old = siestaModel.__values[self.id];
+            siestaModel.__values[self.id] = v;
+            broadcast(siestaModel, {
                 type: ChangeType.Set,
                 old: old,
                 new: v,
                 field: self.id
             });
-            cache.remoteInsert(restObject, v, old);
+            cache.remoteInsert(siestaModel, v, old);
         },
         enumerable: true,
         configurable: true
@@ -414,9 +414,9 @@ Mapping.prototype._new = function (data) {
                 throw new RestError('No such relationship type: ' + relationship.type);
             }
         }
-        proxy.install(restObject);
+        proxy.install(siestaModel);
     }
-    return restObject;
+    return siestaModel;
 };
 
 Mapping.prototype.save = function (callback) {

@@ -179,8 +179,8 @@ function localDump(asJson) {
 
 function dump(asJson) {
     var dumped = {
-        idCache: localDump(),
-        restCache: remoteDump()
+        localCache: localDump(),
+        remoteCache: remoteDump()
     };
     return asJson ? JSON.stringify(dumped, null, 4) : dumped;
 }
@@ -260,8 +260,8 @@ function insert(obj) {
 
 function dump(asJson) {
     var dumped = {
-        idCache: localDump(),
-        restCache: remoteDump()
+        localCache: localDump(),
+        remoteCache: remoteDump()
     };
     return asJson ? JSON.stringify(dumped, null, 4) : dumped;
 }

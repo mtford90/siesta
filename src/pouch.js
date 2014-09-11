@@ -49,10 +49,10 @@ function _reset(inMemory) {
     var dbName = guid();
     if (inMemory) {
         if (typeof window != 'undefined') {
-            pouch = new PouchDB('rest-' + dbName, {adapter: 'memory'});
+            pouch = new PouchDB('siesta-' + dbName, {adapter: 'memory'});
         }
         else {
-            pouch = new PouchDB('rest-' + dbName, {db: require('memdown')});
+            pouch = new PouchDB('siesta-' + dbName, {db: require('memdown')});
         }
     }
     else {

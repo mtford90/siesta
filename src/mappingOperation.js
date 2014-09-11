@@ -86,22 +86,22 @@ function MappingOperation(mapping, data, completion) {
                                 // The Store will go out to Pouch if it's not in the cache, giving other operations the
                                 // chance to get here first and insert a new object into the store.
                                 // TODO: Alternative would be to only allow one Store operation at a time.
-                                var restObject = cache.get(storeOpts);
-                                if (restObject) {
+                                var siestaModel = cache.get(storeOpts);
+                                if (siestaModel) {
                                     // The race condition occurred. Use the object created by the other mapping operation
                                     // instead.
-                                    self._obj = restObject;
+                                    self._obj = siestaModel;
                                     self._startMapping();
                                 }
                                 else {
-                                    restObject = self.mapping._new(newData);
-                                    restObject.save(function (err) {
+                                    siestaModel = self.mapping._new(newData);
+                                    siestaModel.save(function (err) {
                                         if (err) {
                                             self._errors = err;
                                             self.checkIfDone();
                                         }
                                         else {
-                                            self._obj = restObject;
+                                            self._obj = siestaModel;
                                             self._startMapping();
                                         }
                                     });
@@ -119,14 +119,14 @@ function MappingOperation(mapping, data, completion) {
                     });
                 }
                 else {
-                    var restObject = self.mapping._new();
-                    restObject.save(function (err) {
+                    var siestaModel = self.mapping._new();
+                    siestaModel.save(function (err) {
                         if (err) {
                             self._errors = err;
                             self.checkIfDone();
                         }
                         else {
-                            self._obj = restObject;
+                            self._obj = siestaModel;
                             self._startMapping();
                         }
                     });

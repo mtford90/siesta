@@ -10,18 +10,18 @@ var cache = require('./cache');
 function get(opts, callback) {
     if (Logger.debug.isEnabled)
         Logger.debug('get', opts);
-    var restObject;
+    var siestaModel;
     if (opts._id) {
         if (Object.prototype.toString.call(opts._id) === '[object Array]') {
             // Proxy onto getMultiple instead.
             getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
         }
         else {
-            restObject = cache.get(opts);
-            if (restObject) {
+            siestaModel = cache.get(opts);
+            if (siestaModel) {
                 if (Logger.debug.isEnabled)
-                    Logger.debug('Had cached object', {opts: opts, obj: restObject});
-                wrappedCallback(callback)(null, restObject);
+                    Logger.debug('Had cached object', {opts: opts, obj: siestaModel});
+                wrappedCallback(callback)(null, siestaModel);
             }
             else {
                 if (Object.prototype.toString.call(opts._id) === '[object Array]') {
@@ -49,11 +49,11 @@ function get(opts, callback) {
             }), callback);
         }
         else {
-            restObject = cache.get(opts);
-            if (restObject) {
+            siestaModel = cache.get(opts);
+            if (siestaModel) {
                 if (Logger.debug.isEnabled)
-                    Logger.debug('Had cached object', {opts: opts, obj: restObject});
-                wrappedCallback(callback)(null, restObject);
+                    Logger.debug('Had cached object', {opts: opts, obj: siestaModel});
+                wrappedCallback(callback)(null, siestaModel);
             }
             else {
                 var mapping = opts.mapping;
