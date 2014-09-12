@@ -37,7 +37,7 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
                 else {
                     if (Logger.trace.isEnabled)
                         Logger.trace('Successfully persisted changes: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
-                    if (callback) callback(null, resp._rev);
+                    if (callback) callback(null, resp.rev);
                 }
             });
         }

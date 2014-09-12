@@ -11,7 +11,7 @@ var s = require('../../index')
 var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
 
-describe.only('intercollection relationships', function () {
+describe('intercollection relationships', function () {
 
     var myOfflineCollection;
     var myOnlineCollection;
@@ -102,11 +102,7 @@ describe.only('intercollection relationships', function () {
             {username: 'mtford', name: 'Michael Ford', userId: '1'},
             {username: 'blahblah', name: 'Blah Blah', userId: '2'},
             {username: 'bobm', name: 'Bob Marley', userId: '3'}
-        ], function (err) {
-            if (!err) {
-                myOnlineCollection.save(callback);
-            }
-        });
+        ], callback);
     }
 
     function mapRemotePhotos(callback) {
@@ -114,59 +110,73 @@ describe.only('intercollection relationships', function () {
             {height: 500, width: 500, url: 'http://somewhere/image.jpeg', photoId: '10', createdBy: '1'},
             {height: 1500, width: 1500, url: 'http://somewhere/image2.jpeg', photoId: '11', createdBy: '1'},
             {height: 500, width: 750, url: 'http://somewhere/image3.jpeg', photoId: '12', createdBy: '2'}
-        ], function (err) {
-            if (!err) {
-                myOnlineCollection.save(callback);
-            }
-        });
+        ], callback);
     }
 
     function mapOfflineUsers(callback) {
         myOfflineCollection.User.map([
             {username: 'mike'},
             {username: 'gaz'}
-        ], function (err) {
-            if (!err) {
-                myOnlineCollection.save(callback);
-            }
-        });
+        ], callback);
     }
 
     function installOfflineFixtures(callback) {
-        async.series([
-            mapOfflineUsers
-        ], callback);
+        mapOfflineUsers(function (err) {
+            if (!err) {
+                myOfflineCollection.save(callback);
+            }
+            else {
+                callback(err);
+            }
+        });
     }
 
     function installOnlineFixtures(callback) {
         async.series([
             mapRemoteUsers,
             mapRemotePhotos
-        ], callback);
+        ], function (err) {
+            if (!err) {
+                myOnlineCollection.save(callback);
+            }
+            else {
+                callback(err);
+            }
+        });
     }
 
+    it('Can install offline fixtures', function (done) {
+        installOfflineFixtures(done);
+    });
+
+    it('can install online fixtures', function (done) {
+        installOnlineFixtures(done);
+    });
 
     describe('local queries', function () {
 
-        beforeEach(function (done) {
-            installOnlineFixtures(function (err) {
-                if (err) done(err);
-                installOfflineFixtures(done);
-            });
-        });
 
         describe('offline', function () {
+
+            beforeEach(function (done) {
+                installOfflineFixtures(done);
+            });
+
             it('should return mike when querying for him', function (done) {
-                myOfflineCollection.User.query({username: 'mike'}, function (err, users) {
+                myOfflineCollection.User.query({username: 'gaz'}, function (err, users) {
                     if (err) done(err);
                     assert.equal(users.length, 1);
-                    assert.equal(users[0].username, 'mike');
+                    assert.equal(users[0].username, 'gaz');
                     done();
                 });
             });
         });
 
         describe('online', function () {
+            beforeEach(function (done) {
+                installOnlineFixtures(done);
+            });
+
             it('should return 3 users when run a local all query against users', function (done) {
                 myOnlineCollection.User.all(function (err, users) {
                     if (err) done(err);

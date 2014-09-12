@@ -4,9 +4,9 @@ Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var saveOperation = require('./saveOperation');
-var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
+//var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
 
-var queues = {};
+//var queues = {};
 
 function SiestaModel(mapping) {
     if (!this) {
@@ -139,14 +139,7 @@ SiestaModel.prototype.save = function (callback) {
     op.onCompletion(function () {
         if (callback) callback(op.error, op);
     });
-    var localId = this._id;
-    var queue = queues[localId];
-    if (!queue) {
-        queue = new OperationQueue('SiestaModel[' + localId.toString() + ']', 1);
-        queues[localId] = queue;
-        queue.start();
-    }
-    queue.addOperation(op);
+    op.start();
 };
 
 /**

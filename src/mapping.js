@@ -18,6 +18,7 @@ var guid = require('./misc').guid;
 var cache = require('./cache');
 var extend = require('extend');
 
+
 var ChangeType = require('./ChangeType').ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;
 var broadcast = require('./notificationCentre').broadcast;
@@ -26,6 +27,7 @@ var broadcast = require('./notificationCentre').broadcast;
 var ForeignKeyProxy = require('./proxy').ForeignKeyProxy;
 var OneToOneProxy = require('./proxy').OneToOneProxy;
 
+var util = require('./util');
 
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
@@ -293,6 +295,7 @@ Mapping.prototype._validate = function () {
  * @param obj Force mapping to this object
  */
 Mapping.prototype.map = function (data, callback, obj) {
+    var self = this;
     if (Object.prototype.toString.call(data) == '[object Array]') {
         return this._mapBulk(data, callback);
     }
@@ -302,8 +305,14 @@ Mapping.prototype.map = function (data, callback, obj) {
             if (err) {
                 if (callback) callback(err);
             }
-            else if (callback) {
-                callback(null, op._obj, op.operations);
+            else  {
+                var collectionName = self.collection;
+                var collection = CollectionRegistry[collectionName];
+                collection.save(function (err) {
+                    if (callback) {
+                        callback(err, op._obj, op.operations);
+                    }
+                });
             }
         });
         op._obj = obj;
@@ -316,6 +325,8 @@ Mapping.prototype.map = function (data, callback, obj) {
 Mapping.prototype._mapBulk = function (data, callback) {
     if (Logger.trace.isEnabled)
         Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
+//    util.printStackTrace();
+
     var m = new PerformanceMonitor('_mapBulk');
 
     var self = this;
@@ -337,7 +348,13 @@ Mapping.prototype._mapBulk = function (data, callback) {
                     op: op
                 }
             });
-            callback(null, objects, res);
+            var collectionName = self.collection;
+            var collection = CollectionRegistry[collectionName];
+            collection.save(function (err) {
+                if (callback) {
+                    callback(err, objects, res);
+                }
+            });
         }
 
     });

@@ -85,7 +85,6 @@ describe('dirty fields', function () {
     describe('attributes', function () {
 
         describe('standard', function () {
-            var doc;
 
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
@@ -98,22 +97,35 @@ describe('dirty fields', function () {
                     carMapping.map({name: 'Aston Martin', colour: 'black'}, function (err, _car) {
                         if (err) done(err);
                         car = _car;
-                        Pouch.getPouch().get(car._id, function (err, _doc) {
-                            if (err) done(err);
-                            doc = _doc;
-                            done();
-                        });
+                        done();
                     });
                 });
 
             });
 
-            assertCarNotDirtyWhenFirstMapped();
+            it('car should not be dirty when first mapped', function () {
+                assert.notOk(car.isDirty);
+            });
 
-            it('when first mapped, should have all the same fields', function () {
-                assert.equal(doc._id, car._id);
-                assert.equal(doc.name, car.name);
-                assert.equal(doc.colour, car.colour);
+            it('car mapping should not be dirty when first mapped', function () {
+                assert.notOk(collection.Car.isDirty);
+            });
+            it('collection should not be dirty when first mapped', function () {
+                assert.notOk(collection.isDirty);
+            });
+
+            it('global should not be dirty when first mapped', function () {
+                assert.notOk(Collection.isDirty);
+            });
+            it('when first mapped, should have all the same fields', function (done) {
+                Pouch.getPouch().get(car._id, function (err, _doc) {
+                    if (err) done(err);
+                    assert.equal(_doc._id, car._id);
+                    assert.equal(_doc.name, car.name);
+                    assert.equal(_doc.colour, car.colour);
+                    done();
+                });
+
             });
 
             describe('change attributes', function () {
@@ -122,9 +134,20 @@ describe('dirty fields', function () {
                     car.name = 'Bentley';
                 });
 
+                it('car should be dirty', function () {
+                    assert.ok(car.isDirty);
+                });
 
-                assertCarShouldNowBeDirty();
+                it('car mapping should be dirty', function () {
+                    assert.ok(collection.Car.isDirty);
+                });
+                it('collection should be dirty', function () {
+                    assert.ok(collection.isDirty);
+                });
 
+                it('global should be dirty', function () {
+                    assert.ok(Collection.isDirty);
+                });
 
                 describe('save', function () {
 
@@ -132,8 +155,22 @@ describe('dirty fields', function () {
                         car.save(done);
                     });
 
-                    assertCarNoLongerDirty();
+                    it('car should no longer be dirty', function () {
+                        dump(car.isSaved);
+                        assert.notOk(car.isDirty);
+                    });
 
+                    it('car collection should no longer be dirty', function () {
+                        assert.notOk(collection.Car.isDirty);
+                    });
+
+                    it('collection should no longer be dirty', function () {
+                        assert.notOk(collection.isDirty);
+                    });
+
+                    it('global should no longer be dirty', function () {
+                        assert.notOk(Collection.isDirty);
+                    });
                 });
 
 

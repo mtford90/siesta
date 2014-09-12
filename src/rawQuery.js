@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('RawQuery');
-Logger.setLevel(log.Level.debug);
+Logger.setLevel(log.Level.trace);
 
 
 var mapping = require('./mapping');
@@ -37,6 +37,8 @@ RawQuery.prototype.execute = function (callback) {
         var partialCallback = _.partial(resultsCallback, callback);
         function finish(err, docs) {
             m.end();
+            if (Logger.trace.isEnabled)
+                Logger.debug('Received results: ', docs);
             partialCallback(err, docs);
         }
         if (!err) {

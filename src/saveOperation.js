@@ -68,11 +68,20 @@ SaveOperation.prototype._initialSave = function () {
     pouch.getPouch().put(adapted, function (err, resp) {
         if (!err) {
             object._rev = resp.rev;
-            object.isSaved = true;
-            self._clearDirtyFields(dirtyFields);
+;            self._clearDirtyFields(dirtyFields);
             m.end();
+            self._finish();
         }
-        self._finish(err);
+        else {
+            var DOCUMENT_UPDATE_CONFLICT = 409;
+            var alreadySaved = err.status == DOCUMENT_UPDATE_CONFLICT;
+            if (alreadySaved) {
+                self._saveDirtyFields();
+            }
+            else {
+                self._finish(err);
+            }
+        }
     });
 };
 
@@ -135,6 +144,10 @@ SaveOperation.prototype._saveDirtyFields = function () {
                         Logger.trace('Successfully saved.');
                     self._clearDirtyFields(dirtyFields);
                     m.end();
+                    dump('359u2405982345234234', _rev);
+                    if (!_rev) {
+                        throw new RestError('No revision returned from Pouch');
+                    }
                     self.object._rev = _rev;
                     self._finish(err);
                 }

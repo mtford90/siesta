@@ -217,9 +217,11 @@ Collection.prototype.save = function (callback) {
         var saveOperations = _.map(dirtyObjects, function (obj) {
             return new SaveOperation(obj);
         });
-        var op = new Operation('Save at mapping level', saveOperations, function () {
+        var completion = function () {
             if (callback) callback(op.error ? op.error : null);
-        });
+        };
+        var op = new Operation('Save at mapping level', saveOperations);
+        op.onCompletion(completion);
         op.start();
         return op;
     }

@@ -23,11 +23,8 @@ describe('initial save', function () {
 
             collection.install(function (err) {
                 if (err) done(err);
-                carMapping.map({}, function (err, _car) {
-                    if (err) done(err);
-                    car = _car;
-                    done();
-                });
+                car = carMapping._new();
+                done();
             });
 
         });
@@ -65,11 +62,8 @@ describe('initial save', function () {
 
             collection.install(function (err) {
                 if (err) done(err);
-                carMapping.map({name: 'Aston Martin', colour: 'black'}, function (err, _car) {
-                    if (err) done(err);
-                    car = _car;
-                    done();
-                });
+                car = carMapping._new({name: 'Aston Martin', colour: 'black'});
+                done();
             });
 
         });
@@ -112,7 +106,7 @@ describe('initial save', function () {
 
 describe('saving at different levels', function () {
 
-    var car, doc;
+    var car;
 
     beforeEach(function (done) {
         s.reset(true);
@@ -128,17 +122,7 @@ describe('saving at different levels', function () {
             carMapping.map({name: 'Aston Martin', colour: 'black'}, function (err, _car) {
                 if (err) done(err);
                 car = _car;
-                assert.notOk(car.isSaved);
-                car.save(function (err) {
-                    if (err) done(err);
-                    assert.ok(car.isSaved);
-                    Pouch.getPouch().get(car._id, function (err, _doc) {
-                        if (err) done(err);
-                        doc = _doc;
-                        done();
-                    });
-                });
-
+                done();
             });
         });
 
