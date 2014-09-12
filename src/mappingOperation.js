@@ -344,29 +344,92 @@ MappingOperation.prototype._dump = function (asJson) {
     return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 
+/**
+ * This is a massive optimisation over the above MappingOperation and hence has become rather complicated.
+ * It attempts to send as few requests to PouchDB as possible by flattening relationships across multiple
+ * objects and then piecing everything back together for mapping at the end.
+ *
+ * Note that flattening is only one level deep at the moment e.g. [[model1, model2], [model3], model4] ->
+ *                                                                [model1, model2, model3, model4].
+ *
+ * I've never come across an API that goes any deeper than that, but if that's the case this whole piece of code
+ * is probably going to need to be rewritten to be more flexible.
+ *
+ * @param mapping
+ * @param data
+ * @param completion
+ * @constructor
+ */
 function BulkMappingOperation(mapping, data, completion) {
     var self = this;
     this.mapping = mapping;
     this.data = data;
 
+    this.subopResults = {};
+
+    function _map(i, model, data) {
+        for (var prop in data) {
+            if (data.hasOwnProperty(prop)) {
+                var val = data[prop];
+                if (model._fields.indexOf(prop) > -1) {
+                    model[prop] = val;
+                }
+                else if (model._relationshipFields.indexOf(prop) > -1) {
+                    var related = self.subopResults[prop][i];
+                    model[prop] = related;
+                }
+                else {
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('No such property ' + prop.toString());
+                }
+            }
+        }
+    }
+
     function work(done) {
+        /**
+         * Determine how to lookup each item.
+         */
         var categories = self._categoriseData();
-        var newObjects = categories.newObjects;
+        var local = {};
+        var remote = {};
+
+
         async.parallel([
+            /**
+             * Local lookups.
+             * @param callback
+             */
             function (callback) {
                 var localIdentifiers = _.pluck(categories.localLookups, '_id');
-//                dump(localIdentifiers)
                 Store.getMultipleLocal(localIdentifiers, function (err, objects) {
                     if (!err) {
                         for (var i = 0; i < localIdentifiers.length; i++) {
                             var object = objects[i];
                             var localId = localIdentifiers[i];
-                            var datum = categories.localLookupsById[localId];
                             if (object) {
-
+                                local[localId] = object;
                             }
-                            else {
-                                newObjects.push(datum);
+                        }
+                    }
+                    callback(err);
+                });
+            },
+            /**
+             * Remote lookups
+             * @param callback
+             */
+            function (callback) {
+                var remoteIdentifiers = _.pluck(categories.remoteLookups, mapping.id);
+                dump(self.__relationshipName, remoteIdentifiers);
+                Store.getMultipleRemote(remoteIdentifiers, mapping, function (err, objects) {
+                    dump('objects', objects);
+                    if (!err) {
+                        for (var i = 0; i < remoteIdentifiers.length; i++) {
+                            var object = objects[i];
+                            var remoteId = remoteIdentifiers[i];
+                            if (object) {
+                                remote[remoteId] = object;
                             }
                         }
                     }
@@ -374,16 +437,98 @@ function BulkMappingOperation(mapping, data, completion) {
                 });
             },
             function (callback) {
-                callback(null);
+
+                var subOperationMap = self._constructSubOperations();
+                var subOperations = [];
+                for (var relationshipName in subOperationMap) {
+                    if (subOperationMap.hasOwnProperty(relationshipName)) {
+                        var op = subOperationMap[relationshipName];
+                        subOperations.push(op);
+                    }
+                }
+                if (subOperations.length) {
+                    var compositeOperation = new Operation('Sub Operations', subOperations);
+                    compositeOperation.onCompletion(function () {
+                        var err = this.error;
+                        if (!err) {
+                            _.each(subOperations, function (subop) {
+                                var indexes = subop.__indexes;
+                                var results = subop.result;
+                                if (indexes.length !== results.length) {
+                                    throw Error('Something went very wrong');
+                                }
+                                var relationshipName = subop.__relationshipName;
+                                self.subopResults[relationshipName] = [];
+                                for (var i = 0; i < indexes.length; i++) {
+                                    var idx = indexes[i];
+                                    self.subopResults[relationshipName][idx] = results[i];
+                                }
+                            });
+                        }
+                        callback(err);
+                    });
+                    compositeOperation.start();
+                }
+                else {
+                    callback();
+                }
             }
-        ], function (errors, results) {
+        ], function (errors) {
             if (errors) {
                 done(errors);
             }
             else {
-                done(null);
+
+                function getObj(idx, datum) {
+                    var obj;
+                    if (datum._id) {
+                        obj = local[datum._id];
+                    }
+                    else if (datum[mapping.id]) {
+                        remoteId = datum[mapping.id];
+                        obj = remote[remoteId];
+                    }
+                    if (!obj) {
+                        obj = mapping._new();
+                        if (datum._id) {
+                            local[datum._id] = obj;
+                        }
+                        if (datum[mapping.id]) {
+                            remoteId = datum[mapping.id];
+                            remote[remoteId] = obj;
+                        }
+                        if (!datum._id && !datum[mapping.id]) {
+                            datum._id = obj._id;
+                            local[obj._id] = obj;
+                        }
+                    }
+                    _map(idx, obj, datum);
+                    return obj;
+                }
+
+                var objects = [];
+
+                var n = 0;
+                for (var i = 0; i < data.length; i++) {
+                    var datum = data[i];
+                    var remoteId;
+                    if (Object.prototype.toString.call(datum) == '[object Array]') {
+                        var arr = [];
+                        for (var j = 0; j < datum.length; j++) {
+                            var subDatum = datum[j];
+                            arr.push(getObj(n, subDatum));
+                            n += 1;
+                        }
+                        objects.push(arr);
+                    }
+                    else {
+                        objects.push(getObj(n, datum));
+                        n += 1;
+                    }
+                }
+                done(null, objects);
             }
-        })
+        });
     }
 
     Operation.call(this);
@@ -392,40 +537,117 @@ function BulkMappingOperation(mapping, data, completion) {
     this.completion = completion;
 }
 
+
 BulkMappingOperation.prototype = Object.create(Operation.prototype);
 
+
+
 BulkMappingOperation.prototype._categoriseData = function () {
+    var self = this;
     var localLookups = [];
     var remoteLookups = [];
     var newObjects = [];
 
-    var localLookupsById = {};
-    var remoteLookupsById = {};
-
     var data = this.data;
 
-    for (var i = 0; i < data.length; i++) {
-        var datum = data[i];
+    /**
+     * Place the datum into a category that defines how we're going to perform a lookup against local storage. This can
+     * either be:
+     *    (1) Look up by local id (_id).
+     *    (2) Look up by remote id (whatever is defined the 'id' field in the mapping.
+     *    (3) Neither, we need to create a new object.
+     *
+     * If (1) fails then (2) will fail, so we don't need to lookup twice.
+     *
+     * This method also applies transformations and will return the modified datum if this is the case.
+     * @param datum
+     * @returns {*}
+     */
+    function categoriseDatum(datum) {
+        var modifiedDatum;
+        if (typeof datum != 'object') {
+            modifiedDatum = {};
+            modifiedDatum[self.mapping.id] = datum;
+        }
+        datum = modifiedDatum ? modifiedDatum : datum;
         if (datum._id) {
             localLookups.push(datum);
-            localLookupsById[datum._id] = datum;
         }
-        else if (datum[this.mapping.id]) {
+        else if (datum[self.mapping.id]) {
             remoteLookups.push(datum);
-            var remoteId = datum[this.mapping.id];
-            remoteLookupsById[remoteId] = datum;
         }
         else {
             newObjects.push(datum);
         }
+        return modifiedDatum;
     }
+
+    for (var i = 0; i < data.length; i++) {
+        var datum = data[i];
+        if (Object.prototype.toString.call(datum) == '[object Array]') {
+            for (var j=0;j<datum.length;j++) {
+                var modifiedSubDatum = categoriseDatum(datum[j]);
+                if (modifiedSubDatum) {
+                    datum[j] = modifiedSubDatum;
+                }
+            }
+        }
+        else {
+            var modifiedDatum = categoriseDatum(datum);
+            if (modifiedDatum) {
+                data[i] = modifiedDatum;
+            }
+        }
+    }
+
     return {
         localLookups: localLookups,
         remoteLookups: remoteLookups,
-        newObjects: newObjects,
-        remoteLookupsById: remoteLookupsById,
-        localLookupsById: localLookupsById
+        newObjects: newObjects
     }
+};
+
+BulkMappingOperation.prototype._constructSubOperations = function () {
+    var operations = {};
+    var relationships = this.mapping.relationships;
+    for (var name in relationships) {
+        if (relationships.hasOwnProperty(name)) {
+            var relationship = relationships[name];
+            var relatedData = [];
+            var indexes = [];
+            var idx = 0;
+            for (var i = 0; i < this.data.length; i++) {
+                var datum = this.data[i];
+                if (Object.prototype.toString.call(datum) == '[object Array]') {
+                    for (var j = 0; j < datum.length; j++) {
+                        var subDatum = datum[j];
+                        if (subDatum[name]) {
+                            relatedData.push(subDatum[name]);
+                            indexes.push(idx);
+                            idx++;
+                        }
+                    }
+                }
+                else if (datum[name]) {
+                    relatedData.push(datum[name]);
+                    indexes.push(idx);
+                    idx ++ ;
+                }
+                else {
+                    idx ++;
+                }
+            }
+            if (relatedData.length) {
+                var reverseMapping = relationship.forwardName == name ? relationship.reverseMapping : relationship.forwardMapping;
+                var op = new BulkMappingOperation(reverseMapping, relatedData);
+                // We use the following properties later when mapping the models that result from the related data.
+                op.__relationshipName = name;
+                op.__indexes = indexes;
+                operations[name] = op;
+            }
+        }
+    }
+    return operations;
 };
 
 exports.MappingOperation = MappingOperation;

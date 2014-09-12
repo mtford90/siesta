@@ -173,10 +173,11 @@ exports.getMultipleLocal = function (localIdentifiers, callback) {
             }
             else {
                 var rows = _.pluck(docs.rows, 'doc');
-                dump (rows);
                 var models = PouchAdapter.toSiesta(rows);
                 _.each(models, function (m) {
-                    results.cached[m._id] = m;
+                    if (m) {
+                        results.cached[m._id] = m;
+                    }
                 });
                 finish();
             }
@@ -221,7 +222,9 @@ exports.getMultipleRemote = function (remoteIdentifiers, mapping, callback) {
     if (results.notCached.length) {
         var i = new Index(mapping.collection, mapping.type, [mapping.id]);
         var name = i._getName();
+        dump(name);
         PouchAdapter.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
+            dump(docs);
             if (err) {
                 finish(err);
             }

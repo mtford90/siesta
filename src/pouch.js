@@ -129,14 +129,19 @@ function toSiesta(docs) {
     var mapped = [];
     for (var i = 0; i < docs.length; i++) {
         var doc = docs[i];
-        var opts = {_id: doc._id};
-        var cached = cache.get(opts);
-        if (cached) {
-            mapped[i] = cached;
+        if (doc) {
+            var opts = {_id: doc._id};
+            var cached = cache.get(opts);
+            if (cached) {
+                mapped[i] = cached;
+            }
+            else {
+                mapped[i] = toNew(doc);
+                cache.insert(mapped[i]);
+            }
         }
         else {
-            mapped[i] = toNew(doc);
-            cache.insert(mapped[i]);
+            mapped[i] = null;
         }
     }
     return mapped;
