@@ -231,6 +231,8 @@ BulkSaveOperation.prototype = Object.create(Operation.prototype);
 
 BulkSaveOperation.prototype._start = function () {
     var self = this;
+    var m = new PerformanceMonitor('Bulk Save (' + self.objects.length.toString() + ' objects)');
+    m.start();
     var reduction = _.reduce(this.objects, function (memo, o) {
         memo.adapted.push(pouch.from(o));
         memo.dirtyFields.push(getDirtyFields(o));
@@ -259,6 +261,7 @@ BulkSaveOperation.prototype._start = function () {
                     }
                 }
             }
+            m.end();
             self._completion(errors.length ? errors : null);
         }
 

@@ -6,7 +6,9 @@ HttpLogger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
-var SaveOperation = require('./saveOperation').SaveOperation;
+var saveOperation = require('./saveOperation');
+var SaveOperation = saveOperation.SaveOperation;
+var BulkSaveOperation = saveOperation.BulkSaveOperation;
 var RequestDescriptor = require('./requestDescriptor').RequestDescriptor;
 var ResponseDescriptor = require('./responseDescriptor').ResponseDescriptor;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
@@ -214,16 +216,11 @@ Collection.prototype.save = function (callback) {
         return memo;
     }, []);
     if (dirtyObjects.length) {
-        var saveOperations = _.map(dirtyObjects, function (obj) {
-            return new SaveOperation(obj);
-        });
-        var completion = function () {
+        var op = new BulkSaveOperation(dirtyObjects);
+        op.onCompletion( function () {
             if (callback) callback(op.error ? op.error : null);
-        };
-        var op = new Operation('Save at mapping level', saveOperations);
-        op.onCompletion(completion);
+        });
         op.start();
-        return op;
     }
     else if (callback) {
         callback();
