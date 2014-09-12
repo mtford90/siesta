@@ -474,12 +474,10 @@ Mapping.prototype._new = function (data) {
 };
 
 Mapping.prototype.save = function (callback) {
-    var dirtyObjects = this.__dirtyObjects;
+    var dirtyObjects = _.map(this.__dirtyObjects, function (o) {return o});
     if (dirtyObjects.length) {
-        var saveOperations = _.map(dirtyObjects, function (obj) {
-            return new saveOperation.SaveOperation(obj);
-        });
-        var op = new Operation('Save at mapping level', saveOperations, function () {
+        var op = new saveOperation.BulkSaveOperation(dirtyObjects);
+        op.onCompletion( function () {
             if (callback) callback(op.error ? op.error : null);
         });
         op.start();
