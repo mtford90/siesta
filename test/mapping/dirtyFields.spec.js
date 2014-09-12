@@ -156,7 +156,6 @@ describe('dirty fields', function () {
                     });
 
                     it('car should no longer be dirty', function () {
-                        dump(car.isSaved);
                         assert.notOk(car.isDirty);
                     });
 

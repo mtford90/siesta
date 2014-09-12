@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('RawQuery');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 
 var mapping = require('./mapping');
@@ -106,7 +106,6 @@ RawQuery.prototype._constructKey = function () {
 };
 
 RawQuery.prototype._getDesignDocName = function () {
-    dump(index);
     var i = new index.Index(this.collection, this.modelName, this._getFields());
     return i._getDesignDocName();
 };

@@ -114,7 +114,8 @@ function toNew(doc) {
     for (var prop in doc) {
         if (doc.hasOwnProperty(prop)) {
             if (obj._fields.indexOf(prop) > -1) {
-                obj[prop] = doc[prop];
+                // Assign directly to __values so that we don't mark the field as dirty.
+                obj.__values[prop] = doc[prop];
             }
             else if (obj._relationshipFields.indexOf(prop) > -1) {
                 obj[prop + 'Proxy']._id = doc[prop];

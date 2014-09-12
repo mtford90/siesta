@@ -36,8 +36,9 @@ describe('performance', function () {
     describe('fresh database', function () {
 
         /**
-         * Timings:
+         * On Mike's Mac, 3.4ghz Intel Core i5, 16gb 1600Mhz DDR3, OSX 10.9.3, logging disabled:
          *    - 11/9/2014 13:16: 2.415 secs
+         *    - 12/9/2014 08:36: 1.084 sec
          */
         it('xyz', function (done) {
             this.timeout(10000);
@@ -46,7 +47,7 @@ describe('performance', function () {
                 done(err);
             });
         });
-    })
+    });
 
 
 

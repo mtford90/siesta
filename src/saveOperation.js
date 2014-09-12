@@ -15,15 +15,6 @@ var Platform = require('../vendor/observe-js/src/observe').Platform;
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 
-/**
- * Persists an object. Ensures that only one save operation per object is running at a time.
- * This avoids conflicts.
- *
- * @param object
- * @param completion
- * @returns {SaveOperation}
- * @constructor
- */
 function SaveOperation(object, completion) {
     if (!this) return new SaveOperation(object, completion);
     var self = this;
@@ -55,6 +46,7 @@ SaveOperation.prototype._finish = function (err) {
     this._completion(err);
 };
 
+
 SaveOperation.prototype._initialSave = function () {
     var self = this;
     var m = new PerformanceMonitor('Initial Save');
@@ -85,13 +77,18 @@ SaveOperation.prototype._initialSave = function () {
     });
 };
 
-SaveOperation.prototype._getDirtyFields = function () {
+function getDirtyFields (model) {
     var clonedArray = [];
-    var dirtyFields = this.object.__dirtyFields;
+    var dirtyFields = model.__dirtyFields;
     _.each(dirtyFields, function (f) {
         clonedArray.push(f);
     });
     return clonedArray;
+}
+
+
+SaveOperation.prototype._getDirtyFields = function () {
+    return getDirtyFields(this.object);
 };
 
 SaveOperation.prototype._clearDirtyFields = function (fields) {
@@ -144,7 +141,6 @@ SaveOperation.prototype._saveDirtyFields = function () {
                         Logger.trace('Successfully saved.');
                     self._clearDirtyFields(dirtyFields);
                     m.end();
-                    dump('359u2405982345234234', _rev);
                     if (!_rev) {
                         throw new RestError('No revision returned from Pouch');
                     }
@@ -213,4 +209,62 @@ SaveOperation.prototype._dump = function (asJson) {
     return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 
+
+
+function BulkSaveOperation(objects, completion) {
+    if (!this) return new SaveOperation(object, completion);
+    var self = this;
+
+    var work = function (done) {
+        this._completion = done;
+        self._start();
+    };
+
+    Operation.call(this);
+    this.work = work;
+    this.name = 'Bulk Save Operation';
+    this.completion = completion;
+    this.objects = objects;
+}
+
+BulkSaveOperation.prototype = Object.create(Operation.prototype);
+
+BulkSaveOperation.prototype._start = function () {
+    var self = this;
+    var reduction = _.reduce(this.objects, function (memo, o) {
+        memo.adapted.push(pouch.from(o));
+        memo.dirtyFields.push(getDirtyFields(o));
+        return memo;
+    }, {adapted: [], dirtyFields: []});
+    pouch.getPouch().bulkDocs(reduction.adapted, function (err, responses) {
+        if (err && !responses) {
+            self._completion(err);
+        }
+        else {
+            var errors = [];
+            for (var i=0;i<responses.length;i++) {
+                var response = responses[i];
+                var object = self.objects[i];
+                var dirtyFields = reduction.dirtyFields[i];
+                if (response.ok) {
+                    object._rev = response.rev;
+                    object._unmarkFieldsAsDirty(dirtyFields);
+                }
+                else {
+                    // TODO: Is it safe to ignore document update conflicts?
+                    // It may be possible that there's a race condition here and something may not get saved.
+                    // In which case it may be necessary to gather up objects involved in 409s and save them again.
+                    if (response.status != 409) {
+                        errors[i] = response;
+                    }
+                }
+            }
+            self._completion(errors.length ? errors : null);
+        }
+
+    });
+};
+
+
 exports.SaveOperation = SaveOperation;
+exports.BulkSaveOperation = BulkSaveOperation;
