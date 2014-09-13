@@ -430,7 +430,6 @@ describe('perform mapping', function () {
                         personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            dump(person);
                             carMapping.map({name: 'Bentley', colour: 'black', owner: person, id: 'carRemoteId'}, function (err, _car) {
                                 if (err) done(err);
                                 car = _car;
@@ -487,7 +486,6 @@ describe('perform mapping', function () {
 
                     it('person should have car objects', function () {
                         _.each(cars, function (car) {
-                            dump('cars', person.cars);
                             assert.include(person.cars, car);
                         })
                     });

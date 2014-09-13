@@ -392,7 +392,6 @@ function BulkMappingOperation(mapping, data, completion) {
                     else if (model._relationshipFields.indexOf(prop) > -1) {
 
                         var related = self.subopResults[prop][i];
-                        dump(prop, related);
                         try {
                             model[prop] = related;
                         }
@@ -420,14 +419,14 @@ function BulkMappingOperation(mapping, data, completion) {
     }
 
     function work(done) {
-        var categories, local, remote;
+        var categories, local, remote, singleton;
 
-        if (!self.override) {
+        if (!self.override && !self.mapping.singleton) {
             categories = self._categoriseData();
             local = categories.local;
             remote = categories.remote;
         }
-        else {
+        else if (self.override) {
             local = {};
             remote = {};
             _.each(self.override, function (obj) {
@@ -441,12 +440,8 @@ function BulkMappingOperation(mapping, data, completion) {
         }
 
         async.parallel([
-            /**
-             * Local lookups.
-             * @param callback
-             */
-                function (callback) {
-                if (!self.override) {
+            function (callback) {
+                if (!self.override && !self.mapping.singleton) {
                     var localIdentifiers = _.pluck(categories.localLookups, '_id');
                     Store.getMultipleLocal(localIdentifiers, function (err, objects) {
                         if (!err) {
@@ -466,12 +461,9 @@ function BulkMappingOperation(mapping, data, completion) {
                     callback();
                 }
             },
-            /**
-             * Remote lookups
-             * @param callback
-             */
-                function (callback) {
-                if (!self.override) {
+
+            function (callback) {
+                if (!self.override && !self.mapping.singleton) {
                     var remoteIdentifiers = _.pluck(categories.remoteLookups, mapping.id);
                     Store.getMultipleRemote(remoteIdentifiers, mapping, function (err, objects) {
                         if (!err) {
@@ -485,6 +477,25 @@ function BulkMappingOperation(mapping, data, completion) {
                         }
                         callback(err);
                     });
+                }
+                else {
+                    callback();
+                }
+            },
+            function (callback) {
+                if (self.mapping.singleton) {
+                    self.mapping.all(function (err, objs) {
+                        if (objs.length > 1) {
+                            throw new RestError('Something has gone badly wrong. More than one singleton');
+                        }
+                        else if (objs.length) {
+                            singleton = objs[0];
+                        }
+                        else {
+                            singleton = self.mapping._new();
+                        }
+                        callback();
+                    })
                 }
                 else {
                     callback();
@@ -554,22 +565,26 @@ function BulkMappingOperation(mapping, data, completion) {
 
                 function getObj(idx, datum) {
                     var obj;
-                    if (datum._id) {
-                        obj = local[datum._id];
-                        if (!obj) {
-                            if (!self.errors[idx]) self.errors[idx] = {};
-                            self.errors[idx]['_id'] = new RestError('No such object with _id="' + datum._id + '"');
-                            return;
-                        }
-                    }
-                    else if (datum[mapping.id]) {
-                        remoteId = datum[mapping.id];
-                        obj = remote[remoteId];
-                    }
-                    else if (self.override) {
+                    if (self.override) {
                         obj = self.override[idx];
                     }
-
+                    else if (self.mapping.singleton) {
+                        obj = singleton;
+                    }
+                    else {
+                        if (datum._id) {
+                            obj = local[datum._id];
+                            if (!obj) {
+                                if (!self.errors[idx]) self.errors[idx] = {};
+                                self.errors[idx]['_id'] = new RestError('No such object with _id="' + datum._id + '"');
+                                return;
+                            }
+                        }
+                        else if (datum[mapping.id]) {
+                            remoteId = datum[mapping.id];
+                            obj = remote[remoteId];
+                        }
+                    }
                     if (!obj) {
                         obj = mapping._new();
                         if (datum._id) {

@@ -124,7 +124,6 @@ describe('bulk mapping operation', function () {
 
             var op = new BulkMappingOperation(User, data);
             op.onCompletion(function () {
-                dump(op.error);
                 assert.ok(op.error[0]);
                 assert.notOk(op.error[1]);
                 assert.ok(op.error[2]);
@@ -161,7 +160,6 @@ describe('bulk mapping operation', function () {
 
             var op = new BulkMappingOperation(Repo, data);
             op.onCompletion(function () {
-                dump(op.error);
                 assert.ok(op.error);
                 done();
             });
@@ -201,7 +199,6 @@ describe('bulk mapping operation', function () {
                 assert.ok(op.error[1]);
                 var subError = op.error[1][0];
                 assert.ok(subError);
-                dump(op.error);
                 done();
             });
             op.start();
