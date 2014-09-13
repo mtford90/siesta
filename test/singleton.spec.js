@@ -34,7 +34,6 @@ describe('singleton', function () {
             obj = carMapping._new({colour: 'blue'});
             obj.save(function (err) {
                 if (err) {
-                    dump(err);
                     done();
                 }
                 else {

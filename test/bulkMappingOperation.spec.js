@@ -64,6 +64,94 @@ describe('bulk mapping operation', function () {
         });
     });
 
+    describe('overrides', function () {
+        it('simple', function (done) {
+            var data = [
+                {name: 'Repo', full_name: 'A Big Repo', description: 'Blah'}
+            ];
+
+            var op = new BulkMappingOperation(Repo, data);
+            var m = Repo._new();
+            op.override = [m];
+            op.onCompletion(function () {
+                if (op.error) {
+                    done(op.error);
+                }
+                else {
+                    var objs = op.result;
+                    assert.equal(objs.length, 1);
+                    assert.equal(objs[0], m);
+                    assert.equal(objs[0].name, 'Repo');
+                    assert.equal(objs[0].full_name, 'A Big Repo');
+                    assert.equal(objs[0].description, 'Blah');
+                    done();
+                }
+            });
+            op.start();
+        });
+    });
+
+    describe('errors', function () {
+        // TODO: Errors wtihin arrays of arrays. Need to unflatten errors?
+
+        it('simple', function (done) {
+            var data = [
+                {
+                    login: 'mike',
+                    id: '123',
+                    repositories: 5 // Invalid
+                },
+                {
+                    login: 'mike2',
+                    id: '122315634',
+                    repositories: [ // Valid
+                        {name: 'Repo'}
+                    ]
+                },
+                {
+                    login: 'mike4',
+                    id: '123124',
+                    repositories: 'asdas' // Invalid
+                },
+                {
+                    login: 'mike3',
+                    id: '12324',
+                    repositories: [ // Invalid
+                        {_id: 'nosuchlocalid'}
+                    ]
+                }
+            ];
+
+            var op = new BulkMappingOperation(User, data);
+            op.onCompletion(function () {
+                dump(op.error);
+                assert.ok(op.error[0]);
+                assert.notOk(op.error[1]);
+                assert.ok(op.error[2]);
+                assert.ok(op.error[3]);
+                assert.ok(op.error[0].repositories);
+                assert.ok(op.error[2].repositories);
+                assert.ok(op.error[3].repositories);
+                done();
+            });
+            op.start();
+        });
+        it('non-existent _id', function (done) {
+            var data = [
+                {
+                    _id: 'nonexistant'
+                }
+            ];
+
+            var op = new BulkMappingOperation(User, data);
+            op.onCompletion(function () {
+                assert.ok(op.error);
+                done();
+            });
+            op.start();
+        });
+    });
+
     describe('new', function () {
 
         // TODO: Test invalid

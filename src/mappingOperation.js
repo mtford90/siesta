@@ -2,6 +2,7 @@ var Store = require('./store');
 var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
+var RestError = require('../src/error').RestError;
 
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
@@ -367,6 +368,14 @@ function BulkMappingOperation(mapping, data, completion) {
 
     this.subopResults = {};
 
+    this.errors = [];
+
+    /**
+     * If set, data will be mapped onto the objects in override rather than performing a lookup.
+     * @type {Array}
+     */
+    this.override = null;
+
     function _map(i, model, data) {
         for (var prop in data) {
             if (data.hasOwnProperty(prop)) {
@@ -375,8 +384,28 @@ function BulkMappingOperation(mapping, data, completion) {
                     model[prop] = val;
                 }
                 else if (model._relationshipFields.indexOf(prop) > -1) {
-                    var related = self.subopResults[prop][i];
-                    model[prop] = related;
+                    var isError = !!self.errors[i];
+                    if (isError) {
+                        isError = !!self.errors[i][prop];
+                    }
+                    if (!isError) {
+                        var related = self.subopResults[prop][i];
+                        try {
+                            model[prop] = related;
+                        }
+                        catch (err) {
+                            if (err instanceof RestError) {
+                                if (!self.errors[i]) {
+                                    self.errors[i] = {};
+                                }
+                                self.errors[i][prop] = err;
+                            }
+                            else {
+                                throw err;
+                            }
+                        }
+                    }
+
                 }
                 else {
                     if (Logger.debug.isEnabled)
@@ -387,57 +416,75 @@ function BulkMappingOperation(mapping, data, completion) {
     }
 
     function work(done) {
-        /**
-         * Determine how to lookup each item.
-         */
-        var categories = self._categoriseData();
-        var local = {};
-        var remote = {};
+        var categories, local, remote;
+        local = {};
+        remote = {};
+        if (!self.override) {
+            categories = self._categoriseData();
 
+        }
+        else {
+            _.each(self.override, function (obj) {
+                if (obj._id) {
+                    local[obj._id] = obj;
+                }
+                if (obj[mapping.id]) {
+                    remote[obj[mapping.id]] = obj;
+                }
+            });
+        }
 
         async.parallel([
             /**
              * Local lookups.
              * @param callback
              */
-            function (callback) {
-                var localIdentifiers = _.pluck(categories.localLookups, '_id');
-                Store.getMultipleLocal(localIdentifiers, function (err, objects) {
-                    if (!err) {
-                        for (var i = 0; i < localIdentifiers.length; i++) {
-                            var object = objects[i];
-                            var localId = localIdentifiers[i];
-                            if (object) {
-                                local[localId] = object;
+                function (callback) {
+                if (!self.override) {
+                    var localIdentifiers = _.pluck(categories.localLookups, '_id');
+                    Store.getMultipleLocal(localIdentifiers, function (err, objects) {
+                        if (!err) {
+                            for (var i = 0; i < localIdentifiers.length; i++) {
+                                var object = objects[i];
+                                var localId = localIdentifiers[i];
+                                if (object) {
+                                    local[localId] = object;
+                                }
+
                             }
                         }
-                    }
-                    callback(err);
-                });
+                        callback(err);
+                    });
+                }
+                else {
+                    callback();
+                }
             },
             /**
              * Remote lookups
              * @param callback
              */
-            function (callback) {
-                var remoteIdentifiers = _.pluck(categories.remoteLookups, mapping.id);
-                dump(self.__relationshipName, remoteIdentifiers);
-                Store.getMultipleRemote(remoteIdentifiers, mapping, function (err, objects) {
-                    dump('objects', objects);
-                    if (!err) {
-                        for (var i = 0; i < remoteIdentifiers.length; i++) {
-                            var object = objects[i];
-                            var remoteId = remoteIdentifiers[i];
-                            if (object) {
-                                remote[remoteId] = object;
+                function (callback) {
+                if (!self.override) {
+                    var remoteIdentifiers = _.pluck(categories.remoteLookups, mapping.id);
+                    Store.getMultipleRemote(remoteIdentifiers, mapping, function (err, objects) {
+                        if (!err) {
+                            for (var i = 0; i < remoteIdentifiers.length; i++) {
+                                var object = objects[i];
+                                var remoteId = remoteIdentifiers[i];
+                                if (object) {
+                                    remote[remoteId] = object;
+                                }
                             }
                         }
-                    }
-                    callback(err);
-                });
+                        callback(err);
+                    });
+                }
+                else {
+                    callback();
+                }
             },
             function (callback) {
-
                 var subOperationMap = self._constructSubOperations();
                 var subOperations = [];
                 for (var relationshipName in subOperationMap) {
@@ -449,23 +496,27 @@ function BulkMappingOperation(mapping, data, completion) {
                 if (subOperations.length) {
                     var compositeOperation = new Operation('Sub Operations', subOperations);
                     compositeOperation.onCompletion(function () {
-                        var err = this.error;
-                        if (!err) {
-                            _.each(subOperations, function (subop) {
-                                var indexes = subop.__indexes;
-                                var results = subop.result;
-                                if (indexes.length !== results.length) {
-                                    throw Error('Something went very wrong');
+                        _.each(subOperations, function (subop) {
+                            var indexes = subop.__indexes;
+                            var results = subop.result;
+                            if (indexes.length !== results.length) {
+                                throw Error('Something went very wrong');
+                            }
+                            var relationshipName = subop.__relationshipName;
+                            self.subopResults[relationshipName] = [];
+                            for (var i = 0; i < indexes.length; i++) {
+                                var idx = indexes[i];
+                                if (subop.error && subop.error[i]) {
+                                    var err = subop.error[i];
+                                    if (!self.errors[idx]) self.errors[idx] = {};
+                                    self.errors[idx][relationshipName] = err;
                                 }
-                                var relationshipName = subop.__relationshipName;
-                                self.subopResults[relationshipName] = [];
-                                for (var i = 0; i < indexes.length; i++) {
-                                    var idx = indexes[i];
+                                else {
                                     self.subopResults[relationshipName][idx] = results[i];
                                 }
-                            });
-                        }
-                        callback(err);
+                            }
+                        });
+                        callback();
                     });
                     compositeOperation.start();
                 }
@@ -483,11 +534,20 @@ function BulkMappingOperation(mapping, data, completion) {
                     var obj;
                     if (datum._id) {
                         obj = local[datum._id];
+                        if (!obj) {
+                            if (!self.errors[idx]) self.errors[idx] = {};
+                            self.errors[idx]['_id'] = new RestError('No such object with _id="' + datum._id + '"');
+                            return;
+                        }
                     }
                     else if (datum[mapping.id]) {
                         remoteId = datum[mapping.id];
                         obj = remote[remoteId];
                     }
+                    else if (self.override) {
+                        obj = self.override[idx];
+                    }
+
                     if (!obj) {
                         obj = mapping._new();
                         if (datum._id) {
@@ -526,7 +586,8 @@ function BulkMappingOperation(mapping, data, completion) {
                         n += 1;
                     }
                 }
-                done(null, objects);
+                var isError = self.errors.length;
+                done(isError ? self.errors : null, objects);
             }
         });
     }
@@ -539,8 +600,6 @@ function BulkMappingOperation(mapping, data, completion) {
 
 
 BulkMappingOperation.prototype = Object.create(Operation.prototype);
-
-
 
 BulkMappingOperation.prototype._categoriseData = function () {
     var self = this;
@@ -569,6 +628,10 @@ BulkMappingOperation.prototype._categoriseData = function () {
             modifiedDatum = {};
             modifiedDatum[self.mapping.id] = datum;
         }
+        if (datum instanceof SiestaModel) {
+            modifiedDatum = {};
+            modifiedDatum._id = datum._id;
+        }
         datum = modifiedDatum ? modifiedDatum : datum;
         if (datum._id) {
             localLookups.push(datum);
@@ -585,7 +648,7 @@ BulkMappingOperation.prototype._categoriseData = function () {
     for (var i = 0; i < data.length; i++) {
         var datum = data[i];
         if (Object.prototype.toString.call(datum) == '[object Array]') {
-            for (var j=0;j<datum.length;j++) {
+            for (var j = 0; j < datum.length; j++) {
                 var modifiedSubDatum = categoriseDatum(datum[j]);
                 if (modifiedSubDatum) {
                     datum[j] = modifiedSubDatum;
@@ -631,10 +694,10 @@ BulkMappingOperation.prototype._constructSubOperations = function () {
                 else if (datum[name]) {
                     relatedData.push(datum[name]);
                     indexes.push(idx);
-                    idx ++ ;
+                    idx++;
                 }
                 else {
-                    idx ++;
+                    idx++;
                 }
             }
             if (relatedData.length) {

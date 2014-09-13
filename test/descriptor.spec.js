@@ -40,7 +40,6 @@ describe('request descriptor', function () {
 
         describe('path', function () {
             it('match id', function () {
-                dump(1);
                 var r = new Descriptor({path: '/cars/(?<id>[0-9])/?', mapping: carMapping});
                 var match = r._matchPath('/cars/5/');
                 assert.equal(match.id, '5');

@@ -251,15 +251,32 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
 
     // Validate first.
     if (obj) {
+        var msg, err;
         if (this.isForward) {
             if (Object.prototype.toString.call(obj) == '[object Array]') {
-                callback(new RestError('Cannot assign array to forward side of foreign key relationship'));
+                msg = 'Cannot assign array to forward side of foreign key relationship';
+                Logger.error(msg);
+                err = new RestError(msg);
+                if (callback) {
+                    callback(err);
+                }
+                else {
+                    throw err;
+                }
                 return;
             }
         }
         else {
             if (Object.prototype.toString.call(obj) != '[object Array]') {
-                callback(new RestError('Cannot assign single to reverse side of foreign key relationship'));
+                msg = 'Cannot assign single to reverse side of foreign key relationship';
+                Logger.error(msg);
+                err = new RestError(msg);
+                if (callback) {
+                    callback(err);
+                }
+                else {
+                    throw err;
+                }
                 return;
             }
         }

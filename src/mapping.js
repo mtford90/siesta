@@ -12,6 +12,7 @@ var index = require('./index');
 var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var MappingOperation = require('./mappingOperation').MappingOperation;
+var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
 var saveOperation = require('./saveOperation');
 var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
@@ -292,73 +293,57 @@ Mapping.prototype._validate = function () {
  *
  * @param data Raw data received remotely or otherwise
  * @param callback Called once pouch persistence returns.
- * @param obj Force mapping to this object
+ * @param override Force mapping to this object
  */
-Mapping.prototype.map = function (data, callback, obj) {
-    var self = this;
+Mapping.prototype.map = function (data, callback, override) {
     if (Object.prototype.toString.call(data) == '[object Array]') {
-        return this._mapBulk(data, callback);
+        return this._mapBulk(data, callback, override);
     }
     else {
-        var op = new MappingOperation(this, data, function () {
-            var err = op.error;
-            if (err) {
-                if (callback) callback(err);
-            }
-            else  {
-                var collectionName = self.collection;
-                var collection = CollectionRegistry[collectionName];
-                collection.save(function (err) {
-                    if (callback) {
-                        callback(err, op._obj, op.operations);
+        return this._mapBulk([data], function (err, objects) {
+            dump('res', err, objects);
+            if (callback) {
+                var obj;
+                if (objects) {
+                    if (objects.length) {
+                        obj = objects[0];
                     }
-                });
+                }
+                callback(err, obj);
             }
-        });
-        op._obj = obj;
-        op.start();
-        return op;
+        }, override ? [override] : undefined);
     }
 };
 
-
-Mapping.prototype._mapBulk = function (data, callback) {
+Mapping.prototype._mapBulk = function (data, callback, override) {
     if (Logger.trace.isEnabled)
         Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
-//    util.printStackTrace();
 
     var m = new PerformanceMonitor('_mapBulk');
-
     var self = this;
-    var operations = _.map(data, function (datum) {
-        return new MappingOperation(self, datum);
-    });
-    var op = new Operation('Bulk Mapping', operations, function (err) {
+
+    var op = new BulkMappingOperation(this, data);
+    if (override) {
+        op.override = override;
+    }
+    op.onCompletion(function () {
         m.end();
+        var err = op.error;
         if (err) {
-            callback(err);
+            if (callback) callback(err);
         }
         else {
-            var objects = _.pluck(operations, '_obj');
-            var res = _.map(operations, function (op) {
-                return {
-                    err: op.error,
-                    obj: op._obj,
-                    raw: op.data,
-                    op: op
-                }
-            });
+            var objects = op.result;
             var collectionName = self.collection;
             var collection = CollectionRegistry[collectionName];
             collection.save(function (err) {
                 if (callback) {
-                    callback(err, objects, res);
+                    callback(err, objects);
                 }
             });
         }
-
     });
-    op.logLevel = log.Level.trace;
+
     m.start();
     op.start();
     return op;
