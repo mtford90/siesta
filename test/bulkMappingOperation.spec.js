@@ -69,12 +69,6 @@ describe('bulk mapping operation', function () {
         // TODO: Test invalid
         // TODO: Test invalid _id
         // TODO: Test get all objects that have been mapped (bubble up from suboperations) and then document this.
-        // TODO: Test arrays of attributes.
-        // TODO: Test deep changes, and that they're mapped correctly.
-
-
-        // TODO: Return from mapping before saved? But return a promise in the callback to wait until has saved.
-
 
         describe('array of array', function () {
             it('array of array', function (done) {
@@ -263,19 +257,20 @@ describe('bulk mapping operation', function () {
                         assert.equal(repo.id, 5);
                         assert.equal(repo.name, 'Repo');
                         assert.equal(repo.full_name, 'A Big Repo');
+                        assert.equal(repo.owner, obj);
                         done();
                     });
                     op.start();
                 });
 
-                it.only('existing', function (done) {
-                    Repo.map({
-                        id: 5,
+                it('existing', function (done) {
+                    Pouch.getPouch().post({
+                        id: '5',
                         name: 'Old Name',
-                        full_name: 'Old Full Name'
-                    }, function (err, _repo) {
-                        var _id = _repo._id;
-                        cache.reset();
+                        full_name: 'Old Full Name',
+                        collection: 'MyCollection',
+                        type: 'Repo'
+                    }, function (err, resp) {
                         if (err) {
                             done(err);
                         }
@@ -285,13 +280,12 @@ describe('bulk mapping operation', function () {
                                     login: 'mike',
                                     id: '123',
                                     repositories: [
-                                        {id: 5, name: 'Repo', full_name: 'A Big Repo'}
+                                        {id: '5', name: 'Repo', full_name: 'A Big Repo'}
                                     ]
                                 }
                             ];
                             var op = new BulkMappingOperation(User, data);
                             op.onCompletion(function () {
-                                dump(1);
                                 if (op.error) {
                                     done(op.error);
                                 }
@@ -307,7 +301,8 @@ describe('bulk mapping operation', function () {
                                         assert.equal(repo.id, 5);
                                         assert.equal(repo.name, 'Repo');
                                         assert.equal(repo.full_name, 'A Big Repo');
-                                        assert.equal(repo._id, _id);
+                                        assert.equal(repo._id, resp.id);
+                                        assert.equal(repo.owner, obj);
                                         done();
                                     }
                                     catch (err) {
@@ -322,7 +317,6 @@ describe('bulk mapping operation', function () {
                     })
                 })
             });
-
 
         });
 
@@ -347,6 +341,7 @@ describe('bulk mapping operation', function () {
                 op.start();
             });
         });
+
 
 
     });

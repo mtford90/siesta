@@ -40,7 +40,7 @@ RawQuery.prototype.execute = function (callback) {
         function finish(err, docs) {
             m.end();
             if (Logger.trace.isEnabled)
-                Logger.debug('Received results: ', docs);
+                Logger.trace('Received results: ', docs);
             partialCallback(err, docs);
         }
         if (!err) {

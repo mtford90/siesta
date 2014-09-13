@@ -222,9 +222,7 @@ exports.getMultipleRemote = function (remoteIdentifiers, mapping, callback) {
     if (results.notCached.length) {
         var i = new Index(mapping.collection, mapping.type, [mapping.id]);
         var name = i._getName();
-        dump(name);
         PouchAdapter.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
-            dump(docs);
             if (err) {
                 finish(err);
             }
