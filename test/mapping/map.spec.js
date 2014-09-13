@@ -430,6 +430,7 @@ describe('perform mapping', function () {
                         personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err, _person) {
                             if (err) done(err);
                             person = _person;
+                            dump(person);
                             carMapping.map({name: 'Bentley', colour: 'black', owner: person, id: 'carRemoteId'}, function (err, _car) {
                                 if (err) done(err);
                                 car = _car;
@@ -486,6 +487,7 @@ describe('perform mapping', function () {
 
                     it('person should have car objects', function () {
                         _.each(cars, function (car) {
+                            dump('cars', person.cars);
                             assert.include(person.cars, car);
                         })
                     });
@@ -1243,6 +1245,7 @@ describe('perform mapping', function () {
 
 
         });
+
         describe('foreign key', function () {
 
             var personMapping;
@@ -1338,20 +1341,12 @@ describe('perform mapping', function () {
                         {colour: 'blue', name: 'Lambo', id: "remoteId2dfgdfgdfg"},
                         {colour: 'green', name: 'Ford', id: "remoteId3dfgdfgdfgdfg"}
                     ];
-                    carMapping._mapBulk(raw, function (err, objs, res) {
+                    carMapping._mapBulk(raw, function (err, objs) {
                         if (err) done(err);
                         assert.equal(objs.length, raw.length);
-                        assert.equal(res.length, raw.length);
-                        _.each(res, function (r) {
-                            assert.notOk(r.err);
-                            assert.ok(r.obj);
-                        });
-                        _.each(objs, function (o) {
-                            assert.include(_.pluck(res, 'obj'), o);
-                        });
-                        _.each(raw, function (r) {
-                            assert.include(_.pluck(res, 'raw'), r);
-                        });
+                        assert.equal(objs[0].colour, 'red');
+                        assert.equal(objs[1].colour, 'blue');
+                        assert.equal(objs[2].colour, 'green');
                         done();
                     })
                 });
@@ -1386,25 +1381,11 @@ describe('perform mapping', function () {
                         {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: ownerId},
                         {colour: 'green', name: 'Ford', id: "remoteId3", owner: ownerId}
                     ];
-                    carMapping._mapBulk(raw, function (err, objs, res) {
+                    carMapping._mapBulk(raw, function (err, objs) {
                         if (err) done(err);
                         assert.equal(objs.length, raw.length);
-                        assert.equal(res.length, raw.length);
-                        _.each(res, function (r) {
-                            assert.notOk(r.err);
-                            assert.ok(r.obj);
-                        });
-                        _.each(objs, function (o) {
-                            assert.include(_.pluck(res, 'obj'), o);
-                        });
-                        _.each(raw, function (r) {
-                            assert.include(_.pluck(res, 'raw'), r);
-                        });
-                        var ownerIdentifiers = _.map(objs, function (o) {
-                            return o.ownerProxy._id;
-                        });
-                        assert.equal(ownerIdentifiers[0], ownerIdentifiers[1]);
-                        assert.equal(ownerIdentifiers[1], ownerIdentifiers[2]);
+                        assert.equal(objs[0].owner, objs[1].owner);
+                        assert.equal(objs[1].owner, objs[2].owner);
                         done();
                     })
                 });

@@ -301,7 +301,6 @@ Mapping.prototype.map = function (data, callback, override) {
     }
     else {
         return this._mapBulk([data], function (err, objects) {
-            dump('res', err, objects);
             if (callback) {
                 var obj;
                 if (objects) {
@@ -309,7 +308,7 @@ Mapping.prototype.map = function (data, callback, override) {
                         obj = objects[0];
                     }
                 }
-                callback(err, obj);
+                callback(err ? err[0] : null, obj);
             }
         }, override ? [override] : undefined);
     }

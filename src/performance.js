@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Performance');
-Logger.setLevel(log.Level.info);
+Logger.setLevel(log.Level.warn);
 
 function PerformanceMonitor(name) {
     this.startTime = null;

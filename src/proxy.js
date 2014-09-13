@@ -159,7 +159,13 @@ OneToOneProxy.prototype.set = function (obj, callback, reverse) {
 
     if (obj) {
         if (Object.prototype.toString.call(obj) == '[object Array]') {
-            callback(new RestError('Cannot assign array to one to one relationship'));
+            var err = new RestError('Cannot assign array to one to one relationship');
+            if (callback) {
+                callback(err);
+            }
+            else {
+                throw err;
+            }
             return;
         }
     }

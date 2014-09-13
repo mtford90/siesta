@@ -136,6 +136,7 @@ describe('bulk mapping operation', function () {
             });
             op.start();
         });
+
         it('non-existent _id', function (done) {
             var data = [
                 {
@@ -150,12 +151,84 @@ describe('bulk mapping operation', function () {
             });
             op.start();
         });
+
+        it('array to scalar', function (done) {
+            var data = [
+                {
+                    owner: [5, 6]
+                }
+            ];
+
+            var op = new BulkMappingOperation(Repo, data);
+            op.onCompletion(function () {
+                dump(op.error);
+                assert.ok(op.error);
+                done();
+            });
+            op.start();
+        });
+
+        it('array of array', function (done) {
+            var data = [
+                {
+                    login: 'mike2',
+                    id: '122315634',
+                    repositories: [ // Valid
+                        {name: 'Repo'}
+                    ]
+                },
+                [
+                    {
+                        login: 'mike3',
+                        id: '12324sdf',
+                        repositories: [ // Invalid
+                            {_id: 'nosuchlocalid'}
+                        ]
+                    },
+                    {
+                        login: 'mike5',
+                        id: '12324',
+                        repositories: [ // Invalid
+                            {_id: 'andanotherinvalid _id'}
+                        ]
+                    }
+                ]
+            ];
+
+            var op = new BulkMappingOperation(User, data);
+            op.onCompletion(function () {
+                assert.notOk(op.error[0]);
+                assert.ok(op.error[1]);
+                var subError = op.error[1][0];
+                assert.ok(subError);
+                dump(op.error);
+                done();
+            });
+            op.start();
+        });
+
+        it('wtf', function (done) {
+            var data = [
+                [{name: 'Repo'}],
+                [{_id: 'nosuchlocalid'}]
+            ];
+
+            var op = new BulkMappingOperation(Repo, data);
+            op.onCompletion(function () {
+                assert.equal(op.error.length, 2);
+                assert.equal(op.error[0].length, 1);
+                assert.notOk(op.error[0][0]);
+                assert.equal(op.error[1].length, 1);
+                assert.ok(op.error[1][0]);
+                done();
+            });
+            op.start();
+        });
+
     });
 
     describe('new', function () {
 
-        // TODO: Test invalid
-        // TODO: Test invalid _id
         // TODO: Test get all objects that have been mapped (bubble up from suboperations) and then document this.
 
         describe('array of array', function () {
@@ -429,7 +502,6 @@ describe('bulk mapping operation', function () {
                 op.start();
             });
         });
-
 
 
     });

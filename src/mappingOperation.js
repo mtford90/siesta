@@ -377,19 +377,22 @@ function BulkMappingOperation(mapping, data, completion) {
     this.override = null;
 
     function _map(i, model, data) {
+        // If a siesta model was passed as data, there is nothing to map onto it.
         for (var prop in data) {
             if (data.hasOwnProperty(prop)) {
-                var val = data[prop];
-                if (model._fields.indexOf(prop) > -1) {
-                    model[prop] = val;
+                var isError = !!self.errors[i];
+                if (isError) {
+                    isError = !!self.errors[i][prop];
                 }
-                else if (model._relationshipFields.indexOf(prop) > -1) {
-                    var isError = !!self.errors[i];
-                    if (isError) {
-                        isError = !!self.errors[i][prop];
+                if (!isError) {
+                    var val = data[prop];
+                    if (model._fields.indexOf(prop) > -1) {
+                        model[prop] = val;
                     }
-                    if (!isError) {
+                    else if (model._relationshipFields.indexOf(prop) > -1) {
+
                         var related = self.subopResults[prop][i];
+                        dump(prop, related);
                         try {
                             model[prop] = related;
                         }
@@ -404,26 +407,29 @@ function BulkMappingOperation(mapping, data, completion) {
                                 throw err;
                             }
                         }
-                    }
 
-                }
-                else {
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('No such property ' + prop.toString());
+                    }
+                    else {
+                        if (Logger.debug.isEnabled)
+                            Logger.debug('No such property ' + prop.toString());
+                    }
                 }
             }
         }
+
     }
 
     function work(done) {
         var categories, local, remote;
-        local = {};
-        remote = {};
+
         if (!self.override) {
             categories = self._categoriseData();
-
+            local = categories.local;
+            remote = categories.remote;
         }
         else {
+            local = {};
+            remote = {};
             _.each(self.override, function (obj) {
                 if (obj._id) {
                     local[obj._id] = obj;
@@ -504,10 +510,26 @@ function BulkMappingOperation(mapping, data, completion) {
                             }
                             var relationshipName = subop.__relationshipName;
                             self.subopResults[relationshipName] = [];
+                            var subopErrors;
+                            // Flatten the errors of the suboperation.
+                            if (subop.error) {
+                                subopErrors = [];
+                                for (var i = 0; i < subop.error.length; i++) {
+                                    var e = subop.error[i];
+                                    if (Object.prototype.toString.call(e) == '[object Array]') {
+                                        _.each(e, function (e1) {
+                                            subopErrors.push(e1);
+                                        })
+                                    }
+                                    else {
+                                        subopErrors.push(e);
+                                    }
+                                }
+                            }
                             for (var i = 0; i < indexes.length; i++) {
                                 var idx = indexes[i];
-                                if (subop.error && subop.error[i]) {
-                                    var err = subop.error[i];
+                                if (subopErrors && subopErrors[i]) {
+                                    var err = subopErrors[i];
                                     if (!self.errors[idx]) self.errors[idx] = {};
                                     self.errors[idx][relationshipName] = err;
                                 }
@@ -562,7 +584,9 @@ function BulkMappingOperation(mapping, data, completion) {
                             local[obj._id] = obj;
                         }
                     }
-                    _map(idx, obj, datum);
+                    if (obj != datum) { // e.g. is a SiestaModel is passed as a data item.
+                        _map(idx, obj, datum);
+                    }
                     return obj;
                 }
 
@@ -587,9 +611,31 @@ function BulkMappingOperation(mapping, data, completion) {
                     }
                 }
                 var isError = self.errors.length;
-                done(isError ? self.errors : null, objects);
+                done(isError ? _unflattenErrors() : null, objects);
             }
         });
+    }
+
+    function _unflattenErrors() {
+        var unflattenedErrors = [];
+        var n = 0;
+        for (var i = 0; i < data.length; i++) {
+            var datum = data[i];
+            if (Object.prototype.toString.call(datum) == '[object Array]') {
+                var arr = [];
+                for (var j = 0; j < datum.length; j++) {
+                    arr.push(self.errors[n]);
+                    n += 1;
+                }
+                unflattenedErrors[i] = arr;
+            }
+            else {
+                unflattenedErrors[i] = self.errors[n];
+                n += 1;
+            }
+
+        }
+        return unflattenedErrors;
     }
 
     Operation.call(this);
@@ -606,6 +652,8 @@ BulkMappingOperation.prototype._categoriseData = function () {
     var localLookups = [];
     var remoteLookups = [];
     var newObjects = [];
+    var local = {};
+    var remote = {};
 
     var data = this.data;
 
@@ -629,17 +677,20 @@ BulkMappingOperation.prototype._categoriseData = function () {
             modifiedDatum[self.mapping.id] = datum;
         }
         if (datum instanceof SiestaModel) {
-            modifiedDatum = {};
-            modifiedDatum._id = datum._id;
+            local[datum._id] = datum;
+            if (datum[self.mapping.id]) {
+                remote[datum[self.mapping.id]] = datum;
+            }
+            return;
         }
         datum = modifiedDatum ? modifiedDatum : datum;
         if (datum._id) {
             localLookups.push(datum);
         }
-        else if (datum[self.mapping.id]) {
+        if (datum[self.mapping.id]) {
             remoteLookups.push(datum);
         }
-        else {
+        if (!datum._id && !datum[self.mapping.id]) {
             newObjects.push(datum);
         }
         return modifiedDatum;
@@ -654,6 +705,7 @@ BulkMappingOperation.prototype._categoriseData = function () {
                     datum[j] = modifiedSubDatum;
                 }
             }
+
         }
         else {
             var modifiedDatum = categoriseDatum(datum);
@@ -665,7 +717,9 @@ BulkMappingOperation.prototype._categoriseData = function () {
 
     return {
         localLookups: localLookups,
+        local: local,
         remoteLookups: remoteLookups,
+        remote: remote,
         newObjects: newObjects
     }
 };
