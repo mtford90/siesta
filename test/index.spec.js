@@ -8,6 +8,7 @@ describe('indexes', function () {
     var Index = require('../src/index').Index;
     var Pouch = require('../src/pouch');
     var index = require('../src/index');
+    var RawQuery = require('../src/rawQuery').RawQuery;
 
     beforeEach(function () {
         s.reset(true);
@@ -22,22 +23,27 @@ describe('indexes', function () {
             assert.equal(i._getName(), 'myCollection_Index_Car_colour_name');
         });
 
+        describe('map func', function () {
+            it('map func', function () {
+                var i = new Index('myCollection', 'Car', ['colour', 'name']);
+                var emissions = [];
 
-        it('map func', function () {
-            var i = new Index('myCollection', 'Car', ['colour', 'name']);
-            var emissions = [];
+                function emit(id, doc) {
+                    emissions.push({id: id, doc: doc});
+                }
 
-            function emit(id, doc) {
-                emissions.push({id: id, doc: doc});
-            }
+                var rawMap = i._constructMapFunction();
+                eval('var mapFunc = ' + rawMap);
+                mapFunc({type: 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'});
+                assert.equal(1, emissions.length);
+                var emission = emissions[0];
+                assert.equal(emission.id, 'red_Aston Martin')
+            });
 
-            var rawMap = i._constructMapFunction();
-            eval('var mapFunc = ' + rawMap);
-            mapFunc({type: 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'});
-            assert.equal(1, emissions.length);
-            var emission = emissions[0];
-            assert.equal(emission.id, 'red_Aston Martin')
+
+
         });
+
 
         // Check that queries using the index work as expected with PouchDB.
         it('pouchdb index', function (done) {

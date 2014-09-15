@@ -226,7 +226,6 @@ describe('bulk mapping operation', function () {
 
     describe('new', function () {
 
-        // TODO: Test get all objects that have been mapped (bubble up from suboperations) and then document this.
 
         describe('array of array', function () {
             it('array of array', function (done) {
