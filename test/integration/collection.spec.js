@@ -11,6 +11,8 @@ var s = require('../../index')
 var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
 
+var async = require('async');
+
 describe('intercollection relationships', function () {
 
     var myOfflineCollection;

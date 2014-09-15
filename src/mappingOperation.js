@@ -9,10 +9,11 @@ Logger.setLevel(log.Level.warn);
 
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
+var util = require('./util');
 
-var async = require('async');
 
 var cache = require('./cache');
+var _ = require('./util')._;
 
 /**
  *
@@ -439,7 +440,7 @@ function BulkMappingOperation(mapping, data, completion) {
             });
         }
 
-        async.parallel([
+        util.parallel([
             function (callback) {
                 if (!self.override && !self.mapping.singleton) {
                     var localIdentifiers = _.pluck(categories.localLookups, '_id');

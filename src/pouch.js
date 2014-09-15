@@ -7,6 +7,7 @@ var RestError = require('./error').RestError;
 var guid = require('./misc').guid;
 var cache = require('./cache');
 var pouch = new PouchDB('siesta', {adapter: 'memory'});
+var _ = require('./util')._;
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
     getPouch().get(docId, function (err, doc) {
@@ -51,7 +52,7 @@ function _reset(inMemory) {
             pouch = new PouchDB('siesta-' + dbName, {adapter: 'memory'});
         }
         else {
-            pouch = new PouchDB('siesta-' + dbName, {db: require('memdown')});
+            throw 'nyi';
         }
     }
     else {

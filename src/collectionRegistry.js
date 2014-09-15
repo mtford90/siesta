@@ -1,3 +1,4 @@
+var _ = require('./util')._;
 
 function CollectionRegistry() {
     if (!this) return new CollectionRegistry();

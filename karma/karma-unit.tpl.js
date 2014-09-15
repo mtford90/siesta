@@ -11,7 +11,6 @@ module.exports = function (karma) {
         files: [
             'node_modules/es5-shim/es5-shim.min.js', // Otherwise PouchDB doesn't work.
             'node_modules/q/q.js', // For mocking $q
-            'bower_components/async/lib/async.js',
             <% scripts.forEach( function ( file ) { %>'<%= file %>',
                 <% }); %>
             'build/test-bundle.js'

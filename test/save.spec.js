@@ -7,6 +7,9 @@ var collection, carMapping;
 
 var Platform = require('../vendor/observe-js/src/observe').Platform;
 
+var async = require('async');
+
+
 describe('initial save', function () {
 
     var car;

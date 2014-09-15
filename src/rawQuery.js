@@ -11,6 +11,7 @@ var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 var utils = require('./util');
 
+var _ = utils._;
 
 function RawQuery(collection, modelName, query) {
     this.collection = collection;

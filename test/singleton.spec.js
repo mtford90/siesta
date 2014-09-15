@@ -27,22 +27,6 @@ describe('singleton', function () {
         collection.install(done);
     });
 
-    it('should raise an error if we try create more than one', function (done) {
-        var obj = carMapping._new({colour: 'red'});
-        obj.save(function (err) {
-            if (err) done(err);
-            obj = carMapping._new({colour: 'blue'});
-            obj.save(function (err) {
-                if (err) {
-                    done();
-                }
-                else {
-                    done('Did not receive an error creating two singletons!');
-                }
-            });
-        });
-    });
-
     it('should map onto the same singleton object, even if a different identifier', function (done) {
         carMapping.map({colour: 'red', id: 5}, function (err, car) {
             if (err) done(err);

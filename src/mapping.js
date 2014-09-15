@@ -30,6 +30,9 @@ var OneToOneProxy = require('./proxy').OneToOneProxy;
 
 var util = require('./util');
 
+var _ = util._;
+
+
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 function Mapping(opts) {

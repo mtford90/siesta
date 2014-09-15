@@ -8,7 +8,9 @@ Logger.setLevel(log.Level.warn);
 
 
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
+var utils = require('./util');
 
+var _ = utils._;
 
 var cache = require('./cache');
 

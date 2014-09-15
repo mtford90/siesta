@@ -10,6 +10,7 @@ var extend = require('extend');
 
 // The XRegExp object has these properties that we want to ignore when matching.
 var ignore = ['index', 'input'];
+var _ = require('./util')._;
 
 
 function Descriptor(opts) {

@@ -7,7 +7,6 @@ HttpLogger.setLevel(log.Level.warn);
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 var saveOperation = require('./saveOperation');
-var SaveOperation = saveOperation.SaveOperation;
 var BulkSaveOperation = saveOperation.BulkSaveOperation;
 var RequestDescriptor = require('./requestDescriptor').RequestDescriptor;
 var ResponseDescriptor = require('./responseDescriptor').ResponseDescriptor;
@@ -18,6 +17,7 @@ var Pouch = require('./pouch');
 var extend = require('extend');
 
 var $ = require('../vendor/zepto').$;
+var _ = require('./util')._;
 
 
 /**

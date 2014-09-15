@@ -6,6 +6,9 @@ var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Index');
 Logger.setLevel(log.Level.warn);
 
+var _ = require('./util')._;
+
+
 function combine(a, min) {
     var fn = function (n, src, got, all) {
         if (n == 0) {

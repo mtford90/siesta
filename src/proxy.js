@@ -9,6 +9,8 @@ var broadcast = notificationCentre.broadcast;
 var wrapArray = notificationCentre.wrapArray;
 var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 var ChangeType = require('./changeType').ChangeType;
+var _ = require('./util')._;
+
 
 function Fault(proxy, relationship) {
     var self = this;
