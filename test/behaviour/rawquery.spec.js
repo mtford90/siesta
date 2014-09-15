@@ -1,13 +1,13 @@
-var s = require('../index')
+var s = require('../../index')
     , assert = require('chai').assert;
 
 
 describe('raw query behaviour', function () {
 
 
-    var Index = require('../src/index').Index;
-    var Pouch = require('../src/pouch');
-    var RawQuery = require('../src/rawQuery').RawQuery;
+    var Index = require('../../src/index').Index;
+    var Pouch = require('../../src/pouch');
+    var RawQuery = require('../../src/rawQuery').RawQuery;
 
     beforeEach(function () {
         s.reset(true);

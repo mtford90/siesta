@@ -206,7 +206,6 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         m.end();
         if (callback) callback(err, res);
     }
-
     if (this.singleton) {
         if (typeof idOrCallback == 'function') {
             callback = idOrCallback;
@@ -576,6 +575,7 @@ function constructMapFunction(collection, type, fields) {
     }
     mapFunc = mapFunc.replace('$2', type);
     mapFunc = mapFunc.replace('$3', collection);
+    dump(mapFunc);
     return mapFunc;
 }
 

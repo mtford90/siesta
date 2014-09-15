@@ -10,10 +10,13 @@ var s = require('../../index')
 
 var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
+var cache = require('../../src/cache');
 
 var async = require('async');
 
 describe('intercollection relationships', function () {
+
+
 
     var myOfflineCollection;
     var myOnlineCollection;
@@ -147,6 +150,7 @@ describe('intercollection relationships', function () {
         });
     }
 
+
     it('Can install offline fixtures', function (done) {
         installOfflineFixtures(done);
     });
@@ -155,112 +159,129 @@ describe('intercollection relationships', function () {
         installOnlineFixtures(done);
     });
 
-    describe('local queries', function () {
+    /**
+     * Execute the integration test. Seperated out into a function so can be executed having manipulated Pouch
+     */
+    function tests () {
+        describe('local queries', function () {
+            describe('offline', function () {
 
 
-        describe('offline', function () {
-
-            beforeEach(function (done) {
-                installOfflineFixtures(done);
-            });
-
-            it('should return mike when querying for him', function (done) {
-                myOfflineCollection.User.query({username: 'gaz'}, function (err, users) {
-                    if (err) done(err);
-                    assert.equal(users.length, 1);
-                    assert.equal(users[0].username, 'gaz');
-                    done();
-                });
-            });
-        });
-
-        describe('online', function () {
-            beforeEach(function (done) {
-                installOnlineFixtures(done);
-            });
-
-            it('should return 3 users when run a local all query against users', function (done) {
-                myOnlineCollection.User.all(function (err, users) {
-                    if (err) done(err);
-                    assert.equal(users.length, 3);
-                    done();
-                });
-            });
-
-            it('should return 3 photos when run a local all query against photos', function (done) {
-                myOnlineCollection.Photo.all(function (err, photos) {
-                    if (err) done(err);
-                    assert.equal(photos.length, 3);
-                    done();
-                });
-            });
-
-            it('should return 2 photos with height 500', function (done) {
-                myOnlineCollection.Photo.query({height: 500}, function (err, photos) {
-                    if (err) done(err);
-                    assert.equal(photos.length, 2);
-                    _.each(photos, function (p) {
-                        assert.equal(p.height, 500);
-                    });
-                    done();
-                });
-            });
-
-            it('should return 1 photo with height 500, width, 750', function (done) {
-                myOnlineCollection.Photo.query({height: 500, width: 750}, function (err, photos) {
-                    if (err) done(err);
-                    assert.equal(photos.length, 1);
-                    assert.equal(photos[0].height, 500);
-                    assert.equal(photos[0].width, 750);
-                    done();
-                });
-            });
-
-            it('should be able to query by remote identifier', function (done) {
-                myOnlineCollection.User.get('1', function (err, user) {
-                    if (err) done(err);
-                    assert.equal(user.userId, '1');
-                    done();
-                })
-            })
-
-
-        });
-    });
-
-    describe('relationship mappings', function () {
-
-        beforeEach(function (done) {
-            installOnlineFixtures(done);
-        });
-
-        describe('online', function () {
-            function assertNumPhotos(userId, numPhotos, done) {
-                myOnlineCollection.User.get(userId, function (err, user) {
-                    if (err) done(err);
-                    assert.equal(user.userId, userId);
-                    user.photosProxy.get(function (err, photos) {
+                it('should return mike when querying for him', function (done) {
+                    myOfflineCollection.User.query({username: 'gaz'}, function (err, users) {
                         if (err) done(err);
-                        assert.equal(photos ? photos.length : 0, numPhotos);
+                        assert.equal(users.length, 1);
+                        assert.equal(users[0].username, 'gaz');
                         done();
                     });
+                });
+            });
+
+            describe('online', function () {
+
+                it('should return 3 users when run a local all query against users', function (done) {
+                    myOnlineCollection.User.all(function (err, users) {
+                        if (err) done(err);
+                        assert.equal(users.length, 3);
+                        done();
+                    });
+                });
+
+                it('should return 3 photos when run a local all query against photos', function (done) {
+                    myOnlineCollection.Photo.all(function (err, photos) {
+                        if (err) done(err);
+                        assert.equal(photos.length, 3);
+                        done();
+                    });
+                });
+
+                it('should return 2 photos with height 500', function (done) {
+                    myOnlineCollection.Photo.query({height: 500}, function (err, photos) {
+                        if (err) done(err);
+                        assert.equal(photos.length, 2);
+                        _.each(photos, function (p) {
+                            assert.equal(p.height, 500);
+                        });
+                        done();
+                    });
+                });
+
+                it('should return 1 photo with height 500, width, 750', function (done) {
+                    myOnlineCollection.Photo.query({height: 500, width: 750}, function (err, photos) {
+                        if (err) done(err);
+                        assert.equal(photos.length, 1);
+                        assert.equal(photos[0].height, 500);
+                        assert.equal(photos[0].width, 750);
+                        done();
+                    });
+                });
+
+                it('should be able to query by remote identifier', function (done) {
+                    myOnlineCollection.User.get('1', function (err, user) {
+                        if (err) done(err);
+                        assert.equal(user.userId, '1');
+                        done();
+                    })
                 })
-            }
 
-            it('user with id 1 should have 2 photos', function (done) {
-                assertNumPhotos('1', 2, done);
+
             });
+        });
+        describe('relationship mappings', function () {
+            describe('online', function () {
+                function assertNumPhotos(userId, numPhotos, done) {
+                    myOnlineCollection.User.get(userId, function (err, user) {
+                        if (err) done(err);
+                        assert.equal(user.userId, userId);
+                        user.photosProxy.get(function (err, photos) {
+                            if (err) done(err);
+                            assert.equal(photos ? photos.length : 0, numPhotos);
+                            done();
+                        });
+                    })
+                }
 
-            it('user with id 2 should have 1 photo...', function (done) {
-                assertNumPhotos('2', 1, done);
-            });
+                it('user with id 1 should have 2 photos', function (done) {
+                    assertNumPhotos('1', 2, done);
+                });
 
-            it('user with id 3 should have no photos', function (done) {
-                assertNumPhotos('3', 0, done);
+                it('user with id 2 should have 1 photo...', function (done) {
+                    assertNumPhotos('2', 1, done);
+                });
+
+                it('user with id 3 should have no photos', function (done) {
+                    assertNumPhotos('3', 0, done);
+                });
+
             });
 
         });
+    }
 
+    describe('no cache', function () {
+        beforeEach(function (done) {
+            installOfflineFixtures(function (err) {
+                if (err) done(err);
+                installOnlineFixtures(function (err) {
+                    if (err) done(err);
+                    cache.reset();
+                    done();
+                });
+            });
+        });
+        tests();
     });
+
+//    describe('cached', function () {
+//        beforeEach(function (done) {
+//            installOfflineFixtures(function (err) {
+//                if (err) done(err);
+//                installOnlineFixtures(done);
+//            });
+//        });
+//        tests();
+//    });
+
+
 
 });

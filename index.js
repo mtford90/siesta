@@ -10,7 +10,7 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
-    , _ = require('./util')._;
+    , _ = require('./src/util')._;
 
 Operation.logLevel = log.Level.warn;
 OperationQueue.logLevel = log.Level.warn;
