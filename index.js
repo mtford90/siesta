@@ -9,7 +9,8 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , Operation = require('./vendor/operations.js/src/operation').Operation
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
-    , log = require('./vendor/operations.js/src/log');
+    , log = require('./vendor/operations.js/src/log')
+    , _ = require('./util')._;
 
 Operation.logLevel = log.Level.warn;
 OperationQueue.logLevel = log.Level.warn;
@@ -75,6 +76,11 @@ siesta.Collection = Collection;
 siesta.RelationshipType = RelationshipType;
 
 siesta.setPouch = pouch.setPouch;
+
+
+siesta.collection = function (name, opts) {
+    return new Collection(name, opts);
+};
 
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {
