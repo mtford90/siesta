@@ -17,7 +17,8 @@ var Pouch = require('./pouch');
 var extend = require('extend');
 
 var $ = require('../vendor/zepto').$;
-var _ = require('./util')._;
+var util = require('./util');
+var _ = util._;
 
 
 /**
@@ -248,7 +249,7 @@ Collection.prototype.mapping = function () {
     var self = this;
     if (arguments.length) {
         if (arguments.length == 1) {
-            if (Object.prototype.toString.call(arguments[0]) == '[object Array]') {
+            if (util.isArray(arguments[0])) {
                 return _.map(arguments[0], function (m) {
                     return self._mapping(m.name, m);
                 });
@@ -434,7 +435,7 @@ Collection.prototype._descriptor = function (registrationFunc) {
     var args = Array.prototype.slice.call(arguments, 1);
     if (args.length) {
         if (args.length == 1) {
-            if (Object.prototype.toString.call(args[0]) == '[object Array]') {
+            if (util.isArray(args[0])) {
                 return _.map(args[0], function (d) {
                     return registrationFunc(d);
                 });

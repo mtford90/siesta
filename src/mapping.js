@@ -299,7 +299,7 @@ Mapping.prototype._validate = function () {
  * @param override Force mapping to this object
  */
 Mapping.prototype.map = function (data, callback, override) {
-    if (Object.prototype.toString.call(data) == '[object Array]') {
+    if (util.isArray(data)) {
         return this._mapBulk(data, callback, override);
     }
     else {
@@ -397,7 +397,7 @@ Mapping.prototype._new = function (data) {
                     new: v,
                     field: field
                 });
-                if (Object.prototype.toString.call(v) === '[object Array]') {
+                if (util.isArray(v)) {
                     wrapArray(v, field, newModel);
                 }
 

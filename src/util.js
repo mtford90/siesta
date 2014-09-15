@@ -155,6 +155,8 @@ exports.parallel = function (tasks, callback) {
     _parallel({ map: map, each: each }, tasks, callback);
 };
 
+exports.isArray = isArray;
+
 // END async.js //
 
 // START underscore.js //

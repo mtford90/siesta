@@ -30,7 +30,7 @@ function resultsCallback(callback, err, resp) {
 }
 
 RawQuery.prototype.execute = function (callback) {
-//    utils.printStackTrace();
+//    util.printStackTrace();
     var m = new PerformanceMonitor('Raw Query');
     m.start();
     var self = this;

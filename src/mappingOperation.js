@@ -9,11 +9,11 @@ Logger.setLevel(log.Level.warn);
 
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
-var util = require('./util');
 
 
 var cache = require('./cache');
-var _ = require('./util')._;
+var util = require('./util');
+var _ = util._;
 
 /**
  *
@@ -300,7 +300,7 @@ MappingOperation.prototype._startMapping = function () {
             if (Logger.trace.isEnabled)
                 Logger.trace('Checking "' + prop + '"');
             var val = data[prop];
-            if (Object.prototype.toString.call(val) == '[object Array]') {
+            if (util.isArray(val)) {
                 this._mapArray(prop, val);
             }
             else {
@@ -528,7 +528,7 @@ function BulkMappingOperation(mapping, data, completion) {
                                 subopErrors = [];
                                 for (var i = 0; i < subop.error.length; i++) {
                                     var e = subop.error[i];
-                                    if (Object.prototype.toString.call(e) == '[object Array]') {
+                                    if (util.isArray(e)) {
                                         _.each(e, function (e1) {
                                             subopErrors.push(e1);
                                         })
@@ -612,7 +612,7 @@ function BulkMappingOperation(mapping, data, completion) {
                 for (var i = 0; i < data.length; i++) {
                     var datum = data[i];
                     var remoteId;
-                    if (Object.prototype.toString.call(datum) == '[object Array]') {
+                    if (util.isArray(datum)) {
                         var arr = [];
                         for (var j = 0; j < datum.length; j++) {
                             var subDatum = datum[j];
@@ -637,7 +637,7 @@ function BulkMappingOperation(mapping, data, completion) {
         var n = 0;
         for (var i = 0; i < data.length; i++) {
             var datum = data[i];
-            if (Object.prototype.toString.call(datum) == '[object Array]') {
+            if (util.isArray(datum)) {
                 var arr = [];
                 for (var j = 0; j < datum.length; j++) {
                     arr.push(self.errors[n]);
@@ -714,7 +714,7 @@ BulkMappingOperation.prototype._categoriseData = function () {
 
     for (var i = 0; i < data.length; i++) {
         var datum = data[i];
-        if (Object.prototype.toString.call(datum) == '[object Array]') {
+        if (util.isArray(datum)) {
             for (var j = 0; j < datum.length; j++) {
                 var modifiedSubDatum = categoriseDatum(datum[j]);
                 if (modifiedSubDatum) {
@@ -751,7 +751,7 @@ BulkMappingOperation.prototype._constructSubOperations = function () {
             var idx = 0;
             for (var i = 0; i < this.data.length; i++) {
                 var datum = this.data[i];
-                if (Object.prototype.toString.call(datum) == '[object Array]') {
+                if (util.isArray(datum)) {
                     for (var j = 0; j < datum.length; j++) {
                         var subDatum = datum[j];
                         if (subDatum[name]) {

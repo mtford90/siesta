@@ -10,7 +10,8 @@ var extend = require('extend');
 
 // The XRegExp object has these properties that we want to ignore when matching.
 var ignore = ['index', 'input'];
-var _ = require('./util')._;
+var util = require('./util');
+var _ = util._;
 
 
 function Descriptor(opts) {
@@ -259,7 +260,7 @@ Descriptor.prototype.match = function (config, data) {
         matches = !!extractedData;
         if (matches) {
             var key;
-            if (Object.prototype.toString.call(extractedData) === '[object Array]') {
+            if (util.isArray(extractedData)) {
                 for (key in regexMatches) {
                     if (regexMatches.hasOwnProperty(key)) {
                         _.each(extractedData, function (datum) {
@@ -314,7 +315,7 @@ Descriptor.prototype._transformData = function (data) {
                 }
                 else if (typeof(transform) == 'function') {
                     var transformed = transform(val);
-                    if (Object.prototype.toString.call(transformed) === '[object Array]') {
+                    if (util.isArray(transformed)) {
                         delete data[attr];
                         data[transformed[0]] = transformed[1];
                     }

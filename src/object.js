@@ -5,7 +5,8 @@ Logger.setLevel(log.Level.warn);
 var defineSubProperty = require('./misc').defineSubProperty;
 var saveOperation = require('./saveOperation');
 //var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
-var _ = require('./util')._;
+var util = require('./util');
+var _ = util._;
 
 //var queues = {};
 
@@ -163,7 +164,7 @@ SiestaModel.prototype._dump = function (asJson) {
     cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
         if (self[f + 'Proxy']) {
             if (self[f + 'Proxy'].hasOwnProperty('_id')) {
-                if (Object.prototype.toString.call(self[f + 'Proxy']._id) === '[object Array]') {
+                if (util.isArray(self[f + 'Proxy']._id)) {
                     if (self[f].length) {
                         memo[f] = self[f + 'Proxy']._id;
                     }

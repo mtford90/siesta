@@ -8,9 +8,9 @@ Logger.setLevel(log.Level.warn);
 
 
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
-var utils = require('./util');
+var util = require('./util');
 
-var _ = utils._;
+var _ = util._;
 
 var cache = require('./cache');
 
@@ -19,7 +19,7 @@ function get(opts, callback) {
         Logger.debug('get', opts);
     var siestaModel;
     if (opts._id) {
-        if (Object.prototype.toString.call(opts._id) === '[object Array]') {
+        if (util.isArray(opts._id)) {
             // Proxy onto getMultiple instead.
             getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
         }
@@ -31,7 +31,7 @@ function get(opts, callback) {
                 wrappedCallback(callback)(null, siestaModel);
             }
             else {
-                if (Object.prototype.toString.call(opts._id) === '[object Array]') {
+                if (util.isArray(opts._id)) {
                     // Proxy onto getMultiple instead.
                     getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
                 }
@@ -48,7 +48,7 @@ function get(opts, callback) {
         }
     }
     else if (opts.mapping) {
-        if (Object.prototype.toString.call(opts[opts.mapping.id]) === '[object Array]') {
+        if (util.isArray(opts[opts.mapping.id])) {
             // Proxy onto getMultiple instead.
             getMultiple(_.map(opts[opts.mapping.id], function (id) {
                 var o = {};
