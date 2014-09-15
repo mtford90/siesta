@@ -64,6 +64,8 @@ siesta.reset = function (inMemory, callback) {
     pouch.reset(inMemory, callback);
 };
 
+
+
 siesta.on = _.bind(notificationCentre.on, notificationCentre);
 siesta.addListener = _.bind(notificationCentre.addListener, notificationCentre);
 siesta.removeListener = _.bind(notificationCentre.removeListener, notificationCentre);
@@ -71,6 +73,8 @@ siesta.once = _.bind(notificationCentre.once, notificationCentre);
 
 siesta.Collection = Collection;
 siesta.RelationshipType = RelationshipType;
+
+siesta.setPouch = pouch.setPouch;
 
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {

@@ -186,3 +186,6 @@ exports.toSiesta = toSiesta;
 exports.retryUntilWrittenMultiple = retryUntilWrittenMultiple;
 exports.reset = reset;
 exports.getPouch = getPouch;
+exports.setPouch = function (_p) {
+    pouch = _p;
+};
