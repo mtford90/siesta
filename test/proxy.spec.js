@@ -91,8 +91,8 @@ describe('new object proxy', function () {
                             assert.instanceOf(car.owner, Fault);
                         });
 
-                        it('is not faulted, as no relationship set', function () {
-                            assert.notOk(car.owner.isFault);
+                        it('is faulted, as no relationship set', function () {
+                            assert.ok(car.owner.isFault);
                         });
                     });
 
@@ -105,7 +105,7 @@ describe('new object proxy', function () {
                             assert.instanceOf(car.owner, Fault);
                         });
 
-                        it('is faulted, as relationship set', function () {
+                        it('is faulted, as _id exists, but no related object', function () {
                             assert.ok(car.owner.isFault);
                         });
                     });
@@ -148,8 +148,8 @@ describe('new object proxy', function () {
                             assert.instanceOf(person.cars, Fault);
                         });
 
-                        it('is not faulted, as no relationship set', function () {
-                            assert.notOk(person.cars.isFault);
+                        it('is faulted, as no relationship set', function () {
+                            assert.ok(person.cars.isFault);
                         });
                     });
 
@@ -249,26 +249,24 @@ describe('new object proxy', function () {
                 cache.insert(car);
             });
 
-            describe('get', function () {
-                it('forward', function (done) {
-                    carProxy._id = person._id;
-                    assert.ok(carProxy.isFault);
-                    carProxy.get(function (err, obj) {
-                        if (err) done(err);
-                        assert.equal(person, obj);
-                        done();
-                    });
+            it('forward', function (done) {
+                carProxy._id = person._id;
+                assert.ok(carProxy.isFault);
+                carProxy.get(function (err, obj) {
+                    if (err) done(err);
+                    assert.equal(person, obj);
+                    done();
                 });
+            });
 
-                it('reverse', function (done) {
-                    personProxy._id = car._id;
-                    assert.ok(personProxy.isFault);
-                    personProxy.get(function (err, obj) {
-                        if (err) done(err);
-                        assert.equal(car, obj);
-                        assert.equal(personProxy.related, car);
-                        done();
-                    });
+            it('reverse', function (done) {
+                personProxy._id = car._id;
+                assert.ok(personProxy.isFault);
+                personProxy.get(function (err, obj) {
+                    if (err) done(err);
+                    assert.equal(car, obj);
+                    assert.equal(personProxy.related, car);
+                    done();
                 });
             });
 
@@ -294,9 +292,11 @@ describe('new object proxy', function () {
                 car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
+                carProxy.isFault = false;
                 person = new SiestaModel(personMapping);
                 person._id = '123';
                 personProxy.install(person);
+                personProxy.isFault = false;
             });
 
             describe('none pre-existing', function () {
@@ -465,8 +465,10 @@ describe('new object proxy', function () {
                 car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
+                carProxy.isFault = false;
                 person = new SiestaModel(personMapping);
                 person._id = '123';
+                personProxy.isFault = false;
                 personProxy.install(person);
                 cache.insert(person);
                 cache.insert(car);
@@ -517,9 +519,11 @@ describe('new object proxy', function () {
                 car = new SiestaModel(carMapping);
                 car._id = 'xyz';
                 carProxy.install(car);
+                carProxy.isFault = false;
                 person = new SiestaModel(personMapping);
                 person._id = '123';
                 personProxy.install(person);
+                personProxy.isFault = false;
             });
 
             describe('none pre-existing', function () {

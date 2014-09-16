@@ -6,6 +6,8 @@ describe('mapping queries', function () {
     var Pouch = require('../../src/pouch');
     var SiestaModel = require('../../src/object').SiestaModel;
     var Collection = require('../../src/collection').Collection;
+    var RelationshipType = require('../../src/relationship').RelationshipType;
+    var cache = require('../../src/cache');
 
     beforeEach(function () {
         s.reset(true);
@@ -76,6 +78,61 @@ describe('mapping queries', function () {
             });
         });
 
+
+
+    });
+
+    describe('reverse', function () {
+
+        var carMapping, personMapping;
+
+        var collection;
+
+        beforeEach(function (done) {
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars',
+                        mapping: 'Person'
+                    }
+                }
+            });
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+
+        it('xyz', function (done) {
+            carMapping.map({
+                colour: 'red',
+                name: 'Aston Martin',
+                owner: {
+                    name: 'Michael Ford',
+                    age: 2,
+                    id: '2'
+                },
+                id: 5
+            }, function (err, car) {
+                if (err) done(err);
+                cache.reset();
+                personMapping.get('2', function (err, p) {
+                    assert.ok(p, 'Should be able to fetch the person');
+                    dump(p.cars);
+                    assert.ok(p.cars.isFault);
+                    p.carsProxy.get(function (err, cars) {
+                        assert.equal(cars.length, 1);
+                        assert.equal(cars[0].owner, p);
+                        done(err);
+                    });
+                });
+            });
+        });
     });
 
 });

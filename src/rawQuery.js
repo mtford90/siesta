@@ -38,14 +38,17 @@ RawQuery.prototype.execute = function (callback) {
     var indexName = self._getIndexName();
     Pouch.getPouch().get(designDocId, function (err) {
         var partialCallback = _.partial(resultsCallback, callback);
+
         function finish(err, docs) {
             m.end();
             if (Logger.trace.isEnabled)
                 Logger.trace('Received results: ', docs);
             partialCallback(err, docs);
         }
+
+        var key;
         if (!err) {
-            var key = self._constructKey();
+            key = self._constructKey();
             if (!key.length) {
                 key = self.modelName;
             }
@@ -56,20 +59,22 @@ RawQuery.prototype.execute = function (callback) {
         else {
             if (err.status == 404) {
                 Logger.warn('Couldnt find index "' + indexName + '" and hence must iterate through every single document.');
-                var fields = [];
-                for (var field in self.query) {
-                    if (self.query.hasOwnProperty(field)) {
-                        fields.push(field);
-                    }
-                }
+                var fields = self._sortedFields();
                 // TODO: Clean up constructMapFunction so can output both string+func version so don't need eval here.
                 // TODO: For some reason constructMapFunction2 (which returns a function) wont work with pouch.
                 // I'm thinking that pouch probably doesnt support closures in its queries which would mean
                 // we'd have to stick with eval here.
-                eval('var mapFunc = ' + mapping.constructMapFunction(self.collection, self.modelName, fields));
-//                        var mapFunc = constructMapFunction2(self.collection, self.modelName, fields);
+                dump(fields);
+                var f = mapping.constructMapFunction(self.collection, self.modelName, fields);
+                dump(f);
+                eval('var mapFunc = ' + f);
+                key = self._constructKey(fields);
+                if (!key.length) {
+                    key = self.modelName;
+                }
+                dump(key);
                 //noinspection JSUnresolvedVariable
-                Pouch.getPouch().query(mapFunc, finish);
+                Pouch.getPouch().query(mapFunc, {key: key}, finish);
             }
             else {
                 finish(err);
@@ -88,10 +93,14 @@ RawQuery.prototype._getFields = function () {
     return fields;
 };
 
+RawQuery.prototype._sortedFields = function () {
+    var fields = this._getFields();
+    return _.sortBy(fields, function (x) {return x});
+};
+
 RawQuery.prototype._constructKey = function () {
     var self = this;
-    var fields = this._getFields();
-    var sortedFields = _.sortBy(fields, function (x) {return x});
+    var sortedFields = this._sortedFields();
     var key = _.reduce(sortedFields, function (memo, x) {
         var v;
         if (x === null) {

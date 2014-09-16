@@ -449,6 +449,7 @@ Mapping.prototype._new = function (data) {
             }
         }
         proxy.install(newModel);
+        proxy.isFault = false;
     }
 
 
@@ -575,7 +576,6 @@ function constructMapFunction(collection, type, fields) {
     }
     mapFunc = mapFunc.replace('$2', type);
     mapFunc = mapFunc.replace('$3', collection);
-    dump(mapFunc);
     return mapFunc;
 }
 

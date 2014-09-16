@@ -7,7 +7,8 @@ var RestError = require('./error').RestError;
 var guid = require('./misc').guid;
 var cache = require('./cache');
 var pouch = new PouchDB('siesta', {adapter: 'memory'});
-var _ = require('./util')._;
+var util = require('./util');
+var _ = util._;
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
     getPouch().get(docId, function (err, doc) {
@@ -123,8 +124,18 @@ function toNew(doc) {
             }
         }
     }
+    // All reverse relationships will be faulted, as relationships are only stored in the forward facing model.
+    for (var relationshipName in mapping.relationships) {
+        if (mapping.relationships.hasOwnProperty(relationshipName)) {
+            var proxy = obj[relationshipName + 'Proxy'];
+            if (proxy.isReverse) {
+                proxy.isFault = true;
+            }
+        }
+    }
     return obj;
 }
+
 
 function toSiesta(docs) {
     var mapped = [];

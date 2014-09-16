@@ -44,28 +44,6 @@ describe('indexes', function () {
             });
 
 
-            it('map func2', function (done) {
-                var i = new Index('myCollection', 'Car', ['id']);
-                var obj = {type: 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection', id: 2, _id: 'asdasd'};
-                var pouch = Pouch.getPouch();
-                pouch.put(i._constructPouchDbView(), function (err, resp) {
-                    if (err) done(err);
-                    pouch.put(obj, function (err) {
-                        if (err) done(err);
-                        pouch.query(i._getName(), {key: 2}, function (err, resp) {
-                            if (err) {
-                                done(err);
-                            }
-                            dump(resp);
-                            assert.equal(resp.rows.length, 1);
-                            done();
-                        });
-                    })
-
-                })
-            });
-
-
 
         });
 

@@ -327,9 +327,6 @@ describe('raw query behaviour', function () {
                     });
                 });
 
-
-
-
             });
         });
 

@@ -5,15 +5,17 @@ var s = require('../index')
 describe('pouch doc adapter', function () {
 
 
-    var Collection =  require('../src/collection').Collection;
+    var Collection = require('../src/collection').Collection;
 
-        var Pouch =  require('../src/pouch');
+    var Pouch = require('../src/pouch');
 
-        var RestError =  require('../src/error').RestError;
-        var RelationshipType =  require('../src/relationship').RelationshipType;
+    var RestError = require('../src/error').RestError;
+    var RelationshipType = require('../src/relationship').RelationshipType;
 
-        var SiestaModel =  require('../src/object').SiestaModel;
-;
+    var SiestaModel = require('../src/object').SiestaModel;
+    var cache = require('../src/cache');
+
+    var pouchAdapter = require('../src/pouchAdapter');
 
     beforeEach(function () {
         s.reset(true);
@@ -21,24 +23,78 @@ describe('pouch doc adapter', function () {
 
     describe('from pouch to siesta', function () {
         describe('new', function () {
-            var collection;
-            beforeEach(function (done) {
-                collection = new Collection('myCollection');
-                collection.mapping('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age'],
-                    indexes: ['name', 'age']
+
+            describe('simple', function () {
+                var collection;
+                beforeEach(function (done) {
+                    collection = new Collection('myCollection');
+                    collection.mapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age'],
+                        indexes: ['name', 'age']
+                    });
+                    collection.install(done);
                 });
-                collection.install(done);
+
+                it('absorbs properties', function () {
+                    var doc = {name: 'Michael', type: 'Person', collection: 'myCollection', age: 23, _id: 'randomId', _rev: 'randomRev'};
+                    var obj = Pouch.toNew(doc);
+                    assert.equal(obj.name, 'Michael');
+                    assert.equal(obj.age, 23);
+                    assert.ok(obj.isSaved);
+                });
+
             });
 
-            it('absorbs properties', function () {
-                var doc = {name: 'Michael', type: 'Person', collection: 'myCollection', age: 23, _id: 'randomId', _rev: 'randomRev'};
-                var obj = Pouch.toNew(doc);
-                assert.equal(obj.name, 'Michael');
-                assert.equal(obj.age, 23);
-                assert.ok(obj.isSaved);
-            })
+//            describe('relationships', function () {
+//                describe('foreign key', function () {
+//                    var carMapping, personMapping;
+//
+//                    var collection;
+//
+//                    beforeEach(function (done) {
+//                        collection = new Collection('myCollection');
+//                        carMapping = collection.mapping('Car', {
+//                            id: 'id',
+//                            attributes: ['colour', 'name'],
+//                            relationships: {
+//                                owner: {
+//                                    type: RelationshipType.ForeignKey,
+//                                    reverse: 'cars',
+//                                    mapping: 'Person'
+//                                }
+//                            }
+//                        });
+//                        personMapping = collection.mapping('Person', {
+//                            id: 'id',
+//                            attributes: ['name', 'age']
+//                        });
+//                        collection.install(done);
+//                    });
+//
+//                    it('xyz', function (done) {
+//                        var docs = [
+//                            {colour: 'red', name: 'Aston Martin', owner: 'localPersonId', id: 5, _id: 'localCarId', collection: 'myCollection', type: 'Car'},
+//                            {name: 'Michael Ford', age: 2, id: 'localPersonId', collection: 'myCollection', type: 'Person'}
+//                        ];
+//                        Pouch.getPouch().bulkDocs(docs, function (err, resp) {
+//                            if (err) done(err);
+//                            cache.reset();
+//                            for (var i=0;i<resp.length;i++) {
+//                                docs[i]._rev = resp[i].rev;
+//                            }
+//
+//                            pouchAdapter.toNewR(docs[1], function (err, obj) {
+//                                dump(obj);
+//                                done(err);
+//                            });
+//                        });
+//                    });
+//
+//                });
+//            });
+
+
         });
 
         describe('toSiesta', function () {
@@ -130,6 +186,8 @@ describe('pouch doc adapter', function () {
             });
 
         });
+
+
     });
 
     describe('from siesta to pouch', function () {

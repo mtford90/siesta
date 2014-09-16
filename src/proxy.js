@@ -12,6 +12,8 @@ var ChangeType = require('./changeType').ChangeType;
 
 var util = require('./util');
 
+var Query = require('./query').Query;
+
 function Fault(proxy, relationship) {
     var self = this;
     this.proxy = proxy;
@@ -38,14 +40,28 @@ function NewObjectProxy(opts) {
     var self = this;
     this.fault = new Fault(this);
     this.object = null;
-    this._id = null;
+    this._id = undefined;
     this.related = null;
     Object.defineProperty(this, 'isFault', {
         get: function () {
             if (self._id) {
                 return !self.related;
             }
-            return false;
+            else if (self._id === null) {
+                return false;
+            }
+            return true;
+        },
+        set: function (v) {
+            if (v) {
+                self._id = undefined;
+                self.related = null;
+            }
+            else {
+                if (!self._id) {
+                    self._id = null;
+                }
+            }
         },
         enumerable: true,
         configurable: true
@@ -87,6 +103,20 @@ NewObjectProxy.prototype.getName = function () {
     }
     else if (this.isForward) {
         name = this.forwardName;
+    }
+    else {
+        throw new RestError('Incompatible relationship: ' + this.object.type + ' ,' + JSON.stringify(this._opts, null, 4));
+    }
+    return name;
+};
+
+NewObjectProxy.prototype.getMapping = function () {
+    var name;
+    if (this.isReverse) {
+        name = this.reverseMapping;
+    }
+    else if (this.isForward) {
+        name = this.forwardMapping;
     }
     else {
         throw new RestError('Incompatible relationship: ' + this.object.type + ' ,' + JSON.stringify(this._opts, null, 4));
@@ -445,23 +475,47 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
 
 ForeignKeyProxy.prototype.get = function (callback) {
     var self = this;
-    if (this._id) {
-        Store.get({_id: this._id}, function (err, stored) {
-            if (err) {
-                if (callback) callback(err);
-            }
-            else {
-                self.related = stored;
-                if (Object.prototype.toString.call(stored) == '[object Array]') {
-                    self._wrapArray(stored);
+    if (this.isFault) {
+        if (this._id) {
+            Store.get({_id: this._id}, function (err, stored) {
+                if (err) {
+                    if (callback) callback(err);
                 }
-                if (callback) callback(null, stored);
-            }
-        })
+                else {
+                    self.related = stored;
+                    if (Object.prototype.toString.call(stored) == '[object Array]') {
+                        self._wrapArray(stored);
+                    }
+                    if (callback) callback(null, stored);
+                }
+            })
+        }
+        else if (this.isReverse) {
+            var query = {};
+            query[this.forwardName] = this.object._id;
+            var q = new Query(this.forwardMapping, query);
+            q.execute(function (err, objs) {
+                if (!err) {
+                    self._id = _.pluck(objs, '_id');
+                    self.related = objs;
+                    _.each(objs, function (o) {
+                        o[self.forwardName + 'Proxy']._id = self.object._id;
+                        o[self.forwardName + 'Proxy'].related = self.object;
+                    })
+                }
+                if (callback) callback(err, objs);
+            });
+        }
+        else {
+            // Should never get here, as forward relationships will always have a value for _id if a relationship
+            // exists.
+            throw 'nyi';
+        }
     }
     else if (callback) {
-        callback(null, null);
+        callback(null, this.related);
     }
+
 };
 
 ForeignKeyProxy.prototype._initRelated = function () {
