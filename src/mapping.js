@@ -250,9 +250,22 @@ Mapping.prototype.all = function (callback) {
 };
 
 Mapping.prototype.install = function (callback) {
+    var self = this;
     var errors = this._validate();
     if (!errors.length) {
-        index.installIndexes(this.collection, this.type, this._fields, callback);
+        var indexesToInstall = [];
+        _.each(this._fields, function (f) {
+            indexesToInstall.push(f);
+        });
+        for (var prop in this.relationships) {
+            if (this.relationships.hasOwnProperty(prop)) {
+                var r = self.relationships[prop];
+                if (r.reverse != prop) {
+                    indexesToInstall.push(prop);
+                }
+            }
+        }
+        index.installIndexes(this.collection, this.type, indexesToInstall, callback);
     }
     else {
         if (callback) callback(errors);

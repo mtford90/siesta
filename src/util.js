@@ -109,6 +109,7 @@ function keys(obj) {
     return keys;
 }
 
+
 var _parallel = function (eachfn, tasks, callback) {
     callback = callback || function () {};
     if (isArray(tasks)) {
@@ -171,6 +172,8 @@ var nativeReduce = ArrayProto.reduce;
 var nativeBind = FuncProto.bind;
 var slice = ArrayProto.slice;
 var breaker = {};
+
+_.keys = keys;
 
 _.each = _.forEach = function (obj, iterator, context) {
     if (obj == null) return obj;
