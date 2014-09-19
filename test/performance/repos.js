@@ -6296,7 +6296,7 @@ exports.repos = [
         },
         "private": false,
         "html_url": "https://github.com/collectiveidea/audited",
-        "description": "Audited (formerly acts_as_audited) is an ORM extension that logs all changes to your Rails models.",
+        "description": "Audited (formerly acts_as_audited) is an ORM extension that logs all unmergedChanges to your Rails models.",
         "fork": false,
         "url": "https://api.github.com/repos/collectiveidea/audited",
         "forks_url": "https://api.github.com/repos/collectiveidea/audited/forks",

@@ -491,7 +491,6 @@ ForeignKeyProxy.prototype.get = function (callback) {
             });
         }
 //        else if (this.isReverse) {
-
 //            var query = {};
 //            query[this.forwardName] = this.object._id;
 //            var q = new Query(this.forwardMapping, query);
@@ -507,14 +506,13 @@ ForeignKeyProxy.prototype.get = function (callback) {
 //                if (callback) callback(err, objs);
 //            });
 //        }
-        else {
-            if (callback) callback(null, null);
+        else if (callback) {
+            callback(null, null);
         }
     }
     else if (callback) {
         callback(null, this.related);
     }
-
 };
 
 ForeignKeyProxy.prototype._initRelated = function () {

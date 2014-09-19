@@ -6,9 +6,16 @@ var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var RestError = require('./error').RestError;
 var guid = require('./misc').guid;
 var cache = require('./cache');
-var pouch = new PouchDB('siesta', {adapter: 'memory'});
 var util = require('./util');
 var _ = util._;
+
+var pouch = new PouchDB('siesta', {adapter: 'memory'});
+var changeEmitter;
+var changeObservers = [];
+
+configureChangeEmitter();
+
+var POUCH_EVENT = 'change';
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
     getPouch().get(docId, function (err, doc) {
@@ -38,7 +45,7 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
                 }
                 else {
                     if (Logger.trace.isEnabled)
-                        Logger.trace('Successfully persisted changes: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
+                        Logger.trace('Successfully persisted unmergedChanges: ' + JSON.stringify({doc: doc._id, pouchDBResponse: resp, changes: newValues}, null, 4));
                     if (callback) callback(null, resp.rev);
                 }
             });
@@ -46,11 +53,24 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
     });
 }
 
+function configureChangeEmitter() {
+    if (changeEmitter) {
+        changeEmitter.cancel();
+    }
+    changeEmitter = pouch.changes({
+        since: 'now',
+        live: true
+    });
+    _.each(changeObservers, function (o) {
+        changeEmitter.on(POUCH_EVENT, o);
+    });
+}
 function _reset(inMemory) {
     var dbName = guid();
     if (inMemory) {
         if (typeof window != 'undefined') {
             pouch = new PouchDB('siesta-' + dbName, {adapter: 'memory'});
+            configureChangeEmitter();
         }
         else {
             throw 'nyi';
@@ -199,4 +219,17 @@ exports.reset = reset;
 exports.getPouch = getPouch;
 exports.setPouch = function (_p) {
     pouch = _p;
+};
+
+exports.addObserver = function (o) {
+    changeObservers.push(o);
+    changeEmitter.on(POUCH_EVENT, o);
+};
+
+exports.removeObserver = function (o) {
+    var idx = changeObservers.indexOf(o);
+    if (idx > -1) {
+        changeEmitter.removeListener(POUCH_EVENT, o);
+        changeObservers.splice(idx, 1);
+    }
 };

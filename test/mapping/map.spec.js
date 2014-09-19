@@ -1549,7 +1549,7 @@ describe('perform mapping', function () {
 
             });
 
-            describe('via nested remote id with changes', function () {
+            describe('via nested remote id with unmergedChanges', function () {
                 this.timeout(5000);
                 beforeEach(function (done) {
                     personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
