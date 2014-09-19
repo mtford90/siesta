@@ -15,9 +15,6 @@ var cache = require('../../src/cache');
 var async = require('async');
 
 describe('intercollection relationships', function () {
-
-
-
     var myOfflineCollection;
     var myOnlineCollection;
 
@@ -272,15 +269,15 @@ describe('intercollection relationships', function () {
         tests();
     });
 
-//    describe('cached', function () {
-//        beforeEach(function (done) {
-//            installOfflineFixtures(function (err) {
-//                if (err) done(err);
-//                installOnlineFixtures(done);
-//            });
-//        });
-//        tests();
-//    });
+    describe('cached', function () {
+        beforeEach(function (done) {
+            installOfflineFixtures(function (err) {
+                if (err) done(err);
+                installOnlineFixtures(done);
+            });
+        });
+        tests();
+    });
 
 
 

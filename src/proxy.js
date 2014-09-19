@@ -488,28 +488,27 @@ ForeignKeyProxy.prototype.get = function (callback) {
                     }
                     if (callback) callback(null, stored);
                 }
-            })
-        }
-        else if (this.isReverse) {
-            var query = {};
-            query[this.forwardName] = this.object._id;
-            var q = new Query(this.forwardMapping, query);
-            q.execute(function (err, objs) {
-                if (!err) {
-                    self._id = _.pluck(objs, '_id');
-                    self.related = objs;
-                    _.each(objs, function (o) {
-                        o[self.forwardName + 'Proxy']._id = self.object._id;
-                        o[self.forwardName + 'Proxy'].related = self.object;
-                    })
-                }
-                if (callback) callback(err, objs);
             });
         }
+//        else if (this.isReverse) {
+
+//            var query = {};
+//            query[this.forwardName] = this.object._id;
+//            var q = new Query(this.forwardMapping, query);
+//            q.execute(function (err, objs) {
+//                if (!err) {
+//                    self._id = _.pluck(objs, '_id');
+//                    self.related = objs;
+//                    _.each(objs, function (o) {
+//                        o[self.forwardName + 'Proxy']._id = self.object._id;
+//                        o[self.forwardName + 'Proxy'].related = self.object;
+//                    })
+//                }
+//                if (callback) callback(err, objs);
+//            });
+//        }
         else {
-            // Should never get here, as forward relationships will always have a value for _id if a relationship
-            // exists.
-            throw 'nyi';
+            if (callback) callback(null, null);
         }
     }
     else if (callback) {

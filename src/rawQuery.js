@@ -11,12 +11,23 @@ var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 var utils = require('./util');
 
+var RestError = require('./error').RestError;
+
 var _ = utils._;
 
 function RawQuery(collection, modelName, query) {
+    var self = this;
     this.collection = collection;
     this.modelName = modelName;
     this.query = query;
+
+    Object.defineProperty(self, 'mapping', {
+        configurable: true,
+        enumerable: true,
+        get: function () {
+            return require('../index')[self.collection][self.modelName];
+        }
+    });
 }
 
 function resultsCallback(callback, err, resp) {
@@ -30,7 +41,12 @@ function resultsCallback(callback, err, resp) {
 }
 
 RawQuery.prototype.execute = function (callback) {
-//    util.printStackTrace();
+
+
+    if (!this.mapping.installed) {
+        throw new RestError('Mapping must be installed');
+    }
+
     var m = new PerformanceMonitor('Raw Query');
     m.start();
     var self = this;
@@ -64,15 +80,12 @@ RawQuery.prototype.execute = function (callback) {
                 // TODO: For some reason constructMapFunction2 (which returns a function) wont work with pouch.
                 // I'm thinking that pouch probably doesnt support closures in its queries which would mean
                 // we'd have to stick with eval here.
-                dump(fields);
                 var f = mapping.constructMapFunction(self.collection, self.modelName, fields);
-                dump(f);
                 eval('var mapFunc = ' + f);
                 key = self._constructKey(fields);
                 if (!key.length) {
                     key = self.modelName;
                 }
-                dump(key);
                 //noinspection JSUnresolvedVariable
                 Pouch.getPouch().query(mapFunc, {key: key}, finish);
             }

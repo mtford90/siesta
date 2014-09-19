@@ -10,7 +10,7 @@ describe('subclassing', function () {
 
     var collection, carMapping;
 
-    function CarObject () {
+    function CarObject() {
         SiestaModel.apply(this, arguments);
     }
 
@@ -23,27 +23,47 @@ describe('subclassing', function () {
         collection.install(done);
     });
 
-    it('should instantiate with subclass if present', function () {
+    function installMapping(mapping, callback) {
+        mapping.install(function (err) {
+            if (err) callback(err);
+            else {
+                mapping.installRelationships();
+                mapping.installReverseRelationships();
+                callback();
+            }
+        });
+    }
+
+    it('should instantiate with subclass if present', function (done) {
         carMapping = collection.mapping('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             subclass: CarObject
         });
-        var car = carMapping._new({colour: 'red', name:'Aston Martin'});
-        assert.instanceOf(car, CarObject);
+        installMapping(carMapping, function () {
+            var car = carMapping._new({colour: 'red', name: 'Aston Martin'});
+            assert.instanceOf(car, CarObject);
+            done();
+        });
+
     });
 
-    it('should instantiate with SiestaModel if not present', function () {
+    it('should instantiate with SiestaModel if not present', function (done) {
         carMapping = collection.mapping('Car', {
             id: 'id',
             attributes: ['colour', 'name']
         });
-        var car = carMapping._new({colour: 'red', name:'Aston Martin'});
-        assert.instanceOf(car, SiestaModel);
+        installMapping(carMapping, function () {
+            var car = carMapping._new({colour: 'red', name: 'Aston Martin'});
+            assert.instanceOf(car, SiestaModel);
+            done();
+        });
+
     });
 
     it('should throw an error if setup prototype, but do not call super', function () {
         function CarObject() {}
+
         CarObject.prototype = Object.create(SiestaModel.prototype);
         assert.throws(function () {
             carMapping = collection.mapping('Car', {
@@ -58,6 +78,7 @@ describe('subclassing', function () {
         function CarObject() {
             SiestaModel.apply(this, arguments);
         }
+
         assert.throws(function () {
             carMapping = collection.mapping('Car', {
                 id: 'id',
@@ -70,6 +91,7 @@ describe('subclassing', function () {
     it('should throw an error if do not call super or setup prototype', function () {
         function CarObject() {
         }
+
         assert.throws(function () {
             carMapping = collection.mapping('Car', {
                 id: 'id',
@@ -83,6 +105,7 @@ describe('subclassing', function () {
         function CarObject() {
             SiestaModel.apply(this, arguments);
         }
+
         CarObject.prototype = SiestaModel.prototype;
         assert.throws(function () {
             carMapping = collection.mapping('Car', {

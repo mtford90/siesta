@@ -77,6 +77,18 @@ function Mapping(opts) {
 
     this._validateSubclass();
 
+    this._installed = false;
+    this._relationshipsInstalled = false;
+    this._reverseRelationshipsInstalled = false;
+
+    Object.defineProperty(this, 'installed', {
+        get: function () {
+            return self._installed && self._relationshipsInstalled && self._reverseRelationshipsInstalled;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
 }
 
 /**
@@ -133,64 +145,75 @@ Mapping.prototype._markCollectionAsDirtyIfNeccessary = function () {
 };
 
 Mapping.prototype.installRelationships = function () {
-    var self = this;
-    self._relationships = [];
-    if (self._opts.relationships) {
-        for (var name in self._opts.relationships) {
-            if (Logger.debug.isEnabled)
-                Logger.debug(self.type + ': configuring relationship ' + name);
-            if (self._opts.relationships.hasOwnProperty(name)) {
-                var relationship = self._opts.relationships[name];
-                if (relationship.type == RelationshipType.ForeignKey ||
-                    relationship.type == RelationshipType.OneToOne) {
-                    var mappingName = relationship.mapping;
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('reverseMappingName', mappingName);
-                    var collection = CollectionRegistry[self.collection];
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('collection', CollectionRegistry);
-                    var reverseMapping = collection[mappingName];
+    if (!this._relationshipsInstalled) {
+        var self = this;
+        self._relationships = [];
+        if (self._opts.relationships) {
+            for (var name in self._opts.relationships) {
+                if (Logger.debug.isEnabled)
+                    Logger.debug(self.type + ': configuring relationship ' + name);
+                if (self._opts.relationships.hasOwnProperty(name)) {
+                    var relationship = self._opts.relationships[name];
+                    if (relationship.type == RelationshipType.ForeignKey ||
+                        relationship.type == RelationshipType.OneToOne) {
+                        var mappingName = relationship.mapping;
+                        if (Logger.debug.isEnabled)
+                            Logger.debug('reverseMappingName', mappingName);
+                        var collection = CollectionRegistry[self.collection];
+                        if (Logger.debug.isEnabled)
+                            Logger.debug('collection', CollectionRegistry);
+                        var reverseMapping = collection[mappingName];
 
-                    if (!reverseMapping) {
-                        var arr = mappingName.split('.');
-                        if (arr.length == 2) {
-                            var collectionName = arr[0];
-                            mappingName = arr[1];
-                            var otherCollection = CollectionRegistry[collectionName];
-                            if (!otherCollection) {
-                                throw new RestError('Collection with name "' + collectionName + '" does not exist.');
+                        if (!reverseMapping) {
+                            var arr = mappingName.split('.');
+                            if (arr.length == 2) {
+                                var collectionName = arr[0];
+                                mappingName = arr[1];
+                                var otherCollection = CollectionRegistry[collectionName];
+                                if (!otherCollection) {
+                                    throw new RestError('Collection with name "' + collectionName + '" does not exist.');
+                                }
+                                reverseMapping = otherCollection[mappingName];
                             }
-                            reverseMapping = otherCollection[mappingName];
+                        }
+                        if (Logger.debug.isEnabled)
+                            Logger.debug('reverseMapping', reverseMapping);
+                        if (reverseMapping) {
+                            relationship.reverseMapping = reverseMapping;
+                            relationship.forwardMapping = this;
+                            relationship.forwardName = name;
+                            relationship.reverseName = relationship.reverse;
+                        }
+                        else {
+                            throw new RestError('Mapping with name "' + mappingName.toString() + '" does not exist');
                         }
                     }
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('reverseMapping', reverseMapping);
-                    if (reverseMapping) {
-                        relationship.reverseMapping = reverseMapping;
-                        relationship.forwardMapping = this;
-                        relationship.forwardName = name;
-                        relationship.reverseName = relationship.reverse;
-                    }
                     else {
-                        throw new RestError('Mapping with name "' + mappingName.toString() + '" does not exist');
+                        throw new RestError('Relationship type ' + relationship.type + ' does not exist');
                     }
                 }
-                else {
-                    throw new RestError('Relationship type ' + relationship.type + ' does not exist');
-                }
-
             }
         }
+        this._relationshipsInstalled = true;
+    }
+    else {
+        throw new RestError('Relationships for "' + this.type + '" have already been installed');
     }
 };
 
 Mapping.prototype.installReverseRelationships = function () {
-    for (var forwardName in this.relationships) {
-        if (this.relationships.hasOwnProperty(forwardName)) {
-            var relationship = this.relationships[forwardName];
-            var reverseMapping = relationship.reverseMapping;
-            reverseMapping.relationships[relationship.reverseName] = relationship;
+    if (!this._reverseRelationshipsInstalled) {
+        for (var forwardName in this.relationships) {
+            if (this.relationships.hasOwnProperty(forwardName)) {
+                var relationship = this.relationships[forwardName];
+                var reverseMapping = relationship.reverseMapping;
+                reverseMapping.relationships[relationship.reverseName] = relationship;
+            }
         }
+        this._reverseRelationshipsInstalled = true;
+    }
+    else {
+        throw new RestError('Reverse relationships for "' + this.type + '" have already been installed.');
     }
 };
 
@@ -250,46 +273,37 @@ Mapping.prototype.all = function (callback) {
 };
 
 Mapping.prototype.install = function (callback) {
-    var self = this;
-    var errors = this._validate();
-    if (!errors.length) {
-        var indexesToInstall = [];
-        _.each(this._fields, function (f) {
-            indexesToInstall.push(f);
-        });
-        for (var prop in this.relationships) {
-            if (this.relationships.hasOwnProperty(prop)) {
-                var r = self.relationships[prop];
-                if (r.reverse != prop) {
-                    indexesToInstall.push(prop);
+    if (!this._installed) {
+        var self = this;
+        var errors = this._validate();
+        if (!errors.length) {
+            var indexesToInstall = [];
+            _.each(this._fields, function (f) {
+                indexesToInstall.push(f);
+            });
+            for (var prop in this.relationships) {
+                if (this.relationships.hasOwnProperty(prop)) {
+                    var r = self.relationships[prop];
+                    if (r.reverse != prop) {
+                        indexesToInstall.push(prop);
+                    }
                 }
             }
+            index.installIndexes(this.collection, this.type, indexesToInstall, function (err) {
+                if (!err) {
+                    self._installed = true;
+                }
+                if (callback) callback(err);
+            });
         }
-        index.installIndexes(this.collection, this.type, indexesToInstall, callback);
+        else {
+            if (callback) callback(errors);
+        }
     }
     else {
-        if (callback) callback(errors);
+        throw new RestError('Mapping "' + this.type + '" has already been installed');
     }
 };
-
-//Mapping.prototype._installRemoteLocalView = function (callback) {
-//    var indexName = this.type + '_remote_id';
-//    var views = {};
-//    var map = function (doc) {
-//        if (doc.type == '$1') {
-//
-//        }
-//    };
-//    views[indexName] = {
-//        map: function (doc) {
-//
-//        }
-//    };
-//    var myIndex = {
-//        _id: '_design/' + indexName,
-//        views: views
-//    };
-//};
 
 Mapping.prototype._validate = function () {
     var errors = [];
@@ -311,22 +325,28 @@ Mapping.prototype._validate = function () {
  * @param override Force mapping to this object
  */
 Mapping.prototype.map = function (data, callback, override) {
-    if (util.isArray(data)) {
-        return this._mapBulk(data, callback, override);
+    if (this.installed) {
+        if (util.isArray(data)) {
+            return this._mapBulk(data, callback, override);
+        }
+        else {
+            return this._mapBulk([data], function (err, objects) {
+                if (callback) {
+                    var obj;
+                    if (objects) {
+                        if (objects.length) {
+                            obj = objects[0];
+                        }
+                    }
+                    callback(err ? err[0] : null, obj);
+                }
+            }, override ? [override] : undefined);
+        }
     }
     else {
-        return this._mapBulk([data], function (err, objects) {
-            if (callback) {
-                var obj;
-                if (objects) {
-                    if (objects.length) {
-                        obj = objects[0];
-                    }
-                }
-                callback(err ? err[0] : null, obj);
-            }
-        }, override ? [override] : undefined);
+        throw new RestError('Mapping must be fully installed before creating any models');
     }
+
 };
 
 Mapping.prototype._mapBulk = function (data, callback, override) {
@@ -369,108 +389,116 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
  * @private
  */
 Mapping.prototype._new = function (data) {
-    var self = this;
-    var _id;
-    if (data) {
-        _id = data._id ? data._id : guid();
-    }
-    else {
-        _id = guid();
-    }
-    var newModel;
-    if (this.subclass) {
-        newModel = new this.subclass(this);
-    }
-    else {
-        newModel = new SiestaModel(this);
-    }
-    if (Logger.info.isEnabled)
-        Logger.info('New object created _id="' + _id.toString() + '"', data);
-    newModel._id = _id;
-    // Place attributes on the object.
-    newModel.__values = data || {};
-    var fields = this._fields;
-    var idx = fields.indexOf(this.id);
-    if (idx > -1) {
-        fields.splice(idx, 1);
-    }
-    newModel.__dirtyFields = [];
-    _.each(fields, function (field) {
-        Object.defineProperty(newModel, field, {
+    if (this.installed) {
+        var self = this;
+        var _id;
+        if (data) {
+            _id = data._id ? data._id : guid();
+        }
+        else {
+            _id = guid();
+        }
+        var newModel;
+        if (this.subclass) {
+            newModel = new this.subclass(this);
+        }
+        else {
+            newModel = new SiestaModel(this);
+        }
+        if (Logger.info.isEnabled)
+            Logger.info('New object created _id="' + _id.toString() + '"', data);
+        newModel._id = _id;
+        // Place attributes on the object.
+        newModel.__values = data || {};
+        var fields = this._fields;
+        var idx = fields.indexOf(this.id);
+        if (idx > -1) {
+            fields.splice(idx, 1);
+        }
+        newModel.__dirtyFields = [];
+        _.each(fields, function (field) {
+            Object.defineProperty(newModel, field, {
+                get: function () {
+                    return newModel.__values[field] || null;
+                },
+                set: function (v) {
+                    var old = newModel.__values[field];
+                    newModel.__values[field] = v;
+                    broadcast(newModel, {
+                        type: ChangeType.Set,
+                        old: old,
+                        new: v,
+                        field: field
+                    });
+                    if (util.isArray(v)) {
+                        wrapArray(v, field, newModel);
+                    }
+
+                    if (v != old) {
+                        var logger = log.loggerWithName('SiestaModel');
+                        if (logger.trace.isEnabled)
+                            logger.trace('Marking "' + field + '" as dirty for _id="' + newModel._id + '" as just changed to ' + v);
+                        newModel._markFieldAsDirty(field);
+                    }
+
+                },
+                enumerable: true,
+                configurable: true
+            });
+        });
+
+        Object.defineProperty(newModel, this.id, {
             get: function () {
-                return newModel.__values[field] || null;
+                return newModel.__values[self.id] || null;
             },
             set: function (v) {
-                var old = newModel.__values[field];
-                newModel.__values[field] = v;
+                var old = newModel.__values[self.id];
+                newModel.__values[self.id] = v;
                 broadcast(newModel, {
                     type: ChangeType.Set,
                     old: old,
                     new: v,
-                    field: field
+                    field: self.id
                 });
-                if (util.isArray(v)) {
-                    wrapArray(v, field, newModel);
-                }
-
-                if (v != old) {
-                    var logger = log.loggerWithName('SiestaModel');
-                    if (logger.trace.isEnabled)
-                        logger.trace('Marking "' + field + '" as dirty for _id="' + newModel._id + '" as just changed to ' + v);
-                    newModel._markFieldAsDirty(field);
-                }
-
+                cache.remoteInsert(newModel, v, old);
             },
             enumerable: true,
             configurable: true
         });
-    });
 
-    Object.defineProperty(newModel, this.id, {
-        get: function () {
-            return newModel.__values[self.id] || null;
-        },
-        set: function (v) {
-            var old = newModel.__values[self.id];
-            newModel.__values[self.id] = v;
-            broadcast(newModel, {
-                type: ChangeType.Set,
-                old: old,
-                new: v,
-                field: self.id
-            });
-            cache.remoteInsert(newModel, v, old);
-        },
-        enumerable: true,
-        configurable: true
-    });
+        // Place relationships on the object.
 
-    // Place relationships on the object.
-
-    for (var name in this.relationships) {
-        var proxy;
-        if (this.relationships.hasOwnProperty(name)) {
-            var relationship = this.relationships[name];
-            if (relationship.type == RelationshipType.ForeignKey) {
-                proxy = new ForeignKeyProxy(relationship);
+        for (var name in this.relationships) {
+            var proxy;
+            if (this.relationships.hasOwnProperty(name)) {
+                var relationship = this.relationships[name];
+                if (relationship.type == RelationshipType.ForeignKey) {
+                    proxy = new ForeignKeyProxy(relationship);
+                }
+                else if (relationship.type == RelationshipType.OneToOne) {
+                    proxy = new OneToOneProxy(relationship);
+                }
+                else {
+                    throw new RestError('No such relationship type: ' + relationship.type);
+                }
             }
-            else if (relationship.type == RelationshipType.OneToOne) {
-                proxy = new OneToOneProxy(relationship);
-            }
-            else {
-                throw new RestError('No such relationship type: ' + relationship.type);
-            }
+            proxy.install(newModel);
+            proxy.isFault = false;
         }
-        proxy.install(newModel);
-        proxy.isFault = false;
+
+
+        cache.insert(newModel);
+
+        this._markObjectAsDirty(newModel);
+
+        return newModel;
     }
 
+    else {
+        util.printStackTrace();
+        throw new RestError('Mapping must be fully installed before creating any models');
+    }
 
-    cache.insert(newModel);
-
-    this._markObjectAsDirty(newModel);
-
-    return newModel;
 };
 
 Mapping.prototype.save = function (callback) {

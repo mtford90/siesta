@@ -9,17 +9,26 @@ describe('perform mapping', function () {
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     var SiestaModel = require('../../src/object').SiestaModel;
-    var d = require('../../src/object').dumpSaveQueues;
     var cache = require('../../src/cache');
+    var Operation = require('../../vendor/operations.js/src/operation').Operation;
 
     var collection, carMapping, personMapping;
-
 
     beforeEach(function () {
         collection = null;
         carMapping = null;
         personMapping = null;
         s.reset(true);
+    });
+
+    afterEach(function () {
+        var numIncomplete = 0;
+        _.each(Operation.running, function (op) {
+            if (!op.completed) {
+                numIncomplete++;
+            }
+        });
+        assert.notOk(numIncomplete);
     });
 
     describe('no id', function () {
@@ -38,12 +47,13 @@ describe('perform mapping', function () {
                 if (err) {
                     done(err);
                 }
-                obj = _obj;
-                done();
+                else {
+                    obj = _obj;
+                    done();
+                }
             });
         })
     });
-
 
 
     describe('no relationships', function () {
@@ -1299,27 +1309,6 @@ describe('perform mapping', function () {
 
     describe('bulk', function () {
 
-        it('should redirect arrays to _mapBulk when passed to map', function (done) {
-            collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            collection.install(done);
-            var raw = [
-                {colour: 'red', name: 'Aston Martin', id: 'remoteId1'},
-                {colour: 'blue', name: 'Lambo', id: "remoteId2"},
-                {colour: 'green', name: 'Ford', id: "remoteId3"}
-            ];
-            sinon.stub(carMapping, '_mapBulk', function (_, callback) {
-                callback();
-            });
-            console.log(1);
-            carMapping.map(raw, function () {
-                sinon.assert.calledWith(carMapping._mapBulk, raw);
-                done();
-            })
-        });
 
         describe('new', function () {
             describe('no relationships', function () {
@@ -1333,7 +1322,6 @@ describe('perform mapping', function () {
                 });
 
                 it('all valid', function (done) {
-//                    assert(false, 'need to stop this clobbering the other tests');
                     var raw = [
                         {colour: 'red', name: 'Aston Martin', id: 'remoteId1sdfsdfdsfgsdf'},
                         {colour: 'blue', name: 'Lambo', id: "remoteId2dfgdfgdfg"},
@@ -1393,12 +1381,16 @@ describe('perform mapping', function () {
                     var carRaw1 = {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: ownerId};
                     var carRaw2 = {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: ownerId};
                     carMapping.map(carRaw1, function (err, car1) {
-                        if (err) done(err);
-                        carMapping.map(carRaw2, function (err, car2) {
-                            if (err) done(err);
-                            assert.equal(car1.owner, car2.owner);
-                            done();
-                        })
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            carMapping.map(carRaw2, function (err, car2) {
+                                if (err) done(err);
+                                assert.equal(car1.owner, car2.owner);
+                                done();
+                            })
+                        }
                     });
                 })
             })
@@ -1521,8 +1513,8 @@ describe('perform mapping', function () {
 
                 it('should have mapped onto Michael', function () {
                     assert.equal(cars.length, 9);
-                    for (var i=0;i<8;i++) {
-                        assert.equal(cars[i].owner, cars[i+1].owner);
+                    for (var i = 0; i < 8; i++) {
+                        assert.equal(cars[i].owner, cars[i + 1].owner);
                     }
                 });
 
@@ -1565,7 +1557,7 @@ describe('perform mapping', function () {
                         cache.reset();
                         var raw = [
                             {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: {id: 'personRemoteId'}},
-                            {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: {id: 'personRemoteId', name:'Bob'}},
+                            {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: {id: 'personRemoteId', name: 'Bob'}},
                             {colour: 'green', name: 'Ford', id: "remoteId3", owner: {id: 'personRemoteId'}}
                         ];
                         carMapping._mapBulk(raw, function (err, objs, res) {
