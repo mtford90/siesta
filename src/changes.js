@@ -82,7 +82,7 @@ function arraysEqual(a, b) {
 /**
  * Apply this change to the given object.
  * Will throw an error if this object does not match the change.
- * Removes the change from unmergedChanges.
+ * Changes can be applied to a SiestaModel or a PouchDB document.
  * @param obj
  */
 Change.prototype.apply = function (obj) {
@@ -160,9 +160,7 @@ function mergeChanges(callback) {
                     dump(doc);
                     var change = changes[doc._id];
                     _.each(change, function (c) {
-                        if (c.type == ChangeType.Set) {
-                            doc[c.field] = c.new;
-                        }
+                        c.apply(doc);
                     });
                     bulkDocs.push(doc);
                 });

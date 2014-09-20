@@ -299,7 +299,7 @@ describe.only('changes', function () {
                     myCollection: {
                         Car: {
                             localId: [
-                                {
+                                new Change({
                                     collection: collection,
                                     mapping: mapping,
                                     field: 'colour',
@@ -307,7 +307,7 @@ describe.only('changes', function () {
                                     new: 'blue',
                                     old: 'red',
                                     _id: 'localId'
-                                }
+                                })
                             ]
                         }
                     }
@@ -338,5 +338,6 @@ describe.only('changes', function () {
 
 
         });
+
     });
 });
