@@ -36,14 +36,6 @@ function Collection(name) {
     this._mappings = {};
     this.baseURL = '';
     this.installed = false;
-    this.__dirtyMappings = [];
-    Object.defineProperty(this, 'isDirty', {
-        get: function () {
-            return self.__dirtyMappings.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
 }
 
 /**
@@ -138,94 +130,13 @@ Collection.prototype._finaliseInstallation = function (err, callback) {
     if (callback) callback(err);
 };
 
-Collection.prototype._markMappingAsDirty = function (mapping) {
-    if (this.__dirtyMappings.indexOf(mapping) < 0) {
-        this.__dirtyMappings.push(mapping);
-    }
-    this._markGlobalAsDirtyIfNeccessary();
-};
-
-Collection.prototype._unmarkMappingAsDirty = function (mapping) {
-    var idx = this.__dirtyMappings.indexOf(mapping);
-    if (idx > -1) {
-        this.__dirtyMappings.splice(idx, 1);
-    }
-    this._markGlobalAsDirtyIfNeccessary();
-};
-
-Collection.prototype._markGlobalAsDirtyIfNeccessary = function () {
-    if (this.__dirtyMappings.length) {
-        Collection._markCollectionAsDirty(this);
-    }
-    else {
-        Collection._unmarkCollectionAsDirty(this);
-    }
-};
-
-var dirtyCollections = [];
-
-Object.defineProperty(Collection, '__dirtyCollections', {
-    get: function () {
-        return dirtyCollections;
-    },
-    enumerable: true,
-    configurable: true
-});
-
-/**
- * For testing purposes.
- * @private
- */
-Collection.__clearDirtyCollections = function () {
-    dirtyCollections = [];
-};
-
-Object.defineProperty(Collection, 'isDirty', {
-    get: function () {
-        return !!dirtyCollections.length;
-    },
-    enumerable: true,
-    configurable: true
-});
-
-Collection._markCollectionAsDirty = function (coll) {
-    if (dirtyCollections.indexOf(coll) < 0) {
-        dirtyCollections.push(coll);
-    }
-};
-
-Collection._unmarkCollectionAsDirty = function (coll) {
-    var idx = dirtyCollections.indexOf(coll);
-    if (idx > -1) {
-        dirtyCollections.splice(idx, 1);
-    }
-};
 
 Collection._reset = Pouch.reset;
 
 Collection._getPouch = Pouch.getPouch;
 
-/**
- * Save all dirty objects across all mappings in this collection.
- * @param callback
- * @returns {Operation}
- */
 Collection.prototype.save = function (callback) {
-    var dirtyMappings = this.__dirtyMappings;
-    var dirtyObjects = _.reduce(dirtyMappings, function (memo, m) {
-        _.each(m.__dirtyObjects, function (o) {memo.push(o)});
-        return memo;
-    }, []);
-    if (dirtyObjects.length) {
-        var op = new BulkSaveOperation(dirtyObjects);
-        op.onCompletion( function () {
-            if (callback) callback(op.error ? op.error : null);
-        });
-        op.start();
-    }
-    else if (callback) {
-        callback();
-    }
+
 };
 
 
@@ -467,7 +378,6 @@ Collection.prototype._dump = function (asJson) {
     obj.docId = this._docId;
     obj.name = this._name;
     obj.baseURL = this.baseURL;
-    obj.dirtyMappings = _.pluck(this.__dirtyMappings, 'type');
     return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 

@@ -124,9 +124,6 @@ NewObjectProxy.prototype.getMapping = function () {
     return name;
 };
 
-function capitaliseFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 NewObjectProxy.prototype.install = function (obj) {
     if (obj) {
@@ -149,8 +146,8 @@ NewObjectProxy.prototype.install = function (obj) {
                 configurable: true,
                 enumerable: true
             });
-            obj[ ('get' + capitaliseFirstLetter(name))] = _.bind(this.get, this);
-            obj[ ('set' + capitaliseFirstLetter(name))] = _.bind(this.set, this);
+            obj[ ('get' + util.capitaliseFirstLetter(name))] = _.bind(this.get, this);
+            obj[ ('set' + util.capitaliseFirstLetter(name))] = _.bind(this.set, this);
             obj[name + 'Proxy'] = this;
             if (!obj._proxies) {
                 obj._proxies = [];
@@ -180,102 +177,7 @@ var Logger = log.loggerWithName('Proxy');
 Logger.setLevel(log.Level.warn);
 
 
-function OneToOneProxy(opts) {
-    if (!this) return new OneToOneProxy(opts);
-    NewObjectProxy.call(this, opts);
-}
 
-OneToOneProxy.prototype = Object.create(NewObjectProxy.prototype);
-
-OneToOneProxy.prototype.set = function (obj, callback, reverse) {
-
-    if (obj) {
-        if (Object.prototype.toString.call(obj) == '[object Array]') {
-            var err = new RestError('Cannot assign array to one to one relationship');
-            if (callback) {
-                callback(err);
-            }
-            else {
-                throw err;
-            }
-            return;
-        }
-    }
-
-    var self = this;
-    var reverseName = this.isForward ? this.reverseName : this.forwardName;
-    var setterName = ('set' + capitaliseFirstLetter(reverseName));
-
-    if (obj) {
-        clearCurrentlyRelated(function (err) {
-            if (!err) {
-                setForward();
-                if (!reverse) setReverse();
-            }
-            if (callback) callback(err);
-        });
-
-        function clearCurrentlyRelated(c) {
-            if (self.isFault) {
-                self.get(function (err, related) {
-                    if (!err) {
-                        related[setterName](null, null, true);
-                    }
-                    c(err);
-                });
-            }
-            else if (self.related) {
-                self.related[setterName](null, null, true);
-                c();
-            }
-            else {
-                c();
-            }
-        }
-
-    }
-    else {
-        setForward();
-        if (!reverse) setReverse();
-        if (callback) callback();
-    }
-
-
-    function setReverse() {
-        if (obj) {
-            obj[setterName](self.object, null, true);
-        }
-    }
-
-    function setForward() {
-        if (obj) {
-            self._id = obj._id;
-            self.related = obj;
-        }
-        else {
-            self._id = null;
-            self.related = null;
-        }
-        if (self.isForward) {
-            self.object._markFieldAsDirty(self.forwardName);
-        }
-    }
-};
-
-OneToOneProxy.prototype.get = function (callback) {
-    var self = this;
-    if (this._id) {
-        Store.get({_id: this._id}, function (err, stored) {
-            if (err) {
-                if (callback) callback(err);
-            }
-            else {
-                self.related = stored;
-                if (callback) callback(null, stored);
-            }
-        })
-    }
-};
 
 function ForeignKeyProxy(opts) {
     if (!this) return new ForeignKeyProxy(opts);
@@ -450,9 +352,6 @@ ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
         else {
             self._id = null;
             self.related = null;
-        }
-        if (self.isForward) {
-            self.object._markFieldAsDirty(self.forwardName);
         }
         var old;
         if (oldRelated) {
@@ -644,6 +543,5 @@ ForeignKeyProxy.prototype.install = function (obj) {
 };
 
 exports.NewObjectProxy = NewObjectProxy;
-exports.OneToOneProxy = OneToOneProxy;
 exports.ForeignKeyProxy = ForeignKeyProxy;
 exports.Fault = Fault;

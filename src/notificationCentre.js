@@ -36,7 +36,6 @@ function wrapArray(array, field, siestaModel) {
         array.observer.open(function (splices) {
             var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
             if (fieldIsAttribute) {
-                siestaModel._markFieldAsDirty(field);
                 splices.forEach(function (splice) {
                     broadcast(siestaModel, {
                         field: field,
@@ -46,12 +45,6 @@ function wrapArray(array, field, siestaModel) {
                         removed: splice.removed
                     });
                 });
-            }
-            else {
-                var proxy = siestaModel[field + 'Proxy'];
-                if (proxy.isForward) {
-                    siestaModel._markFieldAsDirty(field);
-                }
             }
         })
     }

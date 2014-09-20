@@ -65,16 +65,6 @@ function Mapping(opts) {
         this.relationships = [];
     }
 
-    this.__dirtyObjects = [];
-
-    Object.defineProperty(this, 'isDirty', {
-        get: function () {
-            return !!self.__dirtyObjects.length;
-        },
-        enumerable: true,
-        configurable: true
-    });
-
     this._validateSubclass();
 
     this._installed = false;
@@ -102,10 +92,6 @@ Mapping.prototype._validateSubclass = function () {
             throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
                 'Did you call super?');
         }
-        if (!obj.save && !obj._markFieldAsDirty) {
-            throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
-                'Did you configure the prototype correctly?');
-        }
         if (this.subclass.prototype == SiestaModel.prototype) {
             throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
                 'You should use Object.create on SiestaModel prototype.');
@@ -113,36 +99,6 @@ Mapping.prototype._validateSubclass = function () {
     }
 };
 
-Mapping.prototype._markObjectAsDirty = function (obj) {
-    if (this.__dirtyObjects.indexOf(obj) < 0) {
-        this.__dirtyObjects.push(obj);
-    }
-    this._markCollectionAsDirtyIfNeccessary();
-};
-
-Mapping.prototype._unmarkObjectAsDirty = function (obj) {
-    var idx = this.__dirtyObjects.indexOf(obj);
-    if (idx > -1) {
-        this.__dirtyObjects.splice(idx, 1);
-    }
-    this._markCollectionAsDirtyIfNeccessary();
-};
-
-Mapping.prototype._markCollectionAsDirtyIfNeccessary = function () {
-    var collection = CollectionRegistry[this.collection];
-    if (collection) {
-        if (this.__dirtyObjects.length) {
-            collection._markMappingAsDirty(this);
-        }
-        else {
-            collection._unmarkMappingAsDirty(this);
-        }
-    }
-    else {
-        throw new RestError('Collection "' + this.collection + '" does not exist.');
-    }
-
-};
 
 Mapping.prototype.installRelationships = function () {
     if (!this._relationshipsInstalled) {
@@ -415,7 +371,6 @@ Mapping.prototype._new = function (data) {
         if (idx > -1) {
             fields.splice(idx, 1);
         }
-        newModel.__dirtyFields = [];
         _.each(fields, function (field) {
             Object.defineProperty(newModel, field, {
                 get: function () {
@@ -434,12 +389,6 @@ Mapping.prototype._new = function (data) {
                         wrapArray(v, field, newModel);
                     }
 
-                    if (v != old) {
-                        var logger = log.loggerWithName('SiestaModel');
-                        if (logger.trace.isEnabled)
-                            logger.trace('Marking "' + field + '" as dirty for _id="' + newModel._id + '" as just changed to ' + v);
-                        newModel._markFieldAsDirty(field);
-                    }
 
                 },
                 enumerable: true,
@@ -489,7 +438,6 @@ Mapping.prototype._new = function (data) {
 
         cache.insert(newModel);
 
-        this._markObjectAsDirty(newModel);
 
         return newModel;
     }
@@ -499,21 +447,6 @@ Mapping.prototype._new = function (data) {
         throw new RestError('Mapping must be fully installed before creating any models');
     }
 
-};
-
-Mapping.prototype.save = function (callback) {
-    var dirtyObjects = _.map(this.__dirtyObjects, function (o) {return o});
-    if (dirtyObjects.length) {
-        var op = new saveOperation.BulkSaveOperation(dirtyObjects);
-        op.onCompletion( function () {
-            if (callback) callback(op.error ? op.error : null);
-        });
-        op.start();
-        return op;
-    }
-    else {
-        if (callback) callback();
-    }
 };
 
 Mapping.prototype._dump = function (asJSON) {

@@ -19,6 +19,7 @@ var _ = util._;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
 
+var SiestaModel = require('./object').SiestaModel;
 
 var extend = require('extend');
 
@@ -68,6 +69,21 @@ function Change(opts) {
     defineSubProperty.call(this, 'new', this._opts);
     defineSubProperty.call(this, 'old', this._opts);
 }
+
+Change.prototype._dump = function (json) {
+    var dumped = {};
+    dumped.collection = this.collection;
+    dumped.mapping = this.mapping;
+    dumped._id = this._id;
+    dumped.field = this.field;
+    dumped.type = this.type;
+    if (this.index) dumped.index = this.index;
+    if (this.added) dumped.added = _.map(this.added, function (x) {return x._dump()});
+    if (this.removed) dumped.removed = _.map(this.removed, function (x) {return x._dump()});
+    if (this.old) dumped.old = this.old;
+    if (this.new) dumped.new = this.new;
+    return json ? JSON.stringify(dumped, null, 4) : dumped;
+};
 
 function arraysEqual(a, b) {
     if (a === b) return true;
@@ -132,6 +148,10 @@ function changesByIdentifiers() {
         }
     }
     return changes;
+}
+
+function changesForIdentifier(ident) {
+    return changesByIdentifiers()[ident] || [];
 }
 
 
@@ -226,6 +246,10 @@ function allChanges() {
 exports.Change = Change;
 exports.registerChange = registerChange;
 exports.mergeChanges = mergeChanges;
+exports.changesForIdentifier = changesForIdentifier;
+exports.resetChanges = function () {
+    unmergedChanges = {};
+};
 
 // Use defineProperty so that we can inject unmergedChanges for testing.
 Object.defineProperty(exports, 'changes', {

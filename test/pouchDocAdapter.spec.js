@@ -46,55 +46,6 @@ describe('pouch doc adapter', function () {
 
             });
 
-//            describe('relationships', function () {
-//                describe('foreign key', function () {
-//                    var carMapping, personMapping;
-//
-//                    var collection;
-//
-//                    beforeEach(function (done) {
-//                        collection = new Collection('myCollection');
-//                        carMapping = collection.mapping('Car', {
-//                            id: 'id',
-//                            attributes: ['colour', 'name'],
-//                            relationships: {
-//                                owner: {
-//                                    type: RelationshipType.ForeignKey,
-//                                    reverse: 'cars',
-//                                    mapping: 'Person'
-//                                }
-//                            }
-//                        });
-//                        personMapping = collection.mapping('Person', {
-//                            id: 'id',
-//                            attributes: ['name', 'age']
-//                        });
-//                        collection.install(done);
-//                    });
-//
-//                    it('xyz', function (done) {
-//                        var docs = [
-//                            {colour: 'red', name: 'Aston Martin', owner: 'localPersonId', id: 5, _id: 'localCarId', collection: 'myCollection', type: 'Car'},
-//                            {name: 'Michael Ford', age: 2, id: 'localPersonId', collection: 'myCollection', type: 'Person'}
-//                        ];
-//                        Pouch.getPouch().bulkDocs(docs, function (err, resp) {
-//                            if (err) done(err);
-//                            cache.reset();
-//                            for (var i=0;i<resp.length;i++) {
-//                                docs[i]._rev = resp[i].rev;
-//                            }
-//
-//                            pouchAdapter.toNewR(docs[1], function (err, obj) {
-//                                dump(obj);
-//                                done(err);
-//                            });
-//                        });
-//                    });
-//
-//                });
-//            });
-
-
         });
 
         describe('toSiesta', function () {

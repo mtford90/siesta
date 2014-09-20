@@ -11,8 +11,12 @@ function printStackTrace() {
     console.log(stack);
 }
 
-exports.printStackTrace = printStackTrace;
+function capitaliseFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
+exports.printStackTrace = printStackTrace;
+exports.capitaliseFirstLetter = capitaliseFirstLetter;
 
 var root = {};
 // START async.js //

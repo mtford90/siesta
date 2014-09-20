@@ -10,6 +10,7 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
+    , changes = require('./src/changes')
     , _ = require('./src/util')._;
 
 Operation.logLevel = log.Level.warn;
@@ -25,34 +26,7 @@ else {
 }
 
 siesta.save = function save(callback) {
-    var dirtyCollections = [];
-    for (var collName in CollectionRegistry) {
-        if (CollectionRegistry.hasOwnProperty(collName)) {
-            var coll = CollectionRegistry[collName];
-            if (coll.isDirty) dirtyCollections.push(coll);
-        }
-    }
-    var dirtyMappings = _.reduce(dirtyCollections, function (memo, c) {
-        _.each(c.__dirtyMappings, function (m) {
-            memo.push(m);
-        });
-        return memo;
-    }, []);
-    var dirtyObjects = _.reduce(dirtyMappings, function (memo, m) {
-        _.each(m.__dirtyObjects, function (o) {memo.push(o)});
-        return memo;
-    }, []);
-    if (dirtyObjects.length) {
-        var op = new saveOperation.BulkSaveOperation(dirtyObjects);
-        op.onCompletion( function () {
-            if (callback) callback(op.error ? op.error : null);
-        });
-        op.start();
-        return op;
-    }
-    else if (callback) {
-        callback();
-    }
+
 };
 
 siesta.reset = function (inMemory, callback) {
@@ -60,7 +34,7 @@ siesta.reset = function (inMemory, callback) {
     CollectionRegistry.reset();
     DescriptorRegistry.reset();
     //noinspection JSAccessibilityCheck
-    Collection.__clearDirtyCollections();
+    changes.resetChanges();
     index.clearIndexes();
     pouch.reset(inMemory, callback);
 };
