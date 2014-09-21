@@ -11,7 +11,6 @@ var Query = require('./query').Query;
 var index = require('./index');
 var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
-var MappingOperation = require('./mappingOperation').MappingOperation;
 var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
 var saveOperation = require('./saveOperation');
 var SiestaModel = require('./object').SiestaModel;
@@ -27,6 +26,7 @@ var broadcast = require('./notificationCentre').broadcast;
 
 var ForeignKeyProxy = require('./proxy').ForeignKeyProxy;
 var OneToOneProxy = require('./proxy').OneToOneProxy;
+var ManyToManyProxy = require('./proxy').ManyToManyProxy;
 
 var util = require('./util');
 
@@ -111,7 +111,8 @@ Mapping.prototype.installRelationships = function () {
                 if (self._opts.relationships.hasOwnProperty(name)) {
                     var relationship = self._opts.relationships[name];
                     if (relationship.type == RelationshipType.ForeignKey ||
-                        relationship.type == RelationshipType.OneToOne) {
+                        relationship.type == RelationshipType.OneToOne ||
+                        relationship.type == RelationshipType.ManyToMany) {
                         var mappingName = relationship.mapping;
                         if (Logger.debug.isEnabled)
                             Logger.debug('reverseMappingName', mappingName);
@@ -427,6 +428,9 @@ Mapping.prototype._new = function (data) {
                 else if (relationship.type == RelationshipType.OneToOne) {
                     proxy = new OneToOneProxy(relationship);
                 }
+                else if (relationship.type == RelationshipType.ManyToMany) {
+                    proxy = new ManyToManyProxy(relationship);
+                }
                 else {
                     throw new RestError('No such relationship type: ' + relationship.type);
                 }
@@ -434,11 +438,7 @@ Mapping.prototype._new = function (data) {
             proxy.install(newModel);
             proxy.isFault = false;
         }
-
-
         cache.insert(newModel);
-
-
         return newModel;
     }
 
