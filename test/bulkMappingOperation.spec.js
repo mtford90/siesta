@@ -351,7 +351,7 @@ describe('bulk mapping operation', function () {
                     assert.equal(suboperations.owner.__relationshipName, 'owner');
                 });
 
-                it('none existing', function (done) {
+                it.only('none existing', function (done) {
                     var owner = {id: 5, login: 'mike'};
                     var data = [
                         {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', id: 'remoteId1'},

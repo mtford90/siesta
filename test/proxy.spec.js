@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe.only('new object proxy', function () {
+describe('new object proxy', function () {
 
     var NewObjectProxy = require('../src/proxy').NewObjectProxy;
     var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;

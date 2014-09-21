@@ -7,9 +7,6 @@ var RestError = require('../src/error').RestError;
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
 
-var PerformanceMonitor = require('./performance').PerformanceMonitor;
-
-
 
 var cache = require('./cache');
 var util = require('./util');
@@ -123,7 +120,6 @@ function BulkMappingOperation(mapping, data, completion) {
                                 if (object) {
                                     local[localId] = object;
                                 }
-
                             }
                         }
                         callback(err);
