@@ -3,7 +3,8 @@ var Store = require('./store');
 
 RelationshipType = {
     ForeignKey: 'ForeignKey',
-    OneToOne: 'OneToOne'
+    OneToOne: 'OneToOne',
+    ManyToMany: 'ManyToMany'
 };
 
 function RelatedObjectProxy(relationship, object) {

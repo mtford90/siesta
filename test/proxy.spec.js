@@ -6,6 +6,7 @@ describe.only('new object proxy', function () {
     var NewObjectProxy = require('../src/proxy').NewObjectProxy;
     var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;
     var ForeignKeyProxy = require('../src/foreignKeyProxy').ForeignKeyProxy;
+    var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
     var Mapping = require('../src/mapping').Mapping;
     var SiestaModel = require('../src/object').SiestaModel;
     var Fault = require('../src/proxy').Fault;
@@ -544,7 +545,6 @@ describe.only('new object proxy', function () {
         })
     });
 
-
     describe('foreign key', function () {
         var carProxy, personProxy;
         var car, person;
@@ -715,11 +715,7 @@ describe.only('new object proxy', function () {
                 });
 
 
-
-
-
                 describe('no fault', function () {
-
 
 
                     beforeEach(function () {
@@ -1044,7 +1040,6 @@ describe.only('new object proxy', function () {
                 });
 
 
-
             });
 
         })
@@ -1052,6 +1047,502 @@ describe.only('new object proxy', function () {
 
     });
 
+    describe('many to many', function () {
+        var carProxy, personProxy;
+        var car, person;
 
+        describe('get', function () {
+            beforeEach(function () {
+                carProxy = new ManyToManyProxy({
+                    reverseMapping: personMapping,
+                    forwardMapping: carMapping,
+                    reverseName: 'cars',
+                    forwardName: 'owners'
+                });
+                personProxy = new ManyToManyProxy({
+                    reverseMapping: personMapping,
+                    forwardMapping: carMapping,
+                    reverseName: 'cars',
+                    forwardName: 'owners'
+                });
+                car = new SiestaModel(carMapping);
+                car._id = 'car';
+                carProxy.install(car);
+                person = new SiestaModel(personMapping);
+                person._id = 'person';
+                personProxy.install(person);
+                cache.insert(person);
+                cache.insert(car);
+            });
+
+            describe('no fault', function () {
+
+                beforeEach(function () {
+                    carProxy.isFault = false;
+                    personProxy.isFault = false;
+                });
+
+                it('forward', function (done) {
+                    carProxy._id = [person._id];
+                    carProxy.related = [person];
+                    carProxy.get(function (err, people) {
+                        if (err) done(err);
+                        assert.include(people, person);
+                        assert.include(carProxy.related, person);
+                        done();
+                    });
+                });
+
+                it('reverse', function (done) {
+                    personProxy._id = [car._id];
+                    personProxy.related = [car];
+                    personProxy.get(function (err, cars) {
+                        if (err) done(err);
+                        assert.include(cars, car);
+                        assert.include(personProxy.related, car);
+                        done();
+                    });
+                });
+            });
+
+            describe('fault', function () {
+                it('forward', function (done) {
+                    carProxy._id = [person._id];
+                    carProxy.get(function (err, people) {
+                        if (err) done(err);
+                        assert.include(people, person);
+                        assert.include(carProxy.related, person);
+                        done();
+                    });
+                });
+
+                it('reverse', function (done) {
+                    personProxy._id = [car._id];
+                    personProxy.get(function (err, cars) {
+                        if (err) done(err);
+                        assert.equal(cars.length, 1);
+                        assert.include(cars, car);
+                        assert.include(personProxy.related, car);
+                        done();
+                    });
+                });
+            });
+
+        });
+
+        describe('set', function () {
+            var carProxy, personProxy;
+            var car, person;
+            beforeEach(function () {
+                carProxy = new ManyToManyProxy({
+                    reverseMapping: personMapping,
+                    forwardMapping: carMapping,
+                    reverseName: 'cars',
+                    forwardName: 'owners'
+                });
+                personProxy = new ManyToManyProxy({
+                    reverseMapping: personMapping,
+                    forwardMapping: carMapping,
+                    reverseName: 'cars',
+                    forwardName: 'owners'
+                });
+                car = new SiestaModel(carMapping);
+                car._id = 'car';
+                carProxy.install(car);
+                carProxy.isFault = false;
+                person = new SiestaModel(personMapping);
+                person._id = 'person';
+                personProxy.install(person);
+                personProxy.isFault = false;
+            });
+
+            describe('none pre-existing', function () {
+
+                describe('forward', function () {
+                    it('should set forward', function () {
+                        car.owners = [person];
+                        assert.include(car.owners, person);
+                        assert.include(carProxy._id, person._id);
+                        assert.include(carProxy.related, person);
+                    });
+
+                    it('should set reverse', function () {
+                        car.owners = [person];
+                        assert.include(person.cars, car);
+                        assert.include(personProxy._id, car._id);
+                        assert.include(personProxy.related, car);
+                    });
+                });
+
+                describe('backwards', function () {
+                    it('should set forward', function () {
+                        person.cars = [car];
+                        assert.include(person.cars, car);
+                        assert.include(personProxy._id, car._id);
+                        assert.include(personProxy.related, car);
+
+                    });
+
+                    it('should set reverse', function () {
+                        person.cars = [car];
+                        assert.include(car.owners, person);
+                        assert.include(carProxy._id, person._id);
+                        assert.include(carProxy.related, person);
+                    });
+                });
+            });
+
+
+            describe('pre-existing', function () {
+
+                var anotherPerson, anotherPersonProxy;
+
+                beforeEach(function () {
+                    anotherPerson = new SiestaModel(personMapping);
+                    anotherPerson._id = 'anotherPerson';
+                    anotherPersonProxy = new ManyToManyProxy({
+                        reverseMapping: personMapping,
+                        forwardMapping: carMapping,
+                        reverseName: 'cars',
+                        forwardName: 'owners'
+                    });
+                    anotherPersonProxy.install(anotherPerson);
+                    anotherPersonProxy.isFault = false;
+                    cache.insert(anotherPerson);
+                    cache.insert(person);
+                    cache.insert(car);
+                });
+
+                describe('no fault', function () {
+                    beforeEach(function () {
+                        car.owners = [anotherPerson];
+                    });
+
+                    describe('forward', function () {
+                        it('should set forward', function () {
+                            car.owners = [person];
+                            assert.include(car.owners, person);
+                            assert.include(carProxy._id, person._id);
+                            assert.include(carProxy.related, person);
+                        });
+
+                        it('should set reverse', function () {
+                            car.owners = [person];
+                            assert.include(person.cars, car);
+                            assert.include(personProxy._id, car._id);
+                            assert.include(personProxy.related, car);
+                        });
+
+                        it('should clear the old', function () {
+                            car.owners = [person];
+                            assert.equal(anotherPersonProxy._id.length, 0);
+                            assert.equal(anotherPersonProxy.related.length, 0);
+                        });
+
+                        it('generates correct changes', function () {
+                            car.owners = [person];
+                            var carChanges = changes.changesForIdentifier(car._id);
+                            dump('carChanges', carChanges.length);
+                            assert.equal(carChanges.length, 2);
+                            var personChanges = changes.changesForIdentifier(person._id);
+                            dump('personChanges', personChanges.length);
+                            assert.equal(personChanges.length, 1);
+                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            dump('anotherPersonChanges', anotherPersonChanges.length);
+                            assert.equal(anotherPersonChanges.length, 2);
+                            var personChange = personChanges[0];
+                            var firstCarChange = carChanges[0];
+                            var secondCarChange = carChanges[1];
+                            var firstAnotherPersonChange = anotherPersonChanges[0];
+                            var secondAnotherPersonChange = anotherPersonChanges[1];
+                            assert.equal(personChange.collection, 'myCollection');
+                            assert.equal(personChange.mapping, 'Person');
+                            assert.equal(personChange._id, person._id);
+                            assert.equal(personChange.field, 'cars');
+                            assert.equal(personChange.index, 0);
+                            assert.equal(personChange.added.length, 1);
+                            assert.equal(personChange.type, ChangeType.Splice);
+                            assert.include(personChange.added, car._id);
+                            assert.equal(firstAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(firstAnotherPersonChange.mapping, 'Person');
+                            assert.equal(firstAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(firstAnotherPersonChange.field, 'cars');
+                            assert.equal(firstAnotherPersonChange.index, 0);
+                            assert.equal(firstAnotherPersonChange.added.length, 1);
+                            assert.equal(firstAnotherPersonChange.removed.length, 0);
+                            assert.equal(firstAnotherPersonChange.type, ChangeType.Splice);
+                            assert.include(firstAnotherPersonChange.added, car._id);
+                            assert.equal(secondAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(secondAnotherPersonChange.mapping, 'Person');
+                            assert.equal(secondAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(secondAnotherPersonChange.field, 'cars');
+                            assert.equal(secondAnotherPersonChange.index, 0);
+                            assert.equal(secondAnotherPersonChange.added.length, 0);
+                            assert.equal(secondAnotherPersonChange.removed.length, 1);
+                            assert.equal(secondAnotherPersonChange.type, ChangeType.Splice);
+                            assert.include(secondAnotherPersonChange.removed, car._id);
+                            assert.equal(secondCarChange.collection, 'myCollection');
+                            assert.equal(secondCarChange.mapping, 'Car');
+                            assert.equal(secondCarChange._id, car._id);
+                            assert.equal(secondCarChange.field, 'owners');
+                            assert.equal(secondCarChange.old.length, 1);
+                            assert.equal(secondCarChange.new.length, 1);
+                            assert.equal(secondCarChange.type, ChangeType.Set);
+                            assert.include(secondCarChange.new, person._id);
+                            assert.equal(firstCarChange.collection, 'myCollection');
+                            assert.equal(firstCarChange.mapping, 'Car');
+                            assert.equal(firstCarChange._id, car._id);
+                            assert.equal(firstCarChange.field, 'owners');
+                            assert.equal(firstCarChange.new.length, 1);
+                            assert.include(firstCarChange.new, anotherPerson._id);
+                            assert.equal(firstCarChange.old.length, 0);
+                            assert.equal(firstCarChange.type, ChangeType.Set);
+                        });
+
+                    });
+
+                    describe('backwards', function () {
+                        it('should set forward', function () {
+                            person.cars = [car];
+                            assert.include(person.cars, car);
+                            assert.include(personProxy._id, car._id);
+                            assert.include(personProxy.related, car);
+                        });
+
+                        it('should set reverse', function () {
+                            person.cars = [car];
+                            assert.include(car.owners, person);
+                            assert.include(carProxy._id, person._id);
+                            assert.include(carProxy.related, person);
+                        });
+
+                        it('should clear the old', function () {
+                            person.cars = [car];
+                            assert.equal(anotherPersonProxy._id.length, 0);
+                            assert.equal(anotherPersonProxy.related.length, 0);
+                        });
+
+                        it('generates correct changes', function () {
+                            person.cars = [car];
+                            var carChanges = changes.changesForIdentifier(car._id);
+                            dump('carChanges', carChanges.length);
+                            assert.equal(carChanges.length, 2);
+                            var personChanges = changes.changesForIdentifier(person._id);
+                            dump('personChanges', personChanges.length);
+                            assert.equal(personChanges.length, 1);
+                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            dump('anotherPersonChanges', anotherPersonChanges.length);
+                            assert.equal(anotherPersonChanges.length, 2);
+                            var personChange = personChanges[0];
+                            var firstCarChange = carChanges[0];
+                            var secondCarChange = carChanges[1];
+                            var firstAnotherPersonChange = anotherPersonChanges[0];
+                            var secondAnotherPersonChange = anotherPersonChanges[1];
+                            assert.equal(personChange.collection, 'myCollection');
+                            assert.equal(personChange.mapping, 'Person');
+                            assert.equal(personChange._id, person._id);
+                            assert.equal(personChange.field, 'cars');
+                            assert.equal(personChange.old.length, 0);
+                            assert.equal(personChange.new.length, 1);
+                            assert.include(personChange.new, car._id);
+                            assert.equal(personChange.type, ChangeType.Set);
+                            assert.equal(firstAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(firstAnotherPersonChange.mapping, 'Person');
+                            assert.equal(firstAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(firstAnotherPersonChange.field, 'cars');
+                            assert.equal(firstAnotherPersonChange.index, 0);
+                            assert.equal(firstAnotherPersonChange.added.length, 1);
+                            assert.equal(firstAnotherPersonChange.removed.length, 0);
+                            assert.equal(firstAnotherPersonChange.type, ChangeType.Splice);
+                            assert.include(firstAnotherPersonChange.added, car._id);
+                            assert.equal(secondAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(secondAnotherPersonChange.mapping, 'Person');
+                            assert.equal(secondAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(secondAnotherPersonChange.field, 'cars');
+                            assert.equal(secondAnotherPersonChange.index, 0);
+                            assert.equal(secondAnotherPersonChange.added.length, 0);
+                            assert.equal(secondAnotherPersonChange.removed.length, 1);
+                            assert.equal(secondAnotherPersonChange.type, ChangeType.Splice);
+                            assert.include(secondAnotherPersonChange.removed, car._id);
+                            assert.equal(secondCarChange.collection, 'myCollection');
+                            assert.equal(secondCarChange.mapping, 'Car');
+                            assert.equal(secondCarChange._id, car._id);
+                            assert.equal(secondCarChange.field, 'owners');
+                            assert.equal(secondCarChange.index, 1);
+                            assert.equal(secondCarChange.type, ChangeType.Splice);
+                            assert.include(secondCarChange.added, person._id);
+                            assert.equal(firstCarChange.collection, 'myCollection');
+                            assert.equal(firstCarChange.mapping, 'Car');
+                            assert.equal(firstCarChange._id, car._id);
+                            assert.equal(firstCarChange.field, 'owners');
+                            assert.equal(firstCarChange.new, anotherPerson._id);
+                            assert.equal(firstCarChange.old.length, 0);
+                            assert.equal(firstCarChange.type, ChangeType.Set);
+                        });
+                    });
+                });
+
+                describe('fault', function () {
+                    beforeEach(function () {
+                        car.owners = [anotherPerson];
+                        carProxy.related = undefined;
+                        anotherPersonProxy.related = undefined;
+                    });
+                    describe('forward', function () {
+                        it('should set forward', function () {
+                            car.owners = [person];
+                            assert.include(car.owners, person);
+                            assert.include(carProxy._id, person._id);
+                            assert.include(carProxy.related, person);
+                        });
+
+                        it('should set reverse', function () {
+                            car.owners = [person];
+                            assert.include(person.cars, car);
+                            assert.include(personProxy._id, car._id);
+                            assert.include(personProxy.related, car);
+                        });
+
+                        it('generates correct changes', function () {
+                            car.owners = [person];
+                            var carChanges = changes.changesForIdentifier(car._id);
+                            dump('carChanges', carChanges.length);
+                            assert.equal(carChanges.length, 2);
+                            var personChanges = changes.changesForIdentifier(person._id);
+                            dump('personChanges', personChanges.length);
+                            assert.equal(personChanges.length, 1);
+                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            dump('anotherPersonChanges', anotherPersonChanges.length);
+                            assert.equal(anotherPersonChanges.length, 2);
+                            var personChange = personChanges[0];
+                            var firstCarChange = carChanges[0];
+                            var secondCarChange = carChanges[1];
+                            var firstAnotherPersonChange = anotherPersonChanges[0];
+                            var secondAnotherPersonChange = anotherPersonChanges[1];
+                            assert.equal(personChange.type, ChangeType.Splice);
+                            assert.equal(personChange.collection, 'myCollection');
+                            assert.equal(personChange.mapping, 'Person');
+                            assert.equal(personChange._id, person._id);
+                            assert.equal(personChange.field, 'cars');
+                            assert.equal(personChange.index, 0);
+                            assert.equal(personChange.added.length, 1);
+                            assert.include(personChange.added, car._id);
+                            assert.equal(firstAnotherPersonChange.type, ChangeType.Splice);
+                            assert.equal(firstAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(firstAnotherPersonChange.mapping, 'Person');
+                            assert.equal(firstAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(firstAnotherPersonChange.field, 'cars');
+                            assert.equal(firstAnotherPersonChange.index, 0);
+                            assert.equal(firstAnotherPersonChange.added.length, 1);
+                            assert.equal(firstAnotherPersonChange.removed.length, 0);
+                            assert.include(firstAnotherPersonChange.added, car._id);
+                            assert.equal(secondAnotherPersonChange.type, ChangeType.Remove);
+                            assert.equal(secondAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(secondAnotherPersonChange.mapping, 'Person');
+                            assert.equal(secondAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(secondAnotherPersonChange.field, 'cars');
+                            assert.equal(secondAnotherPersonChange.removed.length, 1);
+                            assert.include(secondAnotherPersonChange.removed, car._id);
+                            assert.equal(secondCarChange.type, ChangeType.Set);
+                            assert.equal(secondCarChange.collection, 'myCollection');
+                            assert.equal(secondCarChange.mapping, 'Car');
+                            assert.equal(secondCarChange._id, car._id);
+                            assert.equal(secondCarChange.field, 'owners');
+                            assert.equal(secondCarChange.old.length, 1);
+                            assert.equal(secondCarChange.new.length, 1);
+                            assert.include(secondCarChange.new, person._id);
+                            assert.equal(firstCarChange.type, ChangeType.Set);
+                            assert.equal(firstCarChange.collection, 'myCollection');
+                            assert.equal(firstCarChange.mapping, 'Car');
+                            assert.equal(firstCarChange._id, car._id);
+                            assert.equal(firstCarChange.field, 'owners');
+                            assert.equal(firstCarChange.new.length, 1);
+                            assert.include(firstCarChange.new, anotherPerson._id);
+                            assert.equal(firstCarChange.old.length, 0);
+                        });
+
+                    });
+
+                    describe('backwards', function () {
+                        it('should set forward', function () {
+                            person.cars = [car];
+                            assert.include(person.cars, car);
+                            assert.include(personProxy._id, car._id);
+                            assert.include(personProxy.related, car);
+                        });
+
+                        it('should set reverse', function () {
+                            person.cars = [car];
+                            assert.include(carProxy._id, person._id);
+                        });
+
+                        it('generates correct changes', function () {
+                            person.cars = [car];
+                            var carChanges = changes.changesForIdentifier(car._id);
+                            dump('carChanges', carChanges.length);
+                            assert.equal(carChanges.length, 2);
+                            var personChanges = changes.changesForIdentifier(person._id);
+                            dump('personChanges', personChanges.length);
+                            assert.equal(personChanges.length, 1);
+                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            dump('anotherPersonChanges', anotherPersonChanges.length);
+                            assert.equal(anotherPersonChanges.length, 2);
+                            var personChange = personChanges[0];
+                            var firstCarChange = carChanges[0];
+                            var secondCarChange = carChanges[1];
+                            var firstAnotherPersonChange = anotherPersonChanges[0];
+                            var secondAnotherPersonChange = anotherPersonChanges[1];
+                            assert.equal(personChange.type, ChangeType.Set);
+                            assert.equal(personChange.collection, 'myCollection');
+                            assert.equal(personChange.mapping, 'Person');
+                            assert.equal(personChange._id, person._id);
+                            assert.equal(personChange.field, 'cars');
+                            assert.equal(personChange.old.length, 0);
+                            assert.equal(personChange.new.length, 1);
+                            assert.include(personChange.new, car._id);
+                            assert.equal(firstAnotherPersonChange.type, ChangeType.Splice);
+                            assert.equal(firstAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(firstAnotherPersonChange.mapping, 'Person');
+                            assert.equal(firstAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(firstAnotherPersonChange.field, 'cars');
+                            assert.equal(firstAnotherPersonChange.index, 0);
+                            assert.equal(firstAnotherPersonChange.added.length, 1);
+                            assert.equal(firstAnotherPersonChange.removed.length, 0);
+                            assert.include(firstAnotherPersonChange.added, car._id);
+                            assert.equal(secondAnotherPersonChange.type, ChangeType.Remove);
+                            assert.equal(secondAnotherPersonChange.collection, 'myCollection');
+                            assert.equal(secondAnotherPersonChange.mapping, 'Person');
+                            assert.equal(secondAnotherPersonChange._id, anotherPerson._id);
+                            assert.equal(secondAnotherPersonChange.field, 'cars');
+                            assert.equal(secondAnotherPersonChange.removed.length, 1);
+                            assert.include(secondAnotherPersonChange.removed, car._id);
+                            assert.equal(secondCarChange.type, ChangeType.Splice);
+                            assert.equal(secondCarChange.collection, 'myCollection');
+                            assert.equal(secondCarChange.mapping, 'Car');
+                            assert.equal(secondCarChange._id, car._id);
+                            assert.equal(secondCarChange.field, 'owners');
+                            assert.equal(secondCarChange.index, 1);
+                            assert.include(secondCarChange.added, person._id);
+                            assert.equal(firstCarChange.type, ChangeType.Set);
+                            assert.equal(firstCarChange.collection, 'myCollection');
+                            assert.equal(firstCarChange.mapping, 'Car');
+                            assert.equal(firstCarChange._id, car._id);
+                            assert.equal(firstCarChange.field, 'owners');
+                            assert.equal(firstCarChange.new, anotherPerson._id);
+                            assert.equal(firstCarChange.old.length, 0);
+                        });
+
+
+                    });
+
+                });
+
+
+
+            });
+        })
+
+
+    });
 });
 
