@@ -102,6 +102,8 @@ function arraysEqual(a, b) {
  * @param obj
  */
 Change.prototype.apply = function (obj) {
+    var self = this;
+    var removed;
     if (obj._id != this._id) {
         throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + obj._id.toString());
     }
@@ -114,7 +116,7 @@ Change.prototype.apply = function (obj) {
         obj[this.field] = this.new;
     }
     else if (this.type == ChangeType.Splice) {
-        var removed = this.removed;
+        removed = this.removed;
         var added = this.added;
         var index = this.index;
         if (!(removed || added)) {
@@ -128,6 +130,17 @@ Change.prototype.apply = function (obj) {
         if (!arraysEqual(actuallyRemoved, this.removed)) {
             throw new RestError('Objects actually removed did not match those specified in the change');
         }
+    }
+    else if (this.type == ChangeType.Remove) {
+        removed = this.removed;
+        if (!removed) {
+            throw new RestError('Must pass removed');
+        }
+        _.each(removed, function (r) {
+            var arr = obj[self.field];
+            var idx = arr.indexOf(r);
+            arr.splice(idx, 1);
+        });
     }
     else {
         throw new RestError('Unknown change type "' + this.type.toString() + '"');

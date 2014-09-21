@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe('changes', function () {
+describe('changes!', function () {
 
     var sut = require('../src/changes');
     var ChangeType = require('../src/changeType').ChangeType;
@@ -190,7 +190,7 @@ describe('changes', function () {
                 collection.install(done);
             });
 
-            it('no remove count or added', function () {
+            it('works', function () {
                 var obj = mapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});
                 var c = new Change();
                 c.collection = collection;
@@ -250,8 +250,39 @@ describe('changes', function () {
                         c.apply(obj);
                     }, RestError);
                 });
-            })
+            });
         });
+
+        describe('remove', function () {
+            it('works', function () {
+                var obj = mapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});
+                var c = new Change();
+                c.collection = collection;
+                c.mapping = mapping;
+                c.field = 'colours';
+                c.type = ChangeType.Remove;
+                c.removed = ['red'];
+                c._id = obj._id;
+                c.apply(obj);
+                assert.equal(obj.colours.length, 1);
+                assert.equal(obj.colours[0], 'blue');
+            });
+            describe('errors', function () {
+                it('no removed', function () {
+                    var obj = mapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});
+                    var c = new Change();
+                    c.collection = collection;
+                    c.mapping = mapping;
+                    c.field = 'colours';
+                    c.type = ChangeType.Remove;
+                    c._id = obj._id;
+                    assert.throws(function () {
+                        c.apply(obj);
+                    }, RestError);
+                });
+
+            });
+        })
 
     });
 

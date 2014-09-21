@@ -1,4 +1,5 @@
 exports.ChangeType = {
     Set: 'Set',
-    Splice: 'Splice'
+    Splice: 'Splice',
+    Remove: 'Remove'
 };

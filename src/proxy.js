@@ -1,20 +1,15 @@
-var RestError = require('./error').RestError;
-var Store = require('./store');
+var RestError = require('./error').RestError
+    , Store = require('./store')
+    , defineSubProperty = require('./misc').defineSubProperty
+    , Operation = require('../vendor/operations.js/src/operation').Operation
+    , util = require('./util')
+    , _ = util._
+    , changes = require('./changes')
+    , Query = require('./query').Query
+    , log = require('../vendor/operations.js/src/log')
+    , ChangeType = require('./changeType').ChangeType;
 
-var defineSubProperty = require('./misc').defineSubProperty;
-
-var Operation = require('../vendor/operations.js/src/operation').Operation;
-var notificationCentre = require('./notificationCentre');
-var broadcast = notificationCentre.broadcast;
-var wrapArray = notificationCentre.wrapArray;
-var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
-var ChangeType = require('./changeType').ChangeType;
-
-var util = require('./util');
-
-var Query = require('./query').Query;
-
-function Fault(proxy, relationship) {
+function Fault(proxy) {
     var self = this;
     this.proxy = proxy;
     Object.defineProperty(this, 'isFault', {
@@ -96,41 +91,12 @@ function NewObjectProxy(opts) {
     });
 }
 
-NewObjectProxy.prototype.getName = function () {
-    var name;
-    if (this.isReverse) {
-        name = this.reverseName;
-    }
-    else if (this.isForward) {
-        name = this.forwardName;
-    }
-    else {
-        throw new RestError('Incompatible relationship: ' + this.object.type + ' ,' + JSON.stringify(this._opts, null, 4));
-    }
-    return name;
-};
-
-NewObjectProxy.prototype.getMapping = function () {
-    var name;
-    if (this.isReverse) {
-        name = this.reverseMapping;
-    }
-    else if (this.isForward) {
-        name = this.forwardMapping;
-    }
-    else {
-        throw new RestError('Incompatible relationship: ' + this.object.type + ' ,' + JSON.stringify(this._opts, null, 4));
-    }
-    return name;
-};
-
-
 NewObjectProxy.prototype.install = function (obj) {
     if (obj) {
         if (!this.object) {
             this.object = obj;
             var self = this;
-            var name = this.getName();
+            var name = getForwardName.call(this);
             Object.defineProperty(obj, name, {
                 get: function () {
                     if (self.related) {
@@ -171,377 +137,182 @@ NewObjectProxy.prototype.get = function (callback) {
     throw new RestError('Must subclass NewObjectProxy');
 };
 
-var log = require('../vendor/operations.js/src/log');
-
-var Logger = log.loggerWithName('Proxy');
-Logger.setLevel(log.Level.warn);
-
-
-
-
-function ForeignKeyProxy(opts) {
-    if (!this) return new ForeignKeyProxy(opts);
-    NewObjectProxy.call(this, opts);
+function getReverseProxyForObject(obj) {
+    var reverseName = getReverseName.call(this);
+    var proxyName = (reverseName + 'Proxy');
+    if (util.isArray(obj)) {
+        return _.pluck(obj, proxyName);
+    }
+    else {
+        return obj[proxyName];
+    }
 }
 
-ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
+function getReverseName() {
+    return this.isForward ? this.reverseName : this.forwardName;
+}
 
-ForeignKeyProxy.prototype.set = function (obj, callback, reverse) {
-    var self = this;
+function getForwardName() {
+    return this.isForward ? this.forwardName : this.reverseName;
+}
 
-    // Validate first.
+function getReverseMapping() {
+    return this.isForward ? this.reverseMapping : this.forwardMapping;
+}
+
+function checkInstalled() {
+    if (!this.object) {
+        throw new RestError('Proxy must be installed on an object before can use it.');
+    }
+}
+
+/**
+ * Configure _id and related with the new related object.
+ * @param obj
+ */
+function set(obj) {
+    registerSetChange.call(this, obj);
     if (obj) {
-        var msg, err;
-        if (this.isForward) {
-            if (Object.prototype.toString.call(obj) == '[object Array]') {
-                msg = 'Cannot assign array to forward side of foreign key relationship';
-                Logger.error(msg);
-                err = new RestError(msg);
-                if (callback) {
-                    callback(err);
-                }
-                else {
-                    throw err;
-                }
-                return;
-            }
+        if (util.isArray(obj)) {
+            this._id = _.pluck(obj, '_id');
+            this.related = obj;
         }
         else {
-            if (Object.prototype.toString.call(obj) != '[object Array]') {
-                msg = 'Cannot assign single to reverse side of foreign key relationship';
-                Logger.error(msg);
-                err = new RestError(msg);
-                if (callback) {
-                    callback(err);
-                }
-                else {
-                    throw err;
-                }
-                return;
-            }
+            this._id = obj._id;
+            this.related = obj;
         }
-    }
-
-    var reverseName = this.isForward ? this.reverseName : this.forwardName;
-    var setterName = ('set' + capitaliseFirstLetter(reverseName));
-    var splicerName = 'splice' + capitaliseFirstLetter(reverseName);
-    var reverseProxyName = reverseName + 'Proxy';
-
-
-    if (self.isForward) {
-        removeReverse(function (err) {
-            if (!err) {
-                setForward();
-                if (obj) {
-                    if (!reverse) {
-                        var identifiers = obj[reverseProxyName]._id;
-                        var length = identifiers ? identifiers.length : 0;
-                        obj[splicerName](length, 0, [self.object], null, true);
-                    }
-                }
-            }
-            if (callback)callback(err);
-        });
-
     }
     else {
-        setReverse(function (err) {
-            if (!err) {
-                var oldId = self._id;
-                var oldRelated = self.related;
-                self._id = [];
-                if (obj) {
-                    _.each(obj, function (o) {
-                        self._id.push(o._id);
-                        o[setterName](self.object, null, true);
-                    });
-                }
-                self.related = obj;
-                self._wrapArray(self.related);
-                var old;
-                if (oldRelated) {
-                    old = oldRelated
-                }
-                else if (oldId) {
-                    old = oldId;
-                }
-                else {
-                    old = null;
-                }
-                broadcast(self.object, {
-                    type: ChangeType.Set,
-                    old: old,
-                    new: obj,
-                    field: self.reverseName
-                });
-                if (callback) callback();
-            }
-            else if (callback) {
-                callback(err);
-            }
-        });
+        this._id = null;
+        this.related = null;
     }
+}
 
-
-    /**
-     * Remove the object from the reverse foreign key
-     * @param c
-     */
-    function removeReverse(c) {
-        function _removeReverse(related) {
-            var identifiers = related[reverseName + 'Proxy']._id;
-            if (identifiers) {
-                var idx = identifiers.indexOf(self.object._id);
-                related[splicerName](idx, 1, [], null, true);
-            }
-        }
-
-        if (self.isFault) {
-            self.get(function (err, related) {
-                if (!err) {
-                    _removeReverse(related);
-                }
-                c(err);
-            });
-        }
-        else if (self.related) {
-            _removeReverse(self.related);
-            c();
-        }
-        else {
-            c();
-        }
+function splice(idx, numRemove) {
+    registerSpliceChange.apply(this, arguments);
+    var add = Array.prototype.slice.call(arguments, 2);
+    var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
+    if (this.related) {
+        _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
     }
+    return returnValue;
+}
 
-    function setReverse(c) {
-        if (!reverse) {
-            function _setReverse(related) {
-                _.each(related, function (r) {
-                    r[setterName](self.object, null, true);
-                });
-            }
-
-            if (self.isFault) {
-                self.get(function (err, related) {
-                    if (!err) {
-                        _setReverse(related);
-                    }
-                    c(err);
-                });
-            }
-            else if (self.related) {
-                _setReverse(self.related);
-                c();
-            }
-            else {
-                c();
-            }
-        }
-        else {
-            c();
-        }
-    }
-
-    function setForward() {
-        var oldId = self._id;
-        var oldRelated = self.related;
-        if (obj) {
-            self._id = obj._id;
-            self.related = obj;
-        }
-        else {
-            self._id = null;
-            self.related = null;
-        }
-        var old;
-        if (oldRelated) {
-            old = oldRelated;
-        }
-        else if (oldId) {
-            old = oldId;
-        }
-        else {
-            old = null;
-        }
-        broadcast(self.object, {
-            type: ChangeType.Set,
-            old: old,
-            new: obj,
-            field: self.forwardName
-        })
-    }
-};
-
-ForeignKeyProxy.prototype.get = function (callback) {
+function clearReverseRelated() {
     var self = this;
-    if (this.isFault) {
-        if (this._id) {
-            Store.get({_id: this._id}, function (err, stored) {
-                if (err) {
-                    if (callback) callback(err);
+    if (!self.isFault) {
+        if (this.related) {
+            var reverseProxy = getReverseProxyForObject.call(this, this.related);
+            var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
+            _.each(reverseProxies, function (p) {
+                if (util.isArray(p._id)) {
+                    var idx = p._id.indexOf(self.object._id);
+                    splice.call(p, idx, 1);
                 }
                 else {
-                    self.related = stored;
-                    if (Object.prototype.toString.call(stored) == '[object Array]') {
-                        self._wrapArray(stored);
-                    }
-                    if (callback) callback(null, stored);
+                    set.call(p, null);
                 }
             });
         }
-//        else if (this.isReverse) {
-//            var query = {};
-//            query[this.forwardName] = this.object._id;
-//            var q = new Query(this.forwardMapping, query);
-//            q.execute(function (err, objs) {
-//                if (!err) {
-//                    self._id = _.pluck(objs, '_id');
-//                    self.related = objs;
-//                    _.each(objs, function (o) {
-//                        o[self.forwardName + 'Proxy']._id = self.object._id;
-//                        o[self.forwardName + 'Proxy'].related = self.object;
-//                    })
-//                }
-//                if (callback) callback(err, objs);
-//            });
-//        }
-        else if (callback) {
-            callback(null, null);
-        }
     }
-    else if (callback) {
-        callback(null, this.related);
-    }
-};
-
-ForeignKeyProxy.prototype._initRelated = function () {
-    if (!this.related) {
-        this.related = [];
-        this._wrapArray(this.related);
-    }
-    if (!this._id) {
-        this._id = [];
-    }
-};
-
-ForeignKeyProxy.prototype._wrapArray = function (arr) {
-    var self = this;
-    wrapArray(arr, this.reverseName, this.object);
-    if (!arr.foreignKeyObserver) {
-        arr.foreignKeyObserver = new ArrayObserver(arr);
-        var observerFunction = function (splices) {
-            if (Logger.debug.isEnabled)
-                Logger.debug('observe');
-            splices.forEach(function (splice) {
-                var added = [];
-                var numAdded = splice.addedCount;
-                var idx = splice.index;
-                for (var i = idx; i < idx + numAdded; i++) {
-                    added.push(self.related[i]);
-                }
-                self._applyReverseOfSplice(splice.removed, added);
-                splices.forEach(function (splice) {
-                    broadcast(self.object, {
-                        field: self.reverseName,
-                        type: ChangeType.Splice,
-                        index: splice.index,
-                        addedCount: splice.addedCount,
-                        removed: splice.removed
+    else {
+        if (self._id) {
+            var reverseName = getReverseName.call(this);
+            var reverseMapping = getReverseMapping.call(this);
+            var identifiers = util.isArray(self._id) ? self._id : [self._id];
+            if (this._reverseIsArray) {
+                _.each(identifiers, function (_id) {
+                    changes.registerChange({
+                        collection: reverseMapping.collection,
+                        mapping: reverseMapping.type,
+                        _id: _id,
+                        field: reverseName,
+                        removed: [self.object._id],
+                        type: ChangeType.Remove
                     });
                 });
-            });
-        };
-        arr.foreignKeyObserver.open(observerFunction);
-    }
-};
-
-ForeignKeyProxy.prototype._applyReverseOfSplice = function (removed, added) {
-    if (Logger.debug.isEnabled)
-        Logger.debug('_applyReverseOfSplice', reverse);
-    var self = this;
-    var setterName = ('set' + capitaliseFirstLetter(this.forwardName));
-    _.each(removed, function (removed) {
-        removed[setterName](null, null, true);
-    });
-    _.each(added, function (a) {
-        a[setterName](self.object, null, true);
-    });
-};
-
-ForeignKeyProxy.prototype._makeChangesToRelatedWithoutObservations = function (f) {
-    this.related.foreignKeyObserver.close();
-    this.related.foreignKeyObserver = null;
-    f();
-    this._wrapArray(this.related);
-};
-
-ForeignKeyProxy.prototype._splice = function (idx, numRemove, added, callback, reverse) {
-    var self = this;
-    if (this.isReverse) {
-        if (Logger.debug.isEnabled)
-            Logger.debug('_splice', idx, reverse);
-        if (idx !== undefined && idx !== null && idx > -1) {
-            var removed = [];
-            for (var i = idx; i < idx + numRemove; i++) {
-                removed.push(this.related[i]);
-            }
-            self._initRelated();
-            var splice = _.partial(this.related.splice, idx, numRemove);
-            // Otherwise infinite recursion via observations.
-            this._makeChangesToRelatedWithoutObservations(function () {
-                splice.apply(self.related, added);
-                splice.apply(self._id, _.pluck(added, '_id'));
-                broadcast(self.object, {
-                    field: self.reverseName,
-                    type: ChangeType.Splice,
-                    index: idx,
-                    addedCount: added.length,
-                    removed: removed
-                });
-            });
-            if (!reverse) {
-                this._applyReverseOfSplice(removed, added, reverse);
-            }
-            if (callback) callback();
-        }
-        else {
-            var sg = 'Must specify an index';
-            Logger.error(sg, idx);
-            throw new RestError(sg);
-        }
-    }
-    else {
-        throw new RestError('Cannot splice forward foreign key relationship');
-    }
-
-};
-
-ForeignKeyProxy.prototype.splice = function (idx, numRemove, add, callback, reverse) {
-    var args = arguments;
-    var self = this;
-    if (this.isFault) {
-        this.get(function (err) {
-            if (err) {
-                if (callback) callback(err);
             }
             else {
-                self._splice.apply(self, args);
+                _.each(identifiers, function (_id) {
+                    changes.registerChange({
+                        collection: reverseMapping.collection,
+                        mapping: reverseMapping.type,
+                        _id: _id,
+                        field: reverseName,
+                        new: null,
+                        old: self.object._id,
+                        type: ChangeType.Set
+                    });
+                });
             }
-        })
+
+        }
+        else {
+            throw new Error();
+        }
+    }
+}
+
+function setReverse(obj) {
+    var self = this;
+    var reverseProxy = getReverseProxyForObject.call(this, obj);
+    var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
+    _.each(reverseProxies, function (p) {
+        clearReverseRelated.call(p);
+        if (util.isArray(p._id)) {
+            splice.call(p, p._id.length, 0, self.object);
+        }
+        else {
+            set.call(p, self.object);
+        }
+    });
+}
+
+function registerSetChange(obj) {
+    var mapping = this.object.mapping.type;
+    var coll = this.object.collection;
+    var newVar;
+    if (util.isArray(obj)) {
+        newVar = _.pluck(obj, '_id');
     }
     else {
-        this._splice.apply(this, arguments);
+        newVar = obj ? obj._id : obj;
     }
-};
+    changes.registerChange({
+        collection: coll,
+        mapping: mapping,
+        _id: this.object._id,
+        field: getForwardName.call(this),
+        new: newVar,
+        old: this._id,
+        type: ChangeType.Set
+    });
+}
 
-ForeignKeyProxy.prototype.install = function (obj) {
-    NewObjectProxy.prototype.install.call(this, obj);
-    if (this.isReverse) {
-        obj[ ('splice' + capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
-
-    }
-};
+function registerSpliceChange(idx, numRemove) {
+    var add = Array.prototype.slice.call(arguments, 2);
+    var mapping = this.object.mapping.type;
+    var coll = this.object.collection;
+    changes.registerChange({
+        collection: coll,
+        mapping: mapping,
+        _id: this.object._id,
+        field: getForwardName.call(this),
+        index: idx,
+        removed: this._id.slice(idx, idx+numRemove),
+        added: _.pluck(add, '_id'),
+        type: ChangeType.Splice
+    });
+}
 
 exports.NewObjectProxy = NewObjectProxy;
-exports.ForeignKeyProxy = ForeignKeyProxy;
 exports.Fault = Fault;
+exports.getReverseProxyForObject = getReverseProxyForObject;
+exports.getReverseName = getReverseName;
+exports.getReverseMapping = getReverseMapping;
+exports.checkInstalled = checkInstalled;
+exports.set = set;
+exports.registerSetChange = registerSetChange;
+exports.splice = splice;
+exports.clearReverseRelated = clearReverseRelated;
+exports.setReverse = setReverse;
