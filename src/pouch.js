@@ -129,7 +129,7 @@ function validate(doc) {
 
 function toNew(doc) {
     var mapping = validate(doc);
-    var obj = mapping._new();
+    var obj = mapping._new(undefined, false);
     obj._id = doc._id;
     obj._rev = doc._rev;
     obj.isSaved = true;

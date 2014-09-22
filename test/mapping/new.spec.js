@@ -5,7 +5,7 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe.only('mapping new object', function () {
+describe('mapping new object', function () {
     var Collection = require('../../src/collection').Collection;
 
     var RelationshipType = require('../../src/relationship').RelationshipType;
@@ -117,9 +117,9 @@ describe.only('mapping new object', function () {
     });
 
     describe('changes', function () {
-        var collection, carMapping, personMapping;
 
-        var car, person, carChanges;
+        var collection, carMapping, personMapping;
+        var car, person, carChanges, personChanges;
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
@@ -143,46 +143,59 @@ describe.only('mapping new object', function () {
                 person = personMapping._new({name: 'Michael Ford', age: 23});
                 car = carMapping._new({colour: 'red', name: 'Aston Martin', owner: person});
                 carChanges = changes.changesForIdentifier(car._id);
+                personChanges = changes.changesForIdentifier(person._id);
                 done();
             });
         });
 
-        it('registers changes', function () {
-            assert.equal(carChanges.length, 3);
-            _.chain(carChanges).pluck('_id').each(function (x) {assert.equal(x, car._id);});
-            _.chain(carChanges).pluck('collection').each(function (x) {assert.equal(x, 'myCollection');});
-            _.chain(carChanges).pluck('mapping').each(function (x) {assert.equal(x, 'Car');});
-            var colourChange = _.findWhere(carChanges, {field: 'colour'});
-            assert.ok(colourChange);
-            assert.equal(colourChange.new, 'red');
-            assert.notOk(colourChange.old);
-            var nameChange = _.findWhere(carChanges, {field: 'name'});
-            assert.ok(nameChange);
-            assert.equal(nameChange.new, 'Aston Martin');
-            assert.notOk(nameChange.old);
-            var ownerChange = _.findWhere(carChanges, {field: 'owner'});
-            assert.ok(ownerChange);
-            assert.equal(ownerChange.new, person._id);
-            assert.notOk(ownerChange.old);
+        describe('registers changes', function () {
+            it('forward', function () {
+                assert.equal(carChanges.length, 3);
+                _.chain(carChanges).pluck('_id').each(function (x) {assert.equal(x, car._id);});
+                _.chain(carChanges).pluck('collection').each(function (x) {assert.equal(x, 'myCollection');});
+                _.chain(carChanges).pluck('mapping').each(function (x) {assert.equal(x, 'Car');});
+                var colourChange = _.findWhere(carChanges, {field: 'colour'});
+                assert.ok(colourChange);
+                assert.equal(colourChange.new, 'red');
+                assert.notOk(colourChange.old);
+                var nameChange = _.findWhere(carChanges, {field: 'name'});
+                assert.ok(nameChange);
+                assert.equal(nameChange.new, 'Aston Martin');
+                assert.notOk(nameChange.old);
+                var ownerChange = _.findWhere(carChanges, {field: 'owner'});
+                assert.ok(ownerChange);
+                assert.equal(ownerChange.new, person._id);
+                assert.notOk(ownerChange.old);
+            });
+
+            it('reverse', function () {
+
+            });
         });
 
-        it('saves changes', function (done) {
-            changes.mergeChanges(function (err) {
-                if (err) done(err);
-                Pouch.getPouch().get(car._id, function (err, doc) {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        assert.equal(doc.colour, 'red');
-                        assert.equal(doc.name, 'Aston Martin');
-                        assert.equal(doc.collection, 'myCollection');
-                        assert.equal(doc.mapping, 'Car');
-                        done();
-                    }
-                });
-            })
-        });
+        describe('saves', function () {
+            it('saves changes', function (done) {
+                changes.mergeChanges(function (err) {
+                    if (err) done(err);
+                    Pouch.getPouch().get(car._id, function (err, doc) {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            assert.equal(doc.colour, 'red');
+                            assert.equal(doc.name, 'Aston Martin');
+                            assert.equal(doc.collection, 'myCollection');
+                            assert.equal(doc.mapping, 'Car');
+                            done();
+                        }
+                    });
+                })
+            });
+        })
+
+
+
+
     });
 
 });

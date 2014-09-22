@@ -15,7 +15,6 @@ describe('pouch doc adapter', function () {
     var SiestaModel = require('../src/object').SiestaModel;
     var cache = require('../src/cache');
 
-    var pouchAdapter = require('../src/pouchAdapter');
 
     beforeEach(function () {
         s.reset(true);

@@ -3,7 +3,6 @@ var Logger = log.loggerWithName('SiestaModel');
 Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
-var saveOperation = require('./saveOperation');
 //var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
 var util = require('./util');
 var _ = util._;

@@ -1,5 +1,4 @@
 var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
-    , saveOperation = require('./src/saveOperation')
     , DescriptorRegistry = require('./src/descriptorRegistry').DescriptorRegistry
     , Collection = require('./src/collection').Collection
     , cache = require('./src/cache')

@@ -12,11 +12,9 @@ var index = require('./index');
 var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
-var saveOperation = require('./saveOperation');
 var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
 var cache = require('./cache');
-var extend = require('extend');
 
 var changes = require('./changes');
 
@@ -395,17 +393,18 @@ Mapping.prototype._new = function (data, registerChanges) {
                 set: function (v) {
                     var old = newModel.__values[field];
                     newModel.__values[field] = v;
-                    broadcast(newModel, {
-                        type: ChangeType.Set,
-                        old: old,
+                    changes.registerChange({
+                        collection: self.collection,
+                        mapping: self.type,
+                        _id: _id,
                         new: v,
+                        old: old,
+                        type: ChangeType.Set,
                         field: field
                     });
                     if (util.isArray(v)) {
                         wrapArray(v, field, newModel);
                     }
-
-
                 },
                 enumerable: true,
                 configurable: true

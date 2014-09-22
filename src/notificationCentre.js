@@ -3,7 +3,7 @@ var notificationCentre = new EventEmitter();
 var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 var ChangeType = require('./ChangeType').ChangeType;
 var log = require('../vendor/operations.js/src/log');
-
+var changes = require('./changes');
 
 function broadcast(obj, change) {
     var payload = {
@@ -37,18 +37,28 @@ function wrapArray(array, field, siestaModel) {
             var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
-                    broadcast(siestaModel, {
-                        field: field,
-                        type: ChangeType.Splice,
+                    changes.registerChange({
+                        collection: siestaModel.collection,
+                        mapping: siestaModel.mapping.type,
+                        _id: siestaModel._id,
                         index: splice.index,
-                        addedCount: splice.addedCount,
-                        removed: splice.removed
+                        removed: splice.removed,
+                        added: splice.addedCount ? array.slice(splice.index, splice.index+splice.addedCount) : [],
+                        type: ChangeType.Splice,
+                        field: field
                     });
+//
+//                    broadcast(siestaModel, {
+//                        field: field,
+//                        type: ChangeType.Splice,
+//                        index: splice.index,
+//                        addedCount: splice.addedCount,
+//                        removed: splice.removed
+//                    });
                 });
             }
         })
     }
-
 }
 
 exports.notificationCentre = notificationCentre;
