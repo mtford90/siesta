@@ -227,7 +227,8 @@ function clearReverseRelated() {
                         mapping: reverseMapping.type,
                         _id: _id,
                         field: reverseName,
-                        removed: [self.object._id],
+                        removedId: [self.object._id],
+                        removed: [self.object],
                         type: ChangeType.Remove
                     });
                 });
@@ -240,7 +241,9 @@ function clearReverseRelated() {
                         _id: _id,
                         field: reverseName,
                         new: null,
-                        old: self.object._id,
+                        newId: null,
+                        oldId: self.object._id,
+                        old: self.object,
                         type: ChangeType.Set
                     });
                 });
@@ -271,20 +274,22 @@ function setReverse(obj) {
 function registerSetChange(obj) {
     var mapping = this.object.mapping.type;
     var coll = this.object.collection;
-    var newVar;
+    var newId;
     if (util.isArray(obj)) {
-        newVar = _.pluck(obj, '_id');
+        newId = _.pluck(obj, '_id');
     }
     else {
-        newVar = obj ? obj._id : obj;
+        newId = obj ? obj._id : obj;
     }
     changes.registerChange({
         collection: coll,
         mapping: mapping,
         _id: this.object._id,
         field: getForwardName.call(this),
-        new: newVar,
-        old: this._id,
+        newId: newId,
+        oldId: this._id,
+        old: this.related,
+        new: obj,
         type: ChangeType.Set
     });
 }
@@ -299,8 +304,10 @@ function registerSpliceChange(idx, numRemove) {
         _id: this.object._id,
         field: getForwardName.call(this),
         index: idx,
-        removed: this._id.slice(idx, idx+numRemove),
-        added: _.pluck(add, '_id'),
+        removedId: this._id.slice(idx, idx+numRemove),
+        removed: this.related ? this.related.slice(idx, idx+numRemove) : null,
+        addedId: add.length ? _.pluck(add, '_id') : [],
+        added: add.length ? add : [],
         type: ChangeType.Splice
     });
 }

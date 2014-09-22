@@ -14,8 +14,8 @@ function broadcast(obj, change) {
     };
     var mappingNotif = obj.collection + ':' + obj.type;
     notificationCentre.emit(mappingNotif, payload);
-    var collectioNotif = obj.collection;
-    notificationCentre.emit(collectioNotif, payload);
+    var collectionNotif = obj.collection;
+    notificationCentre.emit(collectionNotif, payload);
     var genericNotif = 'Siesta';
     notificationCentre.emit(genericNotif, payload);
 }

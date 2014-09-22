@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe.only('attribute changes', function () {
+describe('attribute changes', function () {
 
     var Collection = require('../src/collection').Collection
         , ChangeType = require('../src/changeType').ChangeType

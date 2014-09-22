@@ -65,9 +65,13 @@ function Change(opts) {
     defineSubProperty.call(this, 'type', this._opts);
     defineSubProperty.call(this, 'index', this._opts);
     defineSubProperty.call(this, 'added', this._opts);
+    defineSubProperty.call(this, 'addedId', this._opts);
     defineSubProperty.call(this, 'removed', this._opts);
+    defineSubProperty.call(this, 'removedId', this._opts);
     defineSubProperty.call(this, 'new', this._opts);
+    defineSubProperty.call(this, 'newId', this._opts);
     defineSubProperty.call(this, 'old', this._opts);
+    defineSubProperty.call(this, 'oldId', this._opts);
 }
 
 Change.prototype._dump = function (json) {
