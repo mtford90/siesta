@@ -5,6 +5,7 @@ var s = require('../index')
 var mappingOperation = require('../src/mappingOperation');
 var BulkMappingOperation = mappingOperation.BulkMappingOperation;
 var util = require('../src/util');
+var RelationshipType = require('../src/relationship').RelationshipType;
 
 assert.arrEqual = function (arr1, arr2) {
     if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
@@ -19,7 +20,7 @@ assert.arrEqual = function (arr1, arr2) {
     });
 };
 
-describe.only('array flattening', function () {
+describe('array flattening', function () {
     describe('flatten', function () {
         it('mixture', function () {
             var flattened = mappingOperation.flattenArray(['1', ['2', '3'], ['4'], '5']);
@@ -59,14 +60,14 @@ describe('bulk mapping operation', function () {
         collection.baseURL = 'https://api.github.com';
         Repo = collection.mapping('Repo', {
             id: 'id',
-            attributes: ['name', 'full_name', 'description'],
-            relationships: {
-                owner: {
-                    mapping: 'User',
-                    type: siesta.RelationshipType.ForeignKey,
-                    reverse: 'repositories'
-                }
-            }
+            attributes: ['name', 'full_name', 'description']
+//            relationships: {
+//                owner: {
+//                    mapping: 'User',
+//                    type: RelationshipType.ForeignKey,
+//                    reverse: 'repositories'
+//                }
+//            }
         });
         User = collection.mapping('User', {
             id: 'id',
@@ -227,8 +228,6 @@ describe('bulk mapping operation', function () {
     });
 
     describe('new', function () {
-
-
         describe('array of array', function () {
             it('array of array', function (done) {
                 var data = [
@@ -249,7 +248,6 @@ describe('bulk mapping operation', function () {
                 });
                 op.start();
             });
-
 
             it('duplicates', function (done) {
                 var data = [
@@ -329,7 +327,6 @@ describe('bulk mapping operation', function () {
                 });
                 op.start();
             })
-
         });
 
         describe('foreign key', function () {
@@ -479,26 +476,45 @@ describe('bulk mapping operation', function () {
 
         });
 
-        describe('no relationships', function () {
-            it('none existing', function (done) {
-                var data = [
-                    {login: 'mike', id: '123'},
-                    {login: 'bob', id: '1234'}
-                ];
-                var op = new BulkMappingOperation(User, data);
-                op.onCompletion(function () {
-                    var objects = op.result;
-                    assert.equal(objects.length, 2);
-                    var mike = objects[0];
-                    var bob = objects[1];
-                    assert.equal(mike.login, 'mike');
-                    assert.equal(mike.id, '123');
-                    assert.equal(bob.login, 'bob');
-                    assert.equal(bob.id, '1234');
-                    done();
+        describe.only('no relationships', function () {
+            var op;
+
+            describe('none existing', function () {
+                beforeEach(function () {
+                    var data = [
+                        {login: 'mike', id: '123'},
+                        {login: 'bob', id: '1234'}
+                    ];
+                    op = new BulkMappingOperation({mapping: User, data: data});
                 });
-                op.start();
+
+                it('lookup', function (done) {
+                    op._lookup(function () {
+                        assert.equal(op.objects.length, 2);
+                        assert.notOk(op.objects[0].login);
+                        assert.notOk(op.objects[1].login);
+                        done();
+                    });
+                });
+
+                it('completion', function (done) {
+                    op.onCompletion(function () {
+                        var objects = op.result;
+                        assert.equal(objects.length, 2);
+                        var mike = objects[0];
+                        var bob = objects[1];
+                        assert.equal(mike.login, 'mike');
+                        assert.equal(mike.id, '123');
+                        assert.equal(bob.login, 'bob');
+                        assert.equal(bob.id, '1234');
+                        done();
+                    });
+                    op.start();
+                });
+
             });
+
+
         });
 
 
