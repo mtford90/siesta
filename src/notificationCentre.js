@@ -47,17 +47,10 @@ function wrapArray(array, field, siestaModel) {
                         type: ChangeType.Splice,
                         field: field
                     });
-//
-//                    broadcast(siestaModel, {
-//                        field: field,
-//                        type: ChangeType.Splice,
-//                        index: splice.index,
-//                        addedCount: splice.addedCount,
-//                        removed: splice.removed
-//                    });
                 });
             }
-        })
+        });
+        array.isFault = false;
     }
 }
 
