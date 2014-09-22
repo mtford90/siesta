@@ -1,10 +1,52 @@
+var chai = require('chai');
 var s = require('../index')
-    , assert = require('chai').assert;
+    , assert = chai.assert;
+
+var mappingOperation = require('../src/mappingOperation');
+var BulkMappingOperation = mappingOperation.BulkMappingOperation;
+var util = require('../src/util');
+
+assert.arrEqual = function (arr1, arr2) {
+    if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
+    if (!util.isArray(arr2)) throw new chai.AssertionError(arr2.toString() + ' is not an array');
+    _.chain(arr1).zip(arr2).each(function (x) {
+        if (util.isArray(x[0]) && util.isArray(x[1])) {
+            assert.arrEqual(x[0], x[1]);
+        }
+        else if (x[0]!=x[1]) {
+            throw new chai.AssertionError(arr1.toString() + ' != ' + arr2.toString());
+        }
+    });
+};
+
+describe.only('array flattening', function () {
+    describe('flatten', function () {
+        it('mixture', function () {
+            var flattened = mappingOperation.flattenArray(['1', ['2', '3'], ['4'], '5']);
+            assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
+        });
+
+        it('all arrays', function () {
+            var flattened = mappingOperation.flattenArray([['1'], ['2', '3'], ['4'], ['5']]);
+            assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
+        });
+
+        it('no arrays', function () {
+            var flattened = mappingOperation.flattenArray(['1', '2', '3', '4', '5']);
+            assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
+        });
+    });
+    describe('unflatten', function () {
+        it('mixture', function () {
+            var unflattened = mappingOperation.unflattenArray(['a', 'b', 'c', 'd', 'e'], ['1', ['2', '3'], ['4'], '5']);
+            assert.arrEqual(['a', ['b', 'c'], ['d'], 'e'], unflattened);
+        });
+    });
+});
 
 describe('bulk mapping operation', function () {
 
     var Collection = require('../src/collection').Collection;
-    var BulkMappingOperation = require('../src/mappingOperation').BulkMappingOperation;
     var Pouch = require('../src/pouch');
     var cache = require('../src/cache');
     var collection;
@@ -33,20 +75,6 @@ describe('bulk mapping operation', function () {
         collection.install(done);
     });
 
-    it('xyz', function (done) {
-        var data = [
-            {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', _id: 'sdfsd'},
-            {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'sdfsd'},
-            {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd'}
-        ];
-        var op = new BulkMappingOperation(Repo, data);
-        var catagories = op._categoriseData();
-        assert.include(catagories.localLookups, data[0]);
-        assert.include(catagories.remoteLookups, data[1]);
-        assert.include(catagories.newObjects, data[2]);
-        done();
-    });
-
     it('abc', function (done) {
         var data = [
             {name: 'Repo', full_name: 'A Big Repo', description: 'Blah'},
@@ -64,32 +92,6 @@ describe('bulk mapping operation', function () {
         });
     });
 
-    describe('overrides', function () {
-        it('simple', function (done) {
-            var data = [
-                {name: 'Repo', full_name: 'A Big Repo', description: 'Blah'}
-            ];
-
-            var op = new BulkMappingOperation(Repo, data);
-            var m = Repo._new();
-            op.override = [m];
-            op.onCompletion(function () {
-                if (op.error) {
-                    done(op.error);
-                }
-                else {
-                    var objs = op.result;
-                    assert.equal(objs.length, 1);
-                    assert.equal(objs[0], m);
-                    assert.equal(objs[0].name, 'Repo');
-                    assert.equal(objs[0].full_name, 'A Big Repo');
-                    assert.equal(objs[0].description, 'Blah');
-                    done();
-                }
-            });
-            op.start();
-        });
-    });
 
     describe('errors', function () {
         // TODO: Errors wtihin arrays of arrays. Need to unflatten errors?

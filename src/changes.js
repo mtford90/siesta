@@ -76,16 +76,16 @@ function Change(opts) {
 
 Change.prototype._dump = function (json) {
     var dumped = {};
-    dumped.collection = this.collection;
-    dumped.mapping = this.mapping;
-    dumped._id = this._id;
-    dumped.field = this.field;
-    dumped.type = this.type;
-    if (this.index) dumped.index = this.index;
-    if (this.added) dumped.added = _.map(this.added, function (x) {return x._dump()});
-    if (this.removed) dumped.removed = _.map(this.removed, function (x) {return x._dump()});
-    if (this.old) dumped.old = this.old;
-    if (this.new) dumped.new = this.new;
+//    dumped.collection = this.collection;
+//    dumped.mapping = this.mapping;
+//    dumped._id = this._id;
+//    dumped.field = this.field;
+//    dumped.type = this.type;
+//    if (this.index) dumped.index = this.index;
+//    if (this.added) dumped.added = _.map(this.added, function (x) {return x._dump()});
+//    if (this.removed) dumped.removed = _.map(this.removed, function (x) {return x._dump()});
+//    if (this.old) dumped.old = this.old;
+//    if (this.new) dumped.new = this.new;
     return json ? JSON.stringify(dumped, null, 4) : dumped;
 };
 
