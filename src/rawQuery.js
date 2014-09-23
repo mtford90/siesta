@@ -25,7 +25,11 @@ function RawQuery(collection, modelName, query) {
         configurable: true,
         enumerable: true,
         get: function () {
-            return require('../index')[self.collection][self.modelName];
+            var collection = require('../index')[self.collection];
+            if (collection) {
+                return collection[self.modelName];
+            }
+            return null;
         }
     });
 }
@@ -41,12 +45,11 @@ function resultsCallback(callback, err, resp) {
 }
 
 RawQuery.prototype.execute = function (callback) {
-
-
-    if (!this.mapping.installed) {
-        throw new RestError('Mapping must be installed');
+    if (this.mapping) { // During unit testing, we don't populate this.mapping, but rather configure Pouch manually.
+        if (!this.mapping.installed) {
+            throw new RestError('Mapping must be installed');
+        }
     }
-
     var m = new PerformanceMonitor('Raw Query');
     m.start();
     var self = this;
