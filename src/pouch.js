@@ -143,15 +143,6 @@ function toNew(doc) {
             }
         }
     }
-    // All reverse relationships will be faulted, as relationships are only stored in the forward facing model.
-    for (var relationshipName in mapping.relationships) {
-        if (mapping.relationships.hasOwnProperty(relationshipName)) {
-            var proxy = obj[relationshipName + 'Proxy'];
-            if (proxy.isReverse) {
-                proxy.isFault = true;
-            }
-        }
-    }
     return obj;
 }
 

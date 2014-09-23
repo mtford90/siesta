@@ -5,7 +5,7 @@ var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('../src/error').RestError;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 
 var cache = require('./cache');
@@ -172,9 +172,18 @@ BulkMappingOperation.prototype._lookup = function (callback) {
             },
             function (callback) {
                 var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.mapping.id);
+                if (Logger.trace.isEnabled)
+                    Logger.trace('Looking up remoteIdentifiers: ' + JSON.stringify(remoteIdentifiers, null, 4));
                 Store.getMultipleRemote(remoteIdentifiers, self.mapping, function (err, objects) {
                     if (!err) {
-                        for (var i = 0; i < objects.length; i++) {
+                        if (Logger.trace.isEnabled) {
+                            var results = {};
+                            for (i=0; i<objects.length; i++) {
+                                results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
+                            }
+                            Logger.trace('Results for remoteIdentifiers: ' + JSON.stringify(results, null, 4));
+                        }
+                        for (i = 0; i < objects.length; i++) {
                             var obj = objects[i];
                             var lookup = remoteLookups[i];
                             if (obj) {

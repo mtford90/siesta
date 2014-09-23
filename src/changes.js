@@ -106,7 +106,6 @@ function arraysEqual(a, b) {
  * @param obj
  */
 Change.prototype.apply = function (obj) {
-    dump('apply', obj);
     var self = this;
     var removed;
     var field = this.field;
@@ -122,7 +121,7 @@ Change.prototype.apply = function (obj) {
         var old = obj[field];
         if (old != this.old) {
             // This is bad. Something has gone out of sync or we're applying unmergedChanges out of order.
-            throw new RestError('Old value does not match new value: ' + JSON.stringify({old: this.old, actualOld: old}, null, 4));
+            throw new RestError('Old value does not match new value: ' + JSON.stringify({old: this.old, actualOld: old ? old : null}, null, 4));
         }
         obj[field] = this.new;
     }
@@ -198,7 +197,6 @@ function mergeChanges(callback) {
             }
         }
         var db = pouch.getPouch();
-        dump(identifiers);
         db.allDocs({keys: identifiers, include_docs: true}, function (err, resp) {
             if (err) {
                 done(err);
@@ -221,12 +219,11 @@ function mergeChanges(callback) {
                     else {
                         doc = row.doc;
                     }
+                    dump(doc);
                     var change = changes[doc._id];
                     _.each(change, function (c) {
-                        dump(c._dump(true));
                         c.apply(doc);
                     });
-                    dump(doc);
                     bulkDocs.push(doc);
                 });
                 db.bulkDocs(bulkDocs, function (err) {

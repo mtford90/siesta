@@ -277,13 +277,12 @@ function clearReverseRelated() {
 
         }
         else {
-            throw new Error();
+            throw new Error(getForwardName.call(this) + ' has no _id');
         }
     }
 }
 
 function setReverse(obj) {
-    dump('setReverse', obj._id);
     var self = this;
     var reverseProxy = getReverseProxyForObject.call(this, obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];

@@ -1,7 +1,7 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe('perform mapping', function () {
+describe.only('perform mapping', function () {
 
     var Pouch = require('../../src/pouch');
 
@@ -10,6 +10,7 @@ describe('perform mapping', function () {
 
     var SiestaModel = require('../../src/object').SiestaModel;
     var cache = require('../../src/cache');
+    var changes = require('../../src/changes');
     var Operation = require('../../vendor/operations.js/src/operation').Operation;
 
     var collection, carMapping, personMapping;
@@ -75,10 +76,7 @@ describe('perform mapping', function () {
                     done();
                 });
             });
-
         });
-
-
 
         describe('new', function () {
 
@@ -93,14 +91,7 @@ describe('perform mapping', function () {
                 assert.ok(obj._id);
             });
 
-            it('is placed down to pouch', function (done) {
-                var pouchId = obj._id;
-                Pouch.getPouch().get(pouchId, function (err, resp) {
-                    if (err) done(err);
-                    assert.ok(resp);
-                    done();
-                });
-            });
+
         });
 
         describe('existing in cache', function () {
@@ -149,39 +140,47 @@ describe('perform mapping', function () {
             describe('via id', function () {
                 var newObj;
                 beforeEach(function (done) {
-                    cache.reset();
-                    carMapping.map({colour: 'blue', id: 'dfadf'}, function (err, obj) {
+                    var doc = {_id: 'localId', type: 'Car', collection: 'myCollection', colour: 'red', id: 'remoteId'};
+                    Pouch.getPouch().put(doc, function (err, doc) {
                         if (err) done(err);
-                        newObj = obj;
-                        done();
+                        carMapping.map({colour: 'blue', id: 'remoteId'}, function (err, obj) {
+                            if (err) done(err);
+                            newObj = obj;
+                            done();
+                        });
                     });
+
                 });
 
                 it('should be mapped onto the old object', function () {
-                    assert.equal(newObj._id, obj._id);
+                    assert.equal(newObj._id, 'localId');
                 });
 
                 it('should have the new colour', function () {
                     assert.equal(newObj.colour, 'blue');
                 });
-                it('obj removed from cache should not have the new colour', function () {
-                    assert.notEqual(obj.colour, 'blue');
-                });
+
             });
 
             describe('via _id', function () {
                 var newObj;
                 beforeEach(function (done) {
-                    cache.reset();
-                    carMapping.map({colour: 'blue', _id: obj._id}, function (err, obj) {
+                    var doc = {_id: 'localId', type: 'Car', collection: 'myCollection', colour: 'red', id: 'remoteId'};
+                    Pouch.getPouch().put(doc, function (err, doc) {
                         if (err) done(err);
-                        newObj = obj;
-                        done();
+                        carMapping.map({colour: 'blue', _id: 'localId'}, function (err, obj) {
+                            if (err) {
+                                console.error(err);
+                                done(err);
+                            }
+                            newObj = obj;
+                            done();
+                        });
                     });
                 });
 
                 it('should be mapped onto the old object', function () {
-                    assert.equal(newObj._id, obj._id);
+                    assert.equal(newObj._id, 'localId');
                 });
 
                 it('should have the new colour', function () {
@@ -223,9 +222,9 @@ describe('perform mapping', function () {
                 var person, car;
 
                 beforeEach(function (done) {
-                    personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err, _person) {
+                    var doc = {name: 'Michael Ford', age: 23, id: 'personRemoteId', collection: 'myCollection', type: 'Person', _id: 'personLocalId'};
+                    Pouch.getPouch().put(doc, function (err) {
                         if (err) done(err);
-                        cache.reset();
                         carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
                             if (err) {
                                 done(err);
@@ -235,6 +234,7 @@ describe('perform mapping', function () {
                             done();
                         });
                     });
+
                 });
 
                 it('should have mapped onto Michael', function () {
@@ -808,7 +808,6 @@ describe('perform mapping', function () {
 
             });
 
-            // TODO: DRY up the below tests.
 
             describe('remote id', function () {
                 describe('forward', function () {
@@ -845,7 +844,6 @@ describe('perform mapping', function () {
                             });
                         });
                     });
-
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
@@ -1202,7 +1200,6 @@ describe('perform mapping', function () {
     });
 
     describe('errors', function () {
-
         describe('one-to-one', function () {
 
             var personMapping;
@@ -1253,7 +1250,6 @@ describe('perform mapping', function () {
 
 
         });
-
         describe('foreign key', function () {
 
             var personMapping;
@@ -1304,12 +1300,9 @@ describe('perform mapping', function () {
 
 
         });
-
     });
 
     describe('bulk', function () {
-
-
         describe('new', function () {
             describe('no relationships', function () {
                 beforeEach(function (done) {

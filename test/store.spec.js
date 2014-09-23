@@ -226,6 +226,7 @@ describe('store', function () {
                         Store.getMultipleRemote(['remoteId1', 'remoteId2', 'remoteId3'], carMapping, function (err, docs) {
                             if (err) done(err);
                             assert.equal(docs.length, 3);
+                            dump(docs);
                             _.each(docs, function (d) {
                                 assert.instanceOf(d, SiestaModel);
                             });

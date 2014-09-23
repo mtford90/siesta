@@ -45,7 +45,7 @@ describe('array flattening', function () {
     });
 });
 
-describe.only('bulk mapping operation', function () {
+describe('bulk mapping operation', function () {
 
     var Collection = require('../src/collection').Collection;
     var Pouch = require('../src/pouch');

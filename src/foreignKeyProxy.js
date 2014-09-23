@@ -144,7 +144,6 @@ ForeignKeyProxy.prototype.set = function (obj) {
             throw new RestError(errorMessage);
         }
         else {
-            dump(this._id);
             proxy.clearReverseRelated.call(this);
             proxy.set.call(self, obj);
             if (self.isReverse) {

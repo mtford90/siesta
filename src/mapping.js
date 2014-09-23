@@ -310,14 +310,11 @@ Mapping.prototype.map = function (data, callback, override) {
 Mapping.prototype._mapBulk = function (data, callback, override) {
     if (Logger.trace.isEnabled)
         Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
-
     var m = new PerformanceMonitor('_mapBulk');
     var self = this;
-
-    var op = new BulkMappingOperation(this, data);
-    if (override) {
-        op.override = override;
-    }
+    var opts = {mapping: this, data: data};
+    if (override) opts.objects = override;
+    var op = new BulkMappingOperation(opts);
     op.onCompletion(function () {
         m.end();
         var err = op.error;
@@ -326,13 +323,7 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
         }
         else {
             var objects = op.result;
-            var collectionName = self.collection;
-            var collection = CollectionRegistry[collectionName];
-            collection.save(function (err) {
-                if (callback) {
-                    callback(err, objects);
-                }
-            });
+            callback(null, objects);
         }
     });
 
@@ -347,7 +338,6 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
  * @private
  */
 Mapping.prototype._new = function (data, registerChanges) {
-    if (registerChanges === undefined) registerChanges = true;
     if (this.installed) {
         var self = this;
         var _id;
