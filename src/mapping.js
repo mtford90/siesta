@@ -16,6 +16,8 @@ var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
 var cache = require('./cache');
 
+var store = require('./store');
+
 var changes = require('./changes');
 
 
@@ -208,19 +210,29 @@ Mapping.prototype.get = function (idOrCallback, callback) {
     else {
         var opts = {};
         opts[this.id] = idOrCallback;
-        var q = new Query(this, opts);
-        q.execute(function (err, rows) {
-            var obj = null;
-            if (!err && rows.length) {
-                if (rows.length > 1) {
-                    err = 'More than one object with id=' + idOrCallback.toString();
+        opts.mapping = this;
+        var obj = cache.get(opts);
+        if (obj) {
+            finish(null, obj);
+        }
+        else {
+            delete opts.mapping;
+            var q = new Query(this, opts);
+            q.execute(function (err, rows) {
+                dump('rows', rows);
+                var obj = null;
+                if (!err && rows.length) {
+                    if (rows.length > 1) {
+                        err = 'More than one object with id=' + idOrCallback.toString();
+                    }
+                    else {
+                        obj = rows[0];
+                    }
                 }
-                else {
-                    obj = rows[0];
-                }
-            }
-            finish(err, obj);
-        });
+                finish(err, obj);
+            });
+        }
+
     }
 
 };
@@ -337,7 +349,7 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
  * @returns {SiestaModel}
  * @private
  */
-Mapping.prototype._new = function (data, registerChanges) {
+Mapping.prototype._new = function (data) {
     if (this.installed) {
         var self = this;
         var _id;
@@ -365,17 +377,15 @@ Mapping.prototype._new = function (data, registerChanges) {
             fields.splice(idx, 1);
         }
         _.each(fields, function (field) {
-            if (registerChanges && data && data[field] !== undefined) {
-                changes.registerChange({
-                    collection: self.collection,
-                    mapping: self.type,
-                    _id: _id,
-                    new: data[field],
-                    old: null,
-                    type: ChangeType.Set,
-                    field: field
-                });
-            }
+//                changes.registerChange({
+//                    collection: self.collection,
+//                    mapping: self.type,
+//                    _id: _id,
+//                    new: data[field],
+//                    old: null,
+//                    type: ChangeType.Set,
+//                    field: field
+//                });
             Object.defineProperty(newModel, field, {
                 get: function () {
                     return newModel.__values[field] || null;
@@ -417,33 +427,33 @@ Mapping.prototype._new = function (data, registerChanges) {
         // Place relationships on the object.
 
         for (var name in this.relationships) {
-            if (registerChanges && data && data[name] !== undefined) {
-                var related = data[name];
-                if (related instanceof SiestaModel) {
-                    related = related._id;
-                }
-                else if (util.isArray(related)) {
-                    related = _.map(related, function (r) {
-                        var _id;
-                        if (r instanceof SiestaModel) {
-                            _id = r._id;
-                        }
-                        else {
-                            _id = r;
-                        }
-                        return _id;
-                    });
-                }
-                changes.registerChange({
-                    collection: this.collection,
-                    mapping: this.type,
-                    _id: _id,
-                    new: related,
-                    old: null,
-                    type: ChangeType.Set,
-                    field: name
-                });
-            }
+//            if (registerChanges && data && data[name] !== undefined) {
+//                var related = data[name];
+//                if (related instanceof SiestaModel) {
+//                    related = related._id;
+//                }
+//                else if (util.isArray(related)) {
+//                    related = _.map(related, function (r) {
+//                        var _id;
+//                        if (r instanceof SiestaModel) {
+//                            _id = r._id;
+//                        }
+//                        else {
+//                            _id = r;
+//                        }
+//                        return _id;
+//                    });
+//                }
+//                changes.registerChange({
+//                    collection: this.collection,
+//                    mapping: this.type,
+//                    _id: _id,
+//                    new: related,
+//                    old: null,
+//                    type: ChangeType.Set,
+//                    field: name
+//                });
+//            }
             var proxy;
             if (this.relationships.hasOwnProperty(name)) {
                 var relationship = this.relationships[name];

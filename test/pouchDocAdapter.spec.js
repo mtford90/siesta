@@ -62,7 +62,7 @@ describe('pouch doc adapter', function () {
 
             it('existing', function (done) {
                 var doc = {name: 'Michael', age: 23, collection:'MyOnlineCollection', mapping: 'Person', _id: 'localId'};
-                personMapping._new(doc)
+                personMapping._new(doc);
                 collection.Person.map(doc, function (err, person) {
                     if (err) done(err);
                     Pouch.getPouch().get(person._id, function (err, doc) {
@@ -79,6 +79,7 @@ describe('pouch doc adapter', function () {
                 collection.Person.map({name: 'Michael', age: 23}, function (err, person) {
                     if (err) done(err);
                     Pouch.getPouch().get(person._id, function (err, doc) {
+                        if (err) done(err);
                         doc._id = 'randomid';
                         doc._rev = 'randomrev';
                         doc.id = 'randomremoteid';

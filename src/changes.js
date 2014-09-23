@@ -105,67 +105,73 @@ function arraysEqual(a, b) {
     return true;
 }
 
+function applySplice(obj, index, removed, added) {
+    if (!(removed || added)) {
+        throw new RestError('Must remove or add something with a splice change.');
+    }
+    if (index === undefined || index === null) {
+        throw new RestError('Must pass index to splice change');
+    }
+    var arr = obj[this.field];
+    var actuallyRemoved = arr.splice(index, removed.length, added);
+    if (!arraysEqual(actuallyRemoved, removed)) {
+        throw new RestError('Objects actually removed did not match those specified in the change');
+    }
+}
+
+function applyRemove(removed, obj) {
+    var self = this;
+    if (!removed) {
+        throw new RestError('Must pass removed');
+    }
+    _.each(removed, function (r) {
+        var arr = obj[self.field];
+        var idx = arr.indexOf(r);
+        arr.splice(idx, 1);
+    });
+}
+
+function applySet(obj, newVal, old) {
+    var actualOld = obj[this.field];
+    if (actualOld != old) {
+        // This is bad. Something has gone out of sync or we're applying unmergedChanges out of order.
+        throw new RestError('Old value does not match new value: ' + JSON.stringify({old: old ? old : null, actualOld: actualOld ? actualOld : null}, null, 4));
+    }
+    obj[this.field] = newVal;
+}
+
 /**
  * Apply this change to the given object.
  * Will throw an error if this object does not match the change.
  * Changes can be applied to a SiestaModel or a PouchDB document.
- * @param obj
+ * @param doc
  */
-Change.prototype.apply = function (obj) {
-    var self = this;
-    var removed;
-    var field = this.field;
+Change.prototype.apply = function (doc) {
     var collection = this.collection;
     var mapping = this.mapping;
-    if (!field) throw new RestError('Must pass field to change');
+    if (!this.field) throw new RestError('Must pass field to change');
     if (!collection) throw new RestError('Must pass collection to change');
     if (!mapping) throw new RestError('Must pass mapping to change');
-    if (obj._id != this._id) {
-        throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + obj._id.toString());
+    if (doc._id != this._id) {
+        throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + doc._id.toString() + '"');
     }
     if (this.type == ChangeType.Set) {
-        var old = obj[field];
-        if (old != this.old) {
-            // This is bad. Something has gone out of sync or we're applying unmergedChanges out of order.
-            throw new RestError('Old value does not match new value: ' + JSON.stringify({old: this.old, actualOld: old ? old : null}, null, 4));
-        }
-        obj[field] = this.new;
+        applySet.call(this, doc, this.newId || this.new, this.oldId || this.old);
     }
     else if (this.type == ChangeType.Splice) {
-        removed = this.removed;
-        var added = this.added;
-        var index = this.index;
-        if (!(removed || added)) {
-            throw new RestError('Must remove or add something with a splice change.');
-        }
-        if (this.index === undefined || this.index === null) {
-            throw new RestError('Must pass index to splice change');
-        }
-        var arr = obj[field];
-        var actuallyRemoved = arr.splice(index, removed.length, added);
-        if (!arraysEqual(actuallyRemoved, this.removed)) {
-            throw new RestError('Objects actually removed did not match those specified in the change');
-        }
+        applySplice.call(this, doc, this.index, this.removedId || this.removed, this.addedId || this.added);
     }
     else if (this.type == ChangeType.Remove) {
-        removed = this.removed;
-        if (!removed) {
-            throw new RestError('Must pass removed');
-        }
-        _.each(removed, function (r) {
-            var arr = obj[self.field];
-            var idx = arr.indexOf(r);
-            arr.splice(idx, 1);
-        });
+        applyRemove.call(this, this.removedId || this.removed, doc);
     }
     else {
         throw new RestError('Unknown change type "' + this.type.toString() + '"');
     }
-    if (!obj.collection) {
-        obj.collection = collection;
+    if (!doc.collection) {
+        doc.collection = collection.name;
     }
-    if (!obj.mapping) {
-        obj.mapping = mapping;
+    if (!doc.mapping) {
+        doc.mapping = mapping.type;
     }
 };
 

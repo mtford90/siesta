@@ -1,10 +1,8 @@
 var siesta = require('../index');
 var assert = require('chai').assert;
 
-describe('cache', function () {
+describe('cache...', function () {
     var mapping;
-
-
 
     var SiestaModel =  require('../src/object').SiestaModel;
     var Collection =  require('../src/collection').Collection;

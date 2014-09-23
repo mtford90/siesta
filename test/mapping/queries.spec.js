@@ -77,9 +77,6 @@ describe('mapping queries', function () {
                 done();
             });
         });
-
-
-
     });
 
     describe('reverse', function () {
@@ -108,7 +105,7 @@ describe('mapping queries', function () {
             collection.install(done);
         });
 
-        it('xyz', function (done) {
+        it('cached', function (done) {
             carMapping.map({
                 colour: 'red',
                 name: 'Aston Martin',
@@ -120,11 +117,9 @@ describe('mapping queries', function () {
                 id: 5
             }, function (err, car) {
                 if (err) done(err);
-                cache.reset();
                 personMapping.get('2', function (err, p) {
+                    if (err) done(err);
                     assert.ok(p, 'Should be able to fetch the person');
-                    dump(p.cars);
-                    assert.ok(p.cars.isFault);
                     p.carsProxy.get(function (err, cars) {
                         assert.equal(cars.length, 1);
                         assert.equal(cars[0].owner, p);
@@ -133,6 +128,36 @@ describe('mapping queries', function () {
                 });
             });
         });
+
+        it('not cached', function (done) {
+            carMapping.map({
+                colour: 'red',
+                name: 'Aston Martin',
+                owner: {
+                    name: 'Michael Ford',
+                    age: 2,
+                    id: '2'
+                },
+                id: 5
+            }, function (err, car) {
+                if (err) done(err);
+                collection.save(function (err) {
+                    if (err) done(err);
+                    cache.reset();
+                    personMapping.get('2', function (err, p) {
+                        if (err) done(err);
+                        assert.ok(p, 'Should be able to fetch the person');
+                        p.carsProxy.get(function (err, cars) {
+                            assert.equal(cars.length, 1);
+                            assert.equal(cars[0].owner, p);
+                            done(err);
+                        });
+                    });
+                });
+            });
+        });
+
+
     });
 
 });
