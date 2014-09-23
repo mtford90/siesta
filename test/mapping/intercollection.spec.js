@@ -66,12 +66,8 @@ describe('intercoll relationships', function () {
                     if (err) done(err);
                     anotherCollection['AnotherMapping'].map({field: 5, person: {name: 'Michael', age: 23, id: 'xyz'}}, function (err, _obj) {
                         if (err) done(err);
-                        _obj.save(function (err) {
-                            if (err) done(err);
-                            obj = _obj;
-                            done();
-                        })
-
+                        obj = _obj;
+                        done();
                     });
                 });
 
@@ -92,7 +88,6 @@ describe('intercoll relationships', function () {
 
         });
     });
-
 
 
 });
