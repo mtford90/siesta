@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe('notifications', function () {
+describe('attribute notifications', function () {
 
     var Collection = require('../src/collection').Collection
         , ChangeType = require('../src/changeType').ChangeType;
@@ -65,36 +65,32 @@ describe('notifications', function () {
             });
 
 
-            it('notif contains type', function () {
+            it('notif contains collection', function () {
                 assert.equal(notif.collection, 'myCollection');
             });
 
-            it('notif contains collection', function () {
-                assert.equal(notif.type, 'Car');
-            });
-
-            it('notif contains object', function () {
-                assert.equal(notif.obj, car);
+            it('notif contains mapping', function () {
+                assert.equal(notif.mapping, 'Car');
             });
 
             it('changeDict contains attribute name', function () {
-                var change = notif.change;
-                assert.equal(change.field, 'colour');
+                assert.equal(notif.field, 'colour');
             });
 
             it('changeDict contains change type', function () {
-                var change = notif.change;
-                assert.equal(change.type, ChangeType.Set);
+                assert.equal(notif.type, ChangeType.Set);
             });
 
             it('changeDict contains old value', function () {
-                var change = notif.change;
-                assert.equal(change.old, 'red');
+                assert.equal(notif.old, 'red');
             });
 
             it('changeDict contains new value', function () {
-                var change = notif.change;
-                assert.equal(change.new, 'blue');
+                assert.equal(notif.new, 'blue');
+            });
+
+            it('changeDict contains new value', function () {
+                assert.equal(notif._id, car._id);
             });
 
         });
@@ -141,25 +137,24 @@ describe('notifications', function () {
                     });
                 });
 
-                it('notif contains type', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains collection', function () {
-                    assert.equal(notif.type, 'Car');
+                it('notif contains mapping', function () {
+                    assert.equal(notif.mapping, 'Car');
                 });
 
                 it('notif contains object', function () {
-                    assert.equal(notif.obj, car);
+                    assert.equal(notif._id, car._id);
                 });
 
                 it('changeDict contains change', function () {
-                    var change = notif.change;
-                    assert.equal(change.field, 'colours');
-                    assert.equal(change.type, ChangeType.Splice);
-                    assert.equal(change.index, 2);
-                    assert.equal(change.removed.length, 0);
-                    assert.equal(change.addedCount, 1);
+                    assert.equal(notif.field, 'colours');
+                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.index, 2);
+                    assert.equal(notif.removed.length, 0);
+                    assert.equal(notif.added.length, 1);
                 });
 
             });
@@ -174,30 +169,28 @@ describe('notifications', function () {
                             done();
                         });
                         car.colours.pop();
-
                     });
                 });
 
-                it('notif contains type', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains collection', function () {
-                    assert.equal(notif.type, 'Car');
+                it('notif contains mapping', function () {
+                    assert.equal(notif.mapping, 'Car');
                 });
 
-                it('notif contains object', function () {
-                    assert.equal(notif.obj, car);
+                it('notif contains _id', function () {
+                    assert.equal(notif._id, car._id);
                 });
 
                 it('notif contains change', function () {
-                    var change = notif.change;
-                    assert.equal(change.field, 'colours');
-                    assert.equal(change.type, ChangeType.Splice);
-                    assert.equal(change.index, 1);
-                    assert.equal(change.removed.length, 1);
-                    assert.include(change.removed, 'blue');
-                    assert.equal(change.addedCount, 0);
+                    assert.equal(notif.field, 'colours');
+                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.index, 1);
+                    assert.equal(notif.removed.length, 1);
+                    assert.include(notif.removed, 'blue');
+                    assert.equal(notif.added.length, 0);
                 });
             });
 
@@ -214,26 +207,25 @@ describe('notifications', function () {
                     });
                 });
 
-                it('notif contains type', function () {
+                it('notif contains collection', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains collection', function () {
-                    assert.equal(notif.type, 'Car');
+                it('notif contains mapping', function () {
+                    assert.equal(notif.mapping, 'Car');
                 });
 
-                it('notif contains object', function () {
-                    assert.equal(notif.obj, car);
+                it('notif contains id', function () {
+                    assert.equal(notif._id, car._id);
                 });
 
                 it('notif contains change', function () {
-                    var change = notif.change;
-                    assert.equal(change.field, 'colours');
-                    assert.equal(change.type, ChangeType.Splice);
-                    assert.equal(change.index, 0);
-                    assert.equal(change.removed.length, 1);
-                    assert.include(change.removed, 'red');
-                    assert.equal(change.addedCount, 0);
+                    assert.equal(notif.field, 'colours');
+                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.index, 0);
+                    assert.equal(notif.removed.length, 1);
+                    assert.include(notif.removed, 'red');
+                    assert.equal(notif.added.length, 0);
 
                 });
 
@@ -244,14 +236,12 @@ describe('notifications', function () {
                 beforeEach(function (done) {
                     carMapping.map({colours: ['red', 'blue'], name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
                         car = _car;
-                        car.save(function (err) {
-                            if (err) done(err);
+
                             s.once('myCollection:Car', function (n) {
                                 notif = n;
                                 done();
                             });
                             car.colours.unshift('green');
-                        });
                     });
 
                 });
@@ -260,21 +250,20 @@ describe('notifications', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains collection', function () {
-                    assert.equal(notif.type, 'Car');
+                it('notif contains mapping', function () {
+                    assert.equal(notif.mapping, 'Car');
                 });
 
                 it('notif contains object', function () {
-                    assert.equal(notif.obj, car);
+                    assert.equal(notif._id, car._id);
                 });
 
                 it('notif contains change', function () {
-                    var change = notif.change;
-                    assert.equal(change.field, 'colours');
-                    assert.equal(change.type, ChangeType.Splice);
-                    assert.equal(change.index, 0);
-                    assert.equal(change.removed.length, 0);
-                    assert.equal(change.addedCount, 1);
+                    assert.equal(notif.field, 'colours');
+                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.index, 0);
+                    assert.equal(notif.removed.length, 0);
+                    assert.equal(notif.added.length, 1);
                 });
 
             });
@@ -300,21 +289,21 @@ describe('notifications', function () {
                     });
                 });
 
-                it('notif contains type', function () {
+                it('notif contains colleciton', function () {
                     _.each(notifs, function (notif) {
                         assert.equal(notif.collection, 'myCollection');
                     });
                 });
 
-                it('notif contains collection', function () {
+                it('notif contains mapping', function () {
                     _.each(notifs, function (notif) {
-                        assert.equal(notif.type, 'Car');
+                        assert.equal(notif.mapping, 'Car');
                     });
                 });
 
                 it('notif contains object', function () {
                     _.each(notifs, function (notif) {
-                        assert.equal(notif.obj, car);
+                        assert.equal(notif._id, car._id);
                     });
                 });
 
@@ -322,13 +311,12 @@ describe('notifications', function () {
                     var removalNotif;
                     var addNotif;
                     _.each(notifs, function (notif) {
-                        var change = notif.change;
-                        assert.equal(change.field, 'colours');
-                        assert.equal(change.type, ChangeType.Splice);
-                        if (change.removed.length) {
+                        assert.equal(notif.field, 'colours');
+                        assert.equal(notif.type, ChangeType.Splice);
+                        if (notif.removed.length) {
                             removalNotif = notif;
                         }
-                        else if (change.addedCount) {
+                        else if (notif.added) {
                             addNotif = notif;
                         }
                     });

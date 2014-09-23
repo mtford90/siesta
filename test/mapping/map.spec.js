@@ -1,7 +1,7 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe.only('perform mapping', function () {
+describe('perform mapping', function () {
 
     var Pouch = require('../../src/pouch');
 

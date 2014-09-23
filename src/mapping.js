@@ -408,12 +408,6 @@ Mapping.prototype._new = function (data, registerChanges) {
             set: function (v) {
                 var old = newModel.__values[self.id];
                 newModel.__values[self.id] = v;
-                broadcast(newModel, {
-                    type: ChangeType.Set,
-                    old: old,
-                    new: v,
-                    field: self.id
-                });
                 cache.remoteInsert(newModel, v, old);
             },
             enumerable: true,

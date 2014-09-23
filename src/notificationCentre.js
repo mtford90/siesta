@@ -5,20 +5,7 @@ var ChangeType = require('./ChangeType').ChangeType;
 var log = require('../vendor/operations.js/src/log');
 var changes = require('./changes');
 
-function broadcast(obj, change) {
-    var payload = {
-        collection: obj.collection,
-        type: obj.type,
-        obj: obj,
-        change: change
-    };
-    var mappingNotif = obj.collection + ':' + obj.type;
-    notificationCentre.emit(mappingNotif, payload);
-    var collectionNotif = obj.collection;
-    notificationCentre.emit(collectionNotif, payload);
-    var genericNotif = 'Siesta';
-    notificationCentre.emit(genericNotif, payload);
-}
+
 
 ///**
 // * Wraps the methods of a javascript array object so that notifications are sent
@@ -56,4 +43,3 @@ function wrapArray(array, field, siestaModel) {
 
 exports.notificationCentre = notificationCentre;
 exports.wrapArray = wrapArray;
-exports.broadcast = broadcast;

@@ -23,7 +23,13 @@ var SiestaModel = require('./object').SiestaModel;
 
 var extend = require('extend');
 
+var notificationCentre = require('./notificationCentre').notificationCentre;
+
 var unmergedChanges = {};
+
+var log = require('../vendor/operations.js/src/log');
+
+var Logger = log.loggerWithName('changes');
 
 // The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
 pouch.addObserver(function (e) {
@@ -249,6 +255,16 @@ function mergeChanges(callback) {
     mergeQueue.addOperation(op);
 }
 
+function broadcast(collection, mapping, c) {
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '"');
+    notificationCentre.emit(collection, c);
+    var mappingNotif = collection + ':' + mapping;
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + mappingNotif + '"');
+    notificationCentre.emit(mappingNotif, c);
+    var genericNotif = 'Siesta';
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '"');
+    notificationCentre.emit(genericNotif, c);
+}
 /**
  * Register that a change has been made.
  * @param opts
@@ -271,7 +287,9 @@ function registerChange(opts) {
         collectionChanges[mapping.type][_id] = [];
     }
     var objChanges = collectionChanges[mapping.type][_id];
-    objChanges.push(new Change(opts));
+    var c = new Change(opts);
+    objChanges.push(c);
+    broadcast(collection, mapping, c);
 }
 
 /**
