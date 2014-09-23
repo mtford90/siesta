@@ -160,6 +160,10 @@ function getReverseMapping() {
     return this.isForward ? this.reverseMapping : this.forwardMapping;
 }
 
+function getForwardMapping() {
+    return this.isForward ? this.forwardMapping : this.reverseMapping;
+}
+
 function checkInstalled() {
     if (!this.object) {
         throw new RestError('Proxy must be installed on an object before can use it.');
@@ -196,6 +200,28 @@ function splice(idx, numRemove) {
         _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
     }
     return returnValue;
+}
+
+function objAsString(obj) {
+    function _objAsString(obj) {
+        if (obj) {
+            var mapping = obj.mapping;
+            var mappingName = mapping.type;
+            var ident = obj._id;
+            if (typeof ident == 'string') {
+                ident = '"' + ident + '"';
+            }
+            return mappingName + '[_id=' + ident + ']';
+        }
+        else if (obj === undefined) {
+            return 'undefined';
+        }
+        else if (obj === null) {
+            return 'null';
+        }
+    }
+    if (util.isArray(obj)) return _.map(_objAsString, obj).join(', ');
+    return _objAsString(obj);
 }
 
 function clearReverseRelated() {
@@ -257,15 +283,16 @@ function clearReverseRelated() {
 }
 
 function setReverse(obj) {
+    dump('setReverse', obj._id);
     var self = this;
     var reverseProxy = getReverseProxyForObject.call(this, obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
     _.each(reverseProxies, function (p) {
-        clearReverseRelated.call(p);
         if (util.isArray(p._id)) {
             splice.call(p, p._id.length, 0, self.object);
         }
         else {
+            clearReverseRelated.call(p);
             set.call(p, self.object);
         }
     });
@@ -316,10 +343,13 @@ exports.NewObjectProxy = NewObjectProxy;
 exports.Fault = Fault;
 exports.getReverseProxyForObject = getReverseProxyForObject;
 exports.getReverseName = getReverseName;
+exports.getForwardName = getForwardName;
 exports.getReverseMapping = getReverseMapping;
+exports.getForwardMapping = getForwardMapping;
 exports.checkInstalled = checkInstalled;
 exports.set = set;
 exports.registerSetChange = registerSetChange;
 exports.splice = splice;
 exports.clearReverseRelated = clearReverseRelated;
 exports.setReverse = setReverse;
+exports.objAsString = objAsString;

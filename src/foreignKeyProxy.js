@@ -133,7 +133,9 @@ function validate(obj) {
 }
 
 
+
 ForeignKeyProxy.prototype.set = function (obj) {
+//    dump(proxy.objAsString(this.object) + ': ' +  proxy.getForwardName.call(this) + '=' + proxy.objAsString(obj));
     proxy.checkInstalled.call(this);
     var self = this;
     if (obj) {

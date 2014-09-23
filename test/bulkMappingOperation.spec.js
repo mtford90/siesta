@@ -45,7 +45,7 @@ describe('array flattening', function () {
     });
 });
 
-describe('bulk mapping operation', function () {
+describe.only('bulk mapping operation', function () {
 
     var Collection = require('../src/collection').Collection;
     var Pouch = require('../src/pouch');
@@ -60,14 +60,14 @@ describe('bulk mapping operation', function () {
         collection.baseURL = 'https://api.github.com';
         Repo = collection.mapping('Repo', {
             id: 'id',
-            attributes: ['name', 'full_name', 'description']
-//            relationships: {
-//                owner: {
-//                    mapping: 'User',
-//                    type: RelationshipType.ForeignKey,
-//                    reverse: 'repositories'
-//                }
-//            }
+            attributes: ['name', 'full_name', 'description'],
+            relationships: {
+                owner: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'repositories'
+                }
+            }
         });
         User = collection.mapping('User', {
             id: 'id',
@@ -75,24 +75,6 @@ describe('bulk mapping operation', function () {
         });
         collection.install(done);
     });
-
-    it('abc', function (done) {
-        var data = [
-            {name: 'Repo', full_name: 'A Big Repo', description: 'Blah'},
-            {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'sdfsd'},
-            {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd'}
-        ];
-        Repo.map(data, function (err, objs) {
-            if (err) done(err);
-            data[0]._id = objs[0]._id;
-            var op = new BulkMappingOperation(Repo, data);
-            op.onCompletion(function () {
-                done();
-            });
-            op.start();
-        });
-    });
-
 
     describe('errors', function () {
         // TODO: Errors wtihin arrays of arrays. Need to unflatten errors?
@@ -125,9 +107,10 @@ describe('bulk mapping operation', function () {
                 }
             ];
 
-            var op = new BulkMappingOperation(User, data);
+            var op = new BulkMappingOperation({mapping: User, data: data});
             op.onCompletion(function () {
                 assert.ok(op.error[0]);
+                dump(op.error);
                 assert.notOk(op.error[1]);
                 assert.ok(op.error[2]);
                 assert.ok(op.error[3]);
@@ -146,7 +129,7 @@ describe('bulk mapping operation', function () {
                 }
             ];
 
-            var op = new BulkMappingOperation(User, data);
+            var op = new BulkMappingOperation({mapping: User, data: data});
             op.onCompletion(function () {
                 assert.ok(op.error);
                 done();
@@ -161,7 +144,7 @@ describe('bulk mapping operation', function () {
                 }
             ];
 
-            var op = new BulkMappingOperation(Repo, data);
+            var op = new BulkMappingOperation({mapping: Repo, data: data});
             op.onCompletion(function () {
                 assert.ok(op.error);
                 done();
@@ -169,165 +152,27 @@ describe('bulk mapping operation', function () {
             op.start();
         });
 
-        it('array of array', function (done) {
+        it('scalar to array', function (done) {
             var data = [
                 {
-                    login: 'mike2',
-                    id: '122315634',
-                    repositories: [ // Valid
-                        {name: 'Repo'}
-                    ]
-                },
-                [
-                    {
-                        login: 'mike3',
-                        id: '12324sdf',
-                        repositories: [ // Invalid
-                            {_id: 'nosuchlocalid'}
-                        ]
-                    },
-                    {
-                        login: 'mike5',
-                        id: '12324',
-                        repositories: [ // Invalid
-                            {_id: 'andanotherinvalid _id'}
-                        ]
-                    }
-                ]
+                    login: 'mike4',
+                    id: '123124',
+                    repositories: 5
+                }
             ];
-
-            var op = new BulkMappingOperation(User, data);
+            var op = new BulkMappingOperation({mapping: User, data: data});
             op.onCompletion(function () {
-                assert.notOk(op.error[0]);
-                assert.ok(op.error[1]);
-                var subError = op.error[1][0];
-                assert.ok(subError);
+                dump(op.error);
+                assert.ok(op.error);
                 done();
             });
             op.start();
         });
 
-        it('wtf', function (done) {
-            var data = [
-                [{name: 'Repo'}],
-                [{_id: 'nosuchlocalid'}]
-            ];
-
-            var op = new BulkMappingOperation(Repo, data);
-            op.onCompletion(function () {
-                assert.equal(op.error.length, 2);
-                assert.equal(op.error[0].length, 1);
-                assert.notOk(op.error[0][0]);
-                assert.equal(op.error[1].length, 1);
-                assert.ok(op.error[1][0]);
-                done();
-            });
-            op.start();
-        });
 
     });
 
     describe('new', function () {
-        describe('array of array', function () {
-            it('array of array', function (done) {
-                var data = [
-                    [
-                        {name: 'Repo', full_name: 'A Big Repo', description: 'Blah'},
-                        {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah'}
-                    ],
-                    [
-                        {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd'}
-                    ]
-                ];
-                var op = new BulkMappingOperation(Repo, data);
-                op.onCompletion(function () {
-                    var objects = op.result;
-                    assert.notEqual(objects[0][0], objects[0][1]);
-                    assert.notEqual(objects[0][1], objects[1][0]);
-                    done();
-                });
-                op.start();
-            });
-
-            it('duplicates', function (done) {
-                var data = [
-                    [
-                        {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', id: 2},
-                        {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah'}
-                    ],
-                    [
-                        {name: 'Repo3', id: 2}
-                    ]
-                ];
-                var op = new BulkMappingOperation(Repo, data);
-                var ops = op._constructSubOperations();
-                for (var prop in ops) {
-                    if (ops.hasOwnProperty(prop)) {
-                        assert.fail('should be no suboperations ' + prop);
-                    }
-                }
-                op.onCompletion(function () {
-                    var objects = op.result;
-
-                    assert.equal(objects[0][0].name, 'Repo3');
-                    assert.equal(objects[0][0].full_name, 'A Big Repo');
-                    assert.equal(objects[0][0].description, 'Blah');
-                    assert.equal(objects[0][0].id, 2);
-
-                    assert.equal(objects[0][1].name, 'Repo2');
-                    assert.equal(objects[0][1].full_name, 'Another Big Repo');
-                    assert.equal(objects[0][1].description, 'Blsdah');
-                    assert.notOk(objects[0][1].id);
-
-
-                    assert.notEqual(objects[0][0], objects[0][1]);
-                    assert.equal(objects[0][0], objects[1][0]);
-
-                    done();
-                });
-                op.start();
-            });
-
-            it('relationship', function (done) {
-                var data = [
-                    [
-                        {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', owner: 5},
-                        {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', owner: {id: 1, login: 'bob'}}
-                    ],
-                    [
-                        {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', owner: {id: 5, login: 'mike'}}
-                    ]
-                ];
-                var op = new BulkMappingOperation(Repo, data);
-                op.onCompletion(function () {
-                    var objects = op.result;
-                    assert.equal(objects[0][0].owner, objects[1][0].owner);
-                    assert.notEqual(objects[0][0], objects[0][1]);
-                    assert.notEqual(objects[0][1], objects[1][0]);
-                    done();
-                });
-                op.start();
-            });
-
-            it('mixed', function (done) {
-                var data = [
-                    [
-                        {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', owner: 5},
-                        {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', owner: {id: 1, login: 'bob'}}
-                    ],
-                    {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', owner: {id: 5, login: 'mike'}}
-                ];
-                var op = new BulkMappingOperation(Repo, data);
-                op.onCompletion(function () {
-                    var objects = op.result;
-                    assert.equal(objects[0][0].owner, objects[1].owner);
-                    assert.notEqual(objects[0][0], objects[0][1]);
-                    assert.notEqual(objects[0][1], objects[1]);
-                    done();
-                });
-                op.start();
-            })
-        });
 
         describe('foreign key', function () {
 
@@ -339,15 +184,16 @@ describe('bulk mapping operation', function () {
                         {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'sdfsd', owner: 5},
                         {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', owner: owner}
                     ];
-                    var op = new BulkMappingOperation(Repo, data);
-                    var suboperations = op._constructSubOperations();
-                    assert.ok(suboperations.owner);
-                    assert.equal(suboperations.owner.data[0], 5);
-                    assert.equal(suboperations.owner.data[1], owner);
-                    assert.include(suboperations.owner.__indexes, 1);
-                    assert.include(suboperations.owner.__indexes, 2);
-                    assert.notInclude(suboperations.owner.__indexes, 0);
-                    assert.equal(suboperations.owner.__relationshipName, 'owner');
+                    var op = new BulkMappingOperation({mapping: Repo, data:data});
+                    op._constructSubOperations();
+                    var ownerSubOperation = op.subOps.owner.op;
+                    var ownerIndexes = op.subOps.owner.indexes;
+                    assert.equal(ownerIndexes.length, 2);
+                    assert.include(ownerIndexes, 1);
+                    assert.include(ownerIndexes, 2);
+                    assert.equal(ownerSubOperation.mapping, User);
+                    assert.equal(ownerSubOperation.data[0], 5);
+                    assert.equal(ownerSubOperation.data[1], owner);
                 });
 
                 it('none existing', function (done) {
@@ -357,11 +203,13 @@ describe('bulk mapping operation', function () {
                         {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'remoteId2', owner: 5},
                         {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', id: 'remoteId3', owner: owner}
                     ];
-                    var op = new BulkMappingOperation(Repo, data);
+                    var op = new BulkMappingOperation({mapping: Repo, data:data});
                     op.onCompletion(function () {
                         var err = op.error;
-                        if (err) done(err);
-                        var objects = this.result;
+                        if (err) {
+                            done(err);
+                        }
+                        var objects = this.objects;
                         var repo = objects[0];
                         var repo2 = objects[1];
                         var repo3 = objects[2];
@@ -398,10 +246,11 @@ describe('bulk mapping operation', function () {
                             ]
                         }
                     ];
-                    var op = new BulkMappingOperation(User, data);
+                    var op = new BulkMappingOperation({mapping: User, data: data});
                     op.onCompletion(function () {
                         if (op.error) {
-                            done(error);
+                            console.error(JSON.stringify(op.error, null, 4));
+                            done(op.error);
                         }
                         var objects = op.result;
                         assert.equal(objects.length, 1);
@@ -440,9 +289,10 @@ describe('bulk mapping operation', function () {
                                     ]
                                 }
                             ];
-                            var op = new BulkMappingOperation(User, data);
+                            var op = new BulkMappingOperation({mapping: User, data: data});
                             op.onCompletion(function () {
                                 if (op.error) {
+                                    dump(op.error);
                                     done(op.error);
                                 }
                                 else {
@@ -476,7 +326,7 @@ describe('bulk mapping operation', function () {
 
         });
 
-        describe.only('no relationships', function () {
+        describe('no relationships', function () {
             var op;
 
             describe('none existing', function () {
@@ -516,8 +366,6 @@ describe('bulk mapping operation', function () {
 
 
         });
-
-
     });
 
 });

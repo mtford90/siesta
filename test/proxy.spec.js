@@ -731,6 +731,25 @@ describe('new object proxy', function () {
                         assert.include(personProxy._id, car._id);
                         assert.include(personProxy.related, car);
                     });
+
+                    it('multiple', function () {
+                        car.owner = person;
+                        var anotherCar = new SiestaModel(carMapping);
+                        anotherCar._id = 'anotherCar';
+                        var anotherCarProxy = new ForeignKeyProxy({
+                            reverseMapping: personMapping,
+                            forwardMapping: carMapping,
+                            reverseName: 'cars',
+                            forwardName: 'owner'
+                        });
+                        anotherCarProxy.install(anotherCar);
+                        anotherCarProxy.isFault = false;
+                        anotherCar.owner = person;
+                        assert.include(person.cars, car);
+                        assert.include(person.cars, anotherCar);
+                        assert.equal(car.owner, person);
+                        assert.equal(anotherCar.owner, person);
+                    })
                 });
 
                 describe('backwards', function () {
@@ -1431,12 +1450,6 @@ describe('new object proxy', function () {
                             assert.include(carProxy.related, person);
                         });
 
-                        it('should clear the old', function () {
-                            person.cars = [car];
-                            assert.equal(anotherPersonProxy._id.length, 0);
-                            assert.equal(anotherPersonProxy.related.length, 0);
-                        });
-
                         it('generates correct changes', function () {
                             person.cars = [car];
                             var carChanges = changes.changesForIdentifier(car._id);
@@ -1447,12 +1460,11 @@ describe('new object proxy', function () {
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
                             dump('anotherPersonChanges', anotherPersonChanges.length);
-                            assert.equal(anotherPersonChanges.length, 2);
+                            assert.equal(anotherPersonChanges.length, 1);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
                             var secondCarChange = carChanges[1];
                             var firstAnotherPersonChange = anotherPersonChanges[0];
-                            var secondAnotherPersonChange = anotherPersonChanges[1];
                             assert.equal(personChange.collection, 'myCollection');
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
@@ -1475,17 +1487,6 @@ describe('new object proxy', function () {
                             assert.include(firstAnotherPersonChange.added, car);
                             assert.equal(firstAnotherPersonChange.removed.length, 0);
                             assert.equal(firstAnotherPersonChange.removedId.length, 0);
-                            assert.equal(secondAnotherPersonChange.collection, 'myCollection');
-                            assert.equal(secondAnotherPersonChange.mapping, 'Person');
-                            assert.equal(secondAnotherPersonChange._id, anotherPerson._id);
-                            assert.equal(secondAnotherPersonChange.field, 'cars');
-                            assert.equal(secondAnotherPersonChange.index, 0);
-                            assert.equal(secondAnotherPersonChange.added.length, 0);
-                            assert.equal(secondAnotherPersonChange.removedId.length, 1);
-                            assert.include(secondAnotherPersonChange.removedId, car._id);
-                            assert.equal(secondAnotherPersonChange.removed.length, 1);
-                            assert.include(secondAnotherPersonChange.removed, car);
-                            assert.equal(secondAnotherPersonChange.type, ChangeType.Splice);
                             assert.equal(secondCarChange.collection, 'myCollection');
                             assert.equal(secondCarChange.mapping, 'Car');
                             assert.equal(secondCarChange._id, car._id);
@@ -1622,12 +1623,11 @@ describe('new object proxy', function () {
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
                             dump('anotherPersonChanges', anotherPersonChanges.length);
-                            assert.equal(anotherPersonChanges.length, 2);
+                            assert.equal(anotherPersonChanges.length, 1);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
                             var secondCarChange = carChanges[1];
                             var firstAnotherPersonChange = anotherPersonChanges[0];
-                            var secondAnotherPersonChange = anotherPersonChanges[1];
                             assert.equal(personChange.type, ChangeType.Set);
                             assert.equal(personChange.collection, 'myCollection');
                             assert.equal(personChange.mapping, 'Person');
@@ -1650,15 +1650,6 @@ describe('new object proxy', function () {
                             assert.include(firstAnotherPersonChange.added, car);
                             assert.equal(firstAnotherPersonChange.removed.length, 0);
                             assert.equal(firstAnotherPersonChange.removedId.length, 0);
-                            assert.equal(secondAnotherPersonChange.type, ChangeType.Remove);
-                            assert.equal(secondAnotherPersonChange.collection, 'myCollection');
-                            assert.equal(secondAnotherPersonChange.mapping, 'Person');
-                            assert.equal(secondAnotherPersonChange._id, anotherPerson._id);
-                            assert.equal(secondAnotherPersonChange.field, 'cars');
-                            assert.equal(secondAnotherPersonChange.removed.length, 1);
-                            assert.include(secondAnotherPersonChange.removed, car);
-                            assert.equal(secondAnotherPersonChange.removedId.length, 1);
-                            assert.include(secondAnotherPersonChange.removedId, car._id);
                             assert.equal(secondCarChange.type, ChangeType.Splice);
                             assert.equal(secondCarChange.collection, 'myCollection');
                             assert.equal(secondCarChange.mapping, 'Car');
