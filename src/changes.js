@@ -33,7 +33,7 @@ var cache = require('./cache');
 
 var Logger = log.loggerWithName('changes');
 
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.debug);
 
 // The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
 
@@ -117,7 +117,6 @@ function applySplice(obj, field, index, removed, added) {
     if (index === undefined || index === null) {
         throw new RestError('Must pass index to splice change');
     }
-    dump(field);
     var arr = obj[field];
     var actuallyRemoved = _.partial(arr.splice, index, removed.length).apply(arr, added);
     if (!arraysEqual(actuallyRemoved, removed)) {
@@ -175,6 +174,9 @@ Change.prototype.apply = function (doc) {
     }
     if (!doc.mapping) {
         doc.mapping = this.mapping;
+    }
+    if (!doc.type) {
+        doc.type = this.mapping;
     }
 };
 
@@ -299,7 +301,10 @@ function changesForIdentifier(ident) {
  */
 function mergeChanges(callback) {
     var changes = changesByIdentifiers();
-    if (_.keys(changes).length) {
+    var numChanges = _.keys(changes).length;
+    if (numChanges) {
+        if (Logger.debug.isEnabled)
+            Logger.debug('Merging ' + numChanges.toString() + ' changes');
         var op = new Operation('Merge Changes', function (done) {
             var identifiers = [];
             for (var prop in changes) {
@@ -330,15 +335,12 @@ function mergeChanges(callback) {
                         else {
                             doc = row.doc;
                         }
-                        dump(doc);
                         var change = changes[doc._id];
                         _.each(change, function (c) {
-                            dump('Applying change', c, doc);
                             c.apply(doc);
                         });
                         bulkDocs.push(doc);
                     });
-                    dump(bulkDocs);
                     db.bulkDocs(bulkDocs, function (err) {
                         if (err) {
                             if (errors.length) {

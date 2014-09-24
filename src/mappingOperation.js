@@ -3,6 +3,7 @@ var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('../src/error').RestError;
+var Pouch = require('./pouch');
 
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
@@ -84,38 +85,7 @@ function mapAttributes() {
     }
 }
 
-//function registerRelationshipChange(object, field, related) {
-//    var relatedIdentifier;
-//    if (related instanceof SiestaModel) {
-//        relatedIdentifier = related._id;
-//    }
-//    else if (util.isArray(related)) {
-//        relatedIdentifier = _.map(related, function (r) {
-//            var _id;
-//            if (r instanceof SiestaModel) {
-//                _id = r._id;
-//            }
-//            else {
-//                _id = r;
-//            }
-//            return _id;
-//        });
-//    }
-//    var proxy = object[field + 'Proxy'];
-//    var oldId = proxy._id;
-//    var oldRelated = proxy.related;
-//    changes.registerChange({
-//        collection: object.collection,
-//        mapping: object.mapping.type,
-//        _id: object._id,
-//        newId: relatedIdentifier,
-//        new: related,
-//        oldId: oldId,
-//        old: oldRelated,
-//        type: ChangeType.Set,
-//        field: field
-//    });
-//}
+
 BulkMappingOperation.prototype._map = function () {
     var self = this;
     mapAttributes.call(this);
@@ -242,6 +212,35 @@ BulkMappingOperation.prototype._lookup = function (callback) {
         ],
         callback);
 };
+
+BulkMappingOperation.prototype._lookupSingleton = function (callback) {
+    // TODO: Use an index.
+    // TODO: Lookup in cache.
+    var self = this;
+    var _map = function (doc) {
+        if (doc.type == "$1" && doc.collection == "$2") {
+            emit(doc._id, doc);
+        }
+    }.toString();
+    _map.replace('$1', this.mapping.collection);
+    _map.replace('$2', this.mapping.type);
+    Pouch.getPouch().query({map: _map}, {include_docs: true}, function (err, resp) {
+        if (!err) {
+            var rows = resp.rows;
+            if (!rows.length) {
+                var obj = self.mapping._new();
+                for (var i=0;i<self.data.length;i++) {
+                    self.objects[i] = obj;
+                }
+            }
+            else if (rows.length) {
+                throw 'nyi';
+            }
+        }
+        callback(err);
+    });
+};
+
 
 BulkMappingOperation.prototype._start = function (done) {
     if (this.data.length) {

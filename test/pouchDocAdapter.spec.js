@@ -54,41 +54,56 @@ describe('pouch doc adapter', function () {
             beforeEach(function (done) {
                 collection = new Collection('MyOnlineCollection');
                 personMapping = collection.mapping('Person', {
-                    id: 'photoId',
-                    attributes: ['height', 'width', 'url']
+                    id: 'id',
+                    attributes: ['age', 'name']
                 });
                 collection.install(done);
             });
 
             it('existing', function (done) {
-                var doc = {name: 'Michael', age: 23, collection: 'MyOnlineCollection', mapping: 'Person', _id: 'localId'};
-                personMapping._new(doc);
-                collection.Person.map(doc, function (err, person) {
+                this.timeout(4000);
+                var doc = {name: 'Michael', age: 12, _id: 'localId', collection: 'MyOnlineCollection', type: 'Person'};
+                Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
-                    Pouch.getPouch().get(person._id, function (err, doc) {
+                    dump(doc._id);
+                    collection.Person.map({_id: 'localId', age: 23}, function (err, person) {
                         if (err) done(err);
-                        var objs = Pouch.toSiesta([doc]);
-                        assert.equal(objs.length, 1);
-                        assert.equal(objs[0], person);
-                        done();
+                        assert.equal(person._id, doc._id);
+                        collection.save(function (err) {
+                            if (err) done(err);
+                            Pouch.getPouch().get(person._id, function (err, doc) {
+                                if (err) done(err);
+                                var objs = Pouch.toSiesta([doc]);
+                                assert.equal(objs.length, 1);
+                                assert.equal(objs[0], person);
+                                done();
+                            });
+                        });
                     });
                 });
             });
 
             it('new', function (done) {
+                this.timeout(4000);
+
                 collection.Person.map({name: 'Michael', age: 23}, function (err, person) {
                     if (err) done(err);
-                    Pouch.getPouch().get(person._id, function (err, doc) {
+                    collection.save(function (err) {
                         if (err) done(err);
-                        doc._id = 'randomid';
-                        doc._rev = 'randomrev';
-                        doc.id = 'randomremoteid';
-                        if (err) done(err);
-                        var objs = Pouch.toSiesta([doc]);
-                        assert.equal(objs.length, 1);
-                        assert.notEqual(objs[0], person);
-                        assert.instanceOf(objs[0], SiestaModel);
-                        done();
+
+                        Pouch.getPouch().get(person._id, function (err, doc) {
+                            if (err) done(err);
+                            doc._id = 'randomid';
+                            doc._rev = 'randomrev';
+                            doc.id = 'randomremoteid';
+                            dump('doc', doc);
+                            if (err) done(err);
+                            var objs = Pouch.toSiesta([doc]);
+                            assert.equal(objs.length, 1);
+                            assert.notEqual(objs[0], person);
+                            assert.instanceOf(objs[0], SiestaModel);
+                            done();
+                        });
                     });
                 });
             });

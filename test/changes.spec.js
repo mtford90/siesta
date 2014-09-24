@@ -474,7 +474,6 @@ describe('changes!', function () {
                             else {
                                 var doc = docs[0];
                                 assert.arrEqual(doc.owner, ['carId1', 'carId2', 'carId3']);
-                                dump(docs);
                                 done();
                             }
                         });

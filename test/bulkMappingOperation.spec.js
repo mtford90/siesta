@@ -110,7 +110,6 @@ describe('bulk mapping operation', function () {
             var op = new BulkMappingOperation({mapping: User, data: data});
             op.onCompletion(function () {
                 assert.ok(op.error[0]);
-                dump(op.error);
                 assert.notOk(op.error[1]);
                 assert.ok(op.error[2]);
                 assert.ok(op.error[3]);
@@ -162,7 +161,6 @@ describe('bulk mapping operation', function () {
             ];
             var op = new BulkMappingOperation({mapping: User, data: data});
             op.onCompletion(function () {
-                dump(op.error);
                 assert.ok(op.error);
                 done();
             });
@@ -292,7 +290,6 @@ describe('bulk mapping operation', function () {
                             var op = new BulkMappingOperation({mapping: User, data: data});
                             op.onCompletion(function () {
                                 if (op.error) {
-                                    dump(op.error);
                                     done(op.error);
                                 }
                                 else {
@@ -365,6 +362,26 @@ describe('bulk mapping operation', function () {
             });
 
 
+        });
+    });
+
+    describe.only('singleton...', function () {
+        var op;
+        beforeEach(function () {
+            var data = [
+                {login: 'mike', id: '123'},
+                {login: 'bob', id: '1234'}
+            ];
+            op = new BulkMappingOperation({mapping: User, data: data});
+        });
+
+        it('lookupSingleton', function (done) {
+            op._lookupSingleton(function (err) {
+                if (!err) {
+                    
+                }
+                done(err);
+            });
         });
     });
 

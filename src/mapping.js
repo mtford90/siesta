@@ -219,7 +219,6 @@ Mapping.prototype.get = function (idOrCallback, callback) {
             delete opts.mapping;
             var q = new Query(this, opts);
             q.execute(function (err, rows) {
-                dump('rows', rows);
                 var obj = null;
                 if (!err && rows.length) {
                     if (rows.length > 1) {
@@ -387,7 +386,7 @@ Mapping.prototype._new = function (data) {
                     changes.registerChange({
                         collection: self.collection,
                         mapping: self.type,
-                        _id: _id,
+                        _id: newModel._id,
                         new: v,
                         old: old,
                         type: ChangeType.Set,
