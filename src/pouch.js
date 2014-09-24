@@ -160,6 +160,7 @@ function toSiesta(docs) {
             else {
                 mapped[i] = toNew(doc);
                 cache.insert(mapped[i]);
+                mapped[i].applyChanges();  // Apply unsaved changes.
             }
         }
         else {

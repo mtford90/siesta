@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('./util').assert;
 
-describe.only('changes!', function () {
+describe('changes!', function () {
 
     var sut = require('../src/changes');
     var ChangeType = require('../src/changeType').ChangeType;

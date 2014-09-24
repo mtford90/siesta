@@ -34,6 +34,7 @@ var cache = require('./cache');
 var Logger = log.loggerWithName('changes');
 
 // The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
+
 pouch.addObserver(function (e) {
     var id = e.id;
     for (var collectionName in unmergedChanges) {
@@ -392,6 +393,8 @@ function registerChange(opts) {
     objChanges.push(c);
     broadcast(collection, mapping, c);
 }
+
+
 
 /**
  * Returns an array of all pending unmergedChanges.

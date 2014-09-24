@@ -4,7 +4,6 @@ var s = require('../index')
 
 describe('pouch doc adapter', function () {
 
-
     var Collection = require('../src/collection').Collection;
 
     var Pouch = require('../src/pouch');
@@ -14,7 +13,8 @@ describe('pouch doc adapter', function () {
 
     var SiestaModel = require('../src/object').SiestaModel;
     var cache = require('../src/cache');
-
+    var changes = require('../src/changes');
+    var ChangeType = require('../src/changeType').ChangeType;
 
     beforeEach(function () {
         s.reset(true);
@@ -61,7 +61,7 @@ describe('pouch doc adapter', function () {
             });
 
             it('existing', function (done) {
-                var doc = {name: 'Michael', age: 23, collection:'MyOnlineCollection', mapping: 'Person', _id: 'localId'};
+                var doc = {name: 'Michael', age: 23, collection: 'MyOnlineCollection', mapping: 'Person', _id: 'localId'};
                 personMapping._new(doc);
                 collection.Person.map(doc, function (err, person) {
                     if (err) done(err);
@@ -140,6 +140,57 @@ describe('pouch doc adapter', function () {
 
         });
 
+        describe.only('changes', function () {
+            var collection, carMapping;
+            beforeEach(function (done) {
+                collection = new Collection('myCollection');
+
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['name', 'colour']
+                });
+                collection.install(done);
+
+            });
+
+            it('pouch adapter should apply unmerged changes', function (done) {
+                var doc = {
+                    collection: 'myCollection',
+                    type: 'Car',
+                    colour: 'red',
+                    _id: 'localId',
+                    name: 'Aston Martin'
+                };
+                Pouch.getPouch().put(doc, function (err, resp) {
+                    if (err) done(err);
+                    doc._rev = resp.rev;
+                    changes.registerChange({
+                        collection: collection._name,
+                        mapping: carMapping.type,
+                        field: 'colour',
+                        type: ChangeType.Set,
+                        new: 'blue',
+                        old: 'red',
+                        _id: 'localId'
+                    });
+                    changes.registerChange({
+                        collection: collection._name,
+                        mapping: carMapping.type,
+                        field: 'name',
+                        type: ChangeType.Set,
+                        new: 'Bentley',
+                        old: 'Aston Martin',
+                        _id: 'localId'
+                    });
+                    var models = Pouch.toSiesta([doc]);
+                    assert.equal(models[0].colour, 'blue');
+                    assert.equal(models[0].name, 'Bentley');
+                    done();
+                });
+
+            });
+        });
+
 
     });
 
@@ -202,6 +253,5 @@ describe('pouch doc adapter', function () {
 
 
     });
-
 
 });

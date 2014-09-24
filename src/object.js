@@ -6,6 +6,8 @@ var defineSubProperty = require('./misc').defineSubProperty;
 //var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
 var util = require('./util');
 var _ = util._;
+var changes = require('./changes');
+var error = require('./error');
 
 //var queues = {};
 
@@ -51,6 +53,13 @@ function SiestaModel(mapping) {
         configurable: true
     });
 
+    Object.defineProperty(this, 'changes', {
+        get: function () {
+            return changes.changesForIdentifier(self._id);
+        },
+        enumerable: true
+    });
+
     this._rev = null;
 
 }
@@ -94,6 +103,22 @@ SiestaModel.prototype._dump = function (asJson) {
 
     return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
 };
+
+/**
+ * Apply any unsaved changes to this object. Must have _id
+ */
+SiestaModel.prototype.applyChanges = function () {
+    if (this._id) {
+        var self = this;
+        _.each(this.changes, function (c) {
+            c.apply(self);
+        });
+    }
+    else {
+        throw new RestError('Cannot apply changes to object with no _id');
+    }
+};
+
 
 exports.SiestaModel = SiestaModel;
 exports.dumpSaveQueues = function () {
