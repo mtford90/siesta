@@ -12,8 +12,12 @@ describe('changes!', function () {
 
     var Collection = require('../src/collection').Collection;
 
-    var pouch = require('../src/pouch');
+    var Pouch = require('../src/pouch');
     var cache = require('../src/cache');
+
+    var changes = require('../src/changes');
+
+    var util = require('../src/util');
 
     var collection, carMapping;
 
@@ -291,7 +295,7 @@ describe('changes!', function () {
 
         function testMerge(changes, docs, callback) {
             sut.changes = changes;
-            var db = pouch.getPouch();
+            var db = Pouch.getPouch();
             db.bulkDocs(docs, function (err) {
                 if (err) {
                     callback(err);
@@ -373,7 +377,6 @@ describe('changes!', function () {
             });
 
             describe('relationship', function () {
-
                 var personMapping;
                 describe('foreign key', function () {
                     beforeEach(function (done) {
@@ -704,7 +707,6 @@ describe('changes!', function () {
                 });
 
 
-
                 describe('errors', function () {
                     it('invalid oldId', function () {
                         var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
@@ -889,15 +891,100 @@ describe('changes!', function () {
                 });
 
 
-
-
-
             });
-
 
 
         });
 
     })
+
+    describe('save', function () {
+
+        var collection, carMapping, personMapping;
+        var car, person, carChanges, personChanges;
+
+        beforeEach(function (done) {
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        type: RelationshipType.ForeignKey,
+                        reverse: 'cars',
+                        mapping: 'Person'
+                    }
+                }
+            });
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['age', 'name']
+            });
+            collection.install(function (err) {
+                if (err) done(err);
+                personMapping.map({name: 'Michael Ford', age: 23}, function (err, _person) {
+                    if (err) done(err);
+                    person = _person;
+                    carMapping.map({colour: 'red', name: 'Aston Martin', owner: person}, function (err, _car) {
+                        if (err) done(err);
+                        car = _car;
+                        util.next(function () {
+                            carChanges = changes.changesForIdentifier(car._id);
+                            personChanges = changes.changesForIdentifier(person._id);
+                            collection.save(done);
+                        });
+                    });
+                });
+            });
+        });
+
+        describe('registers changes', function () {
+            it('forward', function () {
+                assert.equal(carChanges.length, 3);
+                _.chain(carChanges).pluck('_id').each(function (x) {assert.equal(x, car._id);});
+                _.chain(carChanges).pluck('collection').each(function (x) {assert.equal(x, 'myCollection');});
+                _.chain(carChanges).pluck('mapping').each(function (x) {assert.equal(x, 'Car');});
+                var colourChange = _.findWhere(carChanges, {field: 'colour'});
+                assert.ok(colourChange);
+                assert.equal(colourChange.new, 'red');
+                assert.notOk(colourChange.old);
+                var nameChange = _.findWhere(carChanges, {field: 'name'});
+                assert.ok(nameChange);
+                assert.equal(nameChange.new, 'Aston Martin');
+                assert.notOk(nameChange.old);
+                var ownerChange = _.findWhere(carChanges, {field: 'owner'});
+                assert.ok(ownerChange);
+                assert.equal(ownerChange.new, person);
+                assert.equal(ownerChange.newId, person._id);
+                assert.notOk(ownerChange.old);
+            });
+
+            it('reverse', function () {
+
+            });
+        });
+
+        describe('saves', function () {
+            it('saves changes', function (done) {
+                changes.mergeChanges(function (err) {
+                    if (err) done(err);
+                    assert.notOk(changes.allChanges.length);
+                    Pouch.getPouch().get(car._id, function (err, doc) {
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            assert.equal(doc.colour, 'red');
+                            assert.equal(doc.name, 'Aston Martin');
+                            assert.equal(doc.collection, 'myCollection');
+                            assert.equal(doc.mapping, 'Car');
+                            done();
+                        }
+                    });
+                })
+            });
+        })
+
+    });
 
 });

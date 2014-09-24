@@ -136,12 +136,10 @@ Collection._reset = Pouch.reset;
 Collection._getPouch = Pouch.getPouch;
 
 Collection.prototype.save = function (callback) {
-    observe.performMicrotaskCheckpoint();
-    setTimeout(function () {
+    util.next(function () {
         changes.mergeChanges(callback);
     });
 };
-
 
 Collection.prototype._mapping = function (name, mapping) {
     if (name) {

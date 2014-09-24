@@ -307,14 +307,23 @@ function registerSetChange(obj) {
     else {
         newId = obj ? obj._id : obj;
     }
+    // We take [] == null == undefined in the case of relationships.
+    var oldId = this._id;
+    if (util.isArray(oldId) && !oldId.length) {
+        oldId = null;
+    }
+    var old = this.related;
+    if (util.isArray(old) && !old.length) {
+        old = null;
+    }
     changes.registerChange({
         collection: coll,
         mapping: mapping,
         _id: this.object._id,
         field: getForwardName.call(this),
         newId: newId,
-        oldId: this._id,
-        old: this.related,
+        oldId: oldId,
+        old: old,
         new: obj,
         type: ChangeType.Set
     });

@@ -5,13 +5,15 @@ var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('../src/error').RestError;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 
 var cache = require('./cache');
 var util = require('./util');
 var _ = util._;
 var defineSubProperty = require('./misc').defineSubProperty;
+var changes = require('./changes');
+var ChangeType = require('./changeType').ChangeType;
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {
@@ -82,6 +84,38 @@ function mapAttributes() {
     }
 }
 
+//function registerRelationshipChange(object, field, related) {
+//    var relatedIdentifier;
+//    if (related instanceof SiestaModel) {
+//        relatedIdentifier = related._id;
+//    }
+//    else if (util.isArray(related)) {
+//        relatedIdentifier = _.map(related, function (r) {
+//            var _id;
+//            if (r instanceof SiestaModel) {
+//                _id = r._id;
+//            }
+//            else {
+//                _id = r;
+//            }
+//            return _id;
+//        });
+//    }
+//    var proxy = object[field + 'Proxy'];
+//    var oldId = proxy._id;
+//    var oldRelated = proxy.related;
+//    changes.registerChange({
+//        collection: object.collection,
+//        mapping: object.mapping.type,
+//        _id: object._id,
+//        newId: relatedIdentifier,
+//        new: related,
+//        oldId: oldId,
+//        old: oldRelated,
+//        type: ChangeType.Set,
+//        field: field
+//    });
+//}
 BulkMappingOperation.prototype._map = function () {
     var self = this;
     mapAttributes.call(this);
@@ -91,7 +125,7 @@ BulkMappingOperation.prototype._map = function () {
         var indexes = self.subOps[f].indexes;
         var relatedData = getRelatedData.call(self, f).relatedData;
         var unflattenedObjects = unflattenArray(op.objects, relatedData);
-        for (var i=0;i<unflattenedObjects.length;i++) {
+        for (var i = 0; i < unflattenedObjects.length; i++) {
             var idx = indexes[i];
             // Errors are plucked from the suboperations.
             var error = self.errors[idx];
@@ -102,6 +136,7 @@ BulkMappingOperation.prototype._map = function () {
                 if (object) {
                     try {
                         object[f] = related;
+//                        registerRelationshipChange(object, f, related);
                     }
                     catch (err) {
                         if (err instanceof RestError) {
@@ -178,7 +213,7 @@ BulkMappingOperation.prototype._lookup = function (callback) {
                     if (!err) {
                         if (Logger.trace.isEnabled) {
                             var results = {};
-                            for (i=0; i<objects.length; i++) {
+                            for (i = 0; i < objects.length; i++) {
                                 results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
                             }
                             Logger.trace('Results for remoteIdentifiers: ' + JSON.stringify(results, null, 4));

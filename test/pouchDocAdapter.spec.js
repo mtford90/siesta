@@ -140,7 +140,7 @@ describe('pouch doc adapter', function () {
 
         });
 
-        describe.only('changes', function () {
+        describe('changes', function () {
             var collection, carMapping;
             beforeEach(function (done) {
                 collection = new Collection('myCollection');

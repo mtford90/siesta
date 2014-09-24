@@ -930,8 +930,8 @@ describe('new object proxy', function () {
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
                             assert.equal(personChange.field, 'cars');
-                            assert.equal(personChange.old.length, 0);
-                            assert.equal(personChange.oldId.length, 0);
+                            assert.notOk(personChange.old);
+                            assert.notOk(personChange.oldId);
                             assert.equal(personChange.new.length, 1);
                             assert.equal(personChange.newId.length, 1);
                             assert.include(personChange.newId, car._id);
@@ -1107,7 +1107,7 @@ describe('new object proxy', function () {
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
                             assert.equal(personChange.field, 'cars');
-                            assert.equal(personChange.old.length, 0);
+                            assert.notOk(personChange.old);
                             assert.equal(personChange.newId.length, 1);
                             assert.include(personChange.newId, car._id);
                             assert.equal(personChange.new.length, 1);
@@ -1428,8 +1428,8 @@ describe('new object proxy', function () {
                             assert.include(firstCarChange.new, anotherPerson);
                             assert.equal(firstCarChange.newId.length, 1);
                             assert.include(firstCarChange.newId, anotherPerson._id);
-                            assert.equal(firstCarChange.old.length, 0);
-                            assert.equal(firstCarChange.oldId.length, 0);
+                            assert.notOk(firstCarChange.old);
+                            assert.notOk(firstCarChange.oldId);
                             assert.equal(firstCarChange.type, ChangeType.Set);
                         });
 
@@ -1469,7 +1469,7 @@ describe('new object proxy', function () {
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
                             assert.equal(personChange.field, 'cars');
-                            assert.equal(personChange.old.length, 0);
+                            assert.notOk(personChange.old);
                             assert.equal(personChange.new.length, 1);
                             assert.include(personChange.new, car);
                             assert.equal(personChange.newId.length, 1);
@@ -1501,8 +1501,8 @@ describe('new object proxy', function () {
                             assert.equal(firstCarChange.field, 'owners');
                             assert.include(firstCarChange.new, anotherPerson);
                             assert.include(firstCarChange.newId, anotherPerson._id);
-                            assert.equal(firstCarChange.old.length, 0);
-                            assert.equal(firstCarChange.oldId.length, 0);
+                            assert.notOk(firstCarChange.old);
+                            assert.notOk(firstCarChange.oldId);
                             assert.equal(firstCarChange.type, ChangeType.Set);
                         });
                     });
@@ -1594,8 +1594,8 @@ describe('new object proxy', function () {
                             assert.equal(firstCarChange.newId.length, 1);
                             assert.include(firstCarChange.new, anotherPerson);
                             assert.include(firstCarChange.newId, anotherPerson._id);
-                            assert.equal(firstCarChange.old.length, 0);
-                            assert.equal(firstCarChange.oldId.length, 0);
+                            assert.notOk(firstCarChange.old);
+                            assert.notOk(firstCarChange.oldId);
                         });
 
                     });
@@ -1633,7 +1633,7 @@ describe('new object proxy', function () {
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
                             assert.equal(personChange.field, 'cars');
-                            assert.equal(personChange.old.length, 0);
+                            assert.notOk(personChange.old);
                             assert.equal(personChange.new.length, 1);
                             assert.equal(personChange.newId.length, 1);
                             assert.include(personChange.newId, car._id);
@@ -1665,8 +1665,8 @@ describe('new object proxy', function () {
                             assert.equal(firstCarChange.field, 'owners');
                             assert.include(firstCarChange.new, anotherPerson);
                             assert.include(firstCarChange.newId, anotherPerson._id);
-                            assert.equal(firstCarChange.old.length, 0);
-                            assert.equal(firstCarChange.oldId.length, 0);
+                            assert.notOk(firstCarChange.old);
+                            assert.notOk(firstCarChange.oldId);
                         });
 
 

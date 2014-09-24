@@ -318,3 +318,16 @@ _.bind = function (func, context) {
 
 exports._ = _;
 
+
+var observe = require('../vendor/observe-js/src/observe').Platform;
+
+/**
+ * Performs dirty check/Object.observe callbacks depending on the browser.
+ *
+ * If Object.observe is present,
+ * @param callback
+ */
+exports.next = function (callback) {
+    observe.performMicrotaskCheckpoint();
+    setTimeout(callback);
+};

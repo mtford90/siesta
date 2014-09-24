@@ -33,6 +33,8 @@ var cache = require('./cache');
 
 var Logger = log.loggerWithName('changes');
 
+Logger.setLevel(log.Level.warn);
+
 // The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
 
 pouch.addObserver(function (e) {
@@ -169,10 +171,10 @@ Change.prototype.apply = function (doc) {
         throw new RestError('Unknown change type "' + this.type.toString() + '"');
     }
     if (!doc.collection) {
-        doc.collection = this.collection.name;
+        doc.collection = this.collection;
     }
     if (!doc.mapping) {
-        doc.mapping = this.mapping.type;
+        doc.mapping = this.mapping;
     }
 };
 
@@ -296,65 +298,72 @@ function changesForIdentifier(ident) {
  * Merge unmergedChanges into PouchDB
  */
 function mergeChanges(callback) {
-    var op = new Operation('Merge Changes', function (done) {
-        var changes = changesByIdentifiers();
-        var identifiers = [];
-        for (var prop in changes) {
-            if (changes.hasOwnProperty(prop)) {
-                identifiers.push(prop);
+    var changes = changesByIdentifiers();
+    if (_.keys(changes).length) {
+        var op = new Operation('Merge Changes', function (done) {
+            var identifiers = [];
+            for (var prop in changes) {
+                if (changes.hasOwnProperty(prop)) {
+                    identifiers.push(prop);
+                }
             }
-        }
-        var db = pouch.getPouch();
-        db.allDocs({keys: identifiers, include_docs: true}, function (err, resp) {
-            if (err) {
-                done(err);
-            }
-            else {
-                var bulkDocs = [];
-                var errors = [];
-                _.each(resp.rows, function (row) {
-                    var doc;
-                    if (row.error) {
-                        if (row.error == 'not_found') {
-                            doc = {
-                                _id: row.key
+            var db = pouch.getPouch();
+            db.allDocs({keys: identifiers, include_docs: true}, function (err, resp) {
+                if (err) {
+                    done(err);
+                }
+                else {
+                    var bulkDocs = [];
+                    var errors = [];
+                    _.each(resp.rows, function (row) {
+                        var doc;
+                        if (row.error) {
+                            if (row.error == 'not_found') {
+                                doc = {
+                                    _id: row.key
+                                }
+                            }
+                            else {
+                                errors.push(row.error);
                             }
                         }
                         else {
-                            errors.push(row.error);
+                            doc = row.doc;
                         }
-                    }
-                    else {
-                        doc = row.doc;
-                    }
-                    dump(doc);
-                    var change = changes[doc._id];
-                    _.each(change, function (c) {
-                        c.apply(doc);
+                        dump(doc);
+                        var change = changes[doc._id];
+                        _.each(change, function (c) {
+                            dump('Applying change', c, doc);
+                            c.apply(doc);
+                        });
+                        bulkDocs.push(doc);
                     });
-                    bulkDocs.push(doc);
-                });
-                db.bulkDocs(bulkDocs, function (err) {
-                    if (err) {
-                        if (errors.length) {
-                            errors.push(err);
-                            done(errors);
+                    dump(bulkDocs);
+                    db.bulkDocs(bulkDocs, function (err) {
+                        if (err) {
+                            if (errors.length) {
+                                errors.push(err);
+                                done(errors);
+                            }
+                            else {
+                                done(err);
+                            }
                         }
                         else {
-                            done(err);
+                            done();
                         }
-                    }
-                    else {
-                        done();
-                    }
-                });
-            }
+                    });
+                }
+            });
         });
-    });
-    op.onCompletion(function () {
-        if (callback) callback(op.error);
-    });
-    mergeQueue.addOperation(op);
+        op.onCompletion(function () {
+            if (callback) callback(op.error);
+        });
+        mergeQueue.addOperation(op);
+    }
+    else if (callback) {
+        callback();
+    }
 }
 
 function broadcast(collection, mapping, c) {

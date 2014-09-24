@@ -377,15 +377,6 @@ Mapping.prototype._new = function (data) {
             fields.splice(idx, 1);
         }
         _.each(fields, function (field) {
-//                changes.registerChange({
-//                    collection: self.collection,
-//                    mapping: self.type,
-//                    _id: _id,
-//                    new: data[field],
-//                    old: null,
-//                    type: ChangeType.Set,
-//                    field: field
-//                });
             Object.defineProperty(newModel, field, {
                 get: function () {
                     return newModel.__values[field] || null;
@@ -424,36 +415,8 @@ Mapping.prototype._new = function (data) {
             configurable: true
         });
 
-        // Place relationships on the object.
 
         for (var name in this.relationships) {
-//            if (registerChanges && data && data[name] !== undefined) {
-//                var related = data[name];
-//                if (related instanceof SiestaModel) {
-//                    related = related._id;
-//                }
-//                else if (util.isArray(related)) {
-//                    related = _.map(related, function (r) {
-//                        var _id;
-//                        if (r instanceof SiestaModel) {
-//                            _id = r._id;
-//                        }
-//                        else {
-//                            _id = r;
-//                        }
-//                        return _id;
-//                    });
-//                }
-//                changes.registerChange({
-//                    collection: this.collection,
-//                    mapping: this.type,
-//                    _id: _id,
-//                    new: related,
-//                    old: null,
-//                    type: ChangeType.Set,
-//                    field: name
-//                });
-//            }
             var proxy;
             if (this.relationships.hasOwnProperty(name)) {
                 var relationship = this.relationships[name];
