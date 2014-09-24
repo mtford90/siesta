@@ -13,6 +13,7 @@ describe.only('changes!', function () {
     var Collection = require('../src/collection').Collection;
 
     var pouch = require('../src/pouch');
+    var cache = require('../src/cache');
 
     var collection, carMapping;
 
@@ -483,4 +484,420 @@ describe.only('changes!', function () {
         });
 
     });
+
+    describe('apply changes', function () {
+
+        describe('attribute', function () {
+
+            beforeEach(function (done) {
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colours', 'name']
+                });
+                collection.install(done);
+            });
+
+            it('set', function () {
+                var obj = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                var c = new Change({
+                    collection: collection,
+                    mapping: carMapping,
+                    field: 'colours',
+                    type: ChangeType.Set,
+                    new: 'blue',
+                    old: 'red',
+                    _id: obj._id
+                });
+                c.applySiestaModel(obj);
+                assert.equal(obj.colours, 'blue');
+            });
+
+            it('set, old is wrong', function () {
+                var obj = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                var c = new Change({
+                    collection: collection,
+                    mapping: carMapping,
+                    field: 'colours',
+                    type: ChangeType.Set,
+                    new: 'blue',
+                    old: 'green',
+                    _id: obj._id
+                });
+                assert.throws(function () {
+                    c.applySiestaModel(obj);
+                }, RestError);
+            });
+
+            it('splice', function () {
+                var obj = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});
+                var c = new Change({
+                    collection: collection,
+                    mapping: carMapping,
+                    field: 'colours',
+                    type: ChangeType.Splice,
+                    index: 1,
+                    added: ['green'],
+                    removed: ['blue'],
+                    _id: obj._id
+                });
+                c.apply(obj);
+                assert.equal(obj.colours.length, 2);
+                assert.equal(obj.colours[0], 'red');
+                assert.equal(obj.colours[1], 'green');
+            });
+
+        });
+
+        describe('relationships', function () {
+
+            var personMapping;
+
+            beforeEach(function (done) {
+                collection = new Collection('myCollection');
+                carMapping = collection.mapping('Car', {
+                    id: 'id',
+                    attributes: ['colours', 'name'],
+                    relationships: {
+                        owner: {
+                            type: RelationshipType.ForeignKey,
+                            reverse: 'cars',
+                            mapping: 'Person'
+                        }
+                    }
+                });
+                personMapping = collection.mapping('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                collection.install(done);
+            });
+
+            describe('set', function () {
+
+                describe('no old', function () {
+                    it('new only', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            new: person,
+                            old: null,
+                            _id: car._id
+                        });
+                        c.applySiestaModel(car);
+                        var proxy = car.ownerProxy;
+                        assert.equal(proxy._id, person._id, 'Should set _id');
+                        assert.equal(proxy.related, person, 'Should set person');
+                        assert.equal(car.owner, person);
+                    });
+
+                    it('newId only', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            newId: person._id,
+                            old: null,
+                            _id: car._id
+                        });
+                        c.applySiestaModel(car);
+                        var proxy = car.ownerProxy;
+                        assert.equal(proxy._id, person._id, 'Should set _id');
+                        // person object should be pulled from cache.
+                        assert.equal(proxy.related, person, 'Should set person');
+                        assert.equal(car.owner, person);
+                    });
+
+                    it('both new and newId', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            newId: person._id,
+                            new: person,
+                            old: null,
+                            _id: car._id
+                        });
+                        c.applySiestaModel(car);
+                        var proxy = car.ownerProxy;
+                        assert.equal(proxy._id, person._id, 'Should set _id');
+                        assert.equal(proxy.related, person, 'Should set person');
+                        assert.equal(car.owner, person);
+                    });
+                });
+
+                describe('old', function () {
+                    it('new and old only', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        car.owner = person;
+                        var newOwner = carMapping._new({name: 'Bob', age: 24});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            new: newOwner,
+                            old: person,
+                            _id: car._id
+                        });
+                        c.applySiestaModel(car);
+                        var proxy = car.ownerProxy;
+                        assert.equal(proxy._id, newOwner._id, 'Should set _id');
+                        assert.equal(proxy.related, newOwner, 'Should set person');
+                        assert.equal(car.owner, newOwner);
+                    });
+
+                    it('newId and oldId only, no fault', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        car.owner = person;
+                        var newOwner = carMapping._new({name: 'Bob', age: 24});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            newId: newOwner._id,
+                            oldId: person._id,
+                            _id: car._id
+                        });
+                        c.applySiestaModel(car);
+                        var proxy = car.ownerProxy;
+                        assert.equal(proxy._id, newOwner._id, 'Should set _id');
+                        assert.equal(proxy.related, newOwner, 'Should set person');
+                        assert.equal(car.owner, newOwner);
+                    });
+
+                    it('newId and oldId only, fault', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        car.owner = person;
+                        var newOwner = carMapping._new({name: 'Bob', age: 24});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            newId: newOwner._id,
+                            oldId: person._id,
+                            _id: car._id
+                        });
+                        cache.reset();
+                        c.applySiestaModel(car);
+                        var proxy = car.ownerProxy;
+                        assert.equal(proxy._id, newOwner._id, 'Should set _id');
+                        assert.notOk(proxy.related);
+                        assert.ok(proxy.isFault);
+                    });
+
+                });
+
+
+
+                describe('errors', function () {
+                    it('invalid oldId', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            new: person,
+                            oldId: 'xyz',
+                            _id: car._id
+                        });
+                        assert.throws(function () {
+                            c.applySiestaModel(car);
+                        }, RestError);
+                    });
+                    it('invalid old', function () {
+                        var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                        var person = personMapping._new({name: 'Michael Ford', age: 23});
+                        var c = new Change({
+                            collection: collection,
+                            mapping: carMapping,
+                            field: 'owner',
+                            type: ChangeType.Set,
+                            new: person,
+                            old: {_id: 'xyz'},
+                            _id: car._id
+                        });
+                        assert.throws(function () {
+                            c.applySiestaModel(car);
+                        }, RestError);
+                    });
+
+                })
+
+            });
+
+            describe('splice', function () {
+
+                it('removed only', function () {
+                    var person = personMapping._new({name: 'Michael Ford', age: 23});
+                    var car1 = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                    var car2 = carMapping._new({colours: 'blue', name: 'Aston Martin'});
+                    person.cars = [car1, car2];
+                    var c = new Change({
+                        collection: collection,
+                        mapping: personMapping,
+                        field: 'cars',
+                        type: ChangeType.Splice,
+                        index: 0,
+                        removed: [car1],
+                        _id: person._id
+                    });
+                    c.applySiestaModel(person);
+                    var proxy = person.carsProxy;
+                    assert.equal(proxy._id.length, 1);
+                    assert.include(proxy._id, car2._id);
+                    assert.equal(proxy.related.length, 1);
+                    assert.include(proxy.related, car2);
+                    assert.equal(person.cars.length, 1);
+                });
+
+                it('removedId only, no fault', function () {
+                    var person = personMapping._new({name: 'Michael Ford', age: 23});
+                    var car1 = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                    var car2 = carMapping._new({colours: 'blue', name: 'Aston Martin'});
+                    person.cars = [car1, car2];
+                    var c = new Change({
+                        collection: collection,
+                        mapping: personMapping,
+                        field: 'cars',
+                        type: ChangeType.Splice,
+                        index: 0,
+                        removedId: [car1._id],
+                        _id: person._id
+                    });
+                    c.applySiestaModel(person);
+                    var proxy = person.carsProxy;
+                    assert.equal(proxy._id.length, 1);
+                    assert.include(proxy._id, car2._id);
+                    assert.equal(proxy.related.length, 1);
+                    assert.include(proxy.related, car2);
+                    assert.equal(person.cars.length, 1);
+                });
+
+                it('removedId only, fault', function () {
+                    var person = personMapping._new({name: 'Michael Ford', age: 23});
+                    var car1 = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                    var car2 = carMapping._new({colours: 'blue', name: 'Aston Martin'});
+                    person.cars = [car1, car2];
+                    var c = new Change({
+                        collection: collection,
+                        mapping: personMapping,
+                        field: 'cars',
+                        type: ChangeType.Splice,
+                        index: 0,
+                        removedId: [car1._id],
+                        _id: person._id
+                    });
+                    cache.reset();
+                    var proxy = person.carsProxy;
+                    proxy.related = null;
+                    c.applySiestaModel(person);
+                    assert.equal(proxy._id.length, 1);
+                    assert.include(proxy._id, car2._id);
+                    assert.ok(proxy.isFault);
+                });
+
+                it('added only', function () {
+                    var person = personMapping._new({name: 'Michael Ford', age: 23});
+                    var car1 = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                    var car2 = carMapping._new({colours: 'blue', name: 'Aston Martin'});
+                    var car3 = carMapping._new({colours: 'purple', name: 'Aston Martin'});
+                    person.cars = [car1, car2];
+                    var c = new Change({
+                        collection: collection,
+                        mapping: personMapping,
+                        field: 'cars',
+                        type: ChangeType.Splice,
+                        index: 0,
+                        added: [car3],
+                        _id: person._id
+                    });
+                    c.applySiestaModel(person);
+                    var proxy = person.carsProxy;
+                    assert.equal(proxy._id.length, 3);
+                    assert.include(proxy._id, car3._id);
+                    assert.equal(proxy.related.length, 3);
+                    assert.include(proxy.related, car3);
+                    assert.equal(person.cars.length, 3);
+                });
+
+
+                it('addedId only, no fault', function () {
+                    var person = personMapping._new({name: 'Michael Ford', age: 23});
+                    var car1 = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                    var car2 = carMapping._new({colours: 'blue', name: 'Aston Martin'});
+                    var car3 = carMapping._new({colours: 'purple', name: 'Aston Martin'});
+                    person.cars = [car1, car2];
+                    var c = new Change({
+                        collection: collection,
+                        mapping: personMapping,
+                        field: 'cars',
+                        type: ChangeType.Splice,
+                        index: 0,
+                        addedId: [car3._id],
+                        _id: person._id
+                    });
+                    c.applySiestaModel(person);
+                    var proxy = person.carsProxy;
+                    assert.equal(proxy._id.length, 3);
+                    assert.include(proxy._id, car3._id);
+                    assert.equal(proxy.related.length, 3);
+                    assert.include(proxy.related, car3);
+                    assert.equal(person.cars.length, 3);
+                });
+
+
+                it('addedId only, fault', function () {
+                    var person = personMapping._new({name: 'Michael Ford', age: 23});
+                    var car1 = carMapping._new({colours: 'red', name: 'Aston Martin'});
+                    var car2 = carMapping._new({colours: 'blue', name: 'Aston Martin'});
+                    var car3 = carMapping._new({colours: 'purple', name: 'Aston Martin'});
+                    person.cars = [car1, car2];
+                    var c = new Change({
+                        collection: collection,
+                        mapping: personMapping,
+                        field: 'cars',
+                        type: ChangeType.Splice,
+                        index: 0,
+                        addedId: [car3._id],
+                        _id: person._id
+                    });
+                    cache.reset();
+                    c.applySiestaModel(person);
+                    var proxy = person.carsProxy;
+                    assert.equal(proxy._id.length, 3);
+                    assert.include(proxy._id, car3._id);
+                    assert.notOk(proxy.related);
+                    assert.ok(proxy.isFault);
+                });
+
+
+
+
+
+            });
+
+
+
+        });
+
+    })
+
 });

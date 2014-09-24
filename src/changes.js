@@ -29,6 +29,8 @@ var unmergedChanges = {};
 
 var log = require('../vendor/operations.js/src/log');
 
+var cache = require('./cache');
+
 var Logger = log.loggerWithName('changes');
 
 // The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
@@ -105,73 +107,166 @@ function arraysEqual(a, b) {
     return true;
 }
 
-function applySplice(obj, index, removed, added) {
+function applySplice(obj, field, index, removed, added) {
     if (!(removed || added)) {
         throw new RestError('Must remove or add something with a splice change.');
     }
     if (index === undefined || index === null) {
         throw new RestError('Must pass index to splice change');
     }
-    var arr = obj[this.field];
-    var actuallyRemoved = arr.splice(index, removed.length, added);
+    dump(field);
+    var arr = obj[field];
+    var actuallyRemoved = _.partial(arr.splice, index, removed.length).apply(arr, added);
     if (!arraysEqual(actuallyRemoved, removed)) {
         throw new RestError('Objects actually removed did not match those specified in the change');
     }
 }
 
-function applyRemove(removed, obj) {
-    var self = this;
+function applyRemove(field, removed, obj) {
     if (!removed) {
         throw new RestError('Must pass removed');
     }
     _.each(removed, function (r) {
-        var arr = obj[self.field];
+        var arr = obj[field];
         var idx = arr.indexOf(r);
         arr.splice(idx, 1);
     });
 }
 
-function applySet(obj, newVal, old) {
-    var actualOld = obj[this.field];
+function applySet(obj, field, newVal, old) {
+    var actualOld = obj[field];
     if (actualOld != old) {
         // This is bad. Something has gone out of sync or we're applying unmergedChanges out of order.
         throw new RestError('Old value does not match new value: ' + JSON.stringify({old: old ? old : null, actualOld: actualOld ? actualOld : null}, null, 4));
     }
-    obj[this.field] = newVal;
+    obj[field] = newVal;
 }
 
-/**
- * Apply this change to the given object.
- * Will throw an error if this object does not match the change.
- * Changes can be applied to a SiestaModel or a PouchDB document.
- * @param doc
- */
-Change.prototype.apply = function (doc) {
-    var collection = this.collection;
-    var mapping = this.mapping;
+function validateChange() {
     if (!this.field) throw new RestError('Must pass field to change');
-    if (!collection) throw new RestError('Must pass collection to change');
-    if (!mapping) throw new RestError('Must pass mapping to change');
-    if (doc._id != this._id) {
-        throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + doc._id.toString() + '"');
+    if (!this.collection) throw new RestError('Must pass collection to change');
+    if (!this.mapping) throw new RestError('Must pass mapping to change');
+}
+function validateObject(obj) {
+    if (obj._id != this._id) {
+        throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + obj._id.toString() + '"');
     }
+}
+Change.prototype.apply = function (doc) {
+    validateChange.call(this);
+    validateObject.call(this, doc);
     if (this.type == ChangeType.Set) {
-        applySet.call(this, doc, this.newId || this.new, this.oldId || this.old);
+        applySet.call(this, doc, this.field, this.newId || this.new, this.oldId || this.old);
     }
     else if (this.type == ChangeType.Splice) {
-        applySplice.call(this, doc, this.index, this.removedId || this.removed, this.addedId || this.added);
+        applySplice.call(this, doc, this.field, this.index, this.removedId || this.removed, this.addedId || this.added);
     }
     else if (this.type == ChangeType.Remove) {
-        applyRemove.call(this, this.removedId || this.removed, doc);
+        applyRemove.call(this, this.field, this.removedId || this.removed, doc);
     }
     else {
         throw new RestError('Unknown change type "' + this.type.toString() + '"');
     }
     if (!doc.collection) {
-        doc.collection = collection.name;
+        doc.collection = this.collection.name;
     }
     if (!doc.mapping) {
-        doc.mapping = mapping.type;
+        doc.mapping = this.mapping.type;
+    }
+};
+
+function applySetToSiestaModel(isField, model) {
+    if (isField) {
+        applySet.call(this, model.__values, this.field, this.new, this.old);
+    }
+    else {
+        var identifier = this.newId || (this.new ? this.new._id : null);
+        var oldIdentifier = this.oldId || (this.old ? this.old._id : null);
+        var proxy = model[this.field + 'Proxy'];
+//        var isFaulted = proxy.isFault;
+        applySet.call(this, proxy, '_id', identifier, oldIdentifier);
+        var _new = this.new || (this.newId ? cache.get({_id: this.newId}) : null);
+        var old = this.old || (this.oldId ? cache.get({_id: this.oldId}) : null);
+        if (_new || old) {
+            applySet.call(this, proxy, 'related', _new, old);
+        }
+        else {
+            // Fault
+            proxy.related = null;
+        }
+    }
+}
+
+function applySpliceToSiestaModel(isField, model) {
+    if (isField) {
+        applySplice.call(this, model.__values, this.field, this.index, this.removed, this.added);
+    }
+    else {
+        var removedIdentifiers = this.removedId || (this.removed ? _.pluck(this.removed, '_id') : []);
+        var addedIdentifiers = this.addedId || (this.added ? _.pluck(this.added, '_id') : []);
+        var proxy = model[this.field + 'Proxy'];
+        var isFaulted = proxy.isFault;
+        applySplice.call(this, proxy, '_id', this.index, removedIdentifiers, addedIdentifiers);
+        if (!isFaulted) {
+            var removed = this.removed || _.map(removedIdentifiers, function (x) {return cache.get({_id:x})});
+            var allRemovedCached = _.reduce(removed, function (memo, x) {return x && memo}, true);
+            var added = this.added || _.map(addedIdentifiers, function (x) {return cache.get({_id:x})});
+            var allAddedCached = _.reduce(added, function (memo, x) {return x && memo}, true);
+            if (allRemovedCached && allAddedCached) {
+                applySplice.call(this, proxy, 'related', this.index, removed, added);
+            }
+            else if (!allRemovedCached) {
+                // Something has gone very wrong if we end up here.
+                throw new RestError('If not faulted, all removed objects should be cache.');
+            }
+            else {
+                // Fault
+                proxy.related = null;
+            }
+        }
+    }
+}
+
+function applyRemoveToSiestaModel(isField, model) {
+    if (isField) {
+        applyRemove.call(this, this.field, this.removed, model);
+    }
+    else {
+        var removed = this.removedId || (this.removed ? _.pluck(this.removed, '_id') : []);
+        var proxy = model[this.field + 'Proxy'];
+        var isFaulted = proxy.isFault;
+        applyRemove.call(this, '_id', removed, proxy);
+        if (!isFaulted && this.removed) {
+            applyRemove.call(this, 'related', this.removed, proxy);
+        }
+    }
+}
+
+/**
+ *
+ * @param model - An instance of SiestaModel
+ */
+Change.prototype.applySiestaModel = function (model) {
+    validateChange.call(this);
+    validateObject.call(this, model);
+    var relationshipFields = _.keys(this.mapping.relationships);
+    var fields = this.mapping._fields;
+    var isField = fields.indexOf(this.field) > -1;
+    var isRelationshipField = relationshipFields.indexOf(this.field) > -1;
+    if (!(isField || isRelationshipField)) {
+        throw new RestError('Field "' + this.field + '" does not exist within mapping "' + this.mapping.type + '"');
+    }
+    if (this.type == ChangeType.Set) {
+        applySetToSiestaModel.call(this, isField, model);
+    }
+    else if (this.type == ChangeType.Splice) {
+        applySpliceToSiestaModel.call(this, isField, model);
+    }
+    else if (this.type == ChangeType.Remove) {
+        applyRemoveToSiestaModel.call(this, isField, model);
+    }
+    else {
+        throw new RestError('Unknown change type "' + this.type.toString() + '"');
     }
 };
 
