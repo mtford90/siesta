@@ -12,6 +12,7 @@ var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
 var cache = require('../../src/cache');
 var changes = require('../../src/changes');
+var Pouch = require('../../src/pouch');
 
 var async = require('async');
 
@@ -251,13 +252,16 @@ describe('intercollection relationships', function () {
                 function assertNumPhotos(userId, numPhotos, done) {
                     myOnlineCollection.User.get(userId, function (err, user) {
                         if (err) done(err);
+                        Pouch.getPouch().query('MyOnlineCollection_Index_User_userId', function (err, resp) {
+                            dump(resp.rows);
+                        });
                         assert.ok(user);
                         assert.equal(user.userId, userId);
-                        user.photosProxy.get(function (err, photos) {
-                            if (err) done(err);
-                            assert.equal(photos ? photos.length : 0, numPhotos);
-                            done();
-                        });
+//                        user.photosProxy.get(function (err, photos) {
+//                            if (err) done(err);
+//                            assert.equal(photos ? photos.length : 0, numPhotos);
+//                            done();
+//                        });
                     })
                 }
 

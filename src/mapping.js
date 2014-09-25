@@ -208,7 +208,6 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         });
     }
     else {
-        dump('not a singleton...');
         var opts = {};
         opts[this.id] = idOrCallback;
         opts.mapping = this;
@@ -531,6 +530,8 @@ function constructMapFunction(collection, type, fields) {
                     //noinspection JSUnfilteredForInLoop
                     var field = fields[idx];
                     var value = doc[field];
+//                    dump('value', value);
+//                    dump('doc', doc);
                     if (value !== null && value !== undefined) {
                         aggField += value.toString() + '_';
                     }
@@ -541,6 +542,7 @@ function constructMapFunction(collection, type, fields) {
                         aggField += 'undefined_';
                     }
                 }
+//                dump('aggField', aggField);
                 aggField = aggField.substring(0, aggField.length - 1);
                 emit(aggField, doc);
             }

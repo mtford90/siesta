@@ -338,8 +338,8 @@ describe('changes!', function () {
                             Car: {
                                 localId: [
                                     new Change({
-                                        collection: collection,
-                                        mapping: carMapping,
+                                        collection: collection._name,
+                                        mapping: carMapping.type,
                                         field: 'colour',
                                         type: ChangeType.Set,
                                         new: 'blue',

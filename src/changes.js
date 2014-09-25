@@ -35,9 +35,25 @@ var Logger = log.loggerWithName('changes');
 
 Logger.setLevel(log.Level.debug);
 
-// The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
+/**
+ * Used to ensure merge operation only finishes once all changes are made to the database.
+ * This is because of (what I think is) a bug in PouchDB whereby the bulkDocs callback is called before
+ * all changes have actually been made in the database. By waiting for all the database change events to return
+ * we can ensure that there is no merge overlaps and hence no race conditions.
+ * @type {{}}
+ */
+var waitingForObservations = {};
 
+/**
+ * Populated by each merge operation that is currently executing. When all observations related to the merged changes
+ * are received, this function is called, ending the merge operation.
+ * @type {function}
+ */
+var finishWaitingForObservations;
+
+// The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
 pouch.addObserver(function (e) {
+    dump('observe!', e);
     var id = e.id;
     for (var collectionName in unmergedChanges) {
         if (unmergedChanges.hasOwnProperty(collectionName)) {
@@ -47,6 +63,11 @@ pouch.addObserver(function (e) {
                     var mappingChanges = collectionChanges[mappingName];
                     if (mappingChanges[id]) {
                         delete mappingChanges[id];
+                        delete waitingForObservations[id];
+                        if (!_.keys(waitingForObservations).length && finishWaitingForObservations) {
+                            finishWaitingForObservations();
+                            finishWaitingForObservations = null;
+                        }
                         return;
                     }
                 }
@@ -111,7 +132,6 @@ function arraysEqual(a, b) {
 }
 
 function applySplice(obj, field, index, removed, added) {
-    dump(obj, field, index, removed, added);
     if (!(removed || added)) {
         throw new RestError('Must remove or add something with a splice change.');
     }
@@ -319,6 +339,7 @@ function mergeChanges(callback) {
             var db = pouch.getPouch();
             if (Logger.debug.isEnabled)
                 Logger.debug('Getting docs');
+            _.each(identifiers, function (i) {waitingForObservations[i] = {}});
             db.allDocs({keys: identifiers, include_docs: true}, function (err, resp) {
                 if (err) {
                     done(err);
@@ -353,22 +374,43 @@ function mergeChanges(callback) {
                     });
                     if (Logger.debug.isEnabled)
                         Logger.debug('Saving docs');
-                    db.bulkDocs(bulkDocs, function (err) {
-                        if (err) {
-                            if (errors.length) {
-                                errors.push(err);
-                                done(errors);
-                            }
-                            else {
-                                done(err);
-                            }
+                    var tasks = [];
+                    tasks.push(function (callback) {
+                        if (_.keys(waitingForObservations).length) {
+                            if (Logger.debug.isEnabled)
+                                Logger.debug('waiting for observations');
+                            finishWaitingForObservations = function () {
+                                if (Logger.debug.isEnabled)
+                                    Logger.debug('finished waiting for observations');
+                                callback();
+                            };
                         }
                         else {
                             if (Logger.debug.isEnabled)
-                                Logger.debug('Saved docs');
-                            done();
+                                Logger.debug('no observations to wait for');
+                            callback();
                         }
                     });
+                    tasks.push(function (callback) {
+                        db.bulkDocs(bulkDocs, function (er, resp) {
+                            if (err) {
+                                if (errors.length) {
+                                    errors.push(err);
+                                    callback(errors);
+                                }
+                                else {
+                                    callback(err);
+                                }
+                            }
+                            else {
+                                if (Logger.debug.isEnabled)
+                                    Logger.debug('Saved docs', resp);
+                                callback();
+                            }
+                        });
+                    });
+
+                    util.parallel(tasks, done);
                 }
             });
         });
@@ -450,7 +492,7 @@ exports.Change = Change;
 exports.registerChange = registerChange;
 exports.mergeChanges = mergeChanges;
 exports.changesForIdentifier = changesForIdentifier;
-exports.resetChanges = function () {
+exports.resetChanges = function resetChanges() {
     unmergedChanges = {};
 };
 

@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('RawQuery');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 
 var mapping = require('./mapping');
