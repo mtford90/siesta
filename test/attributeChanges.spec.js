@@ -5,7 +5,6 @@ describe('attribute changes', function () {
 
     var Collection = require('../src/collection').Collection
         , ChangeType = require('../src/changeType').ChangeType
-        , SiestaModel = require('../src/object').SiestaModel
         , changes = require('../src/changes');
 
     beforeEach(function () {
@@ -69,6 +68,21 @@ describe('attribute changes', function () {
                 assert.equal(c.collection, 'myCollection');
                 assert.equal(c.mapping, 'Car');
                 assert.equal(c.field, 'colour');
+            });
+
+            it('remote id', function () {
+                var model = carMapping._new();
+                model.id = 'xyz';
+                var cs = changes.changesForIdentifier(model._id);
+                assert.equal(cs.length, 1);
+                var c = cs[0];
+                assert.equal(c.type, ChangeType.Set);
+                assert.equal(c.new, 'xyz');
+                assert.notOk(c.old);
+                assert.equal(c._id, model._id);
+                assert.equal(c.collection, 'myCollection');
+                assert.equal(c.mapping, 'Car');
+                assert.equal(c.field, 'id');
             });
 
         });

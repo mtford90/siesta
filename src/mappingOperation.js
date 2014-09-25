@@ -199,11 +199,18 @@ BulkMappingOperation.prototype._lookup = function (callback) {
                                 var data = {};
                                 var remoteId = remoteIdentifiers[i];
                                 data[self.mapping.id] = remoteId;
-                                // Handle duplicates.
                                 var cacheQuery = {mapping: self.mapping};
                                 cacheQuery[self.mapping.id] = remoteId;
                                 var cached = cache.get(cacheQuery);
-                                self.objects[lookup.index] = cached || self.mapping._new(data);
+                                if (cached) {
+                                    self.objects[lookup.index] = cached;
+                                }
+                                else {
+                                    self.objects[lookup.index] = self.mapping._new();
+                                    // It's important that we map the remote identifier here to ensure that it ends
+                                    // up in the cache.
+                                    self.objects[lookup.index][self.mapping.id] = remoteId;
+                                }
                             }
                         }
                     }

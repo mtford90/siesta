@@ -74,19 +74,6 @@ describe('subclassing', function () {
         }, RestError);
     });
 
-    it('should throw an error if call super but do not setup prototype', function () {
-        function CarObject() {
-            SiestaModel.apply(this, arguments);
-        }
-
-        assert.throws(function () {
-            carMapping = collection.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name'],
-                subclass: CarObject
-            });
-        }, RestError);
-    });
 
     it('should throw an error if do not call super or setup prototype', function () {
         function CarObject() {

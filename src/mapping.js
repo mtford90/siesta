@@ -217,7 +217,6 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         }
         else {
             delete opts.mapping;
-            dump(opts);
             var q = new Query(this, opts);
             q.execute(function (err, rows) {
                 var obj = null;
@@ -407,8 +406,17 @@ Mapping.prototype._new = function (data) {
                 return newModel.__values[self.id] || null;
             },
             set: function (v) {
-                var old = newModel.__values[self.id];
+                var old = newModel[self.id];
                 newModel.__values[self.id] = v;
+                changes.registerChange({
+                    collection: self.collection,
+                    mapping: self.type,
+                    _id: newModel._id,
+                    new: v,
+                    old: old,
+                    type: ChangeType.Set,
+                    field: self.id
+                });
                 cache.remoteInsert(newModel, v, old);
             },
             enumerable: true,

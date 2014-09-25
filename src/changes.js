@@ -33,7 +33,7 @@ var cache = require('./cache');
 
 var Logger = log.loggerWithName('changes');
 
-Logger.setLevel(log.Level.debug);
+Logger.setLevel(log.Level.warn);
 
 /**
  * Used to ensure merge operation only finishes once all changes are made to the database.
@@ -53,7 +53,6 @@ var finishWaitingForObservations;
 
 // The moment that changes are propagated to Pouch we need to remove said change from unmergedChanges.
 pouch.addObserver(function (e) {
-    dump('observe!', e);
     var id = e.id;
     for (var collectionName in unmergedChanges) {
         if (unmergedChanges.hasOwnProperty(collectionName)) {
