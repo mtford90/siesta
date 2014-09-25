@@ -66,22 +66,23 @@ function wrapArray(arr) {
         arr.foreignKeyObserver = new ArrayObserver(arr);
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
-                var added = [];
-                var numAdded = splice.addedCount;
-                var idx = splice.index;
-                for (var i = idx; i < idx + numAdded; i++) {
-                    added.push(self.related[i]);
-                }
+//                var added = [];
+//                var numAdded = splice.addedCount;
+//                var idx = splice.index;
+//                for (var i = idx; i < idx + numAdded; i++) {
+//                    added.push(self.related[i]);
+//                }
 //                self._applyReverseOfSplice(splice.removed, added);
-                splices.forEach(function (splice) {
-                    broadcast(self.object, {
-                        field: self.reverseName,
-                        type: ChangeType.Splice,
-                        index: splice.index,
-                        addedCount: splice.addedCount,
-                        removed: splice.removed
-                    });
-                });
+//                splices.forEach(function (splice) {
+//                    // TODO: Register changes.
+////                    broadcast(self.object, {
+////                        field: self.reverseName,
+////                        type: ChangeType.Splice,
+////                        index: splice.index,
+////                        addedCount: splice.addedCount,
+////                        removed: splice.removed
+////                    });
+//                });
             });
         };
         arr.foreignKeyObserver.open(observerFunction);
@@ -147,7 +148,7 @@ ForeignKeyProxy.prototype.set = function (obj) {
             proxy.clearReverseRelated.call(this);
             proxy.set.call(self, obj);
             if (self.isReverse) {
-                wrapArray.call(self.related, obj);
+                wrapArray.call(this, self.related);
             }
             proxy.setReverse.call(self, obj);
         }

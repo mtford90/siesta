@@ -61,7 +61,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -84,7 +83,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: '5'});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -107,7 +105,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -141,7 +138,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: 5, colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -165,7 +161,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: '5', colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -219,7 +214,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -242,7 +236,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: '5'});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -265,7 +258,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -295,7 +287,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: 5, colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });
@@ -319,7 +310,6 @@ describe('raw query behaviour', function () {
                             var q = new RawQuery('myCollection', 'Car', {id: '5', colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
-                                dump(docs);
                                 assert.equal(docs.length, 1);
                                 done();
                             });

@@ -510,7 +510,6 @@ describe('new object proxy', function () {
                         it('should clear the old', function () {
                             car.owner = person;
                             assert.instanceOf(anotherPerson.cars, Fault);
-                            dump(anotherPersonProxy._id);
                             assert.notOk(anotherPersonProxy._id);
 //                            assert.notOk(anotherPersonProxy.related);
                         });
@@ -726,7 +725,6 @@ describe('new object proxy', function () {
 
                     it('should set reverse', function () {
                         car.owner = person;
-                        dump(person.cars);
                         assert.include(person.cars, car);
                         assert.include(personProxy._id, car._id);
                         assert.include(personProxy.related, car);
@@ -834,7 +832,6 @@ describe('new object proxy', function () {
                             var secondCarChange = carChanges[1];
                             var firstAnotherPersonChange = anotherPersonChanges[0];
                             var secondAnotherPersonChange = anotherPersonChanges[1];
-                            dump(personChange);
                             assert.equal(personChange.collection, 'myCollection');
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
@@ -913,13 +910,10 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             person.cars = [car];
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1007,13 +1001,10 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             car.owner = person;
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1090,13 +1081,10 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             person.cars = [car];
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1364,20 +1352,16 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             car.owners = [person];
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
                             var secondCarChange = carChanges[1];
                             var firstAnotherPersonChange = anotherPersonChanges[0];
                             var secondAnotherPersonChange = anotherPersonChanges[1];
-                            dump(personChange);
                             assert.equal(personChange.collection, 'myCollection');
                             assert.equal(personChange.mapping, 'Person');
                             assert.equal(personChange._id, person._id);
@@ -1453,13 +1437,10 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             person.cars = [car];
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 1);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1532,13 +1513,10 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             car.owners = [person];
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1616,13 +1594,10 @@ describe('new object proxy', function () {
                         it('generates correct changes', function () {
                             person.cars = [car];
                             var carChanges = changes.changesForIdentifier(car._id);
-                            dump('carChanges', carChanges.length);
                             assert.equal(carChanges.length, 2);
                             var personChanges = changes.changesForIdentifier(person._id);
-                            dump('personChanges', personChanges.length);
                             assert.equal(personChanges.length, 1);
                             var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
-                            dump('anotherPersonChanges', anotherPersonChanges.length);
                             assert.equal(anotherPersonChanges.length, 1);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];

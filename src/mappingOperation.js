@@ -4,6 +4,7 @@ var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('../src/error').RestError;
 var Pouch = require('./pouch');
+var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
@@ -214,31 +215,61 @@ BulkMappingOperation.prototype._lookup = function (callback) {
 };
 
 BulkMappingOperation.prototype._lookupSingleton = function (callback) {
-    // TODO: Use an index.
-    // TODO: Lookup in cache.
     var self = this;
-    var _map = function (doc) {
-        if (doc.type == "$1" && doc.collection == "$2") {
-            emit(doc._id, doc);
-        }
-    }.toString();
-    _map.replace('$1', this.mapping.collection);
-    _map.replace('$2', this.mapping.type);
-    Pouch.getPouch().query({map: _map}, {include_docs: true}, function (err, resp) {
-        if (!err) {
-            var rows = resp.rows;
-            if (!rows.length) {
-                var obj = self.mapping._new();
-                for (var i=0;i<self.data.length;i++) {
+    var cachedSingleton = cache.get({mapping: this.mapping});
+    if (!cachedSingleton) {
+        var q = new Query(this.mapping);
+        q.execute(function (err, objs) {
+            if (!err) {
+                var obj;
+                if (objs.length) {
+                    if (objs.length == 1) {
+                        obj = objs[0];
+                    }
+                    else {
+                        throw new RestError();
+                    }
+                }
+                else {
+                    obj = self.mapping._new();
+                }
+                for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = obj;
                 }
             }
-            else if (rows.length) {
-                throw 'nyi';
-            }
+            callback(err);
+        });
+    }
+    else {
+        for (var i = 0; i < self.data.length; i++) {
+            self.objects[i] = cachedSingleton;
         }
-        callback(err);
-    });
+        callback();
+    }
+
+//    var self = this;
+//    var _map = function (doc) {
+//        if (doc.type == "$1" && doc.collection == "$2") {
+//            emit(doc._id, doc);
+//        }
+//    }.toString();
+//    _map.replace('$1', this.mapping.collection);
+//    _map.replace('$2', this.mapping.type);
+//    Pouch.getPouch().query({map: _map}, {include_docs: true}, function (err, resp) {
+//        if (!err) {
+//            var rows = resp.rows;
+//            if (!rows.length) {
+//                var obj = self.mapping._new();
+//                for (var i=0;i<self.data.length;i++) {
+//                    self.objects[i] = obj;
+//                }
+//            }
+//            else if (rows.length) {
+//                throw 'nyi';
+//            }
+//        }
+//        callback(err);
+//    });
 };
 
 
@@ -246,7 +277,8 @@ BulkMappingOperation.prototype._start = function (done) {
     if (this.data.length) {
         var self = this;
         var tasks = [];
-        tasks.push(_.bind(this._lookup, this));
+        var lookupFunc = this.mapping.singleton ? this._lookupSingleton : this._lookup;
+        tasks.push(_.bind(lookupFunc, this));
         tasks.push(_.bind(this._executeSubOperations, this));
         util.parallel(tasks, function () {
             self._map();

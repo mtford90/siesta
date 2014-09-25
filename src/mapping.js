@@ -208,6 +208,7 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         });
     }
     else {
+        dump('not a singleton...');
         var opts = {};
         opts[this.id] = idOrCallback;
         opts.mapping = this;
@@ -217,6 +218,7 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         }
         else {
             delete opts.mapping;
+            dump(opts);
             var q = new Query(this, opts);
             q.execute(function (err, rows) {
                 var obj = null;

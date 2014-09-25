@@ -65,7 +65,6 @@ describe('pouch doc adapter', function () {
                 var doc = {name: 'Michael', age: 12, _id: 'localId', collection: 'MyOnlineCollection', type: 'Person'};
                 Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
-                    dump(doc._id);
                     collection.Person.map({_id: 'localId', age: 23}, function (err, person) {
                         if (err) done(err);
                         assert.equal(person._id, doc._id);
@@ -85,18 +84,15 @@ describe('pouch doc adapter', function () {
 
             it('new', function (done) {
                 this.timeout(4000);
-
                 collection.Person.map({name: 'Michael', age: 23}, function (err, person) {
                     if (err) done(err);
                     collection.save(function (err) {
                         if (err) done(err);
-
                         Pouch.getPouch().get(person._id, function (err, doc) {
                             if (err) done(err);
                             doc._id = 'randomid';
                             doc._rev = 'randomrev';
                             doc.id = 'randomremoteid';
-                            dump('doc', doc);
                             if (err) done(err);
                             var objs = Pouch.toSiesta([doc]);
                             assert.equal(objs.length, 1);

@@ -14,15 +14,12 @@ describe('cache...', function () {
 
     beforeEach(function (done) {
         siesta.reset(true, function () {
-            mapping = new Mapping({
-                type: 'Car',
+            var coll = new Collection('myCollection');
+            mapping = coll.mapping('Car', {
                 id: 'id',
-                attributes: ['colour', 'name'],
-                collection: 'myCollection'
+                attributes: ['colour', 'name']
             });
-            mapping.install(function (err) {
-                done(err);
-            });
+            coll.install(done);
         });
     });
 
@@ -32,6 +29,7 @@ describe('cache...', function () {
             r._id = 'dsfsd';
             cache.insert(r);
             assert.equal(r, cache._localCache()[r._id]);
+            assert.equal(r, cache._localCacheByType[r.mapping.collection][r.type][r._id], r);
         });
 
         it('by default id', function () {

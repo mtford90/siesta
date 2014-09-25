@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe('singleton', function () {
+describe('singleton mapping', function () {
 
     var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
@@ -53,13 +53,17 @@ describe('singleton', function () {
     });
 
     it('store should return singleton', function (done) {
+        this.timeout(5000);
         carMapping.map({colour: 'red', id: 5}, function (err, car) {
             if (err) done(err);
-            cache.reset();
-            store.get({mapping: carMapping}, function (err, obj) {
+            collection.save(function (err) {
                 if (err) done(err);
-                assert.equal(obj._id, car._id);
-                done();
+                cache.reset();
+                store.get({mapping: carMapping}, function (err, obj) {
+                    if (err) done(err);
+                    assert.equal(obj._id, car._id);
+                    done();
+                });
             });
         });
     });
@@ -74,12 +78,16 @@ describe('singleton', function () {
     });
 
     it('get should simply return the car', function (done) {
+        this.timeout(5000);
         carMapping.map({colour: 'red', id: 5}, function (err, car) {
             if (err) done(err);
-            carMapping.get(function (err, _car) {
+            collection.save(function (err) {
                 if (err) done(err);
-                assert.equal(car, _car);
-                done();
+                carMapping.get(function (err, _car) {
+                    if (err) done(err);
+                    assert.equal(car, _car);
+                    done();
+                });
             });
         });
     });

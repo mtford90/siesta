@@ -111,6 +111,7 @@ function arraysEqual(a, b) {
 }
 
 function applySplice(obj, field, index, removed, added) {
+    dump(obj, field, index, removed, added);
     if (!(removed || added)) {
         throw new RestError('Must remove or add something with a splice change.');
     }
@@ -161,6 +162,7 @@ Change.prototype.apply = function (doc) {
         applySet.call(this, doc, this.field, this.newId || this.new, this.oldId || this.old);
     }
     else if (this.type == ChangeType.Splice) {
+        if (!doc[this.field]) doc[this.field] = [];
         applySplice.call(this, doc, this.field, this.index, this.removedId || this.removed, this.addedId || this.added);
     }
     else if (this.type == ChangeType.Remove) {
@@ -213,9 +215,9 @@ function applySpliceToSiestaModel(isField, model) {
         var isFaulted = proxy.isFault;
         applySplice.call(this, proxy, '_id', this.index, removedIdentifiers, addedIdentifiers);
         if (!isFaulted) {
-            var removed = this.removed || _.map(removedIdentifiers, function (x) {return cache.get({_id:x})});
+            var removed = this.removed || _.map(removedIdentifiers, function (x) {return cache.get({_id: x})});
             var allRemovedCached = _.reduce(removed, function (memo, x) {return x && memo}, true);
-            var added = this.added || _.map(addedIdentifiers, function (x) {return cache.get({_id:x})});
+            var added = this.added || _.map(addedIdentifiers, function (x) {return cache.get({_id: x})});
             var allAddedCached = _.reduce(added, function (memo, x) {return x && memo}, true);
             if (allRemovedCached && allAddedCached) {
                 applySplice.call(this, proxy, 'related', this.index, removed, added);
@@ -306,6 +308,8 @@ function mergeChanges(callback) {
         if (Logger.debug.isEnabled)
             Logger.debug('Merging ' + numChanges.toString() + ' changes');
         var op = new Operation('Merge Changes', function (done) {
+            if (Logger.debug.isEnabled)
+                Logger.debug('Beggining merge operation');
             var identifiers = [];
             for (var prop in changes) {
                 if (changes.hasOwnProperty(prop)) {
@@ -313,13 +317,19 @@ function mergeChanges(callback) {
                 }
             }
             var db = pouch.getPouch();
+            if (Logger.debug.isEnabled)
+                Logger.debug('Getting docs');
             db.allDocs({keys: identifiers, include_docs: true}, function (err, resp) {
                 if (err) {
                     done(err);
                 }
                 else {
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('Got docs');
                     var bulkDocs = [];
                     var errors = [];
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('Updating docs docs');
                     _.each(resp.rows, function (row) {
                         var doc;
                         if (row.error) {
@@ -341,6 +351,8 @@ function mergeChanges(callback) {
                         });
                         bulkDocs.push(doc);
                     });
+                    if (Logger.debug.isEnabled)
+                        Logger.debug('Saving docs');
                     db.bulkDocs(bulkDocs, function (err) {
                         if (err) {
                             if (errors.length) {
@@ -352,6 +364,8 @@ function mergeChanges(callback) {
                             }
                         }
                         else {
+                            if (Logger.debug.isEnabled)
+                                Logger.debug('Saved docs');
                             done();
                         }
                     });
@@ -364,6 +378,8 @@ function mergeChanges(callback) {
         mergeQueue.addOperation(op);
     }
     else if (callback) {
+        if (Logger.debug.isEnabled)
+            Logger.debug('Nothing to merge');
         callback();
     }
 }
@@ -404,7 +420,6 @@ function registerChange(opts) {
     objChanges.push(c);
     broadcast(collection, mapping, c);
 }
-
 
 
 /**

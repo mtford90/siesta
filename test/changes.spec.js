@@ -139,8 +139,8 @@ describe('changes!', function () {
             it('set', function () {
                 var obj = carMapping._new({colour: 'red', name: 'Aston Martin'});
                 var c = new Change();
-                c.collection = collection;
-                c.mapping = carMapping;
+                c.collection = collection._name;
+                c.mapping = carMapping.type;
                 c.field = 'colour';
                 c.type = ChangeType.Set;
                 c.new = 'blue';
@@ -156,8 +156,8 @@ describe('changes!', function () {
                 it('incorrect _id', function () {
                     var obj = carMapping._new({colour: 'red', name: 'Aston Martin'});
                     var c = new Change();
-                    c.collection = collection;
-                    c.mapping = carMapping;
+                    c.collection = collection._name;
+                    c.mapping = carMapping.type;
                     c.field = 'colour';
                     c.type = ChangeType.Set;
                     c.new = 'blue';
@@ -170,8 +170,8 @@ describe('changes!', function () {
                 it('old does not match current', function () {
                     var obj = carMapping._new({colour: 'red', name: 'Aston Martin'});
                     var c = new Change();
-                    c.collection = collection;
-                    c.mapping = carMapping;
+                    c.collection = collection._name;
+                    c.mapping = carMapping.type;
                     c.field = 'colour';
                     c.type = ChangeType.Set;
                     c.new = 'blue';
@@ -405,8 +405,8 @@ describe('changes!', function () {
                                 Car: {
                                     carId: [
                                         new Change({
-                                            collection: collection,
-                                            mapping: carMapping,
+                                            collection: collection._name,
+                                            mapping: carMapping.type,
                                             field: 'owner',
                                             type: ChangeType.Set,
                                             newId: 'personId',
@@ -445,8 +445,8 @@ describe('changes!', function () {
                                 Car: {
                                     personId: [
                                         new Change({
-                                            collection: collection,
-                                            mapping: carMapping,
+                                            collection: collection._name,
+                                            mapping: carMapping.type,
                                             field: 'owner',
                                             type: ChangeType.Set,
                                             newId: ['carId1', 'carId2', 'carId3'],

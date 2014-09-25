@@ -11,6 +11,7 @@ var s = require('../../index')
 var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
 var cache = require('../../src/cache');
+var changes = require('../../src/changes');
 
 var async = require('async');
 
@@ -147,14 +148,35 @@ describe('intercollection relationships', function () {
         });
     }
 
+    describe('can install', function () {
+        it('Can install offline fixtures', function (done) {
+            installOfflineFixtures(function (err) {
+                if (err) done(err);
+                assert.notOk(changes.allChanges.length);
+                done();
+            });
+        });
 
-    it('Can install offline fixtures', function (done) {
-        installOfflineFixtures(done);
+        it('can install online fixtures', function (done) {
+            installOnlineFixtures(function (err) {
+                if (err) done(err);
+                assert.notOk(changes.allChanges.length);
+                done();
+            });
+        });
+
+        it('can install both', function (done) {
+            installOfflineFixtures(function (err) {
+                if (err) done(err);
+                installOnlineFixtures(function (err) {
+                    if (err) done(err);
+                    assert.notOk(changes.allChanges.length);
+                    done();
+                });
+            });
+        })
     });
 
-    it('can install online fixtures', function (done) {
-        installOnlineFixtures(done);
-    });
 
     /**
      * Execute the integration test. Seperated out into a function so can be executed having manipulated Pouch
@@ -229,6 +251,7 @@ describe('intercollection relationships', function () {
                 function assertNumPhotos(userId, numPhotos, done) {
                     myOnlineCollection.User.get(userId, function (err, user) {
                         if (err) done(err);
+                        assert.ok(user);
                         assert.equal(user.userId, userId);
                         user.photosProxy.get(function (err, photos) {
                             if (err) done(err);
@@ -269,15 +292,15 @@ describe('intercollection relationships', function () {
         tests();
     });
 
-    describe('cached', function () {
-        beforeEach(function (done) {
-            installOfflineFixtures(function (err) {
-                if (err) done(err);
-                installOnlineFixtures(done);
-            });
-        });
-        tests();
-    });
+//    describe('cached', function () {
+//        beforeEach(function (done) {
+//            installOfflineFixtures(function (err) {
+//                if (err) done(err);
+//                installOnlineFixtures(done);
+//            });
+//        });
+//        tests();
+//    });
 
 
 
