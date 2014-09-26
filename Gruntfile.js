@@ -65,6 +65,19 @@ module.exports = function (grunt) {
                         expand: true
                     }
                 ]
+            },
+            build_extensionjs: {
+                files: [
+                    {
+                        src: '<%= src_dir %>/http/http.js' ,
+                        cwd: '.',
+                        expand: true,
+                        flatten: true,
+                        rename: function() {
+                            return 'build/siesta.http.js'
+                        }
+                    }
+                ]
             }
 
         },
@@ -72,7 +85,8 @@ module.exports = function (grunt) {
         uglify: {
             compile: {
                 files: {
-                    '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js'
+                    '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js',
+                    '<%= build_dir %>/siesta.http.min.js': '<%= build_dir %>/siesta.http.js'
                 }
             }
         },
@@ -173,15 +187,16 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean',
+        'copy:build_extensionjs',
         'browserify:test',
         'karmaconfig',
         'karma:continuous'
     ]);
 
 
-
     grunt.registerTask('compile', [
         'browserify:build',
+        'copy:build_extensionjs',
         'uglify'
     ]);
 

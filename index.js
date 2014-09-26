@@ -50,6 +50,11 @@ siesta.RelationshipType = RelationshipType;
 
 siesta.setPouch = pouch.setPouch;
 
+// Used by modules.
+siesta._internal = {
+    DescriptorRegistry: DescriptorRegistry,
+    log: log
+};
 
 siesta.collection = function (name, opts) {
     return new Collection(name, opts);

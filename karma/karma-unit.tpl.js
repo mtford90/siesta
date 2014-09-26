@@ -13,7 +13,8 @@ module.exports = function (karma) {
             'node_modules/q/q.js', // For mocking $q
             <% scripts.forEach( function ( file ) { %>'<%= file %>',
                 <% }); %>
-            'build/test-bundle.js'
+            'build/test-bundle.js',
+            'build/siesta.http.js'
     ],
     exclude: [
     ],

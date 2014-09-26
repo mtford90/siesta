@@ -5,13 +5,13 @@ module.exports = {
 
     build_dir: 'build',
     compile_dir: 'bin',
+    src_dir: 'src',
     test_dir: 'test',
 
     app_files: {
         js: [ 'src/**/*.js', '!src/**/*.spec.js', 'index.js'],
         jsunit: [ 'etest/**/*.spec.js' ]
     },
-
 
     test_files: {
         js: [
