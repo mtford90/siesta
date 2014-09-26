@@ -44,12 +44,17 @@ describe('proxy integration', function () {
             id: 5
         }, function (err, car) {
             if (err) done(err);
-            cache.reset();
-            personMapping.get(2, function (err, p) {
-                assert.ok(p.cars.isFault);
-                p.carsProxy.get(function (err, cars) {
-                    assert.equal(cars.length, 1);
-                    done(err);
+            collection.save(function (err) {
+                if (err) done(err);
+                cache.reset();
+                personMapping.get(2, function (err, p) {
+                    dump(p.cars);
+                    var proxy = p.carsProxy;
+                    assert.ok(p.cars.isFault);
+                    p.carsProxy.get(function (err, cars) {
+                        assert.equal(cars.length, 1);
+                        done(err);
+                    });
                 });
             });
         });

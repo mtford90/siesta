@@ -99,11 +99,11 @@ NewObjectProxy.prototype.install = function (obj) {
             var name = getForwardName.call(this);
             Object.defineProperty(obj, name, {
                 get: function () {
-                    if (self.related) {
-                        return self.related;
+                    if (self.isFault) {
+                        return self.fault;
                     }
                     else {
-                        return self.fault;
+                        return self.related;
                     }
                 },
                 set: function (v) {

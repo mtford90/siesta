@@ -29,7 +29,6 @@ function ForeignKeyProxy(opts) {
             }
             else {
                 if (self._id) {
-//                    return !self.related;
                     if (self.related) {
                         if (self._id.length != self.related.length) {
                             if (self.related.length > 0) {

@@ -226,7 +226,6 @@ function applySpliceToSiestaModel(isField, model) {
         var addedIdentifiers = this.addedId || (this.added ? _.pluck(this.added, '_id') : []);
         var proxy = model[this.field + 'Proxy'];
         var isFaulted = proxy.isFault;
-        dump('isFaulted?', isFaulted);
         applySplice.call(this, proxy, '_id', this.index, removedIdentifiers, addedIdentifiers);
         if (!isFaulted) {
             var removed = this.removed || _.map(removedIdentifiers, function (x) {return cache.get({_id: x})});
