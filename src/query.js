@@ -4,7 +4,7 @@ Logger.setLevel(log.Level.warn);
 
 
 var Pouch = require('./pouch/pouch');
-var RawQuery = require('./rawQuery').RawQuery;
+var RawQuery = require('./pouch/query').RawQuery;
 
 
 

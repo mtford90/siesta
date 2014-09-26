@@ -6,7 +6,7 @@ describe('query', function () {
 
     var Index = require('../src/pouch/index').Index;
     var Pouch = require('../src/pouch/pouch');
-    var RawQuery = require('../src/rawQuery').RawQuery;
+    var RawQuery = require('../src/pouch/query').RawQuery;
     var Query = require('../src/query').Query;
     var Collection = require('../src/collection').Collection;
     var SiestaModel = require('../src/object').SiestaModel;

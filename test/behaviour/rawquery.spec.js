@@ -7,7 +7,7 @@ describe('raw query behaviour', function () {
 
     var Index = require('../../src/pouch/index').Index;
     var Pouch = require('../../src/pouch/pouch');
-    var RawQuery = require('../../src/rawQuery').RawQuery;
+    var RawQuery = require('../../src/pouch/query').RawQuery;
 
     beforeEach(function () {
         s.reset(true);
