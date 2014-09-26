@@ -40,6 +40,9 @@ describe('performance', function () {
          *    - 11/9/2014 13:16: 2.415 secs
          *    - 12/9/2014 08:36: 1.084 secs
          *    - 13/9/2014 08:46: 0.53 secs
+         *
+         * On Mike's MacBook Air, 1.7 GHz Intel Core i5, 4 GB 1333 MHz DDR3, OSX 10.10 Beta, logging disabled:
+         *    - 26/9/2014 11:42: 1.094 secs
          */
         it('xyz', function (done) {
             this.timeout(10000);

@@ -113,7 +113,9 @@ ForeignKeyProxy.prototype.get = function (callback) {
     var self = this;
     if (this.isFault) {
         if (this._id.length) {
-            Store.get({_id: this._id}, function (err, stored) {
+            var storeOpts = {_id: this._id};
+            dump(storeOpts);
+            Store.get(storeOpts, function (err, stored) {
                 if (err) {
                     if (callback) callback(err);
                 }

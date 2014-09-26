@@ -509,9 +509,9 @@ describe('new object proxy', function () {
 
                         it('should clear the old', function () {
                             car.owner = person;
-                            assert.instanceOf(anotherPerson.cars, Fault);
+                            assert.notOk(anotherPersonProxy.isFault);
                             assert.notOk(anotherPersonProxy._id);
-//                            assert.notOk(anotherPersonProxy.related);
+                            assert.notOk(anotherPersonProxy.related);
                         });
                         it('should set changes', function () {
                             car.owner = person;
@@ -537,9 +537,9 @@ describe('new object proxy', function () {
 
                         it('should clear the old', function () {
                             person.cars = car;
-                            assert.instanceOf(anotherPerson.cars, Fault);
                             assert.notOk(anotherPersonProxy._id);
                             assert.notOk(anotherPersonProxy.related);
+                            assert.notOk(anotherPersonProxy.isFault);
                         });
 
                         it('should set changes', function () {
