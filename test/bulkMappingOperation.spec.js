@@ -48,7 +48,7 @@ describe('array flattening', function () {
 describe('bulk mapping operation', function () {
 
     var Collection = require('../src/collection').Collection;
-    var Pouch = require('../src/pouch');
+    var Pouch = require('../src/pouch/pouch');
     var cache = require('../src/cache');
     var collection;
     var Repo, User;

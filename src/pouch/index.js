@@ -1,12 +1,12 @@
-var RestError = require('./error').RestError;
-var mapping = require('./mapping');
+var RestError = require('./../error').RestError;
+var mapping = require('./../mapping');
 
 var Pouch = require('./pouch');
-var log = require('../vendor/operations.js/src/log');
+var log = require('../../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Index');
 Logger.setLevel(log.Level.warn);
 
-var _ = require('./util')._;
+var _ = require('./../util')._;
 
 
 function combine(a, min) {

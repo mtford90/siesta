@@ -1,12 +1,12 @@
-var log = require('../vendor/operations.js/src/log');
+var log = require('../../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Pouch');
 Logger.setLevel(log.Level.warn);
 
-var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var RestError = require('./error').RestError;
-var guid = require('./misc').guid;
-var cache = require('./cache');
-var util = require('./util');
+var CollectionRegistry = require('./../collectionRegistry').CollectionRegistry;
+var RestError = require('./../error').RestError;
+var guid = require('./../misc').guid;
+var cache = require('./../cache');
+var util = require('./../util');
 var _ = util._;
 
 var pouch = new PouchDB('siesta', {adapter: 'memory'});

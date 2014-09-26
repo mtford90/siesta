@@ -3,7 +3,7 @@ var s = require('../index')
 
 describe('store', function () {
     var Store = require('../src/store');
-    var Pouch = require('../src/pouch');
+    var Pouch = require('../src/pouch/pouch');
     var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');

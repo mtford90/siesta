@@ -1,9 +1,9 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-describe.only('mapping queries', function () {
+describe('mapping queries', function () {
 
-    var Pouch = require('../../src/pouch');
+    var Pouch = require('../../src/pouch/pouch');
     var SiestaModel = require('../../src/object').SiestaModel;
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;

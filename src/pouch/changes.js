@@ -6,25 +6,25 @@
  * On siesta.save() all changes will be merged into the database.
  */
 
-var defineSubProperty = require('./misc').defineSubProperty;
+var defineSubProperty = require('./../misc').defineSubProperty;
 
-var RestError = require('./error').RestError;
+var RestError = require('./../error').RestError;
 var ChangeType = require('./changeType').ChangeType;
 
 var pouch = require('./pouch');
 
-var util = require('./util');
+var util = require('./../util');
 var _ = util._;
-var Operation = require('../vendor/operations.js/src/operation').Operation;
-var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
-var SiestaModel = require('./object').SiestaModel;
+var Operation = require('../../vendor/operations.js/src/operation').Operation;
+var OperationQueue = require('../../vendor/operations.js/src/queue').OperationQueue;
+var SiestaModel = require('./../object').SiestaModel;
 var extend = require('extend');
-var notificationCentre = require('./notificationCentre').notificationCentre;
+var notificationCentre = require('./../notificationCentre').notificationCentre;
 
 var unmergedChanges = {};
 
-var log = require('../vendor/operations.js/src/log');
-var cache = require('./cache');
+var log = require('../../vendor/operations.js/src/log');
+var cache = require('./../cache');
 var Logger = log.loggerWithName('changes');
 
 Logger.setLevel(log.Level.warn);

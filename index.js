@@ -2,14 +2,14 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , DescriptorRegistry = require('./src/descriptorRegistry').DescriptorRegistry
     , Collection = require('./src/collection').Collection
     , cache = require('./src/cache')
-    , index = require('./src/index')
-    , pouch = require('./src/pouch')
+    , index = require('./src/pouch/index')
+    , pouch = require('./src/pouch/pouch')
     , notificationCentre = require('./src/notificationCentre').notificationCentre
     , Operation = require('./vendor/operations.js/src/operation').Operation
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
-    , changes = require('./src/changes')
+    , changes = require('./src/pouch/changes')
     , _ = require('./src/util')._;
 
 Operation.logLevel = log.Level.warn;

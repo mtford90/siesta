@@ -4,10 +4,10 @@ var RestError = require('./error').RestError
     , Operation = require('../vendor/operations.js/src/operation').Operation
     , util = require('./util')
     , _ = util._
-    , changes = require('./changes')
+    , changes = require('./pouch/changes')
     , Query = require('./query').Query
     , log = require('../vendor/operations.js/src/log')
-    , ChangeType = require('./changeType').ChangeType;
+    , ChangeType = require('./pouch/changeType').ChangeType;
 
 function Fault(proxy) {
     var self = this;

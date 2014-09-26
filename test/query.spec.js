@@ -4,8 +4,8 @@ var s = require('../index')
 describe('query', function () {
 
 
-    var Index = require('../src/index').Index;
-    var Pouch = require('../src/pouch');
+    var Index = require('../src/pouch/index').Index;
+    var Pouch = require('../src/pouch/pouch');
     var RawQuery = require('../src/rawQuery').RawQuery;
     var Query = require('../src/query').Query;
     var Collection = require('../src/collection').Collection;

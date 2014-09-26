@@ -11,9 +11,9 @@ var ResponseDescriptor = require('./responseDescriptor').ResponseDescriptor;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('./error').RestError;
 var Mapping = require('./mapping').Mapping;
-var Pouch = require('./pouch');
+var Pouch = require('./pouch/pouch');
 var extend = require('extend');
-var changes = require('./changes');
+var changes = require('./pouch/changes');
 var observe = require('../vendor/observe-js/src/observe').Platform;
 
 var $ = require('../vendor/zepto').$;

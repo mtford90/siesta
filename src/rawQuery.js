@@ -4,9 +4,9 @@ Logger.setLevel(log.Level.warn);
 
 
 var mapping = require('./mapping');
-var index = require('./index');
-var Index = require('./index').Index;
-var Pouch = require('./pouch');
+var index = require('./pouch/index');
+var Index = require('./pouch/index').Index;
+var Pouch = require('./pouch/pouch');
 var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 var utils = require('./util');
@@ -25,7 +25,7 @@ function RawQuery(collection, modelName, query) {
         configurable: true,
         enumerable: true,
         get: function () {
-            var collection = require('../index')[self.collection];
+            var collection = require('./pouch/index')[self.collection];
             if (collection) {
                 return collection[self.modelName];
             }

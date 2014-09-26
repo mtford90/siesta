@@ -5,7 +5,7 @@ describe('proxy integration', function () {
 
     var Collection = require('../../src/collection').Collection;
     var cache = require('../../src/cache');
-    var Pouch = require('../../src/pouch');
+    var Pouch = require('../../src/pouch/pouch');
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     var carMapping, personMapping;

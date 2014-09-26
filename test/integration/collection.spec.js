@@ -11,8 +11,8 @@ var s = require('../../index')
 var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
 var cache = require('../../src/cache');
-var changes = require('../../src/changes');
-var Pouch = require('../../src/pouch');
+var changes = require('../../src/pouch/changes');
+var Pouch = require('../../src/pouch/pouch');
 
 var async = require('async');
 

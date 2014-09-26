@@ -3,7 +3,7 @@ var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('../src/error').RestError;
-var Pouch = require('./pouch');
+var Pouch = require('./pouch/pouch');
 var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');
@@ -14,8 +14,8 @@ var cache = require('./cache');
 var util = require('./util');
 var _ = util._;
 var defineSubProperty = require('./misc').defineSubProperty;
-var changes = require('./changes');
-var ChangeType = require('./changeType').ChangeType;
+var changes = require('./pouch/changes');
+var ChangeType = require('./pouch/changeType').ChangeType;
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {

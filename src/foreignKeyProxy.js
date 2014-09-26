@@ -4,13 +4,13 @@ var proxy = require('./proxy')
     , util = require('./util')
     , _ = util._
     , RestError = require('./error').RestError
-    , changes = require('./changes')
+    , changes = require('./pouch/changes')
     , SiestaModel = require('./object').SiestaModel
     , notificationCentre = require('./notificationCentre')
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , broadcast = notificationCentre.broadcast
     , wrapArrayForAttributes = notificationCentre.wrapArray
-    , ChangeType = require('./changeType').ChangeType;
+    , ChangeType = require('./pouch/changeType').ChangeType;
 
 
 function ForeignKeyProxy(opts) {

@@ -6,15 +6,15 @@ describe('pouch doc adapter', function () {
 
     var Collection = require('../src/collection').Collection;
 
-    var Pouch = require('../src/pouch');
+    var Pouch = require('../src/pouch/pouch');
 
     var RestError = require('../src/error').RestError;
     var RelationshipType = require('../src/relationship').RelationshipType;
 
     var SiestaModel = require('../src/object').SiestaModel;
     var cache = require('../src/cache');
-    var changes = require('../src/changes');
-    var ChangeType = require('../src/changeType').ChangeType;
+    var changes = require('../src/pouch/changes');
+    var ChangeType = require('../src/pouch/changeType').ChangeType;
 
     beforeEach(function () {
         s.reset(true);

@@ -3,14 +3,14 @@ var s = require('../../index')
 
 describe('perform mapping', function () {
 
-    var Pouch = require('../../src/pouch');
+    var Pouch = require('../../src/pouch/pouch');
 
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     var SiestaModel = require('../../src/object').SiestaModel;
     var cache = require('../../src/cache');
-    var changes = require('../../src/changes');
+    var changes = require('../../src/pouch/changes');
     var Operation = require('../../vendor/operations.js/src/operation').Operation;
 
     var collection, carMapping, personMapping;
