@@ -29,7 +29,21 @@ function ForeignKeyProxy(opts) {
             }
             else {
                 if (self._id) {
-                    return !self.related;
+//                    return !self.related;
+                    if (self.related) {
+                        if (self._id.length != self.related.length) {
+                            if (self.related.length > 0) {
+                                throw new RestError('_id and related are somehow out of sync');
+                            }
+                            else {
+                                return true;
+                            }
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    return true;
                 }
                 return true;
             }
@@ -99,15 +113,20 @@ function makeChangesToRelatedWithoutObservations(f) {
 ForeignKeyProxy.prototype.get = function (callback) {
     var self = this;
     if (this.isFault) {
-        Store.get({_id: this._id}, function (err, stored) {
-            if (err) {
-                if (callback) callback(err);
-            }
-            else {
-                self.related = stored;
-                if (callback) callback(null, stored);
-            }
-        })
+        if (this._id.length) {
+            Store.get({_id: this._id}, function (err, stored) {
+                if (err) {
+                    if (callback) callback(err);
+                }
+                else {
+                    self.related = stored;
+                    if (callback) callback(null, stored);
+                }
+            })
+        }
+        else if (callback) {
+            callback(null, this.related);
+        }
     }
     else {
         if (callback) callback(null, this.related);

@@ -247,14 +247,16 @@ describe('intercollection relationships', function () {
 
             });
         });
-        describe.only('relationship mappings', function () {
+        describe('relationship mappings', function () {
             describe('online', function () {
                 function assertNumPhotos(userId, numPhotos, done) {
                     myOnlineCollection.User.get(userId, function (err, user) {
                         if (err) done(err);
                         assert.ok(user);
                         assert.equal(user.userId, userId);
-                        user.photosProxy.get(function (err, photos) {
+                        var proxy = user.photosProxy;
+                        dump(proxy._id);
+                        proxy.get(function (err, photos) {
                             if (err) done(err);
                             assert.equal(photos ? photos.length : 0, numPhotos);
                             done();

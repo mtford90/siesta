@@ -15,22 +15,16 @@ var pouch = require('./pouch');
 
 var util = require('./util');
 var _ = util._;
-
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
-
 var SiestaModel = require('./object').SiestaModel;
-
 var extend = require('extend');
-
 var notificationCentre = require('./notificationCentre').notificationCentre;
 
 var unmergedChanges = {};
 
 var log = require('../vendor/operations.js/src/log');
-
 var cache = require('./cache');
-
 var Logger = log.loggerWithName('changes');
 
 Logger.setLevel(log.Level.warn);
@@ -232,6 +226,7 @@ function applySpliceToSiestaModel(isField, model) {
         var addedIdentifiers = this.addedId || (this.added ? _.pluck(this.added, '_id') : []);
         var proxy = model[this.field + 'Proxy'];
         var isFaulted = proxy.isFault;
+        dump('isFaulted?', isFaulted);
         applySplice.call(this, proxy, '_id', this.index, removedIdentifiers, addedIdentifiers);
         if (!isFaulted) {
             var removed = this.removed || _.map(removedIdentifiers, function (x) {return cache.get({_id: x})});
