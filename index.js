@@ -4,6 +4,7 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , cache = require('./src/cache')
     , index = require('./src/pouch/index')
     , pouch = require('./src/pouch/pouch')
+    , Mapping = require('./src/mapping').Mapping
     , notificationCentre = require('./src/notificationCentre').notificationCentre
     , Operation = require('./vendor/operations.js/src/operation').Operation
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
@@ -53,7 +54,9 @@ siesta.setPouch = pouch.setPouch;
 // Used by modules.
 siesta._internal = {
     DescriptorRegistry: DescriptorRegistry,
-    log: log
+    log: log,
+    Mapping: Mapping,
+    util: require('./src/util')
 };
 
 siesta.collection = function (name, opts) {

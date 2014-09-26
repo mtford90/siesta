@@ -23,7 +23,7 @@ module.exports = function (grunt) {
 
         browserify: {
             options: {
-                browserifyOptions : {
+                browserifyOptions: {
                     debug: true
                 },
                 debug: true
@@ -69,12 +69,21 @@ module.exports = function (grunt) {
             build_extensionjs: {
                 files: [
                     {
-                        src: '<%= src_dir %>/http/http.js' ,
+                        src: '<%= src_dir %>/http/http.js',
                         cwd: '.',
                         expand: true,
                         flatten: true,
-                        rename: function() {
+                        rename: function () {
                             return 'build/siesta.http.js'
+                        }
+                    },
+                    {
+                        src: '<%= src_dir %>/performance.js',
+                        cwd: '.',
+                        expand: true,
+                        flatten: true,
+                        rename: function () {
+                            return 'build/siesta.perf.js'
                         }
                     }
                 ]
@@ -86,7 +95,8 @@ module.exports = function (grunt) {
             compile: {
                 files: {
                     '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js',
-                    '<%= build_dir %>/siesta.http.min.js': '<%= build_dir %>/siesta.http.js'
+                    '<%= build_dir %>/siesta.http.min.js': '<%= build_dir %>/siesta.http.js',
+                    '<%= build_dir %>/siesta.perf.min.js': '<%= build_dir %>/siesta.perf.js'
                 }
             }
         },
@@ -128,9 +138,19 @@ module.exports = function (grunt) {
 
             jssrc: {
                 files: [
-                    '<%= app_files.js %>'
+                    '<%= app_files.js %>',
+                    '!<%= src_dir %>/http/http.js',
+                    '!<%= src_dir %>/performance.js'
                 ],
                 tasks: [  'browserify:test', 'karma:unit:run' ]
+            },
+
+            ext: {
+                files: [
+                    '<%= src_dir %>/http/http.js',
+                    '<%= src_dir %>/performance.js'
+                ],
+                tasks: ['copy:build_extensionjs', 'karma:unit:run']
             },
 
             index: {

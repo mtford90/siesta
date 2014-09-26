@@ -7,7 +7,6 @@ var mapping = require('./../mapping');
 var index = require('./index');
 var Index = require('./index').Index;
 var Pouch = require('./pouch');
-var PerformanceMonitor = require('./../performance').PerformanceMonitor;
 
 var utils = require('./../util');
 
@@ -50,8 +49,6 @@ RawQuery.prototype.execute = function (callback) {
             throw new RestError('Mapping must be installed');
         }
     }
-    var m = new PerformanceMonitor('Raw Query');
-    m.start();
     var self = this;
     var designDocId = this._getDesignDocName();
     var indexName = self._getIndexName();
@@ -59,7 +56,6 @@ RawQuery.prototype.execute = function (callback) {
         var partialCallback = _.partial(resultsCallback, callback);
 
         function finish(err, docs) {
-            m.end();
             if (Logger.trace.isEnabled)
                 Logger.trace('Received results: ', docs);
             partialCallback(err, docs);

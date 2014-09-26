@@ -7,7 +7,6 @@ var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
 
 
-var PerformanceMonitor = require('./performance').PerformanceMonitor;
 var util = require('./util');
 
 var _ = util._;
@@ -36,11 +35,8 @@ function get(opts, callback) {
                     getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
                 }
                 else {
-                    var m = new PerformanceMonitor('Store get (fault)');
-                    m.start();
                     PouchAdapter.getPouch().get(opts._id).then(function (doc) {
                         var docs = PouchAdapter.toSiesta([doc]);
-                        m.end();
                         if (callback) callback(null, docs.length ? docs[0] : null);
                     }, wrappedCallback(callback));
                 }
@@ -105,8 +101,6 @@ function get(opts, callback) {
 }
 
 function getMultiple(optsArray, callback) {
-    var m = new PerformanceMonitor('Store getMultiple');
-    m.start();
     var docs = [];
     var errors = [];
     _.each(optsArray, function (opts) {
@@ -120,11 +114,9 @@ function getMultiple(optsArray, callback) {
             if (docs.length + errors.length == optsArray.length) {
                 if (callback) {
                     if (errors.length) {
-                        m.end();
                         callback(errors);
                     }
                     else {
-                        m.end();
                         callback(null, docs);
                     }
                 }
@@ -141,8 +133,6 @@ exports.getMultiple = getMultiple;
  * @param localIdentifiers
  */
 exports.getMultipleLocal = function (localIdentifiers, callback) {
-    var m = new PerformanceMonitor('Store getMultipleLocal');
-    m.start();
 
     var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({_id: _id});
@@ -192,8 +182,6 @@ exports.getMultipleLocal = function (localIdentifiers, callback) {
 
 exports.getMultipleRemote = function (remoteIdentifiers, mapping, callback) {
 
-    var m = new PerformanceMonitor('Store getMultipleRemote');
-    m.start();
 
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {mapping: mapping};

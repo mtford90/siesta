@@ -1,9 +1,6 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-/**
- * Test bulk mapping against lots of real data from github.
- */
 describe('performance', function () {
 
     var Collection = require('../../src/collection').Collection;
@@ -42,7 +39,7 @@ describe('performance', function () {
          *    - 13/9/2014 08:46: 0.53 secs
          *
          * On Mike's MacBook Air, 1.7 GHz Intel Core i5, 4 GB 1333 MHz DDR3, OSX 10.10 Beta, logging disabled:
-         *    - 26/9/2014 11:42: 1.094 secs
+         *    - 26/9/2014 11:42: 0.987 secs
          */
         it('xyz', function (done) {
             this.timeout(10000);

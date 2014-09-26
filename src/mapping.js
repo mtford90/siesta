@@ -23,8 +23,6 @@ var changes = require('./pouch/changes');
 
 var ChangeType = require('./pouch/changeType').ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;
-var broadcast = require('./notificationCentre').broadcast;
-
 
 var ForeignKeyProxy = require('./foreignKeyProxy').ForeignKeyProxy;
 var OneToOneProxy = require('./oneToOneProxy').OneToOneProxy;
@@ -34,8 +32,6 @@ var util = require('./util');
 
 var _ = util._;
 
-
-var PerformanceMonitor = require('./performance').PerformanceMonitor;
 
 function Mapping(opts) {
     var self = this;
@@ -182,10 +178,7 @@ Mapping.prototype.query = function (query, callback) {
 };
 
 Mapping.prototype.get = function (idOrCallback, callback) {
-    var m = new PerformanceMonitor('Mapping.get');
-    m.start();
     function finish(err, res) {
-        m.end();
         if (callback) callback(err, res);
     }
 
@@ -319,15 +312,11 @@ Mapping.prototype.map = function (data, callback, override) {
 };
 
 Mapping.prototype._mapBulk = function (data, callback, override) {
-    if (Logger.trace.isEnabled)
-        Logger.trace('_mapBulk: ' + JSON.stringify(data, null, 4));
-    var m = new PerformanceMonitor('_mapBulk');
-    var self = this;
+    dump (this);
     var opts = {mapping: this, data: data};
     if (override) opts.objects = override;
     var op = new BulkMappingOperation(opts);
     op.onCompletion(function () {
-        m.end();
         var err = op.error;
         if (err) {
             if (callback) callback(err);
@@ -337,8 +326,6 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
             callback(null, objects);
         }
     });
-
-    m.start();
     op.start();
     return op;
 };
