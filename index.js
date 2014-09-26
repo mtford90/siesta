@@ -59,6 +59,10 @@ siesta._internal = {
     util: require('./src/util')
 };
 
+siesta.performanceMonitoringEnabled = false;
+siesta.httpEnabled = false;
+siesta.storageEnabled = false;
+
 siesta.collection = function (name, opts) {
     return new Collection(name, opts);
 };
