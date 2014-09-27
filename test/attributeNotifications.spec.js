@@ -4,7 +4,7 @@ var s = require('../index')
 describe('attribute notifications', function () {
 
     var Collection = require('../src/collection').Collection
-        , ChangeType = require('../src/pouch/changeType').ChangeType;
+        , ChangeType = require('../src/changeType').ChangeType;
 
     beforeEach(function () {
         s.reset(true);

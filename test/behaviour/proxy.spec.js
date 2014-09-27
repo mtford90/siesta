@@ -1,4 +1,4 @@
-var s = require('../../index')
+var siesta = require('../../index')
     , assert = require('chai').assert;
 
 describe('proxy integration', function () {
@@ -13,7 +13,7 @@ describe('proxy integration', function () {
     var collection;
 
     beforeEach(function (done) {
-        s.reset(true);
+        siesta.reset(true);
         collection = new Collection('myCollection');
         carMapping = collection.mapping('Car', {
             id: 'id',

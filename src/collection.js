@@ -9,14 +9,13 @@ var ResponseDescriptor = require('./responseDescriptor').ResponseDescriptor;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('./error').RestError;
 var Mapping = require('./mapping').Mapping;
-var Pouch = require('./pouch/pouch');
 var extend = require('extend');
-var changes = require('./pouch/changes');
+var changes = require('./changes');
 var observe = require('../vendor/observe-js/src/observe').Platform;
 
-//var $ = require('../vendor/zepto').$;
 var util = require('./util');
 var _ = util._;
+var ext = require('./ext');
 
 /**
  * @param name
@@ -118,21 +117,24 @@ Collection.prototype.install = function (callback) {
 Collection.prototype._finaliseInstallation = function (err, callback) {
     if (!err) {
         this.installed = true;
-        var index = require('../index');
-        index[this._name] = this;
+        if (ext.storageEnabled) {
+            ext.storage.index[this._name] = this;
+        }
+
     }
     if (callback) callback(err);
 };
 
-
-Collection._reset = Pouch.reset;
-
-Collection._getPouch = Pouch.getPouch;
-
 Collection.prototype.save = function (callback) {
-    util.next(function () {
-        changes.mergeChanges(callback);
-    });
+    if (ext.storageEnabled) {
+        util.next(function () {
+            changes.mergeChanges(callback);
+        });
+    }
+    else {
+        Logger.error('Attempt to save collection, however storage module is not enabled');
+        if (callback) callback('Storage module not enabled.');
+    }
 };
 
 Collection.prototype._mapping = function (name, mapping) {

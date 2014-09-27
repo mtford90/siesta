@@ -1,18 +1,18 @@
-var log = require('../../vendor/operations.js/src/log');
+
+
+
+var utils = siesta._internal.utils
+    , mapping = siesta._internal.mapping
+    , index = require('./index')
+    , Index = index.Index
+    , Pouch = require('./Pouch')
+    , RestError = siesta._internal.error.RestError
+    , log = siesta._internal.log
+    , _ = utils._
+    ;
+
 var Logger = log.loggerWithName('RawQuery');
 Logger.setLevel(log.Level.warn);
-
-
-var mapping = require('./../mapping');
-var index = require('./index');
-var Index = require('./index').Index;
-var Pouch = require('./pouch');
-
-var utils = require('./../util');
-
-var RestError = require('./../error').RestError;
-
-var _ = utils._;
 
 function RawQuery(collection, modelName, query) {
     var self = this;

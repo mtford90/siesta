@@ -1,4 +1,4 @@
-var s = require('../../index')
+var siesta = require('../../index')
     , assert = require('chai').assert;
 
 describe('intercoll relationships', function () {
@@ -9,7 +9,7 @@ describe('intercoll relationships', function () {
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     beforeEach(function () {
-        s.reset(true);
+        siesta.reset(true);
     });
 
     var collection, carMapping, personMapping;

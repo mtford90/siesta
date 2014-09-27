@@ -3,7 +3,7 @@
         throw new Error('Could not find siesta');
     }
 
-    siesta.performanceMonitoringEnabled = true;
+    siesta.ext.performanceMonitoringEnabled = true;
 
     var log = siesta._internal.log
         , Mapping = siesta._internal.Mapping

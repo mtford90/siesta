@@ -3,7 +3,7 @@ var proxy = require('./proxy')
     , Store = require('./store')
     , util = require('./util')
     , RestError = require('./error').RestError
-    , changes = require('./pouch/changes')
+    , changes = require('./changes')
     , SiestaModel = require('./object').SiestaModel;
 
 function OneToOneProxy(opts) {

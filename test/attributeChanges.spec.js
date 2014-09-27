@@ -4,8 +4,8 @@ var s = require('../index')
 describe('attribute changes', function () {
 
     var Collection = require('../src/collection').Collection
-        , ChangeType = require('../src/pouch/changeType').ChangeType
-        , changes = require('../src/pouch/changes');
+        , ChangeType = require('../src/changeType').ChangeType
+        , changes = require('../src/changes');
 
     beforeEach(function () {
         s.reset(true);

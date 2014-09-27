@@ -1,4 +1,4 @@
-var s = require('../../index')
+var siesta = require('../../index')
     , assert = require('chai').assert;
 
 describe('perform mapping', function () {
@@ -10,7 +10,7 @@ describe('perform mapping', function () {
 
     var SiestaModel = require('../../src/object').SiestaModel;
     var cache = require('../../src/cache');
-    var changes = require('../../src/pouch/changes');
+    var changes = require('../../src/changes');
     var Operation = require('../../vendor/operations.js/src/operation').Operation;
 
     var collection, carMapping, personMapping;
@@ -19,7 +19,7 @@ describe('perform mapping', function () {
         collection = null;
         carMapping = null;
         personMapping = null;
-        s.reset(true);
+        siesta.reset(true);
     });
 
     afterEach(function () {

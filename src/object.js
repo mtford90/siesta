@@ -6,7 +6,7 @@ var defineSubProperty = require('./misc').defineSubProperty;
 //var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
 var util = require('./util');
 var _ = util._;
-var changes = require('./pouch/changes');
+var changes = require('./changes');
 var error = require('./error');
 
 //var queues = {};

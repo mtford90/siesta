@@ -1,4 +1,4 @@
-var s = require('../../index')
+var siesta = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping!', function () {
@@ -6,7 +6,7 @@ describe('mapping!', function () {
     var Mapping = require('../../src/mapping').Mapping;
 
     beforeEach(function () {
-        s.reset(true);
+        siesta.reset(true);
     });
 
     it('_fields', function () {

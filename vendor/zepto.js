@@ -99,7 +99,7 @@ var Zepto = (function () {
 
     function classRE(name) {
         return name in classCache ?
-            classCache[name] : (classCache[name] = new RegExp('(^|\\s)' + name + '(\\s|$)'))
+            classCache[name] : (classCache[name] = new RegExp('(^|\\siesta)' + name + '(\\siesta|$)'))
     }
 
     function maybeAddPx(name, value) {
@@ -176,7 +176,7 @@ var Zepto = (function () {
         return object instanceof zepto.Z
     }
 
-    // `$.zepto.init` is Zepto's counterpart to jQuery's `$.fn.init` and
+    // `$.zepto.init` is Zepto'siesta counterpart to jQuery'siesta `$.fn.init` and
     // takes a CSS selector and an optional context (and handles various
     // special cases).
     // This method can be overriden in plugins.
@@ -187,15 +187,15 @@ var Zepto = (function () {
         // Optimize for string selectors
         else if (typeof selector == 'string') {
             selector = selector.trim()
-            // If it's a html fragment, create nodes from it
+            // If it'siesta a html fragment, create nodes from it
             // Note: In both Chrome 21 and Firefox 15, DOM error 12
             // is thrown if the fragment doesn't begin with <
             if (selector[0] == '<' && fragmentRE.test(selector))
                 dom = zepto.fragment(selector, RegExp.$1, context), selector = null
-            // If there's a context, create a collection on that context first, and select
+            // If there'siesta a context, create a collection on that context first, and select
             // nodes from there
             else if (context !== undefined) return $(context).find(selector)
-            // If it's a CSS selector, use it to select nodes.
+            // If it'siesta a CSS selector, use it to select nodes.
             else dom = zepto.qsa(document, selector)
         }
         // If a function is given, call it when the DOM is ready
@@ -208,13 +208,13 @@ var Zepto = (function () {
             // Wrap DOM nodes.
             else if (isObject(selector))
                 dom = [selector], selector = null
-            // If it's a html fragment, create nodes from it
+            // If it'siesta a html fragment, create nodes from it
             else if (fragmentRE.test(selector))
                 dom = zepto.fragment(selector.trim(), RegExp.$1, context), selector = null
-            // If there's a context, create a collection on that context first, and select
+            // If there'siesta a context, create a collection on that context first, and select
             // nodes from there
             else if (context !== undefined) return $(context).find(selector)
-            // And last but no least, if it's a CSS selector, use it to select nodes.
+            // And last but no least, if it'siesta a CSS selector, use it to select nodes.
             else dom = zepto.qsa(document, selector)
         }
         // create a new Zepto collection from the nodes found
@@ -253,7 +253,7 @@ var Zepto = (function () {
         return target
     }
 
-    // `$.zepto.qsa` is Zepto's CSS selector implementation which
+    // `$.zepto.qsa` is Zepto'siesta CSS selector implementation which
     // uses `document.querySelectorAll` and optimizes for some special cases, like `#id`.
     // This method can be overriden in plugins.
     zepto.qsa = function (element, selector) {
@@ -267,9 +267,9 @@ var Zepto = (function () {
             (element.nodeType !== 1 && element.nodeType !== 9) ? [] :
                 slice.call(
                         isSimple && !maybeID ?
-                        maybeClass ? element.getElementsByClassName(nameOnly) : // If it's simple, it could be a class
+                        maybeClass ? element.getElementsByClassName(nameOnly) : // If it'siesta simple, it could be a class
                             element.getElementsByTagName(selector) : // Or a tag
-                        element.querySelectorAll(selector) // Or it's not simple, and we need to query all
+                        element.querySelectorAll(selector) // Or it'siesta not simple, and we need to query all
                 )
     }
 
@@ -937,7 +937,7 @@ exports.Zepto = Zepto;
         if (settings.global && !(--$.active)) triggerGlobal(settings, null, 'ajaxStop')
     }
 
-    // triggers an extra global event "ajaxBeforeSend" that's like "ajaxSend" but cancelable
+    // triggers an extra global event "ajaxBeforeSend" that'siesta like "ajaxSend" but cancelable
     function ajaxBeforeSend(xhr, settings) {
         var context = settings.context
         if (settings.beforeSend.call(context, xhr, settings) === false ||
