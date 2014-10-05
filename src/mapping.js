@@ -8,6 +8,8 @@ var RestError = require('./error').RestError;
 var relationship = require('./relationship');
 var RelationshipType = relationship.RelationshipType;
 var Query = require('./query').Query;
+var index = require('./pouch/index');
+var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
 var SiestaModel = require('./object').SiestaModel;
@@ -16,16 +18,16 @@ var cache = require('./cache');
 
 var store = require('./store');
 
-var changes = require('./changes');
+var changes = require('./pouch/changes');
 
 
-var ChangeType = require('./changeType').ChangeType;
+var ChangeType = require('./pouch/changeType').ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;
 
 var ForeignKeyProxy = require('./foreignKeyProxy').ForeignKeyProxy;
 var OneToOneProxy = require('./oneToOneProxy').OneToOneProxy;
 var ManyToManyProxy = require('./manyToManyProxy').ManyToManyProxy;
-var ext = require('./ext');
+
 var util = require('./util');
 
 var _ = util._;
@@ -236,30 +238,28 @@ Mapping.prototype.install = function (callback) {
     if (!this._installed) {
         var self = this;
         var errors = this._validate();
-        if (ext.storageEnabled) {
-            if (!errors.length) {
-                var indexesToInstall = [];
-                _.each(this._fields, function (f) {
-                    indexesToInstall.push(f);
-                });
-                for (var prop in this.relationships) {
-                    if (this.relationships.hasOwnProperty(prop)) {
-                        var r = self.relationships[prop];
-                        if (r.reverse != prop) {
-                            indexesToInstall.push(prop);
-                        }
+        if (!errors.length) {
+            var indexesToInstall = [];
+            _.each(this._fields, function (f) {
+                indexesToInstall.push(f);
+            });
+            for (var prop in this.relationships) {
+                if (this.relationships.hasOwnProperty(prop)) {
+                    var r = self.relationships[prop];
+                    if (r.reverse != prop) {
+                        indexesToInstall.push(prop);
                     }
                 }
-                ext.storage.index.installIndexes(this.collection, this.type, indexesToInstall, function (err) {
-                    if (!err) {
-                        self._installed = true;
-                    }
-                    if (callback) callback(err);
-                });
             }
-            else {
-                if (callback) callback(errors);
-            }
+            index.installIndexes(this.collection, this.type, indexesToInstall, function (err) {
+                if (!err) {
+                    self._installed = true;
+                }
+                if (callback) callback(err);
+            });
+        }
+        else {
+            if (callback) callback(errors);
         }
     }
     else {

@@ -1,69 +1,33 @@
+/*
+ * Changes describe differences between the in-memory object graph and the object graph sat in the databases.
+ *
+ * Faulted objects being pulled into memory will have changes applied to them.
+ *
+ * On siesta.save() all changes will be merged into the database.
+ */
+
+var defineSubProperty = require('./../misc').defineSubProperty;
+
+var RestError = require('./../error').RestError;
+var ChangeType = require('./changeType').ChangeType;
+
+var pouch = require('./pouch');
+
+var util = require('./../util');
+var _ = util._;
+var Operation = require('../../vendor/operations.js/src/operation').Operation;
+var OperationQueue = require('../../vendor/operations.js/src/queue').OperationQueue;
+var SiestaModel = require('./../object').SiestaModel;
+var extend = require('extend');
+var notificationCentre = require('./../notificationCentre').notificationCentre;
+
 var unmergedChanges = {};
 
-var util = siesta._internal.util
-    , _ = util._
-    , Operation = siesta._internal.Operation
-    , OperationQueue = siesta._internal.OperationQueue
-    , SiestaModel = siesta._internal.SiestaModel
-    , extend = siesta._internal.extend
-    , log = siesta._internal.log
-    , cache = siesta._internal.cache
-    , pouch = require('./pouch')
-    , ChangeType = siesta._internal.ChangeType
-    , RestError = siesta._internal.error.RestError
-    , defineSubProperty = siesta._internal.defineSubProperty
-;
+var log = require('../../vendor/operations.js/src/log');
+var cache = require('./../cache');
+var Logger = log.loggerWithName('changes');
 
-
-var Logger = log.loggerWithName('pouch changes');
 Logger.setLevel(log.Level.warn);
-
-
-function registerChange(opts) {
-    var collection = opts.collection;
-    var mapping = opts.mapping;
-    var _id = opts._id;
-    if (!mapping) throw new RestError('Must pass a mapping');
-    if (!collection) throw new RestError('Must pass a collection');
-    if (!_id) throw new RestError('Must pass a local identifier');
-    if (!unmergedChanges[collection.name]) {
-        unmergedChanges[collection.name] = {};
-    }
-    var collectionChanges = unmergedChanges[collection.name];
-    if (!collectionChanges[mapping.type]) {
-        collectionChanges[mapping.type] = {};
-    }
-    if (!collectionChanges[mapping.type][_id]) {
-        collectionChanges[mapping.type][_id] = [];
-    }
-    var objChanges = collectionChanges[mapping.type][_id];
-    var c = new Change(opts);
-    objChanges.push(c);
-}
-
-/**
- * Returns an array of all pending unmergedChanges.
- * @returns {Array}
- */
-function allChanges() {
-    var allChanges = [];
-    for (var collectionName in unmergedChanges) {
-        if (unmergedChanges.hasOwnProperty(collectionName)) {
-            var collectionChanges = unmergedChanges[collectionName];
-            for (var mappingName in collectionChanges) {
-                if (collectionChanges.hasOwnProperty(mappingName)) {
-                    var mappingChanges = collectionChanges[mappingName];
-                    for (var objectId in mappingChanges) {
-                        if (mappingChanges.hasOwnProperty(objectId)) {
-                            allChanges = allChanges.concat(mappingChanges[objectId]);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return allChanges;
-}
 
 /**
  * Used to ensure merge operation only finishes once all changes are made to the database.
@@ -455,9 +419,70 @@ function mergeChanges(callback) {
     }
 }
 
+function broadcast(collection, mapping, c) {
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '"');
+    notificationCentre.emit(collection, c);
+    var mappingNotif = collection + ':' + mapping;
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + mappingNotif + '"');
+    notificationCentre.emit(mappingNotif, c);
+    var genericNotif = 'Siesta';
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '"');
+    notificationCentre.emit(genericNotif, c);
+}
+/**
+ * Register that a change has been made.
+ * @param opts
+ */
+function registerChange(opts) {
+    var collection = opts.collection;
+    var mapping = opts.mapping;
+    var _id = opts._id;
+    if (!mapping) throw new RestError('Must pass a mapping');
+    if (!collection) throw new RestError('Must pass a collection');
+    if (!_id) throw new RestError('Must pass a local identifier');
+    if (!unmergedChanges[collection.name]) {
+        unmergedChanges[collection.name] = {};
+    }
+    var collectionChanges = unmergedChanges[collection.name];
+    if (!collectionChanges[mapping.type]) {
+        collectionChanges[mapping.type] = {};
+    }
+    if (!collectionChanges[mapping.type][_id]) {
+        collectionChanges[mapping.type][_id] = [];
+    }
+    var objChanges = collectionChanges[mapping.type][_id];
+    var c = new Change(opts);
+    objChanges.push(c);
+    broadcast(collection, mapping, c);
+}
 
-exports.registerChange = registerChange;
+
+/**
+ * Returns an array of all pending unmergedChanges.
+ * @returns {Array}
+ */
+function allChanges() {
+    var allChanges = [];
+    for (var collectionName in unmergedChanges) {
+        if (unmergedChanges.hasOwnProperty(collectionName)) {
+            var collectionChanges = unmergedChanges[collectionName];
+            for (var mappingName in collectionChanges) {
+                if (collectionChanges.hasOwnProperty(mappingName)) {
+                    var mappingChanges = collectionChanges[mappingName];
+                    for (var objectId in mappingChanges) {
+                        if (mappingChanges.hasOwnProperty(objectId)) {
+                            allChanges = allChanges.concat(mappingChanges[objectId]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return allChanges;
+}
+
 exports.Change = Change;
+exports.registerChange = registerChange;
 exports.mergeChanges = mergeChanges;
 exports.changesForIdentifier = changesForIdentifier;
 exports.resetChanges = function resetChanges() {

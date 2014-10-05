@@ -197,7 +197,7 @@ _.each = _.forEach = function (obj, iterator, context) {
 };
 
 // Return the results of applying the iterator to each element.
-// Delegates to **ECMAScript 5**'siesta native `map` if available.
+// Delegates to **ECMAScript 5**'s native `map` if available.
 _.map = _.collect = function (obj, iterator, context) {
     var results = [];
     if (obj == null) return results;
@@ -232,7 +232,7 @@ _.pluck = function (obj, key) {
 var reduceError = 'Reduce of empty array with no initial value';
 
 // **Reduce** builds up a single result from a list of values, aka `inject`,
-// or `foldl`. Delegates to **ECMAScript 5**'siesta native `reduce` if available.
+// or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
 _.reduce = _.foldl = _.inject = function (obj, iterator, memo, context) {
     var initial = arguments.length > 2;
     if (obj == null) obj = [];
@@ -272,7 +272,7 @@ var lookupIterator = function (value) {
     return _.property(value);
 };
 
-// Sort the object'siesta values by a criterion produced by an iterator.
+// Sort the object's values by a criterion produced by an iterator.
 _.sortBy = function (obj, iterator, context) {
     iterator = lookupIterator(iterator);
     return _.pluck(_.map(obj, function (value, index, list) {
@@ -295,7 +295,7 @@ _.sortBy = function (obj, iterator, context) {
 var ctor = function(){};
 
 // Create a function bound to a given object (assigning `this`, and arguments,
-// optionally). Delegates to **ECMAScript 5**'siesta native `Function.bind` if
+// optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
 // available.
 _.bind = function (func, context) {
     var args, bound;

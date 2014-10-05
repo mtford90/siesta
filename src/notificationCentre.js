@@ -1,9 +1,9 @@
 var EventEmitter = require('events').EventEmitter;
 var notificationCentre = new EventEmitter();
 var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
-var ChangeType = require('./changeType').ChangeType;
+var ChangeType = require('./pouch/changeType').ChangeType;
 var log = require('../vendor/operations.js/src/log');
-var changes = require('./changes');
+var changes = require('./pouch/changes');
 
 
 

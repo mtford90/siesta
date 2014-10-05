@@ -13,8 +13,8 @@ describe('pouch doc adapter', function () {
 
     var SiestaModel = require('../src/object').SiestaModel;
     var cache = require('../src/cache');
-    var changes = require('../src/changes');
-    var ChangeType = require('../src/changeType').ChangeType;
+    var changes = require('../src/pouch/changes');
+    var ChangeType = require('../src/pouch/changeType').ChangeType;
 
     beforeEach(function () {
         s.reset(true);

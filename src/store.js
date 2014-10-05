@@ -1,9 +1,11 @@
 var wrappedCallback = require('./misc').wrappedCallback;
+var PouchAdapter = require('./pouch/pouch');
+var Index = require('./pouch/index').Index;
 var RestError = require('./error').RestError;
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
-var ext = require('./ext');
+
 
 var util = require('./util');
 
@@ -32,14 +34,11 @@ function get(opts, callback) {
                     // Proxy onto getMultiple instead.
                     getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
                 }
-                else if (ext.storageEnabled) {
-                    ext.storage.pouch.getPouch().get(opts._id).then(function (doc) {
-                        var docs = ext.storage.pouch.toSiesta([doc]);
+                else {
+                    PouchAdapter.getPouch().get(opts._id).then(function (doc) {
+                        var docs = PouchAdapter.toSiesta([doc]);
                         if (callback) callback(null, docs.length ? docs[0] : null);
                     }, wrappedCallback(callback));
-                }
-                else {
-                    callback(null, null);
                 }
             }
         }
@@ -159,14 +158,14 @@ exports.getMultipleLocal = function (localIdentifiers, callback) {
         }
     }
 
-    if (ext.storageEnabled && results.notCached.length) {
-        ext.storage.pouch.getPouch().allDocs({keys: results.notCached, include_docs: true}, function (err, docs) {
+    if (results.notCached.length) {
+        PouchAdapter.getPouch().allDocs({keys: results.notCached, include_docs: true}, function (err, docs) {
             if (err) {
                 finish(err);
             }
             else {
                 var rows = _.pluck(docs.rows, 'doc');
-                var models = ext.storage.pouch.toSiesta(rows);
+                var models = PouchAdapter.toSiesta(rows);
                 _.each(models, function (m) {
                     if (m) {
                         results.cached[m._id] = m;
@@ -210,17 +209,16 @@ exports.getMultipleRemote = function (remoteIdentifiers, mapping, callback) {
         }
     }
 
-
-    if (ext.storageEnabled && results.notCached.length) {
-        var i = new ext.storage.index.Index(mapping.collection, mapping.type, [mapping.id]);
+    if (results.notCached.length) {
+        var i = new Index(mapping.collection, mapping.type, [mapping.id]);
         var name = i._getName();
-        ext.storage.pouch.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
+        PouchAdapter.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
             if (err) {
                 finish(err);
             }
             else {
                 var rows = _.pluck(docs.rows, 'doc');
-                var models = ext.storage.pouch.toSiesta(rows);
+                var models = PouchAdapter.toSiesta(rows);
                 _.each(models, function (model) {
                     var remoteId = model[mapping.id];
                     results.cached[remoteId] = model;

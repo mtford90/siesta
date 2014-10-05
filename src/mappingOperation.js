@@ -14,8 +14,8 @@ var cache = require('./cache');
 var util = require('./util');
 var _ = util._;
 var defineSubProperty = require('./misc').defineSubProperty;
-var changes = require('./changes');
-var ChangeType = require('./changeType').ChangeType;
+var changes = require('./pouch/changes');
+var ChangeType = require('./pouch/changeType').ChangeType;
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {
@@ -207,7 +207,7 @@ BulkMappingOperation.prototype._lookup = function (callback) {
                                 }
                                 else {
                                     self.objects[lookup.index] = self.mapping._new();
-                                    // It'siesta important that we map the remote identifier here to ensure that it ends
+                                    // It's important that we map the remote identifier here to ensure that it ends
                                     // up in the cache.
                                     self.objects[lookup.index][self.mapping.id] = remoteId;
                                 }

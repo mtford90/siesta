@@ -11,7 +11,7 @@
     var Logger = log.loggerWithName('HTTP');
     Logger.setLevel(log.Level.warn);
 
-    siesta.ext.httpEnabled = true;
+    siesta.httpEnabled = true;
 
     Collection.prototype._httpResponse = function (method, path) {
         var self = this;

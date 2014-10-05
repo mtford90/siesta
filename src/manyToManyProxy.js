@@ -4,11 +4,12 @@ var proxy = require('./proxy')
     , util = require('./util')
     , _ = util._
     , RestError = require('./error').RestError
-    , changes = require('./changes')
+    , changes = require('./pouch/changes')
     , SiestaModel = require('./object').SiestaModel
     , notificationCentre = require('./notificationCentre')
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , wrapArrayForAttributes = notificationCentre.wrapArray;
+    , wrapArrayForAttributes = notificationCentre.wrapArray
+    , ChangeType = require('./pouch/changeType').ChangeType;
 
 
 function ManyToManyProxy(opts) {

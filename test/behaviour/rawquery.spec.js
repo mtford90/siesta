@@ -1,4 +1,4 @@
-var siesta = require('../../index')
+var s = require('../../index')
     , assert = require('chai').assert;
 
 
@@ -10,7 +10,7 @@ describe('raw query behaviour', function () {
     var RawQuery = require('../../src/pouch/query').RawQuery;
 
     beforeEach(function () {
-        siesta.reset(true);
+        s.reset(true);
 
     });
 

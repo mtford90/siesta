@@ -3,8 +3,8 @@ var s = require('../index')
 
 describe('changes!', function () {
 
-    var sut = require('../src/changes');
-    var ChangeType = require('../src/changeType').ChangeType;
+    var sut = require('../src/pouch/changes');
+    var ChangeType = require('../src/pouch/changeType').ChangeType;
     var RelationshipType = require('../src/relationship').RelationshipType;
     var Change = sut.Change;
 
@@ -15,7 +15,7 @@ describe('changes!', function () {
     var Pouch = require('../src/pouch/pouch');
     var cache = require('../src/cache');
 
-    var changes = require('../src/changes');
+    var changes = require('../src/pouch/changes');
 
     var util = require('../src/util');
 

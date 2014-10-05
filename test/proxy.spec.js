@@ -13,8 +13,8 @@ describe('new object proxy', function () {
     var RestError = require('../src/error').RestError;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
-    var changes = require('../src/changes');
-    var ChangeType = require('../src/changeType').ChangeType;
+    var changes = require('../src/pouch/changes');
+    var ChangeType = require('../src/pouch/changeType').ChangeType;
 
     var carMapping, personMapping;
 
