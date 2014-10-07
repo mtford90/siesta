@@ -6,7 +6,6 @@ describe('changes!', function () {
     var sut = require('../src/pouch/changes');
     var ChangeType = require('../src/pouch/changeType').ChangeType;
     var RelationshipType = require('../src/relationship').RelationshipType;
-    var Change = sut.Change;
 
     var RestError = require('../src/error').RestError;
 
@@ -16,7 +15,9 @@ describe('changes!', function () {
     var cache = require('../src/cache');
 
     var changes = require('../src/pouch/changes');
+    var coreChanges = require('../src/changes');
 
+    var Change = coreChanges.Change;
     var util = require('../src/util');
 
     var collection, carMapping;

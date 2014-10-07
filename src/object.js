@@ -100,7 +100,6 @@ SiestaModel.prototype._dump = function (asJson) {
         return memo;
     }, cleanObj);
 
-
     return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
 };
 
@@ -119,6 +118,9 @@ SiestaModel.prototype.applyChanges = function () {
     }
 };
 
+SiestaModel.prototype.get = function (callback) {
+    if (callback) callback(null, this);
+};
 
 exports.SiestaModel = SiestaModel;
 exports.dumpSaveQueues = function () {

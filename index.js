@@ -56,7 +56,16 @@ siesta._internal = {
     DescriptorRegistry: DescriptorRegistry,
     log: log,
     Mapping: Mapping,
-    util: require('./src/util')
+    util: require('./src/util'),
+    error: require('./src/error'),
+    ChangeType: require('./src/pouch/changeType'),
+    object: require('./src/object'),
+    extend: require('extend'),
+    notificationCentre: require('./src/notificationCentre'),
+    cache: require('./src/cache'),
+    misc: require('./src/misc'),
+    Operation: Operation,
+    OperationQueue: OperationQueue
 };
 
 siesta.performanceMonitoringEnabled = false;

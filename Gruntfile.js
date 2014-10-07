@@ -30,7 +30,8 @@ module.exports = function (grunt) {
             },
             build: {
                 files: {
-                    '<%= build_dir %>/siesta.js': ['index.js']
+                    '<%= build_dir %>/siesta.js': ['index.js'],
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch2/pouch.js']
                 }
             },
             test: {

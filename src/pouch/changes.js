@@ -6,8 +6,6 @@
  * On siesta.save() all changes will be merged into the database.
  */
 
-var defineSubProperty = require('./../misc').defineSubProperty;
-
 var RestError = require('./../error').RestError;
 var ChangeType = require('./changeType').ChangeType;
 
@@ -19,7 +17,9 @@ var Operation = require('../../vendor/operations.js/src/operation').Operation;
 var OperationQueue = require('../../vendor/operations.js/src/queue').OperationQueue;
 var SiestaModel = require('./../object').SiestaModel;
 var extend = require('extend');
-var notificationCentre = require('./../notificationCentre').notificationCentre;
+
+var coreChanges = require('../changes');
+var Change = coreChanges.Change;
 
 var unmergedChanges = {};
 
@@ -37,7 +37,6 @@ Logger.setLevel(log.Level.warn);
  * @type {{}}
  */
 var waitingForObservations = {};
-
 /**
  * Populated by each merge operation that is currently executing. When all observations related to the merged changes
  * are received, this function is called, ending the merge operation.
@@ -78,41 +77,6 @@ mergeQueue.start();
  * @param opts
  * @constructor
  */
-function Change(opts) {
-    this._opts = opts;
-    if (!this._opts) {
-        this._opts = {};
-    }
-    defineSubProperty.call(this, 'collection', this._opts);
-    defineSubProperty.call(this, 'mapping', this._opts);
-    defineSubProperty.call(this, '_id', this._opts);
-    defineSubProperty.call(this, 'field', this._opts);
-    defineSubProperty.call(this, 'type', this._opts);
-    defineSubProperty.call(this, 'index', this._opts);
-    defineSubProperty.call(this, 'added', this._opts);
-    defineSubProperty.call(this, 'addedId', this._opts);
-    defineSubProperty.call(this, 'removed', this._opts);
-    defineSubProperty.call(this, 'removedId', this._opts);
-    defineSubProperty.call(this, 'new', this._opts);
-    defineSubProperty.call(this, 'newId', this._opts);
-    defineSubProperty.call(this, 'old', this._opts);
-    defineSubProperty.call(this, 'oldId', this._opts);
-}
-
-Change.prototype._dump = function (json) {
-    var dumped = {};
-    dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();
-    dumped.mapping = (typeof this.mapping) == 'string' ? this.mapping : this.mapping.type;
-    dumped._id = this._id;
-    dumped.field = this.field;
-    dumped.type = this.type;
-    if (this.index) dumped.index = this.index;
-    if (this.added) dumped.added = _.map(this.added, function (x) {return x._dump()});
-    if (this.removed) dumped.removed = _.map(this.removed, function (x) {return x._dump()});
-    if (this.old) dumped.old = this.old;
-    if (this.new) dumped.new = this.new;
-    return json ? JSON.stringify(dumped, null, 4) : dumped;
-};
 
 function arraysEqual(a, b) {
     if (a === b) return true;
@@ -168,6 +132,31 @@ function validateObject(obj) {
         throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + obj._id.toString() + '"');
     }
 }
+
+/**
+ * Register that a change has been made.
+ * @param opts
+ */
+function registerChange(opts) {
+    coreChanges.validateChange(opts);
+    var collection = opts.collection;
+    var mapping = opts.mapping;
+    var _id = opts._id;
+    if (!unmergedChanges[collection.name]) {
+        unmergedChanges[collection.name] = {};
+    }
+    var collectionChanges = unmergedChanges[collection.name];
+    if (!collectionChanges[mapping.type]) {
+        collectionChanges[mapping.type] = {};
+    }
+    if (!collectionChanges[mapping.type][_id]) {
+        collectionChanges[mapping.type][_id] = [];
+    }
+    var objChanges = collectionChanges[mapping.type][_id];
+    var c = coreChanges.registerChange(opts);
+    objChanges.push(c);
+}
+
 Change.prototype.apply = function (doc) {
     validateChange.call(this);
     validateObject.call(this, doc);
@@ -419,42 +408,7 @@ function mergeChanges(callback) {
     }
 }
 
-function broadcast(collection, mapping, c) {
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '"');
-    notificationCentre.emit(collection, c);
-    var mappingNotif = collection + ':' + mapping;
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + mappingNotif + '"');
-    notificationCentre.emit(mappingNotif, c);
-    var genericNotif = 'Siesta';
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '"');
-    notificationCentre.emit(genericNotif, c);
-}
-/**
- * Register that a change has been made.
- * @param opts
- */
-function registerChange(opts) {
-    var collection = opts.collection;
-    var mapping = opts.mapping;
-    var _id = opts._id;
-    if (!mapping) throw new RestError('Must pass a mapping');
-    if (!collection) throw new RestError('Must pass a collection');
-    if (!_id) throw new RestError('Must pass a local identifier');
-    if (!unmergedChanges[collection.name]) {
-        unmergedChanges[collection.name] = {};
-    }
-    var collectionChanges = unmergedChanges[collection.name];
-    if (!collectionChanges[mapping.type]) {
-        collectionChanges[mapping.type] = {};
-    }
-    if (!collectionChanges[mapping.type][_id]) {
-        collectionChanges[mapping.type][_id] = [];
-    }
-    var objChanges = collectionChanges[mapping.type][_id];
-    var c = new Change(opts);
-    objChanges.push(c);
-    broadcast(collection, mapping, c);
-}
+
 
 
 /**
@@ -481,7 +435,6 @@ function allChanges() {
     return allChanges;
 }
 
-exports.Change = Change;
 exports.registerChange = registerChange;
 exports.mergeChanges = mergeChanges;
 exports.changesForIdentifier = changesForIdentifier;
