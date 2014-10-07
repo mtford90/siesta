@@ -175,51 +175,102 @@ describe('generation of changes during array operations', function () {
                 collection.install(done);
             });
 
-            it('push', function (done) {
-                car = carMapping._new();
-                var anotherCar = carMapping._new();
-                person = personMapping._new();
-                person.cars = [car];
-                changes.resetChanges();
-                person.cars.push(anotherCar);
-                util.next(function () {
-                    assert.include(car.owners, person, 'original car should have owner');
-                    dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
-                    dump(person._dump(true));
-                    assert.include(anotherCar.owners, person, 'new car should have owner');
-                    var allChanges = changes.allChanges;
-                    assert.equal(allChanges.length, 2);
-                    var splicePredicate = function (x) {return x._id === person._id};
-                    var spliceChange = _.find(allChanges, splicePredicate);
-                    assert.equal(spliceChange.type, ChangeType.Splice);
-                    assert.include(spliceChange.added, anotherCar);
-                    assert.equal(spliceChange.index, 1);
-                    assert.equal(spliceChange.field, 'cars');
-                    done();
+            describe('no faults', function () {
+                it('push', function (done) {
+                    car = carMapping._new();
+                    var anotherCar = carMapping._new();
+                    person = personMapping._new();
+                    person.cars = [car];
+                    changes.resetChanges();
+                    person.cars.push(anotherCar);
+                    util.next(function () {
+                        assert.include(car.owners, person, 'original car should have owner');
+                        dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
+                        dump(person._dump(true));
+                        assert.include(anotherCar.owners, person, 'new car should have owner');
+                        var allChanges = changes.allChanges;
+                        assert.equal(allChanges.length, 2);
+                        var splicePredicate = function (x) {return x._id === person._id};
+                        var spliceChange = _.find(allChanges, splicePredicate);
+                        assert.equal(spliceChange.type, ChangeType.Splice);
+                        assert.include(spliceChange.added, anotherCar);
+                        assert.equal(spliceChange.index, 1);
+                        assert.equal(spliceChange.field, 'cars');
+                        done();
+                    });
+                });
+
+                it('splice', function (done) {
+                    car = carMapping._new();
+                    person = personMapping._new();
+                    person.cars = [car];
+                    changes.resetChanges();
+                    person.cars.splice(0, 1);
+                    util.next(function () {
+                        var allChanges = changes.allChanges;
+                        dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
+                        assert.equal(allChanges.length, 2);
+                        var personPred = function (x) {return x._id === person._id};
+                        var personChange = _.find(allChanges, personPred);
+                        var carPred = function (x) {return x._id === car._id};
+                        var carChange = _.find(allChanges, carPred);
+                        assert.include(personChange.removed, car);
+                        assert.notOk(car.ownersProxy._id.length);
+                        assert.notOk(car.ownersProxy.related.length);
+                        assert.equal(personChange.type, ChangeType.Splice);
+                        done();
+                    });
                 });
             });
 
-            it('splice', function (done) {
-                car = carMapping._new();
-                person = personMapping._new();
-                person.cars = [car];
-                changes.resetChanges();
-                person.cars.splice(0, 1);
-                util.next(function () {
-                    var allChanges = changes.allChanges;
-                    dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
-                    assert.equal(allChanges.length, 2);
-                    var personPred = function (x) {return x._id === person._id};
-                    var personChange = _.find(allChanges, personPred);
-                    var carPred = function (x) {return x._id === car._id};
-                    var carChange = _.find(allChanges, carPred);
-                    assert.include(personChange.removed, car);
-                    assert.notOk(car.ownersProxy._id.length);
-                    assert.notOk(car.ownersProxy.related.length);
-                    assert.equal(personChange.type, ChangeType.Splice);
-                    done();
+            describe('fault in the reverse', function () {
+                it('push', function (done) {
+                    car = carMapping._new();
+                    var anotherCar = carMapping._new();
+                    person = personMapping._new();
+                    person.cars = [car];
+                    changes.resetChanges();
+                    car.ownersProxy.related = null;
+                    person.cars.push(anotherCar);
+                    util.next(function () {
+                        dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
+                        dump(person._dump(true));
+                        var allChanges = changes.allChanges;
+                        assert.equal(allChanges.length, 2);
+                        var splicePredicate = function (x) {return x._id === person._id};
+                        var spliceChange = _.find(allChanges, splicePredicate);
+                        assert.equal(spliceChange.type, ChangeType.Splice);
+                        assert.include(spliceChange.addedId, anotherCar._id);
+                        assert.equal(spliceChange.index, 1);
+                        assert.equal(spliceChange.field, 'cars');
+                        done();
+                    });
+                });
+
+                it('splice', function (done) {
+                    car = carMapping._new();
+                    person = personMapping._new();
+                    person.cars = [car];
+                    changes.resetChanges();
+                    car.ownersProxy.related = null;
+                    person.cars.splice(0, 1);
+                    util.next(function () {
+                        var allChanges = changes.allChanges;
+                        dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
+                        assert.equal(allChanges.length, 2);
+                        var personPred = function (x) {return x._id === person._id};
+                        var personChange = _.find(allChanges, personPred);
+                        var carPred = function (x) {return x._id === car._id};
+                        var carChange = _.find(allChanges, carPred);
+                        assert.include(personChange.removed, car);
+                        assert.notOk(car.ownersProxy._id.length);
+                        assert.equal(personChange.type, ChangeType.Splice);
+                        done();
+                    });
                 });
             });
+
+
 
 
         });
