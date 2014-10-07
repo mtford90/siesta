@@ -234,7 +234,6 @@ function get(opts) {
 function insert(obj) {
     if (obj._id) {
         var collectionName = obj.mapping.collection;
-        dump('collectionName', collectionName);
         var mappingName = obj.mapping.type;
         if (!localCacheById[obj._id]) {
             if (Logger.debug.isEnabled)

@@ -7,6 +7,9 @@ var RestError = require('./error').RestError
     , changes = require('./pouch/changes')
     , Query = require('./query').Query
     , log = require('../vendor/operations.js/src/log')
+    , notificationCentre = require('./notificationCentre')
+    , wrapArrayForAttributes = notificationCentre.wrapArray
+    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./pouch/changeType').ChangeType;
 
 function Fault(proxy) {
@@ -91,6 +94,10 @@ function NewObjectProxy(opts) {
     });
 }
 
+NewObjectProxy.prototype._dump = function (asJson) {
+    var dumped = {};
+};
+
 NewObjectProxy.prototype.install = function (obj) {
     if (obj) {
         if (!this.object) {
@@ -140,6 +147,17 @@ NewObjectProxy.prototype.get = function (callback) {
 function getReverseProxyForObject(obj) {
     var reverseName = getReverseName.call(this);
     var proxyName = (reverseName + 'Proxy');
+    if (util.isArray(obj)) {
+        return _.pluck(obj, proxyName);
+    }
+    else {
+        return obj[proxyName];
+    }
+}
+
+function getForwardProxyForObject(obj) {
+    var forwardName = getForwardName.call(this);
+    var proxyName = forwardName + 'Proxy';
     if (util.isArray(obj)) {
         return _.pluck(obj, proxyName);
     }
@@ -233,7 +251,9 @@ function clearReverseRelated() {
             _.each(reverseProxies, function (p) {
                 if (util.isArray(p._id)) {
                     var idx = p._id.indexOf(self.object._id);
-                    splice.call(p, idx, 1);
+                    makeChangesToRelatedWithoutObservations.call(p, function () {
+                        splice.call(p, idx, 1);
+                    });
                 }
                 else {
                     set.call(p, null);
@@ -282,13 +302,28 @@ function clearReverseRelated() {
     }
 }
 
+function makeChangesToRelatedWithoutObservations(f) {
+    if (this.related) {
+        this.related.foreignKeyObserver.close();
+        this.related.foreignKeyObserver = null;
+        f();
+        wrapArray.call(this, this.related);
+    }
+    else {
+        // If there's a fault we can make changes anyway.
+        f();
+    }
+}
+
 function setReverse(obj) {
     var self = this;
     var reverseProxy = getReverseProxyForObject.call(this, obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
     _.each(reverseProxies, function (p) {
         if (util.isArray(p._id)) {
-            splice.call(p, p._id.length, 0, self.object);
+            makeChangesToRelatedWithoutObservations.call(p, function () {
+                splice.call(p, p._id.length, 0, self.object);
+            });
         }
         else {
             clearReverseRelated.call(p);
@@ -298,8 +333,10 @@ function setReverse(obj) {
 }
 
 function registerSetChange(obj) {
-    var mapping = this.object.mapping.type;
-    var coll = this.object.collection;
+    var proxyObject = this.object;
+    if (!proxyObject) throw RestError('Proxy must have an object associated');
+    var mapping = proxyObject.mapping.type;
+    var coll = proxyObject.collection;
     var newId;
     if (util.isArray(obj)) {
         newId = _.pluck(obj, '_id');
@@ -319,7 +356,7 @@ function registerSetChange(obj) {
     changes.registerChange({
         collection: coll,
         mapping: mapping,
-        _id: this.object._id,
+        _id: proxyObject._id,
         field: getForwardName.call(this),
         newId: newId,
         oldId: oldId,
@@ -340,16 +377,45 @@ function registerSpliceChange(idx, numRemove) {
         field: getForwardName.call(this),
         index: idx,
         removedId: this._id.slice(idx, idx+numRemove),
-        removed: this.related ? this.related.slice(idx, idx+numRemove) : null,
+        removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
         addedId: add.length ? _.pluck(add, '_id') : [],
         added: add.length ? add : [],
         type: ChangeType.Splice
     });
 }
 
+
+
+function wrapArray(arr) {
+    var self = this;
+    wrapArrayForAttributes(arr, this.reverseName, this.object);
+    if (!arr.foreignKeyObserver) {
+        arr.foreignKeyObserver = new ArrayObserver(arr);
+        var observerFunction = function (splices) {
+            splices.forEach(function (splice) {
+                var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
+                var mapping = getForwardMapping.call(self);
+                changes.registerChange({
+                    collection: mapping.collection,
+                    mapping: mapping,
+                    _id: self.object._id,
+                    field: getForwardName.call(self),
+                    removed: splice.removed,
+                    added: added,
+                    removedId: _.pluck(splice.removed, '_id'),
+                    addedId: _.pluck(splice.added, '_id'),
+                    type: ChangeType.Splice
+                });
+            });
+        };
+        arr.foreignKeyObserver.open(observerFunction);
+    }
+}
+
 exports.NewObjectProxy = NewObjectProxy;
 exports.Fault = Fault;
 exports.getReverseProxyForObject = getReverseProxyForObject;
+exports.getForwardProxyForObject = getForwardProxyForObject;
 exports.getReverseName = getReverseName;
 exports.getForwardName = getForwardName;
 exports.getReverseMapping = getReverseMapping;
@@ -361,3 +427,6 @@ exports.splice = splice;
 exports.clearReverseRelated = clearReverseRelated;
 exports.setReverse = setReverse;
 exports.objAsString = objAsString;
+exports.wrapArray = wrapArray;
+exports.registerSpliceChange = registerSpliceChange;
+exports.makeChangesToRelatedWithoutObservations = makeChangesToRelatedWithoutObservations;

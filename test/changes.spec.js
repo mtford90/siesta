@@ -183,7 +183,6 @@ describe('changes!', function () {
                 });
             })
         });
-
         describe('splice', function () {
 
             beforeEach(function (done) {
@@ -257,7 +256,6 @@ describe('changes!', function () {
                 });
             });
         });
-
         describe('remove', function () {
             it('works', function () {
                 var obj = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});

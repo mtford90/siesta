@@ -7,9 +7,8 @@ var proxy = require('./proxy')
     , changes = require('./pouch/changes')
     , SiestaModel = require('./object').SiestaModel
     , notificationCentre = require('./notificationCentre')
-    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , broadcast = notificationCentre.broadcast
     , wrapArrayForAttributes = notificationCentre.wrapArray
+    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./pouch/changeType').ChangeType;
 
 
@@ -72,6 +71,25 @@ function ForeignKeyProxy(opts) {
 
 ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
+
+
+
+function clearReverse(removed) {
+    var self = this;
+    _.each(removed, function (removedObject) {
+        var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
+        proxy.set.call(reverseProxy, null);
+    });
+}
+
+function setReverse(added) {
+    var self = this;
+    _.each(added, function (added) {
+        var forwardProxy = proxy.getReverseProxyForObject.call(self, added);
+        proxy.set.call(forwardProxy, self.object);
+    });
+}
+
 function wrapArray(arr) {
     var self = this;
     wrapArrayForAttributes(arr, this.reverseName, this.object);
@@ -79,42 +97,35 @@ function wrapArray(arr) {
         arr.foreignKeyObserver = new ArrayObserver(arr);
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
-//                var added = [];
-//                var numAdded = splice.addedCount;
-//                var idx = splice.index;
-//                for (var i = idx; i < idx + numAdded; i++) {
-//                    added.push(self.related[i]);
-//                }
-//                self._applyReverseOfSplice(splice.removed, added);
-//                splices.forEach(function (splice) {
-//                    // TODO: Register changes.
-////                    broadcast(self.object, {
-////                        field: self.reverseName,
-////                        type: ChangeType.Splice,
-////                        index: splice.index,
-////                        addedCount: splice.addedCount,
-////                        removed: splice.removed
-////                    });
-//                });
+                var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
+                var removed = splice.removed;
+                clearReverse.call(self, removed);
+                setReverse.call(self, added);
+                var mapping = proxy.getForwardMapping.call(self);
+                changes.registerChange({
+                    collection: mapping.collection,
+                    mapping: mapping,
+                    _id: self.object._id,
+                    field: proxy.getForwardName.call(self),
+                    removed: removed,
+                    added: added,
+                    removedId: _.pluck(removed, '_id'),
+                    addedId: _.pluck(splice.added, '_id'),
+                    type: ChangeType.Splice,
+                    index: splice.index
+                });
             });
         };
         arr.foreignKeyObserver.open(observerFunction);
     }
 }
 
-function makeChangesToRelatedWithoutObservations(f) {
-    this.related.foreignKeyObserver.close();
-    this.related.foreignKeyObserver = null;
-    f();
-    wrapArray.call(this, this.related);
-}
 
 ForeignKeyProxy.prototype.get = function (callback) {
     var self = this;
     if (this.isFault) {
         if (this._id.length) {
             var storeOpts = {_id: this._id};
-            dump(storeOpts);
             Store.get(storeOpts, function (err, stored) {
                 if (err) {
                     if (callback) callback(err);
@@ -123,7 +134,7 @@ ForeignKeyProxy.prototype.get = function (callback) {
                     self.related = stored;
                     if (callback) callback(null, stored);
                 }
-            })
+            });
         }
         else if (callback) {
             callback(null, this.related);
@@ -154,9 +165,7 @@ function validate(obj) {
 }
 
 
-
 ForeignKeyProxy.prototype.set = function (obj) {
-//    dump(proxy.objAsString(this.object) + ': ' +  proxy.getForwardName.call(this) + '=' + proxy.objAsString(obj));
     proxy.checkInstalled.call(this);
     var self = this;
     if (obj) {
@@ -178,7 +187,6 @@ ForeignKeyProxy.prototype.set = function (obj) {
         proxy.set.call(self, obj);
     }
 };
-
 
 ForeignKeyProxy.prototype.install = function (obj) {
     NewObjectProxy.prototype.install.call(this, obj);

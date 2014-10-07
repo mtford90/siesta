@@ -29,9 +29,7 @@ var OneToOneProxy = require('./oneToOneProxy').OneToOneProxy;
 var ManyToManyProxy = require('./manyToManyProxy').ManyToManyProxy;
 
 var util = require('./util');
-
 var _ = util._;
-
 
 function Mapping(opts) {
     var self = this;
@@ -449,12 +447,7 @@ Mapping.prototype._dump = function (asJSON) {
     dumped.id = this.id;
     dumped.collection = this.collection;
     dumped.relationships = _.map(this.relationships, function (r) {
-        if (r.isForward(this)) {
-            return r.name;
-        }
-        else {
-            return r.reverseName;
-        }
+        return r.isForward ? r.forwardName : r.reverseName;
     });
     return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
 };
@@ -462,7 +455,6 @@ Mapping.prototype._dump = function (asJSON) {
 Mapping.prototype.toString = function () {
     return 'Mapping[' + this.type + ']';
 };
-
 
 /**
  * A subclass of RestError specifcally for errors that occur during mapping.

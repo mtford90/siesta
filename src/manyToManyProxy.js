@@ -5,10 +5,10 @@ var proxy = require('./proxy')
     , _ = util._
     , RestError = require('./error').RestError
     , changes = require('./pouch/changes')
-    , SiestaModel = require('./object').SiestaModel
     , notificationCentre = require('./notificationCentre')
-    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , wrapArrayForAttributes = notificationCentre.wrapArray
+    , SiestaModel = require('./object').SiestaModel
+    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./pouch/changeType').ChangeType;
 
 
@@ -37,10 +37,29 @@ function ManyToManyProxy(opts) {
         }
     });
     this._reverseIsArray = true;
-    this._forwardIsArray = true;
 }
 
-ManyToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
+
+function clearReverse(removed) {
+    var self = this;
+    _.each(removed, function (removedObject) {
+        var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
+        var idx = reverseProxy._id.indexOf(self.object._id);
+        proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function (){
+            proxy.splice.call(reverseProxy, idx, 1);
+        });
+    });
+}
+
+function setReverse(added) {
+    var self = this;
+    _.each(added, function (addedObject) {
+        var reverseProxy = proxy.getReverseProxyForObject.call(self, addedObject);
+        proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function (){
+            proxy.splice.call(reverseProxy, 0, 0, self.object);
+        });
+    });
+}
 
 function wrapArray(arr) {
     var self = this;
@@ -49,27 +68,30 @@ function wrapArray(arr) {
         arr.foreignKeyObserver = new ArrayObserver(arr);
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
-//                var added = [];
-//                var numAdded = splice.addedCount;
-//                var idx = splice.index;
-//                for (var i = idx; i < idx + numAdded; i++) {
-//                    added.push(self.related[i]);
-//                }
-////                self._applyReverseOfSplice(splice.removed, added);
-//                splices.forEach(function (splice) {
-//                    broadcast(self.object, {
-//                        field: self.reverseName,
-//                        type: ChangeType.Splice,
-//                        index: splice.index,
-//                        addedCount: splice.addedCount,
-//                        removed: splice.removed
-//                    });
-//                });
+                var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
+                var removed = splice.removed;
+                clearReverse.call(self, removed);
+                setReverse.call(self, added);
+                var mapping = proxy.getForwardMapping.call(self);
+                changes.registerChange({
+                    collection: mapping.collection,
+                    mapping: mapping,
+                    _id: self.object._id,
+                    field: proxy.getForwardName.call(self),
+                    removed: removed,
+                    added: added,
+                    removedId: _.pluck(removed, '_id'),
+                    addedId: _.pluck(splice.added, '_id'),
+                    type: ChangeType.Splice,
+                    index: splice.index
+                });
             });
         };
         arr.foreignKeyObserver.open(observerFunction);
     }
 }
+
+ManyToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 ManyToManyProxy.prototype.get = function (callback) {
     var self = this;
@@ -107,7 +129,7 @@ ManyToManyProxy.prototype.set = function (obj) {
         else {
             proxy.clearReverseRelated.call(this);
             proxy.set.call(self, obj);
-            wrapArray.call(self.related, obj);
+            wrapArray.call(self, obj);
             proxy.setReverse.call(self, obj);
         }
     }

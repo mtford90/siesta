@@ -712,7 +712,6 @@ describe('new object proxy', function () {
                 personProxy.install(person);
                 personProxy.isFault = false;
             });
-
             describe('none pre-existing', function () {
 
                 describe('forward', function () {
@@ -767,8 +766,6 @@ describe('new object proxy', function () {
                     });
                 });
             });
-
-
             describe('pre-existing', function () {
 
                 var anotherPerson, anotherPersonProxy;
@@ -789,14 +786,10 @@ describe('new object proxy', function () {
                     cache.insert(car);
                 });
 
-
                 describe('no fault', function () {
-
-
                     beforeEach(function () {
                         car.owner = anotherPerson;
                     });
-
                     describe('forward', function () {
                         it('should set forward', function () {
                             car.owner = person;
@@ -885,7 +878,6 @@ describe('new object proxy', function () {
                         });
 
                     });
-
                     describe('backwards', function () {
                         it('should set forward', function () {
                             person.cars = [car];
@@ -1062,7 +1054,6 @@ describe('new object proxy', function () {
                         });
 
                     });
-
                     describe('backwards', function () {
                         it('should set forward', function () {
                             person.cars = [car];
@@ -1146,13 +1137,12 @@ describe('new object proxy', function () {
                         });
 
                     });
-
                 });
 
 
             });
+        });
 
-        })
 
 
     });

@@ -255,7 +255,6 @@ describe('intercollection relationships', function () {
                         assert.ok(user);
                         assert.equal(user.userId, userId);
                         var proxy = user.photosProxy;
-                        dump(proxy._id);
                         proxy.get(function (err, photos) {
                             if (err) done(err);
                             assert.equal(photos ? photos.length : 0, numPhotos);

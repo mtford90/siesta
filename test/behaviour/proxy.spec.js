@@ -48,7 +48,6 @@ describe('proxy integration', function () {
                 if (err) done(err);
                 cache.reset();
                 personMapping.get(2, function (err, p) {
-                    dump(p.cars);
                     var proxy = p.carsProxy;
                     assert.ok(p.cars.isFault);
                     p.carsProxy.get(function (err, cars) {
