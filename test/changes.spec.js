@@ -4,7 +4,7 @@ var s = require('../index')
 describe('changes!', function () {
 
     var sut = require('../src/pouch/changes');
-    var ChangeType = require('../src/pouch/changeType').ChangeType;
+    var ChangeType = require('../src/changes').ChangeType;
     var RelationshipType = require('../src/relationship').RelationshipType;
 
     var RestError = require('../src/error').RestError;

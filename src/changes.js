@@ -6,6 +6,12 @@ var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);
 
+var ChangeType = {
+    Set: 'Set',
+    Splice: 'Splice',
+    Remove: 'Remove'
+};
+
 /**
  * Represents an individual change.
  * @param opts
@@ -85,3 +91,4 @@ function registerChange(opts) {
 exports.Change = Change;
 exports.registerChange = registerChange;
 exports.validateChange = validateChange;
+exports.ChangeType = ChangeType;

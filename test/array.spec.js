@@ -9,7 +9,7 @@ describe('generation of changes during array operations', function () {
 
     var Collection = require('../src/collection').Collection;
     var changes = require('../src/pouch/changes');
-    var ChangeType = require('../src/pouch/changeType').ChangeType;
+    var ChangeType = require('../src/changes').ChangeType;
     var RelationshipType = require('../src/relationship').RelationshipType;
     var util = require('../src/util');
 

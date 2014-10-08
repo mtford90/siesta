@@ -10,7 +10,7 @@ var RestError = require('./error').RestError
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./pouch/changeType').ChangeType;
+    , ChangeType = require('./changes').ChangeType;
 
 function Fault(proxy) {
     var self = this;

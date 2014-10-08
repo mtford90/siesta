@@ -58,14 +58,17 @@ siesta._internal = {
     Mapping: Mapping,
     util: require('./src/util'),
     error: require('./src/error'),
-    ChangeType: require('./src/pouch/changeType'),
+//    ChangeType: require('./src/changes').ChangeType,
+    ChangeType: require('./src/changes').ChangeType,
     object: require('./src/object'),
     extend: require('extend'),
     notificationCentre: require('./src/notificationCentre'),
     cache: require('./src/cache'),
     misc: require('./src/misc'),
     Operation: Operation,
-    OperationQueue: OperationQueue
+    OperationQueue: OperationQueue,
+    coreChanges: require('./src/changes'),
+    CollectionRegistry: require('./src/collectionRegistry').CollectionRegistry
 };
 
 siesta.performanceMonitoringEnabled = false;

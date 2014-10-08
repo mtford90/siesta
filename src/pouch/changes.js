@@ -7,7 +7,6 @@
  */
 
 var RestError = require('./../error').RestError;
-var ChangeType = require('./changeType').ChangeType;
 
 var pouch = require('./pouch');
 
@@ -20,14 +19,16 @@ var extend = require('extend');
 
 var coreChanges = require('../changes');
 var Change = coreChanges.Change;
+var ChangeType = coreChanges.ChangeType;
 
-var unmergedChanges = {};
 
 var log = require('../../vendor/operations.js/src/log');
 var cache = require('./../cache');
-var Logger = log.loggerWithName('changes');
 
+var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);
+
+var unmergedChanges = {};
 
 /**
  * Used to ensure merge operation only finishes once all changes are made to the database.
@@ -72,11 +73,7 @@ var mergeQueue = new OperationQueue('Merge Queue');
 mergeQueue.maxConcurrentOperations = 1;
 mergeQueue.start();
 
-/**
- * Represents an individual change.
- * @param opts
- * @constructor
- */
+
 
 function arraysEqual(a, b) {
     if (a === b) return true;

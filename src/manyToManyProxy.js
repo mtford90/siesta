@@ -9,7 +9,7 @@ var proxy = require('./proxy')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , SiestaModel = require('./object').SiestaModel
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./pouch/changeType').ChangeType;
+    , ChangeType = require('./changes').ChangeType;
 
 
 function ManyToManyProxy(opts) {

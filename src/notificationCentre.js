@@ -1,7 +1,8 @@
 var EventEmitter = require('events').EventEmitter;
 var notificationCentre = new EventEmitter();
 var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
-var ChangeType = require('./pouch/changeType').ChangeType;
+var coreChanges = require('./changes');
+var ChangeType = coreChanges.ChangeType;
 var log = require('../vendor/operations.js/src/log');
 var changes = require('./pouch/changes');
 
@@ -24,6 +25,7 @@ function wrapArray(array, field, siestaModel) {
             var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
+                    dump('ChangeType', coreChanges);
                     changes.registerChange({
                         collection: siestaModel.collection,
                         mapping: siestaModel.mapping.type,
@@ -31,7 +33,7 @@ function wrapArray(array, field, siestaModel) {
                         index: splice.index,
                         removed: splice.removed,
                         added: splice.addedCount ? array.slice(splice.index, splice.index+splice.addedCount) : [],
-                        type: ChangeType.Splice,
+                        type: coreChanges.ChangeType.Splice,
                         field: field
                     });
                 });
@@ -40,6 +42,8 @@ function wrapArray(array, field, siestaModel) {
         array.isFault = false;
     }
 }
+
+
 
 exports.notificationCentre = notificationCentre;
 exports.wrapArray = wrapArray;

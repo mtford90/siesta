@@ -9,7 +9,7 @@ var proxy = require('./proxy')
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./pouch/changeType').ChangeType;
+    , ChangeType = require('./changes').ChangeType;
 
 
 function ForeignKeyProxy(opts) {
@@ -102,6 +102,8 @@ function wrapArray(arr) {
                 clearReverse.call(self, removed);
                 setReverse.call(self, added);
                 var mapping = proxy.getForwardMapping.call(self);
+
+                dump(1);
                 changes.registerChange({
                     collection: mapping.collection,
                     mapping: mapping,

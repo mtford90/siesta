@@ -21,7 +21,7 @@ var store = require('./store');
 var changes = require('./pouch/changes');
 
 
-var ChangeType = require('./pouch/changeType').ChangeType;
+var ChangeType = require('./changes').ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;
 
 var ForeignKeyProxy = require('./foreignKeyProxy').ForeignKeyProxy;

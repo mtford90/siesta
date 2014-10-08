@@ -14,7 +14,7 @@ describe('new object proxy', function () {
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
     var changes = require('../src/pouch/changes');
-    var ChangeType = require('../src/pouch/changeType').ChangeType;
+    var ChangeType = require('../src/changes').ChangeType;
 
     var carMapping, personMapping;
 
