@@ -4,7 +4,6 @@ var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 var coreChanges = require('./changes');
 var ChangeType = coreChanges.ChangeType;
 var log = require('../vendor/operations.js/src/log');
-var changes = require('./pouch/changes');
 
 
 
@@ -26,7 +25,7 @@ function wrapArray(array, field, siestaModel) {
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
                     dump('ChangeType', coreChanges);
-                    changes.registerChange({
+                    coreChanges.registerChange({
                         collection: siestaModel.collection,
                         mapping: siestaModel.mapping.type,
                         _id: siestaModel._id,

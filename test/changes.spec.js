@@ -37,7 +37,7 @@ describe('changes!', function () {
         });
 
         it('registers a change', function () {
-            sut.registerChange({
+            coreChanges.registerChange({
                 collection: collection,
                 mapping: carMapping,
                 _id: 'xyz'
@@ -54,7 +54,7 @@ describe('changes!', function () {
             it('should throw an error if no mapping', function () {
                 assert.throws(
                     function () {
-                        sut.registerChange({
+                        coreChanges.registerChange({
                             collection: collection,
                             _id: 'xyz'
                         })
@@ -65,7 +65,7 @@ describe('changes!', function () {
             it('should throw an error if no collection', function () {
                 assert.throws(
                     function () {
-                        sut.registerChange({
+                        coreChanges.registerChange({
                             mapping: carMapping,
                             _id: 'xyz'
                         })
@@ -76,7 +76,7 @@ describe('changes!', function () {
             it('should throw an error if no _id', function () {
                 assert.throws(
                     function () {
-                        sut.registerChange({
+                        coreChanges.registerChange({
                             mapping: carMapping,
                             collection: collection
                         })

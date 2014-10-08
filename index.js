@@ -10,12 +10,12 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
-    , changes = require('./src/pouch/changes')
     , _ = require('./src/util')._;
 
 Operation.logLevel = log.Level.warn;
 OperationQueue.logLevel = log.Level.warn;
 
+var changes = require('./src/pouch/changes');
 
 var siesta;
 if (typeof module != 'undefined') {

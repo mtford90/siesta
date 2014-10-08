@@ -18,10 +18,9 @@ var cache = require('./cache');
 
 var store = require('./store');
 
-var changes = require('./pouch/changes');
 
-
-var ChangeType = require('./changes').ChangeType;
+var coreChanges = require('./changes');
+var ChangeType = coreChanges.ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;
 
 var ForeignKeyProxy = require('./foreignKeyProxy').ForeignKeyProxy;
@@ -368,7 +367,7 @@ Mapping.prototype._new = function (data) {
                 set: function (v) {
                     var old = newModel.__values[field];
                     newModel.__values[field] = v;
-                    changes.registerChange({
+                    coreChanges.registerChange({
                         collection: self.collection,
                         mapping: self.type,
                         _id: newModel._id,
@@ -393,7 +392,7 @@ Mapping.prototype._new = function (data) {
             set: function (v) {
                 var old = newModel[self.id];
                 newModel.__values[self.id] = v;
-                changes.registerChange({
+                coreChanges.registerChange({
                     collection: self.collection,
                     mapping: self.type,
                     _id: newModel._id,

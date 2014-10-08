@@ -4,13 +4,13 @@ var RestError = require('./error').RestError
     , Operation = require('../vendor/operations.js/src/operation').Operation
     , util = require('./util')
     , _ = util._
-    , changes = require('./pouch/changes')
     , Query = require('./query').Query
     , log = require('../vendor/operations.js/src/log')
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./changes').ChangeType;
+    , coreChanges = require('./changes')
+    , ChangeType = coreChanges.ChangeType;
 
 function Fault(proxy) {
     var self = this;
@@ -238,6 +238,7 @@ function objAsString(obj) {
             return 'null';
         }
     }
+
     if (util.isArray(obj)) return _.map(_objAsString, obj).join(', ');
     return _objAsString(obj);
 }
@@ -268,7 +269,7 @@ function clearReverseRelated() {
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
                 _.each(identifiers, function (_id) {
-                    changes.registerChange({
+                    coreChanges.registerChange({
                         collection: reverseMapping.collection,
                         mapping: reverseMapping.type,
                         _id: _id,
@@ -281,7 +282,7 @@ function clearReverseRelated() {
             }
             else {
                 _.each(identifiers, function (_id) {
-                    changes.registerChange({
+                    coreChanges.registerChange({
                         collection: reverseMapping.collection,
                         mapping: reverseMapping.type,
                         _id: _id,
@@ -353,7 +354,7 @@ function registerSetChange(obj) {
     if (util.isArray(old) && !old.length) {
         old = null;
     }
-    changes.registerChange({
+    coreChanges.registerChange({
         collection: coll,
         mapping: mapping,
         _id: proxyObject._id,
@@ -370,20 +371,19 @@ function registerSpliceChange(idx, numRemove) {
     var add = Array.prototype.slice.call(arguments, 2);
     var mapping = this.object.mapping.type;
     var coll = this.object.collection;
-    changes.registerChange({
+    coreChanges.registerChange({
         collection: coll,
         mapping: mapping,
         _id: this.object._id,
         field: getForwardName.call(this),
         index: idx,
-        removedId: this._id.slice(idx, idx+numRemove),
+        removedId: this._id.slice(idx, idx + numRemove),
         removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
         addedId: add.length ? _.pluck(add, '_id') : [],
         added: add.length ? add : [],
         type: ChangeType.Splice
     });
 }
-
 
 
 function wrapArray(arr) {
@@ -395,7 +395,7 @@ function wrapArray(arr) {
             splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                 var mapping = getForwardMapping.call(self);
-                changes.registerChange({
+                coreChanges.registerChange({
                     collection: mapping.collection,
                     mapping: mapping,
                     _id: self.object._id,

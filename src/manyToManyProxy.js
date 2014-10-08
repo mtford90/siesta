@@ -4,7 +4,7 @@ var proxy = require('./proxy')
     , util = require('./util')
     , _ = util._
     , RestError = require('./error').RestError
-    , changes = require('./pouch/changes')
+    , coreChanges = require('./changes')
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , SiestaModel = require('./object').SiestaModel
@@ -73,7 +73,7 @@ function wrapArray(arr) {
                 clearReverse.call(self, removed);
                 setReverse.call(self, added);
                 var mapping = proxy.getForwardMapping.call(self);
-                changes.registerChange({
+                coreChanges.registerChange({
                     collection: mapping.collection,
                     mapping: mapping,
                     _id: self.object._id,

@@ -14,7 +14,8 @@ describe('pouch doc adapter', function () {
     var SiestaModel = require('../src/object').SiestaModel;
     var cache = require('../src/cache');
     var changes = require('../src/pouch/changes');
-    var ChangeType = require('../src/changes').ChangeType;
+    var coreChanges = require('../src/changes');
+    var ChangeType = coreChanges.ChangeType;
 
     beforeEach(function () {
         s.reset(true);
@@ -175,7 +176,7 @@ describe('pouch doc adapter', function () {
                 Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
                     doc._rev = resp.rev;
-                    changes.registerChange({
+                    coreChanges.registerChange({
                         collection: collection._name,
                         mapping: carMapping.type,
                         field: 'colour',
@@ -184,7 +185,7 @@ describe('pouch doc adapter', function () {
                         old: 'red',
                         _id: 'localId'
                     });
-                    changes.registerChange({
+                    coreChanges.registerChange({
                         collection: collection._name,
                         mapping: carMapping.type,
                         field: 'name',

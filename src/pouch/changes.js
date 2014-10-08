@@ -130,11 +130,9 @@ function validateObject(obj) {
     }
 }
 
-/**
- * Register that a change has been made.
- * @param opts
- */
-function registerChange(opts) {
+var oldRegisterChange = coreChanges.registerChange;
+
+coreChanges.registerChange = function (opts) {
     coreChanges.validateChange(opts);
     var collection = opts.collection;
     var mapping = opts.mapping;
@@ -150,9 +148,9 @@ function registerChange(opts) {
         collectionChanges[mapping.type][_id] = [];
     }
     var objChanges = collectionChanges[mapping.type][_id];
-    var c = coreChanges.registerChange(opts);
+    var c = oldRegisterChange(opts);
     objChanges.push(c);
-}
+};
 
 Change.prototype.apply = function (doc) {
     validateChange.call(this);
@@ -432,7 +430,6 @@ function allChanges() {
     return allChanges;
 }
 
-exports.registerChange = registerChange;
 exports.mergeChanges = mergeChanges;
 exports.changesForIdentifier = changesForIdentifier;
 exports.resetChanges = function resetChanges() {
