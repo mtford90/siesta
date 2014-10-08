@@ -56,9 +56,9 @@ siesta._internal = {
     DescriptorRegistry: DescriptorRegistry,
     log: log,
     Mapping: Mapping,
+    mapping: require('./src/mapping'),
     util: require('./src/util'),
     error: require('./src/error'),
-//    ChangeType: require('./src/changes').ChangeType,
     ChangeType: require('./src/changes').ChangeType,
     object: require('./src/object'),
     extend: require('extend'),
@@ -78,6 +78,7 @@ siesta.storageEnabled = false;
 siesta.collection = function (name, opts) {
     return new Collection(name, opts);
 };
+
 
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {

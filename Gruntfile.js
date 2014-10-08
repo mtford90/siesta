@@ -31,12 +31,13 @@ module.exports = function (grunt) {
             build: {
                 files: {
                     '<%= build_dir %>/siesta.js': ['index.js'],
-                    '<%= build_dir %>/siesta.storage.js': ['src/pouch2/pouch.js']
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch2/storage.js']
                 }
             },
             test: {
                 files: {
-                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js']
+                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch2/storage.js']
                 }
             }
         },
@@ -97,7 +98,8 @@ module.exports = function (grunt) {
                 files: {
                     '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js',
                     '<%= build_dir %>/siesta.http.min.js': '<%= build_dir %>/siesta.http.js',
-                    '<%= build_dir %>/siesta.perf.min.js': '<%= build_dir %>/siesta.perf.js'
+                    '<%= build_dir %>/siesta.perf.min.js': '<%= build_dir %>/siesta.perf.js',
+                    '<%= build_dir %>/siesta.storage.min.js': '<%= build_dir %>/siesta.storage.js'
                 }
             }
         },
@@ -213,7 +215,6 @@ module.exports = function (grunt) {
         'karmaconfig',
         'karma:continuous'
     ]);
-
 
     grunt.registerTask('compile', [
         'browserify:build',

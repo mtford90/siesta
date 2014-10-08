@@ -1,5 +1,3 @@
-
-
 var log = require('../../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Pouch');
 Logger.setLevel(log.Level.warn);
@@ -67,6 +65,7 @@ function configureChangeEmitter() {
         changeEmitter.on(POUCH_EVENT, o);
     });
 }
+
 function _reset(inMemory) {
     var dbName = guid();
     if (inMemory) {
@@ -148,7 +147,6 @@ function toNew(doc) {
     return obj;
 }
 
-
 function toSiesta(docs) {
     var mapped = [];
     for (var i = 0; i < docs.length; i++) {
@@ -218,7 +216,6 @@ exports.addObserver = function (o) {
     changeObservers.push(o);
     changeEmitter.on(POUCH_EVENT, o);
 };
-
 exports.removeObserver = function (o) {
     var idx = changeObservers.indexOf(o);
     if (idx > -1) {
