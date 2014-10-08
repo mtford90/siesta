@@ -1,7 +1,7 @@
 var s = require('../index')
     , assert = require('./util').assert;
 
-describe('changes!', function () {
+describe.only('changes!', function () {
 
     var sut = require('../src/pouch/changes');
     var ChangeType = require('../src/changes').ChangeType;
@@ -894,7 +894,7 @@ describe('changes!', function () {
 
         });
 
-    })
+    });
 
     describe('save', function () {
 

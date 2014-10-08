@@ -6,6 +6,17 @@
  * On siesta.save() all changes will be merged into the database.
  */
 
+
+//var index = require('../../index');
+//dump(index);
+//var oldReset = index.siesta.reset;
+//
+//
+//index.siesta.reset = function () {
+//    resetChanges();
+//    oldReset.apply(oldReset, arguments);
+//};
+
 var RestError = require('./../error').RestError;
 
 var pouch = require('./pouch');
@@ -403,9 +414,6 @@ function mergeChanges(callback) {
     }
 }
 
-
-
-
 /**
  * Returns an array of all pending unmergedChanges.
  * @returns {Array}
@@ -430,11 +438,13 @@ function allChanges() {
     return allChanges;
 }
 
+function resetChanges() {
+    unmergedChanges = {};
+}
+
 exports.mergeChanges = mergeChanges;
 exports.changesForIdentifier = changesForIdentifier;
-exports.resetChanges = function resetChanges() {
-    unmergedChanges = {};
-};
+exports.resetChanges = resetChanges;
 
 // Use defineProperty so that we can inject unmergedChanges for testing.
 Object.defineProperty(exports, 'changes', {

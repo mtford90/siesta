@@ -1,3 +1,4 @@
+
 var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , DescriptorRegistry = require('./src/descriptorRegistry').DescriptorRegistry
     , Collection = require('./src/collection').Collection
@@ -11,6 +12,8 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
     , _ = require('./src/util')._;
+
+
 
 Operation.logLevel = log.Level.warn;
 OperationQueue.logLevel = log.Level.warn;
@@ -33,12 +36,13 @@ siesta.reset = function (inMemory, callback) {
     cache.reset();
     CollectionRegistry.reset();
     DescriptorRegistry.reset();
-    //noinspection JSAccessibilityCheck
     changes.resetChanges();
+    //noinspection JSAccessibilityCheck
     index.clearIndexes();
     pouch.reset(inMemory, callback);
 };
 
+dump(123);
 
 
 siesta.on = _.bind(notificationCentre.on, notificationCentre);
@@ -52,6 +56,7 @@ siesta.RelationshipType = RelationshipType;
 siesta.setPouch = pouch.setPouch;
 
 // Used by modules.
+var coreChanges = require('./src/changes');
 siesta._internal = {
     DescriptorRegistry: DescriptorRegistry,
     log: log,
@@ -59,7 +64,7 @@ siesta._internal = {
     mapping: require('./src/mapping'),
     util: require('./src/util'),
     error: require('./src/error'),
-    ChangeType: require('./src/changes').ChangeType,
+    ChangeType: coreChanges.ChangeType,
     object: require('./src/object'),
     extend: require('extend'),
     notificationCentre: require('./src/notificationCentre'),
@@ -67,7 +72,7 @@ siesta._internal = {
     misc: require('./src/misc'),
     Operation: Operation,
     OperationQueue: OperationQueue,
-    coreChanges: require('./src/changes'),
+    coreChanges: coreChanges,
     CollectionRegistry: require('./src/collectionRegistry').CollectionRegistry
 };
 
@@ -93,3 +98,4 @@ if (typeof window != 'undefined') {
     window.siesta = siesta;
 }
 
+exports.siesta = siesta;
