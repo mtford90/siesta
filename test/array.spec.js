@@ -185,8 +185,6 @@ describe('generation of s.ext.storage.changes during array operations', function
                     person.cars.push(anotherCar);
                     util.next(function () {
                         assert.include(car.owners, person, 'original car should have owner');
-                        dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
-                        dump(person._dump(true));
                         assert.include(anotherCar.owners, person, 'new car should have owner');
                         var allChanges = s.ext.storage.changes.allChanges;
                         assert.equal(allChanges.length, 2);
@@ -208,7 +206,6 @@ describe('generation of s.ext.storage.changes during array operations', function
                     person.cars.splice(0, 1);
                     util.next(function () {
                         var allChanges = s.ext.storage.changes.allChanges;
-                        dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
                         assert.equal(allChanges.length, 2);
                         var personPred = function (x) {return x._id === person._id};
                         var personChange = _.find(allChanges, personPred);
@@ -233,8 +230,6 @@ describe('generation of s.ext.storage.changes during array operations', function
                     car.ownersProxy.related = null;
                     person.cars.push(anotherCar);
                     util.next(function () {
-                        dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
-                        dump(person._dump(true));
                         var allChanges = s.ext.storage.changes.allChanges;
                         assert.equal(allChanges.length, 2);
                         var splicePredicate = function (x) {return x._id === person._id};
@@ -256,7 +251,6 @@ describe('generation of s.ext.storage.changes during array operations', function
                     person.cars.splice(0, 1);
                     util.next(function () {
                         var allChanges = s.ext.storage.changes.allChanges;
-                        dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
                         assert.equal(allChanges.length, 2);
                         var personPred = function (x) {return x._id === person._id};
                         var personChange = _.find(allChanges, personPred);

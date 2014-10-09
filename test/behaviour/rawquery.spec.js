@@ -13,7 +13,6 @@ describe('raw query behaviour', function () {
             describe('singular', function () {
 
                 beforeEach(function (done) {
-                    dump(s.ext);
                     var index = new s.ext.storage.Index('myCollection', 'Car', ['id']);
                     index.install(done);
                 });

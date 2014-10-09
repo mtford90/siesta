@@ -107,27 +107,27 @@ describe('pouch doc adapter', function () {
 
         describe('validation', function () {
             it('No API field', function () {
-                assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {type: 'Car'}), RestError);
+                assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {type: 'Car'}), RestError);
             });
 
             it('No type field', function (done) {
                 var collection = new Collection('myCollection');
                 collection.install(function (err) {
                     if (err) done(err);
-                    assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection'}), RestError);
+                    assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection'}), RestError);
                     done();
                 });
             });
 
             it('non existent API', function () {
-                assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
+                assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
             });
 
             it('non existent type', function (done) {
                 var collection = new Collection('myCollection');
                 collection.install(function (err) {
                     if (err) done(err);
-                    assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
+                    assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
                     done();
                 });
             });
@@ -172,7 +172,6 @@ describe('pouch doc adapter', function () {
                 };
                 s.ext.storage.Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
-                    dump(collection.save);
                     doc._rev = resp.rev;
                     s.ext.storage.changes.registerChange({
                         collection: collection._name,
@@ -192,7 +191,7 @@ describe('pouch doc adapter', function () {
                         old: 'Aston Martin',
                         _id: 'localId'
                     });
-                    dump(changes.allChanges);
+                    dump(s.ext.storage.changes.allChanges);
                     var models = s.ext.storage.Pouch.toSiesta([doc]);
                     assert.equal(models[0].colour, 'blue');
                     assert.equal(models[0].name, 'Bentley');

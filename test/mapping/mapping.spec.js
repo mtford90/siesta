@@ -57,7 +57,7 @@ describe('mapping!', function () {
         });
         m.install(function (err) {
             if (err) done(err);
-            assert.equal(Index.indexes.length, 8);
+            assert.equal(s.ext.storage.Index.indexes.length, 8);
             done();
         });
     });

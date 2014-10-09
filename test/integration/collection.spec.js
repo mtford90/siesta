@@ -1,9 +1,9 @@
 /**
- * An integration test that creates two complex collections and then establishes inter-collection relationships
- * between the mappings in each before creating objects etc.
- *
- * We then proceed to test various aspects of the system.
- */
+* An integration test that creates two complex collections and then establishes inter-collection relationships
+* between the mappings in each before creating objects etc.
+*
+* We then proceed to test various aspects of the system.
+*/
 
 var s = require('../../index')
     , assert = require('chai').assert;
@@ -19,83 +19,82 @@ describe('intercollection relationships', function () {
     var myOnlineCollection;
 
     beforeEach(function (done) {
-        s.reset(true, function () {
+        s.reset(true);
+        var finishedCreatingMyOfflineCollection = false;
 
-            var finishedCreatingMyOfflineCollection = false;
+        myOfflineCollection = new Collection('MyOfflineCollection');
 
-            myOfflineCollection = new Collection('MyOfflineCollection');
-            myOfflineCollection.mapping('Folder', {
-                attributes: ['name'],
-                relationships: {
-                    createdBy: {
-                        mapping: 'User',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'folders'
-                    }
+        myOfflineCollection.mapping('Folder', {
+            attributes: ['name'],
+            relationships: {
+                createdBy: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'folders'
                 }
-            });
+            }
+        });
 
-            myOfflineCollection.mapping('DownloadedPhoto', {
-                attributes: ['creationDate'],
-                relationships: {
-                    createdBy: {
-                        mapping: 'User',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'files'
-                    },
-                    folder: {
-                        mapping: 'Folder',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'files'
-                    },
-                    photo: {
-                        mapping: 'MyOnlineCollection.Photo',
-                        type: RelationshipType.OneToOne,
-                        reverse: 'file'
-                    }
+        myOfflineCollection.mapping('DownloadedPhoto', {
+            attributes: ['creationDate'],
+            relationships: {
+                createdBy: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'files'
+                },
+                folder: {
+                    mapping: 'Folder',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'files'
+                },
+                photo: {
+                    mapping: 'MyOnlineCollection.Photo',
+                    type: RelationshipType.OneToOne,
+                    reverse: 'file'
                 }
-            });
+            }
+        });
 
-            myOfflineCollection.mapping('User', {
-                attributes: ['username'],
-                indexes: ['username']
-            });
+        myOfflineCollection.mapping('User', {
+            attributes: ['username'],
+            indexes: ['username']
+        });
 
-            myOfflineCollection.install(function (err) {
-                if (err) done(err);
-                finishedCreatingMyOfflineCollection = true;
-                if (finishedCreatingMyOnlineCollection) {
-                    done();
+        myOfflineCollection.install(function (err) {
+            if (err) done(err);
+            finishedCreatingMyOfflineCollection = true;
+            if (finishedCreatingMyOnlineCollection) {
+                done();
+            }
+        });
+
+        var finishedCreatingMyOnlineCollection = false;
+
+        myOnlineCollection = new Collection('MyOnlineCollection');
+
+        myOnlineCollection.mapping('Photo', {
+            id: 'photoId',
+            attributes: ['height', 'width', 'url'],
+            relationships: {
+                createdBy: {
+                    mapping: 'User',
+                    type: RelationshipType.ForeignKey,
+                    reverse: 'photos'
                 }
-            });
+            }
+        });
 
-            var finishedCreatingMyOnlineCollection = false;
+        myOnlineCollection.mapping('User', {
+            id: 'userId',
+            attributes: ['username', 'name']
+        });
 
-            myOnlineCollection = new Collection('MyOnlineCollection');
-
-            myOnlineCollection.mapping('Photo', {
-                id: 'photoId',
-                attributes: ['height', 'width', 'url'],
-                relationships: {
-                    createdBy: {
-                        mapping: 'User',
-                        type: RelationshipType.ForeignKey,
-                        reverse: 'photos'
-                    }
-                }
-            });
-
-            myOnlineCollection.mapping('User', {
-                id: 'userId',
-                attributes: ['username', 'name']
-            });
-
-            myOnlineCollection.install(function (err) {
-                if (err) done(err);
-                if (finishedCreatingMyOfflineCollection) {
-                    done();
-                }
-            });
+        myOnlineCollection.install(function (err) {
+            if (err) done(err);
+            if (finishedCreatingMyOfflineCollection) {
+                done();
+            }
         });
     });
 
@@ -151,7 +150,7 @@ describe('intercollection relationships', function () {
         it('Can install offline fixtures', function (done) {
             installOfflineFixtures(function (err) {
                 if (err) done(err);
-                assert.notOk(changes.allChanges.length);
+                assert.notOk(s.ext.storage.changes.allChanges.length);
                 done();
             });
         });
@@ -159,7 +158,7 @@ describe('intercollection relationships', function () {
         it('can install online fixtures', function (done) {
             installOnlineFixtures(function (err) {
                 if (err) done(err);
-                assert.notOk(changes.allChanges.length);
+                assert.notOk(s.ext.storage.changes.allChanges.length);
                 done();
             });
         });
@@ -169,7 +168,7 @@ describe('intercollection relationships', function () {
                 if (err) done(err);
                 installOnlineFixtures(function (err) {
                     if (err) done(err);
-                    assert.notOk(changes.allChanges.length);
+                    assert.notOk(s.ext.storage.changes.allChanges.length);
                     done();
                 });
             });

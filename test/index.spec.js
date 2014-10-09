@@ -62,7 +62,7 @@ describe('indexes', function () {
             var i = new s.ext.storage.Index('myCollection', 'Car', ['colour', 'name']);
             i.install(function (err) {
                 if (err) done(err);
-                assert.include(Index.indexes, i);
+                assert.include(s.ext.storage.Index.indexes, i);
                 s.ext.storage.Pouch.getPouch().get('_design/' + i._getName(), function (err, doc) {
                     if (err) done(err);
                     assert.ok(doc);
@@ -80,7 +80,7 @@ describe('indexes', function () {
 
         it('indexes', function () {
             var indexes = s.ext.storage.index._constructIndexes('myCollection', 'Car', ['field1', 'field2', 'field3']);
-            assert.equal(8, s.ext.storage.indexes.length);
+            assert.equal(8, indexes.length);
             _.each(indexes, function (i) {assert.ok(i.install)});
         });
 

@@ -22,12 +22,14 @@ var _ = util._;
  */
 function Collection(name) {
     if (!this) return new Collection(name);
+    if (!name) throw RestError('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
     this._rawMappings = {};
     this._mappings = {};
     this.baseURL = '';
     this.installed = false;
+    CollectionRegistry.register(this);
 }
 
 /**
@@ -37,7 +39,6 @@ function Collection(name) {
 Collection.prototype.install = function (callback) {
     var self = this;
     if (!this.installed) {
-        CollectionRegistry.register(self);
         var mappingsToInstall = [];
         for (var name in this._mappings) {
             if (this._mappings.hasOwnProperty(name)) {

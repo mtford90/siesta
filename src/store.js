@@ -29,8 +29,14 @@ function get(opts, callback) {
                     // Proxy onto getMultiple instead.
                     getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
                 }
-                else {
-                    throw 'Storage module not installed';
+                else if (callback) {
+                    var storage = siesta.ext.storage;
+                    if (storage) {
+                        storage.store.getFromPouch(opts, callback);
+                    }
+                    else {
+                        throw 'Storage module not installed'
+                    }
                 }
             }
         }
@@ -146,12 +152,13 @@ function getMultipleLocal (localIdentifiers, callback) {
     }
 
     if (results.notCached.length) {
-        throw 'Storage module not installed';
+        siesta.ext.storage.store.getMultipleLocalFromCouch(results, finish);
     }
     else {
         finish();
     }
-};
+}
+
 function getMultipleRemote (remoteIdentifiers, mapping, callback) {
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {mapping: mapping};
@@ -180,7 +187,7 @@ function getMultipleRemote (remoteIdentifiers, mapping, callback) {
     }
 
     if (results.notCached.length) {
-        throw 'Storage module not installed'
+        siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
     }
     else {
         finish();

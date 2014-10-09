@@ -143,16 +143,14 @@ describe('store', function () {
 
                     var cars;
 
-                    beforeEach(function (done) {
-                        carMapping.map([
-                            {colour: 'red', id: 'remoteId1'},
-                            {colour: 'blue', id: 'remoteId2'},
-                            {colour: 'green', id: 'remoteId3'}
-                        ], function (err, _cars) {
-                            if (err) done(err);
-                            cars = _cars;
-                            done();
-                        });
+                    beforeEach(function () {
+                        var o = carMapping._new({colour: 'red', id: 'remoteId1'});
+                        var o1 = carMapping._new({colour: 'blue', id: 'remoteId2'});
+                        var o2 = carMapping._new({colour: 'green', id: 'remoteId3'});
+                        cars = [o, o1, o2];
+                        cache.insert(o);
+                        cache.insert(o1);
+                        cache.insert(o2);
                     });
 
                     it('xyz', function (done) {
@@ -170,21 +168,19 @@ describe('store', function () {
                     var cars;
 
                     beforeEach(function (done) {
-                        carMapping.map([
-                            {colour: 'red', id: 'remoteId1'},
-                            {colour: 'green', id: 'remoteId3'}
-                        ], function (err, _cars) {
-                            if (err) done(err);
-                            cars = _cars;
-                            s.ext.storage.Pouch.getPouch().bulkDocs(
-                                [
-                                    {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
-                                ],
-                                function (err) {
-                                    done(err);
-                                }
-                            );
-                        });
+                        var o = carMapping._new({colour: 'red', id: 'remoteId1'});
+                        var o2 = carMapping._new({colour: 'green', id: 'remoteId3'});
+                        cars = [o, o2];
+                        cache.insert(o);
+                        cache.insert(o2);
+                        s.ext.storage.Pouch.getPouch().bulkDocs(
+                            [
+                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
+                            ],
+                            function (err) {
+                                done(err);
+                            }
+                        );
                     });
 
                     it('xyz', function (done) {
@@ -199,8 +195,6 @@ describe('store', function () {
                             done();
                         })
                     })
-
-
                 });
 
             });
@@ -236,16 +230,14 @@ describe('store', function () {
 
                     var cars;
 
-                    beforeEach(function (done) {
-                        carMapping.map([
-                            {colour: 'red', id: 'remoteId1'},
-                            {colour: 'blue', id: 'remoteId2'},
-                            {colour: 'green', id: 'remoteId3'}
-                        ], function (err, _cars) {
-                            if (err) done(err);
-                            cars = _cars;
-                            done();
-                        });
+                    beforeEach(function () {
+                        var o = carMapping._new({colour: 'red', id: 'remoteId1'});
+                        var o1 = carMapping._new({colour: 'blue', id: 'remoteId2'});
+                        var o2 = carMapping._new({colour: 'green', id: 'remoteId3'});
+                        cars = [o, o1, o2];
+                        cache.insert(o);
+                        cache.insert(o1);
+                        cache.insert(o2);
                     });
 
                     it('xyz', function (done) {

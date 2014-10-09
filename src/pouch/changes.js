@@ -33,7 +33,7 @@ collection.Collection.prototype.save = function (callback) {
 };
 
 var Logger = log.loggerWithName('changes');
-Logger.setLevel(log.Level.debug);
+Logger.setLevel(log.Level.warn);
 
 var unmergedChanges = {};
 
@@ -64,7 +64,6 @@ pouch.addObserver(function (e) {
                 if (collectionChanges.hasOwnProperty(mappingName)) {
                     var mappingChanges = collectionChanges[mappingName];
                     if (mappingChanges[id]) {
-                        dump('deleting')
                         delete mappingChanges[id];
                         delete waitingForObservations[id];
                         if (!_.keys(waitingForObservations).length && finishWaitingForObservations) {
@@ -285,16 +284,12 @@ Change.prototype.applySiestaModel = function (model) {
 
 function changesByIdentifiers() {
     var res = {};
-    dump('unmergedChanges', unmergedChanges);
     for (var collectionName in unmergedChanges) {
         if (unmergedChanges.hasOwnProperty(collectionName)) {
-            dump('collectionName', collectionName);
             var collectionChanges = unmergedChanges[collectionName];
             for (var mappingName in collectionChanges) {
                 if (collectionChanges.hasOwnProperty(mappingName)) {
-                    dump('mappingName', mappingName);
                     var mappingChanges = collectionChanges[mappingName];
-                    dump('mappingChanges', mappingChanges);
                     extend(res, mappingChanges);
                 }
             }
@@ -312,9 +307,7 @@ function changesForIdentifier(ident) {
  * Merge unmergedChanges into PouchDB
  */
 function mergeChanges(callback) {
-    dump('mergeChanges', unmergedChanges);
     var changesByIdents = changesByIdentifiers();
-    dump('changesByIdents', changesByIdents);
     var numChanges = _.keys(changesByIdents).length;
     if (numChanges) {
         if (Logger.debug.isEnabled)
@@ -455,7 +448,6 @@ Object.defineProperty(exports, 'changes', {
     },
     set: function (v) {
         unmergedChanges = v;
-        dump('unmergedChanges123', unmergedChanges);
     },
     enumerable: true,
     configurable: true
@@ -467,19 +459,24 @@ Object.defineProperty(exports, 'allChanges', {
     configurable: true
 });
 
+var oldConstructor = SiestaModel.prototype.constructor;
+
 function _SiestaModel(mapping) {
-    SiestaModel.call(this, mapping);
+    var self = this;
+    oldConstructor.call(this, mapping);
+
+//    dump('_SiestaModel constructor');
 
     Object.defineProperty(this, 'changes', {
         get: function () {
-            return changesForIdentifier(self._id);
+            return changesForIdentifier(this._id);
         },
         enumerable: true
     });
-
 }
 
 _SiestaModel.prototype = Object.create(SiestaModel.prototype);
+
 _SiestaModel.prototype.applyChanges = function () {
     if (this._id) {
         var self = this;
@@ -492,8 +489,9 @@ _SiestaModel.prototype.applyChanges = function () {
     }
 };
 
+SiestaModel.prototype = new _SiestaModel();
+
 //noinspection JSValidateTypes
-object.SiestaModel = _SiestaModel;
 
 exports._SiestaModel = _SiestaModel;
 exports.registerChange = coreChanges.registerChange;

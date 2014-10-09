@@ -12,6 +12,7 @@ var RestError = error.RestError;
 //var queues = {};
 
 function SiestaModel(mapping) {
+
     if (!this) {
         return new SiestaModel(mapping);
     }

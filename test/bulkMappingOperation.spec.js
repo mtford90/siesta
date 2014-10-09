@@ -48,7 +48,6 @@ describe('array flattening', function () {
 describe('bulk mapping operation', function () {
 
     var Collection = require('../src/collection').Collection;
-    var Pouch = require('../src/pouch/pouch');
     var cache = require('../src/cache');
     var collection;
     var Repo, User;
@@ -268,7 +267,7 @@ describe('bulk mapping operation', function () {
                     });
 
                     it('existing', function (done) {
-                        Pouch.getPouch().post({
+                        s.ext.storage.Pouch.getPouch().post({
                             id: '5',
                             name: 'Old Name',
                             full_name: 'Old Full Name',
@@ -472,7 +471,7 @@ describe('bulk mapping operation', function () {
 
             beforeEach(function (done) {
                 var doc = {id: '567', _id: 'localId', type: 'User', collection: 'MyCollection'};
-                Pouch.getPouch().put(doc, function (err, resp) {
+                s.ext.storage.Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
                     doc._rev = resp.rev;
                     var data = [

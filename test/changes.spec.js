@@ -287,7 +287,7 @@ describe('changes!', function () {
 
     });
 
-    describe.only('merge changes', function () {
+    describe('merge changes', function () {
         function testMerge(changes, docs, callback) {
             var db = s.ext.storage.Pouch.getPouch();
             db.bulkDocs(docs, function (err) {
@@ -296,7 +296,6 @@ describe('changes!', function () {
                 }
                 else {
                     s.ext.storage.changes.changes = changes;
-                    dump('testMerge2', s.ext.storage.changes.changes);
                     s.ext.storage.changes.mergeChanges(function (err) {
                         if (err) {
                             callback(err);

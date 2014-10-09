@@ -37,28 +37,31 @@ describe('attribute notifications', function () {
                 collection.install(function (err) {
                     if (err) done(err);
                     carMapping.map({colour: 'red', name: 'Aston Martin', id: 'xyz'}, function (err, _car) {
-                        car = _car;
-                        if (err) done(err);
-                        s.once('myCollection:Car', function (n) {
-                            notif = n;
-                            if (notif && genericNotif && collectionNotif) {
-                                done();
-                            }
-                        });
-                        s.once('myCollection', function (n) {
-                            collectionNotif = n;
-                            if (notif && genericNotif && collectionNotif) {
-                                done();
-                            }
-                        });
-                        s.once('Siesta', function (n) {
-                            genericNotif = n;
-                            if (notif && genericNotif && collectionNotif) {
-                                done();
-                            }
-                        });
-                        car.colour = 'blue';
-
+                        if (err) {
+                            done(err);
+                        }
+                        else {
+                            car = _car;
+                            s.once('myCollection:Car', function (n) {
+                                notif = n;
+                                if (notif && genericNotif && collectionNotif) {
+                                    done();
+                                }
+                            });
+                            s.once('myCollection', function (n) {
+                                collectionNotif = n;
+                                if (notif && genericNotif && collectionNotif) {
+                                    done();
+                                }
+                            });
+                            s.once('Siesta', function (n) {
+                                genericNotif = n;
+                                if (notif && genericNotif && collectionNotif) {
+                                    done();
+                                }
+                            });
+                            car.colour = 'blue';
+                        }
                     });
                 });
 

@@ -150,26 +150,27 @@ function toNew(doc) {
 }
 
 function toSiesta(docs) {
-    var mapped = [];
-    for (var i = 0; i < docs.length; i++) {
-        var doc = docs[i];
-        if (doc) {
-            var opts = {_id: doc._id};
-            var cached = cache.get(opts);
-            if (cached) {
-                mapped[i] = cached;
+    if (Logger.debug.isEnabled) Logger.debug('toSiesta');
+        var mapped = [];
+        for (var i = 0; i < docs.length; i++) {
+            var doc = docs[i];
+            if (doc) {
+                var opts = {_id: doc._id};
+                var cached = cache.get(opts);
+                if (cached) {
+                    mapped[i] = cached;
+                }
+                else {
+                    mapped[i] = toNew(doc);
+                    cache.insert(mapped[i]);
+                    mapped[i].applyChanges();  // Apply unsaved changes.
+                }
             }
             else {
-                mapped[i] = toNew(doc);
-                cache.insert(mapped[i]);
-                mapped[i].applyChanges();  // Apply unsaved changes.
+                mapped[i] = null;
             }
         }
-        else {
-            mapped[i] = null;
-        }
-    }
-    return mapped;
+        return mapped;
 }
 
 function from(obj) {

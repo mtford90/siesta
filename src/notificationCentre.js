@@ -24,7 +24,6 @@ function wrapArray(array, field, siestaModel) {
             var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
-                    dump('ChangeType', coreChanges);
                     coreChanges.registerChange({
                         collection: siestaModel.collection,
                         mapping: siestaModel.mapping.type,

@@ -109,11 +109,13 @@ Mapping.prototype.installRelationships = function () {
                         var mappingName = relationship.mapping;
                         if (Logger.debug.isEnabled)
                             Logger.debug('reverseMappingName', mappingName);
+                        if (!self.collection) throw new RestError('Mapping must have collection');
                         var collection = CollectionRegistry[self.collection];
-                        if (Logger.debug.isEnabled)
-                            Logger.debug('collection', CollectionRegistry);
+                        if (!collection) {
+                            dump(CollectionRegistry);
+                            throw new RestError('Collection ' + self.collection + ' not registered');
+                        }
                         var reverseMapping = collection[mappingName];
-
                         if (!reverseMapping) {
                             var arr = mappingName.split('.');
                             if (arr.length == 2) {
