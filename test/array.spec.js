@@ -1,14 +1,14 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe('generation of changes during array operations', function () {
+describe('generation of s.ext.storage.changes during array operations', function () {
 
     var collection;
     var car, person;
     var carMapping, personMapping;
 
     var Collection = require('../src/collection').Collection;
-    var changes = require('../src/pouch/changes');
+    
     var ChangeType = require('../src/changes').ChangeType;
     var RelationshipType = require('../src/relationship').RelationshipType;
     var util = require('../src/util');
@@ -39,11 +39,11 @@ describe('generation of changes during array operations', function () {
         it('push', function (done) {
             car = carMapping._new();
             car.colours = [];
-            changes.resetChanges();
+            s.ext.storage.changes.resetChanges();
             car.colours.push('red');
             util.next(function () {
-                assert.equal(1, changes.allChanges.length);
-                var change = changes.allChanges[0];
+                assert.equal(1, s.ext.storage.changes.allChanges.length);
+                var change = s.ext.storage.changes.allChanges[0];
                 assert.equal(change.type, ChangeType.Splice);
                 assert.include(change.added, 'red');
                 assert.equal(change.index, 0);
@@ -55,11 +55,11 @@ describe('generation of changes during array operations', function () {
         it('splice', function (done) {
             car = carMapping._new();
             car.colours = ['red'];
-            changes.resetChanges();
+            s.ext.storage.changes.resetChanges();
             car.colours.splice(0, 1);
             util.next(function () {
-                assert.equal(1, changes.allChanges.length);
-                var change = changes.allChanges[0];
+                assert.equal(1, s.ext.storage.changes.allChanges.length);
+                var change = s.ext.storage.changes.allChanges[0];
                 assert.equal(change.type, ChangeType.Splice);
                 assert.include(change.removed, 'red');
                 assert.equal(change.index, 0);
@@ -71,11 +71,11 @@ describe('generation of changes during array operations', function () {
         it('sort', function (done) {
             car = carMapping._new();
             car.colours = ['red', 'blue', 'green'];
-            changes.resetChanges();
+            s.ext.storage.changes.resetChanges();
             car.colours.sort();
             // Red is removed and inserted elsewhere.
             util.next(function () {
-                assert.equal(2, changes.allChanges.length);
+                assert.equal(2, s.ext.storage.changes.allChanges.length);
                 done();
             });
         });
@@ -114,12 +114,12 @@ describe('generation of changes during array operations', function () {
                 var anotherCar = carMapping._new();
                 person = personMapping._new();
                 person.cars = [car];
-                changes.resetChanges();
+                s.ext.storage.changes.resetChanges();
                 person.cars.push(anotherCar);
                 util.next(function () {
                     assert.equal(car.owner, person);
                     assert.equal(anotherCar.owner, person);
-                    var allChanges = changes.allChanges;
+                    var allChanges = s.ext.storage.changes.allChanges;
                     assert.equal(allChanges.length, 2);
                     var splicePredicate = function (x) {return x.type === ChangeType.Splice};
                     var spliceChange = _.find(allChanges, splicePredicate);
@@ -134,12 +134,12 @@ describe('generation of changes during array operations', function () {
                 car = carMapping._new();
                 person = personMapping._new();
                 person.cars = [car];
-                changes.resetChanges();
+                s.ext.storage.changes.resetChanges();
                 person.cars.splice(0, 1);
                 util.next(function () {
                     assert.notOk(car.ownerProxy._id);
                     assert.notOk(car.ownerProxy.related);
-                    var allChanges = changes.allChanges;
+                    var allChanges = s.ext.storage.changes.allChanges;
                     assert.equal(allChanges.length, 2);
                     var splicePredicate = function (x) {return x.type === ChangeType.Splice};
                     var spliceChange = _.find(allChanges, splicePredicate);
@@ -181,14 +181,14 @@ describe('generation of changes during array operations', function () {
                     var anotherCar = carMapping._new();
                     person = personMapping._new();
                     person.cars = [car];
-                    changes.resetChanges();
+                    s.ext.storage.changes.resetChanges();
                     person.cars.push(anotherCar);
                     util.next(function () {
                         assert.include(car.owners, person, 'original car should have owner');
                         dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
                         dump(person._dump(true));
                         assert.include(anotherCar.owners, person, 'new car should have owner');
-                        var allChanges = changes.allChanges;
+                        var allChanges = s.ext.storage.changes.allChanges;
                         assert.equal(allChanges.length, 2);
                         var splicePredicate = function (x) {return x._id === person._id};
                         var spliceChange = _.find(allChanges, splicePredicate);
@@ -204,10 +204,10 @@ describe('generation of changes during array operations', function () {
                     car = carMapping._new();
                     person = personMapping._new();
                     person.cars = [car];
-                    changes.resetChanges();
+                    s.ext.storage.changes.resetChanges();
                     person.cars.splice(0, 1);
                     util.next(function () {
-                        var allChanges = changes.allChanges;
+                        var allChanges = s.ext.storage.changes.allChanges;
                         dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
                         assert.equal(allChanges.length, 2);
                         var personPred = function (x) {return x._id === person._id};
@@ -229,13 +229,13 @@ describe('generation of changes during array operations', function () {
                     var anotherCar = carMapping._new();
                     person = personMapping._new();
                     person.cars = [car];
-                    changes.resetChanges();
+                    s.ext.storage.changes.resetChanges();
                     car.ownersProxy.related = null;
                     person.cars.push(anotherCar);
                     util.next(function () {
                         dump(JSON.stringify(_.map(anotherCar.owners, function (x) {return x._dump()}), null, 4));
                         dump(person._dump(true));
-                        var allChanges = changes.allChanges;
+                        var allChanges = s.ext.storage.changes.allChanges;
                         assert.equal(allChanges.length, 2);
                         var splicePredicate = function (x) {return x._id === person._id};
                         var spliceChange = _.find(allChanges, splicePredicate);
@@ -251,11 +251,11 @@ describe('generation of changes during array operations', function () {
                     car = carMapping._new();
                     person = personMapping._new();
                     person.cars = [car];
-                    changes.resetChanges();
+                    s.ext.storage.changes.resetChanges();
                     car.ownersProxy.related = null;
                     person.cars.splice(0, 1);
                     util.next(function () {
-                        var allChanges = changes.allChanges;
+                        var allChanges = s.ext.storage.changes.allChanges;
                         dump('carChange', _.map(allChanges, function (x) {return x._dump(true)}));
                         assert.equal(allChanges.length, 2);
                         var personPred = function (x) {return x._id === person._id};

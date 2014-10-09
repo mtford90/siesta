@@ -1,9 +1,8 @@
 var s = require('../index')
     , assert = require('./util').assert;
 
-describe.only('changes!', function () {
+describe('changes!', function () {
 
-    var sut = require('../src/pouch/changes');
     var ChangeType = require('../src/changes').ChangeType;
     var RelationshipType = require('../src/relationship').RelationshipType;
 
@@ -11,10 +10,8 @@ describe.only('changes!', function () {
 
     var Collection = require('../src/collection').Collection;
 
-    var Pouch = require('../src/pouch/pouch');
     var cache = require('../src/cache');
 
-    var changes = require('../src/pouch/changes');
     var coreChanges = require('../src/changes');
 
     var Change = coreChanges.Change;
@@ -42,7 +39,7 @@ describe.only('changes!', function () {
                 mapping: carMapping,
                 _id: 'xyz'
             });
-            var objChanges = sut.changes[collection.name][carMapping.type]['xyz'];
+            var objChanges = s.ext.storage.changes.changes[collection.name][carMapping.type]['xyz'];
             assert.equal(objChanges.length, 1);
             var change = objChanges[0];
             assert.equal(change.collection, collection);
@@ -86,7 +83,7 @@ describe.only('changes!', function () {
         });
     });
 
-    describe('all changes', function () {
+    describe('all s.ext.storage.changes', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection');
             carMapping = collection.mapping('Car', {
@@ -96,8 +93,8 @@ describe.only('changes!', function () {
             collection.install(done);
         });
 
-        it('all changes', function () {
-            sut.changes = {
+        it('all s.ext.storage.changes', function () {
+            s.ext.storage.changes.changes = {
                 collection: {
                     mapping1: {
                         xyz: ['adsd', 'asdas']
@@ -114,14 +111,14 @@ describe.only('changes!', function () {
                 }
             };
 
-            assert.equal(sut.allChanges.length, 7);
-            assert.include(sut.allChanges, 'adsd');
-            assert.include(sut.allChanges, 'asdas');
-            assert.include(sut.allChanges, 'dsasda');
-            assert.include(sut.allChanges, 'fh43');
-            assert.include(sut.allChanges, 'asd');
-            assert.include(sut.allChanges, '123');
-            assert.include(sut.allChanges, '567');
+            assert.equal(s.ext.storage.changes.allChanges.length, 7);
+            assert.include(s.ext.storage.changes.allChanges, 'adsd');
+            assert.include(s.ext.storage.changes.allChanges, 'asdas');
+            assert.include(s.ext.storage.changes.allChanges, 'dsasda');
+            assert.include(s.ext.storage.changes.allChanges, 'fh43');
+            assert.include(s.ext.storage.changes.allChanges, 'asd');
+            assert.include(s.ext.storage.changes.allChanges, '123');
+            assert.include(s.ext.storage.changes.allChanges, '567');
         });
     });
 
@@ -290,17 +287,17 @@ describe.only('changes!', function () {
 
     });
 
-    describe('merge changes', function () {
-
+    describe.only('merge changes', function () {
         function testMerge(changes, docs, callback) {
-            sut.changes = changes;
-            var db = Pouch.getPouch();
+            var db = s.ext.storage.Pouch.getPouch();
             db.bulkDocs(docs, function (err) {
                 if (err) {
                     callback(err);
                 }
                 else {
-                    sut.mergeChanges(function (err) {
+                    s.ext.storage.changes.changes = changes;
+                    dump('testMerge2', s.ext.storage.changes.changes);
+                    s.ext.storage.changes.mergeChanges(function (err) {
                         if (err) {
                             callback(err);
                         }
@@ -367,7 +364,7 @@ describe.only('changes!', function () {
                         else {
                             var doc = docs[0];
                             assert.equal(doc.colour, 'blue');
-                            assert.notOk(sut.allChanges.length);
+                            assert.notOk(s.ext.storage.changes.allChanges.length);
                             done();
                         }
                     });
@@ -927,8 +924,8 @@ describe.only('changes!', function () {
                         if (err) done(err);
                         car = _car;
                         util.next(function () {
-                            carChanges = changes.changesForIdentifier(car._id);
-                            personChanges = changes.changesForIdentifier(person._id);
+                            carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
+                            personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             collection.save(done);
                         });
                     });
@@ -964,10 +961,10 @@ describe.only('changes!', function () {
 
         describe('saves', function () {
             it('saves changes', function (done) {
-                changes.mergeChanges(function (err) {
+                s.ext.storage.changes.mergeChanges(function (err) {
                     if (err) done(err);
-                    assert.notOk(changes.allChanges.length);
-                    Pouch.getPouch().get(car._id, function (err, doc) {
+                    assert.notOk(s.ext.storage.changes.allChanges.length);
+                    s.ext.storage.Pouch.getPouch().get(car._id, function (err, doc) {
                         if (err) {
                             done(err);
                         }

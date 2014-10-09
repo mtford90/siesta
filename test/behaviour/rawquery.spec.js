@@ -1,17 +1,10 @@
 var s = require('../../index')
     , assert = require('chai').assert;
 
-
 describe('raw query behaviour', function () {
-
-
-    var Index = require('../../src/pouch/index').Index;
-    var Pouch = require('../../src/pouch/pouch');
-    var RawQuery = require('../../src/pouch/query').RawQuery;
 
     beforeEach(function () {
         s.reset(true);
-
     });
 
     describe('data types', function () {
@@ -20,12 +13,13 @@ describe('raw query behaviour', function () {
             describe('singular', function () {
 
                 beforeEach(function (done) {
-                    var index = new Index('myCollection', 'Car', ['id']);
+                    dump(s.ext);
+                    var index = new s.ext.storage.Index('myCollection', 'Car', ['id']);
                     index.install(done);
                 });
 
                 it('string', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -36,7 +30,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 'blah'});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 'blah'});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -47,7 +41,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('numeric', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -58,7 +52,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 5});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -69,7 +63,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('numeric with string query', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -80,7 +74,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: '5'});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: '5'});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -91,7 +85,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('string with numeric query', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -102,7 +96,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 5});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -118,12 +112,12 @@ describe('raw query behaviour', function () {
             describe('multiple', function () {
 
                 beforeEach(function (done) {
-                    var index = new Index('myCollection', 'Car', ['id', 'colour', 'age']);
+                    var index = new s.ext.storage.Index('myCollection', 'Car', ['id', 'colour', 'age']);
                     index.install(done);
                 });
 
                 it('numeric', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -135,7 +129,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 5, colour: 'red', age: 2});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 5, colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -146,7 +140,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('string', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -158,7 +152,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: '5', colour: 'red', age: 2});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: '5', colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -178,7 +172,7 @@ describe('raw query behaviour', function () {
             describe('singular', function () {
 
                 it('string', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -189,7 +183,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 'blah'});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 'blah'});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -200,7 +194,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('numeric', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -211,7 +205,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 5});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -222,7 +216,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('numeric with string query', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -233,7 +227,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: '5'});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: '5'});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -244,7 +238,7 @@ describe('raw query behaviour', function () {
                 });
 
                 it('string with numeric query', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -255,7 +249,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 5});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 5});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -272,7 +266,7 @@ describe('raw query behaviour', function () {
 
 
                 it('numeric', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -284,7 +278,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: 5, colour: 'red', age: 2});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: 5, colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);
@@ -292,10 +286,10 @@ describe('raw query behaviour', function () {
                             });
                         }
                     });
-                });
+                });  
 
                 it('string', function (done) {
-                    Pouch.getPouch().post({
+                    s.ext.storage.Pouch.getPouch().post({
                         type: 'Car',
                         colour: 'red',
                         name: 'Aston Martin',
@@ -307,7 +301,7 @@ describe('raw query behaviour', function () {
                             done(err);
                         }
                         else {
-                            var q = new RawQuery('myCollection', 'Car', {id: '5', colour: 'red', age: 2});
+                            var q = new s.ext.storage.RawQuery('myCollection', 'Car', {id: '5', colour: 'red', age: 2});
                             q.execute(function (err, docs) {
                                 if (err) done(err);
                                 assert.equal(docs.length, 1);

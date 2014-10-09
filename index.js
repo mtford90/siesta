@@ -1,24 +1,24 @@
+var collection = require('./src/collection');
+var util = require('./src/util');
 
 var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , DescriptorRegistry = require('./src/descriptorRegistry').DescriptorRegistry
-    , Collection = require('./src/collection').Collection
+    , Collection = collection.Collection
     , cache = require('./src/cache')
-    , index = require('./src/pouch/index')
-    , pouch = require('./src/pouch/pouch')
     , Mapping = require('./src/mapping').Mapping
     , notificationCentre = require('./src/notificationCentre').notificationCentre
     , Operation = require('./vendor/operations.js/src/operation').Operation
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
-    , _ = require('./src/util')._;
+    , _ = util._;
 
 
 
-Operation.logLevel = log.Level.warn;
-OperationQueue.logLevel = log.Level.warn;
 
-var changes = require('./src/pouch/changes');
+Operation.logLevel = log.Level.info;
+OperationQueue.logLevel = log.Level.info;
+
 
 var siesta;
 if (typeof module != 'undefined') {
@@ -32,17 +32,13 @@ siesta.save = function save(callback) {
 
 };
 
-siesta.reset = function (inMemory, callback) {
+siesta.reset = function () {
     cache.reset();
     CollectionRegistry.reset();
     DescriptorRegistry.reset();
-    changes.resetChanges();
     //noinspection JSAccessibilityCheck
-    index.clearIndexes();
-    pouch.reset(inMemory, callback);
 };
 
-dump(123);
 
 
 siesta.on = _.bind(notificationCentre.on, notificationCentre);
@@ -53,16 +49,15 @@ siesta.once = _.bind(notificationCentre.once, notificationCentre);
 siesta.Collection = Collection;
 siesta.RelationshipType = RelationshipType;
 
-siesta.setPouch = pouch.setPouch;
-
 // Used by modules.
 var coreChanges = require('./src/changes');
+
+// Make available modules to extensions.
 siesta._internal = {
     DescriptorRegistry: DescriptorRegistry,
     log: log,
     Mapping: Mapping,
     mapping: require('./src/mapping'),
-    util: require('./src/util'),
     error: require('./src/error'),
     ChangeType: coreChanges.ChangeType,
     object: require('./src/object'),
@@ -73,12 +68,21 @@ siesta._internal = {
     Operation: Operation,
     OperationQueue: OperationQueue,
     coreChanges: coreChanges,
-    CollectionRegistry: require('./src/collectionRegistry').CollectionRegistry
+    CollectionRegistry: require('./src/collectionRegistry').CollectionRegistry,
+    Collection: collection.Collection,
+    collection: collection,
+    utils: util,
+    util: util,
+    _: util._,
+    query: require('./src/query'),
+    store: require('./src/store')
 };
 
 siesta.performanceMonitoringEnabled = false;
 siesta.httpEnabled = false;
 siesta.storageEnabled = false;
+
+siesta.ext = {};
 
 siesta.collection = function (name, opts) {
     return new Collection(name, opts);

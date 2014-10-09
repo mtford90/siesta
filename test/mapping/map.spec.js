@@ -3,14 +3,12 @@ var s = require('../../index')
 
 describe('perform mapping', function () {
 
-    var Pouch = require('../../src/pouch/pouch');
 
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;
 
     var SiestaModel = require('../../src/object').SiestaModel;
     var cache = require('../../src/cache');
-    var changes = require('../../src/pouch/changes');
     var Operation = require('../../vendor/operations.js/src/operation').Operation;
 
     var collection, carMapping, personMapping;
@@ -141,7 +139,7 @@ describe('perform mapping', function () {
                 var newObj;
                 beforeEach(function (done) {
                     var doc = {_id: 'localId', type: 'Car', collection: 'myCollection', colour: 'red', id: 'remoteId'};
-                    Pouch.getPouch().put(doc, function (err, doc) {
+                    s.ext.storage.Pouch.getPouch().put(doc, function (err, doc) {
                         if (err) done(err);
                         carMapping.map({colour: 'blue', id: 'remoteId'}, function (err, obj) {
                             if (err) done(err);
@@ -166,7 +164,7 @@ describe('perform mapping', function () {
                 var newObj;
                 beforeEach(function (done) {
                     var doc = {_id: 'localId', type: 'Car', collection: 'myCollection', colour: 'red', id: 'remoteId'};
-                    Pouch.getPouch().put(doc, function (err, doc) {
+                    s.ext.storage.Pouch.getPouch().put(doc, function (err, doc) {
                         if (err) done(err);
                         carMapping.map({colour: 'blue', _id: 'localId'}, function (err, obj) {
                             if (err) {
@@ -223,7 +221,7 @@ describe('perform mapping', function () {
 
                 beforeEach(function (done) {
                     var doc = {name: 'Michael Ford', age: 23, id: 'personRemoteId', collection: 'myCollection', type: 'Person', _id: 'personLocalId'};
-                    Pouch.getPouch().put(doc, function (err) {
+                    s.ext.storage.Pouch.getPouch().put(doc, function (err) {
                         if (err) done(err);
                         carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
                             if (err) {

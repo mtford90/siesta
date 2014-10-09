@@ -3,7 +3,6 @@ var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('../src/error').RestError;
-var Pouch = require('./pouch/pouch');
 var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');
@@ -14,7 +13,6 @@ var cache = require('./cache');
 var util = require('./util');
 var _ = util._;
 var defineSubProperty = require('./misc').defineSubProperty;
-var changes = require('./pouch/changes');
 var ChangeType = require('./changes').ChangeType;
 
 function flattenArray(arr) {
@@ -254,29 +252,7 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
         callback();
     }
 
-//    var self = this;
-//    var _map = function (doc) {
-//        if (doc.type == "$1" && doc.collection == "$2") {
-//            emit(doc._id, doc);
-//        }
-//    }.toString();
-//    _map.replace('$1', this.mapping.collection);
-//    _map.replace('$2', this.mapping.type);
-//    Pouch.getPouch().query({map: _map}, {include_docs: true}, function (err, resp) {
-//        if (!err) {
-//            var rows = resp.rows;
-//            if (!rows.length) {
-//                var obj = self.mapping._new();
-//                for (var i=0;i<self.data.length;i++) {
-//                    self.objects[i] = obj;
-//                }
-//            }
-//            else if (rows.length) {
-//                throw 'nyi';
-//            }
-//        }
-//        callback(err);
-//    });
+
 };
 
 

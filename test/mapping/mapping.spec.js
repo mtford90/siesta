@@ -2,7 +2,6 @@ var s = require('../../index')
     , assert = require('chai').assert;
 
 describe('mapping!', function () {
-    var Index = require('../../src/pouch/index').Index;
     var Mapping = require('../../src/mapping').Mapping;
 
     beforeEach(function () {

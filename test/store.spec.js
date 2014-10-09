@@ -3,7 +3,6 @@ var s = require('../index')
 
 describe('store', function () {
     var Store = require('../src/store');
-    var Pouch = require('../src/pouch/pouch');
     var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
@@ -38,7 +37,7 @@ describe('store', function () {
 
         it('in pouch, have _id', function (done) {
             var pouchid = 'pouchId';
-            Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid}, function (err, doc) {
+            s.ext.storage.Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid}, function (err, doc) {
                 if (err) done(err);
                 Store.get({_id: pouchid}, function (err, obj) {
                     if (err) done(err);
@@ -57,7 +56,7 @@ describe('store', function () {
         it('in pouch, dont have _id', function (done) {
             var pouchid = 'pouchId';
             var remoteId = 'xyz';
-            Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
+            s.ext.storage.Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
                 if (err) done(err);
                 Store.get({id: remoteId, mapping: carMapping}, function (err, doc) {
                     if (err) done(err);
@@ -72,7 +71,7 @@ describe('store', function () {
 
                 describe('not cached', function () {
                     beforeEach(function (done) {
-                        Pouch.getPouch().bulkDocs(
+                        s.ext.storage.Pouch.getPouch().bulkDocs(
                             [
                                 {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
                                 {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
@@ -117,7 +116,7 @@ describe('store', function () {
                 describe('not cached', function () {
 
                     beforeEach(function (done) {
-                        Pouch.getPouch().bulkDocs(
+                        s.ext.storage.Pouch.getPouch().bulkDocs(
                             [
                                 {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
                                 {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
@@ -177,7 +176,7 @@ describe('store', function () {
                         ], function (err, _cars) {
                             if (err) done(err);
                             cars = _cars;
-                            Pouch.getPouch().bulkDocs(
+                            s.ext.storage.Pouch.getPouch().bulkDocs(
                                 [
                                     {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
                                 ],
@@ -210,7 +209,7 @@ describe('store', function () {
                 describe('not cached', function () {
 
                     beforeEach(function (done) {
-                        Pouch.getPouch().bulkDocs(
+                        s.ext.storage.Pouch.getPouch().bulkDocs(
                             [
                                 {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
                                 {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
@@ -272,7 +271,7 @@ describe('store', function () {
                         ], function (err, _cars) {
                             if (err) done(err);
                             cars = _cars;
-                            Pouch.getPouch().bulkDocs(
+                            s.ext.storage.Pouch.getPouch().bulkDocs(
                                 [
                                     {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
                                 ],

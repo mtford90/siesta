@@ -1,12 +1,19 @@
-var wrappedCallback = require('./misc').wrappedCallback;
-var RestError = require('./error').RestError;
-var log = require('../vendor/operations.js/src/log');
+var _i = siesta._internal
+    , wrappedCallback = _i.misc.wrappedCallback
+    , util = _i.util
+    , _ = util._
+    , cache = _i.cache
+    , RestError = _i.error.RestError
+    , log = _i.log
+    , originalStore = _i.store
+;
+
 var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
 
-var util = require('./util');
-var _ = util._;
-var cache = require('./cache');
+var PouchAdapter = require('./pouch');
+var index = require('./index');
+var Index = index.Index;
 
 function get(opts, callback) {
     if (Logger.debug.isEnabled)
@@ -30,7 +37,10 @@ function get(opts, callback) {
                     getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
                 }
                 else {
-                    throw 'Storage module not installed';
+                    PouchAdapter.getPouch().get(opts._id).then(function (doc) {
+                        var docs = PouchAdapter.toSiesta([doc]);
+                        if (callback) callback(null, docs.length ? docs[0] : null);
+                    }, wrappedCallback(callback));
                 }
             }
         }
@@ -146,7 +156,21 @@ function getMultipleLocal (localIdentifiers, callback) {
     }
 
     if (results.notCached.length) {
-        throw 'Storage module not installed';
+        PouchAdapter.getPouch().allDocs({keys: results.notCached, include_docs: true}, function (err, docs) {
+            if (err) {
+                finish(err);
+            }
+            else {
+                var rows = _.pluck(docs.rows, 'doc');
+                var models = PouchAdapter.toSiesta(rows);
+                _.each(models, function (m) {
+                    if (m) {
+                        results.cached[m._id] = m;
+                    }
+                });
+                finish();
+            }
+        })
     }
     else {
         finish();
@@ -180,14 +204,29 @@ function getMultipleRemote (remoteIdentifiers, mapping, callback) {
     }
 
     if (results.notCached.length) {
-        throw 'Storage module not installed'
+        var i = new Index(mapping.collection, mapping.type, [mapping.id]);
+        var name = i._getName();
+        PouchAdapter.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
+            if (err) {
+                finish(err);
+            }
+            else {
+                var rows = _.pluck(docs.rows, 'doc');
+                var models = PouchAdapter.toSiesta(rows);
+                _.each(models, function (model) {
+                    var remoteId = model[mapping.id];
+                    results.cached[remoteId] = model;
+                });
+                finish();
+            }
+        });
     }
     else {
         finish();
     }
 }
 
-exports.get = get;
-exports.getMultiple = getMultiple;
-exports.getMultipleLocal = getMultipleLocal;
-exports.getMultipleRemote = getMultipleRemote;
+originalStore.get = get;
+originalStore.getMultiple = getMultiple;
+originalStore.getMultipleLocal = getMultipleLocal;
+originalStore.getMultipleRemote = getMultipleRemote;

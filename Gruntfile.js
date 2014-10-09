@@ -30,14 +30,14 @@ module.exports = function (grunt) {
             },
             build: {
                 files: {
-                    '<%= build_dir %>/siesta.js': ['index.js']
-//                    '<%= build_dir %>/siesta.storage.js': ['src/pouch2/storage.js']
+                    '<%= build_dir %>/siesta.js': ['index.js'],
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js']
                 }
             },
             test: {
                 files: {
-                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js']
-//                    '<%= build_dir %>/siesta.storage.js': ['src/pouch2/pouch.js']
+                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js']
                 }
             }
         },

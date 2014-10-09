@@ -3,7 +3,6 @@ var s = require('../../index')
 
 describe('mapping queries', function () {
 
-    var Pouch = require('../../src/pouch/pouch');
     var SiestaModel = require('../../src/object').SiestaModel;
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;
@@ -23,7 +22,7 @@ describe('mapping queries', function () {
             });
             collection.install(function (err) {
                 if (err) done(err);
-                Pouch.getPouch().bulkDocs([
+                 s.ext.storage.Pouch.getPouch().bulkDocs([
                     {
                         type: 'Car',
                         id: 4,

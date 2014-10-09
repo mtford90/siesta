@@ -1,11 +1,10 @@
 var s = require('../index')
     , assert = require('chai').assert;
 
-describe('attribute changes', function () {
+describe('attribute s.ext.storage.changes', function () {
 
     var Collection = require('../src/collection').Collection
-        , ChangeType = require('../src/changes').ChangeType
-        , changes = require('../src/pouch/changes');
+        , ChangeType = require('../src/changes').ChangeType;
 
     beforeEach(function () {
         s.reset(true);
@@ -42,7 +41,7 @@ describe('attribute changes', function () {
             it('no previous value', function () {
                 var model = carMapping._new();
                 model.colour = 'red';
-                var cs = changes.changesForIdentifier(model._id);
+                var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                 assert.equal(cs.length, 1);
                 var c = cs[0];
                 assert.equal(c.type, ChangeType.Set);
@@ -58,7 +57,7 @@ describe('attribute changes', function () {
                 var model = carMapping._new();
                 model.__values.colour = 'blue';
                 model.colour = 'red';
-                var cs = changes.changesForIdentifier(model._id);
+                var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                 assert.equal(cs.length, 1);
                 var c = cs[0];
                 assert.equal(c.type, ChangeType.Set);
@@ -73,7 +72,7 @@ describe('attribute changes', function () {
             it('remote id', function () {
                 var model = carMapping._new();
                 model.id = 'xyz';
-                var cs = changes.changesForIdentifier(model._id);
+                var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                 assert.equal(cs.length, 1);
                 var c = cs[0];
                 assert.equal(c.type, ChangeType.Set);
@@ -101,7 +100,7 @@ describe('attribute changes', function () {
                 it('no previous value', function () {
                     var model = carMapping._new();
                     model.colours = ['green', 'blue'];
-                    var cs = changes.changesForIdentifier(model._id);
+                    var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                     assert.equal(cs.length, 1);
                     var c = cs[0];
                     assert.equal(c.type, ChangeType.Set);
@@ -118,7 +117,7 @@ describe('attribute changes', function () {
                     var oldColours = ['purple', 'red'];
                     model.__values.colours = oldColours;
                     model.colours = ['green', 'blue'];
-                    var cs = changes.changesForIdentifier(model._id);
+                    var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                     assert.equal(cs.length, 1);
                     var c = cs[0];
                     assert.equal(c.type, ChangeType.Set);
@@ -134,10 +133,10 @@ describe('attribute changes', function () {
             it('push', function (done) {
                 var model = carMapping._new();
                 model.colours = [];
-                changes.resetChanges();
+                s.ext.storage.changes.resetChanges();
                 model.colours.push('red');
                 setTimeout(function () {
-                    var cs = changes.changesForIdentifier(model._id);
+                    var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                     assert.equal(cs.length, 1);
                     var c = cs[0];
                     assert.equal(c.type, ChangeType.Splice);
@@ -156,10 +155,10 @@ describe('attribute changes', function () {
             it('index', function (done) {
                 var model = carMapping._new();
                 model.colours = ['blue', 'green', 'purple'];
-                changes.resetChanges();
+                s.ext.storage.changes.resetChanges();
                 model.colours[1] = 'red';
                 setTimeout(function () {
-                    var cs = changes.changesForIdentifier(model._id);
+                    var cs = s.ext.storage.changes.changesForIdentifier(model._id);
                     assert.equal(cs.length, 1);
                     var c = cs[0];
                     assert.equal(c.type, ChangeType.Splice);

@@ -6,14 +6,11 @@ describe('pouch doc adapter', function () {
 
     var Collection = require('../src/collection').Collection;
 
-    var Pouch = require('../src/pouch/pouch');
-
     var RestError = require('../src/error').RestError;
     var RelationshipType = require('../src/relationship').RelationshipType;
 
     var SiestaModel = require('../src/object').SiestaModel;
     var cache = require('../src/cache');
-    var changes = require('../src/pouch/changes');
     var coreChanges = require('../src/changes');
     var ChangeType = coreChanges.ChangeType;
 
@@ -38,7 +35,7 @@ describe('pouch doc adapter', function () {
 
                 it('absorbs properties', function () {
                     var doc = {name: 'Michael', type: 'Person', collection: 'myCollection', age: 23, _id: 'randomId', _rev: 'randomRev'};
-                    var obj = Pouch.toNew(doc);
+                    var obj = s.ext.storage.Pouch.toNew(doc);
                     assert.equal(obj.name, 'Michael');
                     assert.equal(obj.age, 23);
                     assert.ok(obj.isSaved);
@@ -64,16 +61,16 @@ describe('pouch doc adapter', function () {
             it('existing', function (done) {
                 this.timeout(4000);
                 var doc = {name: 'Michael', age: 12, _id: 'localId', collection: 'MyOnlineCollection', type: 'Person'};
-                Pouch.getPouch().put(doc, function (err, resp) {
+                s.ext.storage.Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
                     collection.Person.map({_id: 'localId', age: 23}, function (err, person) {
                         if (err) done(err);
                         assert.equal(person._id, doc._id);
                         collection.save(function (err) {
                             if (err) done(err);
-                            Pouch.getPouch().get(person._id, function (err, doc) {
+                            s.ext.storage.Pouch.getPouch().get(person._id, function (err, doc) {
                                 if (err) done(err);
-                                var objs = Pouch.toSiesta([doc]);
+                                var objs = s.ext.storage.Pouch.toSiesta([doc]);
                                 assert.equal(objs.length, 1);
                                 assert.equal(objs[0], person);
                                 done();
@@ -89,13 +86,13 @@ describe('pouch doc adapter', function () {
                     if (err) done(err);
                     collection.save(function (err) {
                         if (err) done(err);
-                        Pouch.getPouch().get(person._id, function (err, doc) {
+                        s.ext.storage.Pouch.getPouch().get(person._id, function (err, doc) {
                             if (err) done(err);
                             doc._id = 'randomid';
                             doc._rev = 'randomrev';
                             doc.id = 'randomremoteid';
                             if (err) done(err);
-                            var objs = Pouch.toSiesta([doc]);
+                            var objs = s.ext.storage.Pouch.toSiesta([doc]);
                             assert.equal(objs.length, 1);
                             assert.notEqual(objs[0], person);
                             assert.instanceOf(objs[0], SiestaModel);
@@ -110,27 +107,27 @@ describe('pouch doc adapter', function () {
 
         describe('validation', function () {
             it('No API field', function () {
-                assert.throw(_.bind(Pouch._validate, Pouch, {type: 'Car'}), RestError);
+                assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {type: 'Car'}), RestError);
             });
 
             it('No type field', function (done) {
                 var collection = new Collection('myCollection');
                 collection.install(function (err) {
                     if (err) done(err);
-                    assert.throw(_.bind(Pouch._validate, Pouch, {collection: 'myCollection'}), RestError);
+                    assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection'}), RestError);
                     done();
                 });
             });
 
             it('non existent API', function () {
-                assert.throw(_.bind(Pouch._validate, Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
+                assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
             });
 
             it('non existent type', function (done) {
                 var collection = new Collection('myCollection');
                 collection.install(function (err) {
                     if (err) done(err);
-                    assert.throw(_.bind(Pouch._validate, Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
+                    assert.throw(_.bind(Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
                     done();
                 });
             });
@@ -144,7 +141,7 @@ describe('pouch doc adapter', function () {
                 });
                 collection.install(function (err) {
                     if (err) done(err);
-                    var mapping = Pouch._validate({name: 'Michael', type: 'Person', collection: 'myCollection', age: 23});
+                    var mapping = s.ext.storage.Pouch._validate({name: 'Michael', type: 'Person', collection: 'myCollection', age: 23});
                     assert.ok(mapping);
                     done();
                 });
@@ -165,7 +162,7 @@ describe('pouch doc adapter', function () {
 
             });
 
-            it('pouch adapter should apply unmerged changes', function (done) {
+            it('pouch adapter should apply unmerged s.ext.storage.changes', function (done) {
                 var doc = {
                     collection: 'myCollection',
                     type: 'Car',
@@ -173,10 +170,11 @@ describe('pouch doc adapter', function () {
                     _id: 'localId',
                     name: 'Aston Martin'
                 };
-                Pouch.getPouch().put(doc, function (err, resp) {
+                s.ext.storage.Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
+                    dump(collection.save);
                     doc._rev = resp.rev;
-                    coreChanges.registerChange({
+                    s.ext.storage.changes.registerChange({
                         collection: collection._name,
                         mapping: carMapping.type,
                         field: 'colour',
@@ -185,7 +183,7 @@ describe('pouch doc adapter', function () {
                         old: 'red',
                         _id: 'localId'
                     });
-                    coreChanges.registerChange({
+                    s.ext.storage.changes.registerChange({
                         collection: collection._name,
                         mapping: carMapping.type,
                         field: 'name',
@@ -194,7 +192,8 @@ describe('pouch doc adapter', function () {
                         old: 'Aston Martin',
                         _id: 'localId'
                     });
-                    var models = Pouch.toSiesta([doc]);
+                    dump(changes.allChanges);
+                    var models = s.ext.storage.Pouch.toSiesta([doc]);
                     assert.equal(models[0].colour, 'blue');
                     assert.equal(models[0].name, 'Bentley');
                     done();
@@ -234,7 +233,7 @@ describe('pouch doc adapter', function () {
         it('should convert objects with no relationships successfully', function (done) {
             personMapping.map({name: 'Michael', age: 23, id: 'xyz'}, function (err, person) {
                 if (err) done(err);
-                var adapted = Pouch.from(person);
+                var adapted = s.ext.storage.Pouch.from(person);
                 assert.equal(adapted.name, 'Michael');
                 assert.equal(adapted.age, 23);
                 assert.equal(adapted.id, 'xyz');
@@ -250,7 +249,7 @@ describe('pouch doc adapter', function () {
                 if (err) done(err);
                 carMapping.map({name: 'Aston Martin', id: 'xyz123', owner: {_id: person._id}}, function (err, car) {
                     if (err) done(err);
-                    var adapted = Pouch.from(car);
+                    var adapted = s.ext.storage.Pouch.from(car);
                     assert.equal(adapted.name, 'Aston Martin');
                     assert.equal(adapted.id, 'xyz123');
                     assert.equal(adapted._id, car._id);

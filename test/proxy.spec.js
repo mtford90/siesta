@@ -7,13 +7,11 @@ describe('new object proxy', function () {
     var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;
     var ForeignKeyProxy = require('../src/foreignKeyProxy').ForeignKeyProxy;
     var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
-    var Mapping = require('../src/mapping').Mapping;
     var SiestaModel = require('../src/object').SiestaModel;
     var Fault = require('../src/proxy').Fault;
     var RestError = require('../src/error').RestError;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
-    var changes = require('../src/pouch/changes');
     var ChangeType = require('../src/changes').ChangeType;
 
     var carMapping, personMapping;
@@ -304,9 +302,9 @@ describe('new object proxy', function () {
             describe('none pre-existing', function () {
 
                 function validateChanges() {
-                    var carChanges = changes.changesForIdentifier(car._id);
+                    var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                     assert.equal(carChanges.length, 1);
-                    var personChanges = changes.changesForIdentifier(person._id);
+                    var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                     assert.equal(personChanges.length, 1);
                     var personChange = personChanges[0];
                     var carChange = carChanges[0];
@@ -343,7 +341,7 @@ describe('new object proxy', function () {
                         assert.equal(personProxy.related, car);
                     });
 
-                    it('should set changes', function () {
+                    it('should set s.ext.storage.changes', function () {
                         car.owner = person;
                         validateChanges();
                     });
@@ -365,7 +363,7 @@ describe('new object proxy', function () {
                         assert.equal(carProxy.related, person);
                     });
 
-                    it('should set changes', function () {
+                    it('should set s.ext.storage.changes', function () {
                         person.cars = car;
                         validateChanges();
                     });
@@ -379,11 +377,11 @@ describe('new object proxy', function () {
                 var anotherPerson, anotherPersonProxy;
 
                 function validateChangesNoFault() {
-                    var carChanges = changes.changesForIdentifier(car._id);
+                    var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                     assert.equal(carChanges.length, 2);
-                    var personChanges = changes.changesForIdentifier(person._id);
+                    var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                     assert.equal(personChanges.length, 1);
-                    var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                    var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                     assert.equal(anotherPersonChanges.length, 2);
                     var personChange = personChanges[0];
                     var firstCarChange = carChanges[0];
@@ -425,11 +423,11 @@ describe('new object proxy', function () {
                 }
 
                 function validateChangesFault() {
-                    var carChanges = changes.changesForIdentifier(car._id);
+                    var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                     assert.equal(carChanges.length, 2);
-                    var personChanges = changes.changesForIdentifier(person._id);
+                    var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                     assert.equal(personChanges.length, 1);
-                    var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                    var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                     assert.equal(anotherPersonChanges.length, 2);
                     var personChange = personChanges[0];
                     var firstCarChange = carChanges[0];
@@ -513,7 +511,7 @@ describe('new object proxy', function () {
                             assert.notOk(anotherPersonProxy._id);
                             assert.notOk(anotherPersonProxy.related);
                         });
-                        it('should set changes', function () {
+                        it('should set s.ext.storage.changes', function () {
                             car.owner = person;
                             validateChangesNoFault();
                         });
@@ -542,7 +540,7 @@ describe('new object proxy', function () {
                             assert.notOk(anotherPersonProxy.isFault);
                         });
 
-                        it('should set changes', function () {
+                        it('should set s.ext.storage.changes', function () {
                             person.cars = car;
                             validateChangesNoFault();
                         });
@@ -569,7 +567,7 @@ describe('new object proxy', function () {
                             assert.equal(personProxy.related, car);
                         });
 
-                        it('should set changes', function () {
+                        it('should set s.ext.storage.changes', function () {
                             car.owner = person;
                             validateChangesFault();
                         });
@@ -591,7 +589,7 @@ describe('new object proxy', function () {
                             assert.equal(carProxy.related, person);
                         });
 
-                        it('should set changes', function () {
+                        it('should set s.ext.storage.changes', function () {
                             person.cars = car;
                             validateChangesFault();
                         });
@@ -812,13 +810,13 @@ describe('new object proxy', function () {
                         });
 
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             car.owner = person;
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -899,13 +897,13 @@ describe('new object proxy', function () {
                             assert.equal(anotherPersonProxy.related.length, 0);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             person.cars = [car];
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -990,13 +988,13 @@ describe('new object proxy', function () {
                             assert.include(personProxy.related, car);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             car.owner = person;
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1069,13 +1067,13 @@ describe('new object proxy', function () {
                             assert.equal(carProxy.related, person);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             person.cars = [car];
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1339,13 +1337,13 @@ describe('new object proxy', function () {
                             assert.equal(anotherPersonProxy.related.length, 0);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             car.owners = [person];
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1424,13 +1422,13 @@ describe('new object proxy', function () {
                             assert.include(carProxy.related, person);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             person.cars = [car];
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 1);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1500,13 +1498,13 @@ describe('new object proxy', function () {
                             assert.include(personProxy.related, car);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             car.owners = [person];
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 2);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];
@@ -1581,13 +1579,13 @@ describe('new object proxy', function () {
                             assert.include(carProxy._id, person._id);
                         });
 
-                        it('generates correct changes', function () {
+                        it('generates correct s.ext.storage.changes', function () {
                             person.cars = [car];
-                            var carChanges = changes.changesForIdentifier(car._id);
+                            var carChanges = s.ext.storage.changes.changesForIdentifier(car._id);
                             assert.equal(carChanges.length, 2);
-                            var personChanges = changes.changesForIdentifier(person._id);
+                            var personChanges = s.ext.storage.changes.changesForIdentifier(person._id);
                             assert.equal(personChanges.length, 1);
-                            var anotherPersonChanges = changes.changesForIdentifier(anotherPerson._id);
+                            var anotherPersonChanges = s.ext.storage.changes.changesForIdentifier(anotherPerson._id);
                             assert.equal(anotherPersonChanges.length, 1);
                             var personChange = personChanges[0];
                             var firstCarChange = carChanges[0];

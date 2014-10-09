@@ -1,13 +1,15 @@
-var RestError = require('./../error').RestError;
-var mapping = require('./../mapping');
+var _i = siesta._internal
+    , RestError = _i.error.RestError
+    , mapping = _i.mapping
+    , log = _i.log
+    , util = _i.util
+    , _ = util._
+;
 
 var Pouch = require('./pouch');
-var log = require('../../vendor/operations.js/src/log');
+
 var Logger = log.loggerWithName('Index');
 Logger.setLevel(log.Level.warn);
-
-var _ = require('./../util')._;
-
 
 function combine(a, min) {
     var fn = function (n, src, got, all) {

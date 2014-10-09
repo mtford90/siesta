@@ -8,8 +8,6 @@ var RestError = require('./error').RestError;
 var relationship = require('./relationship');
 var RelationshipType = relationship.RelationshipType;
 var Query = require('./query').Query;
-var index = require('./pouch/index');
-var Index = index.Index;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
 var SiestaModel = require('./object').SiestaModel;
@@ -233,31 +231,9 @@ Mapping.prototype.all = function (callback) {
 
 Mapping.prototype.install = function (callback) {
     if (!this._installed) {
-        var self = this;
         var errors = this._validate();
-        if (!errors.length) {
-            var indexesToInstall = [];
-            _.each(this._fields, function (f) {
-                indexesToInstall.push(f);
-            });
-            for (var prop in this.relationships) {
-                if (this.relationships.hasOwnProperty(prop)) {
-                    var r = self.relationships[prop];
-                    if (r.reverse != prop) {
-                        indexesToInstall.push(prop);
-                    }
-                }
-            }
-            index.installIndexes(this.collection, this.type, indexesToInstall, function (err) {
-                if (!err) {
-                    self._installed = true;
-                }
-                if (callback) callback(err);
-            });
-        }
-        else {
-            if (callback) callback(errors);
-        }
+        this._installed = true;
+        if (callback) callback(errors.length ? errors : null);
     }
     else {
         throw new RestError('Mapping "' + this.type + '" has already been installed');

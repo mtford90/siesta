@@ -11,8 +11,7 @@ describe('mapping new object', function () {
     var RelationshipType = require('../../src/relationship').RelationshipType;
     var ForeignKeyProxy = require('../../src/foreignKeyProxy').ForeignKeyProxy;
     var cache = require('../../src/cache');
-    var changes = require('../../src/pouch/changes');
-    var Pouch = require('../../src/pouch/pouch');
+    
 
     beforeEach(function () {
         s.reset(true);

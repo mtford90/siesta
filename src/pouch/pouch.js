@@ -1,15 +1,17 @@
-var log = require('../../vendor/operations.js/src/log');
+var _i = siesta._internal
+    , log = _i.log
+    , util = _i.util
+    , _ = util._
+    , cache = _i.cache
+    , guid = _i.misc.guid
+    , RestError = _i.error.RestError
+    , CollectionRegistry = _i.CollectionRegistry;
+
 var Logger = log.loggerWithName('Pouch');
 Logger.setLevel(log.Level.warn);
 
-var CollectionRegistry = require('./../collectionRegistry').CollectionRegistry;
-var RestError = require('./../error').RestError;
-var guid = require('./../misc').guid;
-var cache = require('./../cache');
-var util = require('./../util');
-var _ = util._;
-
 var pouch = new PouchDB('siesta', {adapter: 'memory'});
+
 var changeEmitter;
 var changeObservers = [];
 

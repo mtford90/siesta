@@ -11,8 +11,6 @@ var s = require('../../index')
 var Collection = require('../../src/collection').Collection;
 var RelationshipType = require('../../src/relationship').RelationshipType;
 var cache = require('../../src/cache');
-var changes = require('../../src/pouch/changes');
-var Pouch = require('../../src/pouch/pouch');
 
 var async = require('async');
 
@@ -180,7 +178,7 @@ describe('intercollection relationships', function () {
 
 
     /**
-     * Execute the integration test. Seperated out into a function so can be executed having manipulated Pouch
+     * Execute the integration test. Seperated out into a function so can be executed having manipulated s.ext.storage.Pouch
      */
     function tests () {
         describe('local queries', function () {

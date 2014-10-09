@@ -6,40 +6,37 @@
  * On siesta.save() all changes will be merged into the database.
  */
 
-
-//var index = require('../../index');
-//dump(index);
-//var oldReset = index.siesta.reset;
-//
-//
-//index.siesta.reset = function () {
-//    resetChanges();
-//    oldReset.apply(oldReset, arguments);
-//};
-
-var RestError = require('./../error').RestError;
+var _i = siesta._internal
+    , RestError = _i.error.RestError
+    , util = _i.util
+    , _ = util._
+    , Operation = _i.Operation
+    , OperationQueue = _i.OperationQueue
+    , object = _i.object
+    , SiestaModel = object.SiestaModel
+    , extend = _i.extend
+    , log = _i.log
+    , cache = _i.cache
+    , coreChanges = _i.coreChanges
+    , Change = coreChanges.Change
+    , ChangeType = coreChanges.ChangeType
+    , collection = _i.collection
+    ;
 
 var pouch = require('./pouch');
+var index = require('./index');
 
-var util = require('./../util');
-var _ = util._;
-var Operation = require('../../vendor/operations.js/src/operation').Operation;
-var OperationQueue = require('../../vendor/operations.js/src/queue').OperationQueue;
-var SiestaModel = require('./../object').SiestaModel;
-var extend = require('extend');
-
-var coreChanges = require('../changes');
-var Change = coreChanges.Change;
-var ChangeType = coreChanges.ChangeType;
-
-
-var log = require('../../vendor/operations.js/src/log');
-var cache = require('./../cache');
+collection.Collection.prototype.save = function (callback) {
+    util.next(function () {
+        mergeChanges(callback);
+    });
+};
 
 var Logger = log.loggerWithName('changes');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.debug);
 
 var unmergedChanges = {};
+
 
 /**
  * Used to ensure merge operation only finishes once all changes are made to the database.
@@ -49,6 +46,7 @@ var unmergedChanges = {};
  * @type {{}}
  */
 var waitingForObservations = {};
+
 /**
  * Populated by each merge operation that is currently executing. When all observations related to the merged changes
  * are received, this function is called, ending the merge operation.
@@ -66,6 +64,7 @@ pouch.addObserver(function (e) {
                 if (collectionChanges.hasOwnProperty(mappingName)) {
                     var mappingChanges = collectionChanges[mappingName];
                     if (mappingChanges[id]) {
+                        dump('deleting')
                         delete mappingChanges[id];
                         delete waitingForObservations[id];
                         if (!_.keys(waitingForObservations).length && finishWaitingForObservations) {
@@ -83,8 +82,6 @@ pouch.addObserver(function (e) {
 var mergeQueue = new OperationQueue('Merge Queue');
 mergeQueue.maxConcurrentOperations = 1;
 mergeQueue.start();
-
-
 
 function arraysEqual(a, b) {
     if (a === b) return true;
@@ -162,6 +159,7 @@ coreChanges.registerChange = function (opts) {
     var c = oldRegisterChange(opts);
     objChanges.push(c);
 };
+
 
 Change.prototype.apply = function (doc) {
     validateChange.call(this);
@@ -286,19 +284,23 @@ Change.prototype.applySiestaModel = function (model) {
 };
 
 function changesByIdentifiers() {
-    var changes = {};
+    var res = {};
+    dump('unmergedChanges', unmergedChanges);
     for (var collectionName in unmergedChanges) {
         if (unmergedChanges.hasOwnProperty(collectionName)) {
+            dump('collectionName', collectionName);
             var collectionChanges = unmergedChanges[collectionName];
             for (var mappingName in collectionChanges) {
                 if (collectionChanges.hasOwnProperty(mappingName)) {
+                    dump('mappingName', mappingName);
                     var mappingChanges = collectionChanges[mappingName];
-                    extend(changes, mappingChanges);
+                    dump('mappingChanges', mappingChanges);
+                    extend(res, mappingChanges);
                 }
             }
         }
     }
-    return changes;
+    return res;
 }
 
 function changesForIdentifier(ident) {
@@ -310,8 +312,10 @@ function changesForIdentifier(ident) {
  * Merge unmergedChanges into PouchDB
  */
 function mergeChanges(callback) {
-    var changes = changesByIdentifiers();
-    var numChanges = _.keys(changes).length;
+    dump('mergeChanges', unmergedChanges);
+    var changesByIdents = changesByIdentifiers();
+    dump('changesByIdents', changesByIdents);
+    var numChanges = _.keys(changesByIdents).length;
     if (numChanges) {
         if (Logger.debug.isEnabled)
             Logger.debug('Merging ' + numChanges.toString() + ' changes');
@@ -319,8 +323,8 @@ function mergeChanges(callback) {
             if (Logger.debug.isEnabled)
                 Logger.debug('Beggining merge operation');
             var identifiers = [];
-            for (var prop in changes) {
-                if (changes.hasOwnProperty(prop)) {
+            for (var prop in changesByIdents) {
+                if (changesByIdents.hasOwnProperty(prop)) {
                     identifiers.push(prop);
                 }
             }
@@ -354,7 +358,7 @@ function mergeChanges(callback) {
                         else {
                             doc = row.doc;
                         }
-                        var change = changes[doc._id];
+                        var change = changesByIdents[doc._id];
                         _.each(change, function (c) {
                             c.apply(doc);
                         });
@@ -442,9 +446,7 @@ function resetChanges() {
     unmergedChanges = {};
 }
 
-exports.mergeChanges = mergeChanges;
-exports.changesForIdentifier = changesForIdentifier;
-exports.resetChanges = resetChanges;
+
 
 // Use defineProperty so that we can inject unmergedChanges for testing.
 Object.defineProperty(exports, 'changes', {
@@ -453,6 +455,7 @@ Object.defineProperty(exports, 'changes', {
     },
     set: function (v) {
         unmergedChanges = v;
+        dump('unmergedChanges123', unmergedChanges);
     },
     enumerable: true,
     configurable: true
@@ -463,3 +466,37 @@ Object.defineProperty(exports, 'allChanges', {
     enumerable: true,
     configurable: true
 });
+
+function _SiestaModel(mapping) {
+    SiestaModel.call(this, mapping);
+
+    Object.defineProperty(this, 'changes', {
+        get: function () {
+            return changesForIdentifier(self._id);
+        },
+        enumerable: true
+    });
+
+}
+
+_SiestaModel.prototype = Object.create(SiestaModel.prototype);
+_SiestaModel.prototype.applyChanges = function () {
+    if (this._id) {
+        var self = this;
+        _.each(this.changes, function (c) {
+            c.apply(self);
+        });
+    }
+    else {
+        throw new RestError('Cannot apply changes to object with no _id');
+    }
+};
+
+//noinspection JSValidateTypes
+object.SiestaModel = _SiestaModel;
+
+exports._SiestaModel = _SiestaModel;
+exports.registerChange = coreChanges.registerChange;
+exports.mergeChanges = mergeChanges;
+exports.changesForIdentifier = changesForIdentifier;
+exports.resetChanges = resetChanges;

@@ -4,22 +4,15 @@ var s = require('../index')
 
 describe('indexes', function () {
 
-
-    var Index = require('../src/pouch/index').Index;
-    var Pouch = require('../src/pouch/pouch');
-    var index = require('../src/pouch/index');
-    var RawQuery = require('../src/pouch/query').RawQuery;
-
     beforeEach(function () {
         s.reset(true);
-
     });
 
     describe('Index', function () {
         it('index name', function () {
-            var i = new Index('myCollection', 'Car', ['colour', 'name']);
+            var i = new s.ext.storage.Index('myCollection', 'Car', ['colour', 'name']);
             assert.equal(i._getName(), 'myCollection_Index_Car_colour_name');
-            i = new Index('myCollection', 'Car', ['name', 'colour']);
+            i = new s.ext.storage.Index('myCollection', 'Car', ['name', 'colour']);
             assert.equal(i._getName(), 'myCollection_Index_Car_colour_name');
         });
 
@@ -28,7 +21,7 @@ describe('indexes', function () {
 
 
             it('map func', function () {
-                var i = new Index('myCollection', 'Car', ['colour', 'name']);
+                var i = new s.ext.storage.Index('myCollection', 'Car', ['colour', 'name']);
                 var emissions = [];
 
                 function emit(id, doc) {
@@ -48,15 +41,15 @@ describe('indexes', function () {
         });
 
 
-        // Check that queries using the index work as expected with PouchDB.
-        it('pouchdb index', function (done) {
-            var i = new Index('myCollection', 'Car', ['colour', 'name']);
+        // Check that queries using the s.ext.storage.index work as expected with s.ext.storage.PouchDB.
+        it('pouchdb s.ext.storage.index', function (done) {
+            var i = new s.ext.storage.Index('myCollection', 'Car', ['colour', 'name']);
             var view = i._constructPouchDbView();
-            Pouch.getPouch().put(view, function (err, resp) {
+            s.ext.storage.Pouch.getPouch().put(view, function (err, resp) {
                 if (err) done(err);
-                Pouch.getPouch().post({type: 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err, resp) {
+                s.ext.storage.Pouch.getPouch().post({type: 'Car', colour: 'red', name: 'Aston Martin', collection: 'myCollection'}, function (err, resp) {
                     if (err) done(err);
-                    Pouch.getPouch().query(i._getName(), {key: 'red_Aston Martin'}, function (err, resp) {
+                    s.ext.storage.Pouch.getPouch().query(i._getName(), {key: 'red_Aston Martin'}, function (err, resp) {
                         if (err) done(err);
                         assert.equal(resp.total_rows, 1);
                         done();
@@ -66,11 +59,11 @@ describe('indexes', function () {
         });
 
         it('installation', function (done) {
-            var i = new Index('myCollection', 'Car', ['colour', 'name']);
+            var i = new s.ext.storage.Index('myCollection', 'Car', ['colour', 'name']);
             i.install(function (err) {
                 if (err) done(err);
                 assert.include(Index.indexes, i);
-                Pouch.getPouch().get('_design/' + i._getName(), function (err, doc) {
+                s.ext.storage.Pouch.getPouch().get('_design/' + i._getName(), function (err, doc) {
                     if (err) done(err);
                     assert.ok(doc);
                     done();
@@ -81,21 +74,21 @@ describe('indexes', function () {
 
     describe('Indexes', function () {
         it('field combinations', function () {
-            var combinations = index._getFieldCombinations(['field1', 'field2', 'field3']);
+            var combinations = s.ext.storage.index._getFieldCombinations(['field1', 'field2', 'field3']);
             assert.equal(8, combinations.length);
         });
 
         it('indexes', function () {
-            var indexes = index._constructIndexes('myCollection', 'Car', ['field1', 'field2', 'field3']);
-            assert.equal(8, indexes.length);
+            var indexes = s.ext.storage.index._constructIndexes('myCollection', 'Car', ['field1', 'field2', 'field3']);
+            assert.equal(8, s.ext.storage.indexes.length);
             _.each(indexes, function (i) {assert.ok(i.install)});
         });
 
         it('bulk installation', function (done) {
-            index.installIndexes('myCollection', 'Car', ['field1', 'field2', 'field3'], function (err) {
+            s.ext.storage.index.installIndexes('myCollection', 'Car', ['field1', 'field2', 'field3'], function (err) {
                 if (err) done(err);
                 // Should be able to handle conflicts.
-                index.installIndexes('myCollection', 'Car', ['field1', 'field2', 'field3'], function (err) {
+                s.ext.storage.index.installIndexes('myCollection', 'Car', ['field1', 'field2', 'field3'], function (err) {
                     done(err);
                 });
             });
