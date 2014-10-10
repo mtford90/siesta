@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mtford90/rest.git"
+    "url": "git://github.com/mtford90/siesta.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mtford90/rest/issues"
+    "url": "https://github.com/mtford90/siesta/issues"
   },
-  "homepage": "https://github.com/mtford90/rest",
+  "homepage": "https://github.com/mtford90/siesta",
   "devDependencies": {
     "less": "~1.7.4",
     "grunt": "~0.4.5",

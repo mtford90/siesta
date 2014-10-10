@@ -6,26 +6,34 @@ title: Fount
 <div>
   <p class="lead">
     <strong>Siesta</strong> is an object mapping framework for Javascript. It makes it easier to model, consume and 
-    interact with RESTful web services. 
+    interact with RESTful web services.
 </p>
 <hr/>
 
-###Why?
-The main idea behind Siesta is that models should have a **single source of truth** and the belief that anything
-less than this leads to confusion and race conditions when developing complex front-end applications.
+The main idea behind Siesta is that models should have a **single source of truth** - that is - only one local object should
+ever represent a remote resource.
 
-Siesta is heavily inspired by Core Data and RESTKit in this respect.
+You can think of it as an ORM, except that rather than mapping rows to and from a relational database onto
+objects in memory we are mapping JSON data representing remote resources.
 
-###What?
+Siesta provides a declarative API through which we describe the web services that we are going to interact with.
+When data is received from these web services, each object is mapped onto its corresponding local
+representation including any nested related objects.
 
-As ever the best way to explain is by example.
+Siesta then presents powerful ways in which to query and store (thanks to PouchDB) local objects in a 
+browser-agnostic fashion, reducing the number of HTTP requests that need to be sent.
 
-Let's say we're interacting with a web service and receive the following response when querying for a user:
+###The Problem
+
+As ever, the best way to explain is by example.
+
+Let's say we're interacting with a web service describing vehicles and their owners. We fire off a request
+to obtain Mike's user details.
 
 ```javascript
+// GET /users/Mike/
 var userData = {
-    "username": "mike",
-    "id": 10
+    "username": "Mike",
     "cars": [
         {"model": "Bentley", "colour":"Black", id: 11},
         {"model": "Aston Martin", "colour": "Gray", id:12}
@@ -33,14 +41,15 @@ var userData = {
 }
 ```
 
-We then query again for the Bentley and receive the following:
+We then query again for Mike's Bentley and receive the following:
 
 ```javascript
+// GET /cars/11/
 var carData = {
     "model": "Bentley", 
     "colour": "Red", 
     "id": 11,
-    "owner": {"username": "mike", "id": 10}
+    "owner": {"username": "Mike", "id": 10}
 }
 ```
 
@@ -50,41 +59,42 @@ Using traditional methods of interacting with web services we would now
 have two Javascript objects representing our Bentley with id `11`:
 
 ```javascript
-user.cars[0] === car; // False
+userData.cars[0] === carData; // False
 ```
 
 And worst of all:
 
 ```javascript
-console.log(user.cars[0].colour); // Black
-console.log(car.colour); // Red
+console.log(userData.cars[0].colour); // Black
+console.log(carData.colour); // Red
 ```
 
 So not only do we have **two** distinct live objects representing the same remote resource, but one of those
-objects is now out of sync - we have two sources of truth, and one of those sources is lying to us.
+objects is now out of sync - we have two sources of truth, and one of those sources is lying to us!
 
-###How?
+###The Solution
 
-Siesta solves the issue of maintaining a single source of truth through the use of object mapping. A **mapping**
-describes the remote object that we're modeling:
+Siesta solves this issue through the use of object mapping. A **mapping**
+describes the remote object that we're modeling. A **collection** groups mappings. For example we could
+have a collection for each web service with which we are interacting.
 
 ```javascript
 var collection = new Collection('MyCollection');
 
 var User = collection.mapping({
-    id: 'id',
-    attributes: ["username"]
+    id: 'username'
 });
                                    
 var Car = collection.mapping({
     id: 'id',
-    attributes: ["colour", "model"],
-    relationships: {
-        owner: {
+    attributes: [
+        "colour",
+        "model",
+        {
             mapping: User,
             reverse: 'cars'
         }
-    }
+    ]
 });
 ```
 

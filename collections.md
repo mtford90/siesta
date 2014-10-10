@@ -17,4 +17,3 @@ var collection = new siesta.Collection('MyCollection');
 ```javascript
 collection.baseURL = 'http://api.myapp.com';
 ```
-
