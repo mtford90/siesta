@@ -115,3 +115,8 @@ User.map(userData, function (userObject) {
 **Note:** we will rarely need to map data ourselves. Siesta provides an API for sending and receiving
 HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more
 about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
+
+###What next?
+
+Visit our <a href="{{site.baseurl}}/docs.html">Getting Started</a> guide which will walk you through installing
+and configuring Siesta.</br>
