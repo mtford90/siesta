@@ -150,26 +150,6 @@ RawQuery.prototype._dump = function (asJson) {
     return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 
-Query.prototype._rawQuery = function () {
-    return new RawQuery(this.mapping.collection, this.mapping.type, this.query);
-};
 
-Query.prototype.execute = function (callback) {
-    var rawQuery = this._rawQuery();
-    rawQuery.execute(function (err, results) {
-        if (err) {
-            callback(err);
-        }
-        else {
-            if (Logger.debug.isEnabled)
-                Logger.debug('got results', results);
-            if (callback) callback(null, Pouch.toSiesta(results));
-        }
-    });
-};
-
-Query.prototype._dump = function (asJson) {
-    return this._rawQuery()._dump(asJson);
-};
 
 exports.RawQuery = RawQuery;

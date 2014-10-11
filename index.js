@@ -84,6 +84,18 @@ siesta.storageEnabled = false;
 
 siesta.ext = {};
 
+Object.defineProperty(siesta.ext, 'storageEnabled', {
+    get: function () {
+        if (siesta.ext._storageEnabled !== undefined) {
+            return siesta.ext._storageEnabled;
+        }
+        return !!siesta.ext.storage;
+    },
+    set: function (v) {
+        siesta.ext._storageEnabled = v;
+    }
+});
+
 siesta.collection = function (name, opts) {
     return new Collection(name, opts);
 };
