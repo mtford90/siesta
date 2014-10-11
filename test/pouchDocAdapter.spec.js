@@ -191,7 +191,6 @@ describe('pouch doc adapter', function () {
                         old: 'Aston Martin',
                         _id: 'localId'
                     });
-                    dump(s.ext.storage.changes.allChanges);
                     var models = s.ext.storage.Pouch.toSiesta([doc]);
                     assert.equal(models[0].colour, 'blue');
                     assert.equal(models[0].name, 'Bentley');

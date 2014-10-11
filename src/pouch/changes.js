@@ -464,9 +464,6 @@ var oldConstructor = SiestaModel.prototype.constructor;
 function _SiestaModel(mapping) {
     var self = this;
     oldConstructor.call(this, mapping);
-
-//    dump('_SiestaModel constructor');
-
     Object.defineProperty(this, 'changes', {
         get: function () {
             return changesForIdentifier(this._id);

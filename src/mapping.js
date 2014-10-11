@@ -112,7 +112,6 @@ Mapping.prototype.installRelationships = function () {
                         if (!self.collection) throw new RestError('Mapping must have collection');
                         var collection = CollectionRegistry[self.collection];
                         if (!collection) {
-                            dump(CollectionRegistry);
                             throw new RestError('Collection ' + self.collection + ' not registered');
                         }
                         var reverseMapping = collection[mappingName];
@@ -494,8 +493,6 @@ function constructMapFunction(collection, type, fields) {
                     //noinspection JSUnfilteredForInLoop
                     var field = fields[idx];
                     var value = doc[field];
-//                    dump('value', value);
-//                    dump('doc', doc);
                     if (value !== null && value !== undefined) {
                         aggField += value.toString() + '_';
                     }
@@ -506,7 +503,6 @@ function constructMapFunction(collection, type, fields) {
                         aggField += 'undefined_';
                     }
                 }
-//                dump('aggField', aggField);
                 aggField = aggField.substring(0, aggField.length - 1);
                 emit(aggField, doc);
             }
