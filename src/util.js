@@ -331,3 +331,19 @@ exports.next = function (callback) {
     observe.performMicrotaskCheckpoint();
     setTimeout(callback);
 };
+
+/**
+ * Returns a handler that acts upon a callback or a promise depending on the result of a different callback.
+ * @param callback
+ * @param [promise]
+ * @returns {Function}
+ */
+exports.pCallback = function (callback, promise) {
+    return function (err) {
+        if (callback) callback.apply(callback, arguments);
+        if (promise) {
+            if (err) promise.reject(err);
+            else promise.resolve.apply(promise, Array.prototype.slice.call(arguments, 1));
+        }
+    };
+};

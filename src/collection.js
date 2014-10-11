@@ -16,6 +16,8 @@ var observe = require('../vendor/observe-js/src/observe').Platform;
 var util = require('./util');
 var _ = util._;
 
+var q = require('q');
+
 /**
  * @param name
  * @constructor
@@ -37,6 +39,7 @@ function Collection(name) {
  * @param callback
  */
 Collection.prototype.install = function (callback) {
+    var deferred = q.defer();
     var self = this;
     if (!this.installed) {
         var mappingsToInstall = [];
@@ -113,6 +116,7 @@ Collection.prototype.install = function (callback) {
         var err = new RestError('Collection "' + this._name + '" has already been installed');
         self._finaliseInstallation(err, callback);
     }
+    return deferred.promise;
 };
 
 Collection.prototype._finaliseInstallation = function (err, callback) {

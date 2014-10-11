@@ -75,7 +75,8 @@ siesta._internal = {
     util: util,
     _: util._,
     query: require('./src/query'),
-    store: require('./src/store')
+    store: require('./src/store'),
+    q: require('q')
 };
 
 siesta.performanceMonitoringEnabled = false;
