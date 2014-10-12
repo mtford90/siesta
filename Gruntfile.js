@@ -99,7 +99,8 @@ module.exports = function (grunt) {
                     '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js',
                     '<%= build_dir %>/siesta.http.min.js': '<%= build_dir %>/siesta.http.js',
                     '<%= build_dir %>/siesta.perf.min.js': '<%= build_dir %>/siesta.perf.js',
-                    '<%= build_dir %>/siesta.storage.min.js': '<%= build_dir %>/siesta.storage.js'
+                    '<%= build_dir %>/siesta.storage.min.js': '<%= build_dir %>/siesta.storage.js',
+                    '<%= build_dir %>/siesta.bundle.min.js': '<%= build_dir %>/siesta.bundle.js'
                 }
             }
         },
@@ -197,6 +198,16 @@ module.exports = function (grunt) {
 
                 ]
             }
+        },
+
+        concat: {
+            options: {
+                separator: ';'
+            },
+            bundle: {
+                src: ['<%= build_dir %>/siesta.js', '<%= build_dir %>/siesta.http.js', '<%= build_dir %>/siesta.storage.js'],
+                dest: '<%= build_dir %>/siesta.bundle.js'
+            }
         }
 
     };
@@ -219,6 +230,7 @@ module.exports = function (grunt) {
     grunt.registerTask('compile', [
         'browserify:build',
         'copy:build_extensionjs',
+        'concat:bundle',
         'uglify'
     ]);
 
