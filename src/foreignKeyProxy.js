@@ -9,7 +9,10 @@ var proxy = require('./proxy')
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./changes').ChangeType;
+    , ChangeType = require('./changes').ChangeType
+    , q = require('q')
+;
+
 
 
 function ForeignKeyProxy(opts) {
@@ -122,6 +125,8 @@ function wrapArray(arr) {
 
 
 ForeignKeyProxy.prototype.get = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (this.isFault) {
         if (this._id.length) {
@@ -143,6 +148,7 @@ ForeignKeyProxy.prototype.get = function (callback) {
     else {
         if (callback) callback(null, this.related);
     }
+    return deferred.promise;
 };
 
 /**

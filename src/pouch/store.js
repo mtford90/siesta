@@ -6,6 +6,7 @@ var _i = siesta._internal
     , RestError = _i.error.RestError
     , log = _i.log
     , coreStore = _i.store
+    , q = _i.q
 ;
 
 var Logger = log.loggerWithName('Store');
@@ -23,6 +24,8 @@ function getFromPouch(opts, callback) {
 }
 
 function getMultipleLocalFromCouch(results, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     PouchAdapter.getPouch().allDocs({keys: results.notCached, include_docs: true}, function (err, docs) {
         if (err) {
             callback(err);
@@ -37,10 +40,13 @@ function getMultipleLocalFromCouch(results, callback) {
             });
             callback();
         }
-    })
+    });
+    return deferred.promise;
 }
 
 function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var i = new Index(mapping.collection, mapping.type, [mapping.id]);
     var name = i._getName();
     PouchAdapter.getPouch().query(name, {keys: remoteIdentifiers, include_docs: true}, function (err, docs) {
@@ -57,6 +63,7 @@ function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callbac
             callback();
         }
     });
+    return deferred.promise;
 }
 
 exports.getFromPouch = getFromPouch;

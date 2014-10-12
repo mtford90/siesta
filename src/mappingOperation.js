@@ -14,6 +14,7 @@ var util = require('./util');
 var _ = util._;
 var defineSubProperty = require('./misc').defineSubProperty;
 var ChangeType = require('./changes').ChangeType;
+var q = require('q');
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {
@@ -127,6 +128,8 @@ BulkMappingOperation.prototype._map = function () {
  * @private
  */
 BulkMappingOperation.prototype._lookup = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     var remoteLookups = [];
     var localLookups = [];
@@ -217,14 +220,17 @@ BulkMappingOperation.prototype._lookup = function (callback) {
             }
         ],
         callback);
+    return deferred.promise;
 };
 
 BulkMappingOperation.prototype._lookupSingleton = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     var cachedSingleton = cache.get({mapping: this.mapping});
     if (!cachedSingleton) {
-        var q = new Query(this.mapping);
-        q.execute(function (err, objs) {
+        var query = new Query(this.mapping);
+        query.execute(function (err, objs) {
             if (!err) {
                 var obj;
                 if (objs.length) {
@@ -251,8 +257,7 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
         }
         callback();
     }
-
-
+    return deferred.promise;
 };
 
 

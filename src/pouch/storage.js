@@ -2,6 +2,8 @@
 
     var _i = siesta._internal
         , mapping = _i.mapping
+        , q = _i.q
+        , util = _i.util
         , Mapping = mapping.Mapping
     ;
 
@@ -26,6 +28,8 @@
     var oldInstall = mapping.Mapping.prototype.install;
 
     Mapping.prototype.install = function (callback) {
+        var deferred = q.defer();
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var self = this;
         oldInstall.call(this, function (err) {
             if (!err) {
@@ -50,6 +54,7 @@
                 callback(err);
             }
         });
+        return deferred.promise;
     };
 
     if (!siesta.ext) {

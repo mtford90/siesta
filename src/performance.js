@@ -5,9 +5,12 @@
 
     siesta.performanceMonitoringEnabled = true;
 
-    var log = siesta._internal.log
-        , Mapping = siesta._internal.Mapping
-        , _ = siesta._internal.util._;
+    var _i = siesta._internal;
+    var log = _i.log
+        , Mapping = _i.Mapping
+        , util = _i.util
+        , q = _i.q
+    ;
 
     var Logger = log.loggerWithName('Performance');
     Logger.setLevel(log.Level.info);
@@ -30,6 +33,8 @@
     var origMappingGet = Mapping.prototype.get;
 
     Mapping.prototype.get = function (idOrCallback, callback) {
+        var deferred = q.defer();
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var m = new PerformanceMonitor('Mapping.get');
         var id;
         if (typeof idOrCallback == 'function') {
@@ -49,17 +54,21 @@
         else {
             origMappingGet.call(this, c);
         }
+        return deferred.promise;
     };
 
     var origMappingMapBulk = Mapping.prototype._mapBulk;
 
     Mapping.prototype._mapBulk = function (data, callback, override) {
+        var deferred = q.defer();
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var m = new PerformanceMonitor('_mapBulk');
         m.start();
         origMappingMapBulk.call(this, data, function () {
             m.end();
             callback.apply(callback, arguments);
         }, override);
+        return deferred.promise;
     };
 
 })();

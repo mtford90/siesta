@@ -1,9 +1,9 @@
 var log = require('../vendor/operations.js/src/log');
 var cache = require('./cache');
 var Logger = log.loggerWithName('Query');
+var q = require('q');
+var util = require('./util');
 Logger.setLevel(log.Level.warn);
-
-
 
 function Query(mapping, query) {
     this.mapping = mapping;
@@ -17,6 +17,8 @@ function Query(mapping, query) {
  * @private
  */
 function _executeUsingStorageExtension(callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var storageExtension = siesta.ext.storage;
     var RawQuery = storageExtension.RawQuery;
     var Pouch = storageExtension.Pouch;
@@ -31,6 +33,7 @@ function _executeUsingStorageExtension(callback) {
             if (callback) callback(null, Pouch.toSiesta(results));
         }
     });
+    return deferred.promise;
 }
 
 /**
@@ -55,6 +58,8 @@ function objectMatchesQuery(obj) {
  * @private
  */
 function _executeInMemory(callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var cacheByType = cache._localCacheByType;
     dump('cacheByType', cacheByType);
     var mappingName = this.mapping.type;
@@ -79,15 +84,19 @@ function _executeInMemory(callback) {
     else if (callback) {
         callback(null, []);
     }
+    return deferred.promise;
 }
 
 Query.prototype.execute = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (siesta.ext.storageEnabled) {
         _executeUsingStorageExtension.call(this, callback);
     }
     else {
         _executeInMemory.call(this, callback);
     }
+    return deferred.promise;
 };
 
 Query.prototype._dump = function (asJson) {

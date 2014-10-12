@@ -7,8 +7,12 @@ Logger.setLevel(log.Level.warn);
 var util = require('./util');
 var _ = util._;
 var cache = require('./cache');
+var q = require('q');
+
 
 function get(opts, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (Logger.debug.isEnabled)
         Logger.debug('get', opts);
     var siestaModel;
@@ -96,8 +100,12 @@ function get(opts, callback) {
         Logger.error(msg, context);
         wrappedCallback(callback)(new RestError(msg, context));
     }
+    return deferred.promise;
 }
+
 function getMultiple(optsArray, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var docs = [];
     var errors = [];
     _.each(optsArray, function (opts) {
@@ -120,6 +128,7 @@ function getMultiple(optsArray, callback) {
             }
         });
     });
+    return deferred.promise;
 }
 /**
  * Uses pouch bulk fetch API. Much faster than getMultiple.
@@ -127,6 +136,8 @@ function getMultiple(optsArray, callback) {
  * @param callback
  */
 function getMultipleLocal (localIdentifiers, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({_id: _id});
         if (obj) {
@@ -157,9 +168,12 @@ function getMultipleLocal (localIdentifiers, callback) {
     else {
         finish();
     }
+    return deferred.promise;
 }
 
 function getMultipleRemote (remoteIdentifiers, mapping, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {mapping: mapping};
         cacheQuery[mapping.id] = id;
@@ -192,6 +206,7 @@ function getMultipleRemote (remoteIdentifiers, mapping, callback) {
     else {
         finish();
     }
+    return deferred.promise;
 }
 
 exports.get = get;

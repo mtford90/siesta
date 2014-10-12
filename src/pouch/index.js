@@ -3,6 +3,7 @@ var _i = siesta._internal
     , mapping = _i.mapping
     , log = _i.log
     , util = _i.util
+    , q = _i.q
     , _ = util._
 ;
 
@@ -45,6 +46,8 @@ function constructIndexes(collection, modelName, fields) {
 }
 
 function installIndexes(collection, modelName, fields, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var indexes = constructIndexes(collection, modelName, fields);
     var numCompleted = 0;
     var errors = [];
@@ -61,6 +64,7 @@ function installIndexes(collection, modelName, fields, callback) {
             }
         });
     });
+    return deferred.promise;
 }
 
 
@@ -126,6 +130,8 @@ Index.prototype._getName = function () {
 };
 
 Index.prototype.install = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     this._validate();
     var self = this;
     var constructPouchDbView = this._constructPouchDbView();
@@ -145,6 +151,7 @@ Index.prototype.install = function (callback) {
         }
         callback(err, resp);
     });
+    return deferred.promise;
 };
 
 Index.indexes = [];

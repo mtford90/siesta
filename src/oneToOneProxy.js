@@ -3,7 +3,10 @@ var proxy = require('./proxy')
     , Store = require('./store')
     , util = require('./util')
     , RestError = require('./error').RestError
+    , q = require('q')
     , SiestaModel = require('./object').SiestaModel;
+
+
 
 function OneToOneProxy(opts) {
     NewObjectProxy.call(this, opts);
@@ -49,6 +52,8 @@ OneToOneProxy.prototype.set = function (obj) {
 };
 
 OneToOneProxy.prototype.get = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (this._id) {
         Store.get({_id: this._id}, function (err, stored) {
@@ -61,6 +66,7 @@ OneToOneProxy.prototype.get = function (callback) {
             }
         })
     }
+    return deferred.promise;
 };
 
 exports.OneToOneProxy = OneToOneProxy;

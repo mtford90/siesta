@@ -1,10 +1,12 @@
 var _i = siesta._internal
     , mapping = _i.mapping
     , utils = _i.utils
+    , util = _i.utils
     , _ = utils._
     , log = _i.log
     , RestError = _i.error.RestError
     , Query = _i.query.Query
+    , q = _i.q
 ;
 
 var Logger = log.loggerWithName('RawQuery');
@@ -35,6 +37,8 @@ function RawQuery(collection, modelName, query) {
 }
 
 function resultsCallback(callback, err, resp) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (err) {
         if (callback) callback(err);
     }
@@ -42,9 +46,12 @@ function resultsCallback(callback, err, resp) {
         var results = _.pluck(resp.rows, 'value');
         if (callback) callback(null, results);
     }
+    return deferred.promise;
 }
 
 RawQuery.prototype.execute = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.mapping) { // During unit testing, we don't populate this.mapping, but rather configure Pouch manually.
         if (!this.mapping.installed) {
             throw new RestError('Mapping must be installed');
@@ -93,7 +100,8 @@ RawQuery.prototype.execute = function (callback) {
                 finish(err);
             }
         }
-    })
+    });
+    return deferred.promise;
 };
 
 RawQuery.prototype._getFields = function () {

@@ -9,7 +9,9 @@ var proxy = require('./proxy')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , SiestaModel = require('./object').SiestaModel
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./changes').ChangeType;
+    , ChangeType = require('./changes').ChangeType
+    , q = require('q')
+;
 
 
 function ManyToManyProxy(opts) {
@@ -94,6 +96,8 @@ function wrapArray(arr) {
 ManyToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 ManyToManyProxy.prototype.get = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (this.isFault) {
         Store.get({_id: this._id}, function (err, stored) {
@@ -109,6 +113,7 @@ ManyToManyProxy.prototype.get = function (callback) {
     else {
         if (callback) callback(null, this.related);
     }
+    return deferred.promise;
 };
 
 function validate(obj) {

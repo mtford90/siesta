@@ -1,5 +1,7 @@
 var RestError = require('./error').RestError;
 var Store = require('./store');
+var q = require('q');
+
 
 RelationshipType = {
     ForeignKey: 'ForeignKey',
@@ -15,6 +17,8 @@ function RelatedObjectProxy(relationship, object) {
 }
 
 RelatedObjectProxy.prototype.get = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     this.relationship.getRelated(this.object, function (err, related) {
         if (!err) {
@@ -22,18 +26,28 @@ RelatedObjectProxy.prototype.get = function (callback) {
         }
         if (callback) callback(err, related);
     });
+    return deferred.promise;
 };
 
 RelatedObjectProxy.prototype.set = function (obj, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     this.relationship.setRelated(this.object, obj, callback);
+    return deferred.promise;
 };
 
 RelatedObjectProxy.prototype.remove = function (obj, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     this.relationship.removeRelated(this.object, obj, callback);
+    return deferred.promise;
 };
 
 RelatedObjectProxy.prototype.add = function (obj, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     this.relationship.addRelated(this.object, obj, callback);
+    return deferred.promise;
 };
 
 RelatedObjectProxy.prototype.isFault = function () {
@@ -97,6 +111,8 @@ Relationship.prototype.contributeToSiestaModel = function (obj) {
 
 Relationship.prototype.setRelatedById = function (obj, relatedId, callback) {
     var self = this;
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     Store.get({_id: relatedId}, function (err, related) {
         if (err) {
             callback(err);
@@ -106,7 +122,8 @@ Relationship.prototype.setRelatedById = function (obj, relatedId, callback) {
                 if (callback) callback();
             });
         }
-    })
+    });
+    return deferred.promise;
 };
 
 Relationship.prototype._dump = function (asJSON) {

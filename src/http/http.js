@@ -6,6 +6,8 @@
     var Collection = siesta.Collection
         , DescriptorRegistry = siesta._internal.DescriptorRegistry
         , log = siesta._internal.log
+        , util = siesta._internal.util
+        , q = siesta._internal.q
     ;
 
     var Logger = log.loggerWithName('HTTP');
@@ -26,6 +28,8 @@
             opts = args[0];
             callback = args[1];
         }
+        var deferred = q.defer();
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         opts.type = method;
         if (!opts.url) { // Allow overrides.
             var baseURL = this.baseURL;
@@ -81,31 +85,31 @@
     };
 
     Collection.prototype.GET = function () {
-        _.partial(this._httpResponse, 'GET').apply(this, arguments);
+        return _.partial(this._httpResponse, 'GET').apply(this, arguments);
     };
 
     Collection.prototype.OPTIONS = function () {
-        _.partial(this._httpResponse, 'OPTIONS').apply(this, arguments);
+        return _.partial(this._httpResponse, 'OPTIONS').apply(this, arguments);
     };
 
     Collection.prototype.TRACE = function () {
-        _.partial(this._httpRequest, 'TRACE').apply(this, arguments);
+        return _.partial(this._httpRequest, 'TRACE').apply(this, arguments);
     };
 
     Collection.prototype.HEAD = function () {
-        _.partial(this._httpResponse, 'HEAD').apply(this, arguments);
+        return _.partial(this._httpResponse, 'HEAD').apply(this, arguments);
     };
 
     Collection.prototype.POST = function () {
-        _.partial(this._httpRequest, 'POST').apply(this, arguments);
+        return _.partial(this._httpRequest, 'POST').apply(this, arguments);
     };
 
     Collection.prototype.PUT = function () {
-        _.partial(this._httpRequest, 'PUT').apply(this, arguments);
+        return _.partial(this._httpRequest, 'PUT').apply(this, arguments);
     };
 
     Collection.prototype.PATCH = function () {
-        _.partial(this._httpRequest, 'PATCH').apply(this, arguments);
+        return _.partial(this._httpRequest, 'PATCH').apply(this, arguments);
     };
 
     Collection.prototype._httpRequest = function (method, path, object) {
@@ -120,6 +124,8 @@
             opts = args[0];
             callback = args[1];
         }
+        var deferred = q.defer();
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         args = Array.prototype.slice.call(args, 2);
         var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
         var matchedDescriptor;
@@ -154,6 +160,7 @@
                 Logger.trace('Did not match descriptor');
             callback(null, null, null);
         }
+        return deferred.promise;
     };
 
 })();

@@ -338,7 +338,7 @@ exports.next = function (callback) {
  * @param [promise]
  * @returns {Function}
  */
-exports.pCallback = function (callback, promise) {
+exports.constructCallbackAndPromiseHandler = function (callback, promise) {
     return function (err) {
         if (callback) callback.apply(callback, arguments);
         if (promise) {

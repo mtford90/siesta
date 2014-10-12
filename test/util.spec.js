@@ -5,7 +5,7 @@ var s = require('../index')
 var util = require('../src/util');
 var q = require('q');
 
-describe('pCallback', function () {
+describe('constructCallbackAndPromiseHandler', function () {
     describe('no error or result', function () {
         function doSomethingWithNoErrorOrResult (callback) {
             setTimeout(callback);
@@ -13,21 +13,21 @@ describe('pCallback', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorOrResult (util.pCallback(null, deferred));
+            doSomethingWithNoErrorOrResult (util.constructCallbackAndPromiseHandler(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorOrResult (util.pCallback(done));
+            doSomethingWithNoErrorOrResult (util.constructCallbackAndPromiseHandler(done));
         });
 
         it('promise & callback returns', function (done) {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithNoErrorOrResult(util.pCallback(function () {
+            doSomethingWithNoErrorOrResult(util.constructCallbackAndPromiseHandler(function () {
                 callbackReturned = true;
                 if (callbackReturned && promiseReturned) done();
             }, deferred));
@@ -47,14 +47,14 @@ describe('pCallback', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithAnError (util.pCallback(null, deferred));
+            doSomethingWithAnError (util.constructCallbackAndPromiseHandler(null, deferred));
             deferred.promise.fail(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithAnError (util.pCallback(function (err) {
+            doSomethingWithAnError (util.constructCallbackAndPromiseHandler(function (err) {
                 assert.ok(err);
                 done();
             }));
@@ -64,7 +64,7 @@ describe('pCallback', function () {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithAnError(util.pCallback(function (err) {
+            doSomethingWithAnError(util.constructCallbackAndPromiseHandler(function (err) {
                 assert.ok(err);
                 callbackReturned = true;
                 if (callbackReturned && promiseReturned) done();
@@ -85,14 +85,14 @@ describe('pCallback', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorAndASingleResult(util.pCallback(null, deferred));
+            doSomethingWithNoErrorAndASingleResult(util.constructCallbackAndPromiseHandler(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorAndASingleResult (util.pCallback(function (err, res) {
+            doSomethingWithNoErrorAndASingleResult (util.constructCallbackAndPromiseHandler(function (err, res) {
                 assert.notOk(err);
                 assert.equal(res, 'result');
                 done();
@@ -103,7 +103,7 @@ describe('pCallback', function () {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithNoErrorAndASingleResult(util.pCallback(function () {
+            doSomethingWithNoErrorAndASingleResult(util.constructCallbackAndPromiseHandler(function () {
                 callbackReturned = true;
                 if (callbackReturned && promiseReturned) done();
             }, deferred));
@@ -125,14 +125,14 @@ describe('pCallback', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorAndMultipleResults(util.pCallback(null, deferred));
+            doSomethingWithNoErrorAndMultipleResults(util.constructCallbackAndPromiseHandler(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorAndMultipleResults (util.pCallback(function (err, res1, res2, res3) {
+            doSomethingWithNoErrorAndMultipleResults (util.constructCallbackAndPromiseHandler(function (err, res1, res2, res3) {
                 assert.notOk(err);
                 assert.equal(res1, 'result1');
                 assert.equal(res2, 'result2');
@@ -145,7 +145,7 @@ describe('pCallback', function () {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithNoErrorAndMultipleResults(util.pCallback(function (err, res1, res2, res3) {
+            doSomethingWithNoErrorAndMultipleResults(util.constructCallbackAndPromiseHandler(function (err, res1, res2, res3) {
                 try {
                     assert.equal(res1, 'result1');
                     assert.equal(res2, 'result2');
@@ -161,6 +161,7 @@ describe('pCallback', function () {
             deferred.promise.then(function (res1, res2, res3) {
                 try {
                     assert.equal(res1, 'result1');
+                    // Promise resolution only accepts one result...
                     assert.notOk(res2);
                     assert.notOk(res3);
                 }

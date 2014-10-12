@@ -9,6 +9,8 @@ var _ = util._;
 var error = require('./error');
 var RestError = error.RestError;
 
+var q = require('q');
+
 //var queues = {};
 
 function SiestaModel(mapping) {
@@ -99,7 +101,10 @@ SiestaModel.prototype._dump = function (asJson) {
 
 
 SiestaModel.prototype.get = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (callback) callback(null, this);
+    return deferred.promise;
 };
 
 exports.SiestaModel = SiestaModel;

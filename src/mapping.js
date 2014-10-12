@@ -13,7 +13,6 @@ var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
 var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
 var cache = require('./cache');
-
 var store = require('./store');
 
 
@@ -27,6 +26,8 @@ var ManyToManyProxy = require('./manyToManyProxy').ManyToManyProxy;
 
 var util = require('./util');
 var _ = util._;
+var q = require('q');
+
 
 function Mapping(opts) {
     var self = this;
@@ -169,11 +170,16 @@ Mapping.prototype.installReverseRelationships = function () {
 };
 
 Mapping.prototype.query = function (query, callback) {
-    var q = new Query(this, query);
-    q.execute(callback);
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    var _query = new Query(this, query);
+    _query.execute(callback);
+    return deferred.promise;
 };
 
 Mapping.prototype.get = function (idOrCallback, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     function finish(err, res) {
         if (callback) callback(err, res);
     }
@@ -206,8 +212,8 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         }
         else {
             delete opts.mapping;
-            var q = new Query(this, opts);
-            q.execute(function (err, rows) {
+            var query = new Query(this, opts);
+            query.execute(function (err, rows) {
                 var obj = null;
                 if (!err && rows.length) {
                     if (rows.length > 1) {
@@ -222,15 +228,20 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         }
 
     }
-
+    return deferred.promise;
 };
 
 Mapping.prototype.all = function (callback) {
-    var q = new Query(this, {});
-    q.execute(callback);
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    var query = new Query(this, {});
+    query.execute(callback);
+    return deferred.promise;
 };
 
 Mapping.prototype.install = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (!this._installed) {
         var errors = this._validate();
         this._installed = true;
@@ -239,6 +250,7 @@ Mapping.prototype.install = function (callback) {
     else {
         throw new RestError('Mapping "' + this.type + '" has already been installed');
     }
+    return deferred.promise;
 };
 
 Mapping.prototype._validate = function () {
@@ -261,12 +273,14 @@ Mapping.prototype._validate = function () {
  * @param override Force mapping to this object
  */
 Mapping.prototype.map = function (data, callback, override) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.installed) {
         if (util.isArray(data)) {
-            return this._mapBulk(data, callback, override);
+            this._mapBulk(data, callback, override);
         }
         else {
-            return this._mapBulk([data], function (err, objects) {
+            this._mapBulk([data], function (err, objects) {
                 if (callback) {
                     var obj;
                     if (objects) {
@@ -282,11 +296,12 @@ Mapping.prototype.map = function (data, callback, override) {
     else {
         throw new RestError('Mapping must be fully installed before creating any models');
     }
-
+    return deferred.promise;
 };
 
 Mapping.prototype._mapBulk = function (data, callback, override) {
-    dump (this);
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var opts = {mapping: this, data: data};
     if (override) opts.objects = override;
     var op = new BulkMappingOperation(opts);
@@ -301,7 +316,7 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
         }
     });
     op.start();
-    return op;
+    return deferred.promise;
 };
 
 /**

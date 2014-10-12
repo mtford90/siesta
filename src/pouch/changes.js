@@ -21,22 +21,25 @@ var _i = siesta._internal
     , Change = coreChanges.Change
     , ChangeType = coreChanges.ChangeType
     , collection = _i.collection
+    , q = _i.q
     ;
 
 var pouch = require('./pouch');
 var index = require('./index');
 
 collection.Collection.prototype.save = function (callback) {
+    var deferred = q.defer();
     util.next(function () {
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         mergeChanges(callback);
     });
+    return deferred.promise;
 };
 
 var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);
 
 var unmergedChanges = {};
-
 
 /**
  * Used to ensure merge operation only finishes once all changes are made to the database.
@@ -307,6 +310,8 @@ function changesForIdentifier(ident) {
  * Merge unmergedChanges into PouchDB
  */
 function mergeChanges(callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var changesByIdents = changesByIdentifiers();
     var numChanges = _.keys(changesByIdents).length;
     if (numChanges) {
@@ -409,6 +414,7 @@ function mergeChanges(callback) {
             Logger.debug('Nothing to merge');
         callback();
     }
+    return deferred.promise;
 }
 
 /**

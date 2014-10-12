@@ -5,6 +5,8 @@ var Logger = log.loggerWithName('RequestDescriptor');
 Logger.setLevel(log.Level.warn);
 
 var Serialiser = require('./serialiser');
+var q = require('q');
+var util = require('./util');
 
 function RequestDescriptor(opts) {
     if (!this) {
@@ -31,6 +33,8 @@ function RequestDescriptor(opts) {
 RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
 RequestDescriptor.prototype._serialise = function (obj, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (Logger.trace.isEnabled)
         Logger.trace('_serialise');
@@ -52,6 +56,7 @@ RequestDescriptor.prototype._serialise = function (obj, callback) {
         if (Logger.trace.isEnabled)
             Logger.trace('serialiser uses a callback', this.serialiser);
     }
+    return deferred.promise;
 };
 
 RequestDescriptor.prototype._dump = function (asJson) {

@@ -5,6 +5,7 @@ var _i = siesta._internal
     , cache = _i.cache
     , guid = _i.misc.guid
     , RestError = _i.error.RestError
+    , q = _i.q
     , CollectionRegistry = _i.CollectionRegistry;
 
 var Logger = log.loggerWithName('Pouch');
@@ -20,6 +21,8 @@ configureChangeEmitter();
 var POUCH_EVENT = 'change';
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     getPouch().get(docId, function (err, doc) {
         if (err) {
             var msg = 'Unable to get doc with _id="' + docId + '". This is a serious error and means that ' +
@@ -53,6 +56,7 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
             });
         }
     });
+    return deferred.promise;
 }
 
 function configureChangeEmitter() {
@@ -86,11 +90,14 @@ function _reset(inMemory) {
 }
 
 function reset(inMemory, callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (pouch) {
         pouch.destroy();
     }
     _reset(inMemory);
     if (callback) callback();
+    return deferred.promise;
 }
 
 function getPouch() {
