@@ -1,5 +1,4 @@
 var Descriptor = require('./descriptor').Descriptor;
-//var Logger = require('../vendor/operations.js/src/log').loggerWithName('ResponseDescriptor');
 
 function ResponseDescriptor(opts) {
     if (!this) {

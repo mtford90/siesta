@@ -202,6 +202,18 @@ module.exports = function (grunt) {
                 src: ['<%= build_dir %>/siesta.js', '<%= build_dir %>/siesta.http.js', '<%= build_dir %>/siesta.storage.js'],
                 dest: '<%= build_dir %>/siesta.bundle.js'
             }
+        },
+
+        compress: {
+            comp: {
+                files: [
+                    {src: ['<%= build_dir %>/siesta.http.min.js'], dest: '<%= build_dir %>/siesta.http.min.js.gz'},
+                    {src: ['<%= build_dir %>/siesta.bundle.min.js'], dest: '<%= build_dir %>/siesta.bundle.min.js.gz'},
+                    {src: ['<%= build_dir %>/siesta.perf.min.js'], dest: '<%= build_dir %>/siesta.perf.min.js.gz'},
+                    {src: ['<%= build_dir %>/siesta.storage.min.js'], dest: '<%= build_dir %>/siesta.storage.min.js.gz'},
+                    {src: ['<%= build_dir %>/siesta.min.js'], dest: '<%= build_dir %>/siesta.min.js.gz'}
+                ]
+            }
         }
 
     };

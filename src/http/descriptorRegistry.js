@@ -1,8 +1,9 @@
-var log = siesta._internal.log;
+var _i = siesta._internal;
+var log = _i.log;
 var Logger = log.loggerWithName('DescriptorRegistry');
 Logger.setLevel(log.Level.warn);
 
-var assert = require('./../misc').assert;
+var assert = _i.misc.assert;
 
 
 function DescriptorRegistry() {
