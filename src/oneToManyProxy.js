@@ -15,7 +15,7 @@ var proxy = require('./proxy')
 
 
 
-function ForeignKeyProxy(opts) {
+function OneToManyProxy(opts) {
     NewObjectProxy.call(this, opts);
     var self = this;
     Object.defineProperty(this, 'isFault', {
@@ -72,7 +72,7 @@ function ForeignKeyProxy(opts) {
     this._forwardIsArray = false;
 }
 
-ForeignKeyProxy.prototype = Object.create(NewObjectProxy.prototype);
+OneToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
 
 
 
@@ -96,8 +96,8 @@ function setReverse(added) {
 function wrapArray(arr) {
     var self = this;
     wrapArrayForAttributes(arr, this.reverseName, this.object);
-    if (!arr.foreignKeyObserver) {
-        arr.foreignKeyObserver = new ArrayObserver(arr);
+    if (!arr.oneToManyObserver) {
+        arr.oneToManyObserver = new ArrayObserver(arr);
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
@@ -119,12 +119,12 @@ function wrapArray(arr) {
                 });
             });
         };
-        arr.foreignKeyObserver.open(observerFunction);
+        arr.oneToManyObserver.open(observerFunction);
     }
 }
 
 
-ForeignKeyProxy.prototype.get = function (callback) {
+OneToManyProxy.prototype.get = function (callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
@@ -171,7 +171,7 @@ function validate(obj) {
 }
 
 
-ForeignKeyProxy.prototype.set = function (obj) {
+OneToManyProxy.prototype.set = function (obj) {
     proxy.checkInstalled.call(this);
     var self = this;
     if (obj) {
@@ -194,7 +194,7 @@ ForeignKeyProxy.prototype.set = function (obj) {
     }
 };
 
-ForeignKeyProxy.prototype.install = function (obj) {
+OneToManyProxy.prototype.install = function (obj) {
     NewObjectProxy.prototype.install.call(this, obj);
     if (this.isReverse) {
         obj[ ('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
@@ -202,4 +202,4 @@ ForeignKeyProxy.prototype.install = function (obj) {
 };
 
 
-exports.ForeignKeyProxy = ForeignKeyProxy;
+exports.OneToManyProxy = OneToManyProxy;

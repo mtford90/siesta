@@ -30,7 +30,7 @@ describe('http!', function () {
             relationships: {
                 owner: {
                     mapping: 'Person',
-                    type: RelationshipType.ForeignKey,
+                    type: RelationshipType.OneToMany,
                     reverse: 'cars'
                 }
             }

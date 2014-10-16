@@ -25,7 +25,7 @@ describe('serialisers', function () {
                 relationships: {
                     owner: {
                         mapping: 'Person',
-                        type: RelationshipType.ForeignKey,
+                        type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }
                 }
@@ -76,7 +76,7 @@ describe('serialisers', function () {
                 relationships: {
                     owner: {
                         mapping: 'Person',
-                        type: RelationshipType.ForeignKey,
+                        type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }
                 }

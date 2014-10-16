@@ -41,7 +41,7 @@ describe('mapping relationships', function () {
         describe('Foreign Key', function () {
 
             beforeEach(function (done) {
-                configureAPI(RelationshipType.ForeignKey, function (err) {
+                configureAPI(RelationshipType.OneToMany, function (err) {
                     if (err) done(err);
                     done();
                 });
@@ -121,7 +121,7 @@ describe('mapping relationships', function () {
                 relationships: {
                     owner: {
                         mapping: 'asd',
-                        type: RelationshipType.ForeignKey,
+                        type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }
                 }

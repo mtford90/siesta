@@ -29,7 +29,7 @@ describe('intercollection relationships', function () {
             relationships: {
                 createdBy: {
                     mapping: 'User',
-                    type: RelationshipType.ForeignKey,
+                    type: RelationshipType.OneToMany,
                     reverse: 'folders'
                 }
             }
@@ -40,12 +40,12 @@ describe('intercollection relationships', function () {
             relationships: {
                 createdBy: {
                     mapping: 'User',
-                    type: RelationshipType.ForeignKey,
+                    type: RelationshipType.OneToMany,
                     reverse: 'files'
                 },
                 folder: {
                     mapping: 'Folder',
-                    type: RelationshipType.ForeignKey,
+                    type: RelationshipType.OneToMany,
                     reverse: 'files'
                 },
                 photo: {
@@ -79,7 +79,7 @@ describe('intercollection relationships', function () {
             relationships: {
                 createdBy: {
                     mapping: 'User',
-                    type: RelationshipType.ForeignKey,
+                    type: RelationshipType.OneToMany,
                     reverse: 'photos'
                 }
             }

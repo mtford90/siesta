@@ -15,7 +15,7 @@ window.onload = function () {
         relationships: {
             owner: {
                 mapping: 'User',
-                type: 'ForeignKey',
+                type: 'OneToMany',
                 reverse: 'repositories'
             }
         }

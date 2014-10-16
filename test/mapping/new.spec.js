@@ -9,7 +9,7 @@ describe('mapping new object', function () {
     var Collection = require('../../src/collection').Collection;
 
     var RelationshipType = require('../../src/relationship').RelationshipType;
-    var ForeignKeyProxy = require('../../src/foreignKeyProxy').ForeignKeyProxy;
+    var OneToManyProxy = require('../../src/oneToManyProxy').OneToManyProxy;
     var cache = require('../../src/cache');
     
 
@@ -96,19 +96,19 @@ describe('mapping new object', function () {
         }
 
         beforeEach(function (done) {
-            configureAPI(RelationshipType.ForeignKey, 'cars', done);
+            configureAPI(RelationshipType.OneToMany, 'cars', done);
         });
 
         describe('installation of proxies', function () {
 
             it('installs forward related object proxy', function () {
                 var carObject = carMapping._new();
-                assert.instanceOf(carObject.ownerProxy, ForeignKeyProxy);
+                assert.instanceOf(carObject.ownerProxy, OneToManyProxy);
             });
 
             it('installs reverse related object proxy', function () {
                 var personObject = personMapping._new();
-                assert.instanceOf(personObject.carsProxy, ForeignKeyProxy);
+                assert.instanceOf(personObject.carsProxy, OneToManyProxy);
             });
 
         });

@@ -18,7 +18,7 @@ describe('performance', function () {
             relationships: {
                 owner: {
                     mapping: 'User',
-                    type: siesta.RelationshipType.ForeignKey,
+                    type: siesta.RelationshipType.OneToMany,
                     reverse: 'repositories'
                 }
             }

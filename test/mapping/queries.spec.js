@@ -136,7 +136,7 @@ describe('mapping queries', function () {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        type: RelationshipType.ForeignKey,
+                        type: RelationshipType.OneToMany,
                         reverse: 'cars',
                         mapping: 'Person'
                     }

@@ -95,7 +95,7 @@ describe('generation of s.ext.storage.changes during array operations', function
                     relationships: {
                         owner: {
                             mapping: 'Person',
-                            type: RelationshipType.ForeignKey,
+                            type: RelationshipType.OneToMany,
                             reverse: 'cars'
                         }
                     }

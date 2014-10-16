@@ -433,7 +433,7 @@ carMapping = collection.registerMapping('Car', {
     relationships: {
         owner: {
             mapping: 'Person',
-            type: RelationshipType.ForeignKey,
+            type: RelationshipType.OneToMany,
             reverse: 'cars'
         }
     }

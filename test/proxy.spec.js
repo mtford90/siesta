@@ -5,7 +5,7 @@ describe('new object proxy', function () {
 
     var NewObjectProxy = require('../src/proxy').NewObjectProxy;
     var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;
-    var ForeignKeyProxy = require('../src/foreignKeyProxy').ForeignKeyProxy;
+    var OneToManyProxy = require('../src/oneToManyProxy').OneToManyProxy;
     var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
     var SiestaModel = require('../src/object').SiestaModel;
     var Fault = require('../src/proxy').Fault;
@@ -606,13 +606,13 @@ describe('new object proxy', function () {
 
         describe('get', function () {
             beforeEach(function () {
-                carProxy = new ForeignKeyProxy({
+                carProxy = new OneToManyProxy({
                     reverseMapping: personMapping,
                     forwardMapping: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                personProxy = new ForeignKeyProxy({
+                personProxy = new OneToManyProxy({
                     reverseMapping: personMapping,
                     forwardMapping: carMapping,
                     reverseName: 'cars',
@@ -689,13 +689,13 @@ describe('new object proxy', function () {
             var carProxy, personProxy;
             var car, person;
             beforeEach(function () {
-                carProxy = new ForeignKeyProxy({
+                carProxy = new OneToManyProxy({
                     reverseMapping: personMapping,
                     forwardMapping: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner'
                 });
-                personProxy = new ForeignKeyProxy({
+                personProxy = new OneToManyProxy({
                     reverseMapping: personMapping,
                     forwardMapping: carMapping,
                     reverseName: 'cars',
@@ -731,7 +731,7 @@ describe('new object proxy', function () {
                         car.owner = person;
                         var anotherCar = new SiestaModel(carMapping);
                         anotherCar._id = 'anotherCar';
-                        var anotherCarProxy = new ForeignKeyProxy({
+                        var anotherCarProxy = new OneToManyProxy({
                             reverseMapping: personMapping,
                             forwardMapping: carMapping,
                             reverseName: 'cars',
@@ -771,7 +771,7 @@ describe('new object proxy', function () {
                 beforeEach(function () {
                     anotherPerson = new SiestaModel(personMapping);
                     anotherPerson._id = 'anotherPerson';
-                    anotherPersonProxy = new ForeignKeyProxy({
+                    anotherPersonProxy = new OneToManyProxy({
                         reverseMapping: personMapping,
                         forwardMapping: carMapping,
                         reverseName: 'cars',

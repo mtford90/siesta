@@ -39,7 +39,7 @@ describe('intercoll relationships', function () {
         var obj;
 
         beforeEach(function (done) {
-            configureAPI(RelationshipType.ForeignKey, done);
+            configureAPI(RelationshipType.OneToMany, done);
         });
 
         afterEach(function () {
@@ -56,7 +56,7 @@ describe('intercoll relationships', function () {
                     relationships: {
                         person: {
                             mapping: 'myCollection.Person',
-                            type: RelationshipType.ForeignKey,
+                            type: RelationshipType.OneToMany,
                             reverse: 'other'
                         }
                     }

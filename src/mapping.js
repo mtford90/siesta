@@ -20,7 +20,7 @@ var coreChanges = require('./changes');
 var ChangeType = coreChanges.ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;
 
-var ForeignKeyProxy = require('./foreignKeyProxy').ForeignKeyProxy;
+var OneToManyProxy = require('./oneToManyProxy').OneToManyProxy;
 var OneToOneProxy = require('./oneToOneProxy').OneToOneProxy;
 var ManyToManyProxy = require('./manyToManyProxy').ManyToManyProxy;
 
@@ -104,7 +104,7 @@ Mapping.prototype.installRelationships = function () {
                     Logger.debug(self.type + ': configuring relationship ' + name);
                 if (self._opts.relationships.hasOwnProperty(name)) {
                     var relationship = self._opts.relationships[name];
-                    if (relationship.type == RelationshipType.ForeignKey ||
+                    if (relationship.type == RelationshipType.OneToMany ||
                         relationship.type == RelationshipType.OneToOne ||
                         relationship.type == RelationshipType.ManyToMany) {
                         var mappingName = relationship.mapping;
@@ -404,8 +404,8 @@ Mapping.prototype._new = function (data) {
             var proxy;
             if (this.relationships.hasOwnProperty(name)) {
                 var relationship = this.relationships[name];
-                if (relationship.type == RelationshipType.ForeignKey) {
-                    proxy = new ForeignKeyProxy(relationship);
+                if (relationship.type == RelationshipType.OneToMany) {
+                    proxy = new OneToManyProxy(relationship);
                 }
                 else if (relationship.type == RelationshipType.OneToOne) {
                     proxy = new OneToOneProxy(relationship);

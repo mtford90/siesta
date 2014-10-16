@@ -64,7 +64,7 @@ describe('bulk mapping operation', function () {
                 relationships: {
                     owner: {
                         mapping: 'User',
-                        type: RelationshipType.ForeignKey,
+                        type: RelationshipType.OneToMany,
                         reverse: 'repositories'
                     }
                 }
@@ -381,7 +381,7 @@ describe('bulk mapping operation', function () {
                 relationships: {
                     owner: {
                         mapping: 'User',
-                        type: RelationshipType.ForeignKey,
+                        type: RelationshipType.OneToMany,
                         reverse: 'repositories'
                     }
                 }

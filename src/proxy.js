@@ -305,8 +305,8 @@ function clearReverseRelated() {
 
 function makeChangesToRelatedWithoutObservations(f) {
     if (this.related) {
-        this.related.foreignKeyObserver.close();
-        this.related.foreignKeyObserver = null;
+        this.related.oneToManyObserver.close();
+        this.related.oneToManyObserver = null;
         f();
         wrapArray.call(this, this.related);
     }
@@ -389,8 +389,8 @@ function registerSpliceChange(idx, numRemove) {
 function wrapArray(arr) {
     var self = this;
     wrapArrayForAttributes(arr, this.reverseName, this.object);
-    if (!arr.foreignKeyObserver) {
-        arr.foreignKeyObserver = new ArrayObserver(arr);
+    if (!arr.oneToManyObserver) {
+        arr.oneToManyObserver = new ArrayObserver(arr);
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
@@ -408,7 +408,7 @@ function wrapArray(arr) {
                 });
             });
         };
-        arr.foreignKeyObserver.open(observerFunction);
+        arr.oneToManyObserver.open(observerFunction);
     }
 }
 

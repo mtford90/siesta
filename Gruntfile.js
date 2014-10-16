@@ -237,7 +237,8 @@ module.exports = function (grunt) {
         'browserify:build',
         'copy:build_extensionjs',
         'concat:bundle',
-        'uglify'
+        'uglify',
+        'compress'
     ]);
 
     function filterForJS(files) {

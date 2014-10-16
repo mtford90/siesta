@@ -4,7 +4,7 @@ var q = require('q');
 
 
 RelationshipType = {
-    ForeignKey: 'ForeignKey',
+    OneToMany: 'OneToMany',
     OneToOne: 'OneToOne',
     ManyToMany: 'ManyToMany'
 };
