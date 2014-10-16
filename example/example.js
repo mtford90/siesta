@@ -15,7 +15,7 @@ window.onload = function () {
         relationships: {
             owner: {
                 mapping: 'User',
-                type: siesta.RelationshipType.ForeignKey,
+                type: 'ForeignKey',
                 reverse: 'repositories'
             }
         }

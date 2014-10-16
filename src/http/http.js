@@ -84,33 +84,7 @@
         $.ajax(opts);
     };
 
-    Collection.prototype.GET = function () {
-        return _.partial(this._httpResponse, 'GET').apply(this, arguments);
-    };
 
-    Collection.prototype.OPTIONS = function () {
-        return _.partial(this._httpResponse, 'OPTIONS').apply(this, arguments);
-    };
-
-    Collection.prototype.TRACE = function () {
-        return _.partial(this._httpRequest, 'TRACE').apply(this, arguments);
-    };
-
-    Collection.prototype.HEAD = function () {
-        return _.partial(this._httpResponse, 'HEAD').apply(this, arguments);
-    };
-
-    Collection.prototype.POST = function () {
-        return _.partial(this._httpRequest, 'POST').apply(this, arguments);
-    };
-
-    Collection.prototype.PUT = function () {
-        return _.partial(this._httpRequest, 'PUT').apply(this, arguments);
-    };
-
-    Collection.prototype.PATCH = function () {
-        return _.partial(this._httpRequest, 'PATCH').apply(this, arguments);
-    };
 
     Collection.prototype._httpRequest = function (method, path, object) {
         var self = this;

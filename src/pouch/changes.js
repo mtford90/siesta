@@ -27,15 +27,6 @@ var _i = siesta._internal
 var pouch = require('./pouch');
 var index = require('./index');
 
-collection.Collection.prototype.save = function (callback) {
-    var deferred = q.defer();
-    util.next(function () {
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        mergeChanges(callback);
-    });
-    return deferred.promise;
-};
-
 var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);
 
@@ -444,7 +435,6 @@ function allChanges() {
 function resetChanges() {
     unmergedChanges = {};
 }
-
 
 
 // Use defineProperty so that we can inject unmergedChanges for testing.

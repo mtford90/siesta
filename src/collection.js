@@ -19,19 +19,51 @@ var _ = util._;
 var q = require('q');
 
 /**
+ * A collection describes a set of models and optionally a REST API which we would
+ * like to model.
+ *
  * @param name
  * @constructor
+ *
+ * @example
+ * ```js
+ * var GitHub = new Collection('GitHub')
+ * // ... configure mappings, descriptors etc ...
+ * GitHub.install(function () {
+ *     // ... carry on.
+ * });
+ * ```
  */
 function Collection(name) {
+    var self = this;
     if (!this) return new Collection(name);
     if (!name) throw RestError('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
     this._rawMappings = {};
     this._mappings = {};
+    /**
+     * The URL of the API e.g. http://api.github.com
+     * @type {string}
+     */
     this.baseURL = '';
+
+    /**
+     * Set to true if installation has succeeded. You cannot use the collectio
+     * @type {boolean}
+     */
     this.installed = false;
     CollectionRegistry.register(this);
+
+    /**
+     *
+     * @type {string}
+     */
+    Object.defineProperty(this, 'name', {
+        get: function () {
+            return self._name;
+        }
+    });
 }
 
 /**
@@ -118,7 +150,6 @@ Collection.prototype.install = function (callback) {
     }
     return deferred.promise;
 };
-
 Collection.prototype._finaliseInstallation = function (err, callback) {
     if (!err) {
         this.installed = true;
@@ -127,10 +158,6 @@ Collection.prototype._finaliseInstallation = function (err, callback) {
     }
     if (callback) callback(err);
 };
-
-
-
-
 Collection.prototype._mapping = function (name, mapping) {
     if (name) {
         this._rawMappings[name] = mapping;
@@ -146,7 +173,6 @@ Collection.prototype._mapping = function (name, mapping) {
         throw new RestError('No name specified when creating mapping');
     }
 };
-
 Collection.prototype.mapping = function () {
     var self = this;
     if (arguments.length) {
@@ -174,13 +200,11 @@ Collection.prototype.mapping = function () {
     return null;
 };
 
-
 function requestDescriptor(opts) {
     var requestDescriptor = new RequestDescriptor(opts);
     DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
     return requestDescriptor;
 }
-
 function responseDescriptor(opts) {
     var responseDescriptor = new ResponseDescriptor(opts);
     DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
@@ -208,15 +232,12 @@ Collection.prototype._descriptor = function (registrationFunc) {
     }
     return null;
 };
-
 Collection.prototype.requestDescriptor = function () {
     return _.partial(this._descriptor, requestDescriptor).apply(this, arguments);
 };
-
 Collection.prototype.responseDescriptor = function () {
     return _.partial(this._descriptor, responseDescriptor).apply(this, arguments);
 };
-
 Collection.prototype._dump = function (asJson) {
     var obj = {};
     obj.installed = this.installed;
@@ -226,5 +247,98 @@ Collection.prototype._dump = function (asJson) {
     return asJson ? JSON.stringify(obj, null, 4) : obj;
 };
 
-exports.Collection = Collection;
 
+/**
+ * Persist all changes to PouchDB.
+ * Note: Storage extension must be installed.
+ * @param callback
+ * @returns {Promise}
+ */
+Collection.prototype.save = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    if (siesta.ext.storageEnabled) {
+        util.next(function () {
+            var mergeChanges = siesta.ext.storage.changes.mergeChanges;
+            mergeChanges(callback);
+        });
+    }
+    else {
+        callback('Storage module not installed');
+    }
+    return deferred.promise;
+};
+
+
+/**
+ * Send a HTTP request using the given method
+ * @param request Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false
+ * @param method
+ * @returns {*}
+ */
+Collection.prototype.HTTP_METHOD = function (request, method) {
+    if (siesta.ext.storageEnabled) {
+        return _.partial(request ? this._httpRequest : this._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
+    }
+    else {
+        throw Error('Storage extension not installed.');
+    }
+};
+
+/**
+ * Send a GET request
+ * @returns {*}
+ */
+Collection.prototype.GET = function () {
+    return _.partial(this.HTTP_METHOD, false, 'GET').apply(this, arguments);
+};
+
+/**
+ * Send a OPTIONS request
+ * @returns {*}
+ */
+Collection.prototype.OPTIONS = function () {
+    return _.partial(this.HTTP_METHOD, false, 'OPTIONS').apply(this, arguments);
+};
+
+/**
+ * Send a TRACE request
+ * @returns {*}
+ */
+Collection.prototype.TRACE = function () {
+    return _.partial(this.HTTP_METHOD, false, 'TRACE').apply(this, arguments);
+};
+
+/**
+ * Send a HEAD request
+ * @returns {*}
+ */
+Collection.prototype.HEAD = function () {
+    return _.partial(this.HTTP_METHOD, false, 'HEAD').apply(this, arguments);
+};
+
+/**
+ * Send a POST request
+ * @returns {*}
+ */
+Collection.prototype.POST = function () {
+    return _.partial(this.HTTP_METHOD, true, 'POST').apply(this, arguments);
+};
+
+/**
+ * Send a PUT request
+ * @returns {*}
+ */
+Collection.prototype.PUT = function () {
+    return _.partial(this.HTTP_METHOD, true, 'PUT').apply(this, arguments);
+};
+
+/**
+ * Send a PATCH request
+ * @returns {*}
+ */
+Collection.prototype.PATCH = function () {
+    return _.partial(this.HTTP_METHOD, true, 'PATCH').apply(this, arguments);
+};
+
+exports.Collection = Collection;

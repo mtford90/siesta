@@ -12,7 +12,6 @@ describe('http!', function () {
     var DescriptorRegistry = require('../src/descriptorRegistry').DescriptorRegistry;
     var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
 
-
     var collection, carMapping, personMapping, vitalSignsMapping;
 
     var server;
