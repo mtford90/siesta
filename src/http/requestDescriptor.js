@@ -1,12 +1,15 @@
-var Descriptor = require('./descriptor').Descriptor;
-var defineSubProperty = require('./misc').defineSubProperty;
-var log = require('../vendor/operations.js/src/log');
+var Descriptor = require('./descriptor').Descriptor
+    , Serialiser = require('./serialiser');
+
+var _i = siesta._internal
+    , q = _i.q
+    , util = _i.util
+    , log = _i.log
+    , defineSubProperty = _i.misc.defineSubProperty
+;
+
 var Logger = log.loggerWithName('RequestDescriptor');
 Logger.setLevel(log.Level.warn);
-
-var Serialiser = require('./serialiser');
-var q = require('q');
-var util = require('./util');
 
 function RequestDescriptor(opts) {
     if (!this) {

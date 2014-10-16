@@ -31,13 +31,16 @@ module.exports = function (grunt) {
             build: {
                 files: {
                     '<%= build_dir %>/siesta.js': ['index.js'],
-                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js']
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js'],
+                    '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
                 }
             },
             test: {
                 files: {
                     '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
-                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js']
+                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js'],
+                    '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
+
                 }
             }
         },
@@ -70,15 +73,6 @@ module.exports = function (grunt) {
             },
             build_extensionjs: {
                 files: [
-                    {
-                        src: '<%= src_dir %>/http/http.js',
-                        cwd: '.',
-                        expand: true,
-                        flatten: true,
-                        rename: function () {
-                            return 'build/siesta.http.js'
-                        }
-                    },
                     {
                         src: '<%= src_dir %>/performance.js',
                         cwd: '.',

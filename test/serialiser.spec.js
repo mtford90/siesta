@@ -5,7 +5,6 @@ describe('serialisers', function () {
 
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
-    var Serialiser = require('../src/serialiser');
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 
@@ -36,21 +35,21 @@ describe('serialisers', function () {
         it('should return the id if has one', function (done) {
             carMapping.map({colour: 'red', name: 'Aston Martin', id: 5}, function (err, car) {
                 if (err) done(err);
-                assert.equal(Serialiser.idSerialiser(car), car.id);
+                assert.equal(siesta.ext.http.Serialiser.idSerialiser(car), car.id);
                 done();
             });
         });
         it('should return null if doesnt have an id', function (done) {
             carMapping.map({colour: 'red', name: 'Aston Martin'}, function (err, car) {
                 if (err) done(err);
-                assert.equal(Serialiser.idSerialiser(car), null);
+                assert.equal(siesta.ext.http.Serialiser.idSerialiser(car), null);
                 done();
             });
         });
         it('should return null if no id field', function (done) {
             personMapping.map({name: 'Michael Ford', id: 5}, function (err, car) {
                 if (err) done(err);
-                assert.equal(Serialiser.idSerialiser(car), null);
+                assert.equal(siesta.ext.http.Serialiser.idSerialiser(car), null);
                 done();
             });
         });
@@ -93,7 +92,7 @@ describe('serialisers', function () {
         it('depth 0', function (done) {
             carMapping.map({colour: 'red', name: 'Aston Martin', id: 5, owner: {name: 'Michael Ford', id: 28}}, function (err, car) {
                 if (err) done(err);
-                Serialiser.depthSerializer(0)(car, function (err, data) {
+                siesta.ext.http.Serialiser.depthSerializer(0)(car, function (err, data) {
                     if (err) done(err);
                     assert.equal(data.colour, car.colour);
                     assert.equal(data.name, car.name);
@@ -107,7 +106,7 @@ describe('serialisers', function () {
         it('depth 1', function (done) {
             carMapping.map({colour: 'red', name: 'Aston Martin', id: 5, owner: {name: 'Michael Ford', id: 28, vitalSigns: {id: 35, heartRate: 65}}}, function (err, car) {
                 if (err) done(err);
-                Serialiser.depthSerializer(1)(car, function (err, data) {
+                siesta.ext.http.Serialiser.depthSerializer(1)(car, function (err, data) {
                     if (err) done(err);
                     assert.equal(data.colour, car.colour);
                     assert.equal(data.name, car.name);
@@ -122,7 +121,7 @@ describe('serialisers', function () {
         it('depth 2', function (done) {
             carMapping.map({colour: 'red', name: 'Aston Martin', id: 5, owner: {name: 'Michael Ford', id: 28, vitalSigns: {id: 35, heartRate: 65}}}, function (err, car) {
                 if (err) done(err);
-                Serialiser.depthSerializer(2)(car, function (err, data) {
+                siesta.ext.http.Serialiser.depthSerializer(2)(car, function (err, data) {
                     if (err) done(err);
                     assert.equal(data.colour, car.colour);
                     assert.equal(data.name, car.name);

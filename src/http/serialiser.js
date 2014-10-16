@@ -1,8 +1,8 @@
-var log = require('../vendor/operations.js/src/log');
+var log = require('../../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Serialiser');
 Logger.setLevel(log.Level.warn);
 
-var utils = require('./util');
+var utils = require('./../util');
 
 var _ = utils._;
 function idSerialiser(obj) {

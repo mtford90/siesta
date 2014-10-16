@@ -1,17 +1,19 @@
-var log = require('../vendor/operations.js/src/log');
+var _i = siesta._internal
+    , log = _i.log
+    , RestError = _i.error.RestError
+    , assert = _i.misc.assert
+    , defineSubProperty = _i.misc.defineSubProperty
+    , CollectionRegistry = _i.CollectionRegistry
+    , extend = _i.extend
+    , util = _i.util
+    , _ = util._
+    ;
+
 var Logger = log.loggerWithName('Descriptor');
 Logger.setLevel(log.Level.warn);
-var RestError = require('./error').RestError;
-var XRegExp = require('xregexp').XRegExp;
-var assert = require('./misc').assert;
-var defineSubProperty = require('./misc').defineSubProperty;
-var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var extend = require('extend');
-
 // The XRegExp object has these properties that we want to ignore when matching.
 var ignore = ['index', 'input'];
-var util = require('./util');
-var _ = util._;
+var XRegExp = require('xregexp').XRegExp;
 
 
 function Descriptor(opts) {

@@ -3,9 +3,6 @@ var Logger = log.loggerWithName('Collection');
 Logger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
-var RequestDescriptor = require('./requestDescriptor').RequestDescriptor;
-var ResponseDescriptor = require('./responseDescriptor').ResponseDescriptor;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
 var RestError = require('./error').RestError;
 var Mapping = require('./mapping').Mapping;
@@ -201,13 +198,14 @@ Collection.prototype.mapping = function () {
 };
 
 function requestDescriptor(opts) {
-    var requestDescriptor = new RequestDescriptor(opts);
-    DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+    var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
+    siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
     return requestDescriptor;
 }
+
 function responseDescriptor(opts) {
-    var responseDescriptor = new ResponseDescriptor(opts);
-    DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+    var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
+    siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
     return responseDescriptor;
 }
 

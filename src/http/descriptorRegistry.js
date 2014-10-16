@@ -1,8 +1,8 @@
-var log = require('../vendor/operations.js/src/log');
+var log = siesta._internal.log;
 var Logger = log.loggerWithName('DescriptorRegistry');
 Logger.setLevel(log.Level.warn);
 
-var assert = require('./misc').assert;
+var assert = require('./../misc').assert;
 
 
 function DescriptorRegistry() {

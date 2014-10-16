@@ -4,16 +4,27 @@
     }
 
     var Collection = siesta.Collection
-        , DescriptorRegistry = siesta._internal.DescriptorRegistry
         , log = siesta._internal.log
         , util = siesta._internal.util
         , q = siesta._internal.q
-    ;
+        ;
+
+    var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
     var Logger = log.loggerWithName('HTTP');
     Logger.setLevel(log.Level.warn);
 
-    siesta.httpEnabled = true;
+    if (!siesta.ext) {
+        siesta.ext = {};
+    }
+
+    siesta.ext.http = {
+        RequestDescriptor: require('./requestDescriptor').RequestDescriptor,
+        ResponseDescriptor: require('./responseDescriptor').ResponseDescriptor,
+        Descriptor: require('./descriptor').Descriptor,
+        Serialiser: require('./serialiser'),
+        DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry
+    };
 
     Collection.prototype._httpResponse = function (method, path) {
         var self = this;
@@ -83,9 +94,6 @@
         };
         $.ajax(opts);
     };
-
-
-
     Collection.prototype._httpRequest = function (method, path, object) {
         var self = this;
         var args = Array.prototype.slice.call(arguments, 2);

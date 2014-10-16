@@ -2,7 +2,6 @@ var collection = require('./src/collection');
 var util = require('./src/util');
 
 var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
-    , DescriptorRegistry = require('./src/descriptorRegistry').DescriptorRegistry
     , Collection = collection.Collection
     , cache = require('./src/cache')
     , Mapping = require('./src/mapping').Mapping
@@ -12,8 +11,6 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
     , _ = util._;
-
-
 
 
 Operation.logLevel = log.Level.warn;
@@ -35,10 +32,9 @@ siesta.save = function save(callback) {
 siesta.reset = function () {
     cache.reset();
     CollectionRegistry.reset();
-    DescriptorRegistry.reset();
+    siesta.ext.http.DescriptorRegistry.reset();
     //noinspection JSAccessibilityCheck
 };
-
 
 
 siesta.on = _.bind(notificationCentre.on, notificationCentre);
@@ -54,7 +50,6 @@ var coreChanges = require('./src/changes');
 
 // Make available modules to extensions.
 siesta._internal = {
-    DescriptorRegistry: DescriptorRegistry,
     log: log,
     Mapping: Mapping,
     mapping: require('./src/mapping'),
@@ -94,6 +89,18 @@ Object.defineProperty(siesta.ext, 'storageEnabled', {
     },
     set: function (v) {
         siesta.ext._storageEnabled = v;
+    }
+});
+
+Object.defineProperty(siesta.ext, 'httpEnabled', {
+    get: function () {
+        if (siesta.ext._httpEnabled !== undefined) {
+            return siesta.ext._httpEnabled;
+        }
+        return !!siesta.ext.http;
+    },
+    set: function (v) {
+        siesta.ext._httpEnabled = v;
     }
 });
 

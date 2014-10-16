@@ -6,10 +6,7 @@ describe('cache...', function () {
 
     var SiestaModel =  require('../src/object').SiestaModel;
     var Collection =  require('../src/collection').Collection;
-    var ResponseDescriptor =  require('../src/responseDescriptor').ResponseDescriptor;
-    var DescriptorRegistry =  require('../src/descriptorRegistry').DescriptorRegistry;
     var RelationshipType =  require('../src/relationship').RelationshipType;
-    var Mapping =  require('../src/mapping').Mapping;
     var cache =  require('../src/cache');
 
     beforeEach(function (done) {
@@ -98,12 +95,12 @@ describe('cache...', function () {
                 }
             });
             collection.baseURL = 'http://mywebsite.co.uk/';
-            var desc = new ResponseDescriptor({
+            var desc = new siesta.ext.http.ResponseDescriptor({
                 method: 'GET',
                 mapping: carMapping,
                 path: '/cars/(?<id>[0-9])/?'
             });
-            DescriptorRegistry.registerResponseDescriptor(desc);
+            siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(desc);
             collection.install(done);
         });
 

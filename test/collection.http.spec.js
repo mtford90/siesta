@@ -2,15 +2,11 @@ var s = require('../index')
     , assert = require('chai').assert;
 
 
-
 describe('http!', function () {
 
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
     var SiestaModel = require('../src/object').SiestaModel;
-    var ResponseDescriptor = require('../src/responseDescriptor').ResponseDescriptor;
-    var DescriptorRegistry = require('../src/descriptorRegistry').DescriptorRegistry;
-    var RequestDescriptor = require('../src/requestDescriptor').RequestDescriptor;
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 
@@ -66,14 +62,13 @@ describe('http!', function () {
         describe('check', function () {
 
             beforeEach(function (done) {
-
                 configureCollection(done);
-                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/(?<colour>[a-zA-Z0-9]+)/?'
                 }));
-                DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
                     mapping: carMapping,
                     path: '/cars/(?<colour>[a-zA-Z0-9]+)/?'
@@ -161,7 +156,7 @@ describe('http!', function () {
 
                 describe('single', function () {
                     beforeEach(function (done) {
-                        DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                             method: 'GET',
                             mapping: carMapping,
                             path: '/cars/(?<id>[0-9])/?'
@@ -210,7 +205,7 @@ describe('http!', function () {
 
                 describe('multiple', function () {
                     beforeEach(function (done) {
-                        DescriptorRegistry.registerResponseDescriptor(new ResponseDescriptor({
+                        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                             method: 'GET',
                             mapping: carMapping,
                             path: '/cars/?'
@@ -252,18 +247,18 @@ describe('http!', function () {
             var err, obj, resp;
             beforeEach(function (done) {
                 configureCollection(done);
-                var responseDescriptor = new ResponseDescriptor({
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'POST',
                     mapping: carMapping,
                     path: 'cars/?'
                 });
-                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new RequestDescriptor({
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'POST',
                     mapping: carMapping,
                     path: 'cars/?'
                 });
-                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {
@@ -307,18 +302,18 @@ describe('http!', function () {
             var err, obj, resp;
             beforeEach(function (done) {
                 configureCollection(done);
-                var responseDescriptor = new ResponseDescriptor({
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PUT',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
                 });
-                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new RequestDescriptor({
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'PUT',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
                 });
-                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {
@@ -362,18 +357,18 @@ describe('http!', function () {
         describe('PATCH', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                var responseDescriptor = new ResponseDescriptor({
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PATCH',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
                 });
-                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new RequestDescriptor({
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'PATCH',
                     mapping: carMapping,
                     path: '/cars/(?<id>[0-9])/?'
                 });
-                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
                 configureCollection(done);
             });
 
@@ -490,18 +485,18 @@ describe('http!', function () {
             var err, obj, resp;
             beforeEach(function (done) {
                 configureCollection(done);
-                var responseDescriptor = new ResponseDescriptor({
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'TRACE',
                     mapping: carMapping,
                     path: 'cars/'
                 });
-                DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new RequestDescriptor({
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'TRACE',
                     mapping: carMapping,
                     path: 'cars/'
                 });
-                DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {
