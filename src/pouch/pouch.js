@@ -63,10 +63,14 @@ function configureChangeEmitter() {
     if (changeEmitter) {
         changeEmitter.cancel();
     }
+
     changeEmitter = pouch.changes({
         since: 'now',
         live: true
     });
+
+    if (!changeEmitter.on) {Logger.error('For some reason PouchDB.changes is not returning an emitter');}
+    console.log('configuring changeEmitter', changeEmitter);
     _.each(changeObservers, function (o) {
         changeEmitter.on(POUCH_EVENT, o);
     });
@@ -226,6 +230,7 @@ exports.addObserver = function (o) {
     changeObservers.push(o);
     changeEmitter.on(POUCH_EVENT, o);
 };
+
 exports.removeObserver = function (o) {
     var idx = changeObservers.indexOf(o);
     if (idx > -1) {

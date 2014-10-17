@@ -3,16 +3,118 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Example</title>
-    <script src="https://github.com/daleharvey/pouchdb/releases/download/3.0.6/pouchdb-3.0.6.min.js"></script>
-    <!--<script src="https://github.com/daleharvey/pouchdb/releases/download/3.0.6/pouchdb.memory.js"></script>-->
+    <script src="https://github.com/pouchdb/pouchdb/releases/download/3.0.6/pouchdb-3.0.6.js"></script>
+    <script src="https://github.com/pouchdb/pouchdb/releases/download/3.0.6/pouchdb.memory.js"></script>
     <script src="http://underscorejs.org/underscore.js"></script>
     <script src="http://code.jquery.com/jquery-2.1.1.js"></script>
     <script src="../build/siesta.js"></script>
-    <script src="../build/siesta.http.js"></script>
     <script src="../build/siesta.storage.js"></script>
-    <script src="example.js"></script>
+    <script src="../build/siesta.http.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script>
+        var collection;
+
+        function getRepos() {
+            collection.GET('/repositories', function (err, repos) {
+                console.log('Got repos', repos);
+            });
+        }
+
+        window.onload = function () {
+            collection = new siesta.Collection('MyCollection');
+            collection.baseURL = 'https://api.github.com';
+            var Repo = collection.mapping('Repo', {
+                id: 'id',
+                attributes: ['name', 'full_name', 'description'],
+                relationships: {
+                    owner: {
+                        mapping: 'User',
+                        type: 'OneToMany',
+                        reverse: 'repositories'
+                    }
+                }
+            });
+            var User = collection.mapping('User', {
+                id: 'id',
+                attributes: ['login']
+            });
+            collection.responseDescriptor({
+                path: '/repositories',
+                mapping: Repo,
+                method: 'GET'
+            });
+            collection.install(function (err) {
+                if (!err) {
+                    getRepos();
+                }
+                else {
+                    console.error(err);
+                }
+            });
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Open Sans', Helvetica;
+        }
+
+        .repo {
+            height: 300px;
+            background-color: blue;
+        }
+
+        /*#header {*/
+            /*padding-bottom: 10px;*/
+        /*}*/
+
+
+    </style>
 </head>
 <body>
-
+<div class="container">
+    <div class="row" id="header">
+        <div class="col-md-12">
+            <h1 class="text-center">Siesta Github Demo</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="repo">
+                <h2>Silk</h2>
+                <div class="user">
+                    <img src="https://avatars3.githubusercontent.com/u/1734057?v=2&s=40"/>
+                    <span class="username">mtford0</span>
+                </div>
+                <div class="description">
+                    Silky smooth profiling for Django.
+                </div>
+                <div class="stats">
+                    <div class="watchers">
+                        <div class="num">x</div>
+                        <div class="name">watchers</div>
+                    </div>
+                    <div class="stars">
+                        <div class="num">y</div>
+                        <div class="name">stars</div>
+                    </div>
+                    <div class="forks">
+                        <div class="num">z</div>
+                        <div class="name">forks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="repo">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="repo">
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
