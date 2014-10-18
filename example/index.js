@@ -110,6 +110,10 @@ function init() {
 window.onload = init;
 
 function showStats() {
-    var stats = '<ul><li>There are 5 repositories distributed across 12 users<li></ul>';
+    var stats =
+        '<p style="text-align: center !important;">The below provides a summary of the Siesta Object Graph:</p>' +
+        '<p><ul><li>' +
+        'There are 5 repositories distributed across 12 users' +
+        '<li></ul></p>';
     sweetAlert('Statistics', stats)
 }

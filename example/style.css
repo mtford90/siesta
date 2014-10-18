@@ -33,14 +33,18 @@ body {
     cursor: pointer;
 }
 
-.repo:hover .border {
+.repo .border {
     height: 4px;
     width: 100%;
     position: absolute;
     bottom: 0;
     left: 0;
-    background-color: rgb(87, 148, 219);
     z-index: 10;
+    background-color: transparent;
+}
+
+.repo:hover .border {
+    background-color: rgb(87, 148, 219);
 }
 
 .repo .user {
@@ -62,8 +66,6 @@ body {
 .repo .description {
     margin-top: 8px;
 }
-
-
 
 .repo .stats {
     text-align: center;
@@ -100,12 +102,14 @@ body {
     border-left-style: solid;
 }
 
-
 /* Header */
 
 #header {
     background-color: white;
+    padding-left: 15px;
+    padding-right: 15px;
 }
+
 
 #header h3 {
     margin-top: 10px;
@@ -120,7 +124,6 @@ body {
     padding-bottom: 70px;
 }
 
-
 .row .col-md-3 {
     padding-top: 15px;
 }
@@ -133,12 +136,15 @@ body {
     .row .repo-col:not(:first-child) {
         padding-left: 0;
     }
+
     .row:not(:first-child) {
         padding-top: 15px;
     }
+
     .row:first-child {
         padding-top: 0px;
     }
+
     .row .col-md-3 {
         padding-top: 0px;
     }
@@ -148,7 +154,7 @@ body {
 
 #footer {
     background: #18191b;
-    height: 50px;
+    height: 47px;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -157,8 +163,29 @@ body {
 
 #footer #inner-footer {
     margin-top: 6px;
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#footer #inner-footer button#visualise {
+    height: 37px;
+}
+
+#footer #inner-footer .form {
+    float: left;
+}
+
+#footer #inner-footer .form i {
+    color: rgb(153, 153, 153);
+    position: relative;
+    left: 9px;
+    z-index: 2;
+}
+
+#footer #inner-footer .form input, #footer #inner-footer .form .button {
+    position: relative;
+    right: 18px;
+    z-index: 1;
 }
 
 #INPUT_1 {
@@ -166,7 +193,7 @@ body {
     color: rgb(255, 255, 255);
     height: 37px;
     position: relative;
-    width: 216px;
+    width: 160px;
     perspective-origin: 108px 18.5px;
     transform-origin: 108px 18.5px;
     border: 0px none rgb(255, 255, 255);
@@ -192,12 +219,14 @@ body {
     transform-origin: 42.5px 18px;
     background: rgb(91, 164, 229) none repeat scroll 0% 0% / auto padding-box border-box;
     border: 1px solid rgb(69, 152, 226);
-    border-radius: 3px 3px 3px 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
     font: normal normal 300 normal 11px/15.7142858505249px 'Open Sans', sans-serif;
     outline: rgb(255, 255, 255) none 0px;
     padding: 5.5px 15.0699996948242px;
     transition: background 0.2s ease 0s, border-color 0.2s ease 0s;
     position: relative;
+    right: 22px;
     bottom: 2px;
 }
 
@@ -205,22 +234,7 @@ body {
     background-color: rgb(80, 133, 188);
 }
 
-.form {
-    float: left;
-}
 
-.form i {
-    color: rgb(153, 153, 153);
-    position: relative;
-    left: 9px;
-    z-index: 2;
-}
-
-.form input,button {
-    position: relative;
-    right: 18px;
-    z-index: 1;
-}
 
 ul {
     list-style-position: outside;
@@ -232,7 +246,7 @@ ul li {
 }
 
 #statistics-button {
-    margin-top: 6px;
+    margin-top: 5px;
 }
 
 /* Buttons */
@@ -243,7 +257,7 @@ ul li {
     cursor: pointer;
     display: block;
     float: right;
-    height: 35px;
+    height: 37px;
     letter-spacing: 1px;
     text-align: center;
     text-decoration: none;
@@ -263,3 +277,11 @@ ul li {
 .button:hover {
     background-color: rgb(124, 152, 76);
 }
+
+/* Sweet Alert Overrides */
+
+.sweet-alert p {
+    text-align: left !important;
+    margin-top: 10px;
+}
+
