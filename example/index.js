@@ -100,6 +100,9 @@ function query() {
             collection.GET('/search/repositories', {data: {q: text}}, function (err, repos) {
                 fadeSpinnerOutGradually(function () {
                     repositories = repos;
+                    if (!repositories.length) {
+                        $('#no-results').fadeIn(300);
+                    }
                     _.each(repositories, createRepoElement);
                     fadeReposIn();
                 });
@@ -111,10 +114,10 @@ function query() {
     }
 
     fadeSpinnerIn();
+    $('#no-results').fadeOut(300);
     if (!collection) {
-        $('#initial-text').fadeOut(300, function () {
-            init(_query);
-        });
+        $('#initial-text').fadeOut(300);
+        init(_query);
     }
     else {
         _query();

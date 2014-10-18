@@ -26,6 +26,8 @@ body {
     padding-top: 0;
     margin-top: 0;
     margin-bottom: 0;
+    overflow: hidden;
+    margin-right: 5px;
 }
 
 .repo:hover {
@@ -56,6 +58,7 @@ body {
 .repo .user img {
     width: 20px;
 }
+
 
 .repo .user .username {
     position: relative;
@@ -307,7 +310,7 @@ ul li {
 
 .overlay {
     margin: 0;
-    top: 50%; /* 3 */
+    top: 47%; /* 3 */
     transform: translate(0, -50%);
     margin-left: auto;
     margin-right: auto;
