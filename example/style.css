@@ -66,6 +66,8 @@ body {
 
 .repo .description {
     margin-top: 8px;
+    height: 70px;
+    overflow: hidden;
 }
 
 .repo .stats {
@@ -164,8 +166,8 @@ body {
     margin-right: 15px;
 }
 
-#footer #inner-footer button#visualise {
-    height: 37px;
+#footer #inner-footer #visualise {
+    min-width: 93px !important;
 }
 
 #footer #inner-footer .form {
@@ -280,7 +282,7 @@ ul li {
     font-size: 11px;
     outline: rgb(255, 255, 255) none 0px;
     padding: 9.89999961853027px 15.0699996948242px;
-    transition: background 0.3s ease 0s, border-color 0.3s ease 0s, width 1s ease 0s;
+    transition: background 0.3s ease 0s, border-color 0.3s ease 0.3s, width 0.3s ease 0.3s;
 }
 
 .button:hover {
@@ -296,17 +298,28 @@ ul li {
     margin-top: 10px;
 }
 
-#spinner {
-    margin: 0;
-    top: 45%; /* 3 */
-    transform: translate(0, -50%);
-    margin-left: auto;
-    margin-right: auto;
-
-}
-
-#outer-spinner {
+.outer-overlay {
     position: absolute;
     height: 100%;
     width: 100%;
+    pointer-events:none;
+}
+
+.overlay {
+    margin: 0;
+    top: 50%; /* 3 */
+    transform: translate(0, -50%);
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    text-align: center;
+}
+
+#centred-text {
+    font-weight: 100;
+}
+
+.spinner {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
 }

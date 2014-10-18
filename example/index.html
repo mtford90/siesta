@@ -3,8 +3,8 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Example</title>
-    <script src="https://github.com/pouchdb/pouchdb/releases/download/3.0.6/pouchdb-3.0.6.js"></script>
-    <script src="https://github.com/pouchdb/pouchdb/releases/download/3.0.6/pouchdb.memory.js"></script>
+    <script src="https://github.com/pouchdb/pouchdb/releases/download/2.2.3/pouchdb-2.2.3.js"></script>
+    <script src="https://github.com/pouchdb/pouchdb/releases/download/2.2.3/pouchdb.memory.js"></script>
     <script src="http://underscorejs.org/underscore.js"></script>
     <script src="http://code.jquery.com/jquery-2.1.1.js"></script>
     <script src="../build/siesta.js"></script>
@@ -22,10 +22,15 @@
     <script src="index.js"></script>
 </head>
 <body>
-<div id="outer-spinner">
-    <div class="spinner" id="spinner">
+<div class="outer-spinner outer-overlay" id="spinner" style="display: none">
+    <div class="spinner overlay">
         <div class="cube1"></div>
         <div class="cube2"></div>
+    </div>
+</div>
+<div class="outer-overlay" id="initial-text">
+    <div class="overlay">
+        <div id="centred-text">Use the query form to search for GitHub repositories</div>
     </div>
 </div>
 <!-- Begin Template -->
@@ -81,12 +86,12 @@
     <div id="inner-footer">
         <div class="form">
             <i class="glyphicon glyphicon-user"></i>
-            <input id="INPUT_1" placeholder="Username" type="email" name="identification"></input>
-            <button type="submit" class="go-button">
+            <input onkeypress="queryKeyPress(event)" id="INPUT_1" placeholder="Query" type="email" name="identification" ></input>
+            <button type="submit" class="go-button" onclick="query()"">
                 Go
             </button>
         </div>
-        <a href="/settings/billing/" class="button" id="visualise">Visualise</a>
+        <a  class="button" id="visualise" onclick="visualise(this)">Visualise</a>
     </div>
 </div>
 </body>

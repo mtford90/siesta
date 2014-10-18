@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.info);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -240,11 +240,16 @@ Mapping.prototype.all = function (callback) {
 };
 
 Mapping.prototype.install = function (callback) {
+    if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (!this._installed) {
         var errors = this._validate();
         this._installed = true;
+        if (Logger.info.isEnabled) {
+            if (errors.length) Logger.error('Errors installing mapping ' + this.type + ': ' + errors);
+            else Logger.info('Installed mapping ' + this.type);
+        }
         if (callback) callback(errors.length ? errors : null);
     }
     else {

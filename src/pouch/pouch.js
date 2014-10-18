@@ -9,7 +9,7 @@ var _i = siesta._internal
     , CollectionRegistry = _i.CollectionRegistry;
 
 var Logger = log.loggerWithName('Pouch');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.debug);
 
 var pouch = new PouchDB('siesta', {adapter: 'memory'});
 
@@ -60,20 +60,20 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
 }
 
 function configureChangeEmitter() {
-    if (changeEmitter) {
-        changeEmitter.cancel();
-    }
-
-    changeEmitter = pouch.changes({
-        since: 'now',
-        live: true
-    });
-
-    if (!changeEmitter.on) {Logger.error('For some reason PouchDB.changes is not returning an emitter');}
-    console.log('configuring changeEmitter', changeEmitter);
-    _.each(changeObservers, function (o) {
-        changeEmitter.on(POUCH_EVENT, o);
-    });
+//    if (changeEmitter) {
+//        changeEmitter.cancel();
+//    }
+//
+//    changeEmitter = pouch.changes({
+//        since: 'now',
+//        live: true
+//    });
+//
+//    if (!changeEmitter.on) {Logger.error('For some reason PouchDB.changes is not returning an emitter');}
+//    console.log('configuring changeEmitter', changeEmitter);
+//    _.each(changeObservers, function (o) {
+//        changeEmitter.on(POUCH_EVENT, o);
+//    });
 }
 
 function _reset(inMemory) {
@@ -227,14 +227,15 @@ exports.setPouch = function (_p) {
 };
 
 exports.addObserver = function (o) {
-    changeObservers.push(o);
-    changeEmitter.on(POUCH_EVENT, o);
+//    if (Logger.debug.isEnabled) Logger.debug('Adding observer', o);
+//    changeObservers.push(o);
+//    changeEmitter.on(POUCH_EVENT, o);
 };
 
 exports.removeObserver = function (o) {
-    var idx = changeObservers.indexOf(o);
-    if (idx > -1) {
-        changeEmitter.removeListener(POUCH_EVENT, o);
-        changeObservers.splice(idx, 1);
-    }
+//    var idx = changeObservers.indexOf(o);
+//    if (idx > -1) {
+//        changeEmitter.removeListener(POUCH_EVENT, o);
+//        changeObservers.splice(idx, 1);
+//    }
 };

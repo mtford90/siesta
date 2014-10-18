@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Collection');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.debug);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var Operation = require('../vendor/operations.js/src/operation').Operation;

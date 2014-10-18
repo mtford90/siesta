@@ -1,63 +1,23 @@
-var collection;
+var collection
+    , repositories = []
+    ;
 
-var repositories = [
-    {
-        username: 'mtford90',
-        name: 'Silk',
-        description: 'Silky smooth profiling for Django.',
-        watchers: 10,
-        stars: 20,
-        forks: 30,
-        profilePhoto: 'https://avatars3.githubusercontent.com/u/1734057?v=2&s=40'
-    },
-    {
-        username: 'bob',
-        name: 'A Repo',
-        description: 'Description of some Repo',
-        watchers: 2,
-        stars: 1043,
-        forks: 43,
-        profilePhoto: 'https://avatars3.githubusercontent.com/u/1734057?v=2&s=40'
-    },
-    {
-        username: 'mike',
-        name: 'Random Repo',
-        description: 'SOME RANDOM DESCRIPTION',
-        watchers: 43,
-        stars: 134,
-        forks: 23,
-        profilePhoto: 'https://avatars3.githubusercontent.com/u/1734057?v=2&s=40'
-    },
-    {
-        username: 'xfdadf',
-        name: '1309409sudjf',
-        description: 'ckvjbxivbjw',
-        watchers: 433,
-        stars: 3,
-        forks: 223,
-        profilePhoto: 'https://avatars3.githubusercontent.com/u/1734057?v=2&s=40'
-    },
-    {
-        username: 'sd0sdf',
-        name: '94rhvksdf',
-        description: 'sdfsd uisdf sdf sdf',
-        watchers: 3,
-        stars: 56,
-        forks: 1,
-        profilePhoto: 'https://avatars3.githubusercontent.com/u/1734057?v=2&s=40'
-    }
-];
-
-function createRepoElement(opts) {
+function createRepoElement(repoModel) {
     var cloned = $('#template').clone();
     cloned.css('display', 'inherit');
-    cloned.find('.user .username').text(opts.username);
-    cloned.find('h3.name').text(opts.name);
-    cloned.find('.description').text(opts.description);
-    cloned.find('.watchers .num').text(opts.watchers);
-    cloned.find('.stars .num').text(opts.stars);
-    cloned.find('.forks .num').text(opts.forks);
-    cloned.find('img').attr('src', opts.profilePhoto);
+    cloned.find('.user .username').text(repoModel.owner.login);
+    cloned.find('h3.name').text(repoModel.name);
+    cloned.find('.description').text(repoModel.description);
+    cloned.find('.watchers .num').text(repoModel.watchers_count || 0);
+    cloned.find('.stars .num').text(repoModel.stargazers_count || 0);
+    cloned.find('.forks .num').text(repoModel.forks || 0);
+    var url = repoModel.owner.avatar_url;
+    cloned.find('img').attr('src', url);
+    cloned.find('.repo').on('click', function () {
+        var path = repoModel.html_url;
+        console.log('open ' + path);
+        window.open(path, '_blank');
+    });
     var rows = $('#content #repos .row');
     var row;
     for (var i = 0; i < rows.length; i++) {
@@ -79,36 +39,36 @@ function fadeReposOutImmediately(cb) {
 }
 
 function fadeReposOut(t, cb) {
-    $('#content #repos').fadeOut(t, cb);
+    $('#content #repos').finish().fadeOut(t, cb);
 }
 
 function fadeReposIn(cb) {
-    $('#content #repos').fadeIn(300, cb);
+    $('#content #repos').finish().fadeIn(300, cb);
 }
 
-function fadeSpinnerOut(cb) {
-    $('#spinner').fadeOut(300, cb);
+function _fadeSpinnerOut(t, cb) {
+    $('#spinner').finish().fadeOut(t, cb);
+}
+
+function fadeSpinnerOutGradually(cb) {
+    _fadeSpinnerOut(300, cb);
+}
+
+function fadeSpinnerOutImmediately(cb) {
+    _fadeSpinnerOut(0, cb);
 }
 
 function fadeSpinnerIn(cb) {
-    $('#spinner').fadeIn(300, cb);
+    $('#spinner').finish().fadeIn(300, cb);
 }
 
-function getRepos() {
-    fadeReposOutImmediately();
-    fadeSpinnerOut(function () {
-        console.log(1);
-        _.each(repositories, createRepoElement);
-        fadeReposIn();
-    });
-}
-
-function init() {
+function init(cb) {
+    console.log('init');
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
     var Repo = collection.mapping('Repo', {
         id: 'id',
-        attributes: ['name', 'full_name', 'description'],
+        attributes: ['name', 'full_name', 'description', 'html_url', 'watchers_count', 'stargazers_count', 'forks'],
         relationships: {
             owner: {
                 mapping: 'User',
@@ -119,24 +79,70 @@ function init() {
     });
     var User = collection.mapping('User', {
         id: 'id',
-        attributes: ['login']
+        attributes: ['login', 'avatar_url']
     });
     collection.responseDescriptor({
-        path: '/repositories',
+        path: '/search/repositories',
         mapping: Repo,
-        method: 'GET'
+        method: 'GET',
+        data: 'items'
     });
-    collection.install(function (err) {
-        if (!err) {
-            getRepos();
-        }
-        else {
-            console.error(err);
-        }
-    });
+    collection.install(cb);
 }
 
-window.onload = init;
+function query() {
+    var text = $('#INPUT_1').val();
+    $('#INPUT_1').val('');
+    $('#content #repos .row').remove();
+    function _query(err) {
+        console.log('_query');
+        if (!err) {
+            collection.GET('/search/repositories', {data: {q: text}}, function (err, repos) {
+                fadeSpinnerOutGradually(function () {
+                    repositories = repos;
+                    _.each(repositories, createRepoElement);
+                    fadeReposIn();
+                });
+            });
+        }
+        else {
+            alert('TODO: Nicer errors: ' + err);
+        }
+    }
+
+    fadeSpinnerIn();
+    if (!collection) {
+        $('#initial-text').fadeOut(300, function () {
+            init(_query);
+        });
+    }
+    else {
+        _query();
+    }
+}
+
+function queryKeyPress (e) {
+    if (e.keyCode == 13) {
+        query();
+    }
+}
+
+window.onload = function () {
+    fadeReposOutImmediately();
+};
+
+function visualise(btn) {
+    console.log('visualise!', btn);
+    var $btn = $(btn);
+    if ($btn.text().toLowerCase() == 'visualise') {
+        fadeReposOutGradually();
+        $btn.text('Repos');
+    }
+    else {
+        fadeReposIn();
+        $btn.text('Visualise');
+    }
+}
 
 function showStats() {
     var stats =

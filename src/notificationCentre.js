@@ -1,10 +1,10 @@
 var EventEmitter = require('events').EventEmitter;
 var notificationCentre = new EventEmitter();
+notificationCentre.setMaxListeners(100);
 var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 var coreChanges = require('./changes');
 var ChangeType = coreChanges.ChangeType;
 var log = require('../vendor/operations.js/src/log');
-
 
 
 ///**
