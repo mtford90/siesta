@@ -17,10 +17,17 @@
     <script src="../bower_components/sweetalert/lib/sweet-alert.js"></script>
     <link rel="stylesheet" type="text/css" href="../bower_components/sweetalert/lib/sweet-alert.css">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="spinner.css">
     <script src="http://underscorejs.org/underscore.js"></script>
     <script src="index.js"></script>
 </head>
 <body>
+<div id="outer-spinner">
+    <div class="spinner" id="spinner">
+        <div class="cube1"></div>
+        <div class="cube2"></div>
+    </div>
+</div>
 <!-- Begin Template -->
 <div class="col-md-3 repo-col" style="display: none" id="template">
     <div class="repo">
@@ -64,14 +71,18 @@
         <h3>Siesta Github Demo</h3>
         <a class="button" id="statistics-button" onclick="showStats()">Statistics</a>
     </div>
-    <div class="row"></div>
+
+
+    <div id="repos">
+        <div class="row"></div>
+    </div>
 </div>
 <div id="footer">
     <div id="inner-footer">
         <div class="form">
             <i class="glyphicon glyphicon-user"></i>
             <input id="INPUT_1" placeholder="Username" type="email" name="identification"></input>
-            <button type="submit" id="BUTTON_1">
+            <button type="submit" class="go-button">
                 Go
             </button>
         </div>

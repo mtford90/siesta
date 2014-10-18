@@ -19,6 +19,7 @@ body {
     padding-right: 15px;
     padding-top: 15px;
     position: relative;
+    transition: background 0.3s ease 0s, border-color 0.3s ease 0s, width 1s ease 0s;
 }
 
 .repo h3 {
@@ -110,7 +111,6 @@ body {
     padding-right: 15px;
 }
 
-
 #header h3 {
     margin-top: 10px;
     float: left;
@@ -122,14 +122,11 @@ body {
     background-color: #edece4;
     width: 100%;
     padding-bottom: 70px;
+    height: 100%;
 }
 
 .row .col-md-3 {
     padding-top: 15px;
-}
-
-.row {
-    padding-top: 0px;
 }
 
 @media (min-width: 992px) {
@@ -137,14 +134,13 @@ body {
         padding-left: 0;
     }
 
-    .row:not(:first-child) {
+    #repos .row {
         padding-top: 15px;
     }
 
-    .row:first-child {
-        padding-top: 0px;
-    }
-
+    /*.row:first-child {*/
+    /*padding-top: 0px;*/
+    /*}*/
     .row .col-md-3 {
         padding-top: 0px;
     }
@@ -159,10 +155,11 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
+    z-index: 20;
 }
 
 #footer #inner-footer {
-    margin-top: 6px;
+    margin-top: 4px;
     margin-left: 15px;
     margin-right: 15px;
 }
@@ -191,7 +188,7 @@ body {
 #INPUT_1 {
     clear: both;
     color: rgb(255, 255, 255);
-    height: 37px;
+    height: 38px;
     position: relative;
     width: 160px;
     perspective-origin: 108px 18.5px;
@@ -205,11 +202,12 @@ body {
     background-color: rgb(46, 49, 51);
 }
 
-#BUTTON_1 {
+.go-button,
+.sweet-alert .confirm {
     box-shadow: rgba(255, 255, 255, 0.14902) 0px 1px 0px 0px inset;
-    color: rgb(255, 255, 255);
+    color: rgb(255, 255, 255) !important;
     cursor: pointer;
-    height: 37px;
+    height: 38px;
     letter-spacing: 1px;
     min-height: 30px;
     text-transform: uppercase;
@@ -217,24 +215,35 @@ body {
     white-space: nowrap;
     perspective-origin: 42.5px 18px;
     transform-origin: 42.5px 18px;
-    background: rgb(91, 164, 229) none repeat scroll 0% 0% / auto padding-box border-box;
-    border: 1px solid rgb(69, 152, 226);
+    background: rgb(91, 164, 229) none repeat scroll 0% 0% / auto padding-box border-box !important;
+    border: 1px solid rgb(69, 152, 226) !important;
     border-top-right-radius: 3px;
     border-bottom-right-radius: 3px;
     font: normal normal 300 normal 11px/15.7142858505249px 'Open Sans', sans-serif;
     outline: rgb(255, 255, 255) none 0px;
     padding: 5.5px 15.0699996948242px;
     transition: background 0.2s ease 0s, border-color 0.2s ease 0s;
+}
+
+.go-button {
     position: relative;
     right: 22px;
     bottom: 2px;
 }
 
-#BUTTON_1:hover {
-    background-color: rgb(80, 133, 188);
+.sweet-alert .confirm {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-width: 0;
+    width: 100px;
 }
 
-
+.go-button:hover,
+.sweet-alert .confirm:hover {
+    background-color: rgb(80, 133, 188) !important;
+}
 
 ul {
     list-style-position: outside;
@@ -246,7 +255,8 @@ ul li {
 }
 
 #statistics-button {
-    margin-top: 5px;
+    margin-top: 4px;
+    height: 38px;
 }
 
 /* Buttons */
@@ -257,7 +267,7 @@ ul li {
     cursor: pointer;
     display: block;
     float: right;
-    height: 37px;
+    height: 38px;
     letter-spacing: 1px;
     text-align: center;
     text-decoration: none;
@@ -265,7 +275,6 @@ ul li {
     background: rgb(159, 187, 88) none repeat scroll 0% 0% / auto padding-box border-box;
     border: 1px solid rgba(0, 0, 0, 0.0470588);
     border-radius: 3px 3px 3px 3px;
-    line-height: 13px;
     font-variant: normal;
     font-style: normal;
     font-size: 11px;
@@ -276,6 +285,8 @@ ul li {
 
 .button:hover {
     background-color: rgb(124, 152, 76);
+    text-decoration: none;
+    color: rgb(255, 255, 255);
 }
 
 /* Sweet Alert Overrides */
@@ -285,3 +296,17 @@ ul li {
     margin-top: 10px;
 }
 
+#spinner {
+    margin: 0;
+    top: 45%; /* 3 */
+    transform: translate(0, -50%);
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+#outer-spinner {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}

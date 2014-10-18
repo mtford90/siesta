@@ -58,20 +58,49 @@ function createRepoElement(opts) {
     cloned.find('.stars .num').text(opts.stars);
     cloned.find('.forks .num').text(opts.forks);
     cloned.find('img').attr('src', opts.profilePhoto);
-    var rows = $('#content .row');
+    var rows = $('#content #repos .row');
     var row;
-    for (var i = 1; i < rows.length; i++) {
+    for (var i = 0; i < rows.length; i++) {
         row = rows[i];
         if ($(row).children().length < 4) break;
         else row = null;
     }
     if (!row) row = $('<div class="row"></div>');
-    $('#content').append(row);
+    $('#content #repos').append(row);
     $(row).append(cloned);
 }
 
+function fadeReposOutGradually(cb) {
+    fadeReposOut(300, cb);
+}
+
+function fadeReposOutImmediately(cb) {
+    fadeReposOut(0, cb);
+}
+
+function fadeReposOut(t, cb) {
+    $('#content #repos').fadeOut(t, cb);
+}
+
+function fadeReposIn(cb) {
+    $('#content #repos').fadeIn(300, cb);
+}
+
+function fadeSpinnerOut(cb) {
+    $('#spinner').fadeOut(300, cb);
+}
+
+function fadeSpinnerIn(cb) {
+    $('#spinner').fadeIn(300, cb);
+}
+
 function getRepos() {
-    _.each(repositories, createRepoElement);
+    fadeReposOutImmediately();
+    fadeSpinnerOut(function () {
+        console.log(1);
+        _.each(repositories, createRepoElement);
+        fadeReposIn();
+    });
 }
 
 function init() {
