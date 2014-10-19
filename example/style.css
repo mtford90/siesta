@@ -329,6 +329,16 @@ ul li {
     text-align: center;
 }
 
+#initial-text .overlay #centred-text {
+    padding: 40px;
+}
+
+#initial-text .overlay #centred-text p {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #centred-text {
     font-weight: 100;
 }

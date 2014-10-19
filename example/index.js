@@ -127,8 +127,9 @@ function query() {
     fadeSpinnerIn();
     $('#no-results').fadeOut(300);
     if (!collection) {
-        $('#initial-text').fadeOut(300);
-        init(_query);
+        $('#initial-text').fadeOut(300, function () {
+            init(_query);
+        });
     }
     else {
         _query();
@@ -149,10 +150,12 @@ function visualise(btn) {
     console.log('visualise!', btn);
     var $btn = $(btn);
     if ($btn.text().toLowerCase() == 'visualise') {
+        if (!collection) $('#initial-text').fadeOut(300);
         fadeReposOutGradually();
         $btn.text('Repos');
     }
     else {
+        if (!collection) $('#initial-text').fadeIn(300);
         fadeReposIn();
         $btn.text('Visualise');
     }
