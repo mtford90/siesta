@@ -138,16 +138,17 @@ body {
     padding-bottom: 70px;
     padding-top: 50px;
     height: 100%;
+    padding-left: 25px;
+    padding-right: 25px;
 }
 
 .row .col-md-3 {
     padding-top: 15px;
+    padding-left: 7px;
+    padding-right: 7px;
 }
 
 @media (min-width: 992px) {
-    .row .repo-col:not(:first-child) {
-        padding-left: 0;
-    }
 
     #repos .row {
         padding-top: 15px;
