@@ -124,7 +124,7 @@ function query() {
     }
 }
 
-function queryKeyPress (e) {
+function queryKeyPress(e) {
     if (e.keyCode == 13) {
         query();
     }
@@ -150,8 +150,17 @@ function visualise(btn) {
 function showStats() {
     var stats =
         '<p style="text-align: center !important;">The below provides a summary of the Siesta Object Graph:</p>' +
-        '<p><ul><li>' +
-        'There are 5 repositories distributed across 12 users' +
-        '<li></ul></p>';
+        '<p><ul>' +
+        '<li>$NUM_REPOS repositories</li>' +
+        '<li>$NUM_USERS users</li>' +
+        '</ul></p>';
+    var localCacheByType = siesta._internal.cache._localCacheByType;
+    var collCache = localCacheByType['MyCollection'];
+    var repoCache = collCache ? collCache['Repo'] : {};
+    var userCache = collCache ? collCache['User'] : {};
+    var numRepos = Object.keys(repoCache ? repoCache : {}).length;
+    var numUsers = Object.keys(userCache ? userCache : {}).length;
+    stats = stats.replace('$NUM_REPOS', numRepos);
+    stats = stats.replace('$NUM_USERS', numUsers);
     sweetAlert('Statistics', stats)
 }

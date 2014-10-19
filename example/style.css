@@ -114,6 +114,15 @@ body {
     background-color: white;
     padding-left: 15px;
     padding-right: 15px;
+    height: 47px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    border-bottom-color: rgb(233, 231, 222);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
 }
 
 #header h3 {
@@ -127,6 +136,7 @@ body {
     background-color: #edece4;
     width: 100%;
     padding-bottom: 70px;
+    padding-top: 50px;
     height: 100%;
 }
 
