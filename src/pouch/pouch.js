@@ -11,7 +11,7 @@ var _i = siesta._internal
 var Logger = log.loggerWithName('Pouch');
 Logger.setLevel(log.Level.debug);
 
-var pouch = new PouchDB('siesta', {adapter: 'memory'});
+var pouch = new PouchDB('siesta');
 
 var changeEmitter;
 var changeObservers = [];
@@ -60,20 +60,18 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
 }
 
 function configureChangeEmitter() {
-//    if (changeEmitter) {
-//        changeEmitter.cancel();
-//    }
-//
-//    changeEmitter = pouch.changes({
-//        since: 'now',
-//        live: true
-//    });
-//
-//    if (!changeEmitter.on) {Logger.error('For some reason PouchDB.changes is not returning an emitter');}
-//    console.log('configuring changeEmitter', changeEmitter);
-//    _.each(changeObservers, function (o) {
-//        changeEmitter.on(POUCH_EVENT, o);
-//    });
+    if (changeEmitter) {
+        changeEmitter.cancel();
+    }
+
+    changeEmitter = pouch.changes({
+        since: 'now',
+        live: true
+    });
+
+    _.each(changeObservers, function (o) {
+        changeEmitter.on(POUCH_EVENT, o);
+    });
 }
 
 function _reset(inMemory) {
@@ -162,26 +160,26 @@ function toNew(doc) {
 
 function toSiesta(docs) {
     if (Logger.debug.isEnabled) Logger.debug('toSiesta');
-        var mapped = [];
-        for (var i = 0; i < docs.length; i++) {
-            var doc = docs[i];
-            if (doc) {
-                var opts = {_id: doc._id};
-                var cached = cache.get(opts);
-                if (cached) {
-                    mapped[i] = cached;
-                }
-                else {
-                    mapped[i] = toNew(doc);
-                    cache.insert(mapped[i]);
-                    mapped[i].applyChanges();  // Apply unsaved changes.
-                }
+    var mapped = [];
+    for (var i = 0; i < docs.length; i++) {
+        var doc = docs[i];
+        if (doc) {
+            var opts = {_id: doc._id};
+            var cached = cache.get(opts);
+            if (cached) {
+                mapped[i] = cached;
             }
             else {
-                mapped[i] = null;
+                mapped[i] = toNew(doc);
+                cache.insert(mapped[i]);
+                mapped[i].applyChanges();  // Apply unsaved changes.
             }
         }
-        return mapped;
+        else {
+            mapped[i] = null;
+        }
+    }
+    return mapped;
 }
 
 function from(obj) {
@@ -224,18 +222,19 @@ exports.reset = reset;
 exports.getPouch = getPouch;
 exports.setPouch = function (_p) {
     pouch = _p;
+    configureChangeEmitter();
 };
 
 exports.addObserver = function (o) {
-//    if (Logger.debug.isEnabled) Logger.debug('Adding observer', o);
-//    changeObservers.push(o);
-//    changeEmitter.on(POUCH_EVENT, o);
+    if (Logger.debug.isEnabled) Logger.debug('Adding observer', o);
+    changeObservers.push(o);
+    if (changeEmitter) changeEmitter.on(POUCH_EVENT, o);
 };
 
 exports.removeObserver = function (o) {
-//    var idx = changeObservers.indexOf(o);
-//    if (idx > -1) {
-//        changeEmitter.removeListener(POUCH_EVENT, o);
-//        changeObservers.splice(idx, 1);
-//    }
+    var idx = changeObservers.indexOf(o);
+    if (idx > -1) {
+        if (changeEmitter) changeEmitter.removeListener(POUCH_EVENT, o);
+        changeObservers.splice(idx, 1);
+    }
 };

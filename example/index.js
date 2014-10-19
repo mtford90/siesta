@@ -63,6 +63,7 @@ function fadeSpinnerIn(cb) {
 }
 
 function init(cb) {
+    siesta.setPouch(new PouchDB('siesta-mem', {adapter: 'memory'}))
     console.log('init');
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';

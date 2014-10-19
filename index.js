@@ -80,6 +80,15 @@ siesta.storageEnabled = false;
 
 siesta.ext = {};
 
+Object.defineProperty(siesta, 'setPouch', {
+    get: function () {
+        if (siesta.ext.storageEnabled) {
+            return siesta.ext.storage.pouch.setPouch;
+        }
+        return null;
+    }
+});
+
 Object.defineProperty(siesta.ext, 'storageEnabled', {
     get: function () {
         if (siesta.ext._storageEnabled !== undefined) {
