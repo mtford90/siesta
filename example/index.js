@@ -63,7 +63,7 @@ function fadeSpinnerIn(cb) {
 }
 
 function init(cb) {
-    siesta.setPouch(new PouchDB('siesta-mem', {adapter: 'memory'}))
+    siesta.setPouch(new PouchDB('siesta'))
     console.log('init');
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
@@ -99,14 +99,24 @@ function query() {
         console.log('_query');
         if (!err) {
             collection.GET('/search/repositories', {data: {q: text}}, function (err, repos) {
-                fadeSpinnerOutGradually(function () {
-                    repositories = repos;
-                    if (!repositories.length) {
-                        $('#no-results').fadeIn(300);
+                siesta.save(function (err) {
+                    if (err) {
+                        fadeSpinnerOutGradually(function () {
+                            alert('TODO: Nicer errors: ' + err);
+                        });
                     }
-                    _.each(repositories, createRepoElement);
-                    fadeReposIn();
+                    else {
+                        fadeSpinnerOutGradually(function () {
+                            repositories = repos;
+                            if (!repositories.length) {
+                                $('#no-results').fadeIn(300);
+                            }
+                            _.each(repositories, createRepoElement);
+                            fadeReposIn();
+                        });
+                    }
                 });
+
             });
         }
         else {

@@ -10,6 +10,7 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue
     , RelationshipType = require('./src/relationship').RelationshipType
     , log = require('./vendor/operations.js/src/log')
+    , q = require('q')
     , _ = util._;
 
 
@@ -26,7 +27,18 @@ else {
 }
 
 siesta.save = function save(callback) {
-
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    if (siesta.ext.storageEnabled) {
+        util.next(function () {
+            var mergeChanges = siesta.ext.storage.changes.mergeChanges;
+            mergeChanges(callback);
+        });
+    }
+    else {
+        callback('Storage module not installed');
+    }
+    return deferred.promise;
 };
 
 siesta.reset = function () {
