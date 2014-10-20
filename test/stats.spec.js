@@ -283,11 +283,21 @@ describe('statistics', function () {
                                             if (err) done(err);
                                             siesta.save(function (err) {
                                                 if (err) done(err);
-                                                coll.count(function (err, n) {
-                                                    if (err) done(err);
-                                                    assert.equal(n, 5);
-                                                    done();
+                                                var pouch = siesta.ext.storage.Pouch.getPouch();
+                                                pouch.query(function (doc) {
+                                                    if (doc.type == 'Car') {
+                                                        emit(doc._id, doc);
+                                                    }
+                                                }, function (err, resp) {
+                                                    dump('err', err);
+                                                    dump('resp', resp);
+                                                    coll.count(function (err, n) {
+                                                        if (err) done(err);
+                                                        assert.equal(n, 5);
+                                                        done();
+                                                    });
                                                 });
+
                                             });
                                         });
                                     });

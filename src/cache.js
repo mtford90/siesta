@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var LocalCacheLogger = log.loggerWithName('LocalCache');
-LocalCacheLogger.setLevel(log.Level.trace);
+LocalCacheLogger.setLevel(log.Level.warn);
 var RemoteCacheLogger = log.loggerWithName('RemoteCache');
 RemoteCacheLogger.setLevel(log.Level.warn);
 var RestError = require('./error').RestError;
@@ -240,7 +240,7 @@ function get(opts) {
 // TODO: REMOVE THIS. ONLY FOR DEBUGGING.
 function validate() {
     var idents = Object.keys(localCacheById);
-    for (var i=0;i<idents.length;i++) {
+    for (var i = 0; i < idents.length; i++) {
         var ident = idents[i];
         var obj = localCacheById[ident];
         if (ident != obj._id) {

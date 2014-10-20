@@ -4,12 +4,12 @@ var s = require('../../index')
 describe('performance', function () {
 
     var Collection = require('../../src/collection').Collection;
+    var cache = require('../../src/cache');
     var collection;
     var Repo, User;
 
     beforeEach(function (done) {
         s.reset(true);
-
         collection = new Collection('MyCollection');
         collection.baseURL = 'https://api.github.com';
         Repo = collection.mapping('Repo', {
@@ -21,7 +21,8 @@ describe('performance', function () {
                     type: siesta.RelationshipType.OneToMany,
                     reverse: 'repositories'
                 }
-            }
+            },
+            data: 'items'
         });
         User = collection.mapping('User', {
             id: 'id',
@@ -44,12 +45,26 @@ describe('performance', function () {
         it('xyz', function (done) {
             this.timeout(10000);
             var json = require('./repos').repos;
-            Repo.map(json, function (err, repos) {
-                done(err);
+            Repo.map(json, done);
+        });
+
+        it('store', function (done) {
+            this.timeout(10000);
+            var json = require('./repos').repos;
+            Repo.map(json, function (err, objs) {
+                if (err) done(err);
+                siesta.save(function (err) {
+                    if (err) done(err);
+                    cache.reset();
+                    var results = {cached: {}, notCached: {}};
+                    siesta.ext.storage.store.getMultipleRemoteFrompouch(Repo, _.pluck(objs, 'id'), results, function () {
+                        assert.equal(100, Object.keys(results.cached).length);
+                        done();
+                    });
+                });
             });
         });
     });
-
 
 
 });

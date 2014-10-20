@@ -350,11 +350,9 @@ Mapping.prototype.count = function (callback) {
         pouch.query(indexName, {include_docs: false}, function (err, resp) {
             var n;
             if (!err) {
-                dump(JSON.stringify(resp.rows, null, 4));
                 _.each(_.pluck(resp.rows, 'id'), function (id) {
                     hash[id] = {};
                 });
-                dump('hash', hash);
                 n = Object.keys(hash).length;
             }
             callback(err, n);

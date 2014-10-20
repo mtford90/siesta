@@ -17,12 +17,9 @@ describe('store', function () {
             attributes: ['colour', 'name']
         });
         collection.install(done);
-
     });
 
     describe('get', function () {
-
-
         it('already cached', function (done) {
             var model = new SiestaModel(carMapping);
             var pouchId = 'pouchId';
