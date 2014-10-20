@@ -4,8 +4,9 @@
         , mapping = _i.mapping
         , q = _i.q
         , util = _i.util
+        , extend = _.extend
         , Mapping = mapping.Mapping
-    ;
+        ;
 
     var changes = require('./changes')
         , pouch = require('./pouch')
@@ -24,8 +25,29 @@
     };
 
 
-
     var oldInstall = mapping.Mapping.prototype.install;
+
+    Mapping.prototype.getIndexesToInstall = function () {
+        var self = this;
+        var fieldHash = _.reduce(self._fields, function (m, f) {
+            m[f] = {};
+            return m
+        }, {});
+        for (var prop in self.relationships) {
+            if (self.relationships.hasOwnProperty(prop)) {
+                var r = self.relationships[prop];
+                if (r.reverse != prop) {
+                    fieldHash[prop] = {};
+                }
+            }
+        }
+        var indexesToInstall = _.reduce(self.indexes, function (m, f) {
+            if (fieldHash[f]) m.push(f);
+            return m;
+        }, []);
+        if (self.id) indexesToInstall.push(self.id);
+        return  indexesToInstall;
+    };
 
     Mapping.prototype.install = function (callback) {
         var deferred = q.defer();
@@ -33,18 +55,7 @@
         var self = this;
         oldInstall.call(this, function (err) {
             if (!err) {
-                var indexesToInstall = [];
-                _.each(self._fields, function (f) {
-                    indexesToInstall.push(f);
-                });
-                for (var prop in self.relationships) {
-                    if (self.relationships.hasOwnProperty(prop)) {
-                        var r = self.relationships[prop];
-                        if (r.reverse != prop) {
-                            indexesToInstall.push(prop);
-                        }
-                    }
-                }
+                var indexesToInstall = self.getIndexesToInstall();
                 index.installIndexes(self.collection, self.type, indexesToInstall, function (err) {
                     self._installed = !err;
                     if (callback) callback(err);

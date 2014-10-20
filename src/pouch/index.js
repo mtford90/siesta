@@ -10,7 +10,7 @@ var _i = siesta._internal
 var Pouch = require('./pouch');
 
 var Logger = log.loggerWithName('Index');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 function combine(a, min) {
     var fn = function (n, src, got, all) {

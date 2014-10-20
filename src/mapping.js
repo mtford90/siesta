@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.info);
+Logger.setLevel(log.Level.trace);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -14,6 +14,7 @@ var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;
 var cache = require('./cache');
 var store = require('./store');
+var extend = require('extend');
 
 
 var coreChanges = require('./changes');
@@ -52,11 +53,16 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'collection', self._opts);
     defineSubProperty.call(this, 'attributes', self._opts);
     defineSubProperty.call(this, 'relationships', self._opts);
+    defineSubProperty.call(this, 'indexes', self._opts);
     defineSubProperty.call(this, 'subclass', self._opts);
     defineSubProperty.call(this, 'singleton', self._opts);
 
     if (!this.relationships) {
         this.relationships = [];
+    }
+
+    if (!this.indexes) {
+        this.indexes = [];
     }
 
     this._validateSubclass();
@@ -321,6 +327,36 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
         }
     });
     op.start();
+    return deferred.promise;
+};
+
+function _countCache() {
+    var hash = {};
+    var collCache = cache._localCacheByType[this.collection] || {};
+    extend(hash, collCache[this.type] || {});
+    return hash;
+}
+
+// TODO: Really inefficient. Loads all models into mem if using storage...
+Mapping.prototype.count = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    var hash = _countCache.call(this);
+    if (siesta.ext.storageEnabled) {
+        this.all(function (err, objs) {
+            var n;
+            if (!err) {
+                _.each(objs, function (model) {
+                    hash[model._id] = model;
+                });
+                n = Object.keys(hash).length;
+            }
+            callback(err, n);
+        });
+    }
+    else {
+        callback(null, Object.keys(hash).length)
+    }
     return deferred.promise;
 };
 

@@ -340,53 +340,26 @@ Collection.prototype.PATCH = function () {
     return _.partial(this.HTTP_METHOD, true, 'PATCH').apply(this, arguments);
 };
 
-/**
- *
- * @returns {{}}
- * @private
- */
-function _countCache() {
-    var hash = {};
-    var collCache = cache._localCacheByType[this.name] || {};
-    var mappings = Object.keys(collCache);
-    _.each(mappings, function (m) {
-        var mappingCache = collCache[m] || {};
-        extend(hash, mappingCache);
-    });
-    return hash;
-}
 
 /**
  * Returns the number of objects in this collection.
  *
- * TODO: This is very inefficient at the moment. If using storage, it will load every single model into memory!
  * @param callback
  * @returns Promise
  */
 Collection.prototype.count = function (callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var hash = _countCache.call(this);
-    if (siesta.ext.storageEnabled) {
-        var tasks = _.map(this._mappings, function (m) {
-            return _.bind(m.all, m);
-        });
-        util.parallel(tasks, function (err, results) {
-            var n;
-            if (!err) {
-                _.each(results, function (result) {
-                    _.each(result, function (model) {
-                        hash[model._id] = model;
-                    });
-                });
-                n = Object.keys(hash).length;
-            }
-            callback(err, n);
-        });
-    }
-    else {
-        callback(null, Object.keys(hash).length)
-    }
+    var tasks = _.map(this._mappings, function (m) {
+        return _.bind(m.count, m);
+    });
+    util.parallel(tasks, function (err, ns) {
+        var n;
+        if (!err) {
+            n = _.reduce(ns, function (m, r) {return m + r}, 0);
+        }
+        callback(err, n);
+    });
     return deferred.promise;
 };
 

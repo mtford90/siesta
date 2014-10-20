@@ -10,7 +10,7 @@ var _i = siesta._internal
 ;
 
 var Logger = log.loggerWithName('Store');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 var PouchAdapter = require('./pouch');
 var index = require('./index');
@@ -45,6 +45,7 @@ function getMultipleLocalFromCouch(results, callback) {
 }
 
 function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callback) {
+    if (Logger.trace.isEnabled) Logger.trace('getMultipleRemoteFrompouch(' + mapping.type + '):', remoteIdentifiers);
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var i = new Index(mapping.collection, mapping.type, [mapping.id]);
@@ -55,11 +56,15 @@ function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callbac
         }
         else {
             var rows = _.pluck(docs.rows, 'doc');
+            if (Logger.trace.isEnabled) Logger.trace('[ROWS] getMultipleRemoteFrompouch(' + mapping.type + '):', rows);
             var models = PouchAdapter.toSiesta(rows);
             _.each(models, function (model) {
                 var remoteId = model[mapping.id];
                 results.cached[remoteId] = model;
             });
+            if (Logger.trace.isEnabled) {
+                Logger.trace('[RESULTS] getMultipleRemoteFrompouch(' + mapping.type + '):', results);
+            }
             callback();
         }
     });

@@ -168,13 +168,48 @@ function showStats() {
         '<li>$NUM_REPOS repositories</li>' +
         '<li>$NUM_USERS users</li>' +
         '</ul></p>';
-    var localCacheByType = siesta._internal.cache._localCacheByType;
-    var collCache = localCacheByType['MyCollection'];
-    var repoCache = collCache ? collCache['Repo'] : {};
-    var userCache = collCache ? collCache['User'] : {};
-    var numRepos = Object.keys(repoCache ? repoCache : {}).length;
-    var numUsers = Object.keys(userCache ? userCache : {}).length;
-    stats = stats.replace('$NUM_REPOS', numRepos);
-    stats = stats.replace('$NUM_USERS', numUsers);
+//    var localCacheByType = siesta._internal.cache._localCacheByType;
+//    var collCache = localCacheByType['MyCollection'];
+//    var repoCache = collCache ? collCache['Repo'] : {};
+//    var userCache = collCache ? collCache['User'] : {};
+//    var numRepos = Object.keys(repoCache ? repoCache : {}).length;
+//    var numUsers = Object.keys(userCache ? userCache : {}).length;
+    console.log('Starting counts');
+    function _showStats() {
+        collection.Repo.count(function (err, n) {
+            console.log('Repo count', err, n);
+            if (!err) {
+                stats = stats.replace('$NUM_REPOS', n);
+            }
+            else {
+                alert(err);
+            }
+        });
+        collection.User.count(function (err, n) {
+            console.log('User count', err, n);
+            if (!err) {
+                stats = stats.replace('$NUM_USERS', n);
+            }
+            else {
+                alert(err);
+            }
+        });
+    }
+
+    if (!collection) {
+        init(function (err) {
+            if (!err) {
+                _showStats();
+            }
+            else {
+                alert(err);
+            }
+        });
+    }
+    else {
+        _showStats();
+    }
+
+    _showStats();
     sweetAlert('Statistics', stats)
 }
