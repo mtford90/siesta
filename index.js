@@ -14,8 +14,8 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry
     , _ = util._;
 
 
-Operation.logLevel = log.Level.info;
-OperationQueue.logLevel = log.Level.info;
+Operation.logLevel = log.Level.warn;
+OperationQueue.logLevel = log.Level.warn;
 
 
 var siesta;

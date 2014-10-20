@@ -10,7 +10,7 @@ var _i = siesta._internal
 ;
 
 var Logger = log.loggerWithName('Store');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 var PouchAdapter = require('./pouch');
 var index = require('./index');

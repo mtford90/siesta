@@ -9,7 +9,7 @@ var _i = siesta._internal
     , CollectionRegistry = _i.CollectionRegistry;
 
 var Logger = log.loggerWithName('Pouch');
-Logger.setLevel(log.Level.debug);
+Logger.setLevel(log.Level.warn);
 
 var pouch = new PouchDB('siesta');
 
@@ -141,8 +141,8 @@ function validate(doc) {
 
 function toNew(doc) {
     var mapping = validate(doc);
-    var obj = mapping._new(undefined, false);
-    obj._id = doc._id;
+    var obj = mapping._new({_id: doc._id});
+//    obj._id = doc._id;
     obj._rev = doc._rev;
     obj.isSaved = true;
     for (var prop in doc) {
@@ -165,6 +165,13 @@ function toSiesta(docs) {
         var doc = docs[i];
         if (doc) {
             var opts = {_id: doc._id};
+            var type = doc.type;
+            var collection = doc.collection;
+            var mapping = CollectionRegistry[collection][type];
+            if (mapping.id) {
+                opts[mapping.id] = doc[mapping.id];
+                opts.mapping = mapping;
+            }
             var cached = cache.get(opts);
             if (cached) {
                 mapped[i] = cached;

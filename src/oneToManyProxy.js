@@ -11,12 +11,12 @@ var proxy = require('./proxy')
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
     , q = require('q')
-;
-
+    ;
 
 
 function OneToManyProxy(opts) {
     NewObjectProxy.call(this, opts);
+
     var self = this;
     Object.defineProperty(this, 'isFault', {
         get: function () {
@@ -33,12 +33,8 @@ function OneToManyProxy(opts) {
                 if (self._id) {
                     if (self.related) {
                         if (self._id.length != self.related.length) {
-                            if (self.related.length > 0) {
-                                throw new RestError('_id and related are somehow out of sync');
-                            }
-                            else {
-                                return true;
-                            }
+                            validateRelated.call(this);
+                            return true;
                         }
                         else {
                             return false;
@@ -73,8 +69,6 @@ function OneToManyProxy(opts) {
 }
 
 OneToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
-
-
 
 
 function clearReverse(removed) {
@@ -170,6 +164,18 @@ function validate(obj) {
     return null;
 }
 
+function validateRelated() {
+    var self = this;
+    if (self._id) {
+        if (self.related) {
+            if (self._id.length != self.related.length) {
+                if (self.related.length > 0) {
+                    throw new RestError('_id and related are somehow out of sync');
+                }
+            }
+        }
+    }
+}
 
 OneToManyProxy.prototype.set = function (obj) {
     proxy.checkInstalled.call(this);

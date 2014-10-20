@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -33,6 +33,7 @@ var q = require('q');
 function Mapping(opts) {
     var self = this;
     this._opts = opts;
+
     Object.defineProperty(this, '_fields', {
         get: function () {
             var fields = [];
@@ -331,24 +332,29 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
 };
 
 function _countCache() {
-    var hash = {};
     var collCache = cache._localCacheByType[this.collection] || {};
-    extend(hash, collCache[this.type] || {});
-    return hash;
+    var mappingCache = collCache[this.type] || {};
+    return _.reduce(Object.keys(mappingCache), function (m, _id) {
+        m[_id] = {};
+        return m;
+    }, {});
 }
 
-// TODO: Really inefficient. Loads all models into mem if using storage...
 Mapping.prototype.count = function (callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var hash = _countCache.call(this);
     if (siesta.ext.storageEnabled) {
-        this.all(function (err, objs) {
+        var pouch = siesta.ext.storage.Pouch.getPouch();
+        var indexName = (new siesta.ext.storage.Index(this.collection, this.type))._getName() + '_';
+        pouch.query(indexName, {include_docs: false}, function (err, resp) {
             var n;
             if (!err) {
-                _.each(objs, function (model) {
-                    hash[model._id] = model;
+                dump(JSON.stringify(resp.rows, null, 4));
+                _.each(_.pluck(resp.rows, 'id'), function (id) {
+                    hash[id] = {};
                 });
+                dump('hash', hash);
                 n = Object.keys(hash).length;
             }
             callback(err, n);

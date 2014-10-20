@@ -63,8 +63,7 @@ function fadeSpinnerIn(cb) {
 }
 
 function init(cb) {
-    siesta.setPouch(new PouchDB('siesta'))
-    console.log('init');
+    siesta.setPouch(new PouchDB('siesta'));
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
     var Repo = collection.mapping('Repo', {
@@ -96,7 +95,6 @@ function query() {
     $('#INPUT_1').val('');
     $('#content #repos .row').remove();
     function _query(err) {
-        console.log('_query');
         if (!err) {
             collection.GET('/search/repositories', {data: {q: text}}, function (err, repos) {
                 siesta.save(function (err) {
@@ -168,31 +166,20 @@ function showStats() {
         '<li>$NUM_REPOS repositories</li>' +
         '<li>$NUM_USERS users</li>' +
         '</ul></p>';
-//    var localCacheByType = siesta._internal.cache._localCacheByType;
-//    var collCache = localCacheByType['MyCollection'];
-//    var repoCache = collCache ? collCache['Repo'] : {};
-//    var userCache = collCache ? collCache['User'] : {};
-//    var numRepos = Object.keys(repoCache ? repoCache : {}).length;
-//    var numUsers = Object.keys(userCache ? userCache : {}).length;
-    console.log('Starting counts');
+
     function _showStats() {
-        collection.Repo.count(function (err, n) {
-            console.log('Repo count', err, n);
-            if (!err) {
-                stats = stats.replace('$NUM_REPOS', n);
+        var tasks = [
+            function (cb) {
+                collection.Repo.count(cb);
+            },
+            function (cb) {
+                collection.User.count(cb);
             }
-            else {
-                alert(err);
-            }
-        });
-        collection.User.count(function (err, n) {
-            console.log('User count', err, n);
-            if (!err) {
-                stats = stats.replace('$NUM_USERS', n);
-            }
-            else {
-                alert(err);
-            }
+        ];
+        siesta._internal.util.parallel(tasks, function (err, res) {
+            stats = stats.replace('$NUM_REPOS', res[0]);
+            stats = stats.replace('$NUM_USERS', res[1]);
+            sweetAlert('Statistics', stats);
         });
     }
 
@@ -211,5 +198,4 @@ function showStats() {
     }
 
     _showStats();
-    sweetAlert('Statistics', stats)
 }

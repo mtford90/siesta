@@ -59,7 +59,6 @@ describe('pouch doc adapter', function () {
             });
 
             it('existing', function (done) {
-                this.timeout(4000);
                 var doc = {name: 'Michael', age: 12, _id: 'localId', collection: 'MyOnlineCollection', type: 'Person'};
                 s.ext.storage.Pouch.getPouch().put(doc, function (err, resp) {
                     if (err) done(err);
@@ -81,7 +80,6 @@ describe('pouch doc adapter', function () {
             });
 
             it('new', function (done) {
-                this.timeout(4000);
                 collection.Person.map({name: 'Michael', age: 23}, function (err, person) {
                     if (err) done(err);
                     collection.save(function (err) {
@@ -101,6 +99,23 @@ describe('pouch doc adapter', function () {
                     });
                 });
             });
+
+            it('cached', function (done) {
+                collection.Person.map({name: 'Michael', age: 23, id: '2'}, function (err, person) {
+                    if (err) done(err);
+                    collection.save(function (err) {
+                        if (err) done(err);
+                        s.ext.storage.Pouch.getPouch().get(person._id, function (err, doc) {
+                            if (err) done(err);
+                            var objs = s.ext.storage.Pouch.toSiesta([doc]);
+                            assert.equal(objs.length, 1);
+                            assert.equal(objs[0], person);
+                            assert.instanceOf(objs[0], SiestaModel);
+                            done();
+                        });
+                    });
+                });
+            })
 
 
         });

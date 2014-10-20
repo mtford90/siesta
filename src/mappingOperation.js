@@ -6,7 +6,7 @@ var RestError = require('../src/error').RestError;
 var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 
 var cache = require('./cache');

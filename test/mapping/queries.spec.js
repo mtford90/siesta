@@ -41,8 +41,6 @@ describe('mapping queries', function () {
                     done(err);
                 });
             });
-
-
         });
 
 
@@ -75,6 +73,7 @@ describe('mapping queries', function () {
 
         describe('query', function () {
             it('cached', function (done) {
+                this.timeout(10000);
                 mapping.query({color: 'red'}, function (err, cars) {
                     if (err) done(err);
                     assert.equal(cars.length, 1);
@@ -85,6 +84,7 @@ describe('mapping queries', function () {
                 });
             });
             it('not cached', function (done) {
+                this.timeout(10000);
                 cache.reset();
                 mapping.query({color: 'red'}, function (err, cars) {
                     if (err) done(err);

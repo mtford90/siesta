@@ -28,7 +28,7 @@ var pouch = require('./pouch');
 var index = require('./index');
 
 var Logger = log.loggerWithName('changes');
-Logger.setLevel(log.Level.debug);
+Logger.setLevel(log.Level.warn);
 
 var unmergedChanges = {};
 

@@ -61,16 +61,13 @@ function _executeInMemory(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var cacheByType = cache._localCacheByType;
-    dump('cacheByType', cacheByType);
     var mappingName = this.mapping.type;
     var collectionName = this.mapping.collection;
     var cacheByMapping = cacheByType[collectionName];
-    dump('cacheByMapping', cacheByMapping);
     var cacheByLocalId;
     if (cacheByMapping) {
         cacheByLocalId = cacheByMapping[mappingName];
     }
-    dump('cacheByLocalId', cacheByLocalId);
     if (cacheByLocalId) {
         var keys = Object.keys(cacheByLocalId);
         var self = this;

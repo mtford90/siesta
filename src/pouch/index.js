@@ -5,12 +5,12 @@ var _i = siesta._internal
     , util = _i.util
     , q = _i.q
     , _ = util._
-;
+    ;
 
 var Pouch = require('./pouch');
 
 var Logger = log.loggerWithName('Index');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 function combine(a, min) {
     var fn = function (n, src, got, all) {
@@ -71,12 +71,16 @@ function installIndexes(collection, modelName, fields, callback) {
 function Index(collection, type, fields_or_field) {
     this.type = type;
     this.collection = collection;
-    if (fields_or_field.length) {
-        this.fields = _.sortBy(fields_or_field, function (x) {return x});
-
+    if (fields_or_field) {
+        if (fields_or_field.length) {
+            this.fields = _.sortBy(fields_or_field, function (x) {return x});
+        }
+        else {
+            this.fields = [fields_or_field];
+        }
     }
     else {
-        this.fields = [fields_or_field];
+        this.fields = [];
     }
 }
 

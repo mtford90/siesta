@@ -24,7 +24,6 @@
         oldReset.apply(oldReset, arguments);
     };
 
-
     var oldInstall = mapping.Mapping.prototype.install;
 
     Mapping.prototype.getIndexesToInstall = function () {

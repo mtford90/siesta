@@ -1,7 +1,10 @@
 var log = require('../vendor/operations.js/src/log');
-var Logger = log.loggerWithName('cache');
-Logger.setLevel(log.Level.warn);
+var LocalCacheLogger = log.loggerWithName('LocalCache');
+LocalCacheLogger.setLevel(log.Level.trace);
+var RemoteCacheLogger = log.loggerWithName('RemoteCache');
+RemoteCacheLogger.setLevel(log.Level.warn);
 var RestError = require('./error').RestError;
+var util = require('./util');
 
 /**
  * Cache by pouch _id.
@@ -27,12 +30,12 @@ reset();
 function getViaLocalId(localId) {
     var obj = localCacheById[localId];
     if (obj) {
-        if (Logger.debug.isEnabled)
-            Logger.debug('Local cache hit: ' + obj._dump(true));
+        if (LocalCacheLogger.debug.isEnabled)
+            LocalCacheLogger.debug('Local cache hit: ' + obj._dump(true));
     }
     else {
-        if (Logger.debug.isEnabled)
-            Logger.debug('Local cache miss: ' + localId);
+        if (LocalCacheLogger.debug.isEnabled)
+            LocalCacheLogger.debug('Local cache miss: ' + localId);
     }
     return  obj;
 }
@@ -73,18 +76,18 @@ function getViaRemoteId(remoteId, opts) {
         if (typeCache) {
             var obj = typeCache[remoteId];
             if (obj) {
-                if (Logger.debug.isEnabled)
-                    Logger.debug('Remote cache hit: ' + obj._dump(true));
+                if (RemoteCacheLogger.debug.isEnabled)
+                    RemoteCacheLogger.debug('Remote cache hit: ' + obj._dump(true));
             }
             else {
-                if (Logger.debug.isEnabled)
-                    Logger.debug('Remote cache miss: ' + remoteId);
+                if (RemoteCacheLogger.debug.isEnabled)
+                    RemoteCacheLogger.debug('Remote cache miss: ' + remoteId);
             }
             return  obj;
         }
     }
-    if (Logger.debug.isEnabled)
-        Logger.debug('Remote cache miss: ' + remoteId);
+    if (RemoteCacheLogger.debug.isEnabled)
+        RemoteCacheLogger.debug('Remote cache miss: ' + remoteId);
     return null;
 }
 
@@ -106,10 +109,10 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                 var cachedObject = remoteCache[collection][type][remoteId];
                 if (!cachedObject) {
                     remoteCache[collection][type][remoteId] = obj;
-                    if (Logger.debug.isEnabled)
-                        Logger.debug('Remote cache insert: ' + obj._dump(true));
-                    if (Logger.trace.isEnabled)
-                        Logger.trace('Remote cache now looks like: ' + remoteDump(true))
+                    if (RemoteCacheLogger.debug.isEnabled)
+                        RemoteCacheLogger.debug('Remote cache insert: ' + obj._dump(true));
+                    if (RemoteCacheLogger.trace.isEnabled)
+                        RemoteCacheLogger.trace('Remote cache now looks like: ' + remoteDump(true))
                 }
                 else {
                     // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
@@ -117,12 +120,13 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                     if (obj != cachedObject) {
                         var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache.' +
                             ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
-                        Logger.error(message);
+                        RemoteCacheLogger.error(message, {obj: obj, cachedObject: cachedObject});
+                        util.printStackTrace();
                         throw new RestError(message);
                     }
                     else {
-                        if (Logger.debug.isEnabled)
-                            Logger.debug('Object has already been inserted: ' + obj._dump(true));
+                        if (RemoteCacheLogger.debug.isEnabled)
+                            RemoteCacheLogger.debug('Object has already been inserted: ' + obj._dump(true));
                     }
 
                 }
@@ -137,7 +141,7 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
     }
     else {
         var msg = 'Must pass an object when inserting to cache';
-        Logger.error(msg);
+        RemoteCacheLogger.error(msg);
         throw new RestError(msg);
     }
 
@@ -197,6 +201,7 @@ function _localCache() {
 }
 
 function get(opts) {
+    if (LocalCacheLogger.debug.isEnabled) LocalCacheLogger.debug('get', opts);
     var obj, idField, remoteId;
     var localId = opts._id;
     if (localId) {
@@ -208,6 +213,7 @@ function get(opts) {
             if (opts.mapping) {
                 idField = opts.mapping.id;
                 remoteId = opts[idField];
+                if (LocalCacheLogger.debug.isEnabled) LocalCacheLogger.debug(idField + '=' + remoteId);
                 return getViaRemoteId(remoteId, opts);
             }
             else {
@@ -226,31 +232,45 @@ function get(opts) {
         }
     }
     else {
-        Logger.warn('Invalid opts to cache', {opts: opts});
+        LocalCacheLogger.warn('Invalid opts to cache', {opts: opts});
     }
     return null;
 }
 
+// TODO: REMOVE THIS. ONLY FOR DEBUGGING.
+function validate() {
+    var idents = Object.keys(localCacheById);
+    for (var i=0;i<idents.length;i++) {
+        var ident = idents[i];
+        var obj = localCacheById[ident];
+        if (ident != obj._id) {
+            util.printStackTrace();
+            throw new RestError('wtf?');
+        }
+    }
+}
+
 function insert(obj) {
-    if (obj._id) {
+    var localId = obj._id;
+    if (localId) {
         var collectionName = obj.mapping.collection;
         var mappingName = obj.mapping.type;
-        if (!localCacheById[obj._id]) {
-            if (Logger.debug.isEnabled)
-                Logger.debug('Local cache insert: ' + obj._dump(true));
-            localCacheById[obj._id] = obj;
-            if (Logger.trace.isEnabled)
-                Logger.trace('Local cache now looks like: ' + localDump(true));
+        if (!localCacheById[localId]) {
+            if (LocalCacheLogger.debug.isEnabled)
+                LocalCacheLogger.debug('Local cache insert: ' + obj._dump(true));
+            localCacheById[localId] = obj;
+            if (LocalCacheLogger.trace.isEnabled)
+                LocalCacheLogger.trace('Local cache now looks like: ' + localDump(true));
             if (!localCache[collectionName]) localCache[collectionName] = {};
             if (!localCache[collectionName][ mappingName]) localCache[collectionName][mappingName] = {};
-            localCache[collectionName][obj.type][obj._id] = obj;
+            localCache[collectionName][obj.type][localId] = obj;
         }
         else {
             // Something has gone badly wrong here. Two objects should never exist with the same _id
-            if (localCacheById[obj._id] != obj) {
-                var message = 'Object with _id="' + obj._id.toString() + '" is already in the cache. ' +
+            if (localCacheById[localId] != obj) {
+                var message = 'Object with _id="' + localId.toString() + '" is already in the cache. ' +
                     'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
-                Logger.error(message);
+                LocalCacheLogger.error(message);
                 throw new RestError(message);
             }
         }
@@ -261,9 +281,10 @@ function insert(obj) {
         remoteInsert(obj, remoteId);
     }
     else {
-        if (Logger.debug.isEnabled)
-            Logger.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
+        if (RemoteCacheLogger.debug.isEnabled)
+            RemoteCacheLogger.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
     }
+    validate();
 }
 
 

@@ -105,7 +105,6 @@ describe('statistics', function () {
                                     done();
                                 });
                             });
-
                         });
                     });
 
@@ -165,9 +164,9 @@ describe('statistics', function () {
                 describe('single mapping', function () {
                     it('multiple objects', function (done) {
                         Car.map([
-                            {colour: 'red', name: 'Aston Martin'},
-                            {colour: 'blue', name: 'Bentley'},
-                            {colour: 'green', name: 'Lambo'}
+                            {colour: 'red', name: 'Aston Martin', id: '1'},
+                            {colour: 'blue', name: 'Bentley', id: '2'},
+                            {colour: 'green', name: 'Lambo', id: '3'}
                         ], function (err, objs) {
                             if (err) done(err);
                             siesta.save(function (err) {
@@ -185,14 +184,14 @@ describe('statistics', function () {
                 describe('multiple mappings', function () {
                     it('multiple objects', function (done) {
                         Car.map([
-                            {colour: 'red', name: 'Aston Martin'},
-                            {colour: 'blue', name: 'Bentley'},
-                            {colour: 'green', name: 'Lambo'}
+                            {colour: 'red', name: 'Aston Martin', id: '1'},
+                            {colour: 'blue', name: 'Bentley', id: '2'},
+                            {colour: 'green', name: 'Lambo', id: '3'}
                         ], function (err, cars) {
                             if (err) done(err);
                             Person.map([
-                                {age: 24, name: 'Michael Ford'},
-                                {age: 25, name: 'John Doe'}
+                                {age: 24, name: 'Michael Ford', id: '4'},
+                                {age: 25, name: 'John Doe', id: '5'}
                             ], function (err, people) {
                                 if (err) done(err);
                                 siesta.save(function (err) {
@@ -213,6 +212,96 @@ describe('statistics', function () {
             });
 
         });
+
+
+        describe('all faulted, then mapped again', function () {
+            describe('collection level', function () {
+                describe('single mapping', function () {
+                    it('one object', function (done) {
+                        var data = {colour: 'red', name: 'Aston Martin', id: '1'};
+                        Car.map(data, function (err) {
+                            if (err) done(err);
+                            siesta.save(function (err) {
+                                if (err) done(err);
+                                cache.reset();
+                                Car.map(data, function (err) {
+                                    if (err) done(err);
+                                    coll.count(function (err, n) {
+                                        if (err) done(err);
+                                        assert.equal(n, 1);
+                                        done();
+                                    });
+                                });
+                            });
+                        });
+                    });
+
+                    it('multiple objects', function (done) {
+                        var data = [
+                            {colour: 'red', name: 'Aston Martin', id: '1'},
+                            {colour: 'blue', name: 'Bentley', id: '2'},
+                            {colour: 'green', name: 'Lambo', id: '3'}
+                        ];
+                        Car.map(data, function (err) {
+                            if (err) done(err);
+                            siesta.save(function (err) {
+                                if (err) done(err);
+                                cache.reset();
+                                Car.map(data, function (err) {
+                                    if (err) done(err);
+                                    coll.count(function (err, n) {
+                                        if (err) done(err);
+                                        assert.equal(n, 3);
+                                        done();
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+                describe('multiple mappings', function () {
+                    it('multiple objects', function (done) {
+                        var carData = [
+                            {colour: 'red', name: 'Aston Martin', id: '1'},
+                            {colour: 'blue', name: 'Bentley', id: '2'},
+                            {colour: 'green', name: 'Lambo', id: '3'}
+                        ];
+                        Car.map(carData, function (err) {
+                            if (err) done(err);
+                            var personData = [
+                                {age: 24, name: 'Michael Ford', id: '4'},
+                                {age: 25, name: 'John Doe', id: '5'}
+                            ];
+                            Person.map(personData, function (err) {
+                                if (err) done(err);
+                                siesta.save(function (err) {
+                                    if (err) done(err);
+                                    cache.reset();
+                                    Car.map(carData, function (err) {
+                                        if (err) done(err);
+                                        Person.map(personData, function (err) {
+                                            if (err) done(err);
+                                            siesta.save(function (err) {
+                                                if (err) done(err);
+                                                coll.count(function (err, n) {
+                                                    if (err) done(err);
+                                                    assert.equal(n, 5);
+                                                    done();
+                                                });
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+
+                    });
+                });
+            });
+
+        });
+
+
     });
 
     describe('storage not enabled', function () {

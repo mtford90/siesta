@@ -6,6 +6,10 @@ var mappingOperation = require('../src/mappingOperation');
 var BulkMappingOperation = mappingOperation.BulkMappingOperation;
 var util = require('../src/util');
 var RelationshipType = require('../src/relationship').RelationshipType;
+var Collection = require('../src/collection').Collection;
+var cache = require('../src/cache');
+var collection;
+var Repo, User;
 
 assert.arrEqual = function (arr1, arr2) {
     if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
@@ -14,7 +18,7 @@ assert.arrEqual = function (arr1, arr2) {
         if (util.isArray(x[0]) && util.isArray(x[1])) {
             assert.arrEqual(x[0], x[1]);
         }
-        else if (x[0]!=x[1]) {
+        else if (x[0] != x[1]) {
             throw new chai.AssertionError(arr1.toString() + ' != ' + arr2.toString());
         }
     });
@@ -28,7 +32,12 @@ describe('array flattening', function () {
         });
 
         it('all arrays', function () {
-            var flattened = mappingOperation.flattenArray([['1'], ['2', '3'], ['4'], ['5']]);
+            var flattened = mappingOperation.flattenArray([
+                ['1'],
+                ['2', '3'],
+                ['4'],
+                ['5']
+            ]);
             assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
         });
 
@@ -47,10 +56,6 @@ describe('array flattening', function () {
 
 describe('bulk mapping operation', function () {
 
-    var Collection = require('../src/collection').Collection;
-    var cache = require('../src/cache');
-    var collection;
-    var Repo, User;
 
     describe('general', function () {
         beforeEach(function (done) {
@@ -182,7 +187,7 @@ describe('bulk mapping operation', function () {
                             {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'sdfsd', owner: 5},
                             {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', owner: owner}
                         ];
-                        var op = new BulkMappingOperation({mapping: Repo, data:data});
+                        var op = new BulkMappingOperation({mapping: Repo, data: data});
                         op._constructSubOperations();
                         var ownerSubOperation = op.subOps.owner.op;
                         var ownerIndexes = op.subOps.owner.indexes;
@@ -201,7 +206,7 @@ describe('bulk mapping operation', function () {
                             {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'remoteId2', owner: 5},
                             {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', id: 'remoteId3', owner: owner}
                         ];
-                        var op = new BulkMappingOperation({mapping: Repo, data:data});
+                        var op = new BulkMappingOperation({mapping: Repo, data: data});
                         op.onCompletion(function () {
                             var err = op.error;
                             if (err) {
@@ -366,7 +371,6 @@ describe('bulk mapping operation', function () {
         });
     });
 
-
     describe('singleton...', function () {
         var op;
 
@@ -511,5 +515,69 @@ describe('bulk mapping operation', function () {
         });
     });
 
+});
+
+describe('bug', function () {
+
+    var coll, Car;
+
+    beforeEach(function (done) {
+        siesta.reset(true);
+        coll = new Collection('myCollection');
+        Car = coll.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
+//            relationships: {
+//                owner: {
+//                    mapping: 'Person',
+//                    type: 'OneToMany',
+//                    reverse: 'cars'
+//                }
+//            }
+        });
+//        Person = coll.mapping('Person', {
+//            id: 'id',
+//            attributes: ['age', 'name']
+//        });
+        coll.install(done);
+    });
+
+    it('multiple objects', function (done) {
+        var data = [
+            {colour: 'red', name: 'Aston Martin', id: '1'},
+            {colour: 'blue', name: 'Bentley', id: '2'},
+            {colour: 'green', name: 'Lambo', id: '3'}
+        ];
+        Car.map(data, function (err) {
+            if (err) done(err);
+            siesta.save(function (err) {
+                if (err) done(err);
+                cache.reset();
+                Car.map(data, function (err) {
+                    if (err) done(err);
+                    siesta.save(function (err) {
+                        if (err) done(err);
+                        var pouch = siesta.ext.storage.Pouch.getPouch();
+                        pouch.query(function (doc) {
+                            if (doc.type == 'Car') {
+                                emit(doc._id, doc);
+                            }
+                        }, function (err, resp) {
+                            dump('err', err);
+                            dump('resp', resp);
+                            var rowIdents = _.pluck(resp.rows, 'id');
+                            dump('rowIdents.length', rowIdents.length);
+//                            dump('hmm', JSON.stringify(_.reduce(Object.keys(localCache), function (m, _id) {
+//                                if (rowIdents.indexOf(_id) > -1) m.push(localCache[_id]._dump());
+//                                return m;
+//                            }, []), null, 4));
+                            dump('cache', cache._dump(true));
+                            done(err);
+                        });
+                    });
+                });
+            });
+        });
+    });
 });
 

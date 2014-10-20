@@ -1,9 +1,9 @@
 /**
-* An integration test that creates two complex collections and then establishes inter-collection relationships
-* between the mappings in each before creating objects etc.
-*
-* We then proceed to test various aspects of the system.
-*/
+ * An integration test that creates two complex collections and then establishes inter-collection relationships
+ * between the mappings in each before creating objects etc.
+ *
+ * We then proceed to test various aspects of the system.
+ */
 
 var s = require('../../index')
     , assert = require('chai').assert;
@@ -179,11 +179,9 @@ describe('intercollection relationships', function () {
     /**
      * Execute the integration test. Seperated out into a function so can be executed having manipulated s.ext.storage.Pouch
      */
-    function tests () {
+    function tests() {
         describe('local queries', function () {
             describe('offline', function () {
-
-
                 it('should return mike when querying for him', function (done) {
                     myOfflineCollection.User.query({username: 'gaz'}, function (err, users) {
                         if (err) done(err);
@@ -213,6 +211,7 @@ describe('intercollection relationships', function () {
                 });
 
                 it('should return 2 photos with height 500', function (done) {
+                    this.timeout(10000);
                     myOnlineCollection.Photo.query({height: 500}, function (err, photos) {
                         if (err) done(err);
                         assert.equal(photos.length, 2);
@@ -224,6 +223,7 @@ describe('intercollection relationships', function () {
                 });
 
                 it('should return 1 photo with height 500, width, 750', function (done) {
+                    this.timeout(10000);
                     myOnlineCollection.Photo.query({height: 500, width: 750}, function (err, photos) {
                         if (err) done(err);
                         assert.equal(photos.length, 1);
@@ -300,7 +300,6 @@ describe('intercollection relationships', function () {
 //        });
 //        tests();
 //    });
-
 
 
 });

@@ -61,7 +61,6 @@ describe('mapping!', function () {
             m.install(function (err) {
                 if (err) done(err);
                 var indexes = s.ext.storage.Index.indexes;
-                dump('indexes', indexes);
                 assert.equal(indexes.length, 2);
                 done();
             });
