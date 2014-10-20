@@ -48,7 +48,7 @@ describe('performance', function () {
             Repo.map(json, done);
         });
 
-        it('store', function (done) {
+        it.only('store', function (done) {
             this.timeout(10000);
             var json = require('./repos').repos;
             Repo.map(json, function (err, objs) {
@@ -56,9 +56,11 @@ describe('performance', function () {
                 siesta.save(function (err) {
                     if (err) done(err);
                     cache.reset();
-                    var results = {cached: {}, notCached: {}};
-                    siesta.ext.storage.store.getMultipleRemoteFrompouch(Repo, _.pluck(objs, 'id'), results, function () {
+                    var idents = _.pluck(objs, 'id');
+                    var results = {cached: {}, notCached: idents};
+                    siesta.ext.storage.store.getMultipleRemoteFrompouch(Repo, idents, results, function () {
                         assert.equal(100, Object.keys(results.cached).length);
+                        assert.notOk(results.notCached.length);
                         done();
                     });
                 });

@@ -61,6 +61,8 @@ function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callbac
             _.each(models, function (model) {
                 var remoteId = model[mapping.id];
                 results.cached[remoteId] = model;
+                var idx = results.notCached.indexOf(remoteId);
+                results.notCached.splice(idx, 1);
             });
             if (Logger.trace.isEnabled) {
                 Logger.trace('[RESULTS] getMultipleRemoteFrompouch(' + mapping.type + '):', results);
