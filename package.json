@@ -17,14 +17,17 @@
   },
   "homepage": "https://github.com/mtford90/siesta",
   "devDependencies": {
-    "less": "~1.7.4",
-    "grunt": "~0.4.5",
-    "load-grunt-tasks": "~0.6.0",
-    "time-grunt": "~1.0.0",
-    "grunt-contrib-watch": "~0.6.1",
-    "grunt-contrib-less": "~0.11.4",
     "bootstrap": "~3.2.0",
+    "grunt": "~0.4.5",
+    "grunt-contrib-connect": "~0.8.0",
+    "grunt-contrib-copy": "^0.7.0",
+    "grunt-contrib-less": "~0.11.4",
+    "grunt-contrib-watch": "~0.6.1",
     "grunt-jekyll": "~0.4.2",
-    "grunt-contrib-connect": "~0.8.0"
+    "grunt-shell": "^1.1.1",
+    "jsdoc-to-markdown": "^0.5.9",
+    "less": "~1.7.4",
+    "load-grunt-tasks": "~0.6.0",
+    "time-grunt": "~1.0.0"
   }
 }

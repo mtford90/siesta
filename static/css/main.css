@@ -4019,13 +4019,15 @@ Homepage
     padding: 40px 20px;
   }
 }
+.homepage-content.container-fluid > .container {
+  margin-bottom: 40px;
+}
 .homepage-footer.container-fluid {
   background-color: #3f4657;
   box-shadow: none;
   border-radius: 0px;
   color: light;
   border: none;
-  margin-top: 40px;
 }
 @media (max-width: 767px) {
   .homepage-footer.container-fluid {
@@ -4163,11 +4165,25 @@ body {
     content: attr(data-title);
   }
 }
+.row.btn-row {
+  margin-bottom: 5px;
+}
 /* ===========================================================================================
 Componenets
 ============================================================================================== */
 a {
   color: #82becd;
+}
+a.download {
+  color: #3f4657;
+}
+a.download:hover {
+  text-decoration: none;
+  color: #82becd;
+}
+a button:hover {
+  background-color: #3f4657;
+  color: #82becd !important;
 }
 .btn.btn-sidebar {
   padding: 7px 10px;
@@ -4644,7 +4660,7 @@ Code Highlighting
 .hljs-diff .hljs-header,
 .hljs-chunk,
 .hljs-markdown .hljs-blockquote {
-  color: #84989b;
+  color: #d8f0f4;
 }
 .hljs-number,
 .hljs-date,

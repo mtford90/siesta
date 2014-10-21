@@ -4,18 +4,28 @@ title: Getting Started
 sidebar: nav2.html
 ---
 
-## Getting Started
+## {{page.title}}
 
-This guide will get you up and running quickly.
+This guide will get you up and running quickly with minimal effort.
 
 ### Step 1: Installation
 
-TODO
+You can use the below code to include the entire Siesta bundle:
+
+```html
+<html>
+<body>
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.bundle.min.js"></script>
+</body>
+</html>
+```
+
+If you prefer to pick and choose the components that you want to use, head to the 
+<a href="{{site.baseurl}}/download.html">download</a> page for other options.
 
 ### Step 2: Create a collection
 
-A `Collection` describes a set of models and optionally a Rest API with which we want to communicate to get instances
-of those models.
+A `Collection` describes a set of models and optionally a REST API containing the resources the collection will represent.
 
 ```javascript
 var collection = new Collection('MyCollection');
@@ -24,7 +34,11 @@ collection.baseURL = 'http://api.mysite.com';
 
 ### Step 3: Configure object mappings
 
-A simple mapping will just declare attributes:
+The mapping is the Siesta equivalent to models in traditional database ORMs. It describes 
+how attributes and relationships in resources are mapped onto Javascript objects.
+
+
+A simple mapping will only declare attributes:
 
 ```javascript
 collection.mapping('Person', {
@@ -32,28 +46,34 @@ collection.mapping('Person', {
 });
 ```
 
-A more complex mapping will declare the remote `id` that uniquely identifies it, relationships with other mappings
-as well as indexes:
+A more complex mapping:
 
 ```javascript
 collection.mapping('Car', {
+    // The field that uniquely identifies a Car object.
     id: 'id',
+    // Relationships with other remote objects. 
+    // In this case a Car has an owner, and a Person can own many cars.
     relationships: {
         owner: {
             mapping: 'Person',
-            type: RelationshipType.ForeignKey,
-            reverse: 'cars' // Will show up on Person objects
+            type: 'ForeignKey',
+            reverse: 'cars' 
         }
     },
+    // Attributes represent simple data types such as strings and integers.
     attributes: ['model', 'colour', 'licensePlate'],
-    indexes: ['colour'] // id is automatically indexed
+    // If our application will be querying a field, we can create a (PouchDB) index to speed things up.
+    // Note that this is only useful if using the Siesta storage module.
+    indexes: ['colour']
 });
 ```
 
 ### Step 4: Configure request/response descriptors
 
-A descriptor describes the remote API from which we pull instances of our models. A descriptor can either describe
-a HTTP request:
+Descriptors are a component within the HTTP module and are used to *describe* web services with which
+we want to interact. When a HTTP request is sent, the descriptors are used to automatically map data
+to and from the correct mappings.
 
 ```javascript
 collection.requestDescriptor({
@@ -67,10 +87,10 @@ A more complex request descriptor could include attributes in the path which can
 groups. The values of these matches will be mapped onto the object that is sent/received.
 
 ```javascript
-collection.registerRequestDescriptor({
+collection.requestDescriptor({
     path: 'cars/(?P<id>)/'
     method: 'PUT',
-    mapping: 'Car'
+    mapping: 'Car',
     data: 'data' // Serialise to {data: {...}} when sending the request.
 });
 ```
@@ -78,19 +98,29 @@ collection.registerRequestDescriptor({
 Response descriptors are almost identical, however will be used in HTTP responses rather than requests
 
 ```javascript
-collection.registerResponseDescriptor({
+collection.responseDescriptor({
     path: 'cars/(.*)/',
-    method: '*', // Any method
+    // Accept any HTTP method
+    method: '*', 
     mapping: 'Car',
-    data: 'data' // Deserialise from data field in JSON response when receiving.
+    // Deserialise from data field in JSON response when receiving.
+    data: 'data' 
 });
 ```
 
 ### Step 5: Install the collection
 
+Before we can use our collection we need to install it. If the storage module is in use
+then this ensures that indexes are installed and the database is setup among other things.
+
 ```javascript
 collection.install(function (err) {
-    // ... Installs indexes etc.
+    if (err) { 
+        // Handle error.
+    }
+    else {
+        // Do stuff.
+    }
 });
 ```
 

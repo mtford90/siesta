@@ -3,6 +3,20 @@ Componenets
 ============================================================================================== */
 a {
   color: @light;
+
+  &.download {
+    color: @dark;
+  }
+
+  &.download:hover {
+    text-decoration: none;
+    color: @light;
+  }
+
+  button:hover {
+    background-color: @dark;
+    color: @light !important;
+  }
 }
 
 .btn {
@@ -33,6 +47,7 @@ a {
       }
     }
   }
+
 }
 
 code {
@@ -310,7 +325,7 @@ table {
 }
 
 .well {
-  margin:0;
+  margin: 0;
   &.well-sidebar {
     .kill-box-shadow;
     background-color: transparent;
@@ -333,3 +348,4 @@ table {
     }
   }
 }
+

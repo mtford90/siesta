@@ -13,15 +13,14 @@ title: Fount
 The main idea behind Siesta is that models should have a **single source of truth** - that is - only one local object should
 ever represent a remote resource.
 
-You can think of Siesta as an ORM, except that rather than mapping rows from a relational database onto
-objects in memory and vice versa, we are mapping to and from JSON data, replacing the SQL queries with 
-HTTP requests.
+A traditional ORM maps rows from a relational database to objects. Siesta maps objects to and from data transport formats
+(e.g. JSON) and replaces the SQL queries with HTTP requests.
 
 Siesta provides a declarative API through which we describe the web services that we'd like to interact with.
 When data is received from these web services, each object is mapped onto its corresponding local
 representation *including* any nested related objects. 
 
-Siesta then presents powerful ways in which to query  and store local objects (thanks to <a href="http://pouchdb.com/">PouchDB</a>) in a 
+Siesta then presents powerful ways in which to query and store local objects (thanks to <a href="http://pouchdb.com/">PouchDB</a>) in a 
 browser-agnostic fashion, reducing the number of requests we need to make against each web service.
 
 ###The Problem
@@ -91,12 +90,14 @@ var Car = collection.mapping({
     id: 'id',
     attributes: [
         "colour",
-        "model",
-        {
-            mapping: User,
-            reverse: 'cars'
+        "model"
+    ],
+    relationships: {
+        owner: {
+              mapping: User,
+              reverse: 'cars'
         }
-    ]
+    }
 });
 ```
 

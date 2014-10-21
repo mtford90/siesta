@@ -139,6 +139,10 @@ Homepage
   @media (max-width: 767px) {
     padding: 40px 20px;
   }
+
+  >.container {
+    margin-bottom: 40px;
+  }
 }
 
 .homepage-footer.container-fluid {
@@ -147,7 +151,7 @@ Homepage
   border-radius: 0px;
   color: light;
   border: none;
-  margin-top: 40px;
+//  margin-top: 40px;
 
   @media (max-width: 767px) {
     padding: 0 20px;
@@ -307,5 +311,11 @@ html, body {
   /* Label the data */
   td:before {
     content: attr(data-title);
+  }
+}
+
+.row {
+  &.btn-row {
+    margin-bottom: 5px;
   }
 }
