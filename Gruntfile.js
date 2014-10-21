@@ -106,18 +106,18 @@ module.exports = function (grunt) {
                     }
                 },
                 command: 'jsdoc2md ../rest/src/http/http.js'
-            },
-            update_siesta: {
-                options: {
-                    stderr: false
-                },
-                command: 'rm -rf _site/build && rm -rf _site/demo; ' +
-                    'cp -r ../rest/build _site/build; ' +
-                    'cp -r ../rest/example _site/demo; ' +
-                    'cp -r ../rest/node_modules _site/node_modules; ' +
-                    'cp -r ../rest/bower_components _site/bower_components; '
-
             }
+//            update_siesta: {
+//                options: {
+//                    stderr: false
+//                },
+//                command: 'rm -rf _site/build && rm -rf _site/demo; ' +
+//                    'cp -r ../rest/build _site/build; ' +
+//                    'cp -r ../rest/example _site/demo; ' +
+//                    'cp -r ../rest/node_modules _site/node_modules; ' +
+//                    'cp -r ../rest/bower_components _site/bower_components; '
+//
+//            }
 
         }
     });
