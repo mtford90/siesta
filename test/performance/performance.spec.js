@@ -48,7 +48,7 @@ describe('performance', function () {
             Repo.map(json, done);
         });
 
-        it.only('store', function (done) {
+        it('store', function (done) {
             this.timeout(10000);
             var json = require('./repos').repos;
             Repo.map(json, function (err, objs) {
