@@ -1,30 +1,7 @@
 ---
+layout: demo
 title: Demo
 ---
-
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>Example</title>
-    <script src="https://github.com/pouchdb/pouchdb/releases/download/3.0.6/pouchdb-3.0.6.min.js"></script>
-    <script src="https://github.com/pouchdb/pouchdb/releases/download/3.0.6/pouchdb.memory.min.js"></script>
-    <!--<script src="http://underscorejs.org/underscore.js"></script>-->
-    <script src="http://underscorejs.org/underscore-min.js"></script>
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="siesta/siesta.js"></script>
-    <script src="siesta/siesta.storage.js"></script>
-    <script src="siesta/siesta.http.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="sweetalert/lib/sweet-alert.js"></script>
-    <link rel="stylesheet" type="text/css" href="sweetalert/lib/sweet-alert.css">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" type="text/css" href="spinner.css">
-    <script src="index.js"></script>
-</head>
-<body>
 <div class="outer-spinner outer-overlay" id="spinner" style="display: none">
     <div class="spinner overlay">
         <div class="cube1"></div>
@@ -45,7 +22,6 @@ title: Demo
         <div id="centred-text">No results.</div>
     </div>
 </div>
-<!-- Begin Template -->
 <div class="col-md-3 repo-col" style="display: none" id="template">
     <div class="repo">
         <div class="user">
@@ -82,15 +58,12 @@ title: Demo
         <div class="border"></div>
     </div>
 </div>
-<!-- End Template -->
 <div id="header">
     <h3>Siesta Github Demo</h3>
     <a class="button" id="statistics-button" onclick="showStats()">Statistics</a>
 </div>
 
 <div id="content" class="container">
-
-
     <div id="repos">
         <div class="row"></div>
     </div>
@@ -101,11 +74,9 @@ title: Demo
             <i class="glyphicon glyphicon-user"></i>
             <input onkeypress="queryKeyPress(event)" id="INPUT_1" placeholder="Query" type="email" name="identification" ></input>
             <button type="submit" class="go-button" onclick="query()"">
-                Go
+            Go
             </button>
         </div>
         <a  class="button" id="visualise" onclick="visualise(this)">Visualise</a>
     </div>
 </div>
-</body>
-</html>
