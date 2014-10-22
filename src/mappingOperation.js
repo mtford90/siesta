@@ -160,63 +160,73 @@ BulkMappingOperation.prototype._lookup = function (callback) {
     util.parallel([
             function (callback) {
                 var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
-                Store.getMultipleLocal(localIdentifiers, function (err, objects) {
-                    if (!err) {
-                        for (var i = 0; i < localIdentifiers.length; i++) {
-                            var obj = objects[i];
-                            var _id = localIdentifiers[i];
-                            var lookup = localLookups[i];
-                            if (!obj) {
-                                self.errors[lookup.index] = {_id: 'No object with _id="' + _id.toString() + '"'};
-                            }
-                            else {
-                                self.objects[lookup.index] = obj;
+                if (localIdentifiers.length) {
+                    Store.getMultipleLocal(localIdentifiers, function (err, objects) {
+                        if (!err) {
+                            for (var i = 0; i < localIdentifiers.length; i++) {
+                                var obj = objects[i];
+                                var _id = localIdentifiers[i];
+                                var lookup = localLookups[i];
+                                if (!obj) {
+                                    self.errors[lookup.index] = {_id: 'No object with _id="' + _id.toString() + '"'};
+                                }
+                                else {
+                                    self.objects[lookup.index] = obj;
+                                }
                             }
                         }
-                    }
-                    callback(err);
-                });
+                        callback(err);
+                    });
+                }
+                else {
+                    callback();
+                }
             },
             function (callback) {
                 var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.mapping.id);
-                if (Logger.trace.isEnabled)
-                    Logger.trace('Looking up remoteIdentifiers: ' + JSON.stringify(remoteIdentifiers, null, 4));
-                Store.getMultipleRemote(remoteIdentifiers, self.mapping, function (err, objects) {
-                    if (!err) {
-                        if (Logger.trace.isEnabled) {
-                            var results = {};
+                if (remoteIdentifiers.length) {
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Looking up remoteIdentifiers: ' + JSON.stringify(remoteIdentifiers, null, 4));
+                    Store.getMultipleRemote(remoteIdentifiers, self.mapping, function (err, objects) {
+                        if (!err) {
+                            if (Logger.trace.isEnabled) {
+                                var results = {};
+                                for (i = 0; i < objects.length; i++) {
+                                    results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
+                                }
+                                Logger.trace('Results for remoteIdentifiers: ' + JSON.stringify(results, null, 4));
+                            }
                             for (i = 0; i < objects.length; i++) {
-                                results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
-                            }
-                            Logger.trace('Results for remoteIdentifiers: ' + JSON.stringify(results, null, 4));
-                        }
-                        for (i = 0; i < objects.length; i++) {
-                            var obj = objects[i];
-                            var lookup = remoteLookups[i];
-                            if (obj) {
-                                self.objects[lookup.index] = obj;
-                            }
-                            else {
-                                var data = {};
-                                var remoteId = remoteIdentifiers[i];
-                                data[self.mapping.id] = remoteId;
-                                var cacheQuery = {mapping: self.mapping};
-                                cacheQuery[self.mapping.id] = remoteId;
-                                var cached = cache.get(cacheQuery);
-                                if (cached) {
-                                    self.objects[lookup.index] = cached;
+                                var obj = objects[i];
+                                var lookup = remoteLookups[i];
+                                if (obj) {
+                                    self.objects[lookup.index] = obj;
                                 }
                                 else {
-                                    self.objects[lookup.index] = self.mapping._new();
-                                    // It's important that we map the remote identifier here to ensure that it ends
-                                    // up in the cache.
-                                    self.objects[lookup.index][self.mapping.id] = remoteId;
+                                    var data = {};
+                                    var remoteId = remoteIdentifiers[i];
+                                    data[self.mapping.id] = remoteId;
+                                    var cacheQuery = {mapping: self.mapping};
+                                    cacheQuery[self.mapping.id] = remoteId;
+                                    var cached = cache.get(cacheQuery);
+                                    if (cached) {
+                                        self.objects[lookup.index] = cached;
+                                    }
+                                    else {
+                                        self.objects[lookup.index] = self.mapping._new();
+                                        // It's important that we map the remote identifier here to ensure that it ends
+                                        // up in the cache.
+                                        self.objects[lookup.index][self.mapping.id] = remoteId;
+                                    }
                                 }
                             }
                         }
-                    }
-                    callback(err);
-                });
+                        callback(err);
+                    });
+                }
+                else {
+                    callback();
+                }
             }
         ],
         callback);

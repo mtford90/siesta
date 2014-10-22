@@ -6,7 +6,7 @@ describe('performance', function () {
     var Collection = require('../../src/collection').Collection;
     var cache = require('../../src/cache');
     var collection;
-    var Repo, User;
+    var Repo, User, Fork;
 
     beforeEach(function (done) {
         s.reset(true);
@@ -14,19 +14,32 @@ describe('performance', function () {
         collection.baseURL = 'https://api.github.com';
         Repo = collection.mapping('Repo', {
             id: 'id',
-            attributes: ['name', 'full_name', 'description'],
+            attributes: ['name', 'full_name', 'description', 'html_url', 'watchers_count', 'stargazers_count', 'forks'],
             relationships: {
                 owner: {
                     mapping: 'User',
-                    type: siesta.RelationshipType.OneToMany,
+                    type: 'OneToMany',
                     reverse: 'repositories'
                 }
-            },
-            data: 'items'
+            }
+        });
+        Fork = collection.mapping('Fork', {
+            relationships: {
+                source: {
+                    mapping: 'Repo',
+                    type: 'OneToMany',
+                    reverse: 'forked_to'
+                },
+                fork: {
+                    mapping: 'Repo',
+                    type: 'OneToOne',
+                    reverse: 'forked_from'
+                }
+            }
         });
         User = collection.mapping('User', {
             id: 'id',
-            attributes: ['login']
+            attributes: ['login', 'avatar_url']
         });
         collection.install(done);
     });
@@ -63,6 +76,27 @@ describe('performance', function () {
                         assert.notOk(results.notCached.length);
                         done();
                     });
+                });
+            });
+        });
+
+        it.only('fork', function (done) {
+            this.timeout(8000);
+            var repos = require('./repos').repos;
+            Repo.map(repos, function (err, objs) {
+                if (err) done(err);
+                var forks = require('./repos').forks;
+                var rawFork = _.map(forks, function (f) {
+                    return {fork: f, source: {_id: objs[0]._id}};
+                });
+                Fork.map(rawFork, function (err, forks) {
+                    if (err) done(err);
+                    assert.equal(forks.length, 6);
+                    for (var i=0;i<forks.length;i++) {
+                        var fork = forks[i];
+                        assert.equal(fork.source, objs[0]);
+                    }
+                    done();
                 });
             });
         });

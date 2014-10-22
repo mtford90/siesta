@@ -151,14 +151,15 @@ OneToManyProxy.prototype.get = function (callback) {
  * @returns {string|null} An error message or null
  */
 function validate(obj) {
+    var str = Object.prototype.toString.call(obj);
     if (this.isForward) {
-        if (Object.prototype.toString.call(obj) == '[object Array]') {
-            return 'Cannot assign array forward foreign key';
+        if (str == '[object Array]') {
+            return 'Cannot assign array forward oneToMany (' + str + '): ' + this.forwardName;
         }
     }
     else {
-        if (Object.prototype.toString.call(obj) != '[object Array]') {
-            return 'Cannot scalar to reverse foreign key';
+        if (str != '[object Array]') {
+            return 'Cannot scalar to reverse oneToMany (' + str + '): ' + this.reverseName;
         }
     }
     return null;
