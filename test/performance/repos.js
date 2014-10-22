@@ -3165,3 +3165,25 @@ exports.forks = [
         "default_branch": "master"
     }
 ];
+
+exports.followers = [
+  {
+    "login": "stephensauceda",
+    "id": 1017723,
+    "avatar_url": "https://avatars.githubusercontent.com/u/1017723?v=2",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/stephensauceda",
+    "html_url": "https://github.com/stephensauceda",
+    "followers_url": "https://api.github.com/users/stephensauceda/followers",
+    "following_url": "https://api.github.com/users/stephensauceda/following{/other_user}",
+    "gists_url": "https://api.github.com/users/stephensauceda/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/stephensauceda/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/stephensauceda/subscriptions",
+    "organizations_url": "https://api.github.com/users/stephensauceda/orgs",
+    "repos_url": "https://api.github.com/users/stephensauceda/repos",
+    "events_url": "https://api.github.com/users/stephensauceda/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/stephensauceda/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+]

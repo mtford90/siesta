@@ -6,7 +6,7 @@ describe('performance', function () {
     var Collection = require('../../src/collection').Collection;
     var cache = require('../../src/cache');
     var collection;
-    var Repo, User, Fork;
+    var Repo, User, Fork, Follow;
 
     beforeEach(function (done) {
         s.reset(true);
@@ -34,6 +34,20 @@ describe('performance', function () {
                     mapping: 'Repo',
                     type: 'OneToOne',
                     reverse: 'forked_from'
+                }
+            }
+        });
+        Follow = collection.mapping('Follow', {
+            relationships: {
+                followed: {
+                    mapping: 'User',
+                    type: 'OneToMany',
+                    reverse: 'followers'
+                },
+                follower: {
+                    mapping: 'User',
+                    type: 'OneToMany',
+                    reverse: 'following'
                 }
             }
         });
@@ -80,7 +94,7 @@ describe('performance', function () {
             });
         });
 
-        it.only('fork', function (done) {
+        it('fork', function (done) {
             this.timeout(8000);
             var repos = require('./repos').repos;
             Repo.map(repos, function (err, objs) {
@@ -96,6 +110,19 @@ describe('performance', function () {
                         var fork = forks[i];
                         assert.equal(fork.source, objs[0]);
                     }
+                    done();
+                });
+            });
+        });
+
+
+        it.only('follow', function (done) {
+            this.timeout(8000);
+            var repos = require('./repos').repos;
+            Repo.map(repos, function (err, objs) {
+                if (err) done(err);
+                var user = objs[0].owner;
+                Follow.map(require('./repos').follows, function (err, followers) {
                     done();
                 });
             });
