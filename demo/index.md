@@ -8,15 +8,6 @@ title: Demo
         <div class="cube2"></div>
     </div>
 </div>
-<div class="outer-overlay" id="initial-text">
-    <div class="overlay">
-        <div id="centred-text">
-            <p>Welcome to the Siesta demo!</p>
-            <p>This is a simple JQuery web app that uses Siesta to interface with the GitHub API, allowing users to search through repositories by name and description.</p>
-            <p>Use the form in the bottom left to start your search.</p>
-        </div>
-    </div>
-</div>
 <div class="outer-overlay" id="no-results" style="display: none">
     <div class="overlay">
         <div id="centred-text">No results.</div>
@@ -67,7 +58,11 @@ title: Demo
     <div id="repos">
         <div class="row"></div>
     </div>
+    <div id="visualisation" style="display: none">
+    </div>
 </div>
+
+
 <div id="footer">
     <div id="inner-footer">
         <div class="form">
@@ -77,6 +72,6 @@ title: Demo
             Go
             </button>
         </div>
-        <a  class="button" id="visualise" onclick="visualise(this)">Visualise</a>
+        <a  class="button" id="visualise" onclick="visualisePressed(this)">Visualise</a>
     </div>
 </div>

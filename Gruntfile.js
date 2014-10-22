@@ -48,7 +48,7 @@ module.exports = function (grunt) {
                 tasks: ['build']
             },
             jekyll: {
-                files: ['**/*.md', '_includes/*.html', '_data/*.yml', '_layouts/*.html', '_posts/*.md', 'blog/*.html', '_config.yml'],
+                files: ['**/*.md', '_includes/*.html', '_data/*.yml', '_layouts/*.html', '_posts/*.md', 'blog/*.html', '_config.yml', '*/**.js', 'demo/**/*.css'],
                 tasks: ['build']
             }
         },

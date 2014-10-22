@@ -30,7 +30,7 @@ body {
     margin-right: 5px;
 }
 
-.repo:hover {
+.repo.hovered {
     transition: background 0.3s ease 0s, border-color 0.3s ease 0s, width 1s ease 0s;
     background-color: rgb(238, 245, 248);
     cursor: pointer;
@@ -46,7 +46,7 @@ body {
     background-color: transparent;
 }
 
-.repo:hover .border {
+.repo.hovered .border {
     background-color: rgb(87, 148, 219);
 }
 
@@ -59,6 +59,13 @@ body {
     width: 20px;
 }
 
+.repo .user.hovered {
+    cursor: pointer;
+}
+
+.repo .user.hovered .username {
+    text-decoration: underline;
+}
 
 .repo .user .username {
     position: relative;
@@ -85,9 +92,23 @@ body {
     height: 50px;
 }
 
+.repo .stats .forks.hovered {
+    cursor: pointer;
+    background-color: rgb(238, 245, 248);
+    border-bottom: 4px solid rgb(87, 148, 219);
+}
+
+.repo .stats .forks .stat-border {
+    height: 3px;
+}
+
+.repo .stats .forks.hovered .stat-border {
+    background-color: rgb(87, 148, 219);
+}
+
 .repo .stats .stat {
     display: inline-block;
-    width: 32%;
+    width: 32.5%;
     position: relative;
     height: 50px;
 }
@@ -160,6 +181,10 @@ body {
     .row .col-md-3 {
         padding-top: 0px;
     }
+}
+
+#visualisation {
+
 }
 
 /* Footer */
