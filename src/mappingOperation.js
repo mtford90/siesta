@@ -6,8 +6,7 @@ var RestError = require('../src/error').RestError;
 var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.trace);
-
+Logger.setLevel(log.Level.warn);
 
 var cache = require('./cache');
 var util = require('./util');
@@ -62,6 +61,15 @@ function BulkMappingOperation(opts) {
     this.name = 'Mapping Operation';
     this.work = _.bind(this._start, this);
 
+    // if (this.data) {
+    //     _.each(this.data, function (datum) {
+    //         if (!datum) {
+    //             Logger.error('Eep! Null data!', this.data);
+    //             throw 'Eep! Null data!';
+    //         }
+    //     })
+    // }
+
     this.subOps = {};
 }
 
@@ -84,7 +92,6 @@ function mapAttributes() {
         }
     }
 }
-
 
 BulkMappingOperation.prototype._map = function () {
     var self = this;
@@ -138,22 +145,27 @@ BulkMappingOperation.prototype._lookup = function (callback) {
             var lookup;
             var datum = this.data[i];
             var isScalar = typeof datum == 'string' || typeof datum == 'number' || datum instanceof String;
-            if (isScalar) {
-                lookup = {index: i, datum: {}};
-                lookup.datum[self.mapping.id] = datum;
-                remoteLookups.push(lookup);
-            }
-            else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
-                this.objects[i] = datum;
-            }
-            else if (datum._id) {
-                localLookups.push({index: i, datum: datum});
-            }
-            else if (datum[self.mapping.id]) {
-                remoteLookups.push({index: i, datum: datum});
+            if (datum) {
+                if (isScalar) {
+                    lookup = {index: i, datum: {}};
+                    lookup.datum[self.mapping.id] = datum;
+                    remoteLookups.push(lookup);
+                }
+                else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
+                    this.objects[i] = datum;
+                }
+                else if (datum._id) {
+                    localLookups.push({index: i, datum: datum});
+                }
+                else if (datum[self.mapping.id]) {
+                    remoteLookups.push({index: i, datum: datum});
+                }
+                else {
+                    this.objects[i] = self.mapping._new();
+                }
             }
             else {
-                this.objects[i] = self.mapping._new();
+                this.objects[i] = null;
             }
         }
     }
@@ -271,6 +283,8 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
 };
 
 
+
+
 BulkMappingOperation.prototype._start = function (done) {
     if (this.data.length) {
         var self = this;
@@ -293,9 +307,11 @@ function getRelatedData(name) {
     var relatedData = [];
     for (var i = 0; i < this.data.length; i++) {
         var datum = this.data[i];
-        if (datum[name]) {
-            indexes.push(i);
-            relatedData.push(datum[name]);
+        if (datum) {
+            if (datum[name]) {
+                indexes.push(i);
+                relatedData.push(datum[name]);
+            }
         }
     }
     return {indexes: indexes, relatedData: relatedData};

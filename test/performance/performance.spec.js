@@ -86,7 +86,7 @@ describe('performance', function () {
                     var idents = _.pluck(objs, 'id');
                     var results = {cached: {}, notCached: idents};
                     siesta.ext.storage.store.getMultipleRemoteFrompouch(Repo, idents, results, function () {
-                        assert.equal(100, Object.keys(results.cached).length);
+                        assert.equal(30, Object.keys(results.cached).length);
                         assert.notOk(results.notCached.length);
                         done();
                     });
@@ -116,7 +116,7 @@ describe('performance', function () {
         });
 
 
-        it.only('follow', function (done) {
+        it('follow', function (done) {
             this.timeout(8000);
             var repos = require('./repos').repos;
             Repo.map(repos, function (err, objs) {
