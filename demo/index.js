@@ -2,6 +2,63 @@ var collection
     , repositories = []
     ;
 
+var User, Fork, Repo;
+
+function showForks(repoModel) {
+//    var spinner = '<div class="fork-body">' +
+//        '<div class="spinner fork-spinner" style="margin-top: 30px !important; margin-bottom: 10px">' +
+//        '<div class="cube1"></div>' +
+//        '<div class="cube2"></div>' +
+//        '</div>' +
+//        '<div id="forks"></div></div>';
+//    sweetAlert('Forks (' + repoModel.name + ')', spinner);
+    fadeReposOutGradually(function () {
+        removeAllRepoElements();
+        fadeSpinnerIn(function () {
+            var path = '/repos/' + repoModel.owner.login + '/' + repoModel.name + '/forks';
+            console.log('path', path);
+            collection.GET(path, function (err, repos) {
+                if (err) {
+                    // TODO
+                }
+                else {
+                    var rawForks = _.map(repos, function (r) {return {source: {_id: repoModel._id}, fork: {_id: r._id}}});
+                    console.log('rawForks', rawForks);
+                    Fork.map(rawForks, function (err, forks) {
+                        console.log('Forks made!', forks);
+                        if (err) {
+                            // TODO
+                        }
+                        else {
+                            siesta.save(function (err) {
+                                if (err) {
+                                    // TODO
+                                }
+                                else {
+                                    repositories = _.pluck(forks, 'fork');
+                                    fadeSpinnerOutGradually(function () {
+                                        createRepoElements();
+                                    });
+//                            $('.fork-spinner').fadeOut(300, function () {
+//                                $('.confirm').attr('disabled', false);
+//                                _.each(forks, function (f) {
+//                                    $('.fork-body #forks').append('<p>' + f.fork.name + '</p>')
+//                                });
+//                                console.log('Forks saved!', forks);
+//                            });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+//    $('.confirm').attr('disabled', true);
+
+}
+
 function createRepoElement(repoModel) {
     var cloned = $('#template').clone();
     cloned.css('display', 'inherit');
@@ -47,6 +104,7 @@ function createRepoElement(repoModel) {
     });
     $forks.on('click', function (e) {
         e.stopPropagation();
+        showForks(repoModel);
     });
     var rows = $('#content #repos .row');
     var row;
@@ -104,7 +162,7 @@ function init(cb) {
     siesta.setPouch(new PouchDB('siesta'));
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
-    var Repo = collection.mapping('Repo', {
+    Repo = collection.mapping('Repo', {
         id: 'id',
         attributes: ['name', 'full_name', 'description', 'html_url', 'watchers_count', 'stargazers_count', 'forks'],
         relationships: {
@@ -115,7 +173,21 @@ function init(cb) {
             }
         }
     });
-    var User = collection.mapping('User', {
+    Fork = collection.mapping('Fork', {
+        relationships: {
+            source: {
+                mapping: 'Repo',
+                type: 'OneToMany',
+                reverse: 'forked_to'
+            },
+            fork: {
+                mapping: 'Repo',
+                type: 'OneToOne',
+                reverse: 'forked_from'
+            }
+        }
+    });
+    User = collection.mapping('User', {
         id: 'id',
         attributes: ['login', 'avatar_url']
     });
@@ -125,13 +197,30 @@ function init(cb) {
         method: 'GET',
         data: 'items'
     });
+//    /repos/:owner/:repo/forks
+    collection.responseDescriptor({
+        path: '/repos/(.*)/(.*)/forks',
+        mapping: Repo,
+        method: 'GET'
+    });
     collection.install(cb);
 }
 
+function removeAllRepoElements() {
+    $('#content #repos .row').remove();
+}
+
+function createRepoElements() {
+    if (!repositories.length) {
+        $('#no-results').fadeIn(300);
+    }
+    _.each(repositories, createRepoElement);
+    fadeReposIn();
+}
 function _query() {
     var text = $('#INPUT_1').val();
     $('#INPUT_1').val('');
-    $('#content #repos .row').remove();
+    removeAllRepoElements();
     function remoteQuery(err) {
         if (!err) {
             collection.GET('/search/repositories', {data: {q: text}}, function (err, repos) {
@@ -144,11 +233,7 @@ function _query() {
                     else {
                         fadeSpinnerOutGradually(function () {
                             repositories = repos;
-                            if (!repositories.length) {
-                                $('#no-results').fadeIn(300);
-                            }
-                            _.each(repositories, createRepoElement);
-                            fadeReposIn();
+                            createRepoElements();
                         });
                     }
                 });

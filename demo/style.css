@@ -330,6 +330,13 @@ ul li {
     color: rgb(255, 255, 255);
 }
 
+button.confirm:disabled, button.confirm:disabled:hover {
+    background-color: #8d8d8d !important;
+    border-color: #8d8d8d !important;;
+    cursor: default;
+    opacity: 0.7;
+}
+
 /* Sweet Alert Overrides */
 
 .sweet-alert p {
