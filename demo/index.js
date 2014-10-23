@@ -28,16 +28,14 @@ function showForks(repoModel) {
                         if (err) {
                             // TODO
                         } else {
-                            siesta.save(function(err) {
-                                if (err) {
-                                    // TODO
-                                } else {
-                                    repositories = _.pluck(forks, 'fork');
-                                    fadeSpinnerOutGradually(function() {
-                                        createRepoElements();
-                                    });
-                                }
-                            });
+                            if (err) {
+                                // TODO
+                            } else {
+                                repositories = _.pluck(forks, 'fork');
+                                fadeSpinnerOutGradually(function() {
+                                    createRepoElements();
+                                });
+                            }
                         }
                     });
                 }
@@ -54,13 +52,11 @@ function getReposForUserModel(userModel, callback) {
         if (err) {
             callback(err);
         } else {
-            siesta.save(function(err) {
-                if (err) {
-                    callback(err);
-                } else {
-                    callback(null, repos);
-                }
-            });
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, repos);
+            }
         }
     });
 }
@@ -108,70 +104,65 @@ function listFollowers(userModel) {
         if (err) {
             // TODO                 
         } else {
-            siesta.save(function(err) {
-                var rawFollows = _.map(users, function(u) {
-                    return {
-                        followed: {
-                            _id: userModel._id
-                        },
-                        follower: {
-                            _id: u._id
-                        }
+            var rawFollows = _.map(users, function(u) {
+                return {
+                    followed: {
+                        _id: userModel._id
+                    },
+                    follower: {
+                        _id: u._id
                     }
-                });
-                console.log('rawFollows', rawFollows);
-                getReposForUserModel(userModel, function(err, repos) {
-                    if (err) {
-                        // TODO
-                    } else {
-                        Follow.map(rawFollows, function(err, follows) {
-                            console.log('Follows made!', follows);
+                }
+            });
+            console.log('rawFollows', rawFollows);
+            getReposForUserModel(userModel, function(err, repos) {
+                if (err) {
+                    // TODO
+                } else {
+                    Follow.map(rawFollows, function(err, follows) {
+                        console.log('Follows made!', follows);
+                        if (err) {
+                            console.error('Error creating follows', follows);
+                        } else {
                             if (err) {
-                                console.error('Error creating follows', follows);
+                                // TODO
                             } else {
-                                siesta.save(function(err) {
-                                    if (err) {
-                                        // TODO
-                                    } else {
-                                        $('.fork-spinner').fadeOut(300, function() {
-                                            var $forks = $('#forks');
-                                            var $repoButton = $('<a>' + repos.length.toString() + ' public repositories</a>')
-                                            var elem = $('<p>This user has </p>');
-                                            elem.append($repoButton);
-                                            $forks.find('#repos').append(elem);
-                                            $repoButton.on('click', function() {
-                                                reposForUser(userModel);
-                                                closeModal();
+                                $('.fork-spinner').fadeOut(300, function() {
+                                    var $forks = $('#forks');
+                                    var $repoButton = $('<a>' + repos.length.toString() + ' public repositories</a>')
+                                    var elem = $('<p>This user has </p>');
+                                    elem.append($repoButton);
+                                    $forks.find('#repos').append(elem);
+                                    $repoButton.on('click', function() {
+                                        reposForUser(userModel);
+                                        closeModal();
+                                    });
+                                    $('#forks').fadeIn(300, function() {
+                                        $('.confirm').attr('disabled', false);
+                                        var body = $('.fork-body #forks #followers');
+                                        if (follows.length) {
+                                            _.each(follows, function(f) {
+                                                var elem = $('<img class="follower" data-toggle="tooltip" data-placement="top" title="' + f.follower.login + '" src="' + f.follower.avatar_url + '"/>');
+                                                elem.hover(function() {
+                                                    $('#hovered-username').text(f.follower.login);
+                                                }, function() {
+                                                    $('#hovered-username').text('');
+                                                });
+                                                elem.on('click', function() {
+                                                    var path = f.follower.html_url;
+                                                    window.open(path, '_blank');
+                                                });
+                                                body.append(elem);
                                             });
-                                            $('#forks').fadeIn(300, function() {
-                                                $('.confirm').attr('disabled', false);
-                                                var body = $('.fork-body #forks #followers');
-                                                if (follows.length) {
-                                                    _.each(follows, function(f) {
-                                                        var elem = $('<img class="follower" data-toggle="tooltip" data-placement="top" title="' + f.follower.login + '" src="' + f.follower.avatar_url + '"/>');
-                                                        elem.hover(function() {
-                                                            $('#hovered-username').text(f.follower.login);
-                                                        }, function() {
-                                                            $('#hovered-username').text('');
-                                                        });
-                                                        elem.on('click', function() {
-                                                            var path = f.follower.html_url;
-                                                            window.open(path, '_blank');
-                                                        });
-                                                        body.append(elem);
-                                                    });
-                                                } else {
-                                                    body.append('This user has no followers yet!');
-                                                }
-                                            });
-                                        });
-                                    }
+                                        } else {
+                                            body.append('This user has no followers yet!');
+                                        }
+                                    });
                                 });
                             }
-                        });
-                    }
-
-                });
+                        }
+                    });
+                }
 
             });
         }
@@ -279,7 +270,6 @@ function fadeVisualisationOut(cb) {
 }
 
 function init(cb) {
-    siesta.setPouch(new PouchDB('siesta'));
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
     Repo = collection.mapping('Repo', {
@@ -376,19 +366,16 @@ function _query() {
                     q: text
                 }
             }, function(err, repos) {
-                siesta.save(function(err) {
-                    if (err) {
-                        fadeSpinnerOutGradually(function() {
-                            alert('TODO: Nicer errors: ' + err);
-                        });
-                    } else {
-                        fadeSpinnerOutGradually(function() {
-                            repositories = repos;
-                            createRepoElements();
-                        });
-                    }
-                });
-
+                if (err) {
+                    fadeSpinnerOutGradually(function() {
+                        alert('TODO: Nicer errors: ' + err);
+                    });
+                } else {
+                    fadeSpinnerOutGradually(function() {
+                        repositories = repos;
+                        createRepoElements();
+                    });
+                }
             });
         } else {
             alert('TODO: Nicer errors: ' + err);

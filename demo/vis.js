@@ -30,6 +30,7 @@ function showVis() {
         getFollows(function(err, follows) {
             console.log('followModels', follows);
             getForks(function(err, forks) {
+                
                 console.log('forkModels', forks);
                 var users = {};
                 var repos = {};
@@ -64,6 +65,7 @@ function showVis() {
                         relationshipType: 'forked'
                     }
                 });
+
                 var followLinks = _.map(follows, function(f) {
                     var followed = f.followed;
                     var follower = f.follower;
@@ -83,7 +85,6 @@ function showVis() {
                 var links = ownedLinks.concat(forkedLinks).concat(followLinks);
                 var nodes = {};
 
-                // Compute the distinct nodes from the links.
                 links.forEach(function(link) {
                     link.source = nodes[link.source.name] || (nodes[link.source.name] = link.source);
                     link.target = nodes[link.target.name] || (nodes[link.target.name] = link.target);
@@ -150,7 +151,6 @@ function showVis() {
 
                 console.log('container', container);
 
-                // Per-type markers, as they don't inherit styles.
                 container.append("defs").selectAll("marker")
                     .data(["ManyToMany", "owned", "forked"])
                     .enter().append("marker")
@@ -173,21 +173,12 @@ function showVis() {
                     .attr("class", function(d) {
                         return "link " + d.relationshipType;
                     });
-                //            .attr("marker-end", function (d) { return "url(#" + d.type + ")"; });
-
 
                 var drag = force.drag()
                     .on("dragstart", function() {
                         console.log('event...', d3.event);
                         d3.event.sourceEvent.stopPropagation();
                     });
-
-                //    var circle = container.append("g").selectAll("circle")
-                //            .data(force.nodes())
-                //            .enter().append("circle")
-                //            .attr("r", 6)
-                //            .call(drag);
-
 
                 var circle = container.append("g").selectAll("circle")
                     .data(force.nodes())
@@ -215,7 +206,6 @@ function showVis() {
                         return d.name;
                     });
 
-                // Use elliptical arc path segments to doubly-encode directionality.
                 function tick() {
                     path.attr("d", linkArc);
                     circle.attr("transform", transform);
@@ -240,43 +230,6 @@ function showVis() {
             });
         });
     });
-    // });
-
-    // var repos = [
-    //     {name: 'xyz123456'},
-    //     {name: 'dfgdfg'},
-    //     {name: 'dfgdf'},
-    //     {name: '234234'},
-    //     {name: 'd09rtet'},
-    //     {name: 'fdgdf03'}
-    // ];
-
-    // _.each(repos, function (x) {
-    //     x.mapping = {
-    //         type: 'Repo'
-    //     };
-    // });
-
-    // var users = [
-    //     {name: 'mtford90', url: 'https://avatars2.githubusercontent.com/u/1734057?v=2&s=460'},
-    //     {name: 'wallyqs', url: 'https://avatars2.githubusercontent.com/u/26195?v=2&s=460'}
-    // ];
-
-    // _.each(users, function (x) {
-    //     x.mapping = {
-    //         type: 'User'
-    //     };
-    // });
-
-    // var links = [
-    //     {source: users[0], target: repos[0], relationshipType: "owned"},
-    //     {source: users[0], target: repos[1], relationshipType: "owned"},
-    //     {source: users[0], target: repos[2], relationshipType: "owned"},
-    //     {source: users[0], target: repos[3], relationshipType: "owned"},
-    //     {source: users[0], target: repos[4], relationshipType: "owned"},
-    //     {source: users[0], target: repos[5], relationshipType: "owned"},
-    //     {source: repos[2], target: repos[3], relationshipType: "forked"},
-    //     {source: users[1], target: users[0], relationshipType: 'follows'}
-    // ];
+ 
 
 }

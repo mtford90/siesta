@@ -156,8 +156,8 @@ body {
 #content {
     background-color: #edece4;
     width: 100%;
-    padding-bottom: 70px;
-    padding-top: 50px;
+    padding-bottom: 100px;
+    padding-top: 35px;
     height: 100%;
     padding-left: 25px;
     padding-right: 25px;
@@ -167,6 +167,10 @@ body {
     padding-top: 15px;
     padding-left: 7px;
     padding-right: 7px;
+}
+
+#repos {
+    padding-bottom: 70px;
 }
 
 @media (min-width: 992px) {
