@@ -20,7 +20,6 @@ title: Demo
             <img/>
         </div>
         <h3 class="name"></h3>
-
         <div class="description"></div>
         <div class="stats">
             <div class="watchers stat">
@@ -62,13 +61,12 @@ title: Demo
     </div>
 </div>
 
-
 <div id="footer">
     <div id="inner-footer">
         <div class="form">
             <i class="glyphicon glyphicon-user"></i>
             <input onkeypress="queryKeyPress(event)" id="INPUT_1" placeholder="Query" type="email" name="identification" ></input>
-            <button type="submit" class="go-button" onclick="query()"">
+            <button type="submit" class="go-button" onclick="query()">
             Go
             </button>
         </div>

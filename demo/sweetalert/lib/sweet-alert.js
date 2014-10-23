@@ -1,6 +1,9 @@
 // SweetAlert
 // 2014 (c) - Tristan Edwards
 // github.com/t4t5/sweetalert
+
+var closeModal;
+
 (function(window, document) {
 
   var modalClass   = '.sweet-alert',
@@ -639,7 +642,7 @@
     }, 500);
   }
 
-  function closeModal() {
+  closeModal = function() {
     var modal = getModal();
     fadeOut(getOverlay(), 5);
     fadeOut(modal, 5);
