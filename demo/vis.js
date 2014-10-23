@@ -30,13 +30,13 @@ function showVis() {
         getFollows(function(err, follows) {
             console.log('followModels', follows);
             getForks(function(err, forks) {
-                
                 console.log('forkModels', forks);
                 var users = {};
                 var repos = {};
                 var ownedLinks = _.map(repoModels, function(r) {
                     if (!repos[r._id]) {
-                        repos[r._id] = {name: r.name, type: 'Repo'};
+                        var repoName = r.name + '(' + r.owner.login + ')';
+                        repos[r._id] = {name: repoName, type: 'Repo'};
                     }
                     if (!users[r.owner._id]) {
                         users[r.owner._id] = {name: r.owner.login, url: r.owner.avatar_url, type:'User'};
@@ -47,17 +47,18 @@ function showVis() {
                         relationshipType: 'owned'
                     }
                 });
-
                 var forkedLinks = _.map(forks, function(f) {
                     var sourceRepo = f.source;
                     var forkRepo = f.fork;
+                    var forkRepoName = forkRepo.name + '(' + forkRepo.owner.login + ')';
+                    var sourceRepoName = sourceRepo.name + '(' + sourceRepo.owner.login + ')';
                     console.log('forkRepo', forkRepo);
                     console.log('sourceRepo', sourceRepo);
                     if (!repos[forkRepo._id]) {
-                        repos[forkRepo._id] = {name: forkRepo.name, type: 'Repo'};
+                        repos[forkRepo._id] = {name: forkRepoName, type: 'Repo'};
                     }
                     if (!repos[sourceRepo._id]) {
-                        repos[sourceRepo._id] = {name: sourceRepo.name, type: 'Repo'};
+                        repos[sourceRepo._id] = {name: sourceRepoName, type: 'Repo'};
                     }
                     return {
                         source: repos[sourceRepo._id],
@@ -86,8 +87,10 @@ function showVis() {
                 var nodes = {};
 
                 links.forEach(function(link) {
-                    link.source = nodes[link.source.name] || (nodes[link.source.name] = link.source);
-                    link.target = nodes[link.target.name] || (nodes[link.target.name] = link.target);
+                    var sourceName = link.source.name;
+                    var targetName = link.target.name;
+                    link.source = nodes[sourceName] || (nodes[sourceName] = link.source);
+                    link.target = nodes[targetName] || (nodes[targetName] = link.target);
                 });
 
                 console.log('ownedLinks', ownedLinks);
@@ -147,8 +150,6 @@ function showVis() {
                     .attr("transform", "translate(" + transx + "," + transy + ")");
 
                 zoom.translate([transx, transy]);
-
-
                 console.log('container', container);
 
                 container.append("defs").selectAll("marker")
