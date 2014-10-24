@@ -1,7 +1,7 @@
-var s = require('../index')
-    , assert = require('chai').assert;
+var s = require('../index'),
+    assert = require('chai').assert;
 
-describe('singleton mapping', function () {
+describe('singleton mapping', function() {
 
     var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
@@ -16,7 +16,7 @@ describe('singleton mapping', function () {
 
     CarObject.prototype = Object.create(SiestaModel.prototype);
 
-    beforeEach(function (done) {
+    beforeEach(function(done) {
         s.reset(true);
         collection = new Collection('Car');
         carMapping = collection.mapping('Car', {
@@ -27,10 +27,16 @@ describe('singleton mapping', function () {
         collection.install(done);
     });
 
-    it('should map onto the same singleton object, even if a different identifier', function (done) {
-        carMapping.map({colour: 'red', id: 5}, function (err, car) {
+    it('should map onto the same singleton object, even if a different identifier', function(done) {
+        carMapping.map({
+            colour: 'red',
+            id: 5
+        }, function(err, car) {
             if (err) done(err);
-            carMapping.map({colour: 'blue', id: 10}, function (err, car2) {
+            carMapping.map({
+                colour: 'blue',
+                id: 10
+            }, function(err, car2) {
                 if (err) done(err);
                 assert.equal(car, car2);
                 assert.equal(car.colour, 'blue');
@@ -40,10 +46,14 @@ describe('singleton mapping', function () {
         });
     });
 
-    it('should map onto the same singleton object', function (done) {
-        carMapping.map({colour: 'red'}, function (err, car) {
+    it('should map onto the same singleton object', function(done) {
+        carMapping.map({
+            colour: 'red'
+        }, function(err, car) {
             if (err) done(err);
-            carMapping.map({colour: 'blue'}, function (err, car2) {
+            carMapping.map({
+                colour: 'blue'
+            }, function(err, car2) {
                 if (err) done(err);
                 assert.equal(car, car2);
                 assert.equal(car.colour, 'blue');
@@ -52,42 +62,33 @@ describe('singleton mapping', function () {
         });
     });
 
-    it('store should return singleton', function (done) {
-        this.timeout(5000);
-        carMapping.map({colour: 'red', id: 5}, function (err, car) {
-            if (err) done(err);
-            collection.save(function (err) {
-                if (err) done(err);
-                cache.reset();
-                store.get({mapping: carMapping}, function (err, obj) {
-                    if (err) done(err);
-                    assert.equal(obj._id, car._id);
-                    done();
-                });
-            });
-        });
-    });
 
-    it('cache should return singleton', function (done) {
-        carMapping.map({colour: 'red', id: 5}, function (err, car) {
+
+    it('cache should return singleton', function(done) {
+        carMapping.map({
+            colour: 'red',
+            id: 5
+        }, function(err, car) {
             if (err) done(err);
-            var obj = cache.get({mapping: carMapping});
+            var obj = cache.get({
+                mapping: carMapping
+            });
             assert.equal(obj, car);
             done();
         });
     });
 
-    it('get should simply return the car', function (done) {
+    it('get should simply return the car', function(done) {
         this.timeout(5000);
-        carMapping.map({colour: 'red', id: 5}, function (err, car) {
+        carMapping.map({
+            colour: 'red',
+            id: 5
+        }, function(err, car) {
             if (err) done(err);
-            collection.save(function (err) {
+            carMapping.get(function(err, _car) {
                 if (err) done(err);
-                carMapping.get(function (err, _car) {
-                    if (err) done(err);
-                    assert.equal(car, _car);
-                    done();
-                });
+                assert.equal(car, _car);
+                done();
             });
         });
     });

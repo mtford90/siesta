@@ -1,7 +1,7 @@
-var s = require('../index')
-    , assert = require('chai').assert;
+var s = require('../index'),
+    assert = require('chai').assert;
 
-describe('store', function () {
+describe('store......', function() {
     var Store = require('../src/store');
     var SiestaModel = require('../src/object').SiestaModel;
     var Collection = require('../src/collection').Collection;
@@ -9,7 +9,7 @@ describe('store', function () {
 
     var carMapping, collection;
 
-    beforeEach(function (done) {
+    beforeEach(function(done) {
         s.reset(true);
         collection = new Collection('myCollection');
         carMapping = collection.mapping('Car', {
@@ -19,263 +19,92 @@ describe('store', function () {
         collection.install(done);
     });
 
-    describe('get', function () {
-        it('already cached', function (done) {
+    describe('get', function() {
+        it('already cached', function(done) {
             var model = new SiestaModel(carMapping);
             var pouchId = 'pouchId';
             model._id = pouchId;
             cache.insert(model);
-            Store.get({_id: pouchId}, function (err, doc) {
-                if (err)done(err);
+            Store.get({
+                _id: pouchId
+            }, function(err, doc) {
+                if (err) done(err);
                 assert.equal(doc, model);
                 done();
             });
         });
 
-        it('in pouch, have _id', function (done) {
-            var pouchid = 'pouchId';
-            s.ext.storage.Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid}, function (err, doc) {
-                if (err) done(err);
-                Store.get({_id: pouchid}, function (err, obj) {
-                    if (err) done(err);
-                    var cachedObject = cache.get({_id: obj._id});
-                    try {
-                        assert.equal(cachedObject, obj);
+        describe('multiple', function() {
+
+            describe('getMultiple', function() {
+                //TODO
+            });
+
+            describe('getMultipleLocal', function() {
+                var cars;
+
+                beforeEach(function() {
+                    var o = carMapping._new({
+                        colour: 'red',
+                        id: 'remoteId1'
+                    });
+                    var o1 = carMapping._new({
+                        colour: 'blue',
+                        id: 'remoteId2'
+                    });
+                    var o2 = carMapping._new({
+                        colour: 'green',
+                        id: 'remoteId3'
+                    });
+                    cars = [o, o1, o2];
+                    cache.insert(o);
+                    cache.insert(o1);
+                    cache.insert(o2);
+                });
+
+                it('xyz', function(done) {
+                    Store.getMultipleLocal(_.pluck(cars, '_id'), function(err, docs) {
+                        if (err) done(err);
+                        assert.equal(docs.length, 3);
+                        _.each(docs, function(d) {
+                            assert.instanceOf(d, SiestaModel);
+                        });
                         done();
-                    }
-                    catch (err) {
-                        done(err);
-                    }
-                });
-            });
-        });
-
-        it('in pouch, dont have _id', function (done) {
-            var pouchid = 'pouchId';
-            var remoteId = 'xyz';
-            s.ext.storage.Pouch.getPouch().put({type: 'Car', collection: 'myCollection', colour: 'red', _id: pouchid, id: remoteId}, function (err, doc) {
-                if (err) done(err);
-                Store.get({id: remoteId, mapping: carMapping}, function (err, doc) {
-                    if (err) done(err);
-                    done();
-                });
-            });
-        });
-
-        describe('multiple', function () {
-
-            describe('getMultiple', function () {
-
-                describe('not cached', function () {
-                    beforeEach(function (done) {
-                        s.ext.storage.Pouch.getPouch().bulkDocs(
-                            [
-                                {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
-                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
-                                {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
-                            ],
-                            function (err) {
-                                done(err);
-                            }
-                        );
-                    });
-                    it('getMultiple should return multiple', function (done) {
-                        Store.getMultiple([
-                            {_id: 'localId1'},
-                            {_id: 'localId2'},
-                            {_id: 'localId3'}
-                        ], function (err, docs) {
-                            if (err) done(err);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        });
-                    });
-
-                    it('get should proxy to getMultiple if _id is an array', function (done) {
-                        Store.get({_id: ['localId1', 'localId2', 'localId3']}, function (err, docs) {
-                            if (err) done(err);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        });
-                    });
-
-
-                });
-
-            });
-
-            describe('getMultipleLocal', function () {
-
-                describe('not cached', function () {
-
-                    beforeEach(function (done) {
-                        s.ext.storage.Pouch.getPouch().bulkDocs(
-                            [
-                                {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
-                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
-                                {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
-                            ],
-                            function (err) {
-                                done(err);
-                            }
-                        );
-                    });
-
-                    it('xyz', function (done) {
-                        Store.getMultipleLocal(['localId1', 'localId2', 'localId3'], function (err, docs) {
-                            if (err) done(err);
-                            assert.equal(docs.length, 3);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        })
                     })
-                });
-                describe('cached', function () {
+                })
+
+
+            });
+
+            describe('getMultipleRemote', function() {
+                describe('cached', function() {
 
                     var cars;
 
-                    beforeEach(function () {
-                        var o = carMapping._new({colour: 'red', id: 'remoteId1'});
-                        var o1 = carMapping._new({colour: 'blue', id: 'remoteId2'});
-                        var o2 = carMapping._new({colour: 'green', id: 'remoteId3'});
+                    beforeEach(function() {
+                        var o = carMapping._new({
+                            colour: 'red',
+                            id: 'remoteId1'
+                        });
+                        var o1 = carMapping._new({
+                            colour: 'blue',
+                            id: 'remoteId2'
+                        });
+                        var o2 = carMapping._new({
+                            colour: 'green',
+                            id: 'remoteId3'
+                        });
                         cars = [o, o1, o2];
                         cache.insert(o);
                         cache.insert(o1);
                         cache.insert(o2);
                     });
 
-                    it('xyz', function (done) {
-                        Store.getMultipleLocal(_.pluck(cars, '_id'), function (err, docs) {
+                    it('xyz', function(done) {
+                        Store.getMultipleRemote(_.pluck(cars, 'id'), carMapping, function(err, docs) {
                             if (err) done(err);
                             assert.equal(docs.length, 3);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        })
-                    })
-                });
-                describe('partially cached', function () {
-                    var cars;
-
-                    beforeEach(function (done) {
-                        var o = carMapping._new({colour: 'red', id: 'remoteId1'});
-                        var o2 = carMapping._new({colour: 'green', id: 'remoteId3'});
-                        cars = [o, o2];
-                        cache.insert(o);
-                        cache.insert(o2);
-                        s.ext.storage.Pouch.getPouch().bulkDocs(
-                            [
-                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
-                            ],
-                            function (err) {
-                                done(err);
-                            }
-                        );
-                    });
-
-                    it('xyz', function (done) {
-                        var localIdentifiers = _.pluck(cars, '_id');
-                        localIdentifiers.push('localId2');
-                        Store.getMultipleLocal(localIdentifiers, function (err, docs) {
-                            if (err) done(err);
-                            assert.equal(docs.length, 3);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        })
-                    })
-                });
-
-            });
-
-            describe('getMultipleRemote', function () {
-                describe('not cached', function () {
-
-                    beforeEach(function (done) {
-                        s.ext.storage.Pouch.getPouch().bulkDocs(
-                            [
-                                {type: 'Car', collection: 'myCollection', colour: 'red', _id: 'localId1', id: 'remoteId1'},
-                                {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'},
-                                {type: 'Car', collection: 'myCollection', colour: 'green', _id: 'localId3', id: 'remoteId3'}
-                            ],
-                            function (err) {
-                                done(err);
-                            }
-                        );
-                    });
-
-                    it('xyz', function (done) {
-                        Store.getMultipleRemote(['remoteId1', 'remoteId2', 'remoteId3'], carMapping, function (err, docs) {
-                            if (err) done(err);
-                            assert.equal(docs.length, 3);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        })
-                    })
-                });
-                describe('cached', function () {
-
-                    var cars;
-
-                    beforeEach(function () {
-                        var o = carMapping._new({colour: 'red', id: 'remoteId1'});
-                        var o1 = carMapping._new({colour: 'blue', id: 'remoteId2'});
-                        var o2 = carMapping._new({colour: 'green', id: 'remoteId3'});
-                        cars = [o, o1, o2];
-                        cache.insert(o);
-                        cache.insert(o1);
-                        cache.insert(o2);
-                    });
-
-                    it('xyz', function (done) {
-                        Store.getMultipleRemote(_.pluck(cars, 'id'), carMapping, function (err, docs) {
-                            if (err) done(err);
-                            assert.equal(docs.length, 3);
-                            _.each(docs, function (d) {
-                                assert.instanceOf(d, SiestaModel);
-                            });
-                            done();
-                        })
-                    })
-
-
-                });
-                describe('partially cached', function () {
-                    var cars;
-
-                    beforeEach(function (done) {
-                        carMapping.map([
-                            {colour: 'red', id: 'remoteId1'},
-                            {colour: 'green', id: 'remoteId3'}
-                        ], function (err, _cars) {
-                            if (err) done(err);
-                            cars = _cars;
-                            s.ext.storage.Pouch.getPouch().bulkDocs(
-                                [
-                                    {type: 'Car', collection: 'myCollection', colour: 'blue', _id: 'localId2', id: 'remoteId2'}
-                                ],
-                                function (err) {
-                                    done(err);
-                                }
-                            );
-                        });
-                    });
-
-                    it('xyz', function (done) {
-                        Store.getMultipleRemote(['remoteId1', 'remoteId2', 'remoteId3'], carMapping, function (err, docs) {
-                            if (err) done(err);
-                            assert.equal(docs.length, 3);
-                            _.each(docs, function (d) {
+                            _.each(docs, function(d) {
                                 assert.instanceOf(d, SiestaModel);
                             });
                             done();

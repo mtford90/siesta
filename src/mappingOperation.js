@@ -282,9 +282,6 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
     return deferred.promise;
 };
 
-
-
-
 BulkMappingOperation.prototype._start = function (done) {
     if (this.data.length) {
         var self = this;

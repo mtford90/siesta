@@ -16,6 +16,7 @@ var _ = util._;
 var q = require('q');
 
 var cache = require('./cache');
+
 /**
  * A collection describes a set of models and optionally a REST API which we would
  * like to model.
@@ -35,7 +36,7 @@ var cache = require('./cache');
 function Collection(name) {
     var self = this;
     if (!this) return new Collection(name);
-    if (!name) throw RestError('Collection must have a name');
+    if (!name) throw new RestError('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
     this._rawMappings = {};
@@ -276,12 +277,7 @@ Collection.prototype.save = function (callback) {
  * @returns {*}
  */
 Collection.prototype.HTTP_METHOD = function (request, method) {
-    if (siesta.ext.storageEnabled) {
-        return _.partial(request ? this._httpRequest : this._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
-    }
-    else {
-        throw Error('Storage extension not installed.');
-    }
+    return _.partial(request ? this._httpRequest : this._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
 };
 
 /**

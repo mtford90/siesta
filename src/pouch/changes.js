@@ -95,9 +95,12 @@ function applySplice(obj, field, index, removed, added) {
     }
     var arr = obj[field];
     var actuallyRemoved = _.partial(arr.splice, index, removed.length).apply(arr, added);
-    if (!arraysEqual(actuallyRemoved, removed)) {
-        throw new RestError('Objects actually removed did not match those specified in the change');
-    }
+    // TODO: FIX THIS!!!! 
+    // if (!arraysEqual(actuallyRemoved, removed)) {
+    //     var err = 'Objects actually removed did not match those specified in the change';
+    //     Logger.error(err, {actuallyRemoved: actuallyRemoved, expectedRemoved: removed})
+    //     throw new RestError(err);
+    // }
 }
 
 function applyRemove(field, removed, obj) {

@@ -1,6 +1,6 @@
 var chai = require('chai');
-var s = require('../index')
-    , assert = chai.assert;
+var s = require('../index'),
+    assert = chai.assert;
 
 var mappingOperation = require('../src/mappingOperation');
 var BulkMappingOperation = mappingOperation.BulkMappingOperation;
@@ -11,27 +11,28 @@ var cache = require('../src/cache');
 var collection;
 var Repo, User;
 
-assert.arrEqual = function (arr1, arr2) {
+assert.arrEqual = function(arr1, arr2) {
     if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
     if (!util.isArray(arr2)) throw new chai.AssertionError(arr2.toString() + ' is not an array');
-    _.chain(arr1).zip(arr2).each(function (x) {
+    _.chain(arr1).zip(arr2).each(function(x) {
         if (util.isArray(x[0]) && util.isArray(x[1])) {
             assert.arrEqual(x[0], x[1]);
-        }
-        else if (x[0] != x[1]) {
+        } else if (x[0] != x[1]) {
             throw new chai.AssertionError(arr1.toString() + ' != ' + arr2.toString());
         }
     });
 };
 
-describe('array flattening', function () {
-    describe('flatten', function () {
-        it('mixture', function () {
-            var flattened = mappingOperation.flattenArray(['1', ['2', '3'], ['4'], '5']);
+describe('array flattening', function() {
+    describe('flatten', function() {
+        it('mixture', function() {
+            var flattened = mappingOperation.flattenArray(['1', ['2', '3'],
+                ['4'], '5'
+            ]);
             assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
         });
 
-        it('all arrays', function () {
+        it('all arrays', function() {
             var flattened = mappingOperation.flattenArray([
                 ['1'],
                 ['2', '3'],
@@ -41,24 +42,26 @@ describe('array flattening', function () {
             assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
         });
 
-        it('no arrays', function () {
+        it('no arrays', function() {
             var flattened = mappingOperation.flattenArray(['1', '2', '3', '4', '5']);
             assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
         });
     });
-    describe('unflatten', function () {
-        it('mixture', function () {
-            var unflattened = mappingOperation.unflattenArray(['a', 'b', 'c', 'd', 'e'], ['1', ['2', '3'], ['4'], '5']);
-            assert.arrEqual(['a', ['b', 'c'], ['d'], 'e'], unflattened);
+    describe('unflatten', function() {
+        it('mixture', function() {
+            var unflattened = mappingOperation.unflattenArray(['a', 'b', 'c', 'd', 'e'], ['1', ['2', '3'],
+                ['4'], '5'
+            ]);
+            assert.arrEqual(['a', ['b', 'c'],
+                ['d'], 'e'
+            ], unflattened);
         });
     });
 });
 
-describe('bulk mapping operation', function () {
-
-
-    describe('general', function () {
-        beforeEach(function (done) {
+describe('bulk mapping operation', function() {
+    describe('general', function() {
+        beforeEach(function(done) {
             s.reset(true);
 
             collection = new Collection('MyCollection');
@@ -81,91 +84,112 @@ describe('bulk mapping operation', function () {
             collection.install(done);
         });
 
-        describe('errors', function () {
-            // TODO: Errors wtihin arrays of arrays. Need to unflatten errors?
+        describe('errors', function() {
 
-            it('simple', function (done) {
-                var data = [
-                    {
+            describe('simple', function() {
+                var op;
+
+                beforeEach(function(done) {
+                    var data = [{
                         login: 'mike',
                         id: '123',
                         repositories: 5 // Invalid
-                    },
-                    {
+                    }, {
                         login: 'mike2',
                         id: '122315634',
                         repositories: [ // Valid
-                            {name: 'Repo'}
+                            {
+                                name: 'Repo'
+                            }
                         ]
-                    },
-                    {
+                    }, {
                         login: 'mike4',
                         id: '123124',
                         repositories: 'asdas' // Invalid
-                    },
-                    {
+                    }, {
                         login: 'mike3',
                         id: '12324',
                         repositories: [ // Invalid
-                            {_id: 'nosuchlocalid'}
+                            {
+                                _id: 'nosuchlocalid'
+                            }
                         ]
-                    }
-                ];
+                    }];
+                    op = new BulkMappingOperation({
+                        mapping: User,
+                        data: data
+                    });
+                    op.onCompletion(function() {
+                        done();
+                    });
+                    op.start();
 
-                var op = new BulkMappingOperation({mapping: User, data: data});
-                op.onCompletion(function () {
+                });
+
+                it('scalar int', function() {
                     assert.ok(op.error[0]);
-                    assert.notOk(op.error[1]);
-                    assert.ok(op.error[2]);
-                    assert.ok(op.error[3]);
                     assert.ok(op.error[0].repositories);
+                });
+
+                it('valid', function() {
+                    assert.notOk(op.error[1]);
+                });
+
+                it('scalar string', function() {
+                    assert.ok(op.error[2]);
                     assert.ok(op.error[2].repositories);
+                });
+
+                it('invalid _id', function() {
+                    assert.ok(op.error[3]);
                     assert.ok(op.error[3].repositories);
-                    done();
                 });
-                op.start();
+
             });
 
-            it('non-existent _id', function (done) {
-                var data = [
-                    {
-                        _id: 'nonexistant'
-                    }
-                ];
+            it('non-existent _id', function(done) {
+                var data = [{
+                    _id: 'nonexistant'
+                }];
 
-                var op = new BulkMappingOperation({mapping: User, data: data});
-                op.onCompletion(function () {
+                var op = new BulkMappingOperation({
+                    mapping: User,
+                    data: data
+                });
+                op.onCompletion(function() {
                     assert.ok(op.error);
                     done();
                 });
                 op.start();
             });
 
-            it('array to scalar', function (done) {
-                var data = [
-                    {
-                        owner: [5, 6]
-                    }
-                ];
+            it('array to scalar', function(done) {
+                var data = [{
+                    owner: [5, 6]
+                }];
 
-                var op = new BulkMappingOperation({mapping: Repo, data: data});
-                op.onCompletion(function () {
+                var op = new BulkMappingOperation({
+                    mapping: Repo,
+                    data: data
+                });
+                op.onCompletion(function() {
                     assert.ok(op.error);
                     done();
                 });
                 op.start();
             });
 
-            it('scalar to array', function (done) {
-                var data = [
-                    {
-                        login: 'mike4',
-                        id: '123124',
-                        repositories: 5
-                    }
-                ];
-                var op = new BulkMappingOperation({mapping: User, data: data});
-                op.onCompletion(function () {
+            it('scalar to array', function(done) {
+                var data = [{
+                    login: 'mike4',
+                    id: '123124',
+                    repositories: 5
+                }];
+                var op = new BulkMappingOperation({
+                    mapping: User,
+                    data: data
+                });
+                op.onCompletion(function() {
                     assert.ok(op.error);
                     done();
                 });
@@ -175,19 +199,37 @@ describe('bulk mapping operation', function () {
 
         });
 
-        describe('new', function () {
+        describe('new', function() {
 
-            describe('foreign key', function () {
+            describe('foreign key', function() {
 
-                describe('forward', function () {
-                    it('sub operations', function () {
-                        var owner = {id: 6, login: 'mike'};
-                        var data = [
-                            {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', _id: 'sdfsd'},
-                            {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'sdfsd', owner: 5},
-                            {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', owner: owner}
-                        ];
-                        var op = new BulkMappingOperation({mapping: Repo, data: data});
+                describe('forward', function() {
+                    it('sub operations', function() {
+                        var owner = {
+                            id: 6,
+                            login: 'mike'
+                        };
+                        var data = [{
+                            name: 'Repo',
+                            full_name: 'A Big Repo',
+                            description: 'Blah',
+                            _id: 'sdfsd'
+                        }, {
+                            name: 'Repo2',
+                            full_name: 'Another Big Repo',
+                            description: 'Blsdah',
+                            id: 'sdfsd',
+                            owner: 5
+                        }, {
+                            name: 'Repo3',
+                            full_name: 'Yet Another Big Repo',
+                            description: 'Blahasdasd',
+                            owner: owner
+                        }];
+                        var op = new BulkMappingOperation({
+                            mapping: Repo,
+                            data: data
+                        });
                         op._constructSubOperations();
                         var ownerSubOperation = op.subOps.owner.op;
                         var ownerIndexes = op.subOps.owner.indexes;
@@ -199,15 +241,34 @@ describe('bulk mapping operation', function () {
                         assert.equal(ownerSubOperation.data[1], owner);
                     });
 
-                    it('none existing', function (done) {
-                        var owner = {id: 5, login: 'mike'};
-                        var data = [
-                            {name: 'Repo', full_name: 'A Big Repo', description: 'Blah', id: 'remoteId1'},
-                            {name: 'Repo2', full_name: 'Another Big Repo', description: 'Blsdah', id: 'remoteId2', owner: 5},
-                            {name: 'Repo3', full_name: 'Yet Another Big Repo', description: 'Blahasdasd', id: 'remoteId3', owner: owner}
-                        ];
-                        var op = new BulkMappingOperation({mapping: Repo, data: data});
-                        op.onCompletion(function () {
+                    it('none existing', function(done) {
+                        var owner = {
+                            id: 5,
+                            login: 'mike'
+                        };
+                        var data = [{
+                            name: 'Repo',
+                            full_name: 'A Big Repo',
+                            description: 'Blah',
+                            id: 'remoteId1'
+                        }, {
+                            name: 'Repo2',
+                            full_name: 'Another Big Repo',
+                            description: 'Blsdah',
+                            id: 'remoteId2',
+                            owner: 5
+                        }, {
+                            name: 'Repo3',
+                            full_name: 'Yet Another Big Repo',
+                            description: 'Blahasdasd',
+                            id: 'remoteId3',
+                            owner: owner
+                        }];
+                        var op = new BulkMappingOperation({
+                            mapping: Repo,
+                            data: data
+                        });
+                        op.onCompletion(function() {
                             var err = op.error;
                             if (err) {
                                 done(err);
@@ -238,19 +299,22 @@ describe('bulk mapping operation', function () {
 
                 });
 
-                describe('reverse', function () {
-                    it('none existing', function (done) {
-                        var data = [
-                            {
-                                login: 'mike',
-                                id: '123',
-                                repositories: [
-                                    {id: 5, name: 'Repo', full_name: 'A Big Repo'}
-                                ]
-                            }
-                        ];
-                        var op = new BulkMappingOperation({mapping: User, data: data});
-                        op.onCompletion(function () {
+                describe('reverse', function() {
+                    it('none existing', function(done) {
+                        var data = [{
+                            login: 'mike',
+                            id: '123',
+                            repositories: [{
+                                id: 5,
+                                name: 'Repo',
+                                full_name: 'A Big Repo'
+                            }]
+                        }];
+                        var op = new BulkMappingOperation({
+                            mapping: User,
+                            data: data
+                        });
+                        op.onCompletion(function() {
                             if (op.error) {
                                 console.error(JSON.stringify(op.error, null, 4));
                                 done(op.error);
@@ -271,77 +335,77 @@ describe('bulk mapping operation', function () {
                         op.start();
                     });
 
-                    it('existing', function (done) {
-                        s.ext.storage.Pouch.getPouch().post({
+                    it('existing', function(done) {
+                        var repo = Repo._new({
                             id: '5',
                             name: 'Old Name',
                             full_name: 'Old Full Name',
                             collection: 'MyCollection',
                             type: 'Repo'
-                        }, function (err, resp) {
-                            if (err) {
-                                done(err);
+                        });
+                        cache.insert(repo);
+                        var data = [{
+                            login: 'mike',
+                            id: '123',
+                            repositories: [{
+                                id: '5',
+                                name: 'Repo',
+                                full_name: 'A Big Repo'
+                            }]
+                        }];
+                        var op = new BulkMappingOperation({
+                            mapping: User,
+                            data: data
+                        });
+                        op.onCompletion(function() {
+                            if (op.error) {
+                                done(op.error);
+                            } else {
+                                var objects = op.result;
+                                try {
+                                    assert.equal(objects.length, 1);
+                                    var obj = objects[0];
+                                    assert.equal(obj.login, 'mike');
+                                    assert.equal(obj.id, '123');
+                                    assert.equal(obj.repositories.length, 1);
+                                    var repo = obj.repositories[0];
+                                    assert.equal(repo.id, 5);
+                                    assert.equal(repo.name, 'Repo');
+                                    assert.equal(repo.full_name, 'A Big Repo');
+                                    assert.equal(repo.owner, obj);
+                                    done();
+                                } catch (err) {
+                                    done(err);
+                                }
                             }
-                            else {
-                                var data = [
-                                    {
-                                        login: 'mike',
-                                        id: '123',
-                                        repositories: [
-                                            {id: '5', name: 'Repo', full_name: 'A Big Repo'}
-                                        ]
-                                    }
-                                ];
-                                var op = new BulkMappingOperation({mapping: User, data: data});
-                                op.onCompletion(function () {
-                                    if (op.error) {
-                                        done(op.error);
-                                    }
-                                    else {
-                                        var objects = op.result;
-                                        try {
-                                            assert.equal(objects.length, 1);
-                                            var obj = objects[0];
-                                            assert.equal(obj.login, 'mike');
-                                            assert.equal(obj.id, '123');
-                                            assert.equal(obj.repositories.length, 1);
-                                            var repo = obj.repositories[0];
-                                            assert.equal(repo.id, 5);
-                                            assert.equal(repo.name, 'Repo');
-                                            assert.equal(repo.full_name, 'A Big Repo');
-                                            assert.equal(repo._id, resp.id);
-                                            assert.equal(repo.owner, obj);
-                                            done();
-                                        }
-                                        catch (err) {
-                                            done(err);
-                                        }
-                                    }
+                        });
+                        op.start();
 
-                                });
-                                op.start();
-                            }
-
-                        })
                     })
                 });
 
             });
 
-            describe('no relationships', function () {
+            describe('no relationships', function() {
                 var op;
 
-                describe('none existing', function () {
-                    beforeEach(function () {
-                        var data = [
-                            {login: 'mike', id: '123'},
-                            {login: 'bob', id: '1234'}
-                        ];
-                        op = new BulkMappingOperation({mapping: User, data: data});
+                describe('none existing', function() {
+                    beforeEach(function() {
+                        var data = [{
+                            login: 'mike',
+                            id: '123'
+                        }, {
+                            login: 'bob',
+                            id: '1234'
+                        }];
+                        op = new BulkMappingOperation({
+                            mapping: User,
+                            data: data
+                        });
                     });
 
-                    it('lookup', function (done) {
-                        op._lookup(function () {
+                    it('lookup', function(done) {
+                        op._lookup(function() {
                             assert.equal(op.objects.length, 2);
                             assert.notOk(op.objects[0].login);
                             assert.notOk(op.objects[1].login);
@@ -349,8 +413,8 @@ describe('bulk mapping operation', function () {
                         });
                     });
 
-                    it('completion', function (done) {
-                        op.onCompletion(function () {
+                    it('completion', function(done) {
+                        op.onCompletion(function() {
                             var objects = op.result;
                             assert.equal(objects.length, 2);
                             var mike = objects[0];
@@ -371,10 +435,10 @@ describe('bulk mapping operation', function () {
         });
     });
 
-    describe('singleton...', function () {
+    describe('singleton...', function() {
         var op;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             s.reset(true);
 
             collection = new Collection('MyCollection');
@@ -398,17 +462,23 @@ describe('bulk mapping operation', function () {
             collection.install(done);
         });
 
-        describe('new', function () {
-            beforeEach(function () {
-                var data = [
-                    {login: 'mike', id: '123'},
-                    {login: 'bob', id: '1234'}
-                ];
-                op = new BulkMappingOperation({mapping: User, data: data});
+        describe('new', function() {
+            beforeEach(function() {
+                var data = [{
+                    login: 'mike',
+                    id: '123'
+                }, {
+                    login: 'bob',
+                    id: '1234'
+                }];
+                op = new BulkMappingOperation({
+                    mapping: User,
+                    data: data
+                });
             });
 
-            it('lookupSingleton', function (done) {
-                op._lookupSingleton(function (err) {
+            it('lookupSingleton', function(done) {
+                op._lookupSingleton(function(err) {
                     if (!err) {
                         assert.equal(op.objects.length, 2);
                         assert.equal(op.objects[0], op.objects[1]);
@@ -417,8 +487,8 @@ describe('bulk mapping operation', function () {
                 });
             });
 
-            it('map', function (done) {
-                op.onCompletion(function () {
+            it('map', function(done) {
+                op.onCompletion(function() {
                     var err = op.error;
                     if (!err) {
                         assert.equal(op.objects.length, 2);
@@ -432,20 +502,28 @@ describe('bulk mapping operation', function () {
             });
         });
 
-        describe('existing, cached', function () {
+        describe('existing, cached', function() {
             var obj;
 
-            beforeEach(function () {
-                obj = User._new({id: '567'});
-                var data = [
-                    {login: 'mike', id: '123'},
-                    {login: 'bob', id: '1234'}
-                ];
-                op = new BulkMappingOperation({mapping: User, data: data});
+            beforeEach(function() {
+                obj = User._new({
+                    id: '567'
+                });
+                var data = [{
+                    login: 'mike',
+                    id: '123'
+                }, {
+                    login: 'bob',
+                    id: '1234'
+                }];
+                op = new BulkMappingOperation({
+                    mapping: User,
+                    data: data
+                });
             });
 
-            it('lookupSingleton', function (done) {
-                op._lookupSingleton(function (err) {
+            it('lookupSingleton', function(done) {
+                op._lookupSingleton(function(err) {
                     if (!err) {
                         assert.equal(op.objects.length, 2);
                         assert.equal(op.objects[0], obj);
@@ -455,8 +533,8 @@ describe('bulk mapping operation', function () {
                 });
             });
 
-            it('map', function (done) {
-                op.onCompletion(function () {
+            it('map', function(done) {
+                op.onCompletion(function() {
                     var err = op.error;
                     if (!err) {
                         assert.equal(op.objects.length, 2);
@@ -471,113 +549,46 @@ describe('bulk mapping operation', function () {
             });
         });
 
-        describe('existing, faulted', function () {
-
-            beforeEach(function (done) {
-                var doc = {id: '567', _id: 'localId', type: 'User', collection: 'MyCollection'};
-                s.ext.storage.Pouch.getPouch().put(doc, function (err, resp) {
-                    if (err) done(err);
-                    doc._rev = resp.rev;
-                    var data = [
-                        {login: 'mike', id: '123'},
-                        {login: 'bob', id: '1234'}
-                    ];
-                    op = new BulkMappingOperation({mapping: User, data: data});
-                    done();
-                });
-            });
-
-            it('lookupSingleton', function (done) {
-                op._lookupSingleton(function (err) {
-                    if (!err) {
-                        assert.equal(op.objects.length, 2);
-                        assert.equal(op.objects[0]._id, 'localId');
-                        assert.equal(op.objects[0], op.objects[1]);
-                    }
-                    done(err);
-                });
-            });
-
-            it('map', function (done) {
-                op.onCompletion(function () {
-                    var err = op.error;
-                    if (!err) {
-                        assert.equal(op.objects.length, 2);
-                        assert.equal(op.objects[0]._id, 'localId');
-                        assert.equal(op.objects[0], op.objects[1]);
-                        assert.equal(op.objects[0].login, 'bob');
-                        assert.equal(op.objects[0].id, '1234');
-                    }
-                    done(err);
-                });
-                op.start();
-            });
-        });
     });
 
 });
 
-describe('bug', function () {
+describe('bug', function() {
 
     var coll, Car;
 
-    beforeEach(function (done) {
+    beforeEach(function(done) {
         siesta.reset(true);
         coll = new Collection('myCollection');
         Car = coll.mapping('Car', {
             id: 'id',
             attributes: ['colour', 'name']
-//            relationships: {
-//                owner: {
-//                    mapping: 'Person',
-//                    type: 'OneToMany',
-//                    reverse: 'cars'
-//                }
-//            }
+
         });
-//        Person = coll.mapping('Person', {
-//            id: 'id',
-//            attributes: ['age', 'name']
-//        });
         coll.install(done);
     });
 
-    it('multiple objects', function (done) {
-        var data = [
-            {colour: 'red', name: 'Aston Martin', id: '1'},
-            {colour: 'blue', name: 'Bentley', id: '2'},
-            {colour: 'green', name: 'Lambo', id: '3'}
-        ];
-        Car.map(data, function (err) {
+    it('multiple objects', function(done) {
+        var data = [{
+            colour: 'red',
+            name: 'Aston Martin',
+            id: '1'
+        }, {
+            colour: 'blue',
+            name: 'Bentley',
+            id: '2'
+        }, {
+            colour: 'green',
+            name: 'Lambo',
+            id: '3'
+        }];
+        Car.map(data, function(err) {
             if (err) done(err);
-            siesta.save(function (err) {
+            Car.map(data, function(err) {
                 if (err) done(err);
-                cache.reset();
-                Car.map(data, function (err) {
-                    if (err) done(err);
-                    siesta.save(function (err) {
-                        if (err) done(err);
-                        var pouch = siesta.ext.storage.Pouch.getPouch();
-                        pouch.query(function (doc) {
-                            if (doc.type == 'Car') {
-                                emit(doc._id, doc);
-                            }
-                        }, function (err, resp) {
-                            dump('err', err);
-                            dump('resp', resp);
-                            var rowIdents = _.pluck(resp.rows, 'id');
-                            dump('rowIdents.length', rowIdents.length);
-//                            dump('hmm', JSON.stringify(_.reduce(Object.keys(localCache), function (m, _id) {
-//                                if (rowIdents.indexOf(_id) > -1) m.push(localCache[_id]._dump());
-//                                return m;
-//                            }, []), null, 4));
-                            dump('cache', cache._dump(true));
-                            done(err);
-                        });
-                    });
-                });
+                // TODO
+                done();
             });
         });
     });
 });
-

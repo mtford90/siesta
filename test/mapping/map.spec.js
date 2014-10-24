@@ -133,62 +133,7 @@ describe('perform mapping', function () {
             });
         });
 
-        describe('existing in pouch', function () {
-
-            describe('via id', function () {
-                var newObj;
-                beforeEach(function (done) {
-                    var doc = {_id: 'localId', type: 'Car', collection: 'myCollection', colour: 'red', id: 'remoteId'};
-                    s.ext.storage.Pouch.getPouch().put(doc, function (err, doc) {
-                        if (err) done(err);
-                        carMapping.map({colour: 'blue', id: 'remoteId'}, function (err, obj) {
-                            if (err) done(err);
-                            newObj = obj;
-                            done();
-                        });
-                    });
-
-                });
-
-                it('should be mapped onto the old object', function () {
-                    assert.equal(newObj._id, 'localId');
-                });
-
-                it('should have the new colour', function () {
-                    assert.equal(newObj.colour, 'blue');
-                });
-
-            });
-
-            describe('via _id', function () {
-                var newObj;
-                beforeEach(function (done) {
-                    var doc = {_id: 'localId', type: 'Car', collection: 'myCollection', colour: 'red', id: 'remoteId'};
-                    s.ext.storage.Pouch.getPouch().put(doc, function (err, doc) {
-                        if (err) done(err);
-                        carMapping.map({colour: 'blue', _id: 'localId'}, function (err, obj) {
-                            if (err) {
-                                console.error(err);
-                                done(err);
-                            }
-                            newObj = obj;
-                            done();
-                        });
-                    });
-                });
-
-                it('should be mapped onto the old object', function () {
-                    assert.equal(newObj._id, 'localId');
-                });
-
-                it('should have the new colour', function () {
-                    assert.equal(newObj.colour, 'blue');
-                });
-                it('obj removed from cache should not have the new colour', function () {
-                    assert.notEqual(obj.colour, 'blue');
-                });
-            });
-        });
+     
 
 
     });
@@ -216,31 +161,7 @@ describe('perform mapping', function () {
                 collection.install(done);
             });
 
-            describe('faulted relationship', function () {
-                var person, car;
-
-                beforeEach(function (done) {
-                    var doc = {name: 'Michael Ford', age: 23, id: 'personRemoteId', collection: 'myCollection', type: 'Person', _id: 'personLocalId'};
-                    s.ext.storage.Pouch.getPouch().put(doc, function (err) {
-                        if (err) done(err);
-                        carMapping.map({name: 'Bentley', colour: 'black', owner: 'personRemoteId', id: 'carRemoteId'}, function (err, _car) {
-                            if (err) {
-                                done(err);
-                            }
-                            car = _car;
-                            person = car.owner;
-                            done();
-                        });
-                    });
-
-                });
-
-                it('should have mapped onto Michael', function () {
-                    assert.equal(person.name, 'Michael Ford');
-                    assert.equal(person.age, 23);
-                });
-
-            });
+       
 
             describe('remote id', function () {
 
@@ -1417,7 +1338,6 @@ describe('perform mapping', function () {
                 beforeEach(function (done) {
                     personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
                         if (err) done(err);
-                        cache.reset();
                         var raw = [
                             {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: 'personRemoteId'},
                             {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: 'personRemoteId'},
@@ -1448,7 +1368,6 @@ describe('perform mapping', function () {
                     cars = [];
                     personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
                         if (err) done(err);
-                        cache.reset();
                         var raw1 = [
                             {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: 'personRemoteId'},
                             {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: 'personRemoteId'},
@@ -1515,7 +1434,6 @@ describe('perform mapping', function () {
                 beforeEach(function (done) {
                     personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
                         if (err) done(err);
-                        cache.reset();
                         var raw = [
                             {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: {id: 'personRemoteId'}},
                             {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: {id: 'personRemoteId'}},
@@ -1545,7 +1463,6 @@ describe('perform mapping', function () {
                 beforeEach(function (done) {
                     personMapping.map({name: 'Michael Ford', age: 23, id: 'personRemoteId'}, function (err) {
                         if (err) done(err);
-                        cache.reset();
                         var raw = [
                             {colour: 'red', name: 'Aston Martin', id: 'remoteId1', owner: {id: 'personRemoteId'}},
                             {colour: 'blue', name: 'Lambo', id: "remoteId2", owner: {id: 'personRemoteId', name: 'Bob'}},

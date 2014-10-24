@@ -1,7 +1,7 @@
 var siesta = require('../index');
 var assert = require('chai').assert;
 
-describe('cache...', function () {
+describe('cache...', function() {
     var mapping;
 
     var SiestaModel = require('../src/object').SiestaModel;
@@ -9,19 +9,18 @@ describe('cache...', function () {
     var RelationshipType = require('../src/relationship').RelationshipType;
     var cache = require('../src/cache');
 
-    beforeEach(function (done) {
-        siesta.reset(true, function () {
-            var coll = new Collection('myCollection');
-            mapping = coll.mapping('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            coll.install(done);
+    beforeEach(function(done) {
+        siesta.reset(true);
+        var coll = new Collection('myCollection');
+        mapping = coll.mapping('Car', {
+            id: 'id',
+            attributes: ['colour', 'name']
         });
+        coll.install(done);
     });
 
-    describe('insertion', function () {
-        it('by pouch id', function () {
+    describe('insertion', function() {
+        it('by pouch id', function() {
             var r = new SiestaModel(mapping);
             r._id = 'dsfsd';
             cache.insert(r);
@@ -29,7 +28,7 @@ describe('cache...', function () {
             assert.equal(r, cache._localCacheByType[r.mapping.collection][r.type][r._id], r);
         });
 
-        it('by default id', function () {
+        it('by default id', function() {
             var r = new SiestaModel(mapping);
             r.id = 'dsfsd';
             cache.insert(r);
@@ -38,7 +37,7 @@ describe('cache...', function () {
             assert.equal(r, remoteCache[r.collection][r.type][r.id]);
         });
 
-        it('by custom id', function () {
+        it('by custom id', function() {
             var m = mapping;
             m.id = 'customId';
             var r = new SiestaModel(m);
@@ -50,8 +49,8 @@ describe('cache...', function () {
 
     });
 
-    describe('get', function () {
-        it('by pouch id', function () {
+    describe('get', function() {
+        it('by pouch id', function() {
             var r = new SiestaModel(mapping);
             r.id = 'dsfsd';
             cache.insert(r);
@@ -61,7 +60,7 @@ describe('cache...', function () {
             });
             assert.equal(returned, r);
         });
-        it('by rest id', function () {
+        it('by rest id', function() {
             var model = new SiestaModel(mapping);
             model.id = 'dsfsd';
             model._id = 'xyz';
@@ -74,10 +73,10 @@ describe('cache...', function () {
         });
     });
 
-    describe('full test', function () {
+    describe('full test', function() {
         var collection, carMapping, personMapping;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             collection = new Collection('myCollection');
             personMapping = collection.mapping('Person', {
                 id: 'id',
@@ -104,29 +103,45 @@ describe('cache...', function () {
             collection.install(done);
         });
 
-        describe('errors', function () {
-            it('ignore duplicate inserts if is the same object', function () {
-                var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
+        describe('errors', function() {
+            it('ignore duplicate inserts if is the same object', function() {
+                var person = personMapping._new({
+                    name: 'Michael Ford',
+                    age: 23,
+                    id: 'xyz'
+                });
                 cache.insert(person);
                 cache.insert(person); // Should be fine as is the exact same object.
             });
 
-            it('cant insert object with same _id', function () {
-                var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
+            it('cant insert object with same _id', function() {
+                var person = personMapping._new({
+                    name: 'Michael Ford',
+                    age: 23,
+                    id: 'xyz'
+                });
                 cache.insert(person);
                 var duplicateObject = new SiestaModel();
                 duplicateObject._id = person._id;
-                assert.throws(function () {
+                assert.throws(function() {
                     cache.insert(duplicateObject);
                 }, siesta.RestError);
             });
 
-            it('cant insert object with same id', function () {
-                var person = personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'});
+            it('cant insert object with same id', function() {
+                var person = personMapping._new({
+                    name: 'Michael Ford',
+                    age: 23,
+                    id: 'xyz'
+                });
                 cache.insert(person);
 
-                assert.throws(function () {
-                    cache.insert(personMapping._new({name: 'Michael Ford', age: 23, id: 'xyz'}));
+                assert.throws(function() {
+                    cache.insert(personMapping._new({
+                        name: 'Michael Ford',
+                        age: 23,
+                        id: 'xyz'
+                    }));
                 }, siesta.RestError);
             });
         });

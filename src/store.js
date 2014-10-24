@@ -161,8 +161,7 @@ function getMultipleLocal (localIdentifiers, callback) {
             }
         }
     }
-
-    if (results.notCached.length) {
+    if (siesta.ext.storageEnabled && results.notCached.length) {
         siesta.ext.storage.store.getMultipleLocalFromCouch(results, finish);
     }
     else {
@@ -200,7 +199,7 @@ function getMultipleRemote (remoteIdentifiers, mapping, callback) {
         }
     }
 
-    if (results.notCached.length) {
+    if (siesta.ext.storageEnabled && results.notCached.length) {
         siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
     }
     else {

@@ -55,7 +55,7 @@ function getSingleton(mapping) {
                 }
             }
             if (objs.length > 1) {
-                throw RestError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
+                throw new RestError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
                     'Either a mapping has been modified after objects have already been created, or something has gone' +
                     'very wrong. Please file a bug report if the latter.');
             }

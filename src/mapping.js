@@ -130,7 +130,9 @@ Mapping.prototype.installRelationships = function () {
                                 mappingName = arr[1];
                                 var otherCollection = CollectionRegistry[collectionName];
                                 if (!otherCollection) {
-                                    throw new RestError('Collection with name "' + collectionName + '" does not exist.');
+                                    var err = 'Collection with name "' + collectionName + '" does not exist.';
+                                    console.error(err, {registry: CollectionRegistry});
+                                    throw new RestError(err);
                                 }
                                 reverseMapping = otherCollection[mappingName];
                             }
@@ -161,12 +163,16 @@ Mapping.prototype.installRelationships = function () {
 };
 
 Mapping.prototype.installReverseRelationships = function () {
+            
     if (!this._reverseRelationshipsInstalled) {
         for (var forwardName in this.relationships) {
             if (this.relationships.hasOwnProperty(forwardName)) {
                 var relationship = this.relationships[forwardName];
                 var reverseMapping = relationship.reverseMapping;
-                reverseMapping.relationships[relationship.reverseName] = relationship;
+                var reverseName = relationship.reverseName;
+                if (Logger.debug.isEnabled)
+                    Logger.debug(self.type + ': configuring  reverse relationship ' + name);
+                reverseMapping.relationships[reverseName] = relationship;
             }
         }
         this._reverseRelationshipsInstalled = true;
@@ -387,7 +393,7 @@ Mapping.prototype._new = function (data) {
             newModel = new SiestaModel(this);
         }
         if (Logger.info.isEnabled)
-            Logger.info('New object created _id="' + _id.toString() + '"', data);
+            Logger.info('New object created _id="' + _id.toString() + '", type=' + this.type, data);
         newModel._id = _id;
         // Place attributes on the object.
         newModel.__values = data || {};
