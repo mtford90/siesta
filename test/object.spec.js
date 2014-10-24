@@ -43,7 +43,7 @@ describe('object!!', function() {
 
     });
 
-    describe.only('removal', function() {
+    describe('removal', function() {
 
         var car;
 
