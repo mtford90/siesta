@@ -127,7 +127,7 @@ describe('mapping relationships', function () {
                 }
             });
             collection.install(function (err) {
-                assert.instanceOf(err, RestError);
+                assert.ok(err);
                 done();
             });
         });
@@ -151,7 +151,7 @@ describe('mapping relationships', function () {
             });
 
             collection.install(function (err) {
-                assert.instanceOf(err, RestError);
+                assert.ok(err);
                 done();
             });
 

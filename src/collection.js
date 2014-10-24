@@ -59,7 +59,7 @@ function Collection(name) {
      * @type {string}
      */
     Object.defineProperty(this, 'name', {
-        get: function () {
+        get: function() {
             return self._name;
         }
     });
@@ -69,7 +69,7 @@ function Collection(name) {
  * Ensure mappings are installed.
  * @param callback
  */
-Collection.prototype.install = function (callback) {
+Collection.prototype.install = function(callback) {
     var deferred = q.defer();
     var self = this;
     if (!this.installed) {
@@ -83,73 +83,51 @@ Collection.prototype.install = function (callback) {
         if (Logger.info.isEnabled)
             Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
         if (mappingsToInstall.length) {
-            var operations = _.map(mappingsToInstall, function (m) {
+            var operations = _.map(mappingsToInstall, function(m) {
                 return new Operation('Install Mapping', _.bind(m.install, m));
             });
             var op = new Operation('Install Mappings', operations);
-            op.completion = function () {
+            op.completion = function() {
                 if (op.failed) {
                     Logger.error('Failed to install collection', op.error);
                     self._finaliseInstallation(op.error, callback);
-                }
-                else {
+                } else {
                     self.installed = true;
                     var errors = [];
-                    _.each(mappingsToInstall, function (m) {
+                    _.each(mappingsToInstall, function(m) {
                         if (Logger.info.isEnabled)
                             Logger.info('Installing relationships for mapping with name "' + m.type + '"');
-                        try {
-                            m.installRelationships();
-                        }
-                        catch (err) {
-                            if (err instanceof RestError) {
-                                errors.push(err);
-                            }
-                            else {
-                                throw err;
-                            }
-                        }
+                        var err = m.installRelationships();
+                        if (err) errors.push(err);
                     });
                     if (!errors.length) {
-                        _.each(mappingsToInstall, function (m) {
+                        _.each(mappingsToInstall, function(m) {
                             if (Logger.info.isEnabled)
                                 Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
-                            try {
-                                m.installReverseRelationships();
-                            }
-                            catch (err) {
-                                if (err instanceof RestError) {
-                                    errors.push(err);
-                                }
-                                else {
-                                    throw err;
-                                }
-                            }
+                            var err = m.installReverseRelationships();
+                            if (err) errors.push(err);
                         });
                     }
                     var err;
                     if (errors.length == 1) {
                         err = errors[0];
-                    }
-                    else if (errors.length) {
+                    } else if (errors.length) {
                         err = errors;
                     }
                     self._finaliseInstallation(err, callback);
                 }
             };
             op.start();
-        }
-        else {
+        } else {
             self._finaliseInstallation(null, callback);
         }
-    }
-    else {
+    } else {
         var err = new RestError('Collection "' + this._name + '" has already been installed');
         self._finaliseInstallation(err, callback);
     }
     return deferred.promise;
 };
-Collection.prototype._finaliseInstallation = function (err, callback) {
+Collection.prototype._finaliseInstallation = function(err, callback) {
     if (!err) {
         this.installed = true;
         var index = require('../index');
@@ -157,7 +135,7 @@ Collection.prototype._finaliseInstallation = function (err, callback) {
     }
     if (callback) callback(err);
 };
-Collection.prototype._mapping = function (name, mapping) {
+Collection.prototype._mapping = function(name, mapping) {
     if (name) {
         this._rawMappings[name] = mapping;
         var opts = extend(true, {}, mapping);
@@ -167,30 +145,26 @@ Collection.prototype._mapping = function (name, mapping) {
         this._mappings[name] = mappingObject;
         this[name] = mappingObject;
         return mappingObject;
-    }
-    else {
+    } else {
         throw new RestError('No name specified when creating mapping');
     }
 };
-Collection.prototype.mapping = function () {
+Collection.prototype.mapping = function() {
     var self = this;
     if (arguments.length) {
         if (arguments.length == 1) {
             if (util.isArray(arguments[0])) {
-                return _.map(arguments[0], function (m) {
+                return _.map(arguments[0], function(m) {
                     return self._mapping(m.name, m);
                 });
-            }
-            else {
+            } else {
                 return this._mapping(arguments[0].name, arguments[0]);
             }
-        }
-        else {
+        } else {
             if (typeof arguments[0] == 'string') {
                 return this._mapping(arguments[0], arguments[1]);
-            }
-            else {
-                return _.map(arguments, function (m) {
+            } else {
+                return _.map(arguments, function(m) {
                     return self._mapping(m.name, m);
                 });
             }
@@ -211,34 +185,32 @@ function responseDescriptor(opts) {
     return responseDescriptor;
 }
 
-Collection.prototype._descriptor = function (registrationFunc) {
+Collection.prototype._descriptor = function(registrationFunc) {
     var args = Array.prototype.slice.call(arguments, 1);
     if (args.length) {
         if (args.length == 1) {
             if (util.isArray(args[0])) {
-                return _.map(args[0], function (d) {
+                return _.map(args[0], function(d) {
                     return registrationFunc(d);
                 });
-            }
-            else {
+            } else {
                 return registrationFunc(args[0]);
             }
-        }
-        else {
-            return _.map(args, function (d) {
+        } else {
+            return _.map(args, function(d) {
                 return registrationFunc(d);
             });
         }
     }
     return null;
 };
-Collection.prototype.requestDescriptor = function () {
+Collection.prototype.requestDescriptor = function() {
     return _.partial(this._descriptor, requestDescriptor).apply(this, arguments);
 };
-Collection.prototype.responseDescriptor = function () {
+Collection.prototype.responseDescriptor = function() {
     return _.partial(this._descriptor, responseDescriptor).apply(this, arguments);
 };
-Collection.prototype._dump = function (asJson) {
+Collection.prototype._dump = function(asJson) {
     var obj = {};
     obj.installed = this.installed;
     obj.docId = this._docId;
@@ -254,16 +226,15 @@ Collection.prototype._dump = function (asJson) {
  * @param callback
  * @returns {Promise}
  */
-Collection.prototype.save = function (callback) {
+Collection.prototype.save = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (siesta.ext.storageEnabled) {
-        util.next(function () {
+        util.next(function() {
             var mergeChanges = siesta.ext.storage.changes.mergeChanges;
             mergeChanges(callback);
         });
-    }
-    else {
+    } else {
         callback('Storage module not installed');
     }
     return deferred.promise;
@@ -276,7 +247,7 @@ Collection.prototype.save = function (callback) {
  * @param method
  * @returns {*}
  */
-Collection.prototype.HTTP_METHOD = function (request, method) {
+Collection.prototype.HTTP_METHOD = function(request, method) {
     return _.partial(request ? this._httpRequest : this._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
 };
 
@@ -284,7 +255,7 @@ Collection.prototype.HTTP_METHOD = function (request, method) {
  * Send a GET request
  * @returns {*}
  */
-Collection.prototype.GET = function () {
+Collection.prototype.GET = function() {
     return _.partial(this.HTTP_METHOD, false, 'GET').apply(this, arguments);
 };
 
@@ -292,7 +263,7 @@ Collection.prototype.GET = function () {
  * Send a OPTIONS request
  * @returns {*}
  */
-Collection.prototype.OPTIONS = function () {
+Collection.prototype.OPTIONS = function() {
     return _.partial(this.HTTP_METHOD, false, 'OPTIONS').apply(this, arguments);
 };
 
@@ -300,7 +271,7 @@ Collection.prototype.OPTIONS = function () {
  * Send a TRACE request
  * @returns {*}
  */
-Collection.prototype.TRACE = function () {
+Collection.prototype.TRACE = function() {
     return _.partial(this.HTTP_METHOD, false, 'TRACE').apply(this, arguments);
 };
 
@@ -308,7 +279,7 @@ Collection.prototype.TRACE = function () {
  * Send a HEAD request
  * @returns {*}
  */
-Collection.prototype.HEAD = function () {
+Collection.prototype.HEAD = function() {
     return _.partial(this.HTTP_METHOD, false, 'HEAD').apply(this, arguments);
 };
 
@@ -316,7 +287,7 @@ Collection.prototype.HEAD = function () {
  * Send a POST request
  * @returns {*}
  */
-Collection.prototype.POST = function () {
+Collection.prototype.POST = function() {
     return _.partial(this.HTTP_METHOD, true, 'POST').apply(this, arguments);
 };
 
@@ -324,7 +295,7 @@ Collection.prototype.POST = function () {
  * Send a PUT request
  * @returns {*}
  */
-Collection.prototype.PUT = function () {
+Collection.prototype.PUT = function() {
     return _.partial(this.HTTP_METHOD, true, 'PUT').apply(this, arguments);
 };
 
@@ -332,7 +303,7 @@ Collection.prototype.PUT = function () {
  * Send a PATCH request
  * @returns {*}
  */
-Collection.prototype.PATCH = function () {
+Collection.prototype.PATCH = function() {
     return _.partial(this.HTTP_METHOD, true, 'PATCH').apply(this, arguments);
 };
 
@@ -343,16 +314,18 @@ Collection.prototype.PATCH = function () {
  * @param callback
  * @returns Promise
  */
-Collection.prototype.count = function (callback) {
+Collection.prototype.count = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var tasks = _.map(this._mappings, function (m) {
+    var tasks = _.map(this._mappings, function(m) {
         return _.bind(m.count, m);
     });
-    util.parallel(tasks, function (err, ns) {
+    util.parallel(tasks, function(err, ns) {
         var n;
         if (!err) {
-            n = _.reduce(ns, function (m, r) {return m + r}, 0);
+            n = _.reduce(ns, function(m, r) {
+                return m + r
+            }, 0);
         }
         callback(err, n);
     });

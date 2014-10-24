@@ -132,7 +132,7 @@ Mapping.prototype.installRelationships = function () {
                                 if (!otherCollection) {
                                     var err = 'Collection with name "' + collectionName + '" does not exist.';
                                     console.error(err, {registry: CollectionRegistry});
-                                    throw new RestError(err);
+                                    return err;
                                 }
                                 reverseMapping = otherCollection[mappingName];
                             }
@@ -146,11 +146,11 @@ Mapping.prototype.installRelationships = function () {
                             relationship.reverseName = relationship.reverse;
                         }
                         else {
-                            throw new RestError('Mapping with name "' + mappingName.toString() + '" does not exist');
+                            return 'Mapping with name "' + mappingName.toString() + '" does not exist';
                         }
                     }
                     else {
-                        throw new RestError('Relationship type ' + relationship.type + ' does not exist');
+                        return 'Relationship type ' + relationship.type + ' does not exist';
                     }
                 }
             }
@@ -160,6 +160,7 @@ Mapping.prototype.installRelationships = function () {
     else {
         throw new RestError('Relationships for "' + this.type + '" have already been installed');
     }
+    return null;
 };
 
 Mapping.prototype.installReverseRelationships = function () {
