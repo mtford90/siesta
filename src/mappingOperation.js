@@ -111,18 +111,10 @@ BulkMappingOperation.prototype._map = function () {
                 var related = unflattenedObjects[i]; // Can be array or scalar.
                 var object = self.objects[idx];
                 if (object) {
-                    try {
-                        object[f] = related;
-//                        registerRelationshipChange(object, f, related);
-                    }
-                    catch (err) {
-                        if (err instanceof RestError) {
-                            if (!self.errors[idx]) self.errors[idx] = {};
-                            self.errors[idx][f] = err.message;
-                        }
-                        else {
-                            throw err;
-                        }
+                    var err = object[f +'Proxy'].set(related);
+                    if (err) {
+                        if (!self.errors[idx]) self.errors[idx] = {};
+                        self.errors[idx][f] = err;
                     }
                 }
             }

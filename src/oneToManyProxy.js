@@ -184,7 +184,7 @@ OneToManyProxy.prototype.set = function (obj) {
     if (obj) {
         var errorMessage;
         if (errorMessage = validate.call(this, obj)) {
-            throw new RestError(errorMessage);
+            return errorMessage;
         }
         else {
             proxy.clearReverseRelated.call(this);

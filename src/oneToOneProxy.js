@@ -37,7 +37,7 @@ OneToOneProxy.prototype.set = function (obj) {
     if (obj) {
         var errorMessage;
         if (errorMessage = validate(obj)) {
-            throw new RestError(errorMessage);
+            return errorMessage;
         }
         else {
             proxy.clearReverseRelated.call(this);
