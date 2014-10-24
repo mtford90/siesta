@@ -1,6 +1,6 @@
 var defineSubProperty = require('./misc').defineSubProperty;
 var notificationCentre = require('./notificationCentre').notificationCentre;
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var log = require('../vendor/operations.js/src/log');
 
 var Logger = log.loggerWithName('changes');
@@ -69,9 +69,9 @@ function broadcast(collection, mapping, c) {
  * @param changeOpts
  */
 function validateChange(changeOpts) {
-    if (!changeOpts.mapping) throw new RestError('Must pass a mapping');
-    if (!changeOpts.collection) throw new RestError('Must pass a collection');
-    if (!changeOpts._id) throw new RestError('Must pass a local identifier');
+    if (!changeOpts.mapping) throw new InternalSiestaError('Must pass a mapping');
+    if (!changeOpts.collection) throw new InternalSiestaError('Must pass a collection');
+    if (!changeOpts._id) throw new InternalSiestaError('Must pass a local identifier');
 }
 
 

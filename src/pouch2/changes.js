@@ -1,6 +1,6 @@
 // Dependencies within Siesta core.
 var _i = siesta._internal
-    , RestError = _i.error.RestError
+    , InternalSiestaError = _i.error.InternalSiestaError
     , ChangeType = _i.ChangeType
     , util = _i.util
     , _ = util._
@@ -73,21 +73,21 @@ function arraysEqual(a, b) {
 
 function applySplice(obj, field, index, removed, added) {
     if (!(removed || added)) {
-        throw new RestError('Must remove or add something with a splice change.');
+        throw new InternalSiestaError('Must remove or add something with a splice change.');
     }
     if (index === undefined || index === null) {
-        throw new RestError('Must pass index to splice change');
+        throw new InternalSiestaError('Must pass index to splice change');
     }
     var arr = obj[field];
     var actuallyRemoved = _.partial(arr.splice, index, removed.length).apply(arr, added);
     if (!arraysEqual(actuallyRemoved, removed)) {
-        throw new RestError('Objects actually removed did not match those specified in the change');
+        throw new InternalSiestaError('Objects actually removed did not match those specified in the change');
     }
 }
 
 function applyRemove(field, removed, obj) {
     if (!removed) {
-        throw new RestError('Must pass removed');
+        throw new InternalSiestaError('Must pass removed');
     }
     _.each(removed, function (r) {
         var arr = obj[field];
@@ -100,19 +100,19 @@ function applySet(obj, field, newVal, old) {
     var actualOld = obj[field];
     if (actualOld != old) {
         // This is bad. Something has gone out of sync or we're applying unmergedChanges out of order.
-        throw new RestError('Old value does not match new value: ' + JSON.stringify({old: old ? old : null, actualOld: actualOld ? actualOld : null}, null, 4));
+        throw new InternalSiestaError('Old value does not match new value: ' + JSON.stringify({old: old ? old : null, actualOld: actualOld ? actualOld : null}, null, 4));
     }
     obj[field] = newVal;
 }
 
 function validateChange() {
-    if (!this.field) throw new RestError('Must pass field to change');
-    if (!this.collection) throw new RestError('Must pass collection to change');
-    if (!this.mapping) throw new RestError('Must pass mapping to change');
+    if (!this.field) throw new InternalSiestaError('Must pass field to change');
+    if (!this.collection) throw new InternalSiestaError('Must pass collection to change');
+    if (!this.mapping) throw new InternalSiestaError('Must pass mapping to change');
 }
 function validateObject(obj) {
     if (obj._id != this._id) {
-        throw new RestError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + obj._id.toString() + '"');
+        throw new InternalSiestaError('Cannot apply change with _id="' + this._id.toString() + '" to object with _id="' + obj._id.toString() + '"');
     }
 }
 
@@ -154,7 +154,7 @@ Change.prototype.apply = function (doc) {
         applyRemove.call(this, this.field, this.removedId || this.removed, doc);
     }
     else {
-        throw new RestError('Unknown change type "' + this.type.toString() + '"');
+        throw new InternalSiestaError('Unknown change type "' + this.type.toString() + '"');
     }
     if (!doc.collection) {
         doc.collection = this.collection;
@@ -209,7 +209,7 @@ function applySpliceToSiestaModel(isField, model) {
             }
             else if (!allRemovedCached) {
                 // Something has gone very wrong if we end up here.
-                throw new RestError('If not faulted, all removed objects should be cache.');
+                throw new InternalSiestaError('If not faulted, all removed objects should be cache.');
             }
             else {
                 // Fault
@@ -246,7 +246,7 @@ Change.prototype.applySiestaModel = function (model) {
     var isField = fields.indexOf(this.field) > -1;
     var isRelationshipField = relationshipFields.indexOf(this.field) > -1;
     if (!(isField || isRelationshipField)) {
-        throw new RestError('Field "' + this.field + '" does not exist within mapping "' + this.mapping.type + '"');
+        throw new InternalSiestaError('Field "' + this.field + '" does not exist within mapping "' + this.mapping.type + '"');
     }
     if (this.type == ChangeType.Set) {
         applySetToSiestaModel.call(this, isField, model);
@@ -258,7 +258,7 @@ Change.prototype.applySiestaModel = function (model) {
         applyRemoveToSiestaModel.call(this, isField, model);
     }
     else {
-        throw new RestError('Unknown change type "' + this.type.toString() + '"');
+        throw new InternalSiestaError('Unknown change type "' + this.type.toString() + '"');
     }
 };
 

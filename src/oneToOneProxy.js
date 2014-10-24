@@ -2,7 +2,7 @@ var proxy = require('./proxy')
     , NewObjectProxy = proxy.NewObjectProxy
     , Store = require('./store')
     , util = require('./util')
-    , RestError = require('./error').RestError
+    , InternalSiestaError = require('./error').InternalSiestaError
     , q = require('q')
     , SiestaModel = require('./object').SiestaModel;
 

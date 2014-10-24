@@ -83,7 +83,7 @@
                 }
                 else {
                     // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
-                    throw new RestError('Unnamed collection');
+                    throw new InternalSiestaError('Unnamed collection');
                 }
 
             }

@@ -4,7 +4,7 @@ var _i = siesta._internal
     , _ = util._
     , cache = _i.cache
     , guid = _i.misc.guid
-    , RestError = _i.error.RestError
+    , InternalSiestaError = _i.error.InternalSiestaError
     , q = _i.q
     , CollectionRegistry = _i.CollectionRegistry;
 
@@ -118,23 +118,23 @@ function validate(doc) {
                     return mapping;
                 }
                 else {
-                    throw new RestError('Cannot convert PouchDB document into SiestaModel. ' +
+                    throw new InternalSiestaError('Cannot convert PouchDB document into SiestaModel. ' +
                         'No mapping with type ' + mappingType.toString(), {doc: doc})
                 }
             }
             else {
-                throw new RestError('Cannot convert PouchDB document into SiestaModel. ' +
+                throw new InternalSiestaError('Cannot convert PouchDB document into SiestaModel. ' +
                     'No type field within document', {doc: doc});
             }
         }
         else {
-            throw new RestError('Cannot convert PouchDB document into SiestaModel. ' +
+            throw new InternalSiestaError('Cannot convert PouchDB document into SiestaModel. ' +
                 'API "' + collectionName.toString() + '" doesnt exist.', {doc: doc});
         }
 
     }
     else {
-        throw new RestError('Cannot convert PouchDB document into SiestaModel. ' +
+        throw new InternalSiestaError('Cannot convert PouchDB document into SiestaModel. ' +
             'No collection field within document', {doc: doc});
     }
 }

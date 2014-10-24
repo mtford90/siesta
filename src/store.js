@@ -1,5 +1,5 @@
 var wrappedCallback = require('./misc').wrappedCallback;
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
@@ -86,7 +86,7 @@ function get(opts, callback) {
                         });
                     }
                     else {
-                        wrappedCallback(callback)(new RestError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
+                        wrappedCallback(callback)(new InternalSiestaError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
                     }
                 }
 
@@ -98,7 +98,7 @@ function get(opts, callback) {
         var context = {opts: opts};
         var msg = 'Invalid options given to store';
         Logger.error(msg, context);
-        wrappedCallback(callback)(new RestError(msg, context));
+        wrappedCallback(callback)(new InternalSiestaError(msg, context));
     }
     return deferred.promise;
 }

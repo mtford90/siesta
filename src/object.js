@@ -7,7 +7,7 @@ var defineSubProperty = require('./misc').defineSubProperty;
 var util = require('./util');
 var _ = util._;
 var error = require('./error');
-var RestError = error.RestError;
+var InternalSiestaError = error.InternalSiestaError;
 
 var q = require('q');
 

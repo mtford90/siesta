@@ -1,10 +1,10 @@
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 
 function assert(condition, message, context) {
     if (!condition) {
         message = message || "Assertion failed";
         context = context || {};
-        throw new RestError(message, context);
+        throw new InternalSiestaError(message, context);
     }
 }
 

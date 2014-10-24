@@ -6,7 +6,7 @@
 
 //     var Collection = require('../src/collection').Collection;
 
-//     var RestError = require('../src/error').RestError;
+//     var InternalSiestaError = require('../src/error').InternalSiestaError;
 //     var RelationshipType = require('../src/relationship').RelationshipType;
 
 //     var SiestaModel = require('../src/object').SiestaModel;
@@ -122,27 +122,27 @@
 
 //         describe('validation', function () {
 //             it('No API field', function () {
-//                 assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {type: 'Car'}), RestError);
+//                 assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {type: 'Car'}), InternalSiestaError);
 //             });
 
 //             it('No type field', function (done) {
 //                 var collection = new Collection('myCollection');
 //                 collection.install(function (err) {
 //                     if (err) done(err);
-//                     assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection'}), RestError);
+//                     assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection'}), InternalSiestaError);
 //                     done();
 //                 });
 //             });
 
 //             it('non existent API', function () {
-//                 assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
+//                 assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), InternalSiestaError);
 //             });
 
 //             it('non existent type', function (done) {
 //                 var collection = new Collection('myCollection');
 //                 collection.install(function (err) {
 //                     if (err) done(err);
-//                     assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), RestError);
+//                     assert.throw(_.bind(s.ext.storage.Pouch._validate, s.ext.storage.Pouch, {collection: 'myCollection', type: 'Car'}), InternalSiestaError);
 //                     done();
 //                 });
 //             });

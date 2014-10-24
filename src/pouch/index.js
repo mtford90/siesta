@@ -1,5 +1,5 @@
 var _i = siesta._internal
-    , RestError = _i.error.RestError
+    , InternalSiestaError = _i.error.InternalSiestaError
     , mapping = _i.mapping
     , log = _i.log
     , util = _i.util
@@ -116,10 +116,10 @@ Index.prototype._constructMapFunction = function () {
 
 Index.prototype._validate = function () {
     if (!this.type) {
-        throw new RestError('Type must be specified in order to construct index map function.', {index: this});
+        throw new InternalSiestaError('Type must be specified in order to construct index map function.', {index: this});
     }
     if (!this.collection) {
-        throw new RestError('API must be specified in order to construct index map function.', {index: this});
+        throw new InternalSiestaError('API must be specified in order to construct index map function.', {index: this});
     }
 };
 

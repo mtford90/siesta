@@ -5,7 +5,7 @@ var s = require('../index')
 describe('collection setup', function () {
 
     var Collection = require('../src/collection').Collection;
-    var RestError = require('../src/error').RestError;
+    var InternalSiestaError = require('../src/error').InternalSiestaError;
 
     beforeEach(function () {
         s.reset(true);
@@ -102,7 +102,7 @@ describe('collection setup', function () {
                         id: 'id',
                         attributes: ['attr1', 'attr2']
                     });
-                }, RestError);
+                }, InternalSiestaError);
             });
 
             it('vararg', function (done) {

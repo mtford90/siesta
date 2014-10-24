@@ -1,4 +1,4 @@
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var Store = require('./store');
 var q = require('q');
 
@@ -105,7 +105,7 @@ Relationship.prototype.contributeToSiestaModel = function (obj) {
         obj[this.reverseName] = new RelatedObjectProxy(this, obj);
     }
     else {
-        throw new RestError('Cannot contribute to object as this relationship has neither a forward or reverse mapping that matches', {relationship: this, obj: obj});
+        throw new InternalSiestaError('Cannot contribute to object as this relationship has neither a forward or reverse mapping that matches', {relationship: this, obj: obj});
     }
 };
 

@@ -4,7 +4,7 @@ var s = require('../index')
 describe('subclassing', function () {
 
     var SiestaModel = require('../src/object').SiestaModel;
-    var RestError = require('../src/error').RestError;
+    var InternalSiestaError = require('../src/error').InternalSiestaError;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
 
@@ -71,7 +71,7 @@ describe('subclassing', function () {
                 attributes: ['colour', 'name'],
                 subclass: CarObject
             });
-        }, RestError);
+        }, InternalSiestaError);
     });
 
 
@@ -85,7 +85,7 @@ describe('subclassing', function () {
                 attributes: ['colour', 'name'],
                 subclass: CarObject
             });
-        }, RestError);
+        }, InternalSiestaError);
     });
 
     it('should throw an error if do not use a new instance of the prototype, as this is an anti-pattern', function () {
@@ -100,7 +100,7 @@ describe('subclassing', function () {
                 attributes: ['colour', 'name'],
                 subclass: CarObject
             });
-        }, RestError);
+        }, InternalSiestaError);
     });
 
 });

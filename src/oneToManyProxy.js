@@ -3,7 +3,7 @@ var proxy = require('./proxy')
     , Store = require('./store')
     , util = require('./util')
     , _ = util._
-    , RestError = require('./error').RestError
+    , InternalSiestaError = require('./error').InternalSiestaError
     , coreChanges = require('./changes')
     , SiestaModel = require('./object').SiestaModel
     , notificationCentre = require('./notificationCentre')
@@ -171,7 +171,7 @@ function validateRelated() {
         if (self.related) {
             if (self._id.length != self.related.length) {
                 if (self.related.length > 0) {
-                    throw new RestError('_id and related are somehow out of sync');
+                    throw new InternalSiestaError('_id and related are somehow out of sync');
                 }
             }
         }

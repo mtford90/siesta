@@ -4,7 +4,7 @@ var s = require('../index')
 describe('request descriptor', function () {
 
     var Collection = require('../src/collection').Collection;
-    var RestError = require('../src/error').RestError;
+    var InternalSiestaError = require('../src/error').InternalSiestaError;
     var RelationshipType = require('../src/relationship').RelationshipType;
 
     var collection, carMapping, personMapping;
@@ -112,7 +112,7 @@ describe('request descriptor', function () {
             assert.equal('Car', r.mapping.type);
         });
         it('should throw an exception if passed as string without collection', function () {
-            assert.throws(_.partial(siesta.ext.http.Descriptor, {mapping: 'Car'}), RestError);
+            assert.throws(_.partial(siesta.ext.http.Descriptor, {mapping: 'Car'}), InternalSiestaError);
         });
     });
 
@@ -325,7 +325,7 @@ describe('request descriptor', function () {
         it('no mapping', function () {
             assert.throws(function () {
                 new siesta.ext.http.Descriptor({data: 'data'})
-            }, RestError);
+            }, InternalSiestaError);
         });
     });
 
@@ -471,7 +471,7 @@ describe('request descriptor', function () {
                         assert.throws(function () {
                             requestDescriptor._transformData(data);
 
-                        }, RestError);
+                        }, InternalSiestaError);
                     });
 
                     describe('during serialisation', function () {
@@ -720,7 +720,7 @@ describe('request descriptor', function () {
                 assert.throws(function () {
                     responseDescriptor._transformData(data);
 
-                }, RestError);
+                }, InternalSiestaError);
             });
 
         });

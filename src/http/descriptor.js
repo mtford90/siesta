@@ -1,6 +1,6 @@
 var _i = siesta._internal
     , log = _i.log
-    , RestError = _i.error.RestError
+    , InternalSiestaError = _i.error.InternalSiestaError
     , assert = _i.misc.assert
     , defineSubProperty = _i.misc.defineSubProperty
     , CollectionRegistry = _i.CollectionRegistry
@@ -65,20 +65,20 @@ function Descriptor(opts) {
                         this._opts.mapping = actualMapping;
                     }
                     else {
-                        throw new RestError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts, descriptor: this});
+                        throw new InternalSiestaError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts, descriptor: this});
                     }
                 }
                 else {
-                    throw new RestError('Collection ' + this._opts.collection + ' does not exist', {opts: opts, descriptor: this});
+                    throw new InternalSiestaError('Collection ' + this._opts.collection + ' does not exist', {opts: opts, descriptor: this});
                 }
             }
             else {
-                throw new RestError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts, descriptor: this});
+                throw new InternalSiestaError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts, descriptor: this});
             }
         }
     }
     else {
-        throw new RestError('Descriptors must be initialised with a mapping', {opts: opts, descriptor: this});
+        throw new InternalSiestaError('Descriptors must be initialised with a mapping', {opts: opts, descriptor: this});
     }
 
     // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
@@ -326,7 +326,7 @@ Descriptor.prototype._transformData = function (data) {
                     }
                 }
                 else {
-                    throw new RestError('Invalid transformer');
+                    throw new InternalSiestaError('Invalid transformer');
                 }
             }
         }

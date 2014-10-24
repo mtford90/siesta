@@ -5,7 +5,7 @@ describe('mapping relationships', function () {
 
 
     var Collection = require('../src/collection').Collection;
-    var RestError = require('../src/error').RestError;
+    var InternalSiestaError = require('../src/error').InternalSiestaError;
     var RelationshipType = require('../src/relationship').RelationshipType;
 
 
@@ -140,6 +140,7 @@ describe('mapping relationships', function () {
                 relationships: {
                     owner: {
                         mapping: 'Person',
+                        
                         type: 'invalidtype',
                         reverse: 'cars'
                     }

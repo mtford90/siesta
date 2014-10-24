@@ -4,7 +4,7 @@ var _i = siesta._internal
     , util = _i.utils
     , _ = utils._
     , log = _i.log
-    , RestError = _i.error.RestError
+    , InternalSiestaError = _i.error.InternalSiestaError
     , Query = _i.query.Query
     , q = _i.q
 ;
@@ -54,7 +54,7 @@ RawQuery.prototype.execute = function (callback) {
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.mapping) { // During unit testing, we don't populate this.mapping, but rather configure Pouch manually.
         if (!this.mapping.installed) {
-            throw new RestError('Mapping must be installed');
+            throw new InternalSiestaError('Mapping must be installed');
         }
     }
     var self = this;

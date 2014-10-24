@@ -4,7 +4,7 @@ Logger.setLevel(log.Level.warn);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var relationship = require('./relationship');
 var RelationshipType = relationship.RelationshipType;
 var Query = require('./query').Query;
@@ -90,11 +90,11 @@ Mapping.prototype._validateSubclass = function () {
     if (this.subclass && this.subclass !== SiestaModel) {
         var obj = new this.subclass(this);
         if (!obj.mapping) {
-            throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
+            throw new InternalSiestaError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
                 'Did you call super?');
         }
         if (this.subclass.prototype == SiestaModel.prototype) {
-            throw new RestError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
+            throw new InternalSiestaError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
                 'You should use Object.create on SiestaModel prototype.');
         }
     }
@@ -117,10 +117,10 @@ Mapping.prototype.installRelationships = function () {
                         var mappingName = relationship.mapping;
                         if (Logger.debug.isEnabled)
                             Logger.debug('reverseMappingName', mappingName);
-                        if (!self.collection) throw new RestError('Mapping must have collection');
+                        if (!self.collection) throw new InternalSiestaError('Mapping must have collection');
                         var collection = CollectionRegistry[self.collection];
                         if (!collection) {
-                            throw new RestError('Collection ' + self.collection + ' not registered');
+                            throw new InternalSiestaError('Collection ' + self.collection + ' not registered');
                         }
                         var reverseMapping = collection[mappingName];
                         if (!reverseMapping) {
@@ -158,7 +158,7 @@ Mapping.prototype.installRelationships = function () {
         this._relationshipsInstalled = true;
     }
     else {
-        throw new RestError('Relationships for "' + this.type + '" have already been installed');
+        throw new InternalSiestaError('Relationships for "' + this.type + '" have already been installed');
     }
     return null;
 };
@@ -179,7 +179,7 @@ Mapping.prototype.installReverseRelationships = function () {
         this._reverseRelationshipsInstalled = true;
     }
     else {
-        throw new RestError('Reverse relationships for "' + this.type + '" have already been installed.');
+        throw new InternalSiestaError('Reverse relationships for "' + this.type + '" have already been installed.');
     }
 };
 
@@ -205,7 +205,7 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         this.all(function (err, objs) {
             if (err) finish(err);
             if (objs.length > 1) {
-                throw new RestError('Somehow more than one object has been created for a singleton mapping! ' +
+                throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
                     'This is a serious error, please file a bug report.');
             }
             else if (objs.length) {
@@ -267,7 +267,7 @@ Mapping.prototype.install = function (callback) {
         if (callback) callback(errors.length ? errors : null);
     }
     else {
-        throw new RestError('Mapping "' + this.type + '" has already been installed');
+        throw new InternalSiestaError('Mapping "' + this.type + '" has already been installed');
     }
     return deferred.promise;
 };
@@ -313,7 +313,7 @@ Mapping.prototype.map = function (data, callback, override) {
         }
     }
     else {
-        throw new RestError('Mapping must be fully installed before creating any models');
+        throw new InternalSiestaError('Mapping must be fully installed before creating any models');
     }
     return deferred.promise;
 };
@@ -466,7 +466,7 @@ Mapping.prototype._new = function (data) {
                     proxy = new ManyToManyProxy(relationship);
                 }
                 else {
-                    throw new RestError('No such relationship type: ' + relationship.type);
+                    throw new InternalSiestaError('No such relationship type: ' + relationship.type);
                 }
             }
             proxy.install(newModel);
@@ -478,7 +478,7 @@ Mapping.prototype._new = function (data) {
 
     else {
         util.printStackTrace();
-        throw new RestError('Mapping must be fully installed before creating any models');
+        throw new InternalSiestaError('Mapping must be fully installed before creating any models');
     }
 
 };
@@ -500,7 +500,7 @@ Mapping.prototype.toString = function () {
 };
 
 /**
- * A subclass of RestError specifcally for errors that occur during mapping.
+ * A subclass of InternalSiestaError specifcally for errors that occur during mapping.
  * @param message
  * @param context
  * @param ssf
@@ -517,12 +517,12 @@ function MappingError(message, context, ssf) {
     this.context = context;
     // capture stack trace
     ssf = ssf || arguments.callee;
-    if (ssf && RestError.captureStackTrace) {
-        RestError.captureStackTrace(this, ssf);
+    if (ssf && InternalSiestaError.captureStackTrace) {
+        InternalSiestaError.captureStackTrace(this, ssf);
     }
 }
 
-MappingError.prototype = Object.create(RestError.prototype);
+MappingError.prototype = Object.create(InternalSiestaError.prototype);
 MappingError.prototype.name = 'MappingError';
 MappingError.prototype.constructor = MappingError;
 

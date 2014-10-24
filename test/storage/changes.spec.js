@@ -6,7 +6,7 @@
 //     var ChangeType = require('../src/changes').ChangeType;
 //     var RelationshipType = require('../src/relationship').RelationshipType;
 
-//     var RestError = require('../src/error').RestError;
+//     var InternalSiestaError = require('../src/error').InternalSiestaError;
 
 //     var Collection = require('../src/collection').Collection;
 
@@ -55,7 +55,7 @@
 //                             collection: collection,
 //                             _id: 'xyz'
 //                         })
-//                     }, RestError
+//                     }, InternalSiestaError
 //                 );
 //             });
 
@@ -66,7 +66,7 @@
 //                             mapping: carMapping,
 //                             _id: 'xyz'
 //                         })
-//                     }, RestError
+//                     }, InternalSiestaError
 //                 );
 //             });
 
@@ -77,7 +77,7 @@
 //                             mapping: carMapping,
 //                             collection: collection
 //                         })
-//                     }, RestError
+//                     }, InternalSiestaError
 //                 );
 //             })
 //         });
@@ -163,7 +163,7 @@
 //                     c._id = 'randomid';
 //                     assert.throws(function () {
 //                         c.apply(obj);
-//                     }, RestError);
+//                     }, InternalSiestaError);
 //                 });
 //                 it('old does not match current', function () {
 //                     var obj = carMapping._new({colour: 'red', name: 'Aston Martin'});
@@ -177,7 +177,7 @@
 //                     c._id = obj._id;
 //                     assert.throws(function () {
 //                         c.apply(obj);
-//                     }, RestError);
+//                     }, InternalSiestaError);
 //                 });
 //             })
 //         });
@@ -221,7 +221,7 @@
 //                     c._id = obj._id;
 //                     assert.throws(function () {
 //                         c.apply(obj);
-//                     }, RestError);
+//                     }, InternalSiestaError);
 //                 });
 //                 it('no index', function () {
 //                     var obj = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});
@@ -235,7 +235,7 @@
 //                     c._id = obj._id;
 //                     assert.throws(function () {
 //                         c.apply(obj);
-//                     }, RestError);
+//                     }, InternalSiestaError);
 //                 });
 //                 it('removed doesnt match', function () {
 //                     var obj = carMapping._new({colours: ['red', 'blue'], name: 'Aston Martin'});
@@ -250,7 +250,7 @@
 //                     c._id = obj._id;
 //                     assert.throws(function () {
 //                         c.apply(obj);
-//                     }, RestError);
+//                     }, InternalSiestaError);
 //                 });
 //             });
 //         });
@@ -279,7 +279,7 @@
 //                     c._id = obj._id;
 //                     assert.throws(function () {
 //                         c.apply(obj);
-//                     }, RestError);
+//                     }, InternalSiestaError);
 //                 });
 
 //             });
@@ -523,7 +523,7 @@
 //                 });
 //                 assert.throws(function () {
 //                     c.applySiestaModel(obj);
-//                 }, RestError);
+//                 }, InternalSiestaError);
 //             });
 
 //             it('splice', function () {
@@ -716,7 +716,7 @@
 //                         });
 //                         assert.throws(function () {
 //                             c.applySiestaModel(car);
-//                         }, RestError);
+//                         }, InternalSiestaError);
 //                     });
 //                     it('invalid old', function () {
 //                         var car = carMapping._new({colours: 'red', name: 'Aston Martin'});
@@ -732,7 +732,7 @@
 //                         });
 //                         assert.throws(function () {
 //                             c.applySiestaModel(car);
-//                         }, RestError);
+//                         }, InternalSiestaError);
 //                     });
 
 //                 })

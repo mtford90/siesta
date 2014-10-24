@@ -4,7 +4,7 @@ Logger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var Operation = require('../vendor/operations.js/src/operation').Operation;
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var Mapping = require('./mapping').Mapping;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
@@ -36,7 +36,7 @@ var cache = require('./cache');
 function Collection(name) {
     var self = this;
     if (!this) return new Collection(name);
-    if (!name) throw new RestError('Collection must have a name');
+    if (!name) throw new InternalSiestaError('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
     this._rawMappings = {};
@@ -122,7 +122,7 @@ Collection.prototype.install = function(callback) {
             self._finaliseInstallation(null, callback);
         }
     } else {
-        var err = new RestError('Collection "' + this._name + '" has already been installed');
+        var err = new InternalSiestaError('Collection "' + this._name + '" has already been installed');
         self._finaliseInstallation(err, callback);
     }
     return deferred.promise;
@@ -146,7 +146,7 @@ Collection.prototype._mapping = function(name, mapping) {
         this[name] = mappingObject;
         return mappingObject;
     } else {
-        throw new RestError('No name specified when creating mapping');
+        throw new InternalSiestaError('No name specified when creating mapping');
     }
 };
 Collection.prototype.mapping = function() {

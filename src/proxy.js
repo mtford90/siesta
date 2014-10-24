@@ -1,4 +1,4 @@
-var RestError = require('./error').RestError,
+var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
     defineSubProperty = require('./misc').defineSubProperty,
     Operation = require('../vendor/operations.js/src/operation').Operation,
@@ -71,7 +71,7 @@ function NewObjectProxy(opts) {
             if (self.object) {
                 return self.object.mapping == self.reverseMapping;
             } else {
-                throw new RestError('Cannot use proxy until installed')
+                throw new InternalSiestaError('Cannot use proxy until installed')
             }
         },
         enumerable: true,
@@ -82,7 +82,7 @@ function NewObjectProxy(opts) {
             if (self.object) {
                 return self.object.mapping == self.forwardMapping;
             } else {
-                throw new RestError('Cannot use proxy until installed')
+                throw new InternalSiestaError('Cannot use proxy until installed')
             }
         },
         enumerable: true,
@@ -122,19 +122,19 @@ NewObjectProxy.prototype.install = function(obj) {
             }
             obj._proxies.push(this);
         } else {
-            throw new RestError('Already installed.');
+            throw new InternalSiestaError('Already installed.');
         }
     } else {
-        throw new RestError('No object passed to relationship install');
+        throw new InternalSiestaError('No object passed to relationship install');
     }
 };
 
 NewObjectProxy.prototype.set = function(obj) {
-    throw new RestError('Must subclass NewObjectProxy');
+    throw new InternalSiestaError('Must subclass NewObjectProxy');
 };
 
 NewObjectProxy.prototype.get = function(callback) {
-    throw new RestError('Must subclass NewObjectProxy');
+    throw new InternalSiestaError('Must subclass NewObjectProxy');
 };
 
 function verifyMapping(obj, mapping) {
@@ -144,7 +144,7 @@ function verifyMapping(obj, mapping) {
             object: obj,
             mapping: mapping
         });
-        throw new RestError(err);
+        throw new InternalSiestaError(err);
     }
 }
 
@@ -166,7 +166,7 @@ function getReverseProxyForObject(obj) {
         if (!proxy) {
             var err = 'No proxy with name "' + proxyName + '" on mapping ' + reverseMapping.type;
             console.error(err, obj);
-            throw new RestError(err);
+            throw new InternalSiestaError(err);
         }
         return proxy;
     }
@@ -187,7 +187,7 @@ function getForwardProxyForObject(obj) {
         if (!proxy) {
             var err = 'No proxy with name "' + proxyName + '" on mapping ' + forwardMapping.type;
             console.error(err, obj);
-            throw new RestError(err);
+            throw new InternalSiestaError(err);
         }
         return proxy;
     }
@@ -211,7 +211,7 @@ function getForwardMapping() {
 
 function checkInstalled() {
     if (!this.object) {
-        throw new RestError('Proxy must be installed on an object before can use it.');
+        throw new InternalSiestaError('Proxy must be installed on an object before can use it.');
     }
 }
 
@@ -352,7 +352,7 @@ function setReverse(obj) {
 
 function registerSetChange(obj) {
     var proxyObject = this.object;
-    if (!proxyObject) throw new RestError('Proxy must have an object associated');
+    if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
     var mapping = proxyObject.mapping.type;
     var coll = proxyObject.collection;
     var newId;

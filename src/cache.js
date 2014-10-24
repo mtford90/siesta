@@ -3,7 +3,7 @@ var LocalCacheLogger = log.loggerWithName('LocalCache');
 LocalCacheLogger.setLevel(log.Level.warn);
 var RemoteCacheLogger = log.loggerWithName('RemoteCache');
 RemoteCacheLogger.setLevel(log.Level.warn);
-var RestError = require('./error').RestError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var util = require('./util');
 
 /**
@@ -55,7 +55,7 @@ function getSingleton(mapping) {
                 }
             }
             if (objs.length > 1) {
-                throw new RestError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
+                throw new InternalSiestaError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
                     'Either a mapping has been modified after objects have already been created, or something has gone' +
                     'very wrong. Please file a bug report if the latter.');
             }
@@ -122,7 +122,7 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                             ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
                         RemoteCacheLogger.error(message, {obj: obj, cachedObject: cachedObject});
                         util.printStackTrace();
-                        throw new RestError(message);
+                        throw new InternalSiestaError(message);
                     }
                     else {
                         if (RemoteCacheLogger.debug.isEnabled)
@@ -132,17 +132,17 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                 }
             }
             else {
-                throw new RestError('Mapping has no type', {mapping: obj.mapping, obj: obj});
+                throw new InternalSiestaError('Mapping has no type', {mapping: obj.mapping, obj: obj});
             }
         }
         else {
-            throw new RestError('Mapping has no collection', {mapping: obj.mapping, obj: obj});
+            throw new InternalSiestaError('Mapping has no collection', {mapping: obj.mapping, obj: obj});
         }
     }
     else {
         var msg = 'Must pass an object when inserting to cache';
         RemoteCacheLogger.error(msg);
-        throw new RestError(msg);
+        throw new InternalSiestaError(msg);
     }
 
 }
@@ -245,7 +245,7 @@ function validate() {
         var obj = localCacheById[ident];
         if (ident != obj._id) {
             util.printStackTrace();
-            throw new RestError('wtf?');
+            throw new InternalSiestaError('wtf?');
         }
     }
 }
@@ -271,7 +271,7 @@ function insert(obj) {
                 var message = 'Object with _id="' + localId.toString() + '" is already in the cache. ' +
                     'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
                 LocalCacheLogger.error(message);
-                throw new RestError(message);
+                throw new InternalSiestaError(message);
             }
         }
     }

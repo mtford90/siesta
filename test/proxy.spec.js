@@ -9,7 +9,7 @@ describe('new object proxy', function () {
     var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
     var SiestaModel = require('../src/object').SiestaModel;
     var Fault = require('../src/proxy').Fault;
-    var RestError = require('../src/error').RestError;
+    var InternalSiestaError = require('../src/error').InternalSiestaError;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
     var ChangeType = require('../src/changes').ChangeType;
@@ -51,19 +51,19 @@ describe('new object proxy', function () {
                 proxy.install(car);
                 assert.throws(function () {
                     proxy.install(car);
-                }, RestError);
+                }, InternalSiestaError);
             });
 
             it('isReverse throws an error if proxy not installed', function () {
                 assert.throws(function () {
                     proxy.isForward;
-                }, RestError);
+                }, InternalSiestaError);
             });
 
             it('isReverse throws an error if proxy not installed', function () {
                 assert.throws(function () {
                     proxy.isForward;
-                }, RestError);
+                }, InternalSiestaError);
             });
 
             describe('forward installation', function () {
@@ -205,10 +205,10 @@ describe('new object proxy', function () {
             it('set should fail if not subclasses', function () {
                 assert.throws(function () {
                     car.owner = person;
-                }, RestError);
+                }, InternalSiestaError);
                 assert.throws(function () {
                     car.owner.set(person);
-                }, RestError);
+                }, InternalSiestaError);
             });
 
             it('get should fail if not subclasses', function () {
@@ -216,7 +216,7 @@ describe('new object proxy', function () {
                     car.owner.get(function () {
 
                     })
-                }, RestError);
+                }, InternalSiestaError);
             })
         })
 

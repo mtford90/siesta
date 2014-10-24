@@ -125,7 +125,7 @@ describe('cache...', function() {
                 duplicateObject._id = person._id;
                 assert.throws(function() {
                     cache.insert(duplicateObject);
-                }, siesta.RestError);
+                }, siesta.InternalSiestaError);
             });
 
             it('cant insert object with same id', function() {
@@ -142,7 +142,7 @@ describe('cache...', function() {
                         age: 23,
                         id: 'xyz'
                     }));
-                }, siesta.RestError);
+                }, siesta.InternalSiestaError);
             });
         });
 

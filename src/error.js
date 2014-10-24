@@ -1,6 +1,6 @@
-function RestError(message, context, ssf) {
+function InternalSiestaError(message, context, ssf) {
     if (!this) {
-        return new RestError(message, context);
+        return new InternalSiestaError(message, context);
     }
 
     this.message = message;
@@ -13,8 +13,8 @@ function RestError(message, context, ssf) {
     }
 }
 
-RestError.prototype = Object.create(Error.prototype);
-RestError.prototype.name = 'RestError';
-RestError.prototype.constructor = RestError;
+InternalSiestaError.prototype = Object.create(Error.prototype);
+InternalSiestaError.prototype.name = 'InternalSiestaError';
+InternalSiestaError.prototype.constructor = InternalSiestaError;
 
-exports.RestError = RestError;
+exports.InternalSiestaError = InternalSiestaError;

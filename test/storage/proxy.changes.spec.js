@@ -9,7 +9,7 @@
 //     var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
 //     var SiestaModel = require('../src/object').SiestaModel;
 //     var Fault = require('../src/proxy').Fault;
-//     var RestError = require('../src/error').RestError;
+//     var InternalSiestaError = require('../src/error').InternalSiestaError;
 //     var Collection = require('../src/collection').Collection;
 //     var cache = require('../src/cache');
 //     var ChangeType = require('../src/changes').ChangeType;

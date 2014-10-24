@@ -2,7 +2,7 @@ var Store = require('./store');
 var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');
 var Operation = require('../vendor/operations.js/src/operation').Operation;
-var RestError = require('../src/error').RestError;
+var InternalSiestaError = require('../src/error').InternalSiestaError;
 var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');
@@ -252,7 +252,7 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
                         obj = objs[0];
                     }
                     else {
-                        throw new RestError();
+                        throw new InternalSiestaError();
                     }
                 }
                 else {
