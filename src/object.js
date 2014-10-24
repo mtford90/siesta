@@ -11,6 +11,8 @@ var InternalSiestaError = error.InternalSiestaError;
 
 var q = require('q');
 
+var cache = require('./cache');
+
 //var queues = {};
 
 function SiestaModel(mapping) {
@@ -58,6 +60,7 @@ function SiestaModel(mapping) {
 
     this._rev = null;
 
+    this.removed = false;
 }
 
 /**
@@ -103,9 +106,29 @@ SiestaModel.prototype._dump = function (asJson) {
 SiestaModel.prototype.get = function (callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    if (callback) callback(null, this);
+    callback(null, this);
     return deferred.promise;
 };
+
+SiestaModel.prototype.remove = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    cache.remove(this);
+    this.removed = true;
+    callback(null, this);
+    return deferred.promise;
+}
+
+SiestaModel.prototype.restore = function (callback) {
+    var deferred = q.defer();
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    if (this.removed) {
+        cache.insert(this);
+        this.removed = false;
+    }
+    callback(null, this);
+    return deferred.promise;
+}
 
 exports.SiestaModel = SiestaModel;
 exports.dumpSaveQueues = function () {

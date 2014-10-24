@@ -1,10 +1,5 @@
 function InternalSiestaError(message, context, ssf) {
-    if (!this) {
-        return new InternalSiestaError(message, context);
-    }
-
     this.message = message;
-
     this.context = context;
     // capture stack trace
     ssf = ssf || arguments.callee;
