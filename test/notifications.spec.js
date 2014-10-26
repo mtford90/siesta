@@ -19,8 +19,6 @@ describe('notifications', function() {
     var notif, collectionNotif, genericNotif;
 
     describe('attributes', function() {
-
-
         afterEach(function() {
             notif = null;
             collectionNotif = null;
@@ -377,8 +375,10 @@ describe('notifications', function() {
 
         describe('array', function() {
 
-            describe('foreign key', function() {
+            var personNotif, personGenericNotif, personCollectionNotif;
+            var carNotif, carGenericNotif, carCollectionNotif;
 
+            describe('foreign key', function() {
                 beforeEach(function(done) {
                     collection = new Collection('myCollection');
 
@@ -410,32 +410,50 @@ describe('notifications', function() {
                         person = personMapping._new();
                         person.cars = [car];
                         s.on('myCollection:Person', function(n) {
-                            if (n.type == ChangeType.Splice) {
-                                notif = n;
+                            if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                personNotif = n;
                             }
                         });
                         s.on('myCollection', function(n) {
-                            if (n.type == ChangeType.Splice) {
-                                collectionNotif = n;
+                            if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                personCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function(n) {
-                            if (n.type == ChangeType.Splice) {
-                                genericNotif = n;
+                            if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                personGenericNotif = n;
+                            }
+                        });
+                        s.on('myCollection:Car', function(n) {
+                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                                carNotif = n;
+                            }
+                        });
+                        s.on('myCollection', function(n) {
+                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                                carCollectionNotif = n;
+                            }
+                        });
+                        s.on('Siesta', function(n) {
+                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                                carGenericNotif = n;
                             }
                         });
                         person.cars.push(anotherCar);
                         util.next(function() {
-                            done();
                             notificationCentre.removeAllListeners();
+                            done();
                         })
                     });
 
 
                     it('type', function() {
-                        assert.equal(notif.type, ChangeType.Splice);
-                        assert.equal(genericNotif.type, ChangeType.Splice);
-                        assert.equal(collectionNotif.type, ChangeType.Splice);
+                        assert.equal(personNotif.type, ChangeType.Splice);
+                        assert.equal(personGenericNotif.type, ChangeType.Splice);
+                        assert.equal(personCollectionNotif.type, ChangeType.Splice);
+                        assert.equal(carNotif.type, ChangeType.Set);
+                        assert.equal(carGenericNotif.type, ChangeType.Set);
+                        assert.equal(carCollectionNotif.type, ChangeType.Set);
                     });
 
 
@@ -462,17 +480,35 @@ describe('notifications', function() {
                                 genericNotif = n;
                             }
                         });
+                        s.on('myCollection:Car', function(n) {
+                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                                carNotif = n;
+                            }
+                        });
+                        s.on('myCollection', function(n) {
+                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                                carCollectionNotif = n;
+                            }
+                        });
+                        s.on('Siesta', function(n) {
+                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                                carGenericNotif = n;
+                            }
+                        });
                         person.cars.splice(0, 1);
                         util.next(function() {
+                            notificationCentre.removeAllListeners();
                             done();
                         })
                     });
-
 
                     it('type', function() {
                         assert.equal(notif.type, ChangeType.Splice);
                         assert.equal(genericNotif.type, ChangeType.Splice);
                         assert.equal(collectionNotif.type, ChangeType.Splice);
+                        assert.equal(carNotif.type, ChangeType.Set);
+                        assert.equal(carGenericNotif.type, ChangeType.Set);
+                        assert.equal(carCollectionNotif.type, ChangeType.Set);
                     });
 
                 });
@@ -512,22 +548,38 @@ describe('notifications', function() {
                             person = personMapping._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function(n) {
-                                if (n.type == ChangeType.Splice) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
                                     notif = n;
                                 }
                             });
                             s.on('myCollection', function(n) {
-                                if (n.type == ChangeType.Splice) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
                                     collectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function(n) {
-                                if (n.type == ChangeType.Splice) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
                                     genericNotif = n;
+                                }
+                            });
+                            s.on('myCollection:Car', function(n) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                    carNotif = n;
+                                }
+                            });
+                            s.on('myCollection', function(n) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                    carCollectionNotif = n;
+                                }
+                            });
+                            s.on('Siesta', function(n) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                    carGenericNotif = n;
                                 }
                             });
                             person.cars.push(anotherCar);
                             util.next(function() {
+                                notificationCentre.removeAllListeners();
                                 done();
                             });
                         });
@@ -537,6 +589,9 @@ describe('notifications', function() {
                             assert.equal(notif.type, ChangeType.Splice);
                             assert.equal(genericNotif.type, ChangeType.Splice);
                             assert.equal(collectionNotif.type, ChangeType.Splice);
+                            assert.equal(carNotif.type, ChangeType.Splice);
+                            assert.equal(carGenericNotif.type, ChangeType.Splice);
+                            assert.equal(carCollectionNotif.type, ChangeType.Splice);
                         });
 
                     });
@@ -547,22 +602,38 @@ describe('notifications', function() {
                             person = personMapping._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function(n) {
-                                if (n.type == ChangeType.Splice) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
                                     notif = n;
                                 }
                             });
                             s.on('myCollection', function(n) {
-                                if (n.type == ChangeType.Splice) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
                                     collectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function(n) {
-                                if (n.type == ChangeType.Splice) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
                                     genericNotif = n;
+                                }
+                            });
+                            s.on('myCollection:Car', function(n) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                    carNotif = n;
+                                }
+                            });
+                            s.on('myCollection', function(n) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                    carCollectionNotif = n;
+                                }
+                            });
+                            s.on('Siesta', function(n) {
+                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                    carGenericNotif = n;
                                 }
                             });
                             person.cars.splice(0, 1);
                             util.next(function() {
+                                notificationCentre.removeAllListeners();
                                 done();
                             })
                         });
@@ -572,6 +643,9 @@ describe('notifications', function() {
                             assert.equal(notif.type, ChangeType.Splice);
                             assert.equal(genericNotif.type, ChangeType.Splice);
                             assert.equal(collectionNotif.type, ChangeType.Splice);
+                            assert.equal(carNotif.type, ChangeType.Splice);
+                            assert.equal(carGenericNotif.type, ChangeType.Splice);
+                            assert.equal(carCollectionNotif.type, ChangeType.Splice);
                         });
 
                     });
