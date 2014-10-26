@@ -9,7 +9,7 @@ Logger.setLevel(log.Level.warn);
 var ChangeType = {
     Set: 'Set',
     Splice: 'Splice',
-    Remove: 'Remove',
+    Delete: 'Delete',
     New: 'New'
 };
 

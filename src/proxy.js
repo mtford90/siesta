@@ -297,7 +297,7 @@ function clearReverseRelated() {
                         field: reverseName,
                         removedId: [self.object._id],
                         removed: [self.object],
-                        type: ChangeType.Remove
+                        type: ChangeType.Delete
                     });
                 });
             } else {

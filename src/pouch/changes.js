@@ -167,7 +167,7 @@ Change.prototype.apply = function (doc) {
         if (!doc[this.field]) doc[this.field] = [];
         applySplice.call(this, doc, this.field, this.index, this.removedId || this.removed, this.addedId || this.added);
     }
-    else if (this.type == ChangeType.Remove) {
+    else if (this.type == ChangeType.Delete) {
         applyRemove.call(this, this.field, this.removedId || this.removed, doc);
     }
     else {
@@ -271,7 +271,7 @@ Change.prototype.applySiestaModel = function (model) {
     else if (this.type == ChangeType.Splice) {
         applySpliceToSiestaModel.call(this, isField, model);
     }
-    else if (this.type == ChangeType.Remove) {
+    else if (this.type == ChangeType.Delete) {
         applyRemoveToSiestaModel.call(this, isField, model);
     }
     else {

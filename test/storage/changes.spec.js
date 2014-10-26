@@ -261,7 +261,7 @@
 //                 c.collection = collection;
 //                 c.mapping = carMapping;
 //                 c.field = 'colours';
-//                 c.type = ChangeType.Remove;
+//                 c.type = ChangeType.Delete;
 //                 c.removed = ['red'];
 //                 c._id = obj._id;
 //                 c.apply(obj);
@@ -275,7 +275,7 @@
 //                     c.collection = collection;
 //                     c.mapping = carMapping;
 //                     c.field = 'colours';
-//                     c.type = ChangeType.Remove;
+//                     c.type = ChangeType.Delete;
 //                     c._id = obj._id;
 //                     assert.throws(function () {
 //                         c.apply(obj);
