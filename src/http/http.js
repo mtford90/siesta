@@ -1,18 +1,17 @@
-(function () {
+(function() {
     if (!siesta) {
         throw new Error('Could not find siesta');
     }
 
-    var Collection = siesta.Collection
-        , log = siesta._internal.log
-        , util = siesta._internal.util
-        , q = siesta._internal.q
-        ;
+    var Collection = siesta.Collection,
+        log = siesta._internal.log,
+        util = siesta._internal.util,
+        q = siesta._internal.q;
 
     var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
     var Logger = log.loggerWithName('HTTP');
-    Logger.setLevel(log.Level.warn);
+    Logger.setLevel(log.Level.trace);
 
     if (!siesta.ext) {
         siesta.ext = {};
@@ -26,7 +25,7 @@
         DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry
     };
 
-    Collection.prototype._httpResponse = function (method, path) {
+    Collection.prototype._httpResponse = function(method, path) {
         var self = this;
         var args = Array.prototype.slice.call(arguments, 2);
         var callback;
@@ -34,8 +33,7 @@
         var name = this._name;
         if (typeof(args[0]) == 'function') {
             callback = args[0];
-        }
-        else if (typeof (args[0]) == 'object') {
+        } else if (typeof(args[0]) == 'object') {
             opts = args[0];
             callback = args[1];
         }
@@ -46,63 +44,76 @@
             var baseURL = this.baseURL;
             opts.url = baseURL + path;
         }
-        opts.success = function (data, textStatus, jqXHR) {
+        if (opts.parseResponse === undefined) opts.parseResponse = true;
+        opts.success = function(data, textStatus, jqXHR) {
             if (Logger.trace.isEnabled)
                 Logger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
-            var resp = {data: data, textStatus: textStatus, jqXHR: jqXHR};
-            var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
-            var matchedDescriptor;
-            var extractedData;
+            var resp = {
+                data: data,
+                textStatus: textStatus,
+                jqXHR: jqXHR
+            };
+            if (opts.parseResponse) {
+                var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
+                var matchedDescriptor;
+                var extractedData;
 
-            for (var i = 0; i < descriptors.length; i++) {
-                var descriptor = descriptors[i];
-                extractedData = descriptor.match(opts, data);
-                if (extractedData) {
-                    matchedDescriptor = descriptor;
-                    break;
-                }
-            }
-            if (matchedDescriptor) {
-                if (Logger.trace.isEnabled)
-                    Logger.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
-                if (typeof(extractedData) == 'object') {
-                    var mapping = matchedDescriptor.mapping;
-                    mapping.map(extractedData, function (err, obj) {
-                        if (callback) {
-                            callback(err, obj, resp);
-                        }
-                    }, opts.obj);
-                }
-                else { // Matched, but no data.
-                    callback(null, true, resp);
-                }
-            }
-            else if (callback) {
-                if (name) {
-                    callback(null, null, resp);
-                }
-                else {
-                    // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
-                    throw new InternalSiestaError('Unnamed collection');
+                for (var i = 0; i < descriptors.length; i++) {
+                    var descriptor = descriptors[i];
+                    extractedData = descriptor.match(opts, data);
+                    if (extractedData) {
+                        matchedDescriptor = descriptor;
+                        break;
+                    }
                 }
 
+                if (matchedDescriptor) {
+                    if (Logger.trace.isEnabled)
+                        Logger.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
+                    if (typeof(extractedData) == 'object') {
+                        var mapping = matchedDescriptor.mapping;
+                        mapping.map(extractedData, function(err, obj) {
+                            if (callback) {
+                                callback(err, obj, resp);
+                            }
+                        }, opts.obj);
+                    } else { // Matched, but no data.
+                        callback(null, true, resp);
+                    }
+                } else if (callback) {
+                    if (name) {
+                        callback(null, null, resp);
+                    } else {
+                        // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
+                        throw new InternalSiestaError('Unnamed collection');
+                    }
+                }
+            } else {
+                callback(null, null, resp);
             }
+
         };
-        opts.error = function (jqXHR, textStatus, errorThrown) {
-            var resp = {jqXHR: jqXHR, textStatus: textStatus, errorThrown: errorThrown};
+        opts.error = function(jqXHR, textStatus, errorThrown) {
+            var resp = {
+                jqXHR: jqXHR,
+                textStatus: textStatus,
+                errorThrown: errorThrown
+            };
             if (callback) callback(resp, null, resp);
         };
+        if (Logger.trace.isEnabled)
+            Logger.trace('Ajax request:', opts);
         $.ajax(opts);
     };
-    Collection.prototype._httpRequest = function (method, path, object) {
+
+    Collection.prototype._httpRequest = function(method, path, object) {
         var self = this;
         var args = Array.prototype.slice.call(arguments, 2);
         var callback;
         var opts = {};
         if (typeof(args[0]) == 'function') {
             callback = args[0];
-        }
-        else if (typeof (args[0]) == 'object') {
+        } else if (typeof(args[0]) == 'object') {
             opts = args[0];
             callback = args[1];
         }
@@ -124,20 +135,21 @@
         if (matchedDescriptor) {
             if (Logger.trace.isEnabled)
                 Logger.trace('Matched descriptor: ' + matchedDescriptor._dump(true));
-            matchedDescriptor._serialise(object, function (err, data) {
+            matchedDescriptor._serialise(object, function(err, data) {
                 if (Logger.trace.isEnabled)
-                    Logger.trace('_serialise', {err: err, data: data});
+                    Logger.trace('_serialise', {
+                        err: err,
+                        data: data
+                    });
                 if (err) {
                     if (callback) callback(err, null, null);
-                }
-                else {
+                } else {
                     opts.data = data;
                     opts.obj = object;
                     _.partial(self._httpResponse, method, path, opts, callback).apply(self, args);
                 }
             });
-        }
-        else if (callback) {
+        } else if (callback) {
             if (Logger.trace.isEnabled)
                 Logger.trace('Did not match descriptor');
             callback(null, null, null);

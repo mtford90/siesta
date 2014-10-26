@@ -16,11 +16,10 @@ var ChangeType = require('./changes').ChangeType;
 var q = require('q');
 
 function flattenArray(arr) {
-    return _.reduce(arr, function (memo, e) {
+    return _.reduce(arr, function(memo, e) {
         if (util.isArray(e)) {
             memo = memo.concat(e);
-        }
-        else {
+        } else {
             memo.push(e);
         }
         return memo;
@@ -38,8 +37,7 @@ function unflattenArray(arr, modelArr) {
                 newArr.push(arr[n]);
                 n++;
             }
-        }
-        else {
+        } else {
             unflattened[i] = arr[n];
             n++;
         }
@@ -83,7 +81,7 @@ function mapAttributes() {
         if (datum != object) {
             if (object) { // If object is falsy, then there was an error looking up that object/creating it.
                 var fields = this.mapping._fields;
-                _.each(fields, function (f) {
+                _.each(fields, function(f) {
                     if (datum[f] !== undefined) { // null is fine
                         object[f] = datum[f];
                     }
@@ -93,11 +91,11 @@ function mapAttributes() {
     }
 }
 
-BulkMappingOperation.prototype._map = function () {
+BulkMappingOperation.prototype._map = function() {
     var self = this;
-    mapAttributes.call(this);
+    var numHits = mapAttributes.call(this);
     var relationshipFields = _.keys(self.subOps);
-    _.each(relationshipFields, function (f) {
+    _.each(relationshipFields, function(f) {
         var op = self.subOps[f].op;
         var indexes = self.subOps[f].indexes;
         var relatedData = getRelatedData.call(self, f).relatedData;
@@ -111,7 +109,7 @@ BulkMappingOperation.prototype._map = function () {
                 var related = unflattenedObjects[i]; // Can be array or scalar.
                 var object = self.objects[idx];
                 if (object) {
-                    var err = object[f +'Proxy'].set(related);
+                    var err = object[f + 'Proxy'].set(related);
                     if (err) {
                         if (!self.errors[idx]) self.errors[idx] = {};
                         self.errors[idx][f] = err;
@@ -126,12 +124,14 @@ BulkMappingOperation.prototype._map = function () {
  * For indices where no object is present, perform lookups, creating a new object if necessary.
  * @private
  */
-BulkMappingOperation.prototype._lookup = function (callback) {
+BulkMappingOperation.prototype._lookup = function(callback) {
+    dump('_lookup')
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     var remoteLookups = [];
     var localLookups = [];
+    dump('this.data', this.data);
     for (var i = 0; i < this.data.length; i++) {
         if (!this.objects[i]) {
             var lookup;
@@ -139,59 +139,78 @@ BulkMappingOperation.prototype._lookup = function (callback) {
             var isScalar = typeof datum == 'string' || typeof datum == 'number' || datum instanceof String;
             if (datum) {
                 if (isScalar) {
-                    lookup = {index: i, datum: {}};
+                    lookup = {
+                        index: i,
+                        datum: {}
+                    };
                     lookup.datum[self.mapping.id] = datum;
                     remoteLookups.push(lookup);
-                }
-                else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
+                } else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
                     this.objects[i] = datum;
+                } else if (datum._id) {
+                    localLookups.push({
+                        index: i,
+                        datum: datum
+                    });
+                } else if (datum[self.mapping.id]) {
+                    remoteLookups.push({
+                        index: i,
+                        datum: datum
+                    });
+                } else {
+                    // Create a new object if and only if the data has any fields that will actually
+                    var datumFields = Object.keys(datum);
+                    var objectFields = _.reduce(Object.keys(self.mapping.relationships).concat(self.mapping._fields), function(m, x) {
+                        m[x] = {};
+                        return m;
+                    }, {});
+                    var shouldCreateNewObject = false;
+                    for (var j = 0; j < datumFields.length; j++) {
+                        if (objectFields[datumFields[j]]) {
+                            shouldCreateNewObject = true;
+                            break;
+                        }
+                    }
+                    if (shouldCreateNewObject) {
+                        this.objects[i] = self.mapping._new();
+                    }
                 }
-                else if (datum._id) {
-                    localLookups.push({index: i, datum: datum});
-                }
-                else if (datum[self.mapping.id]) {
-                    remoteLookups.push({index: i, datum: datum});
-                }
-                else {
-                    this.objects[i] = self.mapping._new();
-                }
-            }
-            else {
+            } else {
                 this.objects[i] = null;
             }
         }
     }
     util.parallel([
-            function (callback) {
+            function(callback) {
                 var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
                 if (localIdentifiers.length) {
-                    Store.getMultipleLocal(localIdentifiers, function (err, objects) {
+                    Store.getMultipleLocal(localIdentifiers, function(err, objects) {
                         if (!err) {
                             for (var i = 0; i < localIdentifiers.length; i++) {
                                 var obj = objects[i];
                                 var _id = localIdentifiers[i];
                                 var lookup = localLookups[i];
                                 if (!obj) {
-                                    self.errors[lookup.index] = {_id: 'No object with _id="' + _id.toString() + '"'};
-                                }
-                                else {
+                                    self.errors[lookup.index] = {
+                                        _id: 'No object with _id="' + _id.toString() + '"'
+                                    };
+                                } else {
                                     self.objects[lookup.index] = obj;
                                 }
                             }
                         }
                         callback(err);
                     });
-                }
-                else {
+                } else {
                     callback();
                 }
             },
-            function (callback) {
+            function(callback) {
                 var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.mapping.id);
                 if (remoteIdentifiers.length) {
                     if (Logger.trace.isEnabled)
                         Logger.trace('Looking up remoteIdentifiers: ' + JSON.stringify(remoteIdentifiers, null, 4));
-                    Store.getMultipleRemote(remoteIdentifiers, self.mapping, function (err, objects) {
+                    Store.getMultipleRemote(remoteIdentifiers, self.mapping, function(err, objects) {
                         if (!err) {
                             if (Logger.trace.isEnabled) {
                                 var results = {};
@@ -205,18 +224,18 @@ BulkMappingOperation.prototype._lookup = function (callback) {
                                 var lookup = remoteLookups[i];
                                 if (obj) {
                                     self.objects[lookup.index] = obj;
-                                }
-                                else {
+                                } else {
                                     var data = {};
                                     var remoteId = remoteIdentifiers[i];
                                     data[self.mapping.id] = remoteId;
-                                    var cacheQuery = {mapping: self.mapping};
+                                    var cacheQuery = {
+                                        mapping: self.mapping
+                                    };
                                     cacheQuery[self.mapping.id] = remoteId;
                                     var cached = cache.get(cacheQuery);
                                     if (cached) {
                                         self.objects[lookup.index] = cached;
-                                    }
-                                    else {
+                                    } else {
                                         self.objects[lookup.index] = self.mapping._new();
                                         // It's important that we map the remote identifier here to ensure that it ends
                                         // up in the cache.
@@ -227,8 +246,7 @@ BulkMappingOperation.prototype._lookup = function (callback) {
                         }
                         callback(err);
                     });
-                }
-                else {
+                } else {
                     callback();
                 }
             }
@@ -237,25 +255,25 @@ BulkMappingOperation.prototype._lookup = function (callback) {
     return deferred.promise;
 };
 
-BulkMappingOperation.prototype._lookupSingleton = function (callback) {
+BulkMappingOperation.prototype._lookupSingleton = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
-    var cachedSingleton = cache.get({mapping: this.mapping});
+    var cachedSingleton = cache.get({
+        mapping: this.mapping
+    });
     if (!cachedSingleton) {
         var query = new Query(this.mapping);
-        query.execute(function (err, objs) {
+        query.execute(function(err, objs) {
             if (!err) {
                 var obj;
                 if (objs.length) {
                     if (objs.length == 1) {
                         obj = objs[0];
-                    }
-                    else {
+                    } else {
                         throw new InternalSiestaError();
                     }
-                }
-                else {
+                } else {
                     obj = self.mapping._new();
                 }
                 for (var i = 0; i < self.data.length; i++) {
@@ -264,8 +282,7 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
             }
             callback(err);
         });
-    }
-    else {
+    } else {
         for (var i = 0; i < self.data.length; i++) {
             self.objects[i] = cachedSingleton;
         }
@@ -274,19 +291,18 @@ BulkMappingOperation.prototype._lookupSingleton = function (callback) {
     return deferred.promise;
 };
 
-BulkMappingOperation.prototype._start = function (done) {
+BulkMappingOperation.prototype._start = function(done) {
     if (this.data.length) {
         var self = this;
         var tasks = [];
         var lookupFunc = this.mapping.singleton ? this._lookupSingleton : this._lookup;
         tasks.push(_.bind(lookupFunc, this));
         tasks.push(_.bind(this._executeSubOperations, this));
-        util.parallel(tasks, function () {
+        util.parallel(tasks, function() {
             self._map();
             done(self.errors.length ? self.errors : null, self.objects);
         });
-    }
-    else {
+    } else {
         done(null, []);
     }
 };
@@ -303,10 +319,13 @@ function getRelatedData(name) {
             }
         }
     }
-    return {indexes: indexes, relatedData: relatedData};
+    return {
+        indexes: indexes,
+        relatedData: relatedData
+    };
 }
 
-BulkMappingOperation.prototype._constructSubOperations = function () {
+BulkMappingOperation.prototype._constructSubOperations = function() {
     var subOps = this.subOps;
     var relationships = this.mapping.relationships;
     for (var name in relationships) {
@@ -318,9 +337,15 @@ BulkMappingOperation.prototype._constructSubOperations = function () {
             var relatedData = __ret.relatedData;
             if (relatedData.length) {
                 var flatRelatedData = flattenArray(relatedData);
-                var op = new BulkMappingOperation({mapping: reverseMapping, data: flatRelatedData});
+                var op = new BulkMappingOperation({
+                    mapping: reverseMapping,
+                    data: flatRelatedData
+                });
                 op.__relationshipName = name;
-                subOps[name] = {op: op, indexes: indexes};
+                subOps[name] = {
+                    op: op,
+                    indexes: indexes
+                };
             }
         }
     }
@@ -329,7 +354,7 @@ BulkMappingOperation.prototype._constructSubOperations = function () {
 function gatherErrorsFromSubOperations() {
     var self = this;
     var relationshipNames = _.keys(this.subOps);
-    _.each(relationshipNames, function (name) {
+    _.each(relationshipNames, function(name) {
         var op = self.subOps[name].op;
         var indexes = self.subOps[name].indexes;
         var errors = op.errors;
@@ -340,7 +365,9 @@ function gatherErrorsFromSubOperations() {
                 var idx = indexes[i];
                 var err = unflattenedErrors[i];
                 var isError = err;
-                if (util.isArray(err)) isError = _.reduce(err, function (memo, x) {return memo || x}, false);
+                if (util.isArray(err)) isError = _.reduce(err, function(memo, x) {
+                    return memo || x
+                }, false);
                 if (isError) {
                     if (!self.errors[idx]) self.errors[idx] = {};
                     self.errors[idx][name] = err;
@@ -350,20 +377,21 @@ function gatherErrorsFromSubOperations() {
     });
 }
 
-BulkMappingOperation.prototype._executeSubOperations = function (callback) {
+BulkMappingOperation.prototype._executeSubOperations = function(callback) {
     var self = this;
     this._constructSubOperations();
     var relationshipNames = _.keys(this.subOps);
     if (relationshipNames.length) {
-        var subOperations = _.map(relationshipNames, function (k) { return self.subOps[k].op});
+        var subOperations = _.map(relationshipNames, function(k) {
+            return self.subOps[k].op
+        });
         var compositeOperation = new Operation(subOperations);
-        compositeOperation.onCompletion(function () {
+        compositeOperation.onCompletion(function() {
             gatherErrorsFromSubOperations.call(self, relationshipNames);
             callback();
         });
         compositeOperation.start();
-    }
-    else {
+    } else {
         callback();
     }
 };

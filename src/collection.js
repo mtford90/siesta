@@ -309,6 +309,47 @@ Collection.prototype.PATCH = function() {
 
 
 /**
+ * Send a DELETE request
+ * @returns {*}
+ */
+Collection.prototype.DELETE = function(path, object) {
+    var deferred = q.defer();
+    var args = Array.prototype.slice.call(arguments, 2);
+    var opts = {};
+    var callback;
+    if (typeof(args[0]) == 'function') {
+        callback = args[0];
+    } 
+    else if (typeof(args[0]) == 'object') {
+        opts = args[0];
+        callback = args[1];
+    }
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    var deletionMode = opts.deletionMode || 'restore';
+    // By default we do not map the response from a DELETE request.
+    if (opts.parseResponse === undefined) opts.parseResponse = false;
+    this._httpResponse('DELETE', path, opts, function(err, x, y, z) {
+        dump('err', err);
+        dump('x', x);
+        dump('y', y);
+        dump('z', z);
+        if (err) {
+            if (deletionMode == 'restore') {
+                object.restore();
+            }
+        } 
+        else if (deletionMode == 'success') {
+            object.remove();
+        }
+        callback(err, x, y, z);
+    });
+    if (deletionMode == 'now' || deletionMode == 'restore') {
+        object.remove();
+    }
+    return deferred.promise;
+};
+
+/**
  * Returns the number of objects in this collection.
  *
  * @param callback
