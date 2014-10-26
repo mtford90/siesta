@@ -9,7 +9,8 @@ Logger.setLevel(log.Level.warn);
 var ChangeType = {
     Set: 'Set',
     Splice: 'Splice',
-    Remove: 'Remove'
+    Remove: 'Remove',
+    New: 'New'
 };
 
 /**
@@ -54,13 +55,13 @@ Change.prototype._dump = function (json) {
 };
 
 function broadcast(collection, mapping, c) {
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '"');
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '" of type ' + c.type);
     notificationCentre.emit(collection, c);
     var mappingNotif = collection + ':' + mapping;
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + mappingNotif + '"');
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + mappingNotif + '" of type ' + c.type);
     notificationCentre.emit(mappingNotif, c);
     var genericNotif = 'Siesta';
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '"');
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '" of type ' + c.type);
     notificationCentre.emit(genericNotif, c);
 }
 
@@ -73,7 +74,6 @@ function validateChange(changeOpts) {
     if (!changeOpts.collection) throw new InternalSiestaError('Must pass a collection');
     if (!changeOpts._id) throw new InternalSiestaError('Must pass a local identifier');
 }
-
 
 /**
  * Register that a change has been made.

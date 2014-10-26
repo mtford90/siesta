@@ -1,6 +1,6 @@
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 var defineSubProperty = require('./misc').defineSubProperty;
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -35,13 +35,15 @@ function Mapping(opts) {
     this._opts = opts;
 
     Object.defineProperty(this, '_fields', {
-        get: function () {
+        get: function() {
             var fields = [];
             if (self._opts.id) {
                 fields.push(self._opts.id);
             }
             if (self._opts.attributes) {
-                _.each(self._opts.attributes, function (x) {fields.push(x)});
+                _.each(self._opts.attributes, function(x) {
+                    fields.push(x)
+                });
             }
             return fields;
         },
@@ -73,7 +75,7 @@ function Mapping(opts) {
     this._reverseRelationshipsInstalled = false;
 
     Object.defineProperty(this, 'installed', {
-        get: function () {
+        get: function() {
             return self._installed && self._relationshipsInstalled && self._reverseRelationshipsInstalled;
         },
         enumerable: true,
@@ -86,7 +88,7 @@ function Mapping(opts) {
  * Ensure that any subclasses passed to the mapping are valid and working correctly.
  * @private
  */
-Mapping.prototype._validateSubclass = function () {
+Mapping.prototype._validateSubclass = function() {
     if (this.subclass && this.subclass !== SiestaModel) {
         var obj = new this.subclass(this);
         if (!obj.mapping) {
@@ -101,7 +103,7 @@ Mapping.prototype._validateSubclass = function () {
 };
 
 
-Mapping.prototype.installRelationships = function () {
+Mapping.prototype.installRelationships = function() {
     if (!this._relationshipsInstalled) {
         var self = this;
         self._relationships = [];
@@ -131,7 +133,9 @@ Mapping.prototype.installRelationships = function () {
                                 var otherCollection = CollectionRegistry[collectionName];
                                 if (!otherCollection) {
                                     var err = 'Collection with name "' + collectionName + '" does not exist.';
-                                    console.error(err, {registry: CollectionRegistry});
+                                    console.error(err, {
+                                        registry: CollectionRegistry
+                                    });
                                     return err;
                                 }
                                 reverseMapping = otherCollection[mappingName];
@@ -144,27 +148,24 @@ Mapping.prototype.installRelationships = function () {
                             relationship.forwardMapping = this;
                             relationship.forwardName = name;
                             relationship.reverseName = relationship.reverse;
-                        }
-                        else {
+                        } else {
                             return 'Mapping with name "' + mappingName.toString() + '" does not exist';
                         }
-                    }
-                    else {
+                    } else {
                         return 'Relationship type ' + relationship.type + ' does not exist';
                     }
                 }
             }
         }
         this._relationshipsInstalled = true;
-    }
-    else {
+    } else {
         throw new InternalSiestaError('Relationships for "' + this.type + '" have already been installed');
     }
     return null;
 };
 
-Mapping.prototype.installReverseRelationships = function () {
-            
+Mapping.prototype.installReverseRelationships = function() {
+
     if (!this._reverseRelationshipsInstalled) {
         for (var forwardName in this.relationships) {
             if (this.relationships.hasOwnProperty(forwardName)) {
@@ -177,13 +178,12 @@ Mapping.prototype.installReverseRelationships = function () {
             }
         }
         this._reverseRelationshipsInstalled = true;
-    }
-    else {
+    } else {
         throw new InternalSiestaError('Reverse relationships for "' + this.type + '" have already been installed.');
     }
 };
 
-Mapping.prototype.query = function (query, callback) {
+Mapping.prototype.query = function(query, callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var _query = new Query(this, query);
@@ -191,9 +191,10 @@ Mapping.prototype.query = function (query, callback) {
     return deferred.promise;
 };
 
-Mapping.prototype.get = function (idOrCallback, callback) {
+Mapping.prototype.get = function(idOrCallback, callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+
     function finish(err, res) {
         if (callback) callback(err, res);
     }
@@ -202,38 +203,33 @@ Mapping.prototype.get = function (idOrCallback, callback) {
         if (typeof idOrCallback == 'function') {
             callback = idOrCallback;
         }
-        this.all(function (err, objs) {
+        this.all(function(err, objs) {
             if (err) finish(err);
             if (objs.length > 1) {
                 throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
                     'This is a serious error, please file a bug report.');
-            }
-            else if (objs.length) {
+            } else if (objs.length) {
                 finish(null, objs[0]);
-            }
-            else {
+            } else {
                 finish(null, objs[0]);
             }
         });
-    }
-    else {
+    } else {
         var opts = {};
         opts[this.id] = idOrCallback;
         opts.mapping = this;
         var obj = cache.get(opts);
         if (obj) {
             finish(null, obj);
-        }
-        else {
+        } else {
             delete opts.mapping;
             var query = new Query(this, opts);
-            query.execute(function (err, rows) {
+            query.execute(function(err, rows) {
                 var obj = null;
                 if (!err && rows.length) {
                     if (rows.length > 1) {
                         err = 'More than one object with id=' + idOrCallback.toString();
-                    }
-                    else {
+                    } else {
                         obj = rows[0];
                     }
                 }
@@ -245,7 +241,7 @@ Mapping.prototype.get = function (idOrCallback, callback) {
     return deferred.promise;
 };
 
-Mapping.prototype.all = function (callback) {
+Mapping.prototype.all = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var query = new Query(this, {});
@@ -253,7 +249,7 @@ Mapping.prototype.all = function (callback) {
     return deferred.promise;
 };
 
-Mapping.prototype.install = function (callback) {
+Mapping.prototype.install = function(callback) {
     if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
@@ -265,14 +261,13 @@ Mapping.prototype.install = function (callback) {
             else Logger.info('Installed mapping ' + this.type);
         }
         if (callback) callback(errors.length ? errors : null);
-    }
-    else {
+    } else {
         throw new InternalSiestaError('Mapping "' + this.type + '" has already been installed');
     }
     return deferred.promise;
 };
 
-Mapping.prototype._validate = function () {
+Mapping.prototype._validate = function() {
     var errors = [];
     if (!this.type) {
         errors.push('Must specify a type');
@@ -291,15 +286,14 @@ Mapping.prototype._validate = function () {
  * @param callback Called once pouch persistence returns.
  * @param override Force mapping to this object
  */
-Mapping.prototype.map = function (data, callback, override) {
+Mapping.prototype.map = function(data, callback, override) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.installed) {
         if (util.isArray(data)) {
             this._mapBulk(data, callback, override);
-        }
-        else {
-            this._mapBulk([data], function (err, objects) {
+        } else {
+            this._mapBulk([data], function(err, objects) {
                 if (callback) {
                     var obj;
                     if (objects) {
@@ -311,25 +305,26 @@ Mapping.prototype.map = function (data, callback, override) {
                 }
             }, override ? [override] : undefined);
         }
-    }
-    else {
+    } else {
         throw new InternalSiestaError('Mapping must be fully installed before creating any models');
     }
     return deferred.promise;
 };
 
-Mapping.prototype._mapBulk = function (data, callback, override) {
+Mapping.prototype._mapBulk = function(data, callback, override) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var opts = {mapping: this, data: data};
+    var opts = {
+        mapping: this,
+        data: data
+    };
     if (override) opts.objects = override;
     var op = new BulkMappingOperation(opts);
-    op.onCompletion(function () {
+    op.onCompletion(function() {
         var err = op.error;
         if (err) {
             if (callback) callback(err);
-        }
-        else {
+        } else {
             var objects = op.result;
             callback(null, objects);
         }
@@ -341,31 +336,32 @@ Mapping.prototype._mapBulk = function (data, callback, override) {
 function _countCache() {
     var collCache = cache._localCacheByType[this.collection] || {};
     var mappingCache = collCache[this.type] || {};
-    return _.reduce(Object.keys(mappingCache), function (m, _id) {
+    return _.reduce(Object.keys(mappingCache), function(m, _id) {
         m[_id] = {};
         return m;
     }, {});
 }
 
-Mapping.prototype.count = function (callback) {
+Mapping.prototype.count = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var hash = _countCache.call(this);
     if (siesta.ext.storageEnabled) {
         var pouch = siesta.ext.storage.Pouch.getPouch();
         var indexName = (new siesta.ext.storage.Index(this.collection, this.type))._getName() + '_';
-        pouch.query(indexName, {include_docs: false}, function (err, resp) {
+        pouch.query(indexName, {
+            include_docs: false
+        }, function(err, resp) {
             var n;
             if (!err) {
-                _.each(_.pluck(resp.rows, 'id'), function (id) {
+                _.each(_.pluck(resp.rows, 'id'), function(id) {
                     hash[id] = {};
                 });
                 n = Object.keys(hash).length;
             }
             callback(err, n);
         });
-    }
-    else {
+    } else {
         callback(null, Object.keys(hash).length)
     }
     return deferred.promise;
@@ -376,21 +372,19 @@ Mapping.prototype.count = function (callback) {
  * @returns {SiestaModel}
  * @private
  */
-Mapping.prototype._new = function (data) {
+Mapping.prototype._new = function(data) {
     if (this.installed) {
         var self = this;
         var _id;
         if (data) {
             _id = data._id ? data._id : guid();
-        }
-        else {
+        } else {
             _id = guid();
         }
         var newModel;
         if (this.subclass) {
             newModel = new this.subclass(this);
-        }
-        else {
+        } else {
             newModel = new SiestaModel(this);
         }
         if (Logger.info.isEnabled)
@@ -403,12 +397,12 @@ Mapping.prototype._new = function (data) {
         if (idx > -1) {
             fields.splice(idx, 1);
         }
-        _.each(fields, function (field) {
+        _.each(fields, function(field) {
             Object.defineProperty(newModel, field, {
-                get: function () {
+                get: function() {
                     return newModel.__values[field] || null;
                 },
-                set: function (v) {
+                set: function(v) {
                     var old = newModel.__values[field];
                     newModel.__values[field] = v;
                     coreChanges.registerChange({
@@ -430,10 +424,10 @@ Mapping.prototype._new = function (data) {
         });
 
         Object.defineProperty(newModel, this.id, {
-            get: function () {
+            get: function() {
                 return newModel.__values[self.id] || null;
             },
-            set: function (v) {
+            set: function(v) {
                 var old = newModel[self.id];
                 newModel.__values[self.id] = v;
                 coreChanges.registerChange({
@@ -458,14 +452,11 @@ Mapping.prototype._new = function (data) {
                 var relationship = this.relationships[name];
                 if (relationship.type == RelationshipType.OneToMany) {
                     proxy = new OneToManyProxy(relationship);
-                }
-                else if (relationship.type == RelationshipType.OneToOne) {
+                } else if (relationship.type == RelationshipType.OneToOne) {
                     proxy = new OneToOneProxy(relationship);
-                }
-                else if (relationship.type == RelationshipType.ManyToMany) {
+                } else if (relationship.type == RelationshipType.ManyToMany) {
                     proxy = new ManyToManyProxy(relationship);
-                }
-                else {
+                } else {
                     throw new InternalSiestaError('No such relationship type: ' + relationship.type);
                 }
             }
@@ -473,29 +464,35 @@ Mapping.prototype._new = function (data) {
             proxy.isFault = false;
         }
         cache.insert(newModel);
+        coreChanges.registerChange({
+            collection: this.collection,
+            mapping: this.type,
+            _id: newModel._id,
+            newId: newModel._id,
+            new: newModel,
+            type: ChangeType.New
+        });
         return newModel;
-    }
-
-    else {
+    } else {
         util.printStackTrace();
         throw new InternalSiestaError('Mapping must be fully installed before creating any models');
     }
 
 };
 
-Mapping.prototype._dump = function (asJSON) {
+Mapping.prototype._dump = function(asJSON) {
     var dumped = {};
     dumped.name = this.type;
     dumped.attributes = this.attributes;
     dumped.id = this.id;
     dumped.collection = this.collection;
-    dumped.relationships = _.map(this.relationships, function (r) {
+    dumped.relationships = _.map(this.relationships, function(r) {
         return r.isForward ? r.forwardName : r.reverseName;
     });
     return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
 };
 
-Mapping.prototype.toString = function () {
+Mapping.prototype.toString = function() {
     return 'Mapping[' + this.type + ']';
 };
 
@@ -527,7 +524,9 @@ MappingError.prototype.name = 'MappingError';
 MappingError.prototype.constructor = MappingError;
 
 function arrayAsString(arr) {
-    var arrContents = _.reduce(arr, function (memo, f) {return memo + '"' + f + '",'}, '');
+    var arrContents = _.reduce(arr, function(memo, f) {
+        return memo + '"' + f + '",'
+    }, '');
     arrContents = arrContents.substring(0, arrContents.length - 1);
     return '[' + arrContents + ']';
 }
@@ -540,16 +539,15 @@ function constructMapFunction(collection, type, fields) {
 
     var arr = arrayAsString(fields);
     if (noFieldSetsSpecified) {
-        mapFunc = function (doc) {
+        mapFunc = function(doc) {
             var type = "$2";
             var collection = "$3";
             if (doc.type == type && doc.collection == collection) {
                 emit(doc.type, doc);
             }
         }.toString();
-    }
-    else {
-        mapFunc = function (doc) {
+    } else {
+        mapFunc = function(doc) {
             var type = "$2";
             var collection = "$3";
             if (doc.type == type && doc.collection == collection) {
@@ -562,11 +560,9 @@ function constructMapFunction(collection, type, fields) {
                     var value = doc[field];
                     if (value !== null && value !== undefined) {
                         aggField += value.toString() + '_';
-                    }
-                    else if (value === null) {
+                    } else if (value === null) {
                         aggField += 'null_';
-                    }
-                    else {
+                    } else {
                         aggField += 'undefined_';
                     }
                 }
@@ -588,14 +584,13 @@ function constructMapFunction2(collection, type, fields) {
     var noFieldSetsSpecified = !fields.length || onlyEmptyFieldSetSpecified;
 
     if (noFieldSetsSpecified) {
-        mapFunc = function (doc) {
+        mapFunc = function(doc) {
             if (doc.type == type && doc.collection == collection) {
                 emit(doc.type, doc);
             }
         };
-    }
-    else {
-        mapFunc = function (doc) {
+    } else {
+        mapFunc = function(doc) {
             if (doc.type == type && doc.collection == collection) {
                 var aggField = '';
                 for (var idx in fields) {
@@ -604,11 +599,9 @@ function constructMapFunction2(collection, type, fields) {
                     var value = doc[field];
                     if (value !== null && value !== undefined) {
                         aggField += value.toString() + '_';
-                    }
-                    else if (value === null) {
+                    } else if (value === null) {
                         aggField += 'null_';
-                    }
-                    else {
+                    } else {
                         aggField += 'undefined_';
                     }
                 }
