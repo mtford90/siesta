@@ -77,7 +77,7 @@ function wrapArray(arr) {
                 var mapping = proxy.getForwardMapping.call(self);
                 coreChanges.registerChange({
                     collection: mapping.collection,
-                    mapping: mapping,
+                    mapping: mapping.type,
                     _id: self.object._id,
                     field: proxy.getForwardName.call(self),
                     removed: removed,

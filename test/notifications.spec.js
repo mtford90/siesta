@@ -5,7 +5,8 @@ describe('notifications', function() {
 
     var Collection = require('../src/collection').Collection,
         ChangeType = require('../src/changes').ChangeType,
-        notificationCentre = require('../src/notificationCentre').notificationCentre;
+        util = require('../src/util')
+    notificationCentre = require('../src/notificationCentre').notificationCentre;
 
     beforeEach(function() {
         s.reset(true);
@@ -362,7 +363,272 @@ describe('notifications', function() {
     });
 
     describe('relationships', function() {
-        // TODO
+        var collection;
+        var car, person;
+        var carMapping, personMapping;
+
+        var Collection = require('../src/collection').Collection;
+
+
+        beforeEach(function(done) {
+            s.reset(true);
+            done();
+        });
+
+        describe('array', function() {
+
+            describe('foreign key', function() {
+
+                beforeEach(function(done) {
+                    collection = new Collection('myCollection');
+
+                    carMapping = collection.mapping('Car', {
+                        id: 'id',
+                        attributes: ['colours', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: RelationshipType.OneToMany,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+
+                    personMapping = collection.mapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+
+                    collection.install(done);
+                });
+
+                describe('push', function() {
+
+                    beforeEach(function(done) {
+                        car = carMapping._new();
+                        var anotherCar = carMapping._new();
+                        person = personMapping._new();
+                        person.cars = [car];
+                        s.on('myCollection:Person', function(n) {
+                            if (n.type == ChangeType.Splice) {
+                                notif = n;
+                            }
+                        });
+                        s.on('myCollection', function(n) {
+                            if (n.type == ChangeType.Splice) {
+                                collectionNotif = n;
+                            }
+                        });
+                        s.on('Siesta', function(n) {
+                            if (n.type == ChangeType.Splice) {
+                                genericNotif = n;
+                            }
+                        });
+                        person.cars.push(anotherCar);
+                        util.next(function() {
+                            done();
+                            notificationCentre.removeAllListeners();
+                        })
+                    });
+
+
+                    it('type', function() {
+                        assert.equal(notif.type, ChangeType.Splice);
+                        assert.equal(genericNotif.type, ChangeType.Splice);
+                        assert.equal(collectionNotif.type, ChangeType.Splice);
+                    });
+
+
+                });
+
+                describe('splice', function(done) {
+
+                    beforeEach(function(done) {
+                        car = carMapping._new();
+                        person = personMapping._new();
+                        person.cars = [car];
+                        s.on('myCollection:Person', function(n) {
+                            if (n.type == ChangeType.Splice) {
+                                notif = n;
+                            }
+                        });
+                        s.on('myCollection', function(n) {
+                            if (n.type == ChangeType.Splice) {
+                                collectionNotif = n;
+                            }
+                        });
+                        s.on('Siesta', function(n) {
+                            if (n.type == ChangeType.Splice) {
+                                genericNotif = n;
+                            }
+                        });
+                        person.cars.splice(0, 1);
+                        util.next(function() {
+                            done();
+                        })
+                    });
+
+
+                    it('type', function() {
+                        assert.equal(notif.type, ChangeType.Splice);
+                        assert.equal(genericNotif.type, ChangeType.Splice);
+                        assert.equal(collectionNotif.type, ChangeType.Splice);
+                    });
+
+                });
+
+            });
+
+            describe('many to many', function() {
+                beforeEach(function(done) {
+                    collection = new Collection('myCollection');
+
+                    carMapping = collection.mapping('Car', {
+                        id: 'id',
+                        attributes: ['colours', 'name'],
+                        relationships: {
+                            owners: {
+                                mapping: 'Person',
+                                type: RelationshipType.ManyToMany,
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+
+                    personMapping = collection.mapping('Person', {
+                        id: 'id',
+                        attributes: ['name', 'age']
+                    });
+
+                    collection.install(done);
+                });
+
+                describe('no faults', function() {
+
+                    describe('push', function(done) {
+                        beforeEach(function(done) {
+                            car = carMapping._new();
+                            var anotherCar = carMapping._new();
+                            person = personMapping._new();
+                            person.cars = [car];
+                            s.on('myCollection:Person', function(n) {
+                                if (n.type == ChangeType.Splice) {
+                                    notif = n;
+                                }
+                            });
+                            s.on('myCollection', function(n) {
+                                if (n.type == ChangeType.Splice) {
+                                    collectionNotif = n;
+                                }
+                            });
+                            s.on('Siesta', function(n) {
+                                if (n.type == ChangeType.Splice) {
+                                    genericNotif = n;
+                                }
+                            });
+                            person.cars.push(anotherCar);
+                            util.next(function() {
+                                done();
+                            });
+                        });
+
+
+                        it('type', function() {
+                            assert.equal(notif.type, ChangeType.Splice);
+                            assert.equal(genericNotif.type, ChangeType.Splice);
+                            assert.equal(collectionNotif.type, ChangeType.Splice);
+                        });
+
+                    });
+
+                    describe('splice', function() {
+                        beforeEach(function(done) {
+                            car = carMapping._new();
+                            person = personMapping._new();
+                            person.cars = [car];
+                            s.on('myCollection:Person', function(n) {
+                                if (n.type == ChangeType.Splice) {
+                                    notif = n;
+                                }
+                            });
+                            s.on('myCollection', function(n) {
+                                if (n.type == ChangeType.Splice) {
+                                    collectionNotif = n;
+                                }
+                            });
+                            s.on('Siesta', function(n) {
+                                if (n.type == ChangeType.Splice) {
+                                    genericNotif = n;
+                                }
+                            });
+                            person.cars.splice(0, 1);
+                            util.next(function() {
+                                done();
+                            })
+                        });
+
+
+                        it('type', function() {
+                            assert.equal(notif.type, ChangeType.Splice);
+                            assert.equal(genericNotif.type, ChangeType.Splice);
+                            assert.equal(collectionNotif.type, ChangeType.Splice);
+                        });
+
+                    });
+                });
+
+                // describe('fault in the reverse', function() {
+                //     it('push', function(done) {
+                //         car = carMapping._new();
+                //         var anotherCar = carMapping._new();
+                //         person = personMapping._new();
+                //         person.cars = [car];
+                //         car.ownersProxy.related = null;
+                //         person.cars.push(anotherCar);
+                //         util.next(function() {
+                //             var allChanges = s.ext.storage.changes.allChanges;
+                //             assert.equal(allChanges.length, 2);
+                //             var splicePredicate = function(x) {
+                //                 return x._id === person._id
+                //             };
+                //             var spliceChange = _.find(allChanges, splicePredicate);
+                //             assert.equal(spliceChange.type, ChangeType.Splice);
+                //             assert.include(spliceChange.addedId, anotherCar._id);
+                //             assert.equal(spliceChange.index, 1);
+                //             assert.equal(spliceChange.field, 'cars');
+                //             done();
+                //         });
+                //     });
+
+                //     it('splice', function(done) {
+                //         car = carMapping._new();
+                //         person = personMapping._new();
+                //         person.cars = [car];
+                //         s.ext.storage.changes.resetChanges();
+                //         car.ownersProxy.related = null;
+                //         person.cars.splice(0, 1);
+                //         util.next(function() {
+                //             var allChanges = s.ext.storage.changes.allChanges;
+                //             assert.equal(allChanges.length, 2);
+                //             var personPred = function(x) {
+                //                 return x._id === person._id
+                //             };
+                //             var personChange = _.find(allChanges, personPred);
+                //             var carPred = function(x) {
+                //                 return x._id === car._id
+                //             };
+                //             var carChange = _.find(allChanges, carPred);
+                //             assert.include(personChange.removed, car);
+                //             assert.notOk(car.ownersProxy._id.length);
+                //             assert.equal(personChange.type, ChangeType.Splice);
+                //             done();
+                //         });
+                //     });
+                // });
+            });
+
+        });
+
     });
 
     describe('new object', function() {

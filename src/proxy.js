@@ -413,7 +413,7 @@ function wrapArray(arr) {
                 var mapping = getForwardMapping.call(self);
                 coreChanges.registerChange({
                     collection: mapping.collection,
-                    mapping: mapping,
+                    mapping: mapping.type,
                     _id: self.object._id,
                     field: getForwardName.call(self),
                     removed: splice.removed,
