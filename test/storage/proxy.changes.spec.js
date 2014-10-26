@@ -301,7 +301,7 @@
 //                             assert.include(secondAnotherPersonChange.removed, car);
 //                             assert.equal(secondAnotherPersonChange.removedId.length, 1);
 //                             assert.include(secondAnotherPersonChange.removedId, car._id);
-//                             assert.equal(secondAnotherPersonChange.type, ChangeType.Remove);
+//                             assert.equal(secondAnotherPersonChange.type, ChangeType.Delete);
 //                             assert.equal(secondCarChange.collection, 'myCollection');
 //                             assert.equal(secondCarChange.mapping, 'Car');
 //                             assert.equal(secondCarChange._id, car._id);
@@ -370,7 +370,7 @@
 //                             assert.include(secondAnotherPersonChange.removed, car);
 //                             assert.equal(secondAnotherPersonChange.removedId.length, 1);
 //                             assert.include(secondAnotherPersonChange.removedId, car._id);
-//                             assert.equal(secondAnotherPersonChange.type, ChangeType.Remove);
+//                             assert.equal(secondAnotherPersonChange.type, ChangeType.Delete);
 //                             assert.equal(secondCarChange.collection, 'myCollection');
 //                             assert.equal(secondCarChange.mapping, 'Car');
 //                             assert.equal(secondCarChange._id, car._id);
@@ -654,7 +654,7 @@
 //                             assert.equal(firstAnotherPersonChange.removedId.length, 0);
 //                             assert.include(firstAnotherPersonChange.addedId, car._id);
 //                             assert.include(firstAnotherPersonChange.added, car);
-//                             assert.equal(secondAnotherPersonChange.type, ChangeType.Remove);
+//                             assert.equal(secondAnotherPersonChange.type, ChangeType.Delete);
 //                             assert.equal(secondAnotherPersonChange.collection, 'myCollection');
 //                             assert.equal(secondAnotherPersonChange.mapping, 'Person');
 //                             assert.equal(secondAnotherPersonChange._id, anotherPerson._id);

@@ -418,7 +418,7 @@ describe('notifications', function() {
         });
 
         it('is collectionNotif', function () {
-            assert.ok(collectionNotif);
+            assert.ok(genericNotif);
         });
 
         it('type is New', function() {
