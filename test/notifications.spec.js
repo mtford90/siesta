@@ -15,7 +15,7 @@ describe('notifications', function() {
     var collection, carMapping;
     var car;
 
-        var notif, collectionNotif, genericNotif;
+    var notif, collectionNotif, genericNotif;
 
     describe('attributes', function() {
 
@@ -409,16 +409,16 @@ describe('notifications', function() {
             });
         });
 
-        it('is notif', function () {
+        it('is notif', function() {
             assert.ok(notif);
         });
 
-        it('is genericNotif', function () {
+        it('is genericNotif', function() {
             assert.ok(genericNotif);
         });
 
-        it('is collectionNotif', function () {
-            assert.ok(genericNotif);
+        it('is collectionNotif', function() {
+            assert.ok(collectionNotif);
         });
 
         it('type is New', function() {
@@ -446,10 +446,161 @@ describe('notifications', function() {
 
     describe('object removal', function() {
 
+        beforeEach(function(done) {
+            notif = null;
+            genericNotif = null;
+            collectionNotif = null;
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(function(err) {
+                if (err) done(err);
+                carMapping.map({
+                    colour: 'red',
+                    name: 'Aston Martin',
+                    id: 'xyz'
+                }, function(err, _car) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        car = _car;
+                        s.on('myCollection:Car', function(n) {
+                            if (n.type == ChangeType.Remove) {
+                                notif = n;
+                            }
+                        });
+                        s.on('myCollection', function(n) {
+                            if (n.type == ChangeType.Remove) {
+                                collectionNotif = n;
+                            }
+                        });
+                        s.on('Siesta', function(n) {
+                            if (n.type == ChangeType.Remove) {
+                                genericNotif = n;
+                            }
+                        });
+                        car.remove();
+                        notificationCentre.removeAllListeners();
+                        done();
+                    }
+                });
+            });
+        });
+
+        it('is notif', function() {
+            assert.ok(notif);
+        });
+
+        it('is genericNotif', function() {
+            assert.ok(genericNotif);
+        });
+
+        it('is collectionNotif', function() {
+            assert.ok(collectionNotif);
+        });
+
+        it('type is New', function() {
+            assert.equal(notif.type, ChangeType.Remove);
+            assert.equal(genericNotif.type, ChangeType.Remove);
+            assert.equal(collectionNotif.type, ChangeType.Remove);
+        });
+
+        it('new', function() {
+            assert.equal(notif.old, car);
+            assert.equal(genericNotif.old, car);
+            assert.equal(collectionNotif.old, car);
+        });
+
+        it('_id', function() {
+            assert.equal(notif.oldId, car._id);
+            assert.equal(genericNotif.oldId, car._id);
+            assert.equal(collectionNotif.oldId, car._id);
+            assert.equal(notif._id, car._id);
+            assert.equal(genericNotif._id, car._id);
+            assert.equal(collectionNotif._id, car._id);
+        });
+
     });
 
     describe('object restoration', function() {
+        beforeEach(function(done) {
+            notif = null;
+            genericNotif = null;
+            collectionNotif = null;
+            collection = new Collection('myCollection');
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(function(err) {
+                if (err) done(err);
+                carMapping.map({
+                    colour: 'red',
+                    name: 'Aston Martin',
+                    id: 'xyz'
+                }, function(err, _car) {
+                    if (err) {
+                        done(err);
+                    } else {
+                        car = _car;
+                        car.remove();
+                        s.on('myCollection:Car', function(n) {
+                            if (n.type == ChangeType.New) {
+                                notif = n;
+                            }
+                        });
+                        s.on('myCollection', function(n) {
+                            if (n.type == ChangeType.New) {
+                                collectionNotif = n;
+                            }
+                        });
+                        s.on('Siesta', function(n) {
+                            if (n.type == ChangeType.New) {
+                                genericNotif = n;
+                            }
+                        });
+                        car.restore();
+                        notificationCentre.removeAllListeners();
+                        done();
+                    }
+                });
+            });
+        });
 
+        it('is notif', function() {
+            assert.ok(notif);
+        });
+
+        it('is genericNotif', function() {
+            assert.ok(genericNotif);
+        });
+
+        it('is collectionNotif', function() {
+            assert.ok(collectionNotif);
+        });
+
+        it('type is New', function() {
+            assert.equal(notif.type, ChangeType.New);
+            assert.equal(genericNotif.type, ChangeType.New);
+            assert.equal(collectionNotif.type, ChangeType.New);
+        });
+
+        it('new', function() {
+            assert.equal(notif.new, car);
+            assert.equal(genericNotif.new, car);
+            assert.equal(collectionNotif.new, car);
+        });
+
+        it('_id', function() {
+            assert.equal(notif.newId, car._id);
+            assert.equal(genericNotif.newId, car._id);
+            assert.equal(collectionNotif.newId, car._id);
+            assert.equal(notif._id, car._id);
+            assert.equal(genericNotif._id, car._id);
+            assert.equal(collectionNotif._id, car._id);
+        });
     });
 
 });

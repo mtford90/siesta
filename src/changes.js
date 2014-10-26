@@ -10,7 +10,8 @@ var ChangeType = {
     Set: 'Set',
     Splice: 'Splice',
     Delete: 'Delete',
-    New: 'New'
+    New: 'New',
+    Remove: 'Remove'
 };
 
 /**
