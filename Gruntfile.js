@@ -366,6 +366,10 @@ module.exports = function(grunt) {
         'karma:continuous'
     ]);
 
+    grunt.registerTask('test', [
+       'build'
+    ]);
+
     grunt.registerTask('compile', [
         'browserify:build',
         'copy:build_extensionjs',
