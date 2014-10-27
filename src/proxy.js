@@ -66,29 +66,24 @@ function NewObjectProxy(opts) {
     defineSubProperty.call(this, 'forwardMapping', this._opts);
     defineSubProperty.call(this, 'forwardName', this._opts);
     defineSubProperty.call(this, 'reverseName', this._opts);
-    Object.defineProperty(this, 'isReverse', {
-        get: function() {
-            if (self.object) {
-                return self.object.mapping == self.reverseMapping;
-            } else {
-                throw new InternalSiestaError('Cannot use proxy until installed')
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
+    defineSubProperty.call(this, 'isReverse', this._opts);
     Object.defineProperty(this, 'isForward', {
         get: function() {
-            if (self.object) {
-                return self.object.mapping == self.forwardMapping;
-            } else {
-                throw new InternalSiestaError('Cannot use proxy until installed')
-            }
+            return !self.isReverse;
+        },
+        set: function (v) {
+            self.isReverse = !v;
         },
         enumerable: true,
         configurable: true
     });
-}
+    if (this._opts.isReverse === undefined && this._opts.isForward !== undefined) {
+        this.isReverse = !this._opts.isForward;
+    }
+    else if (this._opts.isReverse === undefined && this._opts.isForward === undefined) {
+        throw InternalSiestaError('Must specify either isReverse or isForward when configuring relationship proxy.');
+    }
+ }
 
 NewObjectProxy.prototype._dump = function(asJson) {
     var dumped = {};

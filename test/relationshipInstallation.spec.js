@@ -1,7 +1,7 @@
-var s = require('../index')
-    , assert = require('chai').assert;
+var s = require('../index'),
+    assert = require('chai').assert;
 
-describe('mapping relationships', function () {
+describe('mapping relationships', function() {
 
 
     var Collection = require('../src/collection').Collection;
@@ -9,7 +9,7 @@ describe('mapping relationships', function () {
     var RelationshipType = require('../src/relationship').RelationshipType;
 
 
-    beforeEach(function () {
+    beforeEach(function() {
         s.reset(true);
     });
 
@@ -35,71 +35,83 @@ describe('mapping relationships', function () {
         collection.install(done);
     }
 
-    describe('valid', function () {
+    describe('valid', function() {
 
 
-        describe('Foreign Key', function () {
+        describe('Foreign Key', function() {
 
-            beforeEach(function (done) {
-                configureAPI(RelationshipType.OneToMany, function (err) {
+            beforeEach(function(done) {
+                configureAPI(RelationshipType.OneToMany, function(err) {
                     if (err) done(err);
                     done();
                 });
             });
 
-            it('configures reverse mapping', function () {
+            it('configures reverse mapping', function() {
                 assert.equal(carMapping.relationships.owner.reverseMapping, personMapping);
             });
 
-            it('configures reverse name', function () {
+            it('configures reverse name', function() {
                 assert.equal(carMapping.relationships.owner.reverseName, 'cars');
 
-            it('configures forward mapping', function () {
-                assert.equal(carMapping.relationships.owner.forwardMapping, carMapping);
-            });
+                it('configures forward mapping', function() {
+                    assert.equal(carMapping.relationships.owner.forwardMapping, carMapping);
+                });
 
             });
-            it('configures forward name', function () {
+            it('configures forward name', function() {
                 assert.equal(carMapping.relationships.owner.forwardName, 'owner');
             });
 
-            it('installs on reverse', function () {
-                assert.equal(personMapping.relationships.cars, carMapping.relationships.owner);
+            it('installs on reverse', function() {
+                var keys = Object.keys(personMapping.relationships.cars);
+                for (var i = 0; i < keys.length; i++) {
+                    var key = keys[i];
+                    if (key != 'isForward' && key != 'isReverse') {
+                        assert.equal(personMapping.relationships.cars[key], carMapping.relationships.owner[key]);
+                    }
+                }
             });
 
 
         });
 
-        describe('OneToOne', function () {
+        describe('OneToOne', function() {
 
-            beforeEach(function (done) {
-                configureAPI(RelationshipType.OneToOne, function (err) {
+            beforeEach(function(done) {
+                configureAPI(RelationshipType.OneToOne, function(err) {
                     if (err) done(err);
                     done();
                 });
 
 
             });
-            it('configures reverse mapping', function () {
+            it('configures reverse mapping', function() {
                 assert.equal(carMapping.relationships.owner.reverseMapping, personMapping);
             });
 
-            it('configures reverse name', function () {
+            it('configures reverse name', function() {
                 assert.equal(carMapping.relationships.owner.reverseName, 'cars');
 
 
 
             });
 
-            it('configures forward mapping', function () {
+            it('configures forward mapping', function() {
                 assert.equal(carMapping.relationships.owner.forwardMapping, carMapping);
             });
-            it('configures forward name', function () {
+            it('configures forward name', function() {
                 assert.equal(carMapping.relationships.owner.forwardName, 'owner');
             });
 
-            it('installs on reverse', function () {
-                assert.equal(personMapping.relationships.cars, carMapping.relationships.owner);
+            it('installs on reverse', function() {
+                var keys = Object.keys(personMapping.relationships.cars);
+                for (var i = 0; i < keys.length; i++) {
+                    var key = keys[i];
+                    if (key != 'isForward' && key != 'isReverse') {
+                        assert.equal(personMapping.relationships.cars[key], carMapping.relationships.owner[key]);
+                    }
+                }
             });
 
 
@@ -112,8 +124,8 @@ describe('mapping relationships', function () {
 
 
 
-    describe('invalid', function () {
-        it('No such mapping', function (done) {
+    describe('invalid', function() {
+        it('No such mapping', function(done) {
             var collection = new Collection('myCollection');
             collection.mapping('Car', {
                 id: 'id',
@@ -126,13 +138,13 @@ describe('mapping relationships', function () {
                     }
                 }
             });
-            collection.install(function (err) {
+            collection.install(function(err) {
                 assert.ok(err);
                 done();
             });
         });
 
-        it('No such relationship type', function (done) {
+        it('No such relationship type', function(done) {
             var collection = new Collection('myCollection');
             collection.mapping('Car', {
                 id: 'id',
@@ -140,7 +152,7 @@ describe('mapping relationships', function () {
                 relationships: {
                     owner: {
                         mapping: 'Person',
-                        
+
                         type: 'invalidtype',
                         reverse: 'cars'
                     }
@@ -151,7 +163,7 @@ describe('mapping relationships', function () {
                 attributes: ['name', 'age']
             });
 
-            collection.install(function (err) {
+            collection.install(function(err) {
                 assert.ok(err);
                 done();
             });

@@ -148,6 +148,7 @@ Mapping.prototype.installRelationships = function() {
                             relationship.forwardMapping = this;
                             relationship.forwardName = name;
                             relationship.reverseName = relationship.reverse;
+                            relationship.isReverse = false;
                         } else {
                             return 'Mapping with name "' + mappingName.toString() + '" does not exist';
                         }
@@ -165,11 +166,12 @@ Mapping.prototype.installRelationships = function() {
 };
 
 Mapping.prototype.installReverseRelationships = function() {
-
     if (!this._reverseRelationshipsInstalled) {
         for (var forwardName in this.relationships) {
             if (this.relationships.hasOwnProperty(forwardName)) {
                 var relationship = this.relationships[forwardName];
+                relationship = extend(true, {}, relationship);
+                relationship.isReverse = true;
                 var reverseMapping = relationship.reverseMapping;
                 var reverseName = relationship.reverseName;
                 if (Logger.debug.isEnabled)
