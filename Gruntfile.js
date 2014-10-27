@@ -1,7 +1,35 @@
-module.exports = function (grunt) {
+/**
+ * Hack in a bug fix whereby code blocks would not be newlines by jsdoc2md.
+ *
+ * e.g. jsdoc2md would spit out
+ *
+ * **Example**
+ * ```js
+ * ...
+ * ```
+ *
+ * instead of
+ *
+ * **Example**
+ *
+ * ```js
+ * ...
+ * ```
+ *
+ * The newline is very much important in terms of rendering correctly.
+ */
+function bugFix(data) {
+    data = data.replace(/(\*+(.*)\*+)(.*)\n```js/g, '$1\n\n```js');
+    return data.replace(/(\*+(.*)\*+)(.*)\n```javascript/g, '$1\n\n```js');
+}
+
+
+module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
+
+    var fs = require('fs');
 
     var userConfig = require('./build.config.js');
 
@@ -40,7 +68,6 @@ module.exports = function (grunt) {
                     '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
                     '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js'],
                     '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
-
                 }
             }
         },
@@ -52,37 +79,31 @@ module.exports = function (grunt) {
 
         copy: {
             build_appjs: {
-                files: [
-                    {
-                        src: [ '<%= app_files.js %>' ],
-                        dest: '<%= build_dir %>/',
-                        cwd: '.',
-                        expand: true
-                    }
-                ]
+                files: [{
+                    src: ['<%= app_files.js %>'],
+                    dest: '<%= build_dir %>/',
+                    cwd: '.',
+                    expand: true
+                }]
             },
             build_vendorjs: {
-                files: [
-                    {
-                        src: [ '<%= vendor_files.js %>' ],
-                        dest: '<%= build_dir %>/',
-                        cwd: '.',
-                        expand: true
-                    }
-                ]
+                files: [{
+                    src: ['<%= vendor_files.js %>'],
+                    dest: '<%= build_dir %>/',
+                    cwd: '.',
+                    expand: true
+                }]
             },
             build_extensionjs: {
-                files: [
-                    {
-                        src: '<%= src_dir %>/performance.js',
-                        cwd: '.',
-                        expand: true,
-                        flatten: true,
-                        rename: function () {
-                            return 'build/siesta.perf.js'
-                        }
+                files: [{
+                    src: '<%= src_dir %>/performance.js',
+                    cwd: '.',
+                    expand: true,
+                    flatten: true,
+                    rename: function() {
+                        return 'build/siesta.perf.js'
                     }
-                ]
+                }]
             }
 
         },
@@ -131,7 +152,7 @@ module.exports = function (grunt) {
 
             gruntfile: {
                 files: 'Gruntfile.js',
-                tasks: [ 'browserify:test', 'karma:unit:run' ]
+                tasks: ['browserify:test', 'karma:unit:run']
             },
 
             jssrc: {
@@ -140,7 +161,7 @@ module.exports = function (grunt) {
                     '!<%= src_dir %>/http/http.js',
                     '!<%= src_dir %>/performance.js'
                 ],
-                tasks: [  'browserify:test', 'karma:unit:run' ]
+                tasks: ['browserify:test', 'karma:unit:run']
             },
 
             ext: {
@@ -162,11 +183,67 @@ module.exports = function (grunt) {
                 files: [
                     '<%= test_dir %>/**/*.js'
                 ],
-                tasks: [  'browserify:test', 'karma:unit:run' ]
-            }
+                tasks: ['browserify:test', 'karma:unit:run']
+            },
 
+            less: {
+                files: ['./docs/static/less/**/*.less'],
+                tasks: ['build-jekyll']
+            },
+
+            jekyll: {
+                files: [
+                    'docs/**/*.md',
+                    'docs/_includes/*.html',
+                    'docs/_data/*.yml',
+                    'docs/_layouts/*.html',
+                    'docs/_posts/*.md',
+                    'docs/blog/*.html',
+                    'docs/_config.yml',
+                    'docs/*/**.js',
+                    './docs/demo/**/*.css'
+                ],
+                tasks: ['build-jekyll']
+            }
         },
 
+        less: {
+            dev: {
+                options: {
+                    paths: ['docs/static/less']
+                },
+                files: {
+                    'docs/static/css/main.css': 'docs/static/less/daux-blue.less'
+                }
+            }
+        },
+        // jekyll: {
+        //     options: {
+        //         bundleExec: true,
+        //         dest: './_site',
+        //         src: './docs',
+        //         serve: false
+        //     },
+        //     build: {
+        //         options: {
+        //             config: 'config.dev.yml'
+        //         }
+        //     },
+        //     dist: {
+        //         options: {
+        //             config: '_config.yml'
+        //         }
+        //     }
+        // },
+        connect: {
+            site: {
+                options: {
+                    livereload: true,
+                    port: 4000,
+                    base: './_site'
+                }
+            }
+        },
         mocha: {
             test: {
                 src: ['etest/index.html']
@@ -184,12 +261,38 @@ module.exports = function (grunt) {
             }
         },
 
+        shell: {
+            collections: {
+                options: {
+                    stderr: false,
+                    callback: function(err, stdout, stderr, cb) {
+                        extracted('collections.md', stdout, cb);
+                    }
+                },
+                command: 'jsdoc2md ../rest/src/collection.js'
+            },
+            http: {
+                options: {
+                    stderr: false,
+                    callback: function(err, stdout, stderr, cb) {
+                        extracted('http.md', stdout, cb);
+                    }
+                },
+                command: 'jsdoc2md ../rest/src/http/http.js'
+            },
+            jekyllBuild: {
+                command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
+            },
+            jekyllCompile: {
+                command: 'jekyll build -s docs/ -d _site/ -c docs/_config.yml'
+            }
+        },
+
         index: {
             build: {
                 dir: '<%= test_dir %>',
                 src: [
                     '<%= test_dir %>/**/*.spec.js'
-
                 ]
             }
         },
@@ -199,20 +302,33 @@ module.exports = function (grunt) {
                 separator: ';'
             },
             bundle: {
-                src: ['<%= build_dir %>/siesta.js', '<%= build_dir %>/siesta.http.js', '<%= build_dir %>/siesta.storage.js'],
+                src: [
+                    '<%= build_dir %>/siesta.js',
+                    '<%= build_dir %>/siesta.http.js',
+                    '<%= build_dir %>/siesta.storage.js'
+                ],
                 dest: '<%= build_dir %>/siesta.bundle.js'
             }
         },
 
         compress: {
             comp: {
-                files: [
-                    {src: ['<%= build_dir %>/siesta.http.min.js'], dest: '<%= build_dir %>/siesta.http.min.js.gz'},
-                    {src: ['<%= build_dir %>/siesta.bundle.min.js'], dest: '<%= build_dir %>/siesta.bundle.min.js.gz'},
-                    {src: ['<%= build_dir %>/siesta.perf.min.js'], dest: '<%= build_dir %>/siesta.perf.min.js.gz'},
-                    {src: ['<%= build_dir %>/siesta.storage.min.js'], dest: '<%= build_dir %>/siesta.storage.min.js.gz'},
-                    {src: ['<%= build_dir %>/siesta.min.js'], dest: '<%= build_dir %>/siesta.min.js.gz'}
-                ]
+                files: [{
+                    src: ['<%= build_dir %>/siesta.http.min.js'],
+                    dest: '<%= build_dir %>/siesta.http.min.js.gz'
+                }, {
+                    src: ['<%= build_dir %>/siesta.bundle.min.js'],
+                    dest: '<%= build_dir %>/siesta.bundle.min.js.gz'
+                }, {
+                    src: ['<%= build_dir %>/siesta.perf.min.js'],
+                    dest: '<%= build_dir %>/siesta.perf.min.js.gz'
+                }, {
+                    src: ['<%= build_dir %>/siesta.storage.min.js'],
+                    dest: '<%= build_dir %>/siesta.storage.min.js.gz'
+                }, {
+                    src: ['<%= build_dir %>/siesta.min.js'],
+                    dest: '<%= build_dir %>/siesta.min.js.gz'
+                }]
             }
         }
 
@@ -221,9 +337,26 @@ module.exports = function (grunt) {
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
     grunt.renameTask('watch', 'delta');
-    grunt.registerTask('default', [ 'build', 'compile' ]);
+    grunt.registerTask('default', ['build', 'compile']);
 
-    grunt.registerTask('watch', [ 'build', 'karma:unit', 'delta' ]);
+    grunt.registerTask('watch', [
+        'build',
+        'build-jekyll',
+        'connect:site',
+        'karma:unit',
+        'delta'
+    ]);
+
+    grunt.registerTask('watch-no-test', [
+        'clean',
+        'copy:build_extensionjs',
+        'browserify:test',
+        'karmaconfig',
+        'build-jekyll',
+        'connect:site',
+        'karma:unit',
+        'delta'
+    ]);
 
     grunt.registerTask('build', [
         'clean',
@@ -241,20 +374,30 @@ module.exports = function (grunt) {
         'compress'
     ]);
 
+    grunt.registerTask('build-jekyll', [
+        'less:dev',
+        'shell:jekyllBuild'
+    ]);
+
+    grunt.registerTask('compile-jekyll', [
+        'less:dev',
+        'shell:jekyllCompile'
+    ]);
+
     function filterForJS(files) {
-        return files.filter(function (file) {
+        return files.filter(function(file) {
             return file.match(/\.js$/);
         });
     }
 
-    grunt.registerMultiTask('index', 'Process index.html template', function () {
+    grunt.registerMultiTask('index', 'Process index.html template', function() {
         var dirRE = new RegExp('^(' + grunt.config('build_dir') + '|' + grunt.config('compile_dir') + ')\/', 'g');
-        var jsFiles = filterForJS(this.filesSrc).map(function (file) {
+        var jsFiles = filterForJS(this.filesSrc).map(function(file) {
             return '../' + file.replace(dirRE, '');
         });
 
         grunt.file.copy('etest/index.tpl.html', this.data.dir + '/index.html', {
-            process: function (contents, path) {
+            process: function(contents, path) {
                 return grunt.template.process(contents, {
                     data: {
                         specs: jsFiles
@@ -265,9 +408,9 @@ module.exports = function (grunt) {
 
     });
 
-    grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
+    grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function() {
         var jsFiles = filterForJS(this.filesSrc);
-        var process = function (contents, path) {
+        var process = function(contents, path) {
             return grunt.template.process(contents, {
                 data: {
                     scripts: jsFiles

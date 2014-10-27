@@ -10,13 +10,13 @@ describe('cache...', function() {
     var cache = require('../src/cache');
 
     beforeEach(function(done) {
-        siesta.reset(true);
+        siesta.reset(true); 
         var coll = new Collection('myCollection');
         mapping = coll.mapping('Car', {
             id: 'id',
             attributes: ['colour', 'name']
         });
-        coll.install(done);
+        coll.install(done);  
     });
 
     describe('insertion', function() {

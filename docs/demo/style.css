@@ -1,0 +1,404 @@
+/* Core */
+
+body {
+    font-family: 'Open Sans', Helvetica;
+    background-color: #edece4;
+    -webkit-font-smoothing: antialiased;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+}
+
+/* Repo */
+
+.repo {
+    height: 200px;
+    background-color: white;
+    box-sizing: border-box;
+    border-bottom: 1px solid #edece4;
+    box-shadow: rgba(0, 0, 0, 0.0470588) 0px 1px 5px 0px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 15px;
+    position: relative;
+    transition: background 0.3s ease 0s, border-color 0.3s ease 0s, width 1s ease 0s;
+}
+
+.repo h3 {
+    padding-top: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+    margin-right: 5px;
+}
+
+.repo.hovered {
+    transition: background 0.3s ease 0s, border-color 0.3s ease 0s, width 1s ease 0s;
+    background-color: rgb(238, 245, 248);
+    cursor: pointer;
+}
+
+.repo .border {
+    height: 4px;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    background-color: transparent;
+}
+
+.repo.hovered .border {
+    background-color: rgb(87, 148, 219);
+}
+
+.repo .user {
+    margin-bottom: 3px;
+    float: right;
+}
+
+.repo .user img {
+    width: 20px;
+}
+
+.repo .user.hovered {
+    cursor: pointer;
+}
+
+.repo .user.hovered .username {
+    text-decoration: underline;
+}
+
+.repo .user .username {
+    position: relative;
+    top: 4px;
+    left: 1px;
+    font-size: 11px;
+}
+
+.repo .description {
+    margin-top: 8px;
+    height: 70px;
+    overflow: hidden;
+}
+
+.repo .stats {
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    border-top-color: rgb(233, 231, 222);
+    border-top-style: solid;
+    border-top-width: 1px;
+    height: 50px;
+}
+
+.repo .stats .forks.hovered {
+    cursor: pointer;
+    background-color: rgb(238, 245, 248);
+    border-bottom: 4px solid rgb(87, 148, 219);
+}
+
+.repo .stats .forks .stat-border {
+    height: 3px;
+}
+
+.repo .stats .forks.hovered .stat-border {
+    background-color: rgb(87, 148, 219);
+}
+
+.repo .stats .stat {
+    display: inline-block;
+    width: 32.5%;
+    position: relative;
+    height: 50px;
+}
+
+.repo .stats .stat .inner-stat div:first-child {
+    height: 24px;
+}
+
+.repo .stats .stat:first-child {
+    border-right-color: rgb(233, 231, 222);
+    border-right-width: 1px;
+    border-right-style: solid;
+}
+
+.repo .stats .stat:last-child {
+    border-left-color: rgb(233, 231, 222);
+    border-left-width: 1px;
+    border-left-style: solid;
+}
+
+/* Header */
+
+#header {
+    background-color: white;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 47px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    border-bottom-color: rgb(233, 231, 222);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+
+#header h3 {
+    margin-top: 10px;
+    float: left;
+}
+
+/* Content */
+
+#content {
+    background-color: #edece4;
+    width: 100%;
+    padding-top: 35px;
+    height: 100%;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+.row .col-md-3 {
+    padding-top: 15px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+#repos {
+}
+
+@media (min-width: 992px) {
+
+    #repos .row {
+        padding-top: 15px;
+    }
+
+    /*.row:first-child {*/
+    /*padding-top: 0px;*/
+    /*}*/
+    .row .col-md-3 {
+        padding-top: 0px;
+    }
+}
+
+#visualisation {
+
+}
+
+/* Footer */
+
+#footer {
+    background: #18191b;
+    height: 47px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+}
+
+#footer #inner-footer {
+    margin-top: 4px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#footer #inner-footer #visualise {
+    min-width: 93px !important;
+}
+
+#footer #inner-footer .form {
+    float: left;
+}
+
+#footer #inner-footer .form i {
+    color: rgb(153, 153, 153);
+    position: relative;
+    left: 9px;
+    z-index: 2;
+}
+
+#footer #inner-footer .form input, #footer #inner-footer .form .button {
+    position: relative;
+    right: 18px;
+    z-index: 1;
+}
+
+#INPUT_1 {
+    clear: both;
+    color: rgb(255, 255, 255);
+    height: 38px;
+    position: relative;
+    width: 160px;
+    perspective-origin: 108px 18.5px;
+    transform-origin: 108px 18.5px;
+    border: 0px none rgb(255, 255, 255);
+    border-radius: 2px 0 0 2px;
+    font: normal normal 200 normal 15px/21.5599994659424px 'Open Sans', sans-serif;
+    outline: rgb(255, 255, 255) none 0px;
+    padding: 8px 0px 8px 32px;
+    transition: background 0.25s ease 0s;
+    background-color: rgb(46, 49, 51);
+}
+
+.go-button,
+.sweet-alert .confirm {
+    box-shadow: rgba(255, 255, 255, 0.14902) 0px 1px 0px 0px inset;
+    color: rgb(255, 255, 255) !important;
+    cursor: pointer;
+    height: 38px;
+    letter-spacing: 1px;
+    min-height: 30px;
+    text-transform: uppercase;
+    vertical-align: middle;
+    white-space: nowrap;
+    perspective-origin: 42.5px 18px;
+    transform-origin: 42.5px 18px;
+    background: rgb(91, 164, 229) none repeat scroll 0% 0% / auto padding-box border-box !important;
+    border: 1px solid rgb(69, 152, 226) !important;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    font: normal normal 300 normal 11px/15.7142858505249px 'Open Sans', sans-serif;
+    outline: rgb(255, 255, 255) none 0px;
+    padding: 5.5px 15.0699996948242px;
+    transition: background 0.2s ease 0s, border-color 0.2s ease 0s;
+}
+
+.go-button {
+    position: relative;
+    right: 22px;
+    bottom: 2px;
+}
+
+.sweet-alert .confirm {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-width: 0;
+    width: 100px;
+}
+
+.go-button:hover,
+.sweet-alert .confirm:hover {
+    background-color: rgb(80, 133, 188) !important;
+}
+
+ul {
+    list-style-position: outside;
+
+}
+
+ul li {
+    padding-left: 0;
+}
+
+#statistics-button {
+    margin-top: 4px;
+    height: 38px;
+}
+
+/* Buttons */
+
+.button {
+    box-sizing: border-box;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    display: block;
+    float: right;
+    height: 38px;
+    letter-spacing: 1px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    background: rgb(159, 187, 88) none repeat scroll 0% 0% / auto padding-box border-box;
+    border: 1px solid rgba(0, 0, 0, 0.0470588);
+    border-radius: 3px 3px 3px 3px;
+    font-variant: normal;
+    font-style: normal;
+    font-size: 11px;
+    outline: rgb(255, 255, 255) none 0px;
+    padding: 9.89999961853027px 15.0699996948242px;
+    transition: background 0.3s ease 0s, border-color 0.3s ease 0.3s, width 0.3s ease 0.3s;
+}
+
+.button:hover {
+    background-color: rgb(124, 152, 76);
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+button.confirm:disabled, button.confirm:disabled:hover {
+    background-color: #8d8d8d !important;
+    border-color: #8d8d8d !important;;
+    cursor: default;
+    opacity: 0.7;
+}
+
+/* Sweet Alert Overrides */
+
+.sweet-alert p {
+    text-align: left !important;
+    margin-top: 10px;
+}
+
+.outer-overlay {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    pointer-events:none;
+}
+
+.overlay {
+    margin: 0;
+    top: 47%; /* 3 */
+    transform: translate(0, -50%);
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    text-align: center;
+}
+
+#initial-text .overlay #centred-text {
+    padding: 40px;
+}
+
+#initial-text .overlay #centred-text p {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#centred-text {
+    font-weight: 100;
+}
+
+.spinner {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+/*.fork-body {
+    max-height: 150px;
+    overflow: scroll;
+}*/
+
+.fork-body h3 #hovered-username {
+    font-size: 10px;
+    padding-left: 6px;    
+}
+
+.fork-body img.follower {
+    width: 24px;
+    padding-bottom: 2px;
+    padding-right: 2px;
+}
+
+.fork-body img.follower:hover {
+    cursor: pointer;
+}
+
