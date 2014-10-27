@@ -15,7 +15,13 @@ Logger.setLevel(log.Level.warn);
 var ignore = ['index', 'input'];
 var XRegExp = require('xregexp').XRegExp;
 
-
+/**
+ * A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+ * intercept a HTTP request/response and perform a mapping.
+ * 
+ * @constructor
+ * @param {Object} opts
+ */
 function Descriptor(opts) {
     if (!this) {
         return new Descriptor(opts);
@@ -112,6 +118,9 @@ function Descriptor(opts) {
         }
     }
 
+    /**
+     * @type {String}
+     */
     defineSubProperty.call(this, 'path', this._opts);
     defineSubProperty.call(this, 'method', this._opts);
     defineSubProperty.call(this, 'mapping', this._opts);
@@ -121,6 +130,19 @@ function Descriptor(opts) {
 
 Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
 
+/**
+ * Takes a regex path and returns an object if matched.
+ * If any regular expression groups were defined, the returned object will contain the matches.
+ * 
+ * @param  {String|RegExp} path
+ * @return {Object}
+ * @example
+ * var d = new Descriptor({
+ *     path: '/resource/(?P<id>)/'
+ * })
+ * var matched = d._matchPath('/resource/2');
+ * console.log(matched); // {id: '2'}
+ */
 Descriptor.prototype._matchPath = function (path) {
     var match = XRegExp.exec(path, this.path);
     var matched = null;
@@ -137,6 +159,17 @@ Descriptor.prototype._matchPath = function (path) {
     return matched;
 };
 
+/**
+ * Returns true if the descriptor accepts the HTTP method.
+ * 
+ * @param  {String} method
+ * @return {boolean}
+ * @example
+ * var d = new Descriptor({
+ *     method: ['POST', 'PUT']
+ * });
+ * console.log(d._matchMethod('GET')); // false
+ */
 Descriptor.prototype._matchMethod = function (method) {
     for (var i = 0; i < this.method.length; i++) {
         if (method.toUpperCase() == this.method[i]) {
@@ -146,12 +179,6 @@ Descriptor.prototype._matchMethod = function (method) {
     return false;
 };
 
-/**
- * Bury obj as far down in data as poss.
- * @param obj
- * @param data keypath object
- * @returns {*}
- */
 function bury(obj, data) {
     var root = data;
     var keys = Object.keys(data);

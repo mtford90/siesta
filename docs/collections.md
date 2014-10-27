@@ -4,6 +4,7 @@ title: Collections
 sidebar: nav2.html
 ---
 
+
 <a name="Collection"></a>
 #class: Collection
 **Members**
@@ -14,7 +15,7 @@ sidebar: nav2.html
   * [collection.installed](#Collection#installed)
   * [collection.install(callback)](#Collection#install)
   * [collection.save(callback)](#Collection#save)
-  * [collection.HTTP_METHOD(method)](#Collection#HTTP_METHOD)
+  * [collection.HTTP_METHOD(request, method)](#Collection#HTTP_METHOD)
   * [collection.GET()](#Collection#GET)
   * [collection.OPTIONS()](#Collection#OPTIONS)
   * [collection.TRACE()](#Collection#TRACE)
@@ -22,6 +23,8 @@ sidebar: nav2.html
   * [collection.POST()](#Collection#POST)
   * [collection.PUT()](#Collection#PUT)
   * [collection.PATCH()](#Collection#PATCH)
+  * [collection.DELETE()](#Collection#DELETE)
+  * [collection.count(callback)](#Collection#count)
 
 <a name="new_Collection"></a>
 ##new Collection(name)
@@ -71,11 +74,12 @@ Note: Storage extension must be installed.
 
 **Returns**: `Promise`  
 <a name="Collection#HTTP_METHOD"></a>
-##collection.HTTP_METHOD(method)
+##collection.HTTP_METHOD(request, method)
 Send a HTTP request using the given method
 
 **Params**
 
+- request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false  
 - method   
 
 **Returns**: `*`  
@@ -86,7 +90,7 @@ Send a GET request
 **Returns**: `*`  
 <a name="Collection#OPTIONS"></a>
 ##collection.OPTIONS()
-Send a GET request
+Send a OPTIONS request
 
 **Returns**: `*`  
 <a name="Collection#TRACE"></a>
@@ -114,3 +118,17 @@ Send a PUT request
 Send a PATCH request
 
 **Returns**: `*`  
+<a name="Collection#DELETE"></a>
+##collection.DELETE()
+Send a DELETE request
+
+**Returns**: `*`  
+<a name="Collection#count"></a>
+##collection.count(callback)
+Returns the number of objects in this collection.
+
+**Params**
+
+- callback   
+
+**Returns**:  - Promise  

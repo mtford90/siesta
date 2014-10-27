@@ -33,6 +33,14 @@ module.exports = function(grunt) {
 
     var userConfig = require('./build.config.js');
 
+    function extracted(outputFile, data, cb) {
+        var templateFile = 'docs/' + outputFile + '.template';
+        var prefix = fs.readFileSync(templateFile);
+        data = prefix + '\n' + data;
+        data = bugFix(data);
+        fs.writeFile('docs/' + outputFile, data, cb);
+    }
+
     var license = require('fs').readFileSync('LICENSE');
 
     var taskConfig = {
@@ -269,7 +277,7 @@ module.exports = function(grunt) {
                         extracted('collections.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md ../rest/src/collection.js'
+                command: 'jsdoc2md src/collection.js'
             },
             http: {
                 options: {
@@ -278,13 +286,25 @@ module.exports = function(grunt) {
                         extracted('http.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md ../rest/src/http/http.js'
+                command: 'jsdoc2md src/http/http.js'
+            },
+            descriptor: {
+                options: {
+                    stderr: false,
+                    callback: function(err, stdout, stderr, cb) {
+                        extracted('descriptors.md', stdout, cb);
+                    }
+                },
+                command: 'jsdoc2md src/http/descriptor.js'
             },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
             },
             jekyllCompile: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.yml'
+            },
+            jekyllDist: {
+                command: 'cd _site/ && git commit -a -m "Jekyll Build" && git push origin gh-pages'
             }
         },
 
@@ -367,7 +387,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('test', [
-       'build'
+        'build'
     ]);
 
     grunt.registerTask('compile', [
@@ -378,14 +398,27 @@ module.exports = function(grunt) {
         'compress'
     ]);
 
+    grunt.registerTask('build-docs', [
+        'shell:http',
+        'shell:collections',
+        'shell:descriptor'
+    ]);
+
     grunt.registerTask('build-jekyll', [
         'less:dev',
+        'build-docs',
         'shell:jekyllBuild'
     ]);
 
     grunt.registerTask('compile-jekyll', [
         'less:dev',
+        'build-docs',
         'shell:jekyllCompile'
+    ]);
+
+    grunt.registerTask('dist-jekyll', [
+        'compile-jekyll',
+        'shell:jekyllDist'
     ]);
 
     function filterForJS(files) {
@@ -409,7 +442,6 @@ module.exports = function(grunt) {
                 });
             }
         });
-
     });
 
     grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function() {
