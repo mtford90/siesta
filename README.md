@@ -14,3 +14,17 @@ Siesta is an object mapping framework for Javascript. It makes it easier to mode
 ## 0.2
 * Persistence
     * Indexeddb/WebSQL
+
+# Contributing
+
+## Setup
+
+TODO
+
+## Website/Documentation
+
+TODO
+
+## Release
+
+TODO
