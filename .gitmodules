@@ -7,3 +7,7 @@
 [submodule "vendor/observe-js"]
 	path = vendor/observe-js
 	url = https://github.com/mtford90/observe-js
+[submodule "_site"]
+	path = _site
+	url = git@github.com:mtford90/siesta.git
+	branch = gh-pages
