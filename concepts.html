@@ -9,7 +9,7 @@
 <!--suppress ALL -->
 <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-    <title>Documentation: HTTP</title>
+    <title>Documentation: Concepts</title>
     <meta name="description" content="The Easiest Way To Document Your Project"/>
     <meta name="author" content="Justin Walsh">
     <!-- Mobile -->
@@ -94,9 +94,31 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    ## HTTP
+    <h2>Concepts</h2>
 
-Note that the HTTP extension needs to be installed to make use of these classes.
+<p>The below provides a summary of concepts in the Siesta API and the documentation.</p>
+
+<h3>Object mapping</h3>
+
+<p>Object mapping refers to the mapping of fields from a source object onto a destination object.</p>
+
+<h3>Object graph</h3>
+
+<p>A graph is a set of vertices with some pairs of vertices connected by edges.</p>
+
+<p><img src="/static/img/svg.png"></p>
+
+<p>An object graph is a graph where each vertex is a Javascript object and each edge represents a relationship
+between those two objects. </p>
+
+<p>All edges are multi-directional and the number of edges per vertex will differ
+depending on whether the edges represent a foreign-key, many-to-many or one-to-one relationship.</p>
+
+<h3>Single source of truth</h3>
+
+<p>Every remote resource should be represented by one and only one local object i.e. for each remote resource
+we have a single local source of truth for that particular resource.</p>
+
 </article>
 </div>
 </div>

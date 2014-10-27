@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<!--suppress ALL -->
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <title>Documentation: Object Mapping</title>
+    <meta name="description" content="The Easiest Way To Document Your Project"/>
+    <meta name="author" content="Justin Walsh">
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&subset=latin,cyrillic-ext,cyrillic'
+          rel='stylesheet' type='text/css'>
+    <!-- CSS -->
+    <link href='static/css/main.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<!-- Docs -->
+<a href="https://github.com/mtford90/siesta" target="_blank" id="github-ribbon" class="hidden-print"><img
+        src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+<div class="container-fluid fluid-height wrapper">
+<div class="navbar navbar-fixed-top hidden-print">
+    <div class="container-fluid">
+        <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
+        <p class="brand navbar-text pull-right"><a href="/download.html">Download 0.1-alpha</a></p>
+    </div>
+</div>
+<div class="row columns content">
+<div class="left-column article-tree col-sm-3 hidden-print">
+    <!-- For Mobile -->
+    <div class="responsive-collapse">
+        <button type="button" class="btn btn-sidebar" id="menu-spinner-button">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div id="sub-nav-collapse" class="sub-nav-collapse">
+        <!-- Navigation -->
+        <!--suppress HtmlUnknownTarget -->
+<ul class="nav nav-list">
+    <li><a href="/docs.html">Getting Started</a></li>
+    <li><a href="/concepts.html">Concepts</a></li>
+    <li>
+        <a href="#" class="aj-nav folder">Guide</a>
+        <ul class="nav nav-list">
+            <li><a href="/object_mapping.html">Mapping</a></li>
+            <li><a href="/http.html">HTTP</a></li>
+            <li><a href="/local_queries.html">Local Queries</a></li>
+            <li><a href="/notifications.html">Notifications</a></li>
+            <li><a href="/persistence.html">Persistence</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="#" class="aj-nav folder">API</a>
+        <ul class="nav nav-list">
+            <li><a href="/collections.html">Collection</a></li>
+        </ul>
+    </li>
+    <li>
+        <a href="#" class="aj-nav folder">Recipes</a>
+        <ul class="nav nav-list">
+            <li><a href="/intercollection_relationships.html">Inter-Collection Relationships</a></li>
+            <li><a href="/complex_queries.html">Complex Queries</a></li>
+            <li><a href="/pouchdb_synchronisation.html">PouchDB Synchronisation</a></li>
+            <li><a href="/local_collections.html">Local Collections</a></li>
+        </ul>
+    </li>
+</ul>
+<div class="well well-sidebar">
+
+    <!-- Links -->
+    <a href="/download.html" target="_blank">Download</a><br><a
+        href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a><br><a
+        href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a><br>
+    <a href="#"
+       id="toggleCodeBlockBtn"
+       onclick="toggleCodeBlocks();">Show
+        Code Blocks Inline</a><br>
+</div>
+
+
+    </div>
+</div>
+<div class="right-column float-view content-area col-sm-9">
+<div class="content-page">
+<article>
+    <h2>Object Mapping</h2>
+
+<h3>Mapping</h3>
+
+<p>Arbritrary data can be mapped using the following:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">siesta</span><span class="p">.</span><span class="nx">MyCollection</span><span class="p">.</span><span class="nx">MyMapping</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span> <span class="p">...</span> <span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>This is the same API used during HTTP requests/responses in combination with the descriptors.</p>
+
+<h3>Subclassing SiestaModel</h3>
+
+<p>We can create our own subclass of <code>SiestaModel</code> and have it used automatically in object mapping through use of the 
+<code>subclass</code> option when configuring our mapping:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">CarModel</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">RestObject</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">customAttribute</span> <span class="o">=</span> <span class="s1">&#39;custom&#39;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">CarModel</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">SiestaModel</span><span class="p">.</span><span class="nx">prototype</span><span class="p">);</span>
+
+<span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">(</span><span class="s1">&#39;Car&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;colour&#39;</span><span class="p">,</span> <span class="s1">&#39;miles&#39;</span><span class="p">],</span>
+    <span class="nx">subclass</span><span class="o">:</span> <span class="nx">CarModel</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Anything models created as a result of being mapped to <code>Car</code> will be now be of class <code>CarModel</code>:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">Car</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span><span class="nx">colour</span><span class="o">:</span> <span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="nx">miles</span><span class="o">:</span><span class="mi">567</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">car</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">car</span><span class="p">.</span><span class="nx">customAttribute</span><span class="p">);</span> <span class="c1">// custom</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3>Singletons</h3>
+
+<p>Sometimes we need to represent models of which there is only one instance - a singleton. This is also useful for
+tieing other models together.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">(</span><span class="s1">&#39;MySingleton&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">singleton</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">fields</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;field1&#39;</span><span class="p">,</span> <span class="s1">&#39;field2&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+
+<span class="nx">collection</span><span class="p">.</span><span class="nx">MySingleton</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">singleton</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Anything mapped using this mapping will be placed onto the same object.</p>
+
+</article>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+    if (typeof jQuery == 'undefined')
+        document.write(unescape("%3Cscript src='js/jquery-1.11.0.min.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<!-- hightlight.js -->
+<script src="static/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<!-- JS -->
+
+<!-- Front end file editor -->
+<script src="static/js/custom.js"></script>
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+</body>
+</html>
+

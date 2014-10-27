@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+</head>
+<body>
+<p><script type="text/javascript">
+    var dataset = [ 5, 10, 15, 20, 25 ];</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">d3.select(&quot;body&quot;).append(&quot;svg&quot;);
+var svg = d3.select(&quot;body&quot;).append(&quot;svg&quot;);
+var w = 500;
+var h = 100;
+svg.attr(&quot;width&quot;, w)
+        .attr(&quot;height&quot;, h);
+var circles = svg.selectAll(&quot;circle&quot;)
+        .data(dataset)
+        .enter()
+        .append(&quot;circle&quot;);
+
+circles.attr(&quot;cx&quot;, function (d, i) {
+    // d is a data point
+    // i is the numeric index
+    return (i * 50) + 25;
+})
+        .attr(&quot;cy&quot;, h / 2)
+        .attr(&quot;r&quot;, function (d) {
+            return d;
+        });
+
+circles.attr(&quot;fill&quot;, &quot;yellow&quot;)
+        .attr(&quot;stroke&quot;, &quot;orange&quot;)
+        .attr(&quot;stroke-width&quot;, function (d) {
+            return d / 2;
+        });
+</code></pre></div>
+<p></script></p>
+
+</body>
+</html>

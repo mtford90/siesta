@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+</head>
+<body>
+<style type="text/css">
+
+    div.bar {
+        display: inline-block;
+        width: 20px;
+        height: 75px;
+        background-color: teal;
+        margin-right: 2px;
+    }
+
+</style>
+
+<p><script type="text/javascript"></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">var dataset = [];                        //Initialize empty array
+for (var i = 0; i &lt; 25; i++) {           //Loop 25 times
+    var newNumber = Math.random() * 30;  //New random number (0-30)
+    dataset.push(Math.round(newNumber));             //Add new number to array
+}
+
+d3.select(&quot;body&quot;).selectAll(&quot;div&quot;)
+        .data(dataset)
+        .enter()
+        .append(&quot;div&quot;)
+        .attr(&quot;class&quot;, &quot;bar&quot;)
+        .style(&quot;height&quot;, function (d) {
+            return d * 5 + &quot;px&quot;;
+        });
+</code></pre></div>
+<p></script></p>
+
+</body>
+</html>

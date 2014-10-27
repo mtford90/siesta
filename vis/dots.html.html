@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://underscorejs.org/underscore.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+</head>
+<body>
+<style>
+    /*noinspection ALL*/
+    .dot rect {
+        fill: white;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+
+    .dot rect.dragging {
+        fill: lightsteelblue;
+        stroke: brown;
+    }
+
+    .axis line {
+        fill: none;
+        stroke: #ddd;
+        shape-rendering: crispEdges;
+        vector-effect: non-scaling-stroke;
+    }
+
+</style>
+
+<p><script>
+    var margin = {top: -5, right: -5, bottom: -5, left: -5},
+            width = 960 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">var zoom = d3.behavior.zoom()
+        .scaleExtent([1, 10])
+        .on(&quot;zoom&quot;, zoomed);
+
+var drag = d3.behavior.drag()
+        .origin(function (d) { return d; })
+        .on(&quot;dragstart&quot;, dragstarted)
+        .on(&quot;drag&quot;, dragged)
+        .on(&quot;dragend&quot;, dragended);
+
+var svg = d3.select(&quot;body&quot;).append(&quot;svg&quot;)
+        .attr(&quot;width&quot;, width + margin.left + margin.right)
+        .attr(&quot;height&quot;, height + margin.top + margin.bottom)
+        .append(&quot;g&quot;)
+        .attr(&quot;transform&quot;, &quot;translate(&quot; + margin.left + &quot;,&quot; + margin.right + &quot;)&quot;)
+        .call(zoom);
+
+var rect = svg.append(&quot;rect&quot;)
+        .attr(&quot;width&quot;, width)
+        .attr(&quot;height&quot;, height)
+        .style(&quot;fill&quot;, &quot;none&quot;)
+        .style(&quot;pointer-events&quot;, &quot;visible&quot;);
+
+var container = svg.append(&quot;g&quot;);
+//
+//    container.append(&quot;g&quot;)
+//            .attr(&quot;class&quot;, &quot;x axis&quot;)
+//            .selectAll(&quot;line&quot;)
+//            .data(d3.range(0, width, 10))
+//            .enter().append(&quot;line&quot;)
+//            .attr(&quot;x1&quot;, function (d) { return d; })
+//            .attr(&quot;y1&quot;, 0)
+//            .attr(&quot;x2&quot;, function (d) { return d; })
+//            .attr(&quot;y2&quot;, height);
+//
+//    container.append(&quot;g&quot;)
+//            .attr(&quot;class&quot;, &quot;y axis&quot;)
+//            .selectAll(&quot;line&quot;)
+//            .data(d3.range(0, height, 10))
+//            .enter().append(&quot;line&quot;)
+//            .attr(&quot;x1&quot;, 0)
+//            .attr(&quot;y1&quot;, function (d) { return d; })
+//            .attr(&quot;x2&quot;, width)
+//            .attr(&quot;y2&quot;, function (d) { return d; });
+//
+//    d3.tsv(&quot;dots.tsv&quot;, dottype, function (error, dots) {
+//        dot = container.append(&quot;g&quot;)
+//                .attr(&quot;class&quot;, &quot;dot&quot;)
+//                .selectAll(&quot;circle&quot;)
+//                .data(dots)
+//                .enter().append(&quot;circle&quot;)
+//                .attr(&quot;r&quot;, 5)
+//                .attr(&quot;cx&quot;, function (d) { return d.x; })
+//                .attr(&quot;cy&quot;, function (d) { return d.y; })
+//                .call(drag);
+//    });
+
+d3.tsv(&quot;dots.tsv&quot;, dottype, function (error, dots) {
+    dot = container.append(&quot;g&quot;)
+            .attr(&quot;class&quot;, &quot;dot&quot;)
+            .selectAll(&quot;rect&quot;)
+            .data(dots)
+            .enter().append(&quot;rect&quot;)
+            .attr(&quot;height&quot;, 15)
+            .attr(&quot;width&quot;, 15)
+            .attr(&quot;x&quot;, function (d) { return d.x; })
+            .attr(&quot;y&quot;, function (d) { return d.y; })
+            .call(drag);
+});
+
+function dottype(d) {
+    d.x = +d.x;
+    d.y = +d.y;
+    return d;
+}
+
+function zoomed() {
+    container.attr(&quot;transform&quot;, &quot;translate(&quot; + d3.event.translate + &quot;)scale(&quot; + d3.event.scale + &quot;)&quot;);
+}
+
+function dragstarted(d) {
+    d3.event.sourceEvent.stopPropagation();
+    d3.select(this).classed(&quot;dragging&quot;, true);
+}
+
+function dragged(d) {
+    d3.select(this).attr(&quot;x&quot;, d.x = d3.event.x).attr(&quot;y&quot;, d.y = d3.event.y);
+}
+
+function dragended(d) {
+    d3.select(this).classed(&quot;dragging&quot;, false);
+}
+</code></pre></div>
+<p></script></p>
+
+</body>
+</html>

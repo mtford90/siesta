@@ -9,7 +9,7 @@
 <!--suppress ALL -->
 <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-    <title>Documentation: HTTP</title>
+    <title>Documentation: Persistence</title>
     <meta name="description" content="The Easiest Way To Document Your Project"/>
     <meta name="author" content="Justin Walsh">
     <!-- Mobile -->
@@ -94,9 +94,20 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    ## HTTP
+    <h2>Persistence</h2>
 
-Note that the HTTP extension needs to be installed to make use of these classes.
+<p>Siesta currently supports use of PouchDB as the local storage backend. PouchDB itself delegates to IndexedDB, WebSQL
+or local storage depending on what is available in the browser</p>
+
+<p>By default Siesta creates an instance of PouchDB as follows:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">pouch</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PouchDB</span><span class="p">(</span><span class="s1">&#39;siesta&#39;</span><span class="p">);</span>
+</code></pre></div>
+<p>You can inject your own instance of PouchDB by doing the following:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">siesta</span><span class="p">.</span><span class="nx">setPouch</span><span class="p">(</span><span class="nx">myPouchInstance</span><span class="p">);</span>
+</code></pre></div>
+<p>NOTE: If you inject your own Pouch instance you <em>must</em> perform the collection installations afterwards otherwise
+indexes will not be installed.</p>
+
 </article>
 </div>
 </div>

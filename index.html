@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<!--suppress HtmlUnknownTarget -->
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <title>Siesta</title>
+    <meta name="description" content="Object Mapping & Persistence for Javascript"/>
+    <meta name="author" content="Michael Ford">
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&subset=latin,cyrillic-ext,cyrillic'
+          rel='stylesheet' type='text/css'>
+    <!-- CSS -->
+    <link href='static/css/main.css' rel='stylesheet' type='text/css'>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+<body>
+<!-- Homepage -->
+<div class="navbar navbar-fixed-top hidden-print">
+    <div class="container">
+        <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
+
+        <p class="brand navbar-text pull-right"><a href="/download.html">Download 0.1-alpha</a>
+        </p>
+    </div>
+</div>
+<!--<a href="https://github.com/mtford90/siesta" target="_blank" id="github-ribbon" class="hidden-print"><img-->
+<!--src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>-->
+
+<div class="homepage-hero well container-fluid">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</div>
+
+<div class="hero-buttons container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="text-center col-sm-12">
+                <a href="https://github.com/mtford90/siesta" class="btn btn-secondary btn-hero">View On GitHub</a>
+                <a href="/docs.html" class="btn btn-primary btn-hero">View Documentation</a>
+                <a href="/demo/" class="btn btn-secondary btn-hero">View Demo</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="homepage-content container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <p><div>
+  <p class="lead">
+    <strong>Siesta</strong> is an object mapping framework for Javascript. It makes it easier to model, consume and 
+    interact with RESTful web services.
+</p>
+<hr/></p>
+
+<p>The main idea behind Siesta is that models should have a <strong>single source of truth</strong> - that is - only one local object should
+ever represent a remote resource.</p>
+
+<p>A traditional ORM maps rows from a relational database to objects. Siesta maps objects to and from data transport formats
+(e.g. JSON) and replaces the SQL queries with HTTP requests.</p>
+
+<p>Siesta provides a declarative API through which we describe the web services that we&#39;d like to interact with.
+When data is received from these web services, each object is mapped onto its corresponding local
+representation <em>including</em> any nested related objects. </p>
+
+<p>Siesta then presents powerful ways in which to query and store local objects (thanks to <a href="http://pouchdb.com/">PouchDB</a>) in a 
+browser-agnostic fashion, reducing the number of requests we need to make against each web service.</p>
+
+<h3>The Problem</h3>
+
+<p>As ever, this problem is best explained through an example.</p>
+
+<p>Let&#39;s say we&#39;re interacting with a web service describing vehicles and their owners. We fire off a request
+to obtain Mike&#39;s user details:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /users/Mike/</span>
+<span class="kd">var</span> <span class="nx">userData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;Mike&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cars&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="o">:</span> <span class="s2">&quot;Bentley&quot;</span><span class="p">,</span> <span class="s2">&quot;colour&quot;</span><span class="o">:</span><span class="s2">&quot;Black&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="mi">11</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="o">:</span> <span class="s2">&quot;Aston Martin&quot;</span><span class="p">,</span> <span class="s2">&quot;colour&quot;</span><span class="o">:</span> <span class="s2">&quot;Gray&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span><span class="mi">12</span><span class="p">}</span>
+     <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>We then query again for Mike&#39;s Bentley and receive the following:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /cars/11/</span>
+<span class="kd">var</span> <span class="nx">carData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="o">:</span> <span class="s2">&quot;Bentley&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;colour&quot;</span><span class="o">:</span> <span class="s2">&quot;Red&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="s2">&quot;owner&quot;</span><span class="o">:</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;Mike&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">10</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Notice that since our last query, Mike&#39;s Bentley has been painted red.</p>
+
+<p>Using traditional methods of interacting with web services we would now 
+have two Javascript objects representing our Bentley with id <code>11</code>. One is nested in the user object
+we received from our first request, and the second is the result of our second request:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">userData</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">carData</span><span class="p">;</span> <span class="c1">// False</span>
+</code></pre></div>
+<p>And worst of all:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userData</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">colour</span><span class="p">);</span> <span class="c1">// Black</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">carData</span><span class="p">.</span><span class="nx">colour</span><span class="p">);</span> <span class="c1">// Red</span>
+</code></pre></div>
+<p>So not only do we now have <strong>two</strong> distinct live objects representing the same remote resource, but one of those
+objects is now out of sync - we have two sources of truth, and one of those sources is a blatantly lying to us.</p>
+
+<h3>The Solution</h3>
+
+<p>Siesta solves this issue through the use of object mapping. A <strong>mapping</strong>
+describes the remote object that we want to model. A <strong>collection</strong> groups together these mappings. For example 
+we could have define a collection to represent each web service that we will interact with.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">collection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Collection</span><span class="p">(</span><span class="s1">&#39;MyCollection&#39;</span><span class="p">);</span>
+
+<span class="kd">var</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;username&#39;</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">Car</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;colour&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;model&quot;</span>
+    <span class="p">],</span>
+    <span class="nx">relationships</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">owner</span><span class="o">:</span> <span class="p">{</span>
+              <span class="nx">mapping</span><span class="o">:</span> <span class="nx">User</span><span class="p">,</span>
+              <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;cars&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>We can then map the raw data into Siesta, which will use the mappings we defined early to decide which
+data should to which local object. </p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">userData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">userObject</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Car</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">carData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">carObject</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userObject</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">carObject</span><span class="p">);</span> <span class="c1">// true</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userObject</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">colour</span><span class="p">;</span> <span class="c1">// &quot;red&quot;</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><strong>Note:</strong> we will rarely need to map data ourselves. Siesta provides an API for sending and receiving
+HTTP requests and performing the mapping automatically, regardless of <code>Content-Type</code> etc. You can read more
+about this in the <a href="/remote_queries.html">documentation</a>.</p>
+
+<h3>What next?</h3>
+
+<p>Visit our <a href="/docs.html">Getting Started</a> guide which will walk you through installing
+and configuring Siesta.</br></p>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="homepage-footer well container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-5 col-sm-offset-1">
+                <ul class="footer-nav">
+                    <li><a href="/docs.html" target="_blank">Documentation</a></li>
+                    <li><a href="/download.html" target="_blank">Download</a></li>
+                    <li><a href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a></li>
+                    <li><a href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-5">
+                <div class="pull-right">
+                    <!--<div class="twitter">-->
+                    <!--<iframe allowtransparency="true" frameborder="0" scrolling="no"-->
+                    <!--style="width:162px; height:20px;"-->
+                    <!--src="https://platform.twitter.com/widgets/follow_button.html?screen_name=justin_walsh&amp;show_count=false"></iframe>-->
+                    <!--</div>-->
+                    <!--<div class="twitter">-->
+                    <!--<iframe allowtransparency="true" frameborder="0" scrolling="no"-->
+                    <!--style="width:162px; height:20px;"-->
+                    <!--src="https://platform.twitter.com/widgets/follow_button.html?screen_name=todaymade&amp;show_count=false"></iframe>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+    if (typeof jQuery == 'undefined')
+        document.write(unescape("%3Cscript src='static/js/jquery-1.11.0.min.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<!-- hightlight.js -->
+<script src="static/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<!-- JS -->
+
+<!-- Front end file editor -->
+<script src="static/js/custom.js"></script>
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+</body>
+</html>
+

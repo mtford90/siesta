@@ -18,7 +18,7 @@ function showForks(repoModel) {
                                 _id: repoModel._id
                             },
                             fork: {
-                                _id: r._id
+                                _id: r._id 
                             }
                         }
                     });

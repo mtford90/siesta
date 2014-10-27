@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<!--suppress HtmlUnknownTarget -->
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <title>Siesta</title>
+    <meta name="description" content="Object Mapping & Persistence for Javascript"/>
+    <meta name="author" content="Michael Ford">
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&subset=latin,cyrillic-ext,cyrillic'
+          rel='stylesheet' type='text/css'>
+    <!-- CSS -->
+    <link href='static/css/main.css' rel='stylesheet' type='text/css'>
+
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+</head>
+<body>
+<!-- Homepage -->
+<div class="navbar navbar-fixed-top hidden-print">
+    <div class="container">
+        <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
+
+        <p class="brand navbar-text pull-right"><a href="/download.html">Download 0.1-alpha</a>
+        </p>
+    </div>
+</div>
+<!--<a href="https://github.com/mtford90/siesta" target="_blank" id="github-ribbon" class="hidden-print"><img-->
+<!--src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>-->
+
+<div class="homepage-hero well container-fluid">
+    <div class="container">
+        <div class="row">
+        </div>
+    </div>
+</div>
+
+<div class="hero-buttons container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="text-center col-sm-12">
+                <a href="https://github.com/mtford90/siesta" class="btn btn-secondary btn-hero">View On GitHub</a>
+                <a href="/docs.html" class="btn btn-primary btn-hero">View Documentation</a>
+                <a href="/demo/" class="btn btn-secondary btn-hero">View Demo</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="homepage-content container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <p>There are two ways to download Siesta. You can either download the bundle which includes most components or pick and choose
+the components that you&#39;d like to use. </p>
+
+<p>Siesta currently offers four components:</p>
+
+<ul>
+<li>Core - object mapping</li>
+<li>HTTP - an interface to <a href="http://jquery.com/">jQuery</a>/jQuery-like ajax libraries such as <a href="http://zeptojs.com/">Zepto</a>.</li>
+<li>Storage - an interface to <a href="http://pouchdb.com/">PouchDB</a> for persistence </li>
+<li>Performance Monitoring: Logs timing information around mapping, HTTP requests etc.</li>
+</ul>
+
+<h3>Bundle</h3>
+
+<p>The Siesta bundle includes Core, HTTP and Storage.</p>
+
+<div class="row btn-row">
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.bundle.min.js">
+        <button class="btn">siesta.bundle.min.js</button>
+    </a>
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.bundle.js">
+        <button class="btn">siesta.bundle.js</button>
+    </a>
+</div>
+
+<h3>Modules</h3>
+
+<div class="row btn-row">
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.js">
+        <button class="btn">siesta.js</button>
+    </a>
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.min.js">
+        <button class="btn">siesta.min.js</button>
+    </a>
+</div>
+
+<div class="row btn-row">
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.http.js">
+        <button class="btn">siesta.http.js</button>
+    </a>
+     <a class="download"href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.http.min.js">
+        <button class="btn">siesta.http.min.js</button>
+     </a>
+</div>
+
+<div class="row btn-row">
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.storage.js">
+        <button class="btn">siesta.storage.js</button>
+    </a>
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.storage.min.js">
+        <button class="btn">siesta.storage.min.js</button>
+    </a>
+</div>
+
+<div class="row btn-row">
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.perf.js">
+        <button class="btn">siesta.perf.js</button>
+    </a>
+    <a class="download" href="https://github.com/mtford90/siesta/releases/download/0.1-alpha/siesta.perf.min.js">
+        <button class="btn">siesta.perf.min.js</button>
+    </a>
+</div>
+
+<h3>Installation</h3>
+
+<p>Modules should be included after siesta core:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="o">&lt;</span><span class="nx">html</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">body</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;siesta.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;siesta.http.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;siesta.storage.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+<span class="o">&lt;</span><span class="nx">script</span> <span class="nx">src</span><span class="o">=</span><span class="s2">&quot;siesta.perf.js&quot;</span><span class="o">&gt;&lt;</span><span class="err">/script&gt;</span>
+
+<span class="c">&lt;!--</span> <span class="p">...</span> <span class="o">--&gt;</span>
+
+<span class="o">&lt;</span><span class="err">/body&gt;</span>
+<span class="o">&lt;</span><span class="err">/html&gt;</span>
+</code></pre></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="homepage-footer well container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-5 col-sm-offset-1">
+                <ul class="footer-nav">
+                    <li><a href="/docs.html" target="_blank">Documentation</a></li>
+                    <li><a href="/download.html" target="_blank">Download</a></li>
+                    <li><a href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a></li>
+                    <li><a href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a></li>
+                </ul>
+            </div>
+            <div class="col-sm-5">
+                <div class="pull-right">
+                    <!--<div class="twitter">-->
+                    <!--<iframe allowtransparency="true" frameborder="0" scrolling="no"-->
+                    <!--style="width:162px; height:20px;"-->
+                    <!--src="https://platform.twitter.com/widgets/follow_button.html?screen_name=justin_walsh&amp;show_count=false"></iframe>-->
+                    <!--</div>-->
+                    <!--<div class="twitter">-->
+                    <!--<iframe allowtransparency="true" frameborder="0" scrolling="no"-->
+                    <!--style="width:162px; height:20px;"-->
+                    <!--src="https://platform.twitter.com/widgets/follow_button.html?screen_name=todaymade&amp;show_count=false"></iframe>-->
+                    <!--</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+    if (typeof jQuery == 'undefined')
+        document.write(unescape("%3Cscript src='static/js/jquery-1.11.0.min.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<!-- hightlight.js -->
+<script src="static/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<!-- JS -->
+
+<!-- Front end file editor -->
+<script src="static/js/custom.js"></script>
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+</body>
+</html>
+
