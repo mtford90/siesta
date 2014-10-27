@@ -114,7 +114,6 @@ function listFollowers(userModel) {
                     }
                 }
             });
-            console.log('rawFollows', rawFollows);
             getReposForUserModel(userModel, function(err, repos) {
                 if (err) {
                     // TODO
