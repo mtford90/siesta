@@ -137,13 +137,13 @@ If any regular expression groups were defined, the returned object will contain 
 </ul>
 
 <p><strong>Returns</strong>: <code>Object</code><br>
-<strong>Example</strong><br>
-var d = new Descriptor({
-    path: &#39;/resource/(?P<id>)/&#39;
-})
-var matched = d._matchPath(&#39;/resource/2&#39;);
-console.log(matched); // {id: &#39;2&#39;}</p>
-
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
+<span class="p">})</span>
+<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
+</code></pre></div>
 <p><a name="Descriptor#_matchMethod"></a></p>
 
 <h2>descriptor._matchMethod(method)</h2>
@@ -157,12 +157,12 @@ console.log(matched); // {id: &#39;2&#39;}</p>
 </ul>
 
 <p><strong>Returns</strong>: <code>boolean</code><br>
-<strong>Example</strong><br>
-var d = new Descriptor({
-    method: [&#39;POST&#39;, &#39;PUT&#39;]
-});
-console.log(d._matchMethod(&#39;GET&#39;)); // false</p>
-
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
+</code></pre></div>
 </article>
 </div>
 </div>
