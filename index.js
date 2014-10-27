@@ -25,20 +25,23 @@ if (typeof module != 'undefined') {
     siesta = {};
 }
 
-siesta.save = function save(callback) {
-    var deferred = q.defer();
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    if (siesta.ext.storageEnabled) {
-        util.next(function() {
-            var mergeChanges = siesta.ext.storage.changes.mergeChanges;
-            mergeChanges(callback);
-        });
-    } else {
-        callback('Storage module not installed');
-    }
-    return deferred.promise;
-};
+// siesta.save = function save(callback) {
+//     var deferred = q.defer();
+//     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+//     if (siesta.ext.storageEnabled) {
+//         util.next(function() {
+//             var mergeChanges = siesta.ext.storage.changes.mergeChanges;
+//             mergeChanges(callback);
+//         });
+//     } else {
+//         callback('Storage module not installed');
+//     }
+//     return deferred.promise;
+// };
 
+/**
+ * Wipe everything!
+ */
 siesta.reset = function() {
     cache.reset();
     CollectionRegistry.reset();
@@ -46,11 +49,48 @@ siesta.reset = function() {
     //noinspection JSAccessibilityCheck
 };
 
-
+/**
+ * Listen to notificatons.
+ * @param {String} notificationName
+ * @param {Function} handler
+ */
 siesta.on = _.bind(notificationCentre.on, notificationCentre);
-siesta.addListener = _.bind(notificationCentre.addListener, notificationCentre);
-siesta.removeListener = _.bind(notificationCentre.removeListener, notificationCentre);
+
+/**
+ * Listen to notificatons.
+ * @param {String} notificationName
+ * @param {Function} handler
+ */
+siesta.addListener = siesta.on;
+
+/**
+ * Stop listening to a particular notification
+ * 
+ * @param {String} notificationName
+ * @param {Function} handler
+ */
+siesta.off = _.bind(notificationCentre.removeListener, notificationCentre);
+
+/**
+ * Stop listening to a particular notification
+ * 
+ * @param {String} notificationName
+ * @param {Function} handler
+ */
+siesta.removeListener = siesta.off;
+
+/**
+ * Listen to one and only one notification.
+ * 
+ * @param {String} notificationName
+ * @param {Function} handler
+ */
 siesta.once = _.bind(notificationCentre.once, notificationCentre);
+
+/**
+ * Removes all listeners.
+ */
+siesta.removeAllListeners = _.bind(notificationCentre.removeAllListeners, notificationCentre);
 
 siesta.Collection = Collection;
 siesta.RelationshipType = RelationshipType;
@@ -90,27 +130,30 @@ siesta.storageEnabled = false;
 
 siesta.ext = {};
 
-Object.defineProperty(siesta, 'setPouch', {
-    get: function() {
-        if (siesta.ext.storageEnabled) {
-            return siesta.ext.storage.pouch.setPouch;
-        }
-        return null;
-    }
-});
+// Object.defineProperty(siesta, 'setPouch', {
+//     get: function() {
+//         if (siesta.ext.storageEnabled) {
+//             return siesta.ext.storage.pouch.setPouch;
+//         }
+//         return null;
+//     }
+// });
 
-Object.defineProperty(siesta.ext, 'storageEnabled', {
-    get: function() {
-        if (siesta.ext._storageEnabled !== undefined) {
-            return siesta.ext._storageEnabled;
-        }
-        return !!siesta.ext.storage;
-    },
-    set: function(v) {
-        siesta.ext._storageEnabled = v;
-    }
-});
+// Object.defineProperty(siesta.ext, 'storageEnabled', {
+//     get: function() {
+//         if (siesta.ext._storageEnabled !== undefined) {
+//             return siesta.ext._storageEnabled;
+//         }
+//         return !!siesta.ext.storage;
+//     },
+//     set: function(v) {
+//         siesta.ext._storageEnabled = v;
+//     }
+// });
 
+/**
+ * True if siesta.http.js is installed correctly (or siesta.bundle.js is being used instead).
+ */
 Object.defineProperty(siesta.ext, 'httpEnabled', {
     get: function() {
         if (siesta.ext._httpEnabled !== undefined) {
@@ -123,10 +166,23 @@ Object.defineProperty(siesta.ext, 'httpEnabled', {
     }
 });
 
+/**
+ * Creates and registers a new Collection.
+ * @param  {[type]} name
+ * @param  {[type]} opts
+ * @return {Collection}
+ */
 siesta.collection = function(name, opts) {
     return new Collection(name, opts);
 };
 
+/**
+ * Sets the ajax function to use e.g. $.ajax
+ * @param {Function} ajax
+ * @example
+ * // Use zepto instead of jQuery for http ajax requests.
+ * siesta.setAjax(zepto.ajax);
+ */
 siesta.setAjax = function(ajax) {
     if (siesta.ext.httpEnabled) {
         siesta.ext.http.ajax = ajax;
@@ -135,10 +191,18 @@ siesta.setAjax = function(ajax) {
     }
 };
 
+/**
+ * Returns the ajax function being used.
+ * @return {Function}
+ */
 siesta.getAjax = function() {
     return siesta.ext.http.ajax;
 };
 
+/**
+ * Returns an object whos keys map onto string constants used for log levels.
+ * @type {Object}
+ */
 siesta.LogLevel = log.Level;
 
 /**
@@ -186,13 +250,13 @@ siesta.setLogLevel = function(loggerName, level) {
     Logger.setLevel(level);
 };
 
-Object.defineProperty(siesta, 'isDirty', {
-    get: function() {
-        return Collection.isDirty
-    },
-    configurable: true,
-    enumerable: true
-});
+// Object.defineProperty(siesta, 'isDirty', {
+//     get: function() {
+//         return Collection.isDirty
+//     },
+//     configurable: true,
+//     enumerable: true
+// });
 
 if (typeof window != 'undefined') {
     window.siesta = siesta;
