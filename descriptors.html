@@ -94,75 +94,7 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    <p><a name="Descriptor"></a></p>
-
-<h1>class: Descriptor</h1>
-
-<p><strong>Members</strong></p>
-
-<ul>
-<li><a href="#Descriptor">class: Descriptor</a>
-
-<ul>
-<li><a href="#new_Descriptor">new Descriptor(opts)</a></li>
-<li><a href="#Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-</ul></li>
-</ul>
-
-<p><a name="new_Descriptor"></a></p>
-
-<h2>new Descriptor(opts)</h2>
-
-<p>A descriptor &#39;describes&#39; possible HTTP requests against an API, and is used to decide whether or not to
-intercept a HTTP request/response and perform a mapping.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>opts <code>Object</code><br></li>
-</ul>
-
-<p><a name="Descriptor#_matchPath"></a></p>
-
-<h2>descriptor._matchPath(path)</h2>
-
-<p>Takes a regex path and returns an object if matched.
-If any regular expression groups were defined, the returned object will contain the matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> | <code>RegExp</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
-<span class="p">})</span>
-<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
-</code></pre></div>
-<p><a name="Descriptor#_matchMethod"></a></p>
-
-<h2>descriptor._matchMethod(method)</h2>
-
-<p>Returns true if the descriptor accepts the HTTP method.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>method <code>String</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>boolean</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
-<span class="p">});</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
-</code></pre></div>
+    
 </article>
 </div>
 </div>
