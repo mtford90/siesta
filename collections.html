@@ -94,37 +94,24 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    <p><a name="Collection"></a></p>
+    <h1>Index</h1>
 
-<h1>class: Collection</h1>
+<p><strong>Namespaces</strong></p>
+
+<ul>
+<li><a href="#siesta">siesta</a></li>
+</ul>
 
 <p><strong>Members</strong></p>
 
 <ul>
-<li><a href="#Collection">class: Collection</a>
-
-<ul>
-<li><a href="#new_Collection">new Collection(name)</a></li>
-<li><a href="#Collection#baseURL">collection.baseURL</a></li>
-<li><a href="#Collection#installed">collection.installed</a></li>
-<li><a href="#Collection#install">collection.install(callback)</a></li>
-<li><a href="#Collection#save">collection.save(callback)</a></li>
-<li><a href="#Collection#HTTP_METHOD">collection.HTTP_METHOD(request, method)</a></li>
-<li><a href="#Collection#GET">collection.GET()</a></li>
-<li><a href="#Collection#OPTIONS">collection.OPTIONS()</a></li>
-<li><a href="#Collection#TRACE">collection.TRACE()</a></li>
-<li><a href="#Collection#HEAD">collection.HEAD()</a></li>
-<li><a href="#Collection#POST">collection.POST()</a></li>
-<li><a href="#Collection#PUT">collection.PUT()</a></li>
-<li><a href="#Collection#PATCH">collection.PATCH()</a></li>
-<li><a href="#Collection#DELETE">collection.DELETE()</a></li>
-<li><a href="#Collection#count">collection.count(callback)</a></li>
-</ul></li>
+<li><a href="#baseURL">baseURL</a></li>
+<li><a href="#installed">installed</a></li>
 </ul>
 
-<p><a name="new_Collection"></a></p>
+<p><a name="siesta"></a></p>
 
-<h2>new Collection(name)</h2>
+<h1>siesta</h1>
 
 <p>A collection describes a set of models and optionally a REST API which we would
 like to model.</p>
@@ -142,129 +129,26 @@ like to model.</p>
     <span class="c1">// ... carry on.</span>
 <span class="p">});</span>
 </code></pre></div>
-<p><a name="Collection#baseURL"></a></p>
+<p><strong>Members</strong></p>
 
-<h2>collection.baseURL</h2>
+<ul>
+<li><a href="#siesta">siesta</a></li>
+</ul>
+
+<p><a name="baseURL"></a></p>
+
+<h1>baseURL</h1>
 
 <p>The URL of the API e.g. http://api.github.com</p>
 
 <p><strong>Type</strong>: <code>string</code><br>
-<a name="Collection#installed"></a></p>
+<a name="installed"></a></p>
 
-<h2>collection.installed</h2>
+<h1>installed</h1>
 
 <p>Set to true if installation has succeeded. You cannot use the collectio</p>
 
-<p><strong>Type</strong>: <code>boolean</code><br>
-<a name="Collection#install"></a></p>
-
-<h2>collection.install(callback)</h2>
-
-<p>Ensure mappings are installed.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>callback<br></li>
-</ul>
-
-<p><a name="Collection#save"></a></p>
-
-<h2>collection.save(callback)</h2>
-
-<p>Persist all changes to PouchDB.
-Note: Storage extension must be installed.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>callback<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="Collection#HTTP_METHOD"></a></p>
-
-<h2>collection.HTTP_METHOD(request, method)</h2>
-
-<p>Send a HTTP request using the given method</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false<br></li>
-<li>method<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#GET"></a></p>
-
-<h2>collection.GET()</h2>
-
-<p>Send a GET request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#OPTIONS"></a></p>
-
-<h2>collection.OPTIONS()</h2>
-
-<p>Send a OPTIONS request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#TRACE"></a></p>
-
-<h2>collection.TRACE()</h2>
-
-<p>Send a TRACE request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#HEAD"></a></p>
-
-<h2>collection.HEAD()</h2>
-
-<p>Send a HEAD request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#POST"></a></p>
-
-<h2>collection.POST()</h2>
-
-<p>Send a POST request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#PUT"></a></p>
-
-<h2>collection.PUT()</h2>
-
-<p>Send a PUT request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#PATCH"></a></p>
-
-<h2>collection.PATCH()</h2>
-
-<p>Send a PATCH request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#DELETE"></a></p>
-
-<h2>collection.DELETE()</h2>
-
-<p>Send a DELETE request</p>
-
-<p><strong>Returns</strong>: <code>*</code><br>
-<a name="Collection#count"></a></p>
-
-<h2>collection.count(callback)</h2>
-
-<p>Returns the number of objects in this collection.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>callback<br></li>
-</ul>
-
-<p><strong>Returns</strong>:  - Promise  </p>
+<p><strong>Type</strong>: <code>boolean</code>  </p>
 
 </article>
 </div>
