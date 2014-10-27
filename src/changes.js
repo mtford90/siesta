@@ -4,7 +4,7 @@ var InternalSiestaError = require('./error').InternalSiestaError;
 var log = require('../vendor/operations.js/src/log');
 
 var Logger = log.loggerWithName('changes');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 var ChangeType = {
     Set: 'Set',

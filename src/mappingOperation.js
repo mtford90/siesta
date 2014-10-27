@@ -125,13 +125,11 @@ BulkMappingOperation.prototype._map = function() {
  * @private
  */
 BulkMappingOperation.prototype._lookup = function(callback) {
-    dump('_lookup')
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     var remoteLookups = [];
     var localLookups = [];
-    dump('this.data', this.data);
     for (var i = 0; i < this.data.length; i++) {
         if (!this.objects[i]) {
             var lookup;

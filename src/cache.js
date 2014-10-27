@@ -42,7 +42,6 @@ function getViaLocalId(localId) {
 function getSingleton(mapping) {
     var mappingName = mapping.type;
     var collectionName = mapping.collection;
-    console.error('getSingleton', localCache);
     var collectionCache = localCache[collectionName];
     if (collectionCache) {
         var typeCache = collectionCache[mappingName];
@@ -299,7 +298,6 @@ function contains(obj) {
 }
 
 function remove(obj) {
-    console.error('localCache', localCache);
     if (contains(obj)) {
         var collectionName = obj.mapping.collection;
         var mappingName = obj.mapping.type;

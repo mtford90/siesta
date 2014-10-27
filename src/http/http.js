@@ -11,7 +11,7 @@
     var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
     var Logger = log.loggerWithName('HTTP');
-    Logger.setLevel(log.Level.trace);
+    Logger.setLevel(log.Level.warn);
 
     if (!siesta.ext) {
         siesta.ext = {};

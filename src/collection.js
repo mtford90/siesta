@@ -329,10 +329,6 @@ Collection.prototype.DELETE = function(path, object) {
     // By default we do not map the response from a DELETE request.
     if (opts.parseResponse === undefined) opts.parseResponse = false;
     this._httpResponse('DELETE', path, opts, function(err, x, y, z) {
-        dump('err', err);
-        dump('x', x);
-        dump('y', y);
-        dump('z', z);
         if (err) {
             if (deletionMode == 'restore') {
                 object.restore();

@@ -140,10 +140,6 @@ NewObjectProxy.prototype.get = function(callback) {
 function verifyMapping(obj, mapping) {
     if (obj.mapping != mapping) {
         var err = 'Mapping does not match. Expected ' + mapping.type + ' but got ' + obj.mapping.type;
-        console.error(err, {
-            object: obj,
-            mapping: mapping
-        });
         throw new InternalSiestaError(err);
     }
 }
@@ -165,7 +161,6 @@ function getReverseProxyForObject(obj) {
         var proxy = obj[proxyName];
         if (!proxy) {
             var err = 'No proxy with name "' + proxyName + '" on mapping ' + reverseMapping.type;
-            console.error(err, obj);
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -186,7 +181,6 @@ function getForwardProxyForObject(obj) {
         var proxy = obj[proxyName];
         if (!proxy) {
             var err = 'No proxy with name "' + proxyName + '" on mapping ' + forwardMapping.type;
-            console.error(err, obj);
             throw new InternalSiestaError(err);
         }
         return proxy;

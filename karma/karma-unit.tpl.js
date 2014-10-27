@@ -14,8 +14,8 @@ module.exports = function (karma) {
             <% scripts.forEach( function ( file ) { %>'<%= file %>',
                 <% }); %>
             'build/test-bundle.js',
-            'build/siesta.http.js',
-            'build/siesta.perf.js'
+            'build/siesta.http.js'
+            // 'build/siesta.perf.js'
     ],
     exclude: [
     ],
