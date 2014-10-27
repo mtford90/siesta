@@ -140,7 +140,36 @@ siesta.setAjax = function (ajax) {
 
 siesta.getAjax = function () {
     return siesta.ext.http.ajax;
-}
+};
+
+siesta.LogLevel = log.Level;
+
+/**
+ * Sets the log level for the named logger
+ * @param {String} loggerName
+ * @param {String} level
+ *
+ * @example
+ * siesta.setLogLevel('Descriptor', siesta.LogLevel.trace);
+ * siesta.setLogLevel('DescriptorRegistry', siesta.LogLevel.trace);
+ * siesta.setLogLevel('HTTP', siesta.LogLevel.trace);
+ * siesta.setLogLevel('RequestDescriptor', siesta.LogLevel.trace);
+ * siesta.setLogLevel('ResponseDescriptor', siesta.LogLevel.trace);
+ * siesta.setLogLevel('LocalCache', siesta.LogLevel.trace);
+ * siesta.setLogLevel('RemoteCache', siesta.LogLevel.trace);
+ * siesta.setLogLevel('changes', siesta.LogLevel.trace);
+ * siesta.setLogLevel('Collection', siesta.LogLevel.trace);
+ * siesta.setLogLevel('Mapping', siesta.LogLevel.trace);
+ * siesta.setLogLevel('MappingOperation', siesta.LogLevel.trace);
+ * siesta.setLogLevel('SiestaModel', siesta.LogLevel.trace);
+ * siesta.setLogLevel('Performance', siesta.LogLevel.trace); // Used by siesta.perf.js
+ * siesta.setLogLevel('Query', siesta.LogLevel.trace); 
+ * siesta.setLogLevel('Store', siesta.LogLevel.trace); 
+ */
+siesta.setLogLevel = function (loggerName, level) {
+    var Logger = log.loggerWithName(loggerName);
+    Logger.setLevel(level);
+};
 
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {

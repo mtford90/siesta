@@ -137,9 +137,7 @@ describe('request descriptor', function() {
                 }));
             })
         });
-
     });
-
 
     describe('specify mapping', function() {
         it('as object', function() {
@@ -340,9 +338,6 @@ describe('request descriptor', function() {
                 }));
             });
         });
-
-
-
     });
 
     describe('match against data', function() {
