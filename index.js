@@ -129,6 +129,18 @@ siesta.collection = function (name, opts) {
     return new Collection(name, opts);
 };
 
+siesta.setAjax = function (ajax) {
+    if (siesta.ext.httpEnabled) {
+        siesta.ext.http.ajax = ajax;
+    }
+    else {
+        throw new Error('http module not installed correctly (have you included siesta.http.js?)');
+    }
+};
+
+siesta.getAjax = function () {
+    return siesta.ext.http.ajax;
+}
 
 Object.defineProperty(siesta, 'isDirty', {
     get: function () {
@@ -137,9 +149,6 @@ Object.defineProperty(siesta, 'isDirty', {
     configurable: true,
     enumerable: true
 });
-
-
-
 
 if (typeof window != 'undefined') {
     window.siesta = siesta;

@@ -26,14 +26,6 @@ describe('recursive relationships', function() {
         collection.install(done);
     });
 
-    // describe.only('installation', function () {
-	   //  it('xyz', function (done) {
-	   //  	console.log('relationships', Repo.relationships);
-	   //  	done();
-	   //  });
-    // });
-
-
     it('map', function (done) {
     	var masterRepoData = {id: '5', name: 'Master Repo'};
     	Repo.map(masterRepoData, function (err, repo) {

@@ -3,10 +3,13 @@
         throw new Error('Could not find siesta');
     }
 
-    var Collection = siesta.Collection,
-        log = siesta._internal.log,
-        util = siesta._internal.util,
-        q = siesta._internal.q;
+
+    var _i = siesta._internal,
+        Collection = siesta.Collection,
+        log = _i.log,
+        util = _i.util,
+        InternalSiestaError = _i.error.InternalSiestaError,
+        q = _i.q;
 
     var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
@@ -17,13 +20,31 @@
         siesta.ext = {};
     }
 
+    var ajax;
+
     siesta.ext.http = {
         RequestDescriptor: require('./requestDescriptor').RequestDescriptor,
         ResponseDescriptor: require('./responseDescriptor').ResponseDescriptor,
         Descriptor: require('./descriptor').Descriptor,
         Serialiser: require('./serialiser'),
-        DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry
-    };
+        DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry,
+        setAjax: function(_ajax) {
+            ajax = _ajax;
+        }
+    };  
+
+    Object.defineProperty(siesta.ext.http, 'ajax', {
+        get: function() {
+            var a = ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
+            if (!a) {
+                throw new InternalSiestaError('ajax has not been defined and could not find $.ajax or jQuery.ajax');
+            }
+            return a;
+        },
+        set: function(v) {
+            ajax = v;
+        }
+    });
 
     Collection.prototype._httpResponse = function(method, path) {
         var self = this;

@@ -7,11 +7,11 @@ describe('http!', function() {
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
     var SiestaModel = require('../src/object').SiestaModel;
+    var InternalSiestaError = require('../src/error').InternalSiestaError;
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 
     var server;
-
 
     beforeEach(function() {
         s.reset(true);
@@ -407,7 +407,6 @@ describe('http!', function() {
                     });
                 });
 
-
                 describe('restore', function() {
                     it('should be restored on failure', function(done) {
                         var data = {
@@ -776,5 +775,50 @@ describe('http!', function() {
         });
 
     });
+
+    describe('ajax', function() {
+        var dollar;
+        var fakeDollar = {
+            ajax: function() {}
+        }
+
+        before(function() {
+            dollar = $;
+        });
+
+        beforeEach(function() {
+            $ = fakeDollar;
+            jQuery = fakeDollar;
+        });
+
+        after(function() {
+            $ = dollar;
+        });
+
+        it('default', function() {
+            assert.equal(s.ext.http.ajax, fakeDollar.ajax);
+        });
+
+        it('no $', function() {
+            $ = undefined;
+            assert.equal(s.ext.http.ajax, fakeDollar.ajax);
+        });
+
+        it('no ajax at all', function () {
+            $ = undefined;
+            jQuery = undefined;
+            assert.throws(function () {
+                var a = s.ext.http.ajax;
+            }, InternalSiestaError);
+        });
+
+        it('set ajax', function () {
+            var fakeAjax = function () {};
+            s.setAjax(fakeAjax);
+            assert.equal(s.ext.http.ajax, fakeAjax);
+            assert.equal(s.getAjax(), fakeAjax);
+        });
+
+    })
 
 });
