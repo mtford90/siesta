@@ -278,7 +278,6 @@ Descriptor.prototype.match = function (config, data) {
                     }
                 }
             }
-
             Logger.trace('data matches');
         }
         else {
