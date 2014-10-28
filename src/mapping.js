@@ -20,7 +20,6 @@ var cache = require('./cache');
 var store = require('./store');
 var extend = require('extend');
 
-
 var coreChanges = require('./changes');
 var ChangeType = coreChanges.ChangeType;
 var wrapArray = require('./notificationCentre').wrapArray;

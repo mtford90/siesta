@@ -6,17 +6,14 @@ var coreChanges = require('./changes');
 var ChangeType = coreChanges.ChangeType;
 var log = require('../vendor/operations.js/src/log');
 
-
-///**
-// * Wraps the methods of a javascript array object so that notifications are sent
-// * on calls.
-// *
-// * @param array the array we have wrapping
-// * @param field name of the field
-// * @param restObject the object to which this array is a property
-// */
-//
-
+/**
+* Wraps the methods of a javascript array object so that notifications are sent
+* on calls.
+*
+* @param array the array we have wrapping
+* @param field name of the field
+* @param restObject the object to which this array is a property
+*/
 function wrapArray(array, field, siestaModel) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
@@ -40,8 +37,6 @@ function wrapArray(array, field, siestaModel) {
         array.isFault = false;
     }
 }
-
-
 
 exports.notificationCentre = notificationCentre;
 exports.wrapArray = wrapArray;

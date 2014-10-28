@@ -49,29 +49,43 @@ function unflattenArray(arr, modelArr) {
     return unflattened;
 }
 
+/**
+ * Defines an encapsulated mapping operation where opts takes a mappin
+ * @param {Objects} opts
+ */
 function BulkMappingOperation(opts) {
     Operation.call(this);
 
     this._opts = opts;
 
+    /**
+     * @name mapping
+     * @type {Mapping}
+     */
     defineSubProperty.call(this, 'mapping', this._opts);
+
+    /**
+     * @name data
+     * @type {Array}
+     */
     defineSubProperty.call(this, 'data', this._opts);
+
+    /**
+     * @name objects
+     * @type {Array}
+     */
     defineSubProperty.call(this, 'objects', this._opts);
+
     if (!this.objects) this.objects = [];
 
+    /**
+     * Array of errors where indexes map onto same index as the datum that caused an error.
+     * @type {Array}
+     */
     this.errors = [];
+
     this.name = 'Mapping Operation';
     this.work = _.bind(this._start, this);
-
-    // if (this.data) {
-    //     _.each(this.data, function (datum) {
-    //         if (!datum) {
-    //             Logger.error('Eep! Null data!', this.data);
-    //             throw 'Eep! Null data!';
-    //         }
-    //     })
-    // }
-
     this.subOps = {};
 }
 
@@ -94,6 +108,7 @@ function mapAttributes() {
         }
     }
 }
+
 
 BulkMappingOperation.prototype._map = function() {
     var self = this;

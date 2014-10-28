@@ -14,6 +14,15 @@ var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);
 
+/**
+ * Constants that describe change events.
+ * Set => A new value is assigned to an attribute/relationship
+ * Splice => All javascript array operations are described as splices.
+ * Delete => Used in the case where objects are removed from an array, but array order is not known in advance.
+ * Remove => Object deletion events
+ * New => Object creation events
+ * @type {Object}
+ */
 var ChangeType = {
     Set: 'Set',
     Splice: 'Splice',
