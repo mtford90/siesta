@@ -82,7 +82,7 @@
        id="toggleCodeBlockBtn"
        onclick="toggleCodeBlocks();">Show
         Code Blocks Inline</a><br>
-</div>
+</div>ƒ
 
 
     </div>
@@ -95,33 +95,53 @@
 <p><strong>Modules</strong></p>
 
 <ul>
-<li><a href="#collection.module_js">collection.js</a>
+<li><a href="#module_collection">collection</a>
 
 <ul>
-<li><a href="#collection.module_js..Collection">class: js~Collection</a></li>
-<li><a href="#new_collection.module_js..Collection">new js~Collection(name)</a></li>
-<li><a href="#collection.module_js..Collection#baseURL">collection.baseURL</a></li>
-<li><a href="#collection.module_js..Collection#installed">collection.installed</a></li>
-<li><a href="#collection.module_js..Collection#install">collection.install(callback)</a></li>
-<li><a href="#collection.module_js..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#collection.module_js..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
-<li><a href="#collection.module_js..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
-<li><a href="#collection.module_js..Collection#HTTP_METHOD">collection.HTTP_METHOD(request, method)</a></li>
-<li><a href="#collection.module_js..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#count">collection.count(callback)</a></li>
+<li><a href="#module_collection..requestDescriptor">collection~requestDescriptor(opts)</a></li>
+<li><a href="#module_collection..responseDescriptor">collection~responseDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection#install">collection.install(callback)</a></li>
+<li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
+<li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
+<li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
+<li><a href="#module_collection..Collection#_descriptor">collection._descriptor(registrationFunc)</a></li>
+<li><a href="#module_collection..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
+<li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#count">collection.count(callback)</a></li>
 </ul></li>
-<li><a href="#store.module_js">store.js</a>
+<li><a href="#module_http">http</a>
 
 <ul>
-<li><a href="#store.module_js..get">js~get(opts, callback)</a></li>
-<li><a href="#store.module_js..getMultipleLocal">js~getMultipleLocal(localIdentifiers, callback)</a></li>
+<li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
+<li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..TRACE">http~TRACE(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..HEAD">http~HEAD(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+</ul></li>
+<li><a href="#module_store">store</a>
+
+<ul>
+<li><a href="#module_store..get">store~get(opts, callback)</a></li>
+<li><a href="#module_store..getMultipleLocal">store~getMultipleLocal(localIdentifiers, callback)</a></li>
 </ul></li>
 </ul>
 
@@ -159,43 +179,108 @@
 <li><a href="#path">path</a></li>
 </ul>
 
-<p><a name="collection.module_js"></a></p>
+<p><a name="module_collection"></a></p>
 
-<h1>collection.js</h1>
-
-<p><a name="collection.module_js..Collection"></a></p>
-
-<h2>class: js~Collection</h2>
+<h1>collection</h1>
 
 <p><strong>Members</strong></p>
 
 <ul>
-<li><a href="#collection.module_js..Collection">class: js~Collection</a>
+<li><a href="#module_collection">collection</a>
 
 <ul>
-<li><a href="#new_collection.module_js..Collection">new js~Collection(name)</a></li>
-<li><a href="#collection.module_js..Collection#baseURL">collection.baseURL</a></li>
-<li><a href="#collection.module_js..Collection#installed">collection.installed</a></li>
-<li><a href="#collection.module_js..Collection#install">collection.install(callback)</a></li>
-<li><a href="#collection.module_js..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#collection.module_js..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
-<li><a href="#collection.module_js..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
-<li><a href="#collection.module_js..Collection#HTTP_METHOD">collection.HTTP_METHOD(request, method)</a></li>
-<li><a href="#collection.module_js..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#collection.module_js..Collection#count">collection.count(callback)</a></li>
+<li><a href="#module_collection..requestDescriptor">collection~requestDescriptor(opts)</a></li>
+<li><a href="#module_collection..responseDescriptor">collection~responseDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection#install">collection.install(callback)</a></li>
+<li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
+<li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
+<li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
+<li><a href="#module_collection..Collection#_descriptor">collection._descriptor(registrationFunc)</a></li>
+<li><a href="#module_collection..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
+<li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#count">collection.count(callback)</a></li>
 </ul></li>
 </ul>
 
-<p><a name="new_collection.module_js..Collection"></a></p>
+<p><a name="module_collection..requestDescriptor"></a></p>
 
-<h3>new js~Collection(name)</h3>
+<h2>collection~requestDescriptor(opts)</h2>
+
+<p>Create RequestDescriptor object.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>opts <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Type</strong>: <code>InternalSiestaError</code><br>
+<strong>Returns</strong>: <code>RequestDescriptor</code><br>
+<a name="module_collection..responseDescriptor"></a></p>
+
+<h2>collection~responseDescriptor(opts)</h2>
+
+<p>Create and register ResponseDescriptor object.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>opts <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Type</strong>: <code>InternalSiestaError</code><br>
+<strong>Returns</strong>: <a href="#ResponseDescriptor">ResponseDescriptor</a><br>
+<a name="module_collection..Collection"></a></p>
+
+<h2>class: collection~Collection</h2>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection..Collection">class: collection~Collection</a>
+
+<ul>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection#install">collection.install(callback)</a></li>
+<li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
+<li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
+<li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
+<li><a href="#module_collection..Collection#_descriptor">collection._descriptor(registrationFunc)</a></li>
+<li><a href="#module_collection..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
+<li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
+<li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..Collection#count">collection.count(callback)</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_module_collection..Collection"></a></p>
+
+<h3>new collection~Collection(name)</h3>
 
 <p>A collection describes a set of models and optionally a REST API which we would
 like to model.</p>
@@ -206,7 +291,7 @@ like to model.</p>
 <li>name<br></li>
 </ul>
 
-<p><strong>Scope</strong>: inner class of <a href="#collection.module_js">js</a><br>
+<p><strong>Scope</strong>: inner class of <a href="#module_collection">collection</a><br>
 <strong>Example</strong></p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">GitHub</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="s1">&#39;GitHub&#39;</span><span class="p">)</span>
 <span class="c1">// ... configure mappings, descriptors etc ...</span>
@@ -214,21 +299,21 @@ like to model.</p>
     <span class="c1">// ... carry on.</span>
 <span class="p">});</span>
 </code></pre></div>
-<p><a name="collection.module_js..Collection#baseURL"></a></p>
+<p><a name="module_collection..Collection#baseURL"></a></p>
 
 <h3>collection.baseURL</h3>
 
 <p>The URL of the API e.g. http://api.github.com</p>
 
 <p><strong>Type</strong>: <code>string</code><br>
-<a name="collection.module_js..Collection#installed"></a></p>
+<a name="module_collection..Collection#installed"></a></p>
 
 <h3>collection.installed</h3>
 
 <p>Set to true if installation has succeeded. You cannot use the collectio</p>
 
 <p><strong>Type</strong>: <code>boolean</code><br>
-<a name="collection.module_js..Collection#install"></a></p>
+<a name="module_collection..Collection#install"></a></p>
 
 <h3>collection.install(callback)</h3>
 
@@ -240,7 +325,35 @@ like to model.</p>
 <li>callback<br></li>
 </ul>
 
-<p><a name="collection.module_js..Collection#mapping"></a></p>
+<p><a name="module_collection..Collection#_finaliseInstallation"></a></p>
+
+<h3>collection._finaliseInstallation(err, callback)</h3>
+
+<p>Mark this collection as installed, and place the collection on the global Siesta object.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>err <code>Object</code><br></li>
+<li>callback <code>function</code><br></li>
+</ul>
+
+<p><a name="module_collection..Collection#_mapping"></a></p>
+
+<h3>collection._mapping(name, mapping)</h3>
+
+<p>Given the name of a mapping and an options object describing the mapping, creating a Mapping
+object, install it and return it.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>name <code>String</code><br></li>
+<li>mapping <code>Object</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Mapping</code><br>
+<a name="module_collection..Collection#mapping"></a></p>
 
 <h3>collection.mapping(optsOrName, opts)</h3>
 
@@ -254,7 +367,20 @@ like to model.</p>
 </ul>
 
 <p><strong>Returns</strong>: <code>Mapping</code><br>
-<a name="collection.module_js..Collection#requestDescriptor"></a></p>
+<a name="module_collection..Collection#_descriptor"></a></p>
+
+<h3>collection._descriptor(registrationFunc)</h3>
+
+<p>Marshals arguments used to create Descriptor and then calls the registration function.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>registrationFunc <code>function</code> - Responsible for registering the descriptor.<br></li>
+</ul>
+
+<p><strong>Returns</strong>: <a href="#Descriptor">Descriptor</a><br>
+<a name="module_collection..Collection#requestDescriptor"></a></p>
 
 <h3>collection.requestDescriptor(opts)</h3>
 
@@ -275,7 +401,7 @@ like to model.</p>
     <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span>
 <span class="p">});</span>
 </code></pre></div>
-<p><a name="collection.module_js..Collection#responseDescriptor"></a></p>
+<p><a name="module_collection..Collection#responseDescriptor"></a></p>
 
 <h3>collection.responseDescriptor(opts)</h3>
 
@@ -295,21 +421,20 @@ like to model.</p>
    <span class="p">}</span>
 <span class="p">});</span>
 </code></pre></div>
-<p><a name="collection.module_js..Collection#HTTP_METHOD"></a></p>
+<p><a name="module_collection..Collection#_dump"></a></p>
 
-<h3>collection.HTTP_METHOD(request, method)</h3>
+<h3>collection._dump(asJson)</h3>
 
-<p>Send a HTTP request using the given method</p>
+<p>Dump this collection as JSON</p>
 
 <p><strong>Params</strong></p>
 
 <ul>
-<li>request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false<br></li>
-<li>method<br></li>
+<li>asJson <code>Boolean</code> - Whether or not to apply JSON.stringify<br></li>
 </ul>
 
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#GET"></a></p>
+<p><strong>Returns</strong>: <code>String</code> | <code>Object</code><br>
+<a name="module_collection..Collection#GET"></a></p>
 
 <h3>collection.GET(path, optsOrCallback, callback)</h3>
 
@@ -318,13 +443,13 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource we want to GET<br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#OPTIONS"></a></p>
+<a name="module_collection..Collection#OPTIONS"></a></p>
 
 <h3>collection.OPTIONS(path, optsOrCallback, callback)</h3>
 
@@ -333,13 +458,13 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send an OPTIONS request<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to send an OPTIONS request<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#TRACE"></a></p>
+<a name="module_collection..Collection#TRACE"></a></p>
 
 <h3>collection.TRACE(path, optsOrCallback, callback)</h3>
 
@@ -354,7 +479,7 @@ like to model.</p>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#HEAD"></a></p>
+<a name="module_collection..Collection#HEAD"></a></p>
 
 <h3>collection.HEAD(path, optsOrCallback, callback)</h3>
 
@@ -363,13 +488,13 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a HEAD request<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to send a HEAD request<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#POST"></a></p>
+<a name="module_collection..Collection#POST"></a></p>
 
 <h3>collection.POST(path, model, optsOrCallback, callback)</h3>
 
@@ -378,14 +503,14 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a POST request<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to send a POST request<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#PUT"></a></p>
+<a name="module_collection..Collection#PUT"></a></p>
 
 <h3>collection.PUT(path, model, optsOrCallback, callback)</h3>
 
@@ -394,14 +519,14 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a PUT request<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to send a PUT request<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to PUT<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#PATCH"></a></p>
+<a name="module_collection..Collection#PATCH"></a></p>
 
 <h3>collection.PATCH(path, model, optsOrCallback, callback)</h3>
 
@@ -410,14 +535,14 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a PATCH request<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to send a PATCH request<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#DELETE"></a></p>
+<a name="module_collection..Collection#DELETE"></a></p>
 
 <h3>collection.DELETE(path, model, optsOrCallback, callback)</h3>
 
@@ -426,14 +551,14 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to DELETE<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to DELETE<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="collection.module_js..Collection#count"></a></p>
+<a name="module_collection..Collection#count"></a></p>
 
 <h3>collection.count(callback)</h3>
 
@@ -446,9 +571,225 @@ like to model.</p>
 </ul>
 
 <p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="store.module_js"></a></p>
+<a name="module_http"></a></p>
 
-<h1>store.js</h1>
+<h1>http</h1>
+
+<p>Provisions usage of $.ajax and similar functions to send HTTP requests mapping
+the results back onto the object graph automatically.</p>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_http">http</a>
+
+<ul>
+<li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
+<li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..TRACE">http~TRACE(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..HEAD">http~HEAD(collection, path, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+</ul></li>
+</ul>
+
+<p><a name="module_http.._httpResponse"></a></p>
+
+<h2>http~_httpResponse(method, path, optsOrCallback, callback)</h2>
+
+<p>Send a HTTP request to the given method and path parsing the response.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>method <code>String</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<a name="module_http.._httpRequest"></a></p>
+
+<h2>http~_httpRequest(method, path, object, optsOrCallback, callback)</h2>
+
+<p>Send a HTTP request to the given method and path</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>method <code>String</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>object <code>SiestaModel</code> - The model we&#39;re pushing to the server<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<a name="module_http..DELETE"></a></p>
+
+<h2>http~DELETE(collection, path, model, optsOrCallback, callback)</h2>
+
+<p>Send a DELETE request. Also removes the object.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>Stirng</code> - The path to the resource to which we want to DELETE<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..HTTP_METHOD"></a></p>
+
+<h2>http~HTTP_METHOD(collection, request, method)</h2>
+
+<p>Send a HTTP request using the given method</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false<br></li>
+<li>method<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..GET"></a></p>
+
+<h2>http~GET(collection, path, optsOrCallback, callback)</h2>
+
+<p>Send a GET request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..OPTIONS"></a></p>
+
+<h2>http~OPTIONS(collection, path, optsOrCallback, callback)</h2>
+
+<p>Send an OPTIONS request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..TRACE"></a></p>
+
+<h2>http~TRACE(collection, path, optsOrCallback, callback)</h2>
+
+<p>Send an TRACE request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..HEAD"></a></p>
+
+<h2>http~HEAD(collection, path, optsOrCallback, callback)</h2>
+
+<p>Send an HEAD request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..POST"></a></p>
+
+<h2>http~POST(collection, path, model, optsOrCallback, callback)</h2>
+
+<p>Send an POST request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..PUT"></a></p>
+
+<h2>http~PUT(collection, path, model, optsOrCallback, callback)</h2>
+
+<p>Send an PUT request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_http..PATCH"></a></p>
+
+<h2>http~PATCH(collection, path, model, optsOrCallback, callback)</h2>
+
+<p>Send an PATCH request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>collection <code>Collection</code><br></li>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_store"></a></p>
+
+<h1>store</h1>
 
 <p>The &quot;store&quot; is responsible for mediating between the in-memory cache and any persistent storage.
 Note that persistent storage has not been properly implemented yet and so this is pretty useless.
@@ -457,17 +798,17 @@ All queries will go straight to the cache instead.</p>
 <p><strong>Members</strong></p>
 
 <ul>
-<li><a href="#store.module_js">store.js</a>
+<li><a href="#module_store">store</a>
 
 <ul>
-<li><a href="#store.module_js..get">js~get(opts, callback)</a></li>
-<li><a href="#store.module_js..getMultipleLocal">js~getMultipleLocal(localIdentifiers, callback)</a></li>
+<li><a href="#module_store..get">store~get(opts, callback)</a></li>
+<li><a href="#module_store..getMultipleLocal">store~getMultipleLocal(localIdentifiers, callback)</a></li>
 </ul></li>
 </ul>
 
-<p><a name="store.module_js..get"></a></p>
+<p><a name="module_store..get"></a></p>
 
-<h2>js~get(opts, callback)</h2>
+<h2>store~get(opts, callback)</h2>
 
 <p>[get description]</p>
 
@@ -478,7 +819,7 @@ All queries will go straight to the cache instead.</p>
 <li>callback <code>function</code><br></li>
 </ul>
 
-<p><strong>Scope</strong>: inner function of <a href="#store.module_js">js</a><br>
+<p><strong>Scope</strong>: inner function of <a href="#module_store">store</a><br>
 <strong>Returns</strong>: <code>Promise</code><br>
 <strong>Example</strong></p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">xyz</span> <span class="o">=</span> <span class="s1">&#39;afsdf&#39;</span><span class="p">;</span>
@@ -486,9 +827,9 @@ All queries will go straight to the cache instead.</p>
 <p><strong>Example</strong></p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">abc</span> <span class="o">=</span> <span class="s1">&#39;asdsd&#39;</span><span class="p">;</span>
 </code></pre></div>
-<p><a name="store.module_js..getMultipleLocal"></a></p>
+<p><a name="module_store..getMultipleLocal"></a></p>
 
-<h2>js~getMultipleLocal(localIdentifiers, callback)</h2>
+<h2>store~getMultipleLocal(localIdentifiers, callback)</h2>
 
 <p>Uses pouch bulk fetch API. Much faster than getMultiple.</p>
 
@@ -499,7 +840,7 @@ All queries will go straight to the cache instead.</p>
 <li>callback<br></li>
 </ul>
 
-<p><strong>Scope</strong>: inner function of <a href="#store.module_js">js</a><br>
+<p><strong>Scope</strong>: inner function of <a href="#module_store">store</a><br>
 <a name="Descriptor"></a></p>
 
 <h1>class: Descriptor</h1>
