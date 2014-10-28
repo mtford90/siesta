@@ -1,3 +1,10 @@
+/**
+ * The "store" is responsible for mediating between the in-memory cache and any persistent storage.
+ * Note that persistent storage has not been properly implemented yet and so this is pretty useless.
+ * All queries will go straight to the cache instead.
+ * @module store
+ */
+
 var wrappedCallback = require('./misc').wrappedCallback;
 var InternalSiestaError = require('./error').InternalSiestaError;
 var log = require('../vendor/operations.js/src/log');
@@ -10,6 +17,20 @@ var cache = require('./cache');
 var q = require('q');
 
 
+/**
+ * [get description]
+ * @param  {Object}   opts
+ * @param  {Function} callback
+ * @return {Promise}
+ * @example
+ * ```js
+ * var xyz = 'afsdf';
+ * ```
+ * @example
+ * ```js
+ * var abc = 'asdsd';
+ * ```
+ */
 function get(opts, callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
@@ -19,83 +40,89 @@ function get(opts, callback) {
     if (opts._id) {
         if (util.isArray(opts._id)) {
             // Proxy onto getMultiple instead.
-            getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
-        }
-        else {
+            getMultiple(_.map(opts._id, function(id) {
+                return {
+                    _id: id
+                }
+            }), callback);
+        } else {
             siestaModel = cache.get(opts);
             if (siestaModel) {
                 if (Logger.debug.isEnabled)
-                    Logger.debug('Had cached object', {opts: opts, obj: siestaModel});
+                    Logger.debug('Had cached object', {
+                        opts: opts,
+                        obj: siestaModel
+                    });
                 wrappedCallback(callback)(null, siestaModel);
-            }
-            else {
+            } else {
                 if (util.isArray(opts._id)) {
                     // Proxy onto getMultiple instead.
-                    getMultiple(_.map(opts._id, function (id) {return {_id: id}}), callback);
-                }
-                else if (callback) {
+                    getMultiple(_.map(opts._id, function(id) {
+                        return {
+                            _id: id
+                        }
+                    }), callback);
+                } else if (callback) {
                     var storage = siesta.ext.storage;
                     if (storage) {
                         storage.store.getFromPouch(opts, callback);
-                    }
-                    else {
+                    } else {
                         throw 'Storage module not installed'
                     }
                 }
             }
         }
-    }
-    else if (opts.mapping) {
+    } else if (opts.mapping) {
         if (util.isArray(opts[opts.mapping.id])) {
             // Proxy onto getMultiple instead.
-            getMultiple(_.map(opts[opts.mapping.id], function (id) {
+            getMultiple(_.map(opts[opts.mapping.id], function(id) {
                 var o = {};
                 o[opts.mapping.id] = id;
                 o.mapping = opts.mapping;
                 return o
             }), callback);
-        }
-        else {
+        } else {
             siestaModel = cache.get(opts);
             if (siestaModel) {
                 if (Logger.debug.isEnabled)
-                    Logger.debug('Had cached object', {opts: opts, obj: siestaModel});
+                    Logger.debug('Had cached object', {
+                        opts: opts,
+                        obj: siestaModel
+                    });
                 wrappedCallback(callback)(null, siestaModel);
-            }
-            else {
+            } else {
                 var mapping = opts.mapping;
                 if (mapping.singleton) {
                     mapping.get(callback);
-                }
-                else {
+                } else {
                     var idField = mapping.id;
                     var id = opts[idField];
                     if (id) {
-                        mapping.get(id, function (err, obj) {
+                        mapping.get(id, function(err, obj) {
                             if (!err) {
                                 if (obj) {
                                     callback(null, obj);
-                                }
-                                else {
+                                } else {
                                     callback(null, null);
                                 }
-                            }
-                            else {
+                            } else {
                                 callback(err);
                             }
                         });
-                    }
-                    else {
-                        wrappedCallback(callback)(new InternalSiestaError('Invalid options given to store. Missing "' + idField.toString() + '."', {opts: opts}));
+                    } else {
+                        wrappedCallback(callback)(new InternalSiestaError('Invalid options given to store. Missing "' + idField.toString() + '."', {
+                            opts: opts
+                        }));
                     }
                 }
 
             }
         }
-    }
-    else {
+    } else {
         // No way in which to find an object locally.
-        var context = {opts: opts};
+        var context = {
+            opts: opts
+        };
         var msg = 'Invalid options given to store';
         Logger.error(msg, context);
         wrappedCallback(callback)(new InternalSiestaError(msg, context));
@@ -108,20 +135,18 @@ function getMultiple(optsArray, callback) {
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var docs = [];
     var errors = [];
-    _.each(optsArray, function (opts) {
-        get(opts, function (err, doc) {
+    _.each(optsArray, function(opts) {
+        get(opts, function(err, doc) {
             if (err) {
                 errors.push(err);
-            }
-            else {
+            } else {
                 docs.push(doc);
             }
             if (docs.length + errors.length == optsArray.length) {
                 if (callback) {
                     if (errors.length) {
                         callback(errors);
-                    }
-                    else {
+                    } else {
                         callback(null, docs);
                     }
                 }
@@ -135,27 +160,30 @@ function getMultiple(optsArray, callback) {
  * @param localIdentifiers
  * @param callback
  */
-function getMultipleLocal (localIdentifiers, callback) {
+function getMultipleLocal(localIdentifiers, callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var results = _.reduce(localIdentifiers, function (memo, _id) {
-        var obj = cache.get({_id: _id});
+    var results = _.reduce(localIdentifiers, function(memo, _id) {
+        var obj = cache.get({
+            _id: _id
+        });
         if (obj) {
             memo.cached[_id] = obj;
-        }
-        else {
+        } else {
             memo.notCached.push(_id);
         }
         return memo;
-    }, {cached: {}, notCached: []});
+    }, {
+        cached: {},
+        notCached: []
+    });
 
     function finish(err) {
         if (callback) {
             if (err) {
                 callback(err);
-            }
-            else {
-                callback(null, _.map(localIdentifiers, function (_id) {
+            } else {
+                callback(null, _.map(localIdentifiers, function(_id) {
                     return results.cached[_id];
                 }));
             }
@@ -163,36 +191,38 @@ function getMultipleLocal (localIdentifiers, callback) {
     }
     if (siesta.ext.storageEnabled && results.notCached.length) {
         siesta.ext.storage.store.getMultipleLocalFromCouch(results, finish);
-    }
-    else {
+    } else {
         finish();
     }
     return deferred.promise;
 }
 
-function getMultipleRemote (remoteIdentifiers, mapping, callback) {
+function getMultipleRemote(remoteIdentifiers, mapping, callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var results = _.reduce(remoteIdentifiers, function (memo, id) {
-        var cacheQuery = {mapping: mapping};
+    var results = _.reduce(remoteIdentifiers, function(memo, id) {
+        var cacheQuery = {
+            mapping: mapping
+        };
         cacheQuery[mapping.id] = id;
         var obj = cache.get(cacheQuery);
         if (obj) {
             memo.cached[id] = obj;
-        }
-        else {
+        } else {
             memo.notCached.push(id);
         }
         return memo;
-    }, {cached: {}, notCached: []});
+    }, {
+        cached: {},
+        notCached: []
+    });
 
     function finish(err) {
         if (callback) {
             if (err) {
                 callback(err);
-            }
-            else {
-                callback(null, _.map(remoteIdentifiers, function (id) {
+            } else {
+                callback(null, _.map(remoteIdentifiers, function(id) {
                     return results.cached[id];
                 }));
             }
@@ -201,8 +231,7 @@ function getMultipleRemote (remoteIdentifiers, mapping, callback) {
 
     if (siesta.ext.storageEnabled && results.notCached.length) {
         siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
-    }
-    else {
+    } else {
         finish();
     }
     return deferred.promise;

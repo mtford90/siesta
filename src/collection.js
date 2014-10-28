@@ -1,3 +1,7 @@
+/**
+ * @module collection
+ */
+
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Collection');
 Logger.setLevel(log.Level.warn);
@@ -22,7 +26,7 @@ var cache = require('./cache');
  *
  * @param name
  * @constructor
- * 
+ *
  *
  * @example
  * ```js
@@ -127,6 +131,12 @@ Collection.prototype.install = function(callback) {
     }
     return deferred.promise;
 };
+
+/**
+ * Mark this collection as installed, and place the collection on the global Siesta object.
+ * @param  {Object}   err
+ * @param  {Function} callback
+ */
 Collection.prototype._finaliseInstallation = function(err, callback) {
     if (!err) {
         this.installed = true;
@@ -135,10 +145,18 @@ Collection.prototype._finaliseInstallation = function(err, callback) {
     }
     if (callback) callback(err);
 };
-Collection.prototype._mapping = function(name, mapping) {
+
+/**
+ * Given the name of a mapping and an options object describing the mapping, creating a Mapping
+ * object, install it and return it.
+ * @param  {Stirng} name
+ * @param  {Object} mapping
+ * @return {Mapping}
+ */
+Collection.prototype._mapping = function(name, opts) {
     if (name) {
-        this._rawMappings[name] = mapping;
-        var opts = extend(true, {}, mapping);
+        this._rawMappings[name] = opts;
+        var opts = extend(true, {}, opts);
         opts.type = name;
         opts.collection = this._name;
         var mappingObject = new Mapping(opts);
@@ -180,18 +198,45 @@ Collection.prototype.mapping = function() {
     return null;
 };
 
+/**
+ * Create RequestDescriptor object.
+ * @param  {Object} opts
+ * @return {RequestDescriptor}
+ * @throws {InternalSiestaError} If http module not installed.
+ */
 function requestDescriptor(opts) {
-    var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
-    siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-    return requestDescriptor;
+    if (siesta.ext.httpEnabled) {
+        var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
+        siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+        return requestDescriptor;
+    }
+    else {
+        throw new InternalSiestaError('HTTP Module not installed');
+    }
 }
 
+/**
+ * Create and register ResponseDescriptor object. 
+ * @param  {Object} opts
+ * @return {ResponseDescriptor}
+ * @throws {InternalSiestaError} If http module not installed.
+ */
 function responseDescriptor(opts) {
-    var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
-    siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+    if (siesta.ext.httpEnabled) {
+        var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
+        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+    }
+    else {
+        throw new InternalSiestaError
+    }
     return responseDescriptor;
 }
 
+/**
+ * Marshals arguments used to create Descriptor and then calls the registration function.
+ * @param  {Function} registrationFunc Responsible for registering the descriptor.
+ * @return {Descriptor}
+ */
 Collection.prototype._descriptor = function(registrationFunc) {
     var args = Array.prototype.slice.call(arguments, 1);
     if (args.length) {
@@ -247,6 +292,11 @@ Collection.prototype.responseDescriptor = function() {
     return _.partial(this._descriptor, responseDescriptor).apply(this, arguments);
 };
 
+/**
+ * Dump this collection as JSON
+ * @param  {Boolean} asJson Whether or not to apply JSON.stringify
+ * @return {String|Object} 
+ */
 Collection.prototype._dump = function(asJson) {
     var obj = {};
     obj.installed = this.installed;
@@ -371,43 +421,17 @@ Collection.prototype.PATCH = function() {
 };
 
 
-/**
- * Send a DELETE request. Also removes the object.
- * @param {path} path The path to the resource to which we want to DELETE
- * @param {SiestaModel} model The model that we would like to PATCH
- * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
- * @param {Function} callback Callback if opts specified.
- * @returns {Promise}
- */
+
 Collection.prototype.DELETE = function(path, object) {
-    var deferred = q.defer();
-    var args = Array.prototype.slice.call(arguments, 2);
-    var opts = {};
-    var callback;
-    if (typeof(args[0]) == 'function') {
-        callback = args[0];
-    } else if (typeof(args[0]) == 'object') {
-        opts = args[0];
-        callback = args[1];
+    if (siesta.ext.httpEnabled) {
+        var DELETE = siesta.ext.http.DELETE;
+        var args = Array.prototype.slice.call(arguments,0);
+        args.unshift(this);
+        DELETE.apply(DELETE, args);
     }
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var deletionMode = opts.deletionMode || 'restore';
-    // By default we do not map the response from a DELETE request.
-    if (opts.parseResponse === undefined) opts.parseResponse = false;
-    siesta.ext.http._httpResponse.call(this, 'DELETE', path, opts, function(err, x, y, z) {
-        if (err) {
-            if (deletionMode == 'restore') {
-                object.restore();
-            }
-        } else if (deletionMode == 'success') {
-            object.remove();
-        }
-        callback(err, x, y, z);
-    });
-    if (deletionMode == 'now' || deletionMode == 'restore') {
-        object.remove();
+    else {
+        throw InternalSiestaError('HTTP module not enabled');
     }
-    return deferred.promise;
 };
 
 /**

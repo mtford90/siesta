@@ -308,7 +308,9 @@ describe('http!', function() {
                             var method = "DELETE";
                             var status = 200;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
+                            console.log('typeBefore', carMapping.type);
                             collection.DELETE('cars/5/', _objectToDelete, function(_err, _obj, _resp) {
+                                console.log('typeAfter', carMapping.type);
                                 err = _err;
                                 obj = _obj;
                                 resp = _resp;

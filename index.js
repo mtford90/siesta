@@ -1,3 +1,7 @@
+/**
+ * @module siesta
+ */
+
 var collection = require('./src/collection');
 var util = require('./src/util');
 

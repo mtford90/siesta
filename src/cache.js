@@ -144,7 +144,6 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
         RemoteCacheLogger.error(msg);
         throw new InternalSiestaError(msg);
     }
-
 }
 
 function remoteDump(asJson) {
@@ -299,10 +298,17 @@ function contains(obj) {
 
 function remove(obj) {
     if (contains(obj)) {
+        console.log('remove', obj);
         var collectionName = obj.mapping.collection;
         var mappingName = obj.mapping.type;
-        delete localCache[collectionName][mappingName][obj._id];
-        delete localCacheById[obj._id];
+        console.log('mapping', obj.mapping);
+        var _id = obj._id;
+        if (!mappingName) throw InternalSiestaError('No mapping name');
+        if (!collectionName) throw InternalSiestaError('No collection name');
+        if (!_id) throw InternalSiestaError('No _id');
+        console.log('localCache', localCache, collectionName, mappingName, _id);
+        delete localCache[collectionName][mappingName][_id];
+        delete localCacheById[_id];
         if (obj.mapping.id) {
             var remoteId = obj[obj.mapping.id];
             delete remoteCache[collectionName][mappingName][remoteId];

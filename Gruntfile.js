@@ -252,41 +252,17 @@ module.exports = function(grunt) {
         },
 
         shell: {
-            collections: {
+            api: {
                 options: {
                     stderr: false,
                     callback: function(err, stdout, stderr, cb) {
                         if (err) {
                             console.error(err);
                             cb(err);
-                        } else extracted('collections.md', stdout, cb);
+                        } else extracted('api.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md src/collection.js src/http/http.js'
-            },
-            http: {
-                options: {
-                    stderr: false,
-                    callback: function(err, stdout, stderr, cb) {
-                        if (err) {
-                            console.error(err);
-                            cb(err);
-                        } else extracted('http.md', stdout, cb);
-                    }
-                },
-                command: 'jsdoc2md src/http/http.js'
-            },
-            descriptor: {
-                options: {
-                    stderr: false,
-                    callback: function(err, stdout, stderr, cb) {
-                        if (err) {
-                            console.error(err);
-                            cb(err);
-                        } else extracted('descriptors.md', stdout, cb);
-                    }
-                },
-                command: 'jsdoc2md src/http/descriptor.js src/http/responseDescriptor.js'
+                command: 'jsdoc2md src/collection.js src/http/http.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js' 
             },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
@@ -390,9 +366,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-docs', [
-        'shell:collections',
-        'shell:http',
-        'shell:descriptor',
+        'shell:api'
     ]);
 
     grunt.registerTask('build-jekyll', [
