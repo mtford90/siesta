@@ -401,7 +401,6 @@ describe('perform mapping', function() {
                 })
 
             });
-
             describe('object', function() {
 
                 describe('forward', function() {
@@ -440,7 +439,6 @@ describe('perform mapping', function() {
                             done();
                         });
                     });
-
                 });
 
                 describe('reverse', function() {
