@@ -4,7 +4,6 @@
  * @module http
  */
 
-
 if (!siesta) {
     throw new Error('Could not find siesta');
 }
@@ -21,6 +20,13 @@ var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 var Logger = log.loggerWithName('HTTP');
 Logger.setLevel(log.Level.warn);
 
+/**
+ * Send a HTTP request to the given method and path parsing the response.
+ * @param {String} method
+ * @param {String} path The path to the resource we want to GET
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ */
 function _httpResponse(method, path) {
     var self = this;
     var args = Array.prototype.slice.call(arguments, 2);
@@ -102,6 +108,14 @@ function _httpResponse(method, path) {
     $.ajax(opts);
 };
 
+/**
+ * Send a HTTP request to the given method and path
+ * @param {String} method
+ * @param {String} path The path to the resource we want to GET
+ * @param {SiestaModel} object The model we're pushing to the server
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ */
 function _httpRequest(method, path, object) {
     var self = this;
     var args = Array.prototype.slice.call(arguments, 2);
@@ -194,6 +208,120 @@ function DELETE(collection, path, object) {
     return deferred.promise;
 }
 
+/**
+ * Send a HTTP request using the given method
+ * @param {Collection} collection
+ * @param request Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false
+ * @param method
+ * @internal
+ * @returns {Promise}
+ */
+function HTTP_METHOD(collection, request, method) {
+    var args = Array.prototype.slice.call(arguments, 3);
+    return _.partial(request ? _httpRequest : _httpResponse, method).apply(collection, args);
+}
+
+/**
+ * Send a GET request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function GET(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, false, 'GET').apply(this, args);
+}
+
+/**
+ * Send an OPTIONS request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function OPTIONS(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, false, 'OPTIONS').apply(this, args);
+}
+
+/**
+ * Send an TRACE request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function TRACE(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, false, 'TRACE').apply(this, args);
+}
+
+/**
+ * Send an HEAD request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function HEAD(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, false, 'HEAD').apply(this, args);
+}
+
+/**
+ * Send an POST request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {SiestaModel} model The model that we would like to POST
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function POST(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, true, 'POST').apply(this, args);
+}
+
+/**
+ * Send an PUT request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {SiestaModel} model The model that we would like to POST
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function PUT(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, true, 'PUT').apply(this, args);
+}
+
+/**
+ * Send an PATCH request
+ * @param {Collection} collection
+ * @param {String} path The path to the resource we want to GET
+ * @param {SiestaModel} model The model that we would like to POST
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
+ */
+function PATCH(collection) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return _.partial(HTTP_METHOD, collection, true, 'PATCH').apply(this, args);
+}
+
 var ajax;
 
 if (!siesta.ext) {
@@ -211,7 +339,15 @@ siesta.ext.http = {
     },
     _httpResponse: _httpResponse,
     _httpRequest: _httpRequest,
-    DELETE: DELETE
+    DELETE: DELETE,
+    HTTP_METHOD: HTTP_METHOD,
+    GET: GET,
+    TRACE: TRACE,
+    OPTIONS: OPTIONS,
+    HEAD: HEAD,
+    POST: POST,
+    PUT: PUT,
+    PATCH: PATCH
 };
 
 Object.defineProperty(siesta.ext.http, 'ajax', {

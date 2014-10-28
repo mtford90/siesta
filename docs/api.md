@@ -22,7 +22,6 @@ sidebar: nav2.html
     * [collection.requestDescriptor(opts)](#module_collection..Collection#requestDescriptor)
     * [collection.responseDescriptor(opts)](#module_collection..Collection#responseDescriptor)
     * [collection._dump(asJson)](#module_collection..Collection#_dump)
-    * [collection.HTTP_METHOD(request, method)](#module_collection..Collection#HTTP_METHOD)
     * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
     * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
     * [collection.TRACE(path, optsOrCallback, callback)](#module_collection..Collection#TRACE)
@@ -30,9 +29,20 @@ sidebar: nav2.html
     * [collection.POST(path, model, optsOrCallback, callback)](#module_collection..Collection#POST)
     * [collection.PUT(path, model, optsOrCallback, callback)](#module_collection..Collection#PUT)
     * [collection.PATCH(path, model, optsOrCallback, callback)](#module_collection..Collection#PATCH)
+    * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
     * [collection.count(callback)](#module_collection..Collection#count)
 * [http](#module_http)
+  * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
+  * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
   * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
+  * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
+  * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
+  * [http~TRACE(collection, path, optsOrCallback, callback)](#module_http..TRACE)
+  * [http~HEAD(collection, path, optsOrCallback, callback)](#module_http..HEAD)
+  * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
+  * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
+  * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
 * [store](#module_store)
   * [store~get(opts, callback)](#module_store..get)
   * [store~getMultipleLocal(localIdentifiers, callback)](#module_store..getMultipleLocal)
@@ -78,7 +88,6 @@ sidebar: nav2.html
     * [collection.requestDescriptor(opts)](#module_collection..Collection#requestDescriptor)
     * [collection.responseDescriptor(opts)](#module_collection..Collection#responseDescriptor)
     * [collection._dump(asJson)](#module_collection..Collection#_dump)
-    * [collection.HTTP_METHOD(request, method)](#module_collection..Collection#HTTP_METHOD)
     * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
     * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
     * [collection.TRACE(path, optsOrCallback, callback)](#module_collection..Collection#TRACE)
@@ -86,6 +95,7 @@ sidebar: nav2.html
     * [collection.POST(path, model, optsOrCallback, callback)](#module_collection..Collection#POST)
     * [collection.PUT(path, model, optsOrCallback, callback)](#module_collection..Collection#PUT)
     * [collection.PATCH(path, model, optsOrCallback, callback)](#module_collection..Collection#PATCH)
+    * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
     * [collection.count(callback)](#module_collection..Collection#count)
 
 <a name="module_collection..requestDescriptor"></a>
@@ -126,7 +136,6 @@ Create and register ResponseDescriptor object.
   * [collection.requestDescriptor(opts)](#module_collection..Collection#requestDescriptor)
   * [collection.responseDescriptor(opts)](#module_collection..Collection#responseDescriptor)
   * [collection._dump(asJson)](#module_collection..Collection#_dump)
-  * [collection.HTTP_METHOD(request, method)](#module_collection..Collection#HTTP_METHOD)
   * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
   * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
   * [collection.TRACE(path, optsOrCallback, callback)](#module_collection..Collection#TRACE)
@@ -134,6 +143,7 @@ Create and register ResponseDescriptor object.
   * [collection.POST(path, model, optsOrCallback, callback)](#module_collection..Collection#POST)
   * [collection.PUT(path, model, optsOrCallback, callback)](#module_collection..Collection#PUT)
   * [collection.PATCH(path, model, optsOrCallback, callback)](#module_collection..Collection#PATCH)
+  * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
   * [collection.count(callback)](#module_collection..Collection#count)
 
 <a name="new_module_collection..Collection"></a>
@@ -190,7 +200,7 @@ object, install it and return it.
 
 **Params**
 
-- name `Stirng`  
+- name `String`  
 - mapping `Object`  
 
 **Returns**: `Mapping`  
@@ -261,23 +271,13 @@ Dump this collection as JSON
 - asJson `Boolean` - Whether or not to apply JSON.stringify  
 
 **Returns**: `String` | `Object`  
-<a name="module_collection..Collection#HTTP_METHOD"></a>
-###collection.HTTP_METHOD(request, method)
-Send a HTTP request using the given method
-
-**Params**
-
-- request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false  
-- method   
-
-**Returns**: `Promise`  
 <a name="module_collection..Collection#GET"></a>
 ###collection.GET(path, optsOrCallback, callback)
 Send a GET request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource we want to GET  
+- path `String` - The path to the resource we want to GET  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -288,7 +288,7 @@ Send a OPTIONS request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource to which we want to send an OPTIONS request  
+- path `String` - The path to the resource to which we want to send an OPTIONS request  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -310,7 +310,7 @@ Send a HEAD request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource to which we want to send a HEAD request  
+- path `String` - The path to the resource to which we want to send a HEAD request  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -321,7 +321,7 @@ Send a POST request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource to which we want to send a POST request  
+- path `String` - The path to the resource to which we want to send a POST request  
 - model `SiestaModel` - The model that we would like to POST  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
@@ -333,7 +333,7 @@ Send a PUT request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource to which we want to send a PUT request  
+- path `String` - The path to the resource to which we want to send a PUT request  
 - model `SiestaModel` - The model that we would like to PUT  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
@@ -345,7 +345,19 @@ Send a PATCH request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource to which we want to send a PATCH request  
+- path `String` - The path to the resource to which we want to send a PATCH request  
+- model `SiestaModel` - The model that we would like to PATCH  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Returns**: `Promise`  
+<a name="module_collection..Collection#DELETE"></a>
+###collection.DELETE(path, model, optsOrCallback, callback)
+Send a DELETE request. Also removes the object.
+
+**Params**
+
+- path `String` - The path to the resource to which we want to DELETE  
 - model `SiestaModel` - The model that we would like to PATCH  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
@@ -365,6 +377,46 @@ Returns the number of objects in this collection.
 Provisions usage of $.ajax and similar functions to send HTTP requests mapping
 the results back onto the object graph automatically.
 
+**Members**
+
+* [http](#module_http)
+  * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
+  * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
+  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
+  * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
+  * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
+  * [http~TRACE(collection, path, optsOrCallback, callback)](#module_http..TRACE)
+  * [http~HEAD(collection, path, optsOrCallback, callback)](#module_http..HEAD)
+  * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
+  * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
+  * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+
+<a name="module_http.._httpResponse"></a>
+##http~_httpResponse(method, path, optsOrCallback, callback)
+Send a HTTP request to the given method and path parsing the response.
+
+**Params**
+
+- method `String`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+<a name="module_http.._httpRequest"></a>
+##http~_httpRequest(method, path, object, optsOrCallback, callback)
+Send a HTTP request to the given method and path
+
+**Params**
+
+- method `String`  
+- path `String` - The path to the resource we want to GET  
+- object `SiestaModel` - The model we're pushing to the server  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
 <a name="module_http..DELETE"></a>
 ##http~DELETE(collection, path, model, optsOrCallback, callback)
 Send a DELETE request. Also removes the object.
@@ -374,6 +426,112 @@ Send a DELETE request. Also removes the object.
 - collection `Collection`  
 - path `Stirng` - The path to the resource to which we want to DELETE  
 - model `SiestaModel` - The model that we would like to PATCH  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..HTTP_METHOD"></a>
+##http~HTTP_METHOD(collection, request, method)
+Send a HTTP request using the given method
+
+**Params**
+
+- collection `Collection`  
+- request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false  
+- method   
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..GET"></a>
+##http~GET(collection, path, optsOrCallback, callback)
+Send a GET request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..OPTIONS"></a>
+##http~OPTIONS(collection, path, optsOrCallback, callback)
+Send an OPTIONS request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..TRACE"></a>
+##http~TRACE(collection, path, optsOrCallback, callback)
+Send an TRACE request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..HEAD"></a>
+##http~HEAD(collection, path, optsOrCallback, callback)
+Send an HEAD request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..POST"></a>
+##http~POST(collection, path, model, optsOrCallback, callback)
+Send an POST request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..PUT"></a>
+##http~PUT(collection, path, model, optsOrCallback, callback)
+Send an PUT request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..PATCH"></a>
+##http~PATCH(collection, path, model, optsOrCallback, callback)
+Send an PATCH request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 

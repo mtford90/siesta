@@ -149,7 +149,7 @@ Collection.prototype._finaliseInstallation = function(err, callback) {
 /**
  * Given the name of a mapping and an options object describing the mapping, creating a Mapping
  * object, install it and return it.
- * @param  {Stirng} name
+ * @param  {String} name
  * @param  {Object} mapping
  * @return {Mapping}
  */
@@ -209,14 +209,13 @@ function requestDescriptor(opts) {
         var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
         siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
         return requestDescriptor;
-    }
-    else {
+    } else {
         throw new InternalSiestaError('HTTP Module not installed');
     }
 }
 
 /**
- * Create and register ResponseDescriptor object. 
+ * Create and register ResponseDescriptor object.
  * @param  {Object} opts
  * @return {ResponseDescriptor}
  * @throws {InternalSiestaError} If http module not installed.
@@ -225,8 +224,7 @@ function responseDescriptor(opts) {
     if (siesta.ext.httpEnabled) {
         var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
         siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-    }
-    else {
+    } else {
         throw new InternalSiestaError
     }
     return responseDescriptor;
@@ -295,7 +293,7 @@ Collection.prototype.responseDescriptor = function() {
 /**
  * Dump this collection as JSON
  * @param  {Boolean} asJson Whether or not to apply JSON.stringify
- * @return {String|Object} 
+ * @return {String|Object}
  */
 Collection.prototype._dump = function(asJson) {
     var obj = {};
@@ -328,38 +326,38 @@ Collection.prototype._dump = function(asJson) {
 // };
 
 
-/**
- * Send a HTTP request using the given method
- * @param request Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false
- * @param method
- * @internal
- * @returns {Promise}
- */
-Collection.prototype.HTTP_METHOD = function(request, method) {
-    return _.partial(request ? siesta.ext.http._httpRequest : siesta.ext.http._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
-};
+Collection.prototype._http = function(method) {
+    if (siesta.ext.httpEnabled) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        args.unshift(this);
+        var f = siesta.ext.http[method];
+        f.apply(f, args);
+    } else {
+        throw InternalSiestaError('HTTP module not enabled');
+    }
+}
 
 /**
  * Send a GET request
- * @param {path} path The path to the resource we want to GET
+ * @param {String} path The path to the resource we want to GET
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
  * @returns {Promise}
  */
 Collection.prototype.GET = function() {
-    return _.partial(this.HTTP_METHOD, false, 'GET').apply(this, arguments);
+    _.partial(this._http, 'GET').apply(this, arguments);
 };
 
 /**
  * Send a OPTIONS request
- * @param {path} path The path to the resource to which we want to send an OPTIONS request
+ * @param {String} path The path to the resource to which we want to send an OPTIONS request
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @returns {Promise}
  */
 Collection.prototype.OPTIONS = function() {
-    return _.partial(this.HTTP_METHOD, false, 'OPTIONS').apply(this, arguments);
+    _.partial(this._http, 'OPTIONS').apply(this, arguments);
 };
 
 /**
@@ -370,68 +368,66 @@ Collection.prototype.OPTIONS = function() {
  * @returns {Promise}
  */
 Collection.prototype.TRACE = function() {
-    return _.partial(this.HTTP_METHOD, false, 'TRACE').apply(this, arguments);
+    _.partial(this._http, 'TRACE').apply(this, arguments);
 };
 
 /**
  * Send a HEAD request
- * @param {path} path The path to the resource to which we want to send a HEAD request
+ * @param {String} path The path to the resource to which we want to send a HEAD request
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @returns {Promise}
  */
 Collection.prototype.HEAD = function() {
-    return _.partial(this.HTTP_METHOD, false, 'HEAD').apply(this, arguments);
+    _.partial(this._http, 'HEAD').apply(this, arguments);
 };
 
 /**
  * Send a POST request
- * @param {path} path The path to the resource to which we want to send a POST request
+ * @param {String} path The path to the resource to which we want to send a POST request
  * @param {SiestaModel} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @returns {Promise}
  */
 Collection.prototype.POST = function() {
-    return _.partial(this.HTTP_METHOD, true, 'POST').apply(this, arguments);
+    _.partial(this._http, 'POST').apply(this, arguments);
 };
 
 /**
  * Send a PUT request
- * @param {path} path The path to the resource to which we want to send a PUT request
+ * @param {String} path The path to the resource to which we want to send a PUT request
  * @param {SiestaModel} model The model that we would like to PUT
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @returns {Promise}
  */
 Collection.prototype.PUT = function() {
-    return _.partial(this.HTTP_METHOD, true, 'PUT').apply(this, arguments);
+    _.partial(this._http, 'PUT').apply(this, arguments);
 };
 
 /**
  * Send a PATCH request
- * @param {path} path The path to the resource to which we want to send a PATCH request
+ * @param {String} path The path to the resource to which we want to send a PATCH request
  * @param {SiestaModel} model The model that we would like to PATCH
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @returns {Promise}
  */
 Collection.prototype.PATCH = function() {
-    return _.partial(this.HTTP_METHOD, true, 'PATCH').apply(this, arguments);
+    _.partial(this._http, 'PATCH').apply(this, arguments);
 };
 
-
-
+/**
+ * Send a DELETE request. Also removes the object.
+ * @param {String} path The path to the resource to which we want to DELETE
+ * @param {SiestaModel} model The model that we would like to PATCH
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
+ */
 Collection.prototype.DELETE = function(path, object) {
-    if (siesta.ext.httpEnabled) {
-        var DELETE = siesta.ext.http.DELETE;
-        var args = Array.prototype.slice.call(arguments,0);
-        args.unshift(this);
-        DELETE.apply(DELETE, args);
-    }
-    else {
-        throw InternalSiestaError('HTTP module not enabled');
-    }
+    _.partial(this._http, 'DELETE').apply(this, arguments);
 };
 
 /**
