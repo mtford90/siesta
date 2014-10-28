@@ -1,8 +1,6 @@
-/* util.js
- * =======
- *
+/*
  * This is a collection of utilities taken from libraries such as async.js, underscore.js etc.
- * This is to avoid bloating siesta.js.
+ * @module util
  */
 
 function printStackTrace() {

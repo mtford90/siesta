@@ -1,5 +1,5 @@
 /**
- * @module  performance
+ * @module performance
  */
 
 (function () {

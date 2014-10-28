@@ -1,5 +1,5 @@
 /**
- * @module  relationships
+ * @module relationships
  */
 
 var proxy = require('./proxy')

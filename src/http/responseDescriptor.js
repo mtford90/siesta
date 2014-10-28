@@ -1,3 +1,8 @@
+/**
+ * @module http
+ */
+
+
 var Descriptor = require('./descriptor').Descriptor;
 
 /**

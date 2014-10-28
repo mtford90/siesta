@@ -1,3 +1,7 @@
+/**
+ * @module http
+ */
+
 var _i = siesta._internal;
 
 var log = _i.log

@@ -32,6 +32,7 @@ sidebar: nav2.html
     * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
     * [collection.count(callback)](#module_collection..Collection#count)
 * [http](#module_http)
+  * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
   * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
@@ -43,9 +44,71 @@ sidebar: nav2.html
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~bury(obj, data)](#module_http..bury)
+  * [class: http~Descriptor](#module_http..Descriptor)
+    * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+    * [descriptor.match(config, data)](#module_http..Descriptor#match)
+    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+  * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+    * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 * [store](#module_store)
   * [store~get(opts, callback)](#module_store..get)
   * [store~getMultipleLocal(localIdentifiers, callback)](#module_store..getMultipleLocal)
+* [http](#module_http)
+  * [http~path](#module_http..path)
+  * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
+  * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
+  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
+  * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
+  * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
+  * [http~TRACE(collection, path, optsOrCallback, callback)](#module_http..TRACE)
+  * [http~HEAD(collection, path, optsOrCallback, callback)](#module_http..HEAD)
+  * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
+  * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
+  * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~bury(obj, data)](#module_http..bury)
+  * [class: http~Descriptor](#module_http..Descriptor)
+    * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+    * [descriptor.match(config, data)](#module_http..Descriptor#match)
+    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+  * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+    * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
+* [http](#module_http)
+  * [http~path](#module_http..path)
+  * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
+  * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
+  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
+  * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
+  * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
+  * [http~TRACE(collection, path, optsOrCallback, callback)](#module_http..TRACE)
+  * [http~HEAD(collection, path, optsOrCallback, callback)](#module_http..HEAD)
+  * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
+  * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
+  * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~bury(obj, data)](#module_http..bury)
+  * [class: http~Descriptor](#module_http..Descriptor)
+    * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+    * [descriptor.match(config, data)](#module_http..Descriptor#match)
+    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+  * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+    * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 * [cache](#module_cache)
   * [cache~getViaLocalId(localId)](#module_cache..getViaLocalId)
   * [cache~getSingleton(mapping)](#module_cache..getSingleton)
@@ -58,28 +121,6 @@ sidebar: nav2.html
   * [cache~insert(obj)](#module_cache..insert)
   * [cache~contains(obj)](#module_cache..contains)
   * [cache~remove(obj)](#module_cache..remove)
-
-**Classes**
-
-* [class: Descriptor](#Descriptor)
-  * [new Descriptor(opts)](#new_Descriptor)
-  * [descriptor._matchPath(path)](#Descriptor#_matchPath)
-  * [descriptor._matchMethod(method)](#Descriptor#_matchMethod)
-  * [descriptor._extractData(data)](#Descriptor#_extractData)
-  * [descriptor._matchConfig(config)](#Descriptor#_matchConfig)
-  * [descriptor._matchData(data)](#Descriptor#_matchData)
-  * [descriptor.match(config, data)](#Descriptor#match)
-  * [descriptor._transformData(data)](#Descriptor#_transformData)
-* [class: ResponseDescriptor](#ResponseDescriptor)
-  * [new ResponseDescriptor(opts)](#new_ResponseDescriptor)
-
-**Functions**
-
-* [bury(obj, data)](#bury)
-
-**Members**
-
-* [path](#path)
  
 <a name="module_collection"></a>
 #collection
@@ -131,7 +172,7 @@ Create and register ResponseDescriptor object.
 
 **Scope**: inner function of [collection](#module_collection)  
 **Type**: `InternalSiestaError`  
-**Returns**: [ResponseDescriptor](#ResponseDescriptor)  
+**Returns**: `ResponseDescriptor`  
 <a name="module_collection..Collection"></a>
 ##class: collection~Collection
 **Members**
@@ -234,7 +275,7 @@ Marshals arguments used to create Descriptor and then calls the registration fun
 
 - registrationFunc `function` - Responsible for registering the descriptor.  
 
-**Returns**: [Descriptor](#Descriptor)  
+**Returns**: `Descriptor`  
 <a name="module_collection..Collection#requestDescriptor"></a>
 ###collection.requestDescriptor(opts)
 Register a request descriptor for this collection.
@@ -311,7 +352,7 @@ Send a TRACE request
 
 **Params**
 
-- path <code>[path](#path)</code> - The path to the resource to which we want to send a TRACE request  
+- path `path` - The path to the resource to which we want to send a TRACE request  
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -392,6 +433,7 @@ the results back onto the object graph automatically.
 **Members**
 
 * [http](#module_http)
+  * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
   * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
@@ -403,7 +445,23 @@ the results back onto the object graph automatically.
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~bury(obj, data)](#module_http..bury)
+  * [class: http~Descriptor](#module_http..Descriptor)
+    * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+    * [descriptor.match(config, data)](#module_http..Descriptor#match)
+    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+  * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+    * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 
+<a name="module_http..path"></a>
+##http~path
+**Scope**: inner member of [http](#module_http)  
+**Type**: `String`  
 <a name="module_http.._httpResponse"></a>
 ##http~_httpResponse(method, path, optsOrCallback, callback)
 Send a HTTP request to the given method and path parsing the response.
@@ -549,6 +607,141 @@ Send an PATCH request
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
+<a name="module_http..bury"></a>
+##http~bury(obj, data)
+Performs a breadth-first search through data, embedding obj in the first leaf.
+
+**Params**
+
+- obj `Object`  
+- data `Object`  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Object`  
+<a name="module_http..Descriptor"></a>
+##class: http~Descriptor
+**Members**
+
+* [class: http~Descriptor](#module_http..Descriptor)
+  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+  * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+  * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+  * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+  * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+  * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+  * [descriptor.match(config, data)](#module_http..Descriptor#match)
+  * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+
+<a name="new_module_http..Descriptor"></a>
+###new http~Descriptor(opts)
+A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
+<a name="module_http..Descriptor#_matchPath"></a>
+###descriptor._matchPath(path)
+Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.
+
+**Params**
+
+- path `String` | `RegExp`  
+
+**Returns**: `Object`  
+**Example**
+
+```js
+var d = new Descriptor({
+    path: '/resource/(?P<id>)/'
+})
+var matched = d._matchPath('/resource/2');
+console.log(matched); // {id: '2'}
+```
+
+<a name="module_http..Descriptor#_matchMethod"></a>
+###descriptor._matchMethod(method)
+Returns true if the descriptor accepts the HTTP method.
+
+**Params**
+
+- method `String`  
+
+**Returns**: `boolean`  
+**Example**
+
+```js
+var d = new Descriptor({
+    method: ['POST', 'PUT']
+});
+console.log(d._matchMethod('GET')); // false
+```
+
+<a name="module_http..Descriptor#_extractData"></a>
+###descriptor._extractData(data)
+If nested data has been specified in the descriptor, extract the data.
+
+**Params**
+
+- data `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#_matchConfig"></a>
+###descriptor._matchConfig(config)
+Returns this descriptors mapping if the request config matches.
+
+**Params**
+
+- config `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#_matchData"></a>
+###descriptor._matchData(data)
+Returns data if the data matches, performing any extraction as specified in opts.data
+
+**Params**
+
+- data `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#match"></a>
+###descriptor.match(config, data)
+Check if the HTTP config and returned data match this descriptor definition.
+
+**Params**
+
+- config `Object` - Config object for $.ajax and similar  
+- data `Object`  
+
+**Returns**: `Object` - Extracted data  
+<a name="module_http..Descriptor#_transformData"></a>
+###descriptor._transformData(data)
+Apply any transforms.
+
+**Params**
+
+- data `Object` - Serialised data.  
+
+**Returns**: `Object` - Serialised data with applied transformations.  
+<a name="module_http..ResponseDescriptor"></a>
+##class: http~ResponseDescriptor
+**Members**
+
+* [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+  * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
+
+<a name="new_module_http..ResponseDescriptor"></a>
+###new http~ResponseDescriptor(opts)
+Describes what to do with a HTTP response.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
 <a name="module_store"></a>
 #store
 The "store" is responsible for mediating between the in-memory cache and any persistent storage.
@@ -594,6 +787,637 @@ Uses pouch bulk fetch API. Much faster than getMultiple.
 - callback   
 
 **Scope**: inner function of [store](#module_store)  
+<a name="module_http"></a>
+#http
+Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do 
+with HTTP request/response bodies.
+
+**Members**
+
+* [http](#module_http)
+  * [http~path](#module_http..path)
+  * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
+  * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
+  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
+  * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
+  * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
+  * [http~TRACE(collection, path, optsOrCallback, callback)](#module_http..TRACE)
+  * [http~HEAD(collection, path, optsOrCallback, callback)](#module_http..HEAD)
+  * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
+  * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
+  * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~bury(obj, data)](#module_http..bury)
+  * [class: http~Descriptor](#module_http..Descriptor)
+    * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+    * [descriptor.match(config, data)](#module_http..Descriptor#match)
+    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+  * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+    * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
+
+<a name="module_http..path"></a>
+##http~path
+**Scope**: inner member of [http](#module_http)  
+**Type**: `String`  
+<a name="module_http.._httpResponse"></a>
+##http~_httpResponse(method, path, optsOrCallback, callback)
+Send a HTTP request to the given method and path parsing the response.
+
+**Params**
+
+- method `String`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+<a name="module_http.._httpRequest"></a>
+##http~_httpRequest(method, path, object, optsOrCallback, callback)
+Send a HTTP request to the given method and path
+
+**Params**
+
+- method `String`  
+- path `String` - The path to the resource we want to GET  
+- object `SiestaModel` - The model we're pushing to the server  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+<a name="module_http..DELETE"></a>
+##http~DELETE(collection, path, model, optsOrCallback, callback)
+Send a DELETE request. Also removes the object.
+
+**Params**
+
+- collection `Collection`  
+- path `Stirng` - The path to the resource to which we want to DELETE  
+- model `SiestaModel` - The model that we would like to PATCH  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..HTTP_METHOD"></a>
+##http~HTTP_METHOD(collection, request, method)
+Send a HTTP request using the given method
+
+**Params**
+
+- collection `Collection`  
+- request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false  
+- method   
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..GET"></a>
+##http~GET(collection, path, optsOrCallback, callback)
+Send a GET request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..OPTIONS"></a>
+##http~OPTIONS(collection, path, optsOrCallback, callback)
+Send an OPTIONS request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..TRACE"></a>
+##http~TRACE(collection, path, optsOrCallback, callback)
+Send an TRACE request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..HEAD"></a>
+##http~HEAD(collection, path, optsOrCallback, callback)
+Send an HEAD request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..POST"></a>
+##http~POST(collection, path, model, optsOrCallback, callback)
+Send an POST request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..PUT"></a>
+##http~PUT(collection, path, model, optsOrCallback, callback)
+Send an PUT request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..PATCH"></a>
+##http~PATCH(collection, path, model, optsOrCallback, callback)
+Send an PATCH request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..bury"></a>
+##http~bury(obj, data)
+Performs a breadth-first search through data, embedding obj in the first leaf.
+
+**Params**
+
+- obj `Object`  
+- data `Object`  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Object`  
+<a name="module_http..Descriptor"></a>
+##class: http~Descriptor
+**Members**
+
+* [class: http~Descriptor](#module_http..Descriptor)
+  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+  * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+  * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+  * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+  * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+  * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+  * [descriptor.match(config, data)](#module_http..Descriptor#match)
+  * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+
+<a name="new_module_http..Descriptor"></a>
+###new http~Descriptor(opts)
+A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
+<a name="module_http..Descriptor#_matchPath"></a>
+###descriptor._matchPath(path)
+Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.
+
+**Params**
+
+- path `String` | `RegExp`  
+
+**Returns**: `Object`  
+**Example**
+
+```js
+var d = new Descriptor({
+    path: '/resource/(?P<id>)/'
+})
+var matched = d._matchPath('/resource/2');
+console.log(matched); // {id: '2'}
+```
+
+<a name="module_http..Descriptor#_matchMethod"></a>
+###descriptor._matchMethod(method)
+Returns true if the descriptor accepts the HTTP method.
+
+**Params**
+
+- method `String`  
+
+**Returns**: `boolean`  
+**Example**
+
+```js
+var d = new Descriptor({
+    method: ['POST', 'PUT']
+});
+console.log(d._matchMethod('GET')); // false
+```
+
+<a name="module_http..Descriptor#_extractData"></a>
+###descriptor._extractData(data)
+If nested data has been specified in the descriptor, extract the data.
+
+**Params**
+
+- data `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#_matchConfig"></a>
+###descriptor._matchConfig(config)
+Returns this descriptors mapping if the request config matches.
+
+**Params**
+
+- config `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#_matchData"></a>
+###descriptor._matchData(data)
+Returns data if the data matches, performing any extraction as specified in opts.data
+
+**Params**
+
+- data `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#match"></a>
+###descriptor.match(config, data)
+Check if the HTTP config and returned data match this descriptor definition.
+
+**Params**
+
+- config `Object` - Config object for $.ajax and similar  
+- data `Object`  
+
+**Returns**: `Object` - Extracted data  
+<a name="module_http..Descriptor#_transformData"></a>
+###descriptor._transformData(data)
+Apply any transforms.
+
+**Params**
+
+- data `Object` - Serialised data.  
+
+**Returns**: `Object` - Serialised data with applied transformations.  
+<a name="module_http..ResponseDescriptor"></a>
+##class: http~ResponseDescriptor
+**Members**
+
+* [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+  * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
+
+<a name="new_module_http..ResponseDescriptor"></a>
+###new http~ResponseDescriptor(opts)
+Describes what to do with a HTTP response.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
+<a name="module_http"></a>
+#http
+**Members**
+
+* [http](#module_http)
+  * [http~path](#module_http..path)
+  * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
+  * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
+  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
+  * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
+  * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
+  * [http~TRACE(collection, path, optsOrCallback, callback)](#module_http..TRACE)
+  * [http~HEAD(collection, path, optsOrCallback, callback)](#module_http..HEAD)
+  * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
+  * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
+  * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~bury(obj, data)](#module_http..bury)
+  * [class: http~Descriptor](#module_http..Descriptor)
+    * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+    * [descriptor.match(config, data)](#module_http..Descriptor#match)
+    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+  * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+    * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
+
+<a name="module_http..path"></a>
+##http~path
+**Scope**: inner member of [http](#module_http)  
+**Type**: `String`  
+<a name="module_http.._httpResponse"></a>
+##http~_httpResponse(method, path, optsOrCallback, callback)
+Send a HTTP request to the given method and path parsing the response.
+
+**Params**
+
+- method `String`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+<a name="module_http.._httpRequest"></a>
+##http~_httpRequest(method, path, object, optsOrCallback, callback)
+Send a HTTP request to the given method and path
+
+**Params**
+
+- method `String`  
+- path `String` - The path to the resource we want to GET  
+- object `SiestaModel` - The model we're pushing to the server  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+<a name="module_http..DELETE"></a>
+##http~DELETE(collection, path, model, optsOrCallback, callback)
+Send a DELETE request. Also removes the object.
+
+**Params**
+
+- collection `Collection`  
+- path `Stirng` - The path to the resource to which we want to DELETE  
+- model `SiestaModel` - The model that we would like to PATCH  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..HTTP_METHOD"></a>
+##http~HTTP_METHOD(collection, request, method)
+Send a HTTP request using the given method
+
+**Params**
+
+- collection `Collection`  
+- request  - Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false  
+- method   
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..GET"></a>
+##http~GET(collection, path, optsOrCallback, callback)
+Send a GET request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..OPTIONS"></a>
+##http~OPTIONS(collection, path, optsOrCallback, callback)
+Send an OPTIONS request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..TRACE"></a>
+##http~TRACE(collection, path, optsOrCallback, callback)
+Send an TRACE request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..HEAD"></a>
+##http~HEAD(collection, path, optsOrCallback, callback)
+Send an HEAD request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..POST"></a>
+##http~POST(collection, path, model, optsOrCallback, callback)
+Send an POST request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..PUT"></a>
+##http~PUT(collection, path, model, optsOrCallback, callback)
+Send an PUT request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..PATCH"></a>
+##http~PATCH(collection, path, model, optsOrCallback, callback)
+Send an PATCH request
+
+**Params**
+
+- collection `Collection`  
+- path `String` - The path to the resource we want to GET  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Promise`  
+<a name="module_http..bury"></a>
+##http~bury(obj, data)
+Performs a breadth-first search through data, embedding obj in the first leaf.
+
+**Params**
+
+- obj `Object`  
+- data `Object`  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Object`  
+<a name="module_http..Descriptor"></a>
+##class: http~Descriptor
+**Members**
+
+* [class: http~Descriptor](#module_http..Descriptor)
+  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+  * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
+  * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
+  * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
+  * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
+  * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
+  * [descriptor.match(config, data)](#module_http..Descriptor#match)
+  * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
+
+<a name="new_module_http..Descriptor"></a>
+###new http~Descriptor(opts)
+A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
+<a name="module_http..Descriptor#_matchPath"></a>
+###descriptor._matchPath(path)
+Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.
+
+**Params**
+
+- path `String` | `RegExp`  
+
+**Returns**: `Object`  
+**Example**
+
+```js
+var d = new Descriptor({
+    path: '/resource/(?P<id>)/'
+})
+var matched = d._matchPath('/resource/2');
+console.log(matched); // {id: '2'}
+```
+
+<a name="module_http..Descriptor#_matchMethod"></a>
+###descriptor._matchMethod(method)
+Returns true if the descriptor accepts the HTTP method.
+
+**Params**
+
+- method `String`  
+
+**Returns**: `boolean`  
+**Example**
+
+```js
+var d = new Descriptor({
+    method: ['POST', 'PUT']
+});
+console.log(d._matchMethod('GET')); // false
+```
+
+<a name="module_http..Descriptor#_extractData"></a>
+###descriptor._extractData(data)
+If nested data has been specified in the descriptor, extract the data.
+
+**Params**
+
+- data `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#_matchConfig"></a>
+###descriptor._matchConfig(config)
+Returns this descriptors mapping if the request config matches.
+
+**Params**
+
+- config `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#_matchData"></a>
+###descriptor._matchData(data)
+Returns data if the data matches, performing any extraction as specified in opts.data
+
+**Params**
+
+- data `Object`  
+
+**Returns**: `Object`  
+<a name="module_http..Descriptor#match"></a>
+###descriptor.match(config, data)
+Check if the HTTP config and returned data match this descriptor definition.
+
+**Params**
+
+- config `Object` - Config object for $.ajax and similar  
+- data `Object`  
+
+**Returns**: `Object` - Extracted data  
+<a name="module_http..Descriptor#_transformData"></a>
+###descriptor._transformData(data)
+Apply any transforms.
+
+**Params**
+
+- data `Object` - Serialised data.  
+
+**Returns**: `Object` - Serialised data with applied transformations.  
+<a name="module_http..ResponseDescriptor"></a>
+##class: http~ResponseDescriptor
+**Members**
+
+* [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
+  * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
+
+<a name="new_module_http..ResponseDescriptor"></a>
+###new http~ResponseDescriptor(opts)
+Describes what to do with a HTTP response.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
 <a name="module_cache"></a>
 #cache
 This is an in-memory cache for models. Models are cached by local id (_id) and remote id (defined by the mapping).
@@ -734,138 +1558,3 @@ Removes the object from the cache (if it's actually in the cache) otherwises thr
 
 **Scope**: inner function of [cache](#module_cache)  
 **Type**: `InternalSiestaError`  
-<a name="Descriptor"></a>
-#class: Descriptor
-**Members**
-
-* [class: Descriptor](#Descriptor)
-  * [new Descriptor(opts)](#new_Descriptor)
-  * [descriptor._matchPath(path)](#Descriptor#_matchPath)
-  * [descriptor._matchMethod(method)](#Descriptor#_matchMethod)
-  * [descriptor._extractData(data)](#Descriptor#_extractData)
-  * [descriptor._matchConfig(config)](#Descriptor#_matchConfig)
-  * [descriptor._matchData(data)](#Descriptor#_matchData)
-  * [descriptor.match(config, data)](#Descriptor#match)
-  * [descriptor._transformData(data)](#Descriptor#_transformData)
-
-<a name="new_Descriptor"></a>
-##new Descriptor(opts)
-A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
-intercept a HTTP request/response and perform a mapping.
-
-**Params**
-
-- opts `Object`  
-
-<a name="Descriptor#_matchPath"></a>
-##descriptor._matchPath(path)
-Takes a regex path and returns an object if matched.
-If any regular expression groups were defined, the returned object will contain the matches.
-
-**Params**
-
-- path `String` | `RegExp`  
-
-**Returns**: `Object`  
-**Example**
-
-```js
-var d = new Descriptor({
-    path: '/resource/(?P<id>)/'
-})
-var matched = d._matchPath('/resource/2');
-console.log(matched); // {id: '2'}
-```
-
-<a name="Descriptor#_matchMethod"></a>
-##descriptor._matchMethod(method)
-Returns true if the descriptor accepts the HTTP method.
-
-**Params**
-
-- method `String`  
-
-**Returns**: `boolean`  
-**Example**
-
-```js
-var d = new Descriptor({
-    method: ['POST', 'PUT']
-});
-console.log(d._matchMethod('GET')); // false
-```
-
-<a name="Descriptor#_extractData"></a>
-##descriptor._extractData(data)
-If nested data has been specified in the descriptor, extract the data.
-
-**Params**
-
-- data `Object`  
-
-**Returns**: `Object`  
-<a name="Descriptor#_matchConfig"></a>
-##descriptor._matchConfig(config)
-Returns this descriptors mapping if the request config matches.
-
-**Params**
-
-- config `Object`  
-
-**Returns**: `Object`  
-<a name="Descriptor#_matchData"></a>
-##descriptor._matchData(data)
-Returns data if the data matches, performing any extraction as specified in opts.data
-
-**Params**
-
-- data `Object`  
-
-**Returns**: `Object`  
-<a name="Descriptor#match"></a>
-##descriptor.match(config, data)
-Check if the HTTP config and returned data match this descriptor definition.
-
-**Params**
-
-- config `Object` - Config object for $.ajax and similar  
-- data `Object`  
-
-**Returns**: `Object` - Extracted data  
-<a name="Descriptor#_transformData"></a>
-##descriptor._transformData(data)
-Apply any transforms.
-
-**Params**
-
-- data `Object` - Serialised data.  
-
-**Returns**: `Object` - Serialised data with applied transformations.  
-<a name="ResponseDescriptor"></a>
-#class: ResponseDescriptor
-**Members**
-
-* [class: ResponseDescriptor](#ResponseDescriptor)
-  * [new ResponseDescriptor(opts)](#new_ResponseDescriptor)
-
-<a name="new_ResponseDescriptor"></a>
-##new ResponseDescriptor(opts)
-Describes what to do with a HTTP response.
-
-**Params**
-
-- opts `Object`  
-
-<a name="bury"></a>
-#bury(obj, data)
-Performs a breadth-first search through data, embedding obj in the first leaf.
-
-**Params**
-
-- obj `Object`  
-- data `Object`  
-
-**Returns**: `Object`  
-<a name="path"></a>
-#path
-**Type**: `String`  

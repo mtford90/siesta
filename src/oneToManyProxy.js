@@ -17,7 +17,11 @@ var proxy = require('./proxy')
     , q = require('q')
     ;
 
-
+/**
+ * @class  [OneToManyProxy description]
+ * @constructor
+ * @param {[type]} opts
+ */
 function OneToManyProxy(opts) {
     NewObjectProxy.call(this, opts);
 

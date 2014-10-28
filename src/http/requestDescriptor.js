@@ -1,3 +1,7 @@
+/**
+ * @module http
+ */
+
 var Descriptor = require('./descriptor').Descriptor
     , Serialiser = require('./serialiser');
 
