@@ -6,6 +6,12 @@ var Logger = log.loggerWithName('Serialiser');
 Logger.setLevel(log.Level.warn);
 var _ = utils._;
 
+/**
+ * Serialises an object into it's remote identifier (as defined by the mapping)
+ * @param  {SiestaModel} obj
+ * @return {String}
+ * 
+ */
 function idSerialiser(obj) {
     var idField = obj.mapping.id;
     if (idField) {
@@ -18,6 +24,12 @@ function idSerialiser(obj) {
     }
 }
 
+/**
+ * Serialises obj following relationships to specified depth.
+ * @param  {Integer}   depth
+ * @param  {SiestaModel}   obj
+ * @param  {Function} done 
+ */
 function depthSerialiser(depth, obj, done) {
     if (Logger.trace.isEnabled)
         Logger.trace('depthSerialiser');

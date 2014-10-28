@@ -5,7 +5,10 @@ Logger.setLevel(log.Level.warn);
 
 var assert = _i.misc.assert;
 
-
+/**
+ * @class Entry point for descriptor registration.
+ * @constructor
+ */
 function DescriptorRegistry() {
     if (!this) {
         return new DescriptorRegistry(opts);

@@ -225,24 +225,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-        // jekyll: {
-        //     options: {
-        //         bundleExec: true,
-        //         dest: './_site',
-        //         src: './docs',
-        //         serve: false
-        //     },
-        //     build: {
-        //         options: {
-        //             config: 'config.dev.yml'
-        //         }
-        //     },
-        //     dist: {
-        //         options: {
-        //             config: '_config.yml'
-        //         }
-        //     }
-        // },
         connect: {
             site: {
                 options: {
@@ -274,16 +256,22 @@ module.exports = function(grunt) {
                 options: {
                     stderr: false,
                     callback: function(err, stdout, stderr, cb) {
-                        extracted('collections.md', stdout, cb);
+                        if (err) {
+                            console.error(err);
+                            cb(err);
+                        } else extracted('collections.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md src/collection.js'
+                command: 'jsdoc2md src/collection.js src/http/http.js'
             },
             http: {
                 options: {
                     stderr: false,
                     callback: function(err, stdout, stderr, cb) {
-                        extracted('http.md', stdout, cb);
+                        if (err) {
+                            console.error(err);
+                            cb(err);
+                        } else extracted('http.md', stdout, cb);
                     }
                 },
                 command: 'jsdoc2md src/http/http.js'
@@ -292,10 +280,13 @@ module.exports = function(grunt) {
                 options: {
                     stderr: false,
                     callback: function(err, stdout, stderr, cb) {
-                        extracted('descriptors.md', stdout, cb);
+                        if (err) {
+                            console.error(err);
+                            cb(err);
+                        } else extracted('descriptors.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md src/http/descriptor.js'
+                command: 'jsdoc2md src/http/descriptor.js src/http/responseDescriptor.js'
             },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
@@ -304,7 +295,7 @@ module.exports = function(grunt) {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.yml'
             },
             jekyllDist: {
-                command: 'cd _site/ && git commit -a -m "Jekyll Build" && git push origin gh-pages'
+                command: 'cd _site/ && git add * && git commit -a -m "Jekyll Build" && git push origin gh-pages'
             }
         },
 
@@ -399,9 +390,9 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('build-docs', [
-        'shell:http',
         'shell:collections',
-        'shell:descriptor'
+        'shell:http',
+        'shell:descriptor',
     ]);
 
     grunt.registerTask('build-jekyll', [

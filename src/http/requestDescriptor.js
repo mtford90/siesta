@@ -11,14 +11,16 @@ var _i = siesta._internal
 var Logger = log.loggerWithName('RequestDescriptor');
 Logger.setLevel(log.Level.warn);
 
+/**
+ * @class Describes a HTTP request
+ * @param {Object} opts
+ */
 function RequestDescriptor(opts) {
     if (!this) {
         return new RequestDescriptor(opts);
     }
 
     Descriptor.call(this, opts);
-
-
     if (this._opts['serializer']) {
         this._opts.serialiser = this._opts['serializer'];
     }
@@ -34,6 +36,7 @@ function RequestDescriptor(opts) {
 }
 
 RequestDescriptor.prototype = Object.create(Descriptor.prototype);
+
 
 RequestDescriptor.prototype._serialise = function (obj, callback) {
     var deferred = q.defer();

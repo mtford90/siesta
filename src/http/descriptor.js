@@ -119,6 +119,7 @@ function Descriptor(opts) {
     }
 
     /**
+     * @name path
      * @type {String}
      */
     defineSubProperty.call(this, 'path', this._opts);
@@ -136,12 +137,15 @@ Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELE
  * 
  * @param  {String|RegExp} path
  * @return {Object}
+ * @internal 
  * @example
+ * ```js
  * var d = new Descriptor({
  *     path: '/resource/(?P<id>)/'
  * })
  * var matched = d._matchPath('/resource/2');
  * console.log(matched); // {id: '2'}
+ * ```
  */
 Descriptor.prototype._matchPath = function (path) {
     var match = XRegExp.exec(path, this.path);
@@ -164,11 +168,14 @@ Descriptor.prototype._matchPath = function (path) {
  * 
  * @param  {String} method
  * @return {boolean}
+ * @internal 
  * @example
+ * ```js
  * var d = new Descriptor({
  *     method: ['POST', 'PUT']
  * });
  * console.log(d._matchMethod('GET')); // false
+ * ```
  */
 Descriptor.prototype._matchMethod = function (method) {
     for (var i = 0; i < this.method.length; i++) {
@@ -179,6 +186,13 @@ Descriptor.prototype._matchMethod = function (method) {
     return false;
 };
 
+/**
+ * Performs a breadth-first search through data, embedding obj in the first leaf.
+ * 
+ * @param  {Object} obj
+ * @param  {Object} data
+ * @return {Object}
+ */
 function bury(obj, data) {
     var root = data;
     var keys = Object.keys(data);
@@ -215,6 +229,11 @@ Descriptor.prototype._embedData = function (data) {
     }
 };
 
+/**
+ * If nested data has been specified in the descriptor, extract the data.
+ * @param  {Object} data
+ * @return {Object}
+ */
 Descriptor.prototype._extractData = function (data) {
     if (Logger.debug.isEnabled)
         Logger.debug('_extractData', data);
@@ -247,9 +266,8 @@ Descriptor.prototype._extractData = function (data) {
 
 /**
  * Returns this descriptors mapping if the request config matches.
- * @param config
- * @returns {*}
- * @private
+ * @param {Object} config
+ * @returns {Object}
  */
 Descriptor.prototype._matchConfig = function (config) {
     var matches = config.type ? this._matchMethod(config.type) : {};
@@ -263,6 +281,12 @@ Descriptor.prototype._matchConfig = function (config) {
     return matches;
 };
 
+/**
+ * Returns data if the data matches, performing any extraction as specified in opts.data
+ * 
+ * @param  {Object} data
+ * @return {Object}
+ */
 Descriptor.prototype._matchData = function (data) {
     var extractedData = null;
     if (this.data) {
@@ -279,6 +303,13 @@ Descriptor.prototype._matchData = function (data) {
     return extractedData;
 };
 
+/**
+ * Check if the HTTP config and returned data match this descriptor definition.
+ * 
+ * @param  {Object} config Config object for $.ajax and similar
+ * @param  {Object} data
+ * @return {Object} Extracted data
+ */
 Descriptor.prototype.match = function (config, data) {
     var regexMatches = this._matchConfig(config);
     var matches = !!regexMatches;
@@ -317,6 +348,11 @@ Descriptor.prototype.match = function (config, data) {
     return extractedData;
 };
 
+/**
+ * Apply any transforms.
+ * @param  {Object} data Serialised data.
+ * @return {Object} Serialised data with applied transformations.
+ */
 Descriptor.prototype._transformData = function (data) {
     var transforms = this.transforms;
     for (var attr in transforms) {

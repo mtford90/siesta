@@ -1,4 +1,3 @@
-(function() {
     if (!siesta) {
         throw new Error('Could not find siesta');
     }
@@ -16,37 +15,7 @@
     var Logger = log.loggerWithName('HTTP');
     Logger.setLevel(log.Level.warn);
 
-    if (!siesta.ext) {
-        siesta.ext = {};
-    }
-
-    var ajax;
-
-    siesta.ext.http = {
-        RequestDescriptor: require('./requestDescriptor').RequestDescriptor,
-        ResponseDescriptor: require('./responseDescriptor').ResponseDescriptor,
-        Descriptor: require('./descriptor').Descriptor,
-        Serialiser: require('./serialiser'),
-        DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry,
-        setAjax: function(_ajax) {
-            ajax = _ajax;
-        }
-    };  
-
-    Object.defineProperty(siesta.ext.http, 'ajax', {
-        get: function() {
-            var a = ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
-            if (!a) {
-                throw new InternalSiestaError('ajax has not been defined and could not find $.ajax or jQuery.ajax');
-            }
-            return a;
-        },
-        set: function(v) {
-            ajax = v;
-        }
-    });
-
-    Collection.prototype._httpResponse = function(method, path) {
+    function _httpResponse(method, path) {
         var self = this;
         var args = Array.prototype.slice.call(arguments, 2);
         var callback;
@@ -127,7 +96,9 @@
         $.ajax(opts);
     };
 
-    Collection.prototype._httpRequest = function(method, path, object) {
+    Collection.prototype._httpResponse = _httpResponse;
+
+    function _httpRequest(method, path, object) {
         var self = this;
         var args = Array.prototype.slice.call(arguments, 2);
         var callback;
@@ -167,7 +138,7 @@
                 } else {
                     opts.data = data;
                     opts.obj = object;
-                    _.partial(self._httpResponse, method, path, opts, callback).apply(self, args);
+                    _.partial(_httpResponse, method, path, opts, callback).apply(self, args);
                 }
             });
         } else if (callback) {
@@ -178,4 +149,36 @@
         return deferred.promise;
     };
 
-})();
+    Collection.prototype._httpResponse = _httpResponse;
+
+    var ajax;
+
+    if (!siesta.ext) {
+        siesta.ext = {};
+    }
+
+    siesta.ext.http = {
+        RequestDescriptor: require('./requestDescriptor').RequestDescriptor,
+        ResponseDescriptor: require('./responseDescriptor').ResponseDescriptor,
+        Descriptor: require('./descriptor').Descriptor,
+        Serialiser: require('./serialiser'),
+        DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry,
+        setAjax: function(_ajax) {
+            ajax = _ajax;
+        },
+        _httpResponse: _httpResponse,
+        _httpRequest: _httpRequest
+    };
+
+    Object.defineProperty(siesta.ext.http, 'ajax', {
+        get: function() {
+            var a = ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
+            if (!a) {
+                throw new InternalSiestaError('ajax has not been defined and could not find $.ajax or jQuery.ajax');
+            }
+            return a;
+        },
+        set: function(v) {
+            ajax = v;
+        }
+    });

@@ -9,7 +9,6 @@ var Mapping = require('./mapping').Mapping;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
 
-//var $ = require('../vendor/zepto').$;
 var util = require('./util');
 var _ = util._;
 
@@ -23,10 +22,11 @@ var cache = require('./cache');
  *
  * @param name
  * @constructor
+ * 
  *
  * @example
  * ```js
- * var GitHub = new Collection('GitHub')
+ * var GitHub = new siesta.Collection('GitHub')
  * // ... configure mappings, descriptors etc ...
  * GitHub.install(function () {
  *     // ... carry on.
@@ -149,6 +149,13 @@ Collection.prototype._mapping = function(name, mapping) {
         throw new InternalSiestaError('No name specified when creating mapping');
     }
 };
+
+/**
+ * Registers a mapping with this collection.
+ * @param {String|Object} optsOrName An options object or the name of the mapping. Must pass options as second param if specify name.
+ * @param {Object} opts Options if name already specified.
+ * @return {Mapping}
+ */
 Collection.prototype.mapping = function() {
     var self = this;
     if (arguments.length) {
@@ -204,12 +211,42 @@ Collection.prototype._descriptor = function(registrationFunc) {
     }
     return null;
 };
+
+/**
+ * Register a request descriptor for this collection.
+ * @param {Object} opts
+ * @return {RequestDescriptor} A request descriptor
+ * @example
+ * ```js
+ * collection.requestDescriptor({
+ *     path: 'cars/(?P<id>)/'
+ *     method: 'PUT',
+ *     mapping: 'Car',
+ *     data: 'data'
+ * });
+ * ```
+ */
 Collection.prototype.requestDescriptor = function() {
     return _.partial(this._descriptor, requestDescriptor).apply(this, arguments);
 };
+
+/**
+ * Register a response descriptor for this collection.
+ * @param {Object} opts
+ * @example
+ * ```js
+ * responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+ *    mapping: 'Car',
+ *    transforms: {
+ *        'colour': 'path.to.colour'
+ *    }
+ * });
+ * ```
+ */
 Collection.prototype.responseDescriptor = function() {
     return _.partial(this._descriptor, responseDescriptor).apply(this, arguments);
 };
+
 Collection.prototype._dump = function(asJson) {
     var obj = {};
     obj.installed = this.installed;
@@ -220,40 +257,45 @@ Collection.prototype._dump = function(asJson) {
 };
 
 
-/**
- * Persist all changes to PouchDB.
- * Note: Storage extension must be installed.
- * @param callback
- * @returns {Promise}
- */
-Collection.prototype.save = function(callback) {
-    var deferred = q.defer();
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    if (siesta.ext.storageEnabled) {
-        util.next(function() {
-            var mergeChanges = siesta.ext.storage.changes.mergeChanges;
-            mergeChanges(callback);
-        });
-    } else {
-        callback('Storage module not installed');
-    }
-    return deferred.promise;
-};
+// /**
+//  * Persist all changes to PouchDB.
+//  * Note: Storage extension must be installed.
+//  * @param callback
+//  * @returns {Promise}
+//  */
+// Collection.prototype.save = function(callback) {
+//     var deferred = q.defer();
+//     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+//     if (siesta.ext.storageEnabled) {
+//         util.next(function() {
+//             var mergeChanges = siesta.ext.storage.changes.mergeChanges;
+//             mergeChanges(callback);
+//         });
+//     } else {
+//         callback('Storage module not installed');
+//     }
+//     return deferred.promise;
+// };
 
 
 /**
  * Send a HTTP request using the given method
  * @param request Does the request contain data? e.g. POST/PATCH/PUT will be true, GET will false
  * @param method
- * @returns {*}
+ * @internal
+ * @returns {Promise}
  */
 Collection.prototype.HTTP_METHOD = function(request, method) {
-    return _.partial(request ? this._httpRequest : this._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
+    return _.partial(request ? siesta.ext.http._httpRequest : siesta.ext.http._httpResponse, method).apply(this, Array.prototype.slice.call(arguments, 2));
 };
 
 /**
  * Send a GET request
- * @returns {*}
+ * @param {path} path The path to the resource we want to GET
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @package HTTP
+ * @returns {Promise}
  */
 Collection.prototype.GET = function() {
     return _.partial(this.HTTP_METHOD, false, 'GET').apply(this, arguments);
@@ -261,7 +303,10 @@ Collection.prototype.GET = function() {
 
 /**
  * Send a OPTIONS request
- * @returns {*}
+ * @param {path} path The path to the resource to which we want to send an OPTIONS request
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.OPTIONS = function() {
     return _.partial(this.HTTP_METHOD, false, 'OPTIONS').apply(this, arguments);
@@ -269,7 +314,10 @@ Collection.prototype.OPTIONS = function() {
 
 /**
  * Send a TRACE request
- * @returns {*}
+ * @param {path} path The path to the resource to which we want to send a TRACE request
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.TRACE = function() {
     return _.partial(this.HTTP_METHOD, false, 'TRACE').apply(this, arguments);
@@ -277,7 +325,10 @@ Collection.prototype.TRACE = function() {
 
 /**
  * Send a HEAD request
- * @returns {*}
+ * @param {path} path The path to the resource to which we want to send a HEAD request
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.HEAD = function() {
     return _.partial(this.HTTP_METHOD, false, 'HEAD').apply(this, arguments);
@@ -285,7 +336,11 @@ Collection.prototype.HEAD = function() {
 
 /**
  * Send a POST request
- * @returns {*}
+ * @param {path} path The path to the resource to which we want to send a POST request
+ * @param {SiestaModel} model The model that we would like to POST
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.POST = function() {
     return _.partial(this.HTTP_METHOD, true, 'POST').apply(this, arguments);
@@ -293,7 +348,11 @@ Collection.prototype.POST = function() {
 
 /**
  * Send a PUT request
- * @returns {*}
+ * @param {path} path The path to the resource to which we want to send a PUT request
+ * @param {SiestaModel} model The model that we would like to PUT
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.PUT = function() {
     return _.partial(this.HTTP_METHOD, true, 'PUT').apply(this, arguments);
@@ -301,7 +360,11 @@ Collection.prototype.PUT = function() {
 
 /**
  * Send a PATCH request
- * @returns {*}
+ * @param {path} path The path to the resource to which we want to send a PATCH request
+ * @param {SiestaModel} model The model that we would like to PATCH
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.PATCH = function() {
     return _.partial(this.HTTP_METHOD, true, 'PATCH').apply(this, arguments);
@@ -309,8 +372,12 @@ Collection.prototype.PATCH = function() {
 
 
 /**
- * Send a DELETE request
- * @returns {*}
+ * Send a DELETE request. Also removes the object.
+ * @param {path} path The path to the resource to which we want to DELETE
+ * @param {SiestaModel} model The model that we would like to PATCH
+ * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
+ * @param {Function} callback Callback if opts specified.
+ * @returns {Promise}
  */
 Collection.prototype.DELETE = function(path, object) {
     var deferred = q.defer();
@@ -319,8 +386,7 @@ Collection.prototype.DELETE = function(path, object) {
     var callback;
     if (typeof(args[0]) == 'function') {
         callback = args[0];
-    } 
-    else if (typeof(args[0]) == 'object') {
+    } else if (typeof(args[0]) == 'object') {
         opts = args[0];
         callback = args[1];
     }
@@ -328,13 +394,12 @@ Collection.prototype.DELETE = function(path, object) {
     var deletionMode = opts.deletionMode || 'restore';
     // By default we do not map the response from a DELETE request.
     if (opts.parseResponse === undefined) opts.parseResponse = false;
-    this._httpResponse('DELETE', path, opts, function(err, x, y, z) {
+    siesta.ext.http._httpResponse.call(this, 'DELETE', path, opts, function(err, x, y, z) {
         if (err) {
             if (deletionMode == 'restore') {
                 object.restore();
             }
-        } 
-        else if (deletionMode == 'success') {
+        } else if (deletionMode == 'success') {
             object.remove();
         }
         callback(err, x, y, z);
@@ -349,7 +414,7 @@ Collection.prototype.DELETE = function(path, object) {
  * Returns the number of objects in this collection.
  *
  * @param callback
- * @returns Promise
+ * @returns {Promise}
  */
 Collection.prototype.count = function(callback) {
     var deferred = q.defer();

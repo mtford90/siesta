@@ -1,5 +1,11 @@
 var Descriptor = require('./descriptor').Descriptor;
 
+/**
+ * Describes what to do with a HTTP response.
+ * @constructor
+ * @implements {Descriptor}
+ * @param {Object} opts
+ */
 function ResponseDescriptor(opts) {
     if (!this) {
         return new ResponseDescriptor(opts);
