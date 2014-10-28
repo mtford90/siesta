@@ -3,7 +3,7 @@
 
 // describe('new object proxy', function () {
 
-//     var NewObjectProxy = require('../src/proxy').NewObjectProxy;
+//     var RelationshipProxy = require('../src/proxy').RelationshipProxy;
 //     var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;
 //     var OneToManyProxy = require('../src/oneToManyProxy').OneToManyProxy;
 //     var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;

@@ -3,7 +3,7 @@
  */
 
 var proxy = require('./proxy')
-    , NewObjectProxy = proxy.NewObjectProxy
+    , RelationshipProxy = proxy.RelationshipProxy
     , Store = require('./store')
     , util = require('./util')
     , _ = util._
@@ -22,7 +22,7 @@ var proxy = require('./proxy')
  * @param {Object} opts
  */
 function ManyToManyProxy(opts) {
-    NewObjectProxy.call(this, opts);
+    RelationshipProxy.call(this, opts);
     var self = this;
     Object.defineProperty(this, 'isFault', {
         get: function () {
@@ -100,7 +100,7 @@ function wrapArray(arr) {
     }
 }
 
-ManyToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
+ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
 
 ManyToManyProxy.prototype.get = function (callback) {
     var deferred = q.defer();
@@ -152,7 +152,7 @@ ManyToManyProxy.prototype.set = function (obj) {
 };
 
 ManyToManyProxy.prototype.install = function (obj) {
-    NewObjectProxy.prototype.install.call(this, obj);
+    RelationshipProxy.prototype.install.call(this, obj);
     obj[ ('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
 };
 

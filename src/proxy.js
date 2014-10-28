@@ -18,7 +18,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
 
 /**
  * @class  [Fault description]
- * @param {NewObjectProxy} proxy
+ * @param {RelationshipProxy} proxy
  * @constructor
  */
 function Fault(proxy) {
@@ -42,13 +42,13 @@ Fault.prototype.set = function() {
 };
 
 /**
- * @class  [NewObjectProxy description]
+ * @class  [RelationshipProxy description]
  * @param {Object} opts
  * @constructor
  */
-function NewObjectProxy(opts) {
+function RelationshipProxy(opts) {
     this._opts = opts;
-    if (!this) return new NewObjectProxy(opts);
+    if (!this) return new RelationshipProxy(opts);
     var self = this;
     this.fault = new Fault(this);
     this.object = null;
@@ -99,11 +99,11 @@ function NewObjectProxy(opts) {
     }
  }
 
-NewObjectProxy.prototype._dump = function(asJson) {
+RelationshipProxy.prototype._dump = function(asJson) {
     var dumped = {};
 };
 
-NewObjectProxy.prototype.install = function(obj) {
+RelationshipProxy.prototype.install = function(obj) {
     if (obj) {
         if (!this.object) {
             this.object = obj;
@@ -138,12 +138,12 @@ NewObjectProxy.prototype.install = function(obj) {
     }
 };
 
-NewObjectProxy.prototype.set = function(obj) {
-    throw new InternalSiestaError('Must subclass NewObjectProxy');
+RelationshipProxy.prototype.set = function(obj) {
+    throw new InternalSiestaError('Must subclass RelationshipProxy');
 };
 
-NewObjectProxy.prototype.get = function(callback) {
-    throw new InternalSiestaError('Must subclass NewObjectProxy');
+RelationshipProxy.prototype.get = function(callback) {
+    throw new InternalSiestaError('Must subclass RelationshipProxy');
 };
 
 function verifyMapping(obj, mapping) {
@@ -431,7 +431,7 @@ function wrapArray(arr) {
     }
 }
 
-exports.NewObjectProxy = NewObjectProxy;
+exports.RelationshipProxy = RelationshipProxy;
 exports.Fault = Fault;
 exports.getReverseProxyForObject = getReverseProxyForObject;
 exports.getForwardProxyForObject = getForwardProxyForObject;

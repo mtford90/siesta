@@ -3,7 +3,7 @@ var s = require('../index'),
 
 describe('new object proxy', function() {
 
-    var NewObjectProxy = require('../src/proxy').NewObjectProxy;
+    var RelationshipProxy = require('../src/proxy').RelationshipProxy;
     var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;
     var OneToManyProxy = require('../src/oneToManyProxy').OneToManyProxy;
     var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
@@ -37,7 +37,7 @@ describe('new object proxy', function() {
             var car, person, relationship, proxy;
 
             beforeEach(function() {
-                proxy = new NewObjectProxy({
+                proxy = new RelationshipProxy({
                     reverseMapping: personMapping,
                     forwardMapping: carMapping,
                     reverseName: 'cars',
@@ -57,7 +57,7 @@ describe('new object proxy', function() {
 
             describe('forward installation', function() {
                 beforeEach(function() {
-                    proxy = new NewObjectProxy({
+                    proxy = new RelationshipProxy({
                         reverseMapping: personMapping,
                         forwardMapping: carMapping,
                         reverseName: 'cars',
@@ -128,7 +128,7 @@ describe('new object proxy', function() {
 
             describe('reverse installation', function() {
                 beforeEach(function() {
-                    proxy = new NewObjectProxy({
+                    proxy = new RelationshipProxy({
                         reverseMapping: personMapping,
                         forwardMapping: carMapping,
                         reverseName: 'cars',
@@ -195,7 +195,7 @@ describe('new object proxy', function() {
             var car, person, proxy;
 
             beforeEach(function() {
-                proxy = new NewObjectProxy({
+                proxy = new RelationshipProxy({
                     reverseMapping: personMapping,
                     forwardMapping: carMapping,
                     reverseName: 'cars',

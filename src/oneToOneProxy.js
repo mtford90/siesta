@@ -3,7 +3,7 @@
  */
 
 var proxy = require('./proxy')
-    , NewObjectProxy = proxy.NewObjectProxy
+    , RelationshipProxy = proxy.RelationshipProxy
     , Store = require('./store')
     , util = require('./util')
     , InternalSiestaError = require('./error').InternalSiestaError
@@ -15,12 +15,12 @@ var proxy = require('./proxy')
  * @param {Object} opts
  */
 function OneToOneProxy(opts) {
-    NewObjectProxy.call(this, opts);
+    RelationshipProxy.call(this, opts);
     this._reverseIsArray = false;
     this._forwardIsArray = false;
 }
 
-OneToOneProxy.prototype = Object.create(NewObjectProxy.prototype);
+OneToOneProxy.prototype = Object.create(RelationshipProxy.prototype);
 
 /**
  * Validate the object that we're setting

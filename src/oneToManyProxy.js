@@ -3,7 +3,7 @@
  */
 
 var proxy = require('./proxy')
-    , NewObjectProxy = proxy.NewObjectProxy
+    , RelationshipProxy = proxy.RelationshipProxy
     , Store = require('./store')
     , util = require('./util')
     , _ = util._
@@ -23,7 +23,7 @@ var proxy = require('./proxy')
  * @param {[type]} opts
  */
 function OneToManyProxy(opts) {
-    NewObjectProxy.call(this, opts);
+    RelationshipProxy.call(this, opts);
 
     var self = this;
     Object.defineProperty(this, 'isFault', {
@@ -76,7 +76,7 @@ function OneToManyProxy(opts) {
     this._forwardIsArray = false;
 }
 
-OneToManyProxy.prototype = Object.create(NewObjectProxy.prototype);
+OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
 
 
 function clearReverse(removed) {
@@ -210,7 +210,7 @@ OneToManyProxy.prototype.set = function (obj) {
 };
 
 OneToManyProxy.prototype.install = function (obj) {
-    NewObjectProxy.prototype.install.call(this, obj);
+    RelationshipProxy.prototype.install.call(this, obj);
     if (this.isReverse) {
         obj[ ('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
     }

@@ -57,7 +57,16 @@ function Mapping(opts) {
         configurable: true
     });
 
+    /**
+     * @name type
+     * @type {String}
+     */
     defineSubProperty.call(this, 'type', self._opts);
+
+    /**
+     * @name id
+     * @type {String}
+     */
     defineSubProperty.call(this, 'id', self._opts);
     defineSubProperty.call(this, 'collection', self._opts);
     defineSubProperty.call(this, 'attributes', self._opts);
