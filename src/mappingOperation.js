@@ -1,3 +1,7 @@
+/**
+ * @module mapping
+ */
+
 var Store = require('./store');
 var SiestaModel = require('./object').SiestaModel;
 var log = require('../vendor/operations.js/src/log');

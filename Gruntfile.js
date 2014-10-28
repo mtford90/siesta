@@ -262,7 +262,7 @@ module.exports = function(grunt) {
                         } else extracted('api.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md src/collection.js src/http/http.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js' 
+                command: 'jsdoc2md src/collection.js src/http/http.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js src/cache.js' 
             },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'

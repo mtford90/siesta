@@ -1,3 +1,7 @@
+/**
+ * @module error
+ */
+
 function InternalSiestaError(message, context, ssf) {
     this.message = message;
     this.context = context;

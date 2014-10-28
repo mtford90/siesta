@@ -1,3 +1,7 @@
+/**
+ * @module relationships
+ */
+
 var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
     defineSubProperty = require('./misc').defineSubProperty,
@@ -12,6 +16,11 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     coreChanges = require('./changes'),
     ChangeType = coreChanges.ChangeType;
 
+/**
+ * @class  [Fault description]
+ * @param {NewObjectProxy} proxy
+ * @constructor
+ */
 function Fault(proxy) {
     var self = this;
     this.proxy = proxy;
@@ -32,6 +41,11 @@ Fault.prototype.set = function() {
     this.proxy.set.apply(this.proxy, arguments);
 };
 
+/**
+ * @class  [NewObjectProxy description]
+ * @param {Object} opts
+ * @constructor
+ */
 function NewObjectProxy(opts) {
     this._opts = opts;
     if (!this) return new NewObjectProxy(opts);

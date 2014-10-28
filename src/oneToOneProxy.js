@@ -1,3 +1,7 @@
+/**
+ * @module  relationships
+ */
+
 var proxy = require('./proxy')
     , NewObjectProxy = proxy.NewObjectProxy
     , Store = require('./store')
@@ -6,8 +10,10 @@ var proxy = require('./proxy')
     , q = require('q')
     , SiestaModel = require('./object').SiestaModel;
 
-
-
+/**
+ * [OneToOneProxy description]
+ * @param {Object} opts
+ */
 function OneToOneProxy(opts) {
     NewObjectProxy.call(this, opts);
     this._reverseIsArray = false;

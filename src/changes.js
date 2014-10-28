@@ -1,3 +1,11 @@
+/**
+ * The changes module deals with changes to SiestaModel instances. In the in-memory case this 
+ * just means that notifications are sent on any change. If the storage module is being used,
+ * the changes module is extended to deal with merging changes into whatever persistant storage
+ * method is being used.
+ * @module changes
+ */
+
 var defineSubProperty = require('./misc').defineSubProperty;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 var InternalSiestaError = require('./error').InternalSiestaError;
@@ -55,6 +63,13 @@ Change.prototype._dump = function (json) {
     return json ? JSON.stringify(dumped, null, 4) : dumped;
 };
 
+/**
+ * Broadcas
+ * @param  {String} collection
+ * @param  {String} mapping
+ * @param  {Object} c an options dictionary representing the change
+ * @return {[type]}
+ */
 function broadcast(collection, mapping, c) {
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '" of type ' + c.type);
     notificationCentre.emit(collection, c);
@@ -69,6 +84,7 @@ function broadcast(collection, mapping, c) {
 /**
  * Throw an error if the change is incorrect.
  * @param changeOpts
+ * @throws {InternalSiestaError} If change options are invalid
  */
 function validateChange(changeOpts) {
     if (!changeOpts.mapping) throw new InternalSiestaError('Must pass a mapping');
@@ -79,6 +95,7 @@ function validateChange(changeOpts) {
 /**
  * Register that a change has been made.
  * @param opts
+ * @return {Change} The constructed change
  */
 function registerChange(opts) {
     validateChange(opts);

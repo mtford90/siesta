@@ -1,3 +1,8 @@
+/**
+ * This is an in-memory cache for models. Models are cached by local id (_id) and remote id (defined by the mapping).
+ * Lookups are performed against the cache when mapping.
+ * @module cache
+ */
 var log = require('../vendor/operations.js/src/log');
 var LocalCacheLogger = log.loggerWithName('LocalCache');
 LocalCacheLogger.setLevel(log.Level.warn);
@@ -6,17 +11,11 @@ RemoteCacheLogger.setLevel(log.Level.warn);
 var InternalSiestaError = require('./error').InternalSiestaError;
 var util = require('./util');
 
-/**
- * Cache by pouch _id.
- * @type {{}}
- */
+
 var localCacheById = {};
 var localCache = {};
 
-/**
- * Cache by type and whatever id was specified in the mapping.
- * @type {{}}
- */
+
 var remoteCache = {};
 
 function reset() {
@@ -27,6 +26,11 @@ function reset() {
 
 reset();
 
+/**
+ * Return the object in the cache given a local id (_id)
+ * @param  {String} localId
+ * @return {SiestaModel}
+ */
 function getViaLocalId(localId) {
     var obj = localCacheById[localId];
     if (obj) {
@@ -39,6 +43,11 @@ function getViaLocalId(localId) {
     return obj;
 }
 
+/**
+ * Return the singleton object given a singleton mapping.
+ * @param  {Mapping} mapping
+ * @return {SiestaModel}
+ */
 function getSingleton(mapping) {
     var mappingName = mapping.type;
     var collectionName = mapping.collection;
@@ -64,6 +73,13 @@ function getSingleton(mapping) {
     return null;
 }
 
+/**
+ * Given a remote identifier and an options object that describes mapping/collection,
+ * return the model if cached.
+ * @param  {String} remoteId
+ * @param  {Object} opts
+ * @return {SiestaModel}
+ */
 function getViaRemoteId(remoteId, opts) {
     var type = opts.mapping.type;
     var collection = opts.mapping.collection;
@@ -87,6 +103,12 @@ function getViaRemoteId(remoteId, opts) {
     return null;
 }
 
+/**
+ * Insert an objet into the cache using a remote identifier defined by the mapping.
+ * @param  {SiestaModel} obj
+ * @param  {String} remoteId
+ * @param  {String} previousRemoteId If remote id has been changed, this is the old remote identifier
+ */
 function remoteInsert(obj, remoteId, previousRemoteId) {
     if (obj) {
         var collection = obj.mapping.collection;
@@ -146,6 +168,11 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
     }
 }
 
+/**
+ * Dump the remote id cache
+ * @param  {boolean} asJson Whether or not to apply JSON.stringify
+ * @return {String|Object}
+ */
 function remoteDump(asJson) {
     var dumpedRestCache = {};
     for (var coll in remoteCache) {
@@ -173,6 +200,11 @@ function remoteDump(asJson) {
 
 }
 
+/**
+ * Dump the local id (_id) cache
+ * @param  {boolean} asJson Whether or not to apply JSON.stringify
+ * @return {String|Object}
+ */
 function localDump(asJson) {
     var dumpedIdCache = {};
     for (var id in localCacheById) {
@@ -183,6 +215,11 @@ function localDump(asJson) {
     return asJson ? JSON.stringify(dumpedIdCache, null, 4) : dumpedIdCache;
 }
 
+/**
+ * Dump to the cache.
+ * @param  {boolean} asJson Whether or not to apply JSON.stringify
+ * @return {String|Object}
+ */
 function dump(asJson) {
     var dumped = {
         localCache: localDump(),
@@ -199,6 +236,16 @@ function _localCache() {
     return localCacheById;
 }
 
+/**
+ * Query the cache
+ * @param  {Object} opts Object describing the query
+ * @return {SiestaModel}
+ * @example
+ * ```js
+ * cache.get({_id: '5'}); // Query by local id
+ * cache.get({remoteId: '5', mapping: myMapping}); // Query by remote id
+ * ```
+ */
 function get(opts) {
     if (LocalCacheLogger.debug.isEnabled) LocalCacheLogger.debug('get', opts);
     var obj, idField, remoteId;
@@ -233,19 +280,11 @@ function get(opts) {
     return null;
 }
 
-// TODO: REMOVE THIS. ONLY FOR DEBUGGING.
-function validate() {
-    var idents = Object.keys(localCacheById);
-    for (var i = 0; i < idents.length; i++) {
-        var ident = idents[i];
-        var obj = localCacheById[ident];
-        if (ident != obj._id) {
-            util.printStackTrace();
-            throw new InternalSiestaError('wtf?');
-        }
-    }
-}
-
+/**
+ * Insert an objet into the cache.
+ * @param  {SiestaModel} obj
+ * @throws {InternalSiestaError} An object with _id/remoteId already exists. Not thrown if same obhect.
+ */
 function insert(obj) {
     var localId = obj._id;
     if (localId) {
@@ -278,10 +317,13 @@ function insert(obj) {
         if (RemoteCacheLogger.debug.isEnabled)
             RemoteCacheLogger.debug('No remote id ("' + idField + '") so wont be placing in the remote cache', obj);
     }
-    validate();
 }
 
-
+/**
+ * Returns true if object is in the cache
+ * @param  {SiestaModel} obj
+ * @return {boolean}
+ */
 function contains(obj) {
     var q = {
         _id: obj._id
@@ -296,6 +338,11 @@ function contains(obj) {
     return !!get(q);
 }
 
+/**
+ * Removes the object from the cache (if it's actually in the cache) otherwises throws an error.
+ * @param  {SiestaModel} obj
+ * @throws {InternalSiestaError} If object already in the cache.
+ */
 function remove(obj) {
     if (contains(obj)) {
         console.log('remove', obj);
@@ -317,6 +364,7 @@ function remove(obj) {
         throw new InternalSiestaError('Object was not in cache.');
     }
 }
+
 
 function dump(asJson) {
     var dumped = {

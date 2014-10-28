@@ -1,3 +1,7 @@
+/**
+ * @module query
+ */
+
 var log = require('../vendor/operations.js/src/log');
 var cache = require('./cache');
 var Logger = log.loggerWithName('Query');
@@ -5,9 +9,14 @@ var q = require('q');
 var util = require('./util');
 Logger.setLevel(log.Level.warn);
 
-function Query(mapping, query) {
+/**
+ * @class  [Query description]
+ * @param {Mapping} mapping
+ * @param {Object} opts
+ */
+function Query(mapping, opts) {
     this.mapping = mapping;
-    this.query = query;
+    this.query = opts;
 }
 
 /**

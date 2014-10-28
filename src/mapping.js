@@ -1,3 +1,7 @@
+/**
+ * @module mapping
+ */
+
 var log = require('../vendor/operations.js/src/log');
 var Logger = log.loggerWithName('Mapping');
 Logger.setLevel(log.Level.warn);
@@ -29,7 +33,10 @@ var util = require('./util');
 var _ = util._;
 var q = require('q');
 
-
+/**
+ * 
+ * @param {Object} opts
+ */
 function Mapping(opts) {
     var self = this;
     this._opts = opts;

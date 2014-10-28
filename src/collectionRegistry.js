@@ -1,3 +1,6 @@
+/**
+ * @module collection 
+ */
 var _ = require('./util')._;
 
 function CollectionRegistry() {

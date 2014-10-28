@@ -1,3 +1,7 @@
+/**
+ * @module relationships
+ */
+
 var proxy = require('./proxy')
     , NewObjectProxy = proxy.NewObjectProxy
     , Store = require('./store')

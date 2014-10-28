@@ -1,3 +1,7 @@
+/**
+ * @module relationships
+ */
+
 var proxy = require('./proxy')
     , NewObjectProxy = proxy.NewObjectProxy
     , Store = require('./store')
@@ -13,7 +17,10 @@ var proxy = require('./proxy')
     , q = require('q')
 ;
 
-
+/**
+ * [ManyToManyProxy description]
+ * @param {Object} opts
+ */
 function ManyToManyProxy(opts) {
     NewObjectProxy.call(this, opts);
     var self = this;

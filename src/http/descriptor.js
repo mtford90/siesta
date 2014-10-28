@@ -1,3 +1,9 @@
+/**
+ * Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do 
+ * with HTTP request/response bodies.
+ * @module http
+ */
+
 var _i = siesta._internal
     , log = _i.log
     , InternalSiestaError = _i.error.InternalSiestaError
