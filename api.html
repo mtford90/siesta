@@ -143,6 +143,21 @@
 <li><a href="#module_store..get">store~get(opts, callback)</a></li>
 <li><a href="#module_store..getMultipleLocal">store~getMultipleLocal(localIdentifiers, callback)</a></li>
 </ul></li>
+<li><a href="#module_cache">cache</a>
+
+<ul>
+<li><a href="#module_cache..getViaLocalId">cache~getViaLocalId(localId)</a></li>
+<li><a href="#module_cache..getSingleton">cache~getSingleton(mapping)</a></li>
+<li><a href="#module_cache..getViaRemoteId">cache~getViaRemoteId(remoteId, opts)</a></li>
+<li><a href="#module_cache..remoteInsert">cache~remoteInsert(obj, remoteId, previousRemoteId)</a></li>
+<li><a href="#module_cache..remoteDump">cache~remoteDump(asJson)</a></li>
+<li><a href="#module_cache..localDump">cache~localDump(asJson)</a></li>
+<li><a href="#module_cache..dump">cache~dump(asJson)</a></li>
+<li><a href="#module_cache..get">cache~get(opts)</a></li>
+<li><a href="#module_cache..insert">cache~insert(obj)</a></li>
+<li><a href="#module_cache..contains">cache~contains(obj)</a></li>
+<li><a href="#module_cache..remove">cache~remove(obj)</a></li>
+</ul></li>
 </ul>
 
 <p><strong>Classes</strong></p>
@@ -841,6 +856,194 @@ All queries will go straight to the cache instead.</p>
 </ul>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_store">store</a><br>
+<a name="module_cache"></a></p>
+
+<h1>cache</h1>
+
+<p>This is an in-memory cache for models. Models are cached by local id (_id) and remote id (defined by the mapping).
+Lookups are performed against the cache when mapping.</p>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_cache">cache</a>
+
+<ul>
+<li><a href="#module_cache..getViaLocalId">cache~getViaLocalId(localId)</a></li>
+<li><a href="#module_cache..getSingleton">cache~getSingleton(mapping)</a></li>
+<li><a href="#module_cache..getViaRemoteId">cache~getViaRemoteId(remoteId, opts)</a></li>
+<li><a href="#module_cache..remoteInsert">cache~remoteInsert(obj, remoteId, previousRemoteId)</a></li>
+<li><a href="#module_cache..remoteDump">cache~remoteDump(asJson)</a></li>
+<li><a href="#module_cache..localDump">cache~localDump(asJson)</a></li>
+<li><a href="#module_cache..dump">cache~dump(asJson)</a></li>
+<li><a href="#module_cache..get">cache~get(opts)</a></li>
+<li><a href="#module_cache..insert">cache~insert(obj)</a></li>
+<li><a href="#module_cache..contains">cache~contains(obj)</a></li>
+<li><a href="#module_cache..remove">cache~remove(obj)</a></li>
+</ul></li>
+</ul>
+
+<p><a name="module_cache..getViaLocalId"></a></p>
+
+<h2>cache~getViaLocalId(localId)</h2>
+
+<p>Return the object in the cache given a local id (_id)</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>localId <code>String</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>SiestaModel</code><br>
+<a name="module_cache..getSingleton"></a></p>
+
+<h2>cache~getSingleton(mapping)</h2>
+
+<p>Return the singleton object given a singleton mapping.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>mapping <code>Mapping</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>SiestaModel</code><br>
+<a name="module_cache..getViaRemoteId"></a></p>
+
+<h2>cache~getViaRemoteId(remoteId, opts)</h2>
+
+<p>Given a remote identifier and an options object that describes mapping/collection,
+return the model if cached.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>remoteId <code>String</code><br></li>
+<li>opts <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>SiestaModel</code><br>
+<a name="module_cache..remoteInsert"></a></p>
+
+<h2>cache~remoteInsert(obj, remoteId, previousRemoteId)</h2>
+
+<p>Insert an objet into the cache using a remote identifier defined by the mapping.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>obj <code>SiestaModel</code><br></li>
+<li>remoteId <code>String</code><br></li>
+<li>previousRemoteId <code>String</code> - If remote id has been changed, this is the old remote identifier<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<a name="module_cache..remoteDump"></a></p>
+
+<h2>cache~remoteDump(asJson)</h2>
+
+<p>Dump the remote id cache</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>asJson <code>boolean</code> - Whether or not to apply JSON.stringify<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>String</code> | <code>Object</code><br>
+<a name="module_cache..localDump"></a></p>
+
+<h2>cache~localDump(asJson)</h2>
+
+<p>Dump the local id (_id) cache</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>asJson <code>boolean</code> - Whether or not to apply JSON.stringify<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>String</code> | <code>Object</code><br>
+<a name="module_cache..dump"></a></p>
+
+<h2>cache~dump(asJson)</h2>
+
+<p>Dump to the cache.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>asJson <code>boolean</code> - Whether or not to apply JSON.stringify<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>String</code> | <code>Object</code><br>
+<a name="module_cache..get"></a></p>
+
+<h2>cache~get(opts)</h2>
+
+<p>Query the cache</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>opts <code>Object</code> - Object describing the query<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>SiestaModel</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span><span class="nx">_id</span><span class="o">:</span> <span class="s1">&#39;5&#39;</span><span class="p">});</span> <span class="c1">// Query by local id</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">get</span><span class="p">({</span><span class="nx">remoteId</span><span class="o">:</span> <span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="nx">mapping</span><span class="o">:</span> <span class="nx">myMapping</span><span class="p">});</span> <span class="c1">// Query by remote id</span>
+</code></pre></div>
+<p><a name="module_cache..insert"></a></p>
+
+<h2>cache~insert(obj)</h2>
+
+<p>Insert an objet into the cache.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>obj <code>SiestaModel</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Type</strong>: <code>InternalSiestaError</code><br>
+<a name="module_cache..contains"></a></p>
+
+<h2>cache~contains(obj)</h2>
+
+<p>Returns true if object is in the cache</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>obj <code>SiestaModel</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Returns</strong>: <code>boolean</code><br>
+<a name="module_cache..remove"></a></p>
+
+<h2>cache~remove(obj)</h2>
+
+<p>Removes the object from the cache (if it&#39;s actually in the cache) otherwises throws an error.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>obj <code>SiestaModel</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_cache">cache</a><br>
+<strong>Type</strong>: <code>InternalSiestaError</code><br>
 <a name="Descriptor"></a></p>
 
 <h1>class: Descriptor</h1>
