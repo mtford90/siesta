@@ -9,7 +9,7 @@
 <!--suppress ALL -->
 <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-    <title>Documentation: Collections</title>
+    <title>Documentation: API</title>
     <meta name="description" content="The Easiest Way To Document Your Project"/>
     <meta name="author" content="Justin Walsh">
     <!-- Mobile -->
@@ -91,7 +91,129 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    <p><a name="Collection"></a></p>
+    <h1>Index</h1>
+
+<p><strong>Modules</strong></p>
+
+<ul>
+<li><a href="#module_store">store</a>
+
+<ul>
+<li><a href="#module_store..get">store~get(opts, callback)</a></li>
+<li><a href="#module_store..getMultipleLocal">store~getMultipleLocal(localIdentifiers, callback)</a></li>
+</ul></li>
+</ul>
+
+<p><strong>Classes</strong></p>
+
+<ul>
+<li><a href="#Collection">class: Collection</a>
+
+<ul>
+<li><a href="#new_Collection">new Collection(name)</a></li>
+<li><a href="#Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#Collection#installed">collection.installed</a></li>
+<li><a href="#Collection#install">collection.install(callback)</a></li>
+<li><a href="#Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
+<li><a href="#Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
+<li><a href="#Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
+<li><a href="#Collection#HTTP_METHOD">collection.HTTP_METHOD(request, method)</a></li>
+<li><a href="#Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#Collection#count">collection.count(callback)</a></li>
+</ul></li>
+<li><a href="#Descriptor">class: Descriptor</a>
+
+<ul>
+<li><a href="#new_Descriptor">new Descriptor(opts)</a></li>
+<li><a href="#Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
+<li><a href="#Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
+<li><a href="#Descriptor#_extractData">descriptor._extractData(data)</a></li>
+<li><a href="#Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
+<li><a href="#Descriptor#_matchData">descriptor._matchData(data)</a></li>
+<li><a href="#Descriptor#match">descriptor.match(config, data)</a></li>
+<li><a href="#Descriptor#_transformData">descriptor._transformData(data)</a></li>
+</ul></li>
+<li><a href="#ResponseDescriptor">class: ResponseDescriptor</a>
+
+<ul>
+<li><a href="#new_ResponseDescriptor">new ResponseDescriptor(opts)</a></li>
+</ul></li>
+</ul>
+
+<p><strong>Functions</strong></p>
+
+<ul>
+<li><a href="#bury">bury(obj, data)</a></li>
+</ul>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#path">path</a></li>
+</ul>
+
+<p><a name="module_store"></a></p>
+
+<h1>store</h1>
+
+<p>The &quot;store&quot; is responsible for mediating between the in-memory cache and any persistent storage.
+Note that persistent storage has not been properly implemented yet and so this is pretty useless.
+All queries will go straight to the cache instead.</p>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_store">store</a>
+
+<ul>
+<li><a href="#module_store..get">store~get(opts, callback)</a></li>
+<li><a href="#module_store..getMultipleLocal">store~getMultipleLocal(localIdentifiers, callback)</a></li>
+</ul></li>
+</ul>
+
+<p><a name="module_store..get"></a></p>
+
+<h2>store~get(opts, callback)</h2>
+
+<p>[get description]</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>opts <code>Object</code><br></li>
+<li>callback <code>function</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_store">store</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">xyz</span> <span class="o">=</span> <span class="s1">&#39;afsdf&#39;</span><span class="p">;</span>
+</code></pre></div>
+<p><strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">abc</span> <span class="o">=</span> <span class="s1">&#39;asdsd&#39;</span><span class="p">;</span>
+</code></pre></div>
+<p><a name="module_store..getMultipleLocal"></a></p>
+
+<h2>store~getMultipleLocal(localIdentifiers, callback)</h2>
+
+<p>Uses pouch bulk fetch API. Much faster than getMultiple.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>localIdentifiers<br></li>
+<li>callback<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_store">store</a><br>
+<a name="Collection"></a></p>
 
 <h1>class: Collection</h1>
 
@@ -245,7 +367,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource we want to GET<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource we want to GET<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
@@ -260,7 +382,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to send an OPTIONS request<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send an OPTIONS request<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
@@ -275,7 +397,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to send a TRACE request<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a TRACE request<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
@@ -290,7 +412,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to send a HEAD request<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a HEAD request<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
 </ul>
@@ -305,7 +427,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to send a POST request<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a POST request<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
@@ -321,7 +443,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to send a PUT request<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a PUT request<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to PUT<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
@@ -337,7 +459,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to send a PATCH request<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to send a PATCH request<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
@@ -353,7 +475,7 @@ like to model.</p>
 <p><strong>Params</strong></p>
 
 <ul>
-<li>path <code>path</code> - The path to the resource to which we want to DELETE<br></li>
+<li>path <code><a href="#path">path</a></code> - The path to the resource to which we want to DELETE<br></li>
 <li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 <li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
 <li>callback <code>function</code> - Callback if opts specified.<br></li>
@@ -372,7 +494,192 @@ like to model.</p>
 <li>callback<br></li>
 </ul>
 
-<p><strong>Returns</strong>: <code>Promise</code>  </p>
+<p><strong>Returns</strong>: <code>Promise</code><br>
+<a name="Descriptor"></a></p>
+
+<h1>class: Descriptor</h1>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#Descriptor">class: Descriptor</a>
+
+<ul>
+<li><a href="#new_Descriptor">new Descriptor(opts)</a></li>
+<li><a href="#Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
+<li><a href="#Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
+<li><a href="#Descriptor#_extractData">descriptor._extractData(data)</a></li>
+<li><a href="#Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
+<li><a href="#Descriptor#_matchData">descriptor._matchData(data)</a></li>
+<li><a href="#Descriptor#match">descriptor.match(config, data)</a></li>
+<li><a href="#Descriptor#_transformData">descriptor._transformData(data)</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_Descriptor"></a></p>
+
+<h2>new Descriptor(opts)</h2>
+
+<p>A descriptor &#39;describes&#39; possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>opts <code>Object</code><br></li>
+</ul>
+
+<p><a name="Descriptor#_matchPath"></a></p>
+
+<h2>descriptor._matchPath(path)</h2>
+
+<p>Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> | <code>RegExp</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
+<span class="p">})</span>
+<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
+</code></pre></div>
+<p><a name="Descriptor#_matchMethod"></a></p>
+
+<h2>descriptor._matchMethod(method)</h2>
+
+<p>Returns true if the descriptor accepts the HTTP method.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>method <code>String</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>boolean</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
+</code></pre></div>
+<p><a name="Descriptor#_extractData"></a></p>
+
+<h2>descriptor._extractData(data)</h2>
+
+<p>If nested data has been specified in the descriptor, extract the data.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code><br>
+<a name="Descriptor#_matchConfig"></a></p>
+
+<h2>descriptor._matchConfig(config)</h2>
+
+<p>Returns this descriptors mapping if the request config matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code><br>
+<a name="Descriptor#_matchData"></a></p>
+
+<h2>descriptor._matchData(data)</h2>
+
+<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code><br>
+<a name="Descriptor#match"></a></p>
+
+<h2>descriptor.match(config, data)</h2>
+
+<p>Check if the HTTP config and returned data match this descriptor definition.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code> - Extracted data<br>
+<a name="Descriptor#_transformData"></a></p>
+
+<h2>descriptor._transformData(data)</h2>
+
+<p>Apply any transforms.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code> - Serialised data.<br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
+<a name="ResponseDescriptor"></a></p>
+
+<h1>class: ResponseDescriptor</h1>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#ResponseDescriptor">class: ResponseDescriptor</a>
+
+<ul>
+<li><a href="#new_ResponseDescriptor">new ResponseDescriptor(opts)</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_ResponseDescriptor"></a></p>
+
+<h2>new ResponseDescriptor(opts)</h2>
+
+<p>Describes what to do with a HTTP response.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>opts <code>Object</code><br></li>
+</ul>
+
+<p><a name="bury"></a></p>
+
+<h1>bury(obj, data)</h1>
+
+<p>Performs a breadth-first search through data, embedding obj in the first leaf.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>obj <code>Object</code><br></li>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Returns</strong>: <code>Object</code><br>
+<a name="path"></a></p>
+
+<h1>path</h1>
+
+<p><strong>Type</strong>: <code>String</code>  </p>
 
 </article>
 </div>
