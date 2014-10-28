@@ -3934,6 +3934,9 @@ Homepage
   padding-bottom: 0;
   margin-bottom: 0;
 }
+.homepage-hero .container {
+  margin-bottom: 30px;
+}
 .homepage-hero .text-center {
   font-family: 'Roboto Slab', "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 700;
@@ -3941,6 +3944,10 @@ Homepage
 }
 .homepage-hero h2 {
   margin: 20px 0px;
+}
+.homepage-hero img {
+  margin-left: auto;
+  margin-right: auto;
 }
 .hero-buttons.container-fluid {
   padding-top: 22px;
@@ -4217,7 +4224,7 @@ code {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
   background-color: #3f4657;
   margin-bottom: 0px;
-  z-index: 200;
+  z-index: 201;
 }
 .navbar .container,
 .navbar .container-fluid {
