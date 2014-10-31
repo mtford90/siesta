@@ -34,3 +34,7 @@ test/index.html
 colony
 
 docs/_site
+
+# Sublime
+*.sublime-project
+*.sublime-workspace

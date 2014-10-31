@@ -51,7 +51,7 @@ RequestDescriptor.prototype._serialise = function (obj, callback) {
     var finished;
     var data = this.serialiser(obj, function (err, data) {
         if (!finished) {
-            self._transformData(data);
+            data = self._transformData(data);
             if (callback) callback(err, self._embedData(data));
         }
     });
@@ -59,7 +59,7 @@ RequestDescriptor.prototype._serialise = function (obj, callback) {
         if (Logger.trace.isEnabled)
             Logger.trace('serialiser doesnt use a callback');
         finished = true;
-        self._transformData(data);
+        data = self._transformData(data);
         if (callback) callback(null, self._embedData(data));
     }
     else {

@@ -23,7 +23,7 @@ ResponseDescriptor.prototype = Object.create(Descriptor.prototype);
 ResponseDescriptor.prototype._extractData = function (data) {
     var extractedData = Descriptor.prototype._extractData.call(this, data);
     if (extractedData) {
-        this._transformData(extractedData);
+        extractedData = this._transformData(extractedData);
     }
     return extractedData;
 };
@@ -31,7 +31,7 @@ ResponseDescriptor.prototype._extractData = function (data) {
 ResponseDescriptor.prototype._matchData = function (data) {
     var extractedData = Descriptor.prototype._matchData.call(this, data);
     if (extractedData) {
-        this._transformData(extractedData);
+        extractedData = this._transformData(extractedData);
     }
     return extractedData;
 };

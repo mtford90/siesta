@@ -1,19 +1,18 @@
 /**
- * Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do 
+ * Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do
  * with HTTP request/response bodies.
  * @module http
  */
 
-var _i = siesta._internal
-    , log = _i.log
-    , InternalSiestaError = _i.error.InternalSiestaError
-    , assert = _i.misc.assert
-    , defineSubProperty = _i.misc.defineSubProperty
-    , CollectionRegistry = _i.CollectionRegistry
-    , extend = _i.extend
-    , util = _i.util
-    , _ = util._
-    ;
+var _i = siesta._internal,
+    log = _i.log,
+    InternalSiestaError = _i.error.InternalSiestaError,
+    assert = _i.misc.assert,
+    defineSubProperty = _i.misc.defineSubProperty,
+    CollectionRegistry = _i.CollectionRegistry,
+    extend = _i.extend,
+    util = _i.util,
+    _ = util._;
 
 var Logger = log.loggerWithName('Descriptor');
 Logger.setLevel(log.Level.warn);
@@ -24,7 +23,7 @@ var XRegExp = require('xregexp').XRegExp;
 /**
  * A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
  * intercept a HTTP request/response and perform a mapping.
- * 
+ *
  * @constructor
  * @param {Object} opts
  */
@@ -41,8 +40,7 @@ function Descriptor(opts) {
         if (!(this._opts.path instanceof XRegExp)) {
             this._opts.path = XRegExp(this._opts.path);
         }
-    }
-    else {
+    } else {
         this._opts.path = '';
     }
 
@@ -50,15 +48,15 @@ function Descriptor(opts) {
     if (this._opts.method) {
         if (this._opts.method == '*' || this._opts.method.indexOf('*') > -1) {
             this._opts.method = this.httpMethods;
-        }
-        else if (typeof(this._opts.method) == 'string') {
+        } else if (typeof(this._opts.method) == 'string') {
             this._opts.method = [this._opts.method];
         }
-    }
-    else {
+    } else {
         this._opts.method = this.httpMethods;
     }
-    this._opts.method = _.map(this._opts.method, function (x) {return x.toUpperCase()});
+    this._opts.method = _.map(this._opts.method, function(x) {
+        return x.toUpperCase()
+    });
 
     // Mappings can be passed as the actual mapping object or as a string (with API specified too)
     if (this._opts.mapping) {
@@ -67,30 +65,37 @@ function Descriptor(opts) {
                 var collection;
                 if (typeof(this._opts.collection) == 'string') {
                     collection = CollectionRegistry[this._opts.collection];
-                }
-                else {
+                } else {
                     collection = this._opts.collection;
                 }
                 if (collection) {
                     var actualMapping = collection[this._opts.mapping];
                     if (actualMapping) {
                         this._opts.mapping = actualMapping;
+                    } else {
+                        throw new InternalSiestaError('Mapping ' + this._opts.mapping + ' does not exist', {
+                            opts: opts,
+                            descriptor: this
+                        });
                     }
-                    else {
-                        throw new InternalSiestaError('Mapping ' + this._opts.mapping + ' does not exist', {opts: opts, descriptor: this});
-                    }
+                } else {
+                    throw new InternalSiestaError('Collection ' + this._opts.collection + ' does not exist', {
+                        opts: opts,
+                        descriptor: this
+                    });
                 }
-                else {
-                    throw new InternalSiestaError('Collection ' + this._opts.collection + ' does not exist', {opts: opts, descriptor: this});
-                }
-            }
-            else {
-                throw new InternalSiestaError('Passed mapping as string, but did not specify the collection it belongs to', {opts: opts, descriptor: this});
+            } else {
+                throw new InternalSiestaError('Passed mapping as string, but did not specify the collection it belongs to', {
+                    opts: opts,
+                    descriptor: this
+                });
             }
         }
-    }
-    else {
-        throw new InternalSiestaError('Descriptors must be initialised with a mapping', {opts: opts, descriptor: this});
+    } else {
+        throw new InternalSiestaError('Descriptors must be initialised with a mapping', {
+            opts: opts,
+            descriptor: this
+        });
     }
 
     // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
@@ -102,8 +107,7 @@ function Descriptor(opts) {
             var arr = data.split('.');
             if (arr.length == 1) {
                 root = arr[0];
-            }
-            else {
+            } else {
                 var obj = {};
                 root = obj;
                 var previousKey = arr[0];
@@ -111,8 +115,7 @@ function Descriptor(opts) {
                     var key = arr[i];
                     if (i == (arr.length - 1)) {
                         obj[previousKey] = key;
-                    }
-                    else {
+                    } else {
                         var newVar = {};
                         obj[previousKey] = newVar;
                         obj = newVar;
@@ -140,10 +143,10 @@ Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELE
 /**
  * Takes a regex path and returns an object if matched.
  * If any regular expression groups were defined, the returned object will contain the matches.
- * 
+ *
  * @param  {String|RegExp} path
  * @return {Object}
- * @internal 
+ * @internal
  * @example
  * ```js
  * var d = new Descriptor({
@@ -153,7 +156,7 @@ Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELE
  * console.log(matched); // {id: '2'}
  * ```
  */
-Descriptor.prototype._matchPath = function (path) {
+Descriptor.prototype._matchPath = function(path) {
     var match = XRegExp.exec(path, this.path);
     var matched = null;
     if (match) {
@@ -171,10 +174,10 @@ Descriptor.prototype._matchPath = function (path) {
 
 /**
  * Returns true if the descriptor accepts the HTTP method.
- * 
+ *
  * @param  {String} method
  * @return {boolean}
- * @internal 
+ * @internal
  * @example
  * ```js
  * var d = new Descriptor({
@@ -183,7 +186,7 @@ Descriptor.prototype._matchPath = function (path) {
  * console.log(d._matchMethod('GET')); // false
  * ```
  */
-Descriptor.prototype._matchMethod = function (method) {
+Descriptor.prototype._matchMethod = function(method) {
     for (var i = 0; i < this.method.length; i++) {
         if (method.toUpperCase() == this.method[i]) {
             return true;
@@ -194,7 +197,7 @@ Descriptor.prototype._matchMethod = function (method) {
 
 /**
  * Performs a breadth-first search through data, embedding obj in the first leaf.
- * 
+ *
  * @param  {Object} obj
  * @param  {Object} data
  * @return {Object}
@@ -218,19 +221,17 @@ function bury(obj, data) {
     return root;
 }
 
-Descriptor.prototype._embedData = function (data) {
+Descriptor.prototype._embedData = function(data) {
     if (this.data) {
         var nested;
         if (typeof(this.data) == 'string') {
             nested = {};
             nested[this.data] = data;
-        }
-        else {
+        } else {
             nested = bury(data, extend(true, {}, this.data));
         }
         return nested;
-    }
-    else {
+    } else {
         return data;
     }
 };
@@ -240,14 +241,13 @@ Descriptor.prototype._embedData = function (data) {
  * @param  {Object} data
  * @return {Object}
  */
-Descriptor.prototype._extractData = function (data) {
+Descriptor.prototype._extractData = function(data) {
     if (Logger.debug.isEnabled)
         Logger.debug('_extractData', data);
     if (this.data) {
         if (typeof(this.data) == 'string') {
             return data[this.data];
-        }
-        else {
+        } else {
             var keys = Object.keys(this.data);
             assert(keys.length == 1);
             var currTheirs = data;
@@ -264,8 +264,7 @@ Descriptor.prototype._extractData = function (data) {
             }
             return currTheirs ? currTheirs[currOurs] : null;
         }
-    }
-    else {
+    } else {
         return data;
     }
 };
@@ -275,7 +274,7 @@ Descriptor.prototype._extractData = function (data) {
  * @param {Object} config
  * @returns {Object}
  */
-Descriptor.prototype._matchConfig = function (config) {
+Descriptor.prototype._matchConfig = function(config) {
     var matches = config.type ? this._matchMethod(config.type) : {};
     if (matches) {
         matches = config.url ? this._matchPath(config.url) : {};
@@ -289,18 +288,17 @@ Descriptor.prototype._matchConfig = function (config) {
 
 /**
  * Returns data if the data matches, performing any extraction as specified in opts.data
- * 
+ *
  * @param  {Object} data
  * @return {Object}
  */
-Descriptor.prototype._matchData = function (data) {
+Descriptor.prototype._matchData = function(data) {
     var extractedData = null;
     if (this.data) {
         if (data) {
             extractedData = this._extractData(data);
         }
-    }
-    else {
+    } else {
         extractedData = data;
     }
     if (extractedData) {
@@ -311,12 +309,12 @@ Descriptor.prototype._matchData = function (data) {
 
 /**
  * Check if the HTTP config and returned data match this descriptor definition.
- * 
+ *
  * @param  {Object} config Config object for $.ajax and similar
  * @param  {Object} data
  * @return {Object} Extracted data
  */
-Descriptor.prototype.match = function (config, data) {
+Descriptor.prototype.match = function(config, data) {
     var regexMatches = this._matchConfig(config);
     var matches = !!regexMatches;
     var extractedData = false;
@@ -329,13 +327,12 @@ Descriptor.prototype.match = function (config, data) {
             if (util.isArray(extractedData)) {
                 for (key in regexMatches) {
                     if (regexMatches.hasOwnProperty(key)) {
-                        _.each(extractedData, function (datum) {
+                        _.each(extractedData, function(datum) {
                             datum[key] = regexMatches[key];
                         });
                     }
                 }
-            }
-            else {
+            } else {
                 for (key in regexMatches) {
                     if (regexMatches.hasOwnProperty(key)) {
                         extractedData[key] = regexMatches[key];
@@ -343,12 +340,10 @@ Descriptor.prototype.match = function (config, data) {
                 }
             }
             Logger.trace('data matches');
-        }
-        else {
+        } else {
             Logger.trace('data doesnt match');
         }
-    }
-    else {
+    } else {
         Logger.trace('config doesnt match');
     }
     return extractedData;
@@ -359,46 +354,49 @@ Descriptor.prototype.match = function (config, data) {
  * @param  {Object} data Serialised data.
  * @return {Object} Serialised data with applied transformations.
  */
-Descriptor.prototype._transformData = function (data) {
+Descriptor.prototype._transformData = function(data) {
     var transforms = this.transforms;
-    for (var attr in transforms) {
-        if (transforms.hasOwnProperty(attr)) {
-            if (data[attr]) {
-                var transform = transforms[attr];
-                var val = data[attr];
-                if (typeof(transform) == 'string') {
-                    var split = transform.split('.');
-                    delete data[attr];
-                    if (split.length == 1) {
-                        data[split[0]] = val;
-                    }
-                    else {
-                        data[split[0]] = {};
-                        var newVal = data[split[0]];
-                        for (var i = 1; i < split.length - 1; i++) {
-                            var newAttr = split[i];
-                            newVal[newAttr] = {};
-                            newVal = newVal[newAttr];
-                        }
-                        newVal[split[split.length - 1]] = val;
-                    }
-                }
-                else if (typeof(transform) == 'function') {
-                    var transformed = transform(val);
-                    if (util.isArray(transformed)) {
+    console.log('transforms', transforms);
+    if (typeof(transforms) == 'function') {
+        data = transforms(data);
+        console.log('data', data);
+    } else {
+        for (var attr in transforms) {
+            if (transforms.hasOwnProperty(attr)) {
+                if (data[attr]) {
+                    var transform = transforms[attr];
+                    var val = data[attr];
+                    if (typeof(transform) == 'string') {
+                        var split = transform.split('.');
                         delete data[attr];
-                        data[transformed[0]] = transformed[1];
+                        if (split.length == 1) {
+                            data[split[0]] = val;
+                        } else {
+                            data[split[0]] = {};
+                            var newVal = data[split[0]];
+                            for (var i = 1; i < split.length - 1; i++) {
+                                var newAttr = split[i];
+                                newVal[newAttr] = {};
+                                newVal = newVal[newAttr];
+                            }
+                            newVal[split[split.length - 1]] = val;
+                        }
+                    } else if (typeof(transform) == 'function') {
+                        var transformed = transform(val);
+                        if (util.isArray(transformed)) {
+                            delete data[attr];
+                            data[transformed[0]] = transformed[1];
+                        } else {
+                            data[attr] = transformed;
+                        }
+                    } else {
+                        throw new InternalSiestaError('Invalid transformer');
                     }
-                    else {
-                        data[attr] = transformed;
-                    }
-                }
-                else {
-                    throw new InternalSiestaError('Invalid transformer');
                 }
             }
         }
     }
+    return data;
 };
 
 

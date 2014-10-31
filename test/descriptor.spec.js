@@ -893,6 +893,24 @@ describe('request descriptor', function() {
                 assert.equal(data.color, 'blue');
             });
 
+            it('function', function() {
+                var data = {
+                    colour: 'red'
+                };
+                responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                    mapping: carMapping,
+                    transforms: function(_data) {
+                        assert.equal(data, _data);
+                        return {
+                            key: 'value'
+                        };
+                    }
+                });
+                data = responseDescriptor._transformData(data);
+                assert.notOk(data.colour);
+                assert.equal(data.key, 'value');
+            });
+
             it('invalid', function() {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     mapping: carMapping,

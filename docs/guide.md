@@ -195,20 +195,48 @@ GitHub.descriptor({
     path: '/users/(.*)/repos/',
     mapping: Repo,
     method: 'GET',
-    transform: {
+    transforms: {
     	'stargazers_count': 'num_stars'
     }
 });
 ```
 
-Or for more complicated transformations you can define your own function:
+We can use dot notation to transform nested data:
 
 ```js
 GitHub.descriptor({
     path: '/users/(.*)/repos/',
     mapping: Repo,
     method: 'GET',
-    transform: function (data) {
+    transforms: {
+    	'stargazers_count': 'path.to.num_stars'
+    }
+});
+```
+
+We can also use a function instead:
+
+```js
+GitHub.descriptor({
+    path: '/users/(.*)/repos/',
+    mapping: Repo,
+    method: 'GET',
+    transforms: {
+    	'stargazers_count': function (k) {
+    		return 'path.to.num_stars'
+    	}
+    }
+});
+```
+
+Or for more complicated transformations you can define a top-level transformation function:
+
+```js
+GitHub.descriptor({
+    path: '/users/(.*)/repos/',
+    mapping: Repo,
+    method: 'GET',
+    transforms: function (data) {
     	var n = data.stargazers_count;
     	delete data.stargazers_count;
     	data.num_stars = n;
