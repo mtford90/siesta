@@ -19,12 +19,12 @@ exports.capitaliseFirstLetter = capitaliseFirstLetter;
 var root = {};
 // START async.js //
 
-var isArray = Array.isArray || function (obj) {
+var isArray = Array.isArray || function(obj) {
     return _toString.call(obj) === '[object Array]';
 };
 
 function doParallel(fn) {
-    return function () {
+    return function() {
         var args = Array.prototype.slice.call(arguments);
         return fn.apply(null, [each].concat(args));
     };
@@ -37,34 +37,75 @@ function _map(arr, iterator) {
         return arr.map(iterator);
     }
     var results = [];
-    each(arr, function (x, i, a) {
+    each(arr, function(x, i, a) {
         results.push(iterator(x, i, a));
     });
     return results;
 }
 
 function _asyncMap(eachfn, arr, iterator, callback) {
-    arr = _map(arr, function (x, i) {
-        return {index: i, value: x};
+    arr = _map(arr, function(x, i) {
+        return {
+            index: i,
+            value: x
+        };
     });
     if (!callback) {
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (err) {
+        eachfn(arr, function(x, callback) {
+            iterator(x.value, function(err) {
                 callback(err);
             });
         });
     } else {
         var results = [];
-        eachfn(arr, function (x, callback) {
-            iterator(x.value, function (err, v) {
+        eachfn(arr, function(x, callback) {
+            iterator(x.value, function(err, v) {
                 results[x.index] = v;
                 callback(err);
             });
-        }, function (err) {
+        }, function(err) {
             callback(err, results);
         });
     }
 }
+
+var mapSeries = doSeries(_asyncMap);
+
+function doSeries(fn) {
+    return function() {
+        var args = Array.prototype.slice.call(arguments);
+        return fn.apply(null, [eachSeries].concat(args));
+    };
+}
+
+
+
+function eachSeries(arr, iterator, callback) {
+    callback = callback || function() {};
+    if (!arr.length) {
+        return callback();
+    }
+    var completed = 0;
+    var iterate = function() {
+        iterator(arr[completed], function(err) {
+            if (err) {
+                callback(err);
+                callback = function() {};
+            } else {
+                completed += 1;
+                if (completed >= arr.length) {
+                    callback();
+                } else {
+                    iterate();
+                }
+            }
+        });
+    };
+    iterate();
+}
+
+
+
 
 function _each(arr, iterator) {
     if (arr.forEach) {
@@ -76,20 +117,20 @@ function _each(arr, iterator) {
 }
 
 function each(arr, iterator, callback) {
-    callback = callback || function () {};
+    callback = callback || function() {};
     if (!arr.length) {
         return callback();
     }
     var completed = 0;
-    _each(arr, function (x) {
+    _each(arr, function(x) {
         iterator(x, only_once(done));
     });
+
     function done(err) {
         if (err) {
             callback(err);
-            callback = function () {};
-        }
-        else {
+            callback = function() {};
+        } else {
             completed += 1;
             if (completed >= arr.length) {
                 callback();
@@ -112,12 +153,12 @@ function keys(obj) {
 }
 
 
-var _parallel = function (eachfn, tasks, callback) {
-    callback = callback || function () {};
+var _parallel = function(eachfn, tasks, callback) {
+    callback = callback || function() {};
     if (isArray(tasks)) {
-        eachfn.map(tasks, function (fn, callback) {
+        eachfn.map(tasks, function(fn, callback) {
             if (fn) {
-                fn(function (err) {
+                fn(function(err) {
                     var args = Array.prototype.slice.call(arguments, 1);
                     if (args.length <= 1) {
                         args = args[0];
@@ -126,11 +167,10 @@ var _parallel = function (eachfn, tasks, callback) {
                 });
             }
         }, callback);
-    }
-    else {
+    } else {
         var results = {};
-        eachfn.each(keys(tasks), function (k, callback) {
-            tasks[k](function (err) {
+        eachfn.each(keys(tasks), function(k, callback) {
+            tasks[k](function(err) {
                 var args = Array.prototype.slice.call(arguments, 1);
                 if (args.length <= 1) {
                     args = args[0];
@@ -138,26 +178,61 @@ var _parallel = function (eachfn, tasks, callback) {
                 results[k] = args;
                 callback(err);
             });
-        }, function (err) {
+        }, function(err) {
             callback(err, results);
         });
     }
 };
 
+function series(tasks, callback) {
+    callback = callback || function() {};
+    if (_isArray(tasks)) {
+        mapSeries(tasks, function(fn, callback) {
+            if (fn) {
+                fn(function(err) {
+                    var args = Array.prototype.slice.call(arguments, 1);
+                    if (args.length <= 1) {
+                        args = args[0];
+                    }
+                    callback.call(null, err, args);
+                });
+            }
+        }, callback);
+    } else {
+        var results = {};
+        eachSeries(_keys(tasks), function(k, callback) {
+            tasks[k](function(err) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (args.length <= 1) {
+                    args = args[0];
+                }
+                results[k] = args;
+                callback(err);
+            });
+        }, function(err) {
+            callback(err, results);
+        });
+    }
+}
 
 function only_once(fn) {
     var called = false;
-    return function () {
+    return function() {
         if (called) throw new Error("Callback was already called.");
         called = true;
         fn.apply(root, arguments);
     }
 }
 
-exports.parallel = function (tasks, callback) {
-    _parallel({ map: map, each: each }, tasks, callback);
-};
+function parallel(tasks, callback) {
+    _parallel({
+        map: map,
+        each: each
+    }, tasks, callback);
+}
 
+exports.series = series;
+exports.parallel = parallel;
 exports.isArray = isArray;
 
 // END async.js //
@@ -177,7 +252,7 @@ var breaker = {};
 
 _.keys = keys;
 
-_.each = _.forEach = function (obj, iterator, context) {
+_.each = _.forEach = function(obj, iterator, context) {
     if (obj == null) return obj;
     if (nativeForEach && obj.forEach === nativeForEach) {
         obj.forEach(iterator, context);
@@ -196,11 +271,11 @@ _.each = _.forEach = function (obj, iterator, context) {
 
 // Return the results of applying the iterator to each element.
 // Delegates to **ECMAScript 5**'s native `map` if available.
-_.map = _.collect = function (obj, iterator, context) {
+_.map = _.collect = function(obj, iterator, context) {
     var results = [];
     if (obj == null) return results;
     if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
-    _.each(obj, function (value, index, list) {
+    _.each(obj, function(value, index, list) {
         results.push(iterator.call(context, value, index, list));
     });
     return results;
@@ -209,9 +284,9 @@ _.map = _.collect = function (obj, iterator, context) {
 // Partially apply a function by creating a version that has had some of its
 // arguments pre-filled, without changing its dynamic `this` context. _ acts
 // as a placeholder, allowing any combination of arguments to be pre-filled.
-_.partial = function (func) {
+_.partial = function(func) {
     var boundArgs = slice.call(arguments, 1);
-    return function () {
+    return function() {
         var position = 0;
         var args = boundArgs.slice();
         for (var i = 0, length = args.length; i < length; i++) {
@@ -223,7 +298,7 @@ _.partial = function (func) {
 };
 
 // Convenience version of a common use case of `map`: fetching a property.
-_.pluck = function (obj, key) {
+_.pluck = function(obj, key) {
     return _.map(obj, _.property(key));
 };
 
@@ -231,14 +306,14 @@ var reduceError = 'Reduce of empty array with no initial value';
 
 // **Reduce** builds up a single result from a list of values, aka `inject`,
 // or `foldl`. Delegates to **ECMAScript 5**'s native `reduce` if available.
-_.reduce = _.foldl = _.inject = function (obj, iterator, memo, context) {
+_.reduce = _.foldl = _.inject = function(obj, iterator, memo, context) {
     var initial = arguments.length > 2;
     if (obj == null) obj = [];
     if (nativeReduce && obj.reduce === nativeReduce) {
         if (context) iterator = _.bind(iterator, context);
         return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
     }
-    _.each(obj, function (value, index, list) {
+    _.each(obj, function(value, index, list) {
         if (!initial) {
             memo = value;
             initial = true;
@@ -250,36 +325,36 @@ _.reduce = _.foldl = _.inject = function (obj, iterator, memo, context) {
     return memo;
 };
 
-_.property = function (key) {
-    return function (obj) {
+_.property = function(key) {
+    return function(obj) {
         return obj[key];
     };
 };
 
 // Optimize `isFunction` if appropriate.
-if (typeof (/./) !== 'function') {
-    _.isFunction = function (obj) {
+if (typeof(/./) !== 'function') {
+    _.isFunction = function(obj) {
         return typeof obj === 'function';
     };
 }
 
 // An internal function to generate lookup iterators.
-var lookupIterator = function (value) {
+var lookupIterator = function(value) {
     if (value == null) return _.identity;
     if (_.isFunction(value)) return value;
     return _.property(value);
 };
 
 // Sort the object's values by a criterion produced by an iterator.
-_.sortBy = function (obj, iterator, context) {
+_.sortBy = function(obj, iterator, context) {
     iterator = lookupIterator(iterator);
-    return _.pluck(_.map(obj, function (value, index, list) {
+    return _.pluck(_.map(obj, function(value, index, list) {
         return {
             value: value,
             index: index,
             criteria: iterator.call(context, value, index, list)
         };
-    }).sort(function (left, right) {
+    }).sort(function(left, right) {
         var a = left.criteria;
         var b = right.criteria;
         if (a !== b) {
@@ -290,17 +365,17 @@ _.sortBy = function (obj, iterator, context) {
     }), 'value');
 };
 
-var ctor = function(){};
+var ctor = function() {};
 
 // Create a function bound to a given object (assigning `this`, and arguments,
 // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
 // available.
-_.bind = function (func, context) {
+_.bind = function(func, context) {
     var args, bound;
     if (nativeBind && func.bind === nativeBind) return nativeBind.apply(func, slice.call(arguments, 1));
     if (!_.isFunction(func)) throw new TypeError;
     args = slice.call(arguments, 2);
-    return bound = function () {
+    return bound = function() {
         if (!(this instanceof bound)) return func.apply(context, args.concat(slice.call(arguments)));
         ctor.prototype = func.prototype;
         var self = new ctor;
@@ -315,9 +390,13 @@ _.bind = function (func, context) {
 // END underscore.js //
 
 exports._ = _;
-
-
 var observe = require('../vendor/observe-js/src/observe').Platform;
+
+function next(callback) {
+    observe.performMicrotaskCheckpoint();
+    setTimeout(callback);
+}
+
 
 /**
  * Performs dirty check/Object.observe callbacks depending on the browser.
@@ -325,10 +404,7 @@ var observe = require('../vendor/observe-js/src/observe').Platform;
  * If Object.observe is present,
  * @param callback
  */
-exports.next = function (callback) {
-    observe.performMicrotaskCheckpoint();
-    setTimeout(callback);
-};
+exports.next = next;
 
 /**
  * Returns a handler that acts upon a callback or a promise depending on the result of a different callback.
@@ -336,8 +412,8 @@ exports.next = function (callback) {
  * @param [promise]
  * @returns {Function}
  */
-exports.constructCallbackAndPromiseHandler = function (callback, promise) {
-    return function (err) {
+exports.constructCallbackAndPromiseHandler = function(callback, promise) {
+    return function(err) {
         if (callback) callback.apply(callback, arguments);
         if (promise) {
             if (err) promise.reject(err);

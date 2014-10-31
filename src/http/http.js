@@ -28,6 +28,7 @@ Logger.setLevel(log.Level.warn);
  * @param {Function} callback Callback if opts specified.
  */
 function _httpResponse(method, path) {
+    console.log('_httpResponse', arguments);
     var self = this;
     var args = Array.prototype.slice.call(arguments, 2);
     var callback;
@@ -48,6 +49,7 @@ function _httpResponse(method, path) {
     }
     if (opts.parseResponse === undefined) opts.parseResponse = true;
     opts.success = function(data, textStatus, jqXHR) {
+        console.log('success');
         if (Logger.trace.isEnabled)
             Logger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
         var resp = {
@@ -76,6 +78,7 @@ function _httpResponse(method, path) {
                     var mapping = matchedDescriptor.mapping;
                     mapping.map(extractedData, function(err, obj) {
                         if (callback) {
+
                             callback(err, obj, resp);
                         }
                     }, opts.obj);
@@ -96,6 +99,7 @@ function _httpResponse(method, path) {
 
     };
     opts.error = function(jqXHR, textStatus, errorThrown) {
+        console.log('error');
         var resp = {
             jqXHR: jqXHR,
             textStatus: textStatus,
@@ -105,8 +109,22 @@ function _httpResponse(method, path) {
     };
     if (Logger.trace.isEnabled)
         Logger.trace('Ajax request:', opts);
+    console.log('opts', opts);
     $.ajax(opts);
 };
+
+function _serialiseObject(opts, obj, cb) {
+    this._serialise(obj, function (err, data) {
+        var retData = data;
+        if (opts.fields) {
+            retData = {};
+            _.each(opts.fields, function (f) {
+                retData[f] = data[f];
+            });
+        }
+        cb(err, retData);
+    });
+}
 
 /**
  * Send a HTTP request to the given method and path
@@ -118,7 +136,7 @@ function _httpResponse(method, path) {
  */
 function _httpRequest(method, path, object) {
     var self = this;
-    var args = Array.prototype.slice.call(arguments, 2);
+    var args = Array.prototype.slice.call(arguments, 3);
     var callback;
     var opts = {};
     if (typeof(args[0]) == 'function') {
@@ -145,7 +163,7 @@ function _httpRequest(method, path, object) {
     if (matchedDescriptor) {
         if (Logger.trace.isEnabled)
             Logger.trace('Matched descriptor: ' + matchedDescriptor._dump(true));
-        matchedDescriptor._serialise(object, function(err, data) {
+        _serialiseObject.call(matchedDescriptor, object, opts, function (err, data) {
             if (Logger.trace.isEnabled)
                 Logger.trace('_serialise', {
                     err: err,
@@ -159,6 +177,7 @@ function _httpRequest(method, path, object) {
                 _.partial(_httpResponse, method, path, opts, callback).apply(self, args);
             }
         });
+       
     } else if (callback) {
         if (Logger.trace.isEnabled)
             Logger.trace('Did not match descriptor');
@@ -347,7 +366,8 @@ siesta.ext.http = {
     HEAD: HEAD,
     POST: POST,
     PUT: PUT,
-    PATCH: PATCH
+    PATCH: PATCH,
+    _serialiseObject: _serialiseObject
 };
 
 Object.defineProperty(siesta.ext.http, 'ajax', {

@@ -146,10 +146,9 @@ siesta.series([
 <a id="descriptors"></a>
 ## Configure descriptors
 
-`Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Mapping.prototype.map` which is also available for mapping arbritray data onto the graph outside of HTTP.
+`Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Mapping.prototype.map` which is also available for mapping arbritrary data onto the graph outside of HTTP.
 
-
-<!-- TODO: Response descriptors -->
+The below descriptor describes the GitHub endpoint for obtaining a specific users repositories. `path` is a regular expression, `mapping`tells Siesta what kind of objects to expect from this endpoint and `method` is the HTTP method, list of http methods or a wildcard.
 
 ```js
 GitHub.descriptor({
@@ -159,50 +158,68 @@ GitHub.descriptor({
 });
 ```
 
-<!-- TODO: Nested data on response -->
+In this case it's kind of pointless, as `login` is already a field on the JSON returned from the GitHub API, but if we want to pull information from the path we can do the following: 
 
 ```js
 GitHub.descriptor({
-    path: '/search/repositories/',
+    path: '/users/(?P<login>)/repos/',
     mapping: Repo,
-    method: 'GET',
-    data: 'items'
+    method: 'GET'
 });
 ```
 
+### Nested Data
+
+The GitHub search endpoint nests results in the `items` key. The `data` parameter can be used to deal with this:
+
 ```js
 GitHub.descriptor({
     path: '/search/repositories/',
     mapping: Repo,
+    // method: '*',
+    // method: ['GET', 'PATCH'],
     method: 'GET',
-    data: 'items.further.nesting'
+    data: 'items',
+    // data: 'items.further.nesting'
 });
 ```
 
 <!-- TODO: Transforms -->  
+
+### Transforms
+
+Transforms can be used for simple field conversions:
 
 ```js
 GitHub.descriptor({
     path: '/users/(.*)/repos/',
     mapping: Repo,
     method: 'GET',
-    transforms: {
+    transform: {
     	'stargazers_count': 'num_stars'
     }
 });
 ```
 
-<!-- TODO: Request descriptors -->
+Or for more complicated transformations you can define your own function:
 
 ```js
 GitHub.descriptor({
-	path: '/repos/(.*)/(.*)/',
-	mapping: Repo,
-	method: ['PATCH', 'POST'],
-})
+    path: '/users/(.*)/repos/',
+    mapping: Repo,
+    method: 'GET',
+    transform: function (data) {
+    	var n = data.stargazers_count;
+    	delete data.stargazers_count;
+    	data.num_stars = n;
+    	return data;
+    }
+});
 ```
 
-<!-- TODO: Embedding data on request -->
+### Request vs. Response
+
+If your descriptor contains unsafe methods then additional options can be passed. The `data` field will tell siesta where to nest outgoing (serialised) data.
 
 ```js
 GitHub.descriptor({
@@ -212,20 +229,31 @@ GitHub.descriptor({
 	data: 'data'
 })
 ```
-<!-- TODO: Serialisers (id serialiser) -->
-<!-- TODO: Serialisers (depth serialiser) -->
-<!-- TODO: Regular expressions in the path -->
-<!-- TODO: Transform functions -->
 
 ### Serialisation
 
-<!-- TODO: Built-in serialisers -->
-<!-- TODO: Custom serialisers -->
+```js
+GitHub.descriptor({
+	path: '/repos/(.*)/(.*)/',
+	mapping: Repo,
+	method: ['PATCH', 'POST'],
+	data: 'data',
+	serialiser: siesta.serialisers.id
+});
+```
+
+```js
+GitHub.descriptor({
+	path: '/repos/(.*)/(.*)/',
+	mapping: Repo,
+	method: ['PATCH', 'POST'],
+	data: 'data',
+	serialiser: siesta.serialisers.depth(2)
+});
+```
 
 <a id="http"></a>
 ## Send HTTP requests
-
-<!-- TODO: Safe requests (GET/TRACE/HEAD/OPTIONS/CONNECT) -->
 
 `Collection.prototype.<SAFE_HTTP_METHOD>(path, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
@@ -237,7 +265,6 @@ GitHub.GET('/users/mtford90/repos').then(function (repos) {
 });
 ```
 
-<!-- TODO: Query parameters -->
 
 ```js
 GitHub.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
@@ -247,10 +274,10 @@ GitHub.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
 });
 ```
 
-<!-- TODO: Unsafe requests (PUT/POST/PATCH/DELETE) -->
+`Collection.prototype.<UNSAFE_HTTP_METHOD>(path, object, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
 ```js
-GitHub.PATCH('/users/mtford90/repos', myRepo, {fields: }).then(function (repos) {
+GitHub.PATCH('/users/mtford90/repos', myRepo, {fields: ['name']}).then(function (repos) {
 	siesta.each(repos, function (r) { 
 		console.log(r.name);
 	});
@@ -258,6 +285,10 @@ GitHub.PATCH('/users/mtford90/repos', myRepo, {fields: }).then(function (repos) 
 ```
 
 <!-- TODO: Set the ajax library -->
+
+```js
+siesta.setAjax(zepto.ajax);
+```
 
 <a id="mappingData"></a>
 ## Mapping data without HTTP requests
@@ -381,14 +412,26 @@ siesta.on('GitHub:Repo:' + myRepo.id, function (n) {});
 siesta.on(myRepo._id, function (n) {});
 ```
 
-<!-- TODO: Notification types -->
-<!-- TODO: Properties within the notification dictionary. -->
+Each notification has a `type` property which can be any of the following:
+
+* Splice
+	* `added`
+	* `removed`
+* Set
+	* `new`
+	* `old`
+* Delete
+	* `old`
+* New
+	* `new`
+
+Other common properties:
+
+* `field`: 
 
 ### Caveats
 
-Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for `Object.observe` which is currently only available in Chrome. It also comes with certain caveats.
-
-<!-- TODO: Link to HTML5 compatability site for Object.observe -->
+Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for `Object.observe` which is currently only available in Chrome at the time of writing. It also comes with certain caveats.
 
 e.g. take the case whereby we are manipulating a user repositories.
 
@@ -405,7 +448,17 @@ In browsers that implement `Object.observe`, notifications will be sent on the n
 Repo.map({name: 'MyNewRepo'}).then(function (repo) {
 	myUser.repositories.push(repo);
 	myUser.repositories.splice(0, 1); // Remove repo at index 0.
-	siesta.notify(); // Send out all notifications.
+	siesta.notify(function () { 
+		// Send out all notifications.
+	}); 
+});
+```
+
+Promises can also be used.
+
+```js
+siesta.notify().then(function () {
+	// All notifications will have been sent.
 });
 ```
 
@@ -464,15 +517,15 @@ User.query({login__contains: 'abc'}, function (err, users) {
 
 ## Utils
 
-Siesta makes available various utilities from underscore and asyncjs used throughout the library itself. These are often useful for Siesta users and hence are exposed via the `siesta` object. Note that if you require the full underscore or asyncjs libraries you will need to include these yourself.
+Siesta makes available various utilities from underscore, asyncjs and q used throughout the library itself. These are often useful for Siesta users and hence are exposed via the `siesta` object. Note that if you require the full underscore or asyncjs libraries you will need to include these yourself.
 
-<!-- TODO -->
-
-`siesta.map()`
-`siesta.each()`
-`siesta.partial()`
-`siesta.bind()`
-`siesta.parallel()`
-`siesta.series()`
-`siesta.waterfall()`
-`siesta.q`
+* `siesta.map` is equivalent to [_.map](http://underscorejs.org/#map)
+* `siesta.each` is equivalent to [_.each](http://underscorejs.org/#each)
+* `siesta.partial` is equivalent to [_.partial](http://underscorejs.org/#partial)
+* `siesta.bind` is equivalent to [_.bind](http://underscorejs.org/#bind)
+* `siesta.pluck` is equivalent to [_.pluck](http://underscorejs.org/#pluck)
+* `siesta.property` is equivalent to [_.property](http://underscorejs.org/#property)
+* `siesta.sortBy` is equivalent to [_.sortBy](http://underscorejs.org/#sortBy)
+* `siesta.parallel` is equivalent to [async.parallel](https://github.com/caolan/async#parallel)
+* `siesta.series` is equivalent to [async.series](https://github.com/caolan/async#series)
+* `siesta.q` is the entire [q promises library](https://github.com/kriskowal/q)

@@ -28,3 +28,7 @@ depending on whether the edges represent a foreign-key, many-to-many or one-to-o
 
 Every remote resource should be represented by one and only one local object i.e. for each remote resource
 we have a single local source of truth for that particular resource.
+
+### Fields
+
+A field on a model refers to either an attribute or relationship, where an attribute is a simple value such as an Integer or a String, and a relationship is another model instance or multiple model instances.

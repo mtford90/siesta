@@ -53,6 +53,7 @@ siesta.reset = function() {
     //noinspection JSAccessibilityCheck
 };
 
+
 /**
  * Listen to notificatons.
  * @param {String} notificationName
@@ -203,6 +204,8 @@ siesta.getAjax = function() {
     return siesta.ext.http.ajax;
 };
 
+siesta.notify = util.next;
+
 /**
  * Returns an object whos keys map onto string constants used for log levels.
  * @type {Object}
@@ -253,6 +256,29 @@ siesta.setLogLevel = function(loggerName, level) {
     var Logger = log.loggerWithName(loggerName);
     Logger.setLevel(level);
 };
+
+
+
+siesta.serialisers = {};
+siesta.serializers = siesta.serialisers;
+
+Object.defineProperty(siesta.serialisers, 'id', {
+    get: function() {
+        if (siesta.ext.httpEnabled) {
+            return siesta.ext.http.Serialiser.idSerialiser;
+        }
+        return null;
+    }
+});
+
+Object.defineProperty(siesta.serialisers, 'depth', {
+    get: function() {
+        if (siesta.ext.httpEnabled) {
+            return siesta.ext.http.Serialiser.depthSerializer;
+        }
+        return null;
+    }
+});
 
 // Object.defineProperty(siesta, 'isDirty', {
 //     get: function() {

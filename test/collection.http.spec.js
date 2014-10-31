@@ -577,19 +577,21 @@ describe('http!', function() {
         describe('PATCH', function() {
             var err, obj, resp;
             beforeEach(function(done) {
-                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    method: 'PATCH',
-                    mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                configureCollection(function() {
+                    var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                        method: 'PATCH',
+                        mapping: carMapping,
+                        path: '/cars/(?<id>[0-9])/?'
+                    });
+                    siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                    var requestDescriptor = new siesta.ext.http.RequestDescriptor({
+                        method: 'PATCH',
+                        mapping: carMapping,
+                        path: '/cars/(?<id>[0-9])/?'
+                    });
+                    siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                    done();
                 });
-                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                    method: 'PATCH',
-                    mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
-                });
-                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                configureCollection(done);
             });
 
             describe('success', function() {
@@ -637,7 +639,13 @@ describe('http!', function() {
                     assert.equal(car.colour, 'red');
                     assert.equal(car.name, 'Aston Martin');
                 });
+
+                it('')
             });
+
+
+
+
         });
 
         describe('OPTIONS', function() {
@@ -806,21 +814,65 @@ describe('http!', function() {
             assert.equal(s.ext.http.ajax, fakeDollar.ajax);
         });
 
-        it('no ajax at all', function () {
+        it('no ajax at all', function() {
             $ = undefined;
             jQuery = undefined;
-            assert.throws(function () {
+            assert.throws(function() {
                 var a = s.ext.http.ajax;
             }, InternalSiestaError);
         });
 
-        it('set ajax', function () {
-            var fakeAjax = function () {};
+        it('set ajax', function() {
+            var fakeAjax = function() {};
             s.setAjax(fakeAjax);
             assert.equal(s.ext.http.ajax, fakeAjax);
             assert.equal(s.getAjax(), fakeAjax);
         });
 
-    })
+    });
+
+    describe('specific fields', function() {
+        beforeEach(function(done) {
+            configureCollection(function() {
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                    method: 'PATCH',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
+                    method: 'PATCH',
+                    mapping: carMapping,
+                    path: '/cars/(?<id>[0-9])/?'
+                });
+                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+                carMapping.map({
+                    colour: 'red',
+                    name: 'Aston Martin',
+                    id: '5'
+                }, function(err, _car) {
+                    if (err) done(err);
+                    car = _car;
+                    assert.equal(car.colour, 'red');
+                    assert.equal(car.name, 'Aston Martin');
+                    assert.equal(car.id, '5');
+                    siesta.ext.http._serialiseObject.call(requestDescriptor, {fields:['colour']}, car, function (err, data){
+                        if (err) done(err);
+                        else {
+                            console.log('data', data);
+                            var keys = Object.keys(data);
+                            assert.equal(keys.length, 1);
+                            assert.equal(keys[0], 'colour');
+                            done();
+                        }
+                    } );
+                });
+            });
+        });
+
+        it('xyz', function() {
+            dump('hello');
+        });
+    });
 
 });
