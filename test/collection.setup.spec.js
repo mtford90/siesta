@@ -179,44 +179,8 @@ describe('collection setup', function () {
                         done();
                     })
                 });
-                it('vararg', function (done) {
-                    var requestDescriptors = collection.requestDescriptor({
-                        method: 'POST',
-                        mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
-                    }, {
-                        method: 'POST',
-                        mapping: mapping2,
-                        path: '/path/(?<id>[0-9])/?'
-                    });
-                    collection.install(function (err) {
-                        if (err) {
-                            done(err);
-                        }
-                        assert.equal(requestDescriptors[0].mapping, mapping1);
-                        assert.equal(requestDescriptors[1].mapping, mapping2);
-                        done();
-                    })
-                });
-                it('array', function (done) {
-                    var requestDescriptors = collection.requestDescriptor([{
-                        method: 'POST',
-                        mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
-                    }, {
-                        method: 'POST',
-                        mapping: mapping2,
-                        path: '/path/(?<id>[0-9])/?'
-                    }]);
-                    collection.install(function (err) {
-                        if (err) {
-                            done(err);
-                        }
-                        assert.equal(requestDescriptors[0].mapping, mapping1);
-                        assert.equal(requestDescriptors[1].mapping, mapping2);
-                        done();
-                    })
-                });
+         
+               
             });
             describe('response descriptor', function () {
                 it('single', function (done) {
@@ -239,44 +203,7 @@ describe('collection setup', function () {
                         done();
                     })
                 });
-                it('vararg', function (done) {
-                    var responseDescriptors = collection.responseDescriptor({
-                        method: 'POST',
-                        mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
-                    }, {
-                        method: 'POST',
-                        mapping: mapping2,
-                        path: '/path/(?<id>[0-9])/?'
-                    });
-                    collection.install(function (err) {
-                        if (err) {
-                            done(err);
-                        }
-                        assert.equal(responseDescriptors[0].mapping, mapping1);
-                        assert.equal(responseDescriptors[1].mapping, mapping2);
-                        done();
-                    })
-                });
-                it('array', function (done) {
-                    var responseDescriptors = collection.responseDescriptor([{
-                        method: 'POST',
-                        mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
-                    }, {
-                        method: 'POST',
-                        mapping: mapping2,
-                        path: '/path/(?<id>[0-9])/?'
-                    }]);
-                    collection.install(function (err) {
-                        if (err) {
-                            done(err);
-                        }
-                        assert.equal(responseDescriptors[0].mapping, mapping1);
-                        assert.equal(responseDescriptors[1].mapping, mapping2);
-                        done();
-                    })
-                });
+             
             });
 
         });

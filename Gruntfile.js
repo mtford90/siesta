@@ -166,18 +166,24 @@ module.exports = function(grunt) {
             jssrc: {
                 files: [
                     '<%= app_files.js %>',
-                    '!<%= src_dir %>/http/http.js',
+                    '!<%= src_dir %>/http/**/*.js',
                     '!<%= src_dir %>/performance.js'
                 ],
                 tasks: ['browserify:test', 'karma:unit:run']
             },
 
-            ext: {
+            perf: {
                 files: [
-                    '<%= src_dir %>/http/http.js',
                     '<%= src_dir %>/performance.js'
                 ],
                 tasks: ['copy:build_extensionjs', 'karma:unit:run']
+            },
+
+            http: {
+                files: [
+                    '<%= src_dir %>/http/**/*.js',
+                ],
+                tasks: ['browserify:build', 'karma:unit:run']
             },
 
             index: {
@@ -262,7 +268,7 @@ module.exports = function(grunt) {
                         } else extracted('api.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md src/collection.js src/http/http.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js src/cache.js' 
+                command: 'jsdoc2md src/collection.js src/http/http.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js src/cache.js'
             },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
@@ -341,6 +347,12 @@ module.exports = function(grunt) {
         'karmaconfig',
         'build-jekyll',
         'connect:site',
+        'karma:unit',
+        'delta'
+    ]);
+
+    grunt.registerTask('watch-no-jekyll', [
+        'build',
         'karma:unit',
         'delta'
     ]);

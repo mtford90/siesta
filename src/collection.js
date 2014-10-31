@@ -20,6 +20,9 @@ var q = require('q');
 
 var cache = require('./cache');
 
+var SAFE_METHODS = ['GET', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT'];
+var UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'];
+
 /**
  * A collection describes a set of models and optionally a REST API which we would
  * like to model.
@@ -198,62 +201,6 @@ Collection.prototype.mapping = function() {
     return null;
 };
 
-/**
- * Create RequestDescriptor object.
- * @param  {Object} opts
- * @return {RequestDescriptor}
- * @throws {InternalSiestaError} If http module not installed.
- */
-function requestDescriptor(opts) {
-    if (siesta.ext.httpEnabled) {
-        var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
-        siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-        return requestDescriptor;
-    } else {
-        throw new InternalSiestaError('HTTP Module not installed');
-    }
-}
-
-/**
- * Create and register ResponseDescriptor object.
- * @param  {Object} opts
- * @return {ResponseDescriptor}
- * @throws {InternalSiestaError} If http module not installed.
- */
-function responseDescriptor(opts) {
-    if (siesta.ext.httpEnabled) {
-        var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
-        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-    } else {
-        throw new InternalSiestaError
-    }
-    return responseDescriptor;
-}
-
-/**
- * Marshals arguments used to create Descriptor and then calls the registration function.
- * @param  {Function} registrationFunc Responsible for registering the descriptor.
- * @return {Descriptor}
- */
-Collection.prototype._descriptor = function(registrationFunc) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    if (args.length) {
-        if (args.length == 1) {
-            if (util.isArray(args[0])) {
-                return _.map(args[0], function(d) {
-                    return registrationFunc(d);
-                });
-            } else {
-                return registrationFunc(args[0]);
-            }
-        } else {
-            return _.map(args, function(d) {
-                return registrationFunc(d);
-            });
-        }
-    }
-    return null;
-};
 
 /**
  * Register a request descriptor for this collection.
@@ -269,8 +216,14 @@ Collection.prototype._descriptor = function(registrationFunc) {
  * });
  * ```
  */
-Collection.prototype.requestDescriptor = function() {
-    return _.partial(this._descriptor, requestDescriptor).apply(this, arguments);
+Collection.prototype.requestDescriptor = function(opts) {
+    if (siesta.ext.httpEnabled) {
+        var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
+        siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+        return requestDescriptor;
+    } else {
+        throw new InternalSiestaError('HTTP Module not installed');
+    }
 };
 
 /**
@@ -286,8 +239,18 @@ Collection.prototype.requestDescriptor = function() {
  * });
  * ```
  */
-Collection.prototype.responseDescriptor = function() {
-    return _.partial(this._descriptor, responseDescriptor).apply(this, arguments);
+Collection.prototype.responseDescriptor = function(opts) {
+    if (siesta.ext.httpEnabled) {
+        var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
+        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+    } else {
+        throw new InternalSiestaError
+    }
+    return responseDescriptor;
+};
+
+Collection.prototype.descriptor = function() {
+
 };
 
 /**

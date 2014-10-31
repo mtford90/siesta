@@ -789,7 +789,7 @@ Uses pouch bulk fetch API. Much faster than getMultiple.
 **Scope**: inner function of [store](#module_store)  
 <a name="module_http"></a>
 #http
-Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do 
+Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do
 with HTTP request/response bodies.
 
 **Members**
