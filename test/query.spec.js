@@ -542,6 +542,8 @@ describe('query', function() {
         });
     });
 
+
+
     describe('errors', function() {
         beforeEach(function(done) {
             collection = new Collection('myCollection');

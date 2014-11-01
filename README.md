@@ -11,16 +11,22 @@ Siesta is an object mapping framework for Javascript. It makes it easier to mode
 
 # Roadmap
 
-The below lists ongoing and suggested features. Ideas and contributions are most welcome.
+The below lists ongoing and suggested features. Ideas and contributions are most welcome. Until 1.0, the API should be considered unstable.
 
 ## 0.2
-* Persistence
-    * Indexeddb/WebSQL
 * Paginated APIs
+* More powerful queries
+	* Contains
+	* OR/AND
 
-## Later
+## 0.3
+* Persistence
+    * Indexeddb
+    * WebSQL
+    * Possibly PouchDB
+
+## Later/Possible
 * Attribute verification
-* Functional Reactive
 
 # Contributing
 
