@@ -300,7 +300,8 @@ function clearReverseRelated() {
                         field: reverseName,
                         removedId: [self.object._id],
                         removed: [self.object],
-                        type: ChangeType.Delete
+                        type: ChangeType.Delete,
+                        obj: self.object
                     });
                 });
             } else {
@@ -314,7 +315,8 @@ function clearReverseRelated() {
                         newId: null,
                         oldId: self.object._id,
                         old: self.object,
-                        type: ChangeType.Set
+                        type: ChangeType.Set,
+                        obj: self.object
                     });
                 });
             }
@@ -382,7 +384,8 @@ function registerSetChange(obj) {
         oldId: oldId,
         old: old,
         new: obj,
-        type: ChangeType.Set
+        type: ChangeType.Set,
+        obj: proxyObject
     });
 }
 
@@ -400,7 +403,8 @@ function registerSpliceChange(idx, numRemove) {
         removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
         addedId: add.length ? _.pluck(add, '_id') : [],
         added: add.length ? add : [],
-        type: ChangeType.Splice
+        type: ChangeType.Splice,
+        obj: this.object
     });
 }
 
@@ -423,7 +427,8 @@ function wrapArray(arr) {
                     added: added,
                     removedId: _.pluck(splice.removed, '_id'),
                     addedId: _.pluck(splice.added, '_id'),
-                    type: ChangeType.Splice
+                    type: ChangeType.Splice,
+                    obj: self.object
                 });
             });
         };

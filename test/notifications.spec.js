@@ -16,7 +16,7 @@ describe('notifications', function() {
     var collection, carMapping;
     var car;
 
-    var notif, collectionNotif, genericNotif;
+    var notif, collectionNotif, genericNotif, localIdNotif, remoteIdNotif;
 
     describe('attributes', function() {
         afterEach(function() {
@@ -31,7 +31,6 @@ describe('notifications', function() {
         describe('set value', function() {
 
             beforeEach(function(done) {
-
                 collection = new Collection('myCollection');
                 carMapping = collection.mapping('Car', {
                     id: 'id',
@@ -48,23 +47,34 @@ describe('notifications', function() {
                             done(err);
                         } else {
                             car = _car;
-                            s.once('myCollection:Car', function(n) {
-                                notif = n;
-                                if (notif && genericNotif && collectionNotif) {
+                            function checkDone() {
+                                if (notif && 
+                                    genericNotif && 
+                                    collectionNotif &&
+                                    localIdNotif && 
+                                    remoteIdNotif) {
                                     done();
                                 }
+                            }
+                            s.once('myCollection:Car', function(n) {
+                                notif = n;
+                                checkDone();
                             });
                             s.once('myCollection', function(n) {
                                 collectionNotif = n;
-                                if (notif && genericNotif && collectionNotif) {
-                                    done();
-                                }
+                                checkDone();
                             });
                             s.once('Siesta', function(n) {
                                 genericNotif = n;
-                                if (notif && genericNotif && collectionNotif) {
-                                    done();
-                                }
+                                checkDone();
+                            });  
+                            s.once(_car._id, function (n) {
+                                localIdNotif = n;
+                                checkDone();
+                            });
+                            s.once('myCollection:Car:xyz', function (n) {
+                                remoteIdNotif = n;
+                                checkDone();
                             });
                             car.colour = 'blue';
                         }
@@ -73,6 +83,12 @@ describe('notifications', function() {
 
             });
 
+            it('all notifs equal', function () {
+                assert.equal(notif, genericNotif);
+                assert.equal(genericNotif, collectionNotif);
+                assert.equal(collectionNotif, localIdNotif);
+                assert.equal(localIdNotif, remoteIdNotif);
+            })
 
             it('notif contains collection', function() {
                 assert.equal(notif.collection, 'myCollection');
@@ -125,13 +141,15 @@ describe('notifications', function() {
                     if (err) done(err);
                     var listener = function(n) {
                         notifs.push(n);
-                        if (notifs.length >= 3) {
+                        if (notifs.length >= 5) {
                             done();
                         }
                     };
                     s.once('myCollection:Car', listener);
                     s.once('myCollection', listener);
                     s.once('Siesta', listener);
+                    s.once(_car._id, listener);
+                    s.once('myCollection:Car:xyz', listener);
                     car.colours.push('green');
                 });
             });
@@ -668,7 +686,6 @@ describe('notifications', function() {
                             });
 
                             it('id', function() {
-                                console.log('personNotif', personNotif);
                                 assert.include(personNotif.addedId, anotherCar._id);
                                 assert.include(personGenericNotif.addedId, anotherCar._id);
                                 assert.include(personCollectionNotif.addedId, anotherCar._id);

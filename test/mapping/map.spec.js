@@ -1715,7 +1715,6 @@ describe('perform mapping', function() {
                             _.each(objs, function(o) {
                                 cars.push(o);
                             });
-                            console.log(cars.length);
                             if (cars.length == 9) {
                                 done();
                             }

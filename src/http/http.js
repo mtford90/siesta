@@ -29,7 +29,6 @@ Logger.setLevel(log.Level.warn);
  * @param {Function} callback Callback if opts specified.
  */
 function _httpResponse(method, path) {
-    console.log('_httpResponse', arguments);
     var self = this;
     var args = Array.prototype.slice.call(arguments, 2);
     var callback;
@@ -50,7 +49,6 @@ function _httpResponse(method, path) {
     }
     if (opts.parseResponse === undefined) opts.parseResponse = true;
     opts.success = function(data, textStatus, jqXHR) {
-        console.log('success');
         if (Logger.trace.isEnabled)
             Logger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
         var resp = {
@@ -100,7 +98,6 @@ function _httpResponse(method, path) {
 
     };
     opts.error = function(jqXHR, textStatus, errorThrown) {
-        console.log('error');
         var resp = {
             jqXHR: jqXHR,
             textStatus: textStatus,

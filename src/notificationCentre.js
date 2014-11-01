@@ -29,7 +29,8 @@ function wrapArray(array, field, siestaModel) {
                         removed: splice.removed,
                         added: splice.addedCount ? array.slice(splice.index, splice.index+splice.addedCount) : [],
                         type: coreChanges.ChangeType.Splice,
-                        field: field
+                        field: field,
+                        obj: siestaModel
                     });
                 });
             }

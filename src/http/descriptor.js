@@ -362,10 +362,8 @@ Descriptor.prototype.match = function(config, data) {
  */
 Descriptor.prototype._transformData = function(data) {
     var transforms = this.transforms;
-    console.log('transforms', transforms);
     if (typeof(transforms) == 'function') {
         data = transforms(data);
-        console.log('data', data);
     } else {
         for (var attr in transforms) {
             if (transforms.hasOwnProperty(attr)) {

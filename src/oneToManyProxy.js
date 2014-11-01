@@ -117,7 +117,8 @@ function wrapArray(arr) {
                     removedId: _.pluck(removed, '_id'),
                     addedId: _.pluck(added, '_id'),
                     type: ChangeType.Splice,
-                    index: splice.index
+                    index: splice.index,
+                    obj: self.object
                 });
             });
         };

@@ -429,7 +429,8 @@ Mapping.prototype._new = function(data) {
                         new: v,
                         old: old,
                         type: ChangeType.Set,
-                        field: field
+                        field: field,
+                        obj: newModel
                     });
                     if (util.isArray(v)) {
                         wrapArray(v, field, newModel);
@@ -454,7 +455,8 @@ Mapping.prototype._new = function(data) {
                     new: v,
                     old: old,
                     type: ChangeType.Set,
-                    field: self.id
+                    field: self.id,
+                    obj: newModel
                 });
                 cache.remoteInsert(newModel, v, old);
             },
@@ -487,7 +489,8 @@ Mapping.prototype._new = function(data) {
             _id: newModel._id,
             newId: newModel._id,
             new: newModel,
-            type: ChangeType.New
+            type: ChangeType.New,
+            obj: newModel
         });
         return newModel;
     } else {

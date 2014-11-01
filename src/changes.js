@@ -10,6 +10,7 @@ var defineSubProperty = require('./misc').defineSubProperty;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 var InternalSiestaError = require('./error').InternalSiestaError;
 var log = require('../vendor/operations.js/src/log');
+var collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);
@@ -55,6 +56,7 @@ function Change(opts) {
     defineSubProperty.call(this, 'newId', this._opts);
     defineSubProperty.call(this, 'old', this._opts);
     defineSubProperty.call(this, 'oldId', this._opts);
+    defineSubProperty.call(this, 'obj', this._opts);
 }
 
 Change.prototype._dump = function (json) {
@@ -74,20 +76,40 @@ Change.prototype._dump = function (json) {
 
 /**
  * Broadcas
- * @param  {String} collection
- * @param  {String} mapping
+ * @param  {String} collectionName
+ * @param  {String} mappingName
  * @param  {Object} c an options dictionary representing the change
  * @return {[type]}
  */
-function broadcast(collection, mapping, c) {
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collection + '" of type ' + c.type);
-    notificationCentre.emit(collection, c);
-    var mappingNotif = collection + ':' + mapping;
+function broadcast(collectionName, mappingName, c) {
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collectionName + '" of type ' + c.type);
+    notificationCentre.emit(collectionName, c);
+    var mappingNotif = collectionName + ':' + mappingName;
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + mappingNotif + '" of type ' + c.type);
     notificationCentre.emit(mappingNotif, c);
     var genericNotif = 'Siesta';
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '" of type ' + c.type);
     notificationCentre.emit(genericNotif, c);
+    var localIdNotif = c._id;
+    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + localIdNotif + '" of type ' + c.type);
+    notificationCentre.emit(localIdNotif, c);
+    var collection = collectionRegistry[collectionName];
+    if (!collection) {
+        var err = 'No such collection "' + collectionName + '"';
+        Logger.error(err, collectionRegistry);
+        throw new InternalSiestaError(err);
+    }
+    var mapping = collection[mappingName];
+    if (!mapping) {
+        var err = 'No such mapping "' + mappingName + '"';
+        Logger.error(err, collectionRegistry);
+        throw new InternalSiestaError(err);
+    }
+    if (mapping.id && c.obj[mapping.id]) {
+        var remoteIdNotif = collectionName + ':' + mappingName + ':' + c.obj[mapping.id];
+        if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + remoteIdNotif + '" of type ' + c.type);
+        notificationCentre.emit(remoteIdNotif, c);
+    }
 }
 
 /**
@@ -99,6 +121,7 @@ function validateChange(changeOpts) {
     if (!changeOpts.mapping) throw new InternalSiestaError('Must pass a mapping');
     if (!changeOpts.collection) throw new InternalSiestaError('Must pass a collection');
     if (!changeOpts._id) throw new InternalSiestaError('Must pass a local identifier');
+    if (!changeOpts.obj) throw new InternalSiestaError('Must pass the object');
 }
 
 /**

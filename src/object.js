@@ -119,7 +119,8 @@ SiestaModel.prototype.remove = function(callback) {
         _id: this._id,
         oldId: this._id,
         old: this,
-        type: coreChanges.ChangeType.Remove
+        type: coreChanges.ChangeType.Remove,
+        obj: this
     });
     callback(null, this);
     return deferred.promise;
@@ -138,7 +139,8 @@ SiestaModel.prototype.restore = function(callback) {
         _id: this._id,
         newId: this._id,
         new: this,
-        type: coreChanges.ChangeType.New
+        type: coreChanges.ChangeType.New,
+        obj: this
     });
     callback(null, this);
     return deferred.promise;

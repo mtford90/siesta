@@ -6,17 +6,20 @@ describe('object!!', function() {
     var SiestaModel = require('../src/object').SiestaModel;
     var Mapping = require('../src/mapping').Mapping;
     var cache = require('../src/cache');
+    var Collection = require('../src/collection').Collection;
 
-    var mapping;
+    var mapping, collection;
 
-    beforeEach(function() {
+    beforeEach(function(done) {
         s.reset(true);
-        mapping = new Mapping({
-            type: 'Car',
+        collection = new Collection('myCollection');
+        mapping = collection.mapping({
+            name: 'Car',
             id: 'id',
             attributes: ['colour', 'name'],
             collection: 'myCollection'
-        });
+        })
+        collection.install(done);
     });
 
     describe('fields', function() {
