@@ -201,56 +201,36 @@ Collection.prototype.mapping = function() {
     return null;
 };
 
-
-/**
- * Register a request descriptor for this collection.
- * @param {Object} opts
- * @return {RequestDescriptor} A request descriptor
- * @example
- * ```js
- * collection.requestDescriptor({
- *     path: 'cars/(?P<id>)/'
- *     method: 'PUT',
- *     mapping: 'Car',
- *     data: 'data'
- * });
- * ```
- */
-Collection.prototype.requestDescriptor = function(opts) {
+Collection.prototype.descriptor = function(opts) {
+    var descriptors = [];
     if (siesta.ext.httpEnabled) {
-        var requestDescriptor = new siesta.ext.http.RequestDescriptor(opts);
-        siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-        return requestDescriptor;
+        var methods = siesta.ext.http._resolveMethod(opts.method);
+        var unsafe = [];
+        var safe = [];
+        for (var i = 0; i < methods.length; i++) {
+            var m = methods[i];
+            if (UNSAFE_METHODS.indexOf(m) > -1) {
+                unsafe.push(m);
+            } else {
+                safe.push(m);
+            }
+        }
+        if (unsafe.length) {
+            var requestDescriptor = extend({}, opts);
+            requestDescriptor.method = unsafe;
+            siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+            descriptors.push(new siesta.ext.http.RequestDescriptor(requestDescriptor));
+        }
+        if (safe.length) {
+            var responseDescriptor = extend({}, opts);
+            responseDescriptor.method = safe;
+            descriptors.push(new siesta.ext.http.ResponseDescriptor(responseDescriptor));
+            siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+        }
     } else {
-        throw new InternalSiestaError('HTTP Module not installed');
+        throw new InternalSiestaError('HTTP module not installed');
     }
-};
-
-/**
- * Register a response descriptor for this collection.
- * @param {Object} opts
- * @example
- * ```js
- * responseDescriptor = new siesta.ext.http.ResponseDescriptor({
- *    mapping: 'Car',
- *    transforms: {
- *        'colour': 'path.to.colour'
- *    }
- * });
- * ```
- */
-Collection.prototype.responseDescriptor = function(opts) {
-    if (siesta.ext.httpEnabled) {
-        var responseDescriptor = new siesta.ext.http.ResponseDescriptor(opts);
-        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-    } else {
-        throw new InternalSiestaError
-    }
-    return responseDescriptor;
-};
-
-Collection.prototype.descriptor = function() {
-
+    return descriptors;
 };
 
 /**

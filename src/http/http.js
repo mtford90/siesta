@@ -12,6 +12,7 @@ var _i = siesta._internal,
     Collection = siesta.Collection,
     log = _i.log,
     util = _i.util,
+    descriptor = require('./descriptor'),
     InternalSiestaError = _i.error.InternalSiestaError,
     q = _i.q;
 
@@ -347,10 +348,13 @@ if (!siesta.ext) {
     siesta.ext = {};
 }
 
+
+
 siesta.ext.http = {
     RequestDescriptor: require('./requestDescriptor').RequestDescriptor,
     ResponseDescriptor: require('./responseDescriptor').ResponseDescriptor,
-    Descriptor: require('./descriptor').Descriptor,
+    Descriptor: descriptor.Descriptor,
+    _resolveMethod: descriptor.resolveMethod,
     Serialiser: require('./serialiser'),
     DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry,
     setAjax: function(_ajax) {

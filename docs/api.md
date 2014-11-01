@@ -8,8 +8,6 @@ sidebar: nav2.html
 **Modules**
 
 * [collection](#module_collection)
-  * [collection~requestDescriptor(opts)](#module_collection..requestDescriptor)
-  * [collection~responseDescriptor(opts)](#module_collection..responseDescriptor)
   * [class: collection~Collection](#module_collection..Collection)
     * [new collection~Collection(name)](#new_module_collection..Collection)
     * [collection.baseURL](#module_collection..Collection#baseURL)
@@ -18,9 +16,6 @@ sidebar: nav2.html
     * [collection._finaliseInstallation(err, callback)](#module_collection..Collection#_finaliseInstallation)
     * [collection._mapping(name, mapping)](#module_collection..Collection#_mapping)
     * [collection.mapping(optsOrName, opts)](#module_collection..Collection#mapping)
-    * [collection._descriptor(registrationFunc)](#module_collection..Collection#_descriptor)
-    * [collection.requestDescriptor(opts)](#module_collection..Collection#requestDescriptor)
-    * [collection.responseDescriptor(opts)](#module_collection..Collection#responseDescriptor)
     * [collection._dump(asJson)](#module_collection..Collection#_dump)
     * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
     * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
@@ -124,55 +119,6 @@ sidebar: nav2.html
  
 <a name="module_collection"></a>
 #collection
-**Members**
-
-* [collection](#module_collection)
-  * [collection~requestDescriptor(opts)](#module_collection..requestDescriptor)
-  * [collection~responseDescriptor(opts)](#module_collection..responseDescriptor)
-  * [class: collection~Collection](#module_collection..Collection)
-    * [new collection~Collection(name)](#new_module_collection..Collection)
-    * [collection.baseURL](#module_collection..Collection#baseURL)
-    * [collection.installed](#module_collection..Collection#installed)
-    * [collection.install(callback)](#module_collection..Collection#install)
-    * [collection._finaliseInstallation(err, callback)](#module_collection..Collection#_finaliseInstallation)
-    * [collection._mapping(name, mapping)](#module_collection..Collection#_mapping)
-    * [collection.mapping(optsOrName, opts)](#module_collection..Collection#mapping)
-    * [collection._descriptor(registrationFunc)](#module_collection..Collection#_descriptor)
-    * [collection.requestDescriptor(opts)](#module_collection..Collection#requestDescriptor)
-    * [collection.responseDescriptor(opts)](#module_collection..Collection#responseDescriptor)
-    * [collection._dump(asJson)](#module_collection..Collection#_dump)
-    * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
-    * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
-    * [collection.TRACE(path, optsOrCallback, callback)](#module_collection..Collection#TRACE)
-    * [collection.HEAD(path, optsOrCallback, callback)](#module_collection..Collection#HEAD)
-    * [collection.POST(path, model, optsOrCallback, callback)](#module_collection..Collection#POST)
-    * [collection.PUT(path, model, optsOrCallback, callback)](#module_collection..Collection#PUT)
-    * [collection.PATCH(path, model, optsOrCallback, callback)](#module_collection..Collection#PATCH)
-    * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
-    * [collection.count(callback)](#module_collection..Collection#count)
-
-<a name="module_collection..requestDescriptor"></a>
-##collection~requestDescriptor(opts)
-Create RequestDescriptor object.
-
-**Params**
-
-- opts `Object`  
-
-**Scope**: inner function of [collection](#module_collection)  
-**Type**: `InternalSiestaError`  
-**Returns**: `RequestDescriptor`  
-<a name="module_collection..responseDescriptor"></a>
-##collection~responseDescriptor(opts)
-Create and register ResponseDescriptor object.
-
-**Params**
-
-- opts `Object`  
-
-**Scope**: inner function of [collection](#module_collection)  
-**Type**: `InternalSiestaError`  
-**Returns**: `ResponseDescriptor`  
 <a name="module_collection..Collection"></a>
 ##class: collection~Collection
 **Members**
@@ -185,9 +131,6 @@ Create and register ResponseDescriptor object.
   * [collection._finaliseInstallation(err, callback)](#module_collection..Collection#_finaliseInstallation)
   * [collection._mapping(name, mapping)](#module_collection..Collection#_mapping)
   * [collection.mapping(optsOrName, opts)](#module_collection..Collection#mapping)
-  * [collection._descriptor(registrationFunc)](#module_collection..Collection#_descriptor)
-  * [collection.requestDescriptor(opts)](#module_collection..Collection#requestDescriptor)
-  * [collection.responseDescriptor(opts)](#module_collection..Collection#responseDescriptor)
   * [collection._dump(asJson)](#module_collection..Collection#_dump)
   * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
   * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
@@ -267,54 +210,6 @@ Registers a mapping with this collection.
 - opts `Object` - Options if name already specified.  
 
 **Returns**: `Mapping`  
-<a name="module_collection..Collection#_descriptor"></a>
-###collection._descriptor(registrationFunc)
-Marshals arguments used to create Descriptor and then calls the registration function.
-
-**Params**
-
-- registrationFunc `function` - Responsible for registering the descriptor.  
-
-**Returns**: `Descriptor`  
-<a name="module_collection..Collection#requestDescriptor"></a>
-###collection.requestDescriptor(opts)
-Register a request descriptor for this collection.
-
-**Params**
-
-- opts `Object`  
-
-**Returns**: `RequestDescriptor` - A request descriptor  
-**Example**
-
-```js
-collection.requestDescriptor({
-    path: 'cars/(?P<id>)/'
-    method: 'PUT',
-    mapping: 'Car',
-    data: 'data'
-});
-```
-
-<a name="module_collection..Collection#responseDescriptor"></a>
-###collection.responseDescriptor(opts)
-Register a response descriptor for this collection.
-
-**Params**
-
-- opts `Object`  
-
-**Example**
-
-```js
-responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-   mapping: 'Car',
-   transforms: {
-       'colour': 'path.to.colour'
-   }
-});
-```
-
 <a name="module_collection..Collection#_dump"></a>
 ###collection._dump(asJson)
 Dump this collection as JSON

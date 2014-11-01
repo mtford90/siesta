@@ -417,10 +417,9 @@ describe('request descriptor', function() {
                 mapping: carMapping
             });
         });
-        it('default method is *', function() {
-            _.each(descriptor.httpMethods, function(method) {
-                assert.include(descriptor.method, method.toUpperCase());
-            });
+        it('default method is GET', function() {
+            assert.equal(descriptor.method.length, 1);
+            assert.equal(descriptor.method[0], 'GET');
         });
         it('default path is blank', function() {
             assert.equal(descriptor.path, '');

@@ -20,6 +20,24 @@ Logger.setLevel(log.Level.warn);
 var ignore = ['index', 'input'];
 var XRegExp = require('xregexp').XRegExp;
 
+var httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
+
+function resolveMethod(methods) {
+        // Convert wildcards into methods and ensure is an array of uppercase methods.
+    if (methods) {
+        if (methods == '*' || methods.indexOf('*') > -1) {
+            methods = httpMethods;
+        } else if (!util.isArray(methods)) {
+            methods = [methods];
+        }
+    } else {
+        methods = ['GET'];
+    }
+    return _.map(methods, function(x) {
+        return x.toUpperCase()
+    });
+}
+
 /**
  * A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
  * intercept a HTTP request/response and perform a mapping.
@@ -44,19 +62,7 @@ function Descriptor(opts) {
         this._opts.path = '';
     }
 
-    // Convert wildcards into methods and ensure is an array of uppercase methods.
-    if (this._opts.method) {
-        if (this._opts.method == '*' || this._opts.method.indexOf('*') > -1) {
-            this._opts.method = this.httpMethods;
-        } else if (typeof(this._opts.method) == 'string') {
-            this._opts.method = [this._opts.method];
-        }
-    } else {
-        this._opts.method = this.httpMethods;
-    }
-    this._opts.method = _.map(this._opts.method, function(x) {
-        return x.toUpperCase()
-    });
+    this._opts.method = resolveMethod(this._opts.method);
 
     // Mappings can be passed as the actual mapping object or as a string (with API specified too)
     if (this._opts.mapping) {
@@ -138,7 +144,7 @@ function Descriptor(opts) {
     defineSubProperty.call(this, 'transforms', this._opts);
 }
 
-Descriptor.prototype.httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
+Descriptor.prototype.httpMethods = httpMethods;
 
 /**
  * Takes a regex path and returns an object if matched.
@@ -401,3 +407,4 @@ Descriptor.prototype._transformData = function(data) {
 
 
 exports.Descriptor = Descriptor;
+exports.resolveMethod = resolveMethod;
