@@ -51,26 +51,26 @@
     <li><a href="/siesta/docs.html">Getting Started</a></li>
     <li><a href="/siesta/concepts.html">Concepts</a></li>
     <li>
-        <a href="#" class="aj-nav folder">Guide</a>
-        <ul class="nav nav-list">
+        <a href="/siesta/guide.html" class="aj-nav folder">Guide</a>
+<!--         <ul class="nav nav-list">
             <li><a href="/siesta/object_mapping.html">Mapping</a></li>
             <li><a href="/siesta/http.html">HTTP</a></li>
             <li><a href="/siesta/local_queries.html">Local Queries</a></li>
             <li><a href="/siesta/notifications.html">Notifications</a></li>
             <li><a href="/siesta/persistence.html">Persistence</a></li>
-        </ul>
+        </ul> -->
     </li>
     <li>
         <a href="/siesta/api.html" class="aj-nav folder">API</a>
     </li>
     <li>
         <a href="#" class="aj-nav folder">Recipes</a>
-        <ul class="nav nav-list">
+<!--         <ul class="nav nav-list">
             <li><a href="/siesta/intercollection_relationships.html">Inter-Collection Relationships</a></li>
             <li><a href="/siesta/complex_queries.html">Complex Queries</a></li>
             <li><a href="/siesta/pouchdb_synchronisation.html">PouchDB Synchronisation</a></li>
             <li><a href="/siesta/local_collections.html">Local Collections</a></li>
-        </ul>
+        </ul> -->
     </li>
 </ul>
 <div class="well well-sidebar">
@@ -98,8 +98,6 @@
 <li><a href="#module_collection">collection</a>
 
 <ul>
-<li><a href="#module_collection..requestDescriptor">collection~requestDescriptor(opts)</a></li>
-<li><a href="#module_collection..responseDescriptor">collection~responseDescriptor(opts)</a></li>
 <li><a href="#module_collection..Collection">class: collection~Collection</a></li>
 <li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
 <li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
@@ -108,9 +106,6 @@
 <li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
 <li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
 <li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#module_collection..Collection#_descriptor">collection._descriptor(registrationFunc)</a></li>
-<li><a href="#module_collection..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
-<li><a href="#module_collection..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
 <li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
 <li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
 <li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
@@ -233,69 +228,7 @@
 
 <h1>collection</h1>
 
-<p><strong>Members</strong></p>
-
-<ul>
-<li><a href="#module_collection">collection</a>
-
-<ul>
-<li><a href="#module_collection..requestDescriptor">collection~requestDescriptor(opts)</a></li>
-<li><a href="#module_collection..responseDescriptor">collection~responseDescriptor(opts)</a></li>
-<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
-<li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
-<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
-<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
-<li><a href="#module_collection..Collection#install">collection.install(callback)</a></li>
-<li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
-<li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
-<li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#module_collection..Collection#_descriptor">collection._descriptor(registrationFunc)</a></li>
-<li><a href="#module_collection..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
-<li><a href="#module_collection..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
-<li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
-<li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#count">collection.count(callback)</a></li>
-</ul></li>
-</ul>
-
-<p><a name="module_collection..requestDescriptor"></a></p>
-
-<h2>collection~requestDescriptor(opts)</h2>
-
-<p>Create RequestDescriptor object.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>opts <code>Object</code><br></li>
-</ul>
-
-<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
-<strong>Type</strong>: <code>InternalSiestaError</code><br>
-<strong>Returns</strong>: <code>RequestDescriptor</code><br>
-<a name="module_collection..responseDescriptor"></a></p>
-
-<h2>collection~responseDescriptor(opts)</h2>
-
-<p>Create and register ResponseDescriptor object.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>opts <code>Object</code><br></li>
-</ul>
-
-<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
-<strong>Type</strong>: <code>InternalSiestaError</code><br>
-<strong>Returns</strong>: <code>ResponseDescriptor</code><br>
-<a name="module_collection..Collection"></a></p>
+<p><a name="module_collection..Collection"></a></p>
 
 <h2>class: collection~Collection</h2>
 
@@ -312,9 +245,6 @@
 <li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
 <li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
 <li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#module_collection..Collection#_descriptor">collection._descriptor(registrationFunc)</a></li>
-<li><a href="#module_collection..Collection#requestDescriptor">collection.requestDescriptor(opts)</a></li>
-<li><a href="#module_collection..Collection#responseDescriptor">collection.responseDescriptor(opts)</a></li>
 <li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
 <li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
 <li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
@@ -417,61 +347,7 @@ object, install it and return it.</p>
 </ul>
 
 <p><strong>Returns</strong>: <code>Mapping</code><br>
-<a name="module_collection..Collection#_descriptor"></a></p>
-
-<h3>collection._descriptor(registrationFunc)</h3>
-
-<p>Marshals arguments used to create Descriptor and then calls the registration function.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>registrationFunc <code>function</code> - Responsible for registering the descriptor.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Descriptor</code><br>
-<a name="module_collection..Collection#requestDescriptor"></a></p>
-
-<h3>collection.requestDescriptor(opts)</h3>
-
-<p>Register a request descriptor for this collection.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>opts <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>RequestDescriptor</code> - A request descriptor<br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">collection</span><span class="p">.</span><span class="nx">requestDescriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/(?P&lt;id&gt;)/&#39;</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;PUT&#39;</span><span class="p">,</span>
-    <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
-    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span>
-<span class="p">});</span>
-</code></pre></div>
-<p><a name="module_collection..Collection#responseDescriptor"></a></p>
-
-<h3>collection.responseDescriptor(opts)</h3>
-
-<p>Register a response descriptor for this collection.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>opts <code>Object</code><br></li>
-</ul>
-
-<p><strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">responseDescriptor</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">ext</span><span class="p">.</span><span class="nx">http</span><span class="p">.</span><span class="nx">ResponseDescriptor</span><span class="p">({</span>
-   <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
-   <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
-       <span class="s1">&#39;colour&#39;</span><span class="o">:</span> <span class="s1">&#39;path.to.colour&#39;</span>
-   <span class="p">}</span>
-<span class="p">});</span>
-</code></pre></div>
-<p><a name="module_collection..Collection#_dump"></a></p>
+<a name="module_collection..Collection#_dump"></a></p>
 
 <h3>collection._dump(asJson)</h3>
 
@@ -1097,7 +973,7 @@ All queries will go straight to the cache instead.</p>
 
 <h1>http</h1>
 
-<p>Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do 
+<p>Descriptors deal with the description of HTTP requests and are used by Siesta to determine what to do
 with HTTP request/response bodies.</p>
 
 <p><strong>Members</strong></p>

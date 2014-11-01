@@ -51,26 +51,26 @@
     <li><a href="/siesta/docs.html">Getting Started</a></li>
     <li><a href="/siesta/concepts.html">Concepts</a></li>
     <li>
-        <a href="#" class="aj-nav folder">Guide</a>
-        <ul class="nav nav-list">
+        <a href="/siesta/guide.html" class="aj-nav folder">Guide</a>
+<!--         <ul class="nav nav-list">
             <li><a href="/siesta/object_mapping.html">Mapping</a></li>
             <li><a href="/siesta/http.html">HTTP</a></li>
             <li><a href="/siesta/local_queries.html">Local Queries</a></li>
             <li><a href="/siesta/notifications.html">Notifications</a></li>
             <li><a href="/siesta/persistence.html">Persistence</a></li>
-        </ul>
+        </ul> -->
     </li>
     <li>
         <a href="/siesta/api.html" class="aj-nav folder">API</a>
     </li>
     <li>
         <a href="#" class="aj-nav folder">Recipes</a>
-        <ul class="nav nav-list">
+<!--         <ul class="nav nav-list">
             <li><a href="/siesta/intercollection_relationships.html">Inter-Collection Relationships</a></li>
             <li><a href="/siesta/complex_queries.html">Complex Queries</a></li>
             <li><a href="/siesta/pouchdb_synchronisation.html">PouchDB Synchronisation</a></li>
             <li><a href="/siesta/local_collections.html">Local Collections</a></li>
-        </ul>
+        </ul> -->
     </li>
 </ul>
 <div class="well well-sidebar">

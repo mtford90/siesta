@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<!--suppress ALL -->
+<html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <title>Documentation: Guide</title>
+    <meta name="description" content="The Easiest Way To Document Your Project"/>
+    <meta name="author" content="Justin Walsh">
+    <!-- Mobile -->
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Font -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&subset=latin,cyrillic-ext,cyrillic'
+          rel='stylesheet' type='text/css'>
+    <!-- CSS -->
+    <link href='static/css/main.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+<!-- Docs -->
+<a href="https://github.com/mtford90/siesta" target="_blank" id="github-ribbon" class="hidden-print"><img
+        src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+
+<div class="container-fluid fluid-height wrapper">
+<div class="navbar navbar-fixed-top hidden-print">
+    <div class="container-fluid">
+        <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
+        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.1-alpha</a></p>
+    </div>
+</div>
+<div class="row columns content">
+<div class="left-column article-tree col-sm-3 hidden-print">
+    <!-- For Mobile -->
+    <div class="responsive-collapse">
+        <button type="button" class="btn btn-sidebar" id="menu-spinner-button">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    <div id="sub-nav-collapse" class="sub-nav-collapse">
+        <!-- Navigation -->
+        <!--suppress HtmlUnknownTarget -->
+<ul class="nav nav-list">
+    <li><a href="/siesta/docs.html">Getting Started</a></li>
+    <li><a href="/siesta/concepts.html">Concepts</a></li>
+    <li>
+        <a href="/siesta/guide.html" class="aj-nav folder">Guide</a>
+<!--         <ul class="nav nav-list">
+            <li><a href="/siesta/object_mapping.html">Mapping</a></li>
+            <li><a href="/siesta/http.html">HTTP</a></li>
+            <li><a href="/siesta/local_queries.html">Local Queries</a></li>
+            <li><a href="/siesta/notifications.html">Notifications</a></li>
+            <li><a href="/siesta/persistence.html">Persistence</a></li>
+        </ul> -->
+    </li>
+    <li>
+        <a href="/siesta/api.html" class="aj-nav folder">API</a>
+    </li>
+    <li>
+        <a href="#" class="aj-nav folder">Recipes</a>
+<!--         <ul class="nav nav-list">
+            <li><a href="/siesta/intercollection_relationships.html">Inter-Collection Relationships</a></li>
+            <li><a href="/siesta/complex_queries.html">Complex Queries</a></li>
+            <li><a href="/siesta/pouchdb_synchronisation.html">PouchDB Synchronisation</a></li>
+            <li><a href="/siesta/local_collections.html">Local Collections</a></li>
+        </ul> -->
+    </li>
+</ul>
+<div class="well well-sidebar">
+    <!-- Links -->
+    <a href="/siesta/download.html" target="_blank">Download</a><br><a
+        href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a><br><a
+        href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a><br>
+    <a href="#"
+       id="toggleCodeBlockBtn"
+       onclick="toggleCodeBlocks();">Show
+        Code Blocks Inline</a><br>
+</div>ƒ
+
+
+    </div>
+</div>
+<div class="right-column float-view content-area col-sm-9">
+<div class="content-page">
+<article>
+    <h1>Guide</h1>
+
+<p>This guide covers all of Siesta&#39;s features and uses the GitHub API to illustrate usage.</p>
+
+<ul>
+<li><a href="#collection">Create a collection</a></li>
+<li><a href="#">Configure mappings</a></li>
+<li><a href="#">Configure descriptors</a></li>
+<li><a href="#http">Send HTTP requests</a></li>
+<li><a href="#">Mapping data without HTTP requests</a></li>
+<li><a href="#">Listen to change notifications</a></li>
+<li><a href="#">Query for local data</a></li>
+<li><a href="#">Utils</a></li>
+</ul>
+
+<p><a id="collection"></a></p>
+
+<h2>Create a collection</h2>
+
+<p><code>new siesta.Collection(collectionName)</code> creates a new Collection. A collection organises a set of mappings and optionally descriptors and usually you&#39;d create one per API. </p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">GitHub</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="s1">&#39;MyCollection&#39;</span><span class="p">);</span>
+<span class="nx">GitHub</span><span class="p">.</span><span class="nx">baseURL</span> <span class="o">=</span> <span class="s1">&#39;https://api.github.com/&#39;</span><span class="p">;</span>
+</code></pre></div>
+<p><code>Collection.prototype.install(callback)</code> setups relationships and registers descriptors and mappings. This needs to be called on each collection that you create.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">myColl</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> 
+    <span class="c1">// ...</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Alternatively you can use promises, which will come in handy if you have many collections to install or other libraries that need setting up before your application can run:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">startMyApp</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span>
+<span class="nx">myColl</span><span class="p">.</span><span class="nx">install</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="nx">myOtherColl</span><span class="p">.</span><span class="nx">install</span><span class="p">()).</span><span class="nx">then</span><span class="p">(</span><span class="nx">startMyApp</span><span class="p">)</span>
+</code></pre></div>
+<p>Siesta uses the <a href="https://github.com/kriskowal/q">q</a> library for promises.</p>
+
+<p><a id="mappings"></a></p>
+
+<h2>Configure mappings</h2>
+
+<p><code>Collection.prototype.mapping(opts)</code> is used for registering object mappings in a particular collection.</p>
+
+<p>Mappings can really simple and just map attributes e.g. in the case of GitHub users:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">GitHub</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span>
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;login&#39;</span><span class="p">,</span> <span class="s1">&#39;avatar_url&#39;</span><span class="p">,</span> <span class="s1">&#39;html_url&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Or we can setup complex relationships between our mappings:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">Repo</span> <span class="o">=</span> <span class="nx">GitHub</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Repo&#39;</span><span class="p">,</span>
+    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> 
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;url&#39;</span><span class="p">,</span> <span class="s1">&#39;num_watchers&#39;</span><span class="p">,</span> <span class="s1">&#39;num_forks&#39;</span><span class="p">,</span> <span class="s1">&#39;num_stars&#39;</span><span class="p">],</span>
+    <span class="nx">relationships</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">owner</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;OneToMany&#39;</span><span class="p">,</span>
+            <span class="c1">// A &#39;repositories&#39; property will be added to all User instances.</span>
+            <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;repositories&#39;</span> 
+        <span class="p">},</span>
+        <span class="nx">forkedFrom</span><span class="o">:</span> <span class="p">{</span>
+            <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Repo&#39;</span><span class="p">,</span>
+            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;OneToMany&#39;</span><span class="p">,</span>
+            <span class="c1">// A &#39;forks&#39; property will be added to all Repo instances.</span>
+            <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;forks&#39;</span> 
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div>
+<h3>Relationships</h3>
+
+<p>There are three types of relationships, described below with examples from the GitHub API.</p>
+
+<ul>
+<li><code>OneToMany</code> relationships e.g. one github user has many repositories.</li>
+</ul>
+<div class="highlight"><pre><code class="language-text" data-lang="text">GET /users/:username/repos
+</code></pre></div>
+<ul>
+<li><code>OneToOne</code> relationships e.g. one github user has one rate limit status.</li>
+</ul>
+<div class="highlight"><pre><code class="language-text" data-lang="text">GET /rate_limit
+</code></pre></div>
+<ul>
+<li><code>ManyToMany</code> relationships e.g. many github users can belong to many organisations.</li>
+</ul>
+<div class="highlight"><pre><code class="language-text" data-lang="text">GET /users/:username/orgs
+</code></pre></div>
+<h3>Singleton Mappings</h3>
+
+<p>We can also define singleton mappings, where only ever one model will be instantiated:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="c1">// Maps loosely to https://api.github.com</span>
+<span class="kd">var</span> <span class="nx">RateLimit</span> <span class="o">=</span> <span class="nx">GitHub</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;RateLimit&#39;</span><span class="p">,</span>
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;limit&#39;</span><span class="p">,</span> <span class="s1">&#39;remaining&#39;</span><span class="p">,</span> <span class="s1">&#39;reset&#39;</span><span class="p">],</span>
+    <span class="nx">singleton</span><span class="o">:</span> <span class="kc">true</span>
+<span class="p">});</span>
+</code></pre></div><div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">series</span><span class="p">([</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">RateLimit</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span>
+            <span class="nx">limit</span><span class="o">:</span> <span class="mi">60</span><span class="p">,</span>
+            <span class="nx">remaining</span><span class="o">:</span> <span class="mi">60</span><span class="p">,</span>
+            <span class="nx">reset</span><span class="o">:</span> <span class="mi">1414606386</span>
+        <span class="p">},</span> <span class="nx">cb</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="kd">function</span> <span class="p">(</span><span class="nx">cb</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">RateLimit</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span>
+            <span class="nx">limit</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+            <span class="nx">remaining</span><span class="o">:</span> <span class="mi">40</span><span class="p">,</span>
+            <span class="nx">reset</span><span class="o">:</span> <span class="mi">1414602846</span>
+        <span class="p">},</span> <span class="nx">cb</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">objs</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="nx">objs</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span> <span class="c1">// true</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">limit</span><span class="p">);</span> <span class="c1">// 40</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">remaining</span><span class="p">);</span> <span class="c1">// 40</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">objs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">reset</span><span class="p">);</span> <span class="c1">// 1414602846</span>
+<span class="p">})</span>
+</code></pre></div>
+<p><a id="descriptors"></a></p>
+
+<h2>Configure descriptors</h2>
+
+<p><code>Collection.prototype.descriptor(opts)</code> registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of <code>Mapping.prototype.map</code> which is also available for mapping arbritrary data onto the graph outside of HTTP.</p>
+
+<p>The below descriptor describes the GitHub endpoint for obtaining a specific users repositories. <code>path</code> is a regular expression, <code>mapping</code>tells Siesta what kind of objects to expect from this endpoint and <code>method</code> is the HTTP method, list of http methods or a wildcard.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>In this case it&#39;s kind of pointless, as <code>login</code> is already a field on the JSON returned from the GitHub API, but if we want to pull information from the path we can do the following: </p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(?P&lt;login&gt;)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3>Nested Data</h3>
+
+<p>The GitHub search endpoint nests results in the <code>items</code> key. The <code>data</code> parameter can be used to deal with this:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/search/repositories/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="c1">// method: &#39;*&#39;,</span>
+    <span class="c1">// method: [&#39;GET&#39;, &#39;PATCH&#39;],</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;items&#39;</span><span class="p">,</span>
+    <span class="c1">// data: &#39;items.further.nesting&#39;</span>
+<span class="p">});</span>
+</code></pre></div>
+<!-- TODO: Transforms -->  
+
+<h3>Transforms</h3>
+
+<p>Transforms can be used for simple field conversions:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s1">&#39;stargazers_count&#39;</span><span class="o">:</span> <span class="s1">&#39;num_stars&#39;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>We can use dot notation to transform nested data:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s1">&#39;stargazers_count&#39;</span><span class="o">:</span> <span class="s1">&#39;path.to.num_stars&#39;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>We can also use a function instead:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s1">&#39;stargazers_count&#39;</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">k</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="s1">&#39;path.to.num_stars&#39;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Or for more complicated transformations you can define a top-level transformation function:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
+    <span class="nx">transforms</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">stargazers_count</span><span class="p">;</span>
+        <span class="k">delete</span> <span class="nx">data</span><span class="p">.</span><span class="nx">stargazers_count</span><span class="p">;</span>
+        <span class="nx">data</span><span class="p">.</span><span class="nx">num_stars</span> <span class="o">=</span> <span class="nx">n</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3>Request vs. Response</h3>
+
+<p>If your descriptor contains unsafe methods then additional options can be passed. The <code>data</code> field will tell siesta where to nest outgoing (serialised) data.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/(.*)/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span>
+<span class="p">})</span>
+</code></pre></div>
+<h3>Serialisation</h3>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/(.*)/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+    <span class="nx">serialiser</span><span class="o">:</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">serialisers</span><span class="p">.</span><span class="nx">id</span>
+<span class="p">});</span>
+</code></pre></div><div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/(.*)/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
+    <span class="nx">serialiser</span><span class="o">:</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">serialisers</span><span class="p">.</span><span class="nx">depth</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><a id="http"></a></p>
+
+<h2>Send HTTP requests</h2>
+
+<p><code>Collection.prototype.&lt;SAFE_HTTP_METHOD&gt;(path, ajaxOptsOrCallback, callbackIfOpts)</code> sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;/users/mtford90/repos&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">siesta</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div><div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;/search/repositories&#39;</span><span class="p">,</span> <span class="p">{</span><span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;siesta&#39;</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">siesta</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><code>Collection.prototype.&lt;UNSAFE_HTTP_METHOD&gt;(path, object, ajaxOptsOrCallback, callbackIfOpts)</code> sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">PATCH</span><span class="p">(</span><span class="s1">&#39;/users/mtford90/repos&#39;</span><span class="p">,</span> <span class="nx">myRepo</span><span class="p">,</span> <span class="p">{</span><span class="nx">fields</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">siesta</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<!-- TODO: Set the ajax library -->
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">setAjax</span><span class="p">(</span><span class="nx">zepto</span><span class="p">.</span><span class="nx">ajax</span><span class="p">);</span>
+</code></pre></div>
+<p><a id="mappingData"></a></p>
+
+<h2>Mapping data without HTTP requests</h2>
+
+<p>You do not have to send HTTP requests to map data into Siesta. If your application loads data from websockets or through other protocols/sources then there needs to be a way to map arbitrary data onto the object graph.</p>
+
+<p><code>Mapping.prototype.map(data, callback)</code> will map data using a particular mapping e.g:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">login</span><span class="o">:</span> <span class="s1">&#39;mtford90&#39;</span><span class="p">,</span> 
+    <span class="nx">avatar_url</span><span class="o">:</span> <span class="s1">&#39;http://domain.com/path/to/avatar.png&#39;</span><span class="p">,</span> 
+    <span class="nx">id</span><span class="o">:</span> <span class="mi">123</span>
+<span class="p">};</span>
+
+<span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">err</span><span class="p">)</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">login</span><span class="p">);</span> <span class="c1">// mtford90</span>
+    <span class="k">else</span> <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Promises can also be used:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">data</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">login</span><span class="p">);</span> <span class="c1">// mtford90</span>
+<span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">err</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Arrays of data can also be mapped:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="nx">login</span><span class="o">:</span> <span class="s1">&#39;mtford90&#39;</span><span class="p">,</span> 
+        <span class="nx">id</span><span class="o">:</span> <span class="mi">123</span>
+    <span class="p">},</span> 
+    <span class="p">{</span>
+        <span class="nx">login</span><span class="o">:</span> <span class="s1">&#39;bob&#39;</span><span class="p">,</span> 
+        <span class="nx">id</span><span class="o">:</span> <span class="mi">456</span>
+    <span class="p">}</span>
+<span class="p">];</span>
+<span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">models</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">models</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">m</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">m</span><span class="p">.</span><span class="nx">login</span><span class="p">);</span>
+    <span class="p">});</span> 
+<span class="p">});</span>
+</code></pre></div>
+<p><a id="changeNotifications"></a></p>
+
+<h3>Listen to change notifications</h3>
+
+<p>In Siesta notifications are sent for a variety of events, including model creation, modification and removal. Siesta makes use of the <a href="http://nodejs.org/api/events.html#events_class_events_eventemitter">EventEmitter</a> class for this purpose, borrowed from NodeJS. The following functions can be used for managing notifications:</p>
+
+<p><code>siesta.on(notif, handler)</code> listens to Siesta object change notifications.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">handler</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">siesta</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;GitHub:User&#39;</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span>
+</code></pre></div>
+<p><code>siesta.off(notif, handler)</code> removes a specific handler.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">off</span><span class="p">(</span><span class="s1">&#39;GitHub:User&#39;</span><span class="p">,</span> <span class="nx">handler</span><span class="p">);</span>
+</code></pre></div>
+<p><code>siesta.once(notif, handler)</code> listens for one notification and then cancels.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">once</span><span class="p">(</span><span class="s1">&#39;GitHub:User&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">n</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><code>siesta.removeAllListeners(notif)</code> removes all handlers for one particular notification.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">removeAllListeners</span><span class="p">(</span><span class="s1">&#39;GitHub:User&#39;</span><span class="p">);</span>
+</code></pre></div>
+<p><code>siesta.removeAllListeners()</code> removes all handlers across all notifications.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">removeAllListeners</span><span class="p">();</span>
+</code></pre></div>
+<p>Notifications take the following forms:</p>
+
+<ul>
+<li><code>Siesta</code> - All notifications</li>
+</ul>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;Siesta&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{});</span>
+</code></pre></div>
+<ul>
+<li><code>&lt;Collection&gt;</code> - All notifications for a particular collection</li>
+</ul>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;GitHub&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{});</span>
+</code></pre></div>
+<ul>
+<li><code>&lt;Collection&gt;:&lt;Mapping&gt;</code> - All notifications for objects generated through a particular mapping in a particular collection.</li>
+</ul>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;GitHub:User&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{});</span>
+</code></pre></div>
+<ul>
+<li><code>&lt;Collection&gt;:&lt;Mapping&gt;:&lt;Mapping.id&gt;</code> - All notifications for an object from a particular mapping with remote identifier Mapping.id (which defaults to &#39;id&#39;)</li>
+</ul>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;GitHub:Repo:&#39;</span> <span class="o">+</span> <span class="nx">myRepo</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{});</span>
+</code></pre></div>
+<ul>
+<li><code>&lt;_id&gt;</code> - All notifications object with local identifier &lt;_id&gt; where _id is the unique identifier assigned to a Siesta model.</li>
+</ul>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">myRepo</span><span class="p">.</span><span class="nx">_id</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{});</span>
+</code></pre></div>
+<p>Each notification has a <code>type</code> property which can be any of the following:</p>
+
+<ul>
+<li>Splice
+
+<ul>
+<li><code>added</code></li>
+<li><code>removed</code></li>
+</ul></li>
+<li>Set
+
+<ul>
+<li><code>new</code></li>
+<li><code>old</code></li>
+</ul></li>
+<li>Delete
+
+<ul>
+<li><code>old</code></li>
+</ul></li>
+<li>New
+
+<ul>
+<li><code>new</code></li>
+</ul></li>
+</ul>
+
+<p>Other common properties:</p>
+
+<ul>
+<li><code>field</code>: </li>
+</ul>
+
+<h3>Caveats</h3>
+
+<p>Siesta uses <a href="https://github.com/polymer/observe-js">observe-js</a> from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for <code>Object.observe</code> which is currently only available in Chrome at the time of writing. It also comes with certain caveats.</p>
+
+<p>e.g. take the case whereby we are manipulating a user repositories.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">Repo</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;MyNewRepo&#39;</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">myUser</span><span class="p">.</span><span class="nx">repositories</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">repo</span><span class="p">);</span>
+    <span class="nx">myUser</span><span class="p">.</span><span class="nx">repositories</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// Remove repo at index 0.</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>In browsers that implement <code>Object.observe</code>, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until <code>siesta.notify()</code> is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">Repo</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;MyNewRepo&#39;</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repo</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">myUser</span><span class="p">.</span><span class="nx">repositories</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">repo</span><span class="p">);</span>
+    <span class="nx">myUser</span><span class="p">.</span><span class="nx">repositories</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// Remove repo at index 0.</span>
+    <span class="nx">siesta</span><span class="p">.</span><span class="nx">notify</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> 
+        <span class="c1">// Send out all notifications.</span>
+    <span class="p">});</span> 
+<span class="p">});</span>
+</code></pre></div>
+<p>Promises can also be used.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">notify</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// All notifications will have been sent.</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>In browsers that implement <code>Object.observe</code>, <code>siesta.notify()</code> simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.</p>
+
+<p><a id="queries"></a></p>
+
+<h3>Query for local data</h3>
+
+<p><code>Mapping.prototype.all(callback)</code> will return all models mapped by a particular mapping.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">User</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">users</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">u</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">login</span><span class="p">);</span>   
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<p><code>Mapping.prototype.query(opts, callback)</code> will return all models that match the query described by <code>opts</code>. Many types of queries can be executed, loosely inspired by Django&#39;s ORM query conventions:</p>
+
+<p>Query for a user with a particular local identifier.</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">_id</span><span class="o">:</span> <span class="s1">&#39;xyz&#39;</span><span class="p">,</span> <span class="nx">login</span><span class="o">:</span> <span class="s1">&#39;anotherLogin&#39;</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">u</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">login</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Query for a user with a particular remote identifier:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;xyz&#39;</span><span class="p">,</span> <span class="nx">login</span><span class="o">:</span> <span class="s1">&#39;aLogin&#39;</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">u</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">login</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Query for repos with more than 50 stars:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">Repo</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">stars__gt</span><span class="o">:</span> <span class="mi">50</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">repos</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">r</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>Query for users with names containing &#39;abc&#39;:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">User</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">login__contains</span><span class="o">:</span> <span class="s1">&#39;abc&#39;</span><span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">users</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">u</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+<h2>Utils</h2>
+
+<p>Siesta makes available various utilities from underscore, asyncjs and q used throughout the library itself. These are often useful for Siesta users and hence are exposed via the <code>siesta</code> object. Note that if you require the full underscore or asyncjs libraries you will need to include these yourself.</p>
+
+<ul>
+<li><code>siesta.map</code> is equivalent to <a href="http://underscorejs.org/#map">_.map</a></li>
+<li><code>siesta.each</code> is equivalent to <a href="http://underscorejs.org/#each">_.each</a></li>
+<li><code>siesta.partial</code> is equivalent to <a href="http://underscorejs.org/#partial">_.partial</a></li>
+<li><code>siesta.bind</code> is equivalent to <a href="http://underscorejs.org/#bind">_.bind</a></li>
+<li><code>siesta.pluck</code> is equivalent to <a href="http://underscorejs.org/#pluck">_.pluck</a></li>
+<li><code>siesta.property</code> is equivalent to <a href="http://underscorejs.org/#property">_.property</a></li>
+<li><code>siesta.sortBy</code> is equivalent to <a href="http://underscorejs.org/#sortBy">_.sortBy</a></li>
+<li><code>siesta.parallel</code> is equivalent to <a href="https://github.com/caolan/async#parallel">async.parallel</a></li>
+<li><code>siesta.series</code> is equivalent to <a href="https://github.com/caolan/async#series">async.series</a></li>
+<li><code>siesta.q</code> is the entire <a href="https://github.com/kriskowal/q">q promises library</a></li>
+</ul>
+
+</article>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- jQuery -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script>
+    if (typeof jQuery == 'undefined')
+        document.write(unescape("%3Cscript src='js/jquery-1.11.0.min.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<!-- hightlight.js -->
+<script src="static/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+<!-- JS -->
+
+<!-- Front end file editor -->
+<script src="static/js/custom.js"></script>
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+</body>
+</html>
+
