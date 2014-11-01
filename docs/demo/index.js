@@ -18,7 +18,7 @@ function showForks(repoModel) {
                                 _id: repoModel._id
                             },
                             fork: {
-                                _id: r._id 
+                                _id: r._id
                             }
                         }
                     });
@@ -482,3 +482,30 @@ function showStats() {
 
     _showStats();
 }
+
+$(document).ready(function() {
+    var intro = introJs(); 
+    intro.setOptions({
+        steps: [
+            {
+                intro: "Welcome to the Siesta demo app. This app demonstrates the use of Siesta against the GitHub API."
+            }, 
+            {
+                intro: 'Enter a search term here and press enter to search the GitHub API for repositories with a matching name/description',
+                element: $('#query-form')[0],
+                position: 'top'
+            },
+            {
+                intro: "Click statistics to get a numerical summary of the object graph, that is, the num. unique users & repositories downloaded so far",
+                element: $('#statistics-button')[0],
+                position: 'left'
+            },
+            {
+                intro: 'Once you\'ve gathered enough data, hit visualise to generate a visualisation of the Siesta object graph using d3.js',
+                element: $('#visualise')[0],
+                position: 'left'
+            }
+        ]
+    });
+    intro.start();
+})

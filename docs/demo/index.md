@@ -26,6 +26,7 @@ title: Demo
     <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
     <script type="text/javascript" src="vis.js"></script>
     <script type="text/javascript" src="index.js"></script>
+    <link rel="stylesheet" type="text/css" href="intro/introjs.css">
 </head>
 <body>
 <div class="outer-spinner outer-overlay" id="spinner" style="display: none">
@@ -79,23 +80,25 @@ title: Demo
     <a class="button" id="statistics-button" onclick="showStats()">Statistics</a>
 </div>
 <div id="content" class="container">
-    <div id="repos">
+    <div id="repos"> 
         <div class="row"></div>
     </div>
     <div id="visualisation" style="display: none">
-    </div>
-</div>
+    </div>  
+</div> 
 <div id="footer">
     <div id="inner-footer">
-        <div class="form">
+        <div class="form" id="query-form">
             <i class="glyphicon glyphicon-user"></i>
             <input onkeypress="queryKeyPress(event)" id="INPUT_1" placeholder="Query" type="email" name="identification" ></input>
             <button type="submit" class="go-button" onclick="query()">
             Go
             </button>
         </div>
-        <a  class="button" id="visualise" onclick="visualisePressed(this)">Visualise</a>
+        <a class="button" id="visualise" onclick="visualisePressed(this)">Visualise</a>
     </div>
 </div>
+    <script type="text/javascript" src="intro/intro.js"></script>
+
 </body>
 </html>
