@@ -107,7 +107,7 @@ function _executeInMemory(callback) {
                 if (matches) res.push(obj);
             }
         }
-        callback(err, res);
+        callback(err, err ? null : res);
     } else if (callback) {
         callback(null, []);
     }

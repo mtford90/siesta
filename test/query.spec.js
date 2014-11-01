@@ -160,10 +160,54 @@ describe('query', function() {
                 });
             });
         });
+    });
+
+    describe('errors', function() {
+        beforeEach(function(done) {
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        type: 'OneToMany',
+                        mapping: 'Person',
+                        reverse: 'cars'
+                    }
+                }
+            });
+            collection.install(done);
+        });
+
+        it('invalid op', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__dfsoigsd: 21
+                    });
+                    q.execute(function(err, objs) {
+                        assert.ok(err);
+                        assert.notOk(objs);
+                        done();
+                    });
+                }
+            });
+        })
+    });
 
 
-
-    })
 
 
 
