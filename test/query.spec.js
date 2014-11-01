@@ -172,7 +172,7 @@ describe('query', function() {
                         colour: 'red',
                         name: 'Aston Martin',
                         owner: person
-                    }, function(err, car) {  
+                    }, function(err, car) {
                         if (err) done(err);
                         else {
                             var q = new Query(carMapping, {
@@ -188,6 +188,68 @@ describe('query', function() {
                 });
             });
         });
+    });
+
+    describe('lt', function() {
+        var collection, personMapping, carMapping;
+
+        beforeEach(function(done) {
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+
+        it('matches', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__lt: 22
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[0]);
+                        assert.include(objs, mapped[1]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('no matches', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__lt: 21
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.notOk(objs.length);
+                        done();
+                    });
+                }
+            });
+        });
+
     });
 
     describe('errors', function() {

@@ -59,13 +59,21 @@ function objectMatchesQuery(obj) {
         if (splt.length == 2) {
             field = splt[0]
             op = splt[1];
-        }
-        else {
+        } else {
             field = origField;
         }
+        var queryObj = this.query[origField];
+        var val = obj[field];
         if (op == 'e') {
-            var queryObj = this.query[origField];
-            if (obj[field] != queryObj) {
+            if (val != queryObj) {
+                return false;
+            }
+        } else if (op == 'lt') {
+            if (val) {
+                if (val >= queryObj) {
+                    return false;
+                }
+            } else {
                 return false;
             }
         } else {
@@ -103,8 +111,7 @@ function _executeInMemory(callback) {
             if (typeof(matches) == 'string') {
                 err = matches;
                 break;
-            }
-            else {
+            } else {
                 if (matches) res.push(obj);
             }
         }
