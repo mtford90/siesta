@@ -69,11 +69,19 @@ function objectMatchesQuery(obj) {
                 return false;
             }
         } else if (op == 'lt') {
-            if (val) {
-                if (val >= queryObj) {
-                    return false;
-                }
-            } else {
+            if (val >= queryObj) {
+                return false;
+            }
+        } else if (op == 'lte') {
+            if (val > queryObj) {
+                return false;
+            }
+        } else if (op == 'gt') {
+            if (val <= queryObj) {
+                return false;
+            }
+        } else if (op == 'gte') {
+            if (val < queryObj) {
                 return false;
             }
         } else {

@@ -202,7 +202,7 @@ describe('query', function() {
             collection.install(done);
         });
 
-        it('matches', function(done) {
+        it('matches all', function(done) {
             personMapping.map([{
                 name: 'Michael',
                 age: 21
@@ -221,6 +221,30 @@ describe('query', function() {
                         assert.equal(objs.length, 2);
                         assert.include(objs, mapped[0]);
                         assert.include(objs, mapped[1]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('matches some', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 22
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__lt: 22
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 1);
+                        assert.include(objs, mapped[0]);
                         done();
                     });
                 }
@@ -249,7 +273,273 @@ describe('query', function() {
                 }
             });
         });
+    });
 
+    describe('lte', function() {
+        var collection, personMapping, carMapping;
+
+        beforeEach(function(done) {
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+
+        it('matches all', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__lte: 21
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[0]);
+                        assert.include(objs, mapped[1]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('matches some', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 22
+            }, {
+                name: 'John',
+                age: 23
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__lte: 22
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[0]);
+                        assert.include(objs, mapped[1]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('no matches', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__lte: 20
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.notOk(objs.length);
+                        done();
+                    });
+                }
+            });
+        });
+    });
+
+    describe('gt', function() {
+        var collection, personMapping, carMapping;
+
+        beforeEach(function(done) {
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+
+        it('matches all', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__gt: 20
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[0]);
+                        assert.include(objs, mapped[1]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('matches some', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 22
+            }, {
+                name: 'John',
+                age: 23
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__gt: 21
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[1]);
+                        assert.include(objs, mapped[2]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('no matches', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__gt: 21
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.notOk(objs.length);
+                        done();
+                    });
+                }
+            });
+        });
+    });
+
+    describe('gte', function() {
+        var collection, personMapping, carMapping;
+
+        beforeEach(function(done) {
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+
+        it('matches all', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__gte: 21
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[0]);
+                        assert.include(objs, mapped[1]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('matches some', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 22
+            }, {
+                name: 'John',
+                age: 23
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__gte: 22
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.equal(objs.length, 2);
+                        assert.include(objs, mapped[1]);
+                        assert.include(objs, mapped[2]);
+                        done();
+                    });
+                }
+            });
+        });
+
+        it('no matches', function(done) {
+            personMapping.map([{
+                name: 'Michael',
+                age: 21
+            }, {
+                name: 'Bob',
+                age: 21
+            }], function(err, mapped) {
+                if (err) done(err);
+                else {
+                    assert.ok(mapped);
+                    var q = new Query(personMapping, {
+                        age__gte: 22
+                    });
+                    q.execute(function(err, objs) {
+                        if (err) done(err);
+                        assert.notOk(objs.length);
+                        done();
+                    });
+                }
+            });
+        });
     });
 
     describe('errors', function() {
