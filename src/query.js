@@ -64,7 +64,8 @@ function objectMatchesQuery(obj) {
             field = origField;
         }
         if (op == 'e') {
-            if (obj[field] != this.query[origField]) {
+            var queryObj = this.query[origField];
+            if (obj[field] != queryObj) {
                 return false;
             }
         } else {

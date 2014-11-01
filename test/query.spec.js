@@ -160,6 +160,34 @@ describe('query', function() {
                 });
             });
         });
+
+        describe('relationships', function() {
+            it('model', function(done) {
+                personMapping.map({
+                    name: 'Michael',
+                    age: 21
+                }, function(err, person) {
+                    if (err) done(err);
+                    carMapping.map({
+                        colour: 'red',
+                        name: 'Aston Martin',
+                        owner: person
+                    }, function(err, car) {  
+                        if (err) done(err);
+                        else {
+                            var q = new Query(carMapping, {
+                                owner__e: person
+                            });
+                            q.execute(function(err, objs) {
+                                if (err) done(err);
+                                assert.ok(objs.length);
+                                done();
+                            });
+                        }
+                    });
+                });
+            });
+        });
     });
 
     describe('errors', function() {
