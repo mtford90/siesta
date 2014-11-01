@@ -107,7 +107,6 @@ function _httpResponse(method, path) {
     };
     if (Logger.trace.isEnabled)
         Logger.trace('Ajax request:', opts);
-    console.log('opts', opts);
     $.ajax(opts);
 };
 
@@ -194,7 +193,6 @@ function _httpRequest(method, path, object) {
  * @returns {Promise}
  */
 function DELETE(collection, path, object) {
-    console.log('object', object);
     var deferred = q.defer();
     var args = Array.prototype.slice.call(arguments, 3);
     var opts = {};

@@ -32,11 +32,10 @@ function _executeUsingStorageExtension(callback) {
     var RawQuery = storageExtension.RawQuery;
     var Pouch = storageExtension.Pouch;
     var rawQuery = new RawQuery(this.mapping.collection, this.mapping.type, this.query);
-    rawQuery.execute(function (err, results) {
+    rawQuery.execute(function(err, results) {
         if (err) {
             callback(err);
-        }
-        else {
+        } else {
             if (Logger.debug.isEnabled)
                 Logger.debug('got results', results);
             if (callback) callback(null, Pouch.toSiesta(results));
@@ -52,11 +51,25 @@ function _executeUsingStorageExtension(callback) {
  */
 function objectMatchesQuery(obj) {
     var fields = Object.keys(this.query);
-    for (var i=0; i<fields.length; i++) {
-        var field = fields[i];
-       if (obj[field] != this.query[field]) {
-           return false;
-       }
+    for (var i = 0; i < fields.length; i++) {
+        var origField = fields[i];
+        var splt = origField.split('__');
+        var op = 'e';
+        var field;
+        if (splt.length == 2) {
+            field = splt[0]
+            op = splt[1];
+        }
+        else {
+            field = origField;
+        }
+        if (op == 'e') {
+            if (obj[field] != this.query[origField]) {
+                return false;
+            }
+        } else {
+            return 'Query operator "' + op + '"' + ' does not exist';
+        }
     }
     return true;
 }
@@ -80,36 +93,42 @@ function _executeInMemory(callback) {
     if (cacheByLocalId) {
         var keys = Object.keys(cacheByLocalId);
         var self = this;
-        var matches = _.reduce(keys, function (memo, k) {
+        var res = [];
+        var err;
+        for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
             var obj = cacheByLocalId[k];
-            if (objectMatchesQuery.call(self, obj)) memo.push(obj);
-            return memo;
-        }, []);
-        if (callback) callback(null, matches);
-    }
-    else if (callback) {
+            var matches = objectMatchesQuery.call(self, obj);
+            if (typeof(matches) == 'string') {
+                err = matches;
+                break;
+            }
+            else {
+                if (matches) res.push(obj);
+            }
+        }
+        callback(err, res);
+    } else if (callback) {
         callback(null, []);
     }
     return deferred.promise;
 }
 
-Query.prototype.execute = function (callback) {
+Query.prototype.execute = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    if (siesta.ext.storageEnabled) {
-        _executeUsingStorageExtension.call(this, callback);
-    }
-    else {
-        _executeInMemory.call(this, callback);
-    }
+    // if (siesta.ext.storageEnabled) {
+    //     _executeUsingStorageExtension.call(this, callback);
+    // }
+    // else {
+    _executeInMemory.call(this, callback);
+    // }
     return deferred.promise;
 };
 
-Query.prototype._dump = function (asJson) {
+Query.prototype._dump = function(asJson) {
     // TODO
     return asJson ? '{}' : {};
 };
 
 exports.Query = Query;
-
-
