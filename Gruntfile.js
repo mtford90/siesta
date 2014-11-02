@@ -454,11 +454,14 @@ module.exports = function(grunt) {
                     var split = filepath.split('/');
                     split[0] = '_site';
                     var targetFilePath = split.join('/');
-                    sh.run('cp ' + filepath + ' ' + targetFilePath);
+                    var cmd = 'cp ' + filepath + ' ' + targetFilePath;
+                    grunt.log.writeln(cmd);
+                    sh.run(cmd);
                 } else {
-                    sh.run('cp -r docs/demo _site/demo');
+                    var cmd = 'cp -r docs/demo _site/demo';
+                    sh.run(cmd);
+                    grunt.log.writeln(cmd);
                 }
-                grunt.log.writeln('yo', filepath, action)
             }
         }
     });

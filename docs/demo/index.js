@@ -418,6 +418,7 @@ function _query() {
 
 function query() {
     if ($('#visualise').text().toLowerCase() == 'repos') {
+        $('#visualise').text('VISUALISE');
         backToRepos(function() {
             _query();
         });

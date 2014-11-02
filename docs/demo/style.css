@@ -108,7 +108,7 @@ body {
 
 .repo .stats .stat {
     display: inline-block;
-    width: 32.5%;
+    width: 32.4%; 
     position: relative;
     height: 50px;
 }
@@ -156,10 +156,9 @@ body {
 #content {
     background-color: #edece4;
     width: 100%;
-    padding-top: 35px;
-    height: 100%;
     padding-left: 25px;
     padding-right: 25px;
+    padding-top: 47px;
 }
 
 .row .col-md-3 {
@@ -374,11 +373,11 @@ button.confirm:disabled, button.confirm:disabled:hover {
 }
 
 #centred-text {
-    font-weight: 100;
+    font-weight: 100; 
 }
 
 .spinner {
-    margin-top: 0 !important;
+    margin-top: 0 !important; 
     margin-bottom: 0 !important;
 }
 
