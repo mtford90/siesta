@@ -16,7 +16,20 @@ function getRepos(cb) {
 }
 
 function getFollows(cb) {
-    Follow.all(function(err, follows) {
+    getUsers(function(err, users) {
+        console.log('users', users);
+        var follows;
+        if (!err) {
+            follows = _.reduce(users, function(memo, u) {
+                _.each(u.followers, function(f) {
+                    memo.push({
+                        followed: u,
+                        follower: f
+                    });
+                });
+                return memo;
+            }, []);
+        }
         cb(err, follows);
     });
 }
