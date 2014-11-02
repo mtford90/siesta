@@ -211,7 +211,7 @@ module.exports = function(grunt) {
                     'docs/_posts/*.md',
                     'docs/blog/*.html',
                     'docs/_config.yml',
-                    'docs/*/**.js'
+                    'docs/static/**/*.js'
                 ],
                 tasks: [
                     'build-jekyll'
