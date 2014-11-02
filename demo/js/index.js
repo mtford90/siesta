@@ -185,9 +185,9 @@ function createRepoElement(repoModel) {
         row = rows[i];
         if ($(row).children().length < 4) break;
         else row = null;
-    }
+    }  
     if (!row) row = $('<div class="row"></div>');
-    $('#content #repos').append(row);
+    $('#content #repos').append(row);      
     $(row).append(cloned);
 }
 
@@ -418,6 +418,7 @@ function _query() {
 
 function query() {
     if ($('#visualise').text().toLowerCase() == 'repos') {
+        $('#visualise').text('VISUALISE');
         backToRepos(function() {
             _query();
         });
@@ -441,7 +442,6 @@ function backToRepos(cb) {
 }
 
 function visualisePressed(btn) {
-    console.log('visualise!', btn);
     var $btn = $(btn);
     if ($btn.text().toLowerCase() == 'visualise') {
         fadeReposOutGradually(function() {
@@ -525,14 +525,14 @@ function getSiesta(cb) {
         _getSiesta(cb);
     }
 }
-
+ 
 /**
  * Add overlay layer to the page.
  *
  * Note that this was adapted from introjs and hence is dependent on the styles
  * from that library.
  */
-function addOverlayLayer(cb) {
+function addOverlayLayer(cb) {   
     var targetElm = $('body')[0];
 
     var overlayLayer = document.createElement('div'),
