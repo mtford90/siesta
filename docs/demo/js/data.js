@@ -17,24 +17,14 @@ function configureMappings() {
                 mapping: 'User',
                 type: 'OneToMany',
                 reverse: 'repositories'
-            }
-        }
-    });
-    Fork = collection.mapping('Fork', {
-        relationships: {
-            source: {
+            },
+            forked_from: {
                 mapping: 'Repo',
                 type: 'OneToMany',
                 reverse: 'forked_to'
-            },
-            fork: {
-                mapping: 'Repo',
-                type: 'OneToOne',
-                reverse: 'forked_from'
             }
         }
     });
-  
     User = collection.mapping('User', {
         id: 'id',
         attributes: ['login', 'avatar_url', 'html_url'],

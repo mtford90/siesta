@@ -15,9 +15,12 @@ function getRepos(cb) {
     });
 }
 
+/**
+ * Reduce follows down into individual objects so can be represented in a graph.
+ * @param  {Function} cb callback
+ */
 function getFollows(cb) {
     getUsers(function(err, users) {
-        console.log('users', users);
         var follows;
         if (!err) {
             follows = _.reduce(users, function(memo, u) {
@@ -35,11 +38,23 @@ function getFollows(cb) {
 }
 
 function getForks(cb) {
-    Fork.all(function(err, forks) {
+    getRepos(function(err, repoModels) {
+        var forks;
+        if (!err) {
+            forks = _.reduce(repoModels, function(memo, r) {
+                _.each(r.forked_to, function(f) {
+                    memo.push({
+                        source: r,
+                        fork: f
+                    });
+                });
+                return memo;
+            }, []);
+        }
+        console.log('forks', forks);
         cb(err, forks);
     });
 }
-
 
 function showVis() {
     getRepos(function(err, repoModels) {

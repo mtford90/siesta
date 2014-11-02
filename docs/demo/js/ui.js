@@ -8,38 +8,12 @@ function showForks(repoModel) {
         removeAllRepoElements();
         fadeSpinnerIn(function() {
             var path = '/repos/' + repoModel.owner.login + '/' + repoModel.name + '/forks';
-            console.log('path', path);
             collection.GET(path, function(err, repos) {
-                if (err) {
-                    // TODO
-                } else {
-                    var rawForks = _.map(repos, function(r) {
-                        return {
-                            source: {
-                                _id: repoModel._id
-                            },
-                            fork: {
-                                _id: r._id
-                            }
-                        }
-                    });
-                    console.log('rawForks', rawForks);
-                    Fork.map(rawForks, function(err, forks) {
-                        console.log('Forks made!', forks);
-                        if (err) {
-                            // TODO
-                        } else {
-                            if (err) {
-                                // TODO
-                            } else {
-                                repositories = _.pluck(forks, 'fork');
-                                fadeSpinnerOutGradually(function() {
-                                    createRepoElements();
-                                });
-                            }
-                        }
-                    });
-                }
+            	repoModel.forked_to = repos;
+                repositories = repos;
+                fadeSpinnerOutGradually(function() {
+                    createRepoElements();
+                });
             });
         });
     });
