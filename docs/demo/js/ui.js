@@ -59,67 +59,57 @@ function listFollowers(userModel) {
         '</div>' +
         '</div>';
     sweetAlert(userModel.login, spinner);
-    $('.confirm').attr('disabled', true);  
+    $('.confirm').attr('disabled', true);
     getFollowers(userModel, function(err, users) {
         if (err) {
             // TODO                 
         } else {
-            var rawFollows = _.map(users, function(u) {
-                return {
-                    followed: {
-                        _id: userModel._id
-                    },
-                    follower: {
-                        _id: u._id
-                    }
-                }
-            });
+            userModel.followers = users;
+            // var rawFollows = _.map(users, function(u) {
+            //     return {
+            //         followed: {
+            //             _id: userModel._id
+            //         },
+            //         follower: {
+            //             _id: u._id
+            //         }
+            //     }
+            // });
             getReposForUserModel(userModel, function(err, repos) {
                 if (err) {
                     // TODO
                 } else {
-                    Follow.map(rawFollows, function(err, follows) {
-                        console.log('Follows made!', follows);
-                        if (err) {
-                            console.error('Error creating follows', follows);
-                        } else {
-                            if (err) {
-                                // TODO
-                            } else {
-                                $('.fork-spinner').fadeOut(300, function() {
-                                    var $forks = $('#forks');
-                                    var $repoButton = $('<a>' + repos.length.toString() + ' public repositories</a>')
-                                    var elem = $('<p>This user has </p>');
-                                    elem.append($repoButton);
-                                    $forks.find('#repos').append(elem);
-                                    $repoButton.on('click', function() {
-                                        showReposForUserModel(userModel);
-                                        closeModal();
+                    $('.fork-spinner').fadeOut(300, function() {
+                        var $forks = $('#forks');
+                        var $repoButton = $('<a>' + repos.length.toString() + ' public repositories</a>')
+                        var elem = $('<p>This user has </p>');
+                        elem.append($repoButton);
+                        $forks.find('#repos').append(elem);
+                        $repoButton.on('click', function() {
+                            showReposForUserModel(userModel);
+                            closeModal();
+                        });
+                        $('#forks').fadeIn(300, function() {
+                            $('.confirm').attr('disabled', false);
+                            var body = $('.fork-body #forks #followers');
+                            if (userModel.followers.length) {
+                                _.each(userModel.followers, function(f) {
+                                    var elem = $('<img class="follower" data-toggle="tooltip" data-placement="top" title="' + f.login + '" src="' + f.avatar_url + '"/>');
+                                    elem.hover(function() {
+                                        $('#hovered-username').text(f.login);
+                                    }, function() {
+                                        $('#hovered-username').text('');
                                     });
-                                    $('#forks').fadeIn(300, function() {
-                                        $('.confirm').attr('disabled', false);
-                                        var body = $('.fork-body #forks #followers');
-                                        if (follows.length) {
-                                            _.each(follows, function(f) {
-                                                var elem = $('<img class="follower" data-toggle="tooltip" data-placement="top" title="' + f.follower.login + '" src="' + f.follower.avatar_url + '"/>');
-                                                elem.hover(function() {
-                                                    $('#hovered-username').text(f.follower.login);
-                                                }, function() {
-                                                    $('#hovered-username').text('');
-                                                });
-                                                elem.on('click', function() {
-                                                    var path = f.follower.html_url;
-                                                    window.open(path, '_blank');
-                                                });
-                                                body.append(elem);
-                                            });
-                                        } else {
-                                            body.append('This user has no followers yet!');
-                                        }
+                                    elem.on('click', function() {
+                                        var path = f.html_url;
+                                        window.open(path, '_blank');
                                     });
+                                    body.append(elem);
                                 });
+                            } else {
+                                body.append('This user has no followers yet!');
                             }
-                        }
+                        });
                     });
                 }
 
@@ -161,7 +151,7 @@ function createRepoElement(repoModel) {
         $(this).removeClass('hovered');
         $repo.addClass('hovered');
     });
-    var url = repoModel.owner.avatar_url; 
+    var url = repoModel.owner.avatar_url;
     cloned.find('img').attr('src', url);
     $repo.on('click', function() {
         var path = repoModel.html_url;
@@ -181,9 +171,9 @@ function createRepoElement(repoModel) {
         row = rows[i];
         if ($(row).children().length < 4) break;
         else row = null;
-    }  
+    }
     if (!row) row = $('<div class="row"></div>');
-    $('#content #repos').append(row);      
+    $('#content #repos').append(row);
     $(row).append(cloned);
 }
 
@@ -384,14 +374,14 @@ function showStats() {
 }
 
 
- 
+
 /**
  * Add overlay layer to the page.
  *
  * Note that this was adapted from introjs and hence is dependent on the styles
  * from that library.
  */
-function addOverlayLayer(cb) {   
+function addOverlayLayer(cb) {
     var targetElm = $('body')[0];
 
     var overlayLayer = document.createElement('div'),
@@ -461,4 +451,3 @@ function startIntro() {
         console.log('after new step', targetElement);
     });
 }
-

@@ -34,30 +34,17 @@ function configureMappings() {
             }
         }
     });
-    Follow = collection.mapping('Follow', {
+  
+    User = collection.mapping('User', {
+        id: 'id',
+        attributes: ['login', 'avatar_url', 'html_url'],
         relationships: {
-            followed: {
+            followers: {
                 mapping: 'User',
-                type: 'OneToMany',
-                reverse: 'followers'
-            },
-            follower: {
-                mapping: 'User',
-                type: 'OneToMany',
+                type: 'ManyToMany',
                 reverse: 'following'
             }
         }
-    });
-    User = collection.mapping('User', {
-        id: 'id',
-        attributes: ['login', 'avatar_url', 'html_url']
-        // relationships: {
-        //     followers: {
-        //         mapping: 'User',
-        //         type: 'ManyToMany',
-        //         reverse: 'following'
-        //     }
-        // }
     });
 }
 
