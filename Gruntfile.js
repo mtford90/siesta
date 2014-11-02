@@ -28,8 +28,10 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
+    var exec = require('child_process').exec,
+        fs = require('fs'),
+        sh = require('execSync');
 
-    var fs = require('fs');
 
     var userConfig = require('./build.config.js');
 
@@ -154,13 +156,8 @@ module.exports = function(grunt) {
         },
 
         delta: {
-            options: {
-                livereload: true
-            },
-
             gruntfile: {
-                files: 'Gruntfile.js',
-                tasks: ['browserify:test', 'karma:unit:run']
+                files: 'Gruntfile.js'
             },
 
             jssrc: {
@@ -214,10 +211,22 @@ module.exports = function(grunt) {
                     'docs/_posts/*.md',
                     'docs/blog/*.html',
                     'docs/_config.yml',
-                    'docs/*/**.js',
-                    './docs/demo/**/*.css'
+                    'docs/*/**.js'
                 ],
-                tasks: ['build-jekyll']
+                tasks: [
+                    'build-jekyll'
+                ]
+            },
+
+            demo: {
+                options: {
+                    livereload: true
+                },
+                files: [
+                    'docs/demo/**/*.js',
+                    'docs/demo/**/*.html',
+                    'docs/demo/**/*.css'
+                ]
             }
         },
 
@@ -329,6 +338,8 @@ module.exports = function(grunt) {
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
+
+
     grunt.renameTask('watch', 'delta');
     grunt.registerTask('default', ['build', 'compile']);
 
@@ -433,7 +444,23 @@ module.exports = function(grunt) {
         grunt.file.copy('karma/karma-unit.tpl.js', grunt.config('build_dir') + '/karma-unit.js', {
             process: process
         });
+    });
 
+    grunt.event.on('watch', function(action, filepath, target) {
+        if (action == 'changed') {
+            if (target == 'demo') {
+                // Optimisation to avoid copying every single demo file on changes.
+                if (fs.existsSync('_site/demo')) {
+                    var split = filepath.split('/');
+                    split[0] = '_site';
+                    var targetFilePath = split.join('/');
+                    sh.run('cp ' + filepath + ' ' + targetFilePath);
+                } else {
+                    sh.run('cp -r docs/demo _site/demo');
+                }
+                grunt.log.writeln('yo', filepath, action)
+            }
+        }
     });
 
 };
