@@ -326,6 +326,11 @@ function init(cb) {
         method: 'GET'
     });
     collection.responseDescriptor({
+        path: '/repos/(.*)/(.*)',
+        mapping: Repo,
+        method: 'GET'
+    });
+    collection.responseDescriptor({
         path: '/users/(.*)/repos',
         mapping: Repo,
         method: 'GET'
@@ -483,29 +488,108 @@ function showStats() {
     _showStats();
 }
 
-$(document).ready(function() {
-    var intro = introJs(); 
+function getSiesta(cb) {
+    function _getSiesta() {
+        collection.GET('/repos/mtford90/siesta', function(err, repo) {
+            if (cb) cb(err, repo);
+        });
+    }
+    if (!collection) {
+        init(function() {
+            _getSiesta(cb);
+        });
+    } else {
+        _getSiesta(cb);
+    }
+}
+
+/**
+ * Add overlay layer to the page.
+ *
+ * Note that this was adapted from introjs and hence is dependent on the styles
+ * from that library.
+ */
+function addOverlayLayer(cb) {
+    var targetElm = $('body')[0];
+
+    var overlayLayer = document.createElement('div'),
+        styleText = '',
+        self = this;
+
+    //set css class name
+    overlayLayer.className = 'introjs-overlay';
+
+    styleText += 'top: 0;bottom: 0; left: 0;right: 0;position: fixed;';
+    overlayLayer.setAttribute('style', styleText);
+    targetElm.appendChild(overlayLayer);
+
+    function _addOverlayLayer() {
+        styleText += 'opacity: 0.8;';
+        overlayLayer.setAttribute('style', styleText);
+        cb(overlayLayer);
+    }
+
+    var html =
+        '<div class="outer-spinner outer-overlay" id="spinner">' +
+        '<div class="spinner overlay">' +
+        '<div class="cube1"></div>' +
+        '<div class="cube2"></div>' +
+        '</div>' +
+        '</div>';
+
+    var spinner = $(html)[0];
+
+    overlayLayer.appendChild(spinner);
+    setTimeout(_addOverlayLayer, 10);
+}
+
+function removeOverlayLayer(overlayLayer) {
+    $(overlayLayer).css('opacity', 0.0);
+}
+
+function startIntro() {
+    var intro = introJs();
     intro.setOptions({
-        steps: [
-            {
-                intro: "Welcome to the Siesta demo app. This app demonstrates the use of Siesta against the GitHub API."
-            }, 
-            {
-                intro: 'Enter a search term here and press enter to search the GitHub API for repositories with a matching name/description',
-                element: $('#query-form')[0],
-                position: 'top'
-            },
-            {
-                intro: "Click statistics to get a numerical summary of the object graph, that is, the num. unique users & repositories downloaded so far",
-                element: $('#statistics-button')[0],
-                position: 'left'
-            },
-            {
-                intro: 'Once you\'ve gathered enough data, hit visualise to generate a visualisation of the Siesta object graph using d3.js',
-                element: $('#visualise')[0],
-                position: 'left'
-            }
-        ]
+        steps: [{
+            intro: "Welcome to the Siesta demo app. This app demonstrates the use of Siesta against the GitHub API."
+        }, {
+            intro: 'Enter a search term here and press enter to search the GitHub API for repositories with a matching name/description',
+            element: $('#query-form')[0],
+            position: 'top'
+        }, {
+            intro: "Click statistics to get a numerical summary of the object graph, that is, the num. unique users & repositories downloaded so far",
+            element: $('#statistics-button')[0],
+            position: 'left'
+        }, {
+            intro: 'Once you\'ve gathered enough data, hit visualise to generate a visualisation of the Siesta object graph using d3.js',
+            element: $('#visualise')[0],
+            position: 'left'
+        }, {
+            intro: 'Clicking here will display all forks of the particular repo',
+            element: $('#repos .forks .inner-stat')[0],
+            position: 'right'
+        }, {
+            intro: 'Clicking the user will pull up the users followers and repositories',
+            element: $('#repos .user')[0],
+            position: 'bottom'
+        }]
     });
     intro.start();
+    intro.onafterchange(function(targetElement) {
+        console.log('after new step', targetElement);
+    });
+}
+
+$(document).ready(function() {
+    fadeReposOutImmediately();
+    addOverlayLayer(function(layer) {
+        getSiesta(function(err, siestaRepo) {
+            repositories = [siestaRepo];
+            createRepoElements();
+            fadeReposIn(function() {
+                startIntro();
+                $(layer).find('#spinner').remove();
+            });
+        });
+    });
 })
