@@ -2,6 +2,9 @@ var collection, repositories = [];
 
 var User, Fork, Repo, Follow;
 
+/**
+ * Show the forks for a particular model.
+ */
 function showForks(repoModel) {
     fadeReposOutGradually(function() {
         removeAllRepoElements();
@@ -42,10 +45,11 @@ function showForks(repoModel) {
             });
         });
     });
-
-    //    $('.confirm').attr('disabled', true);
 }
 
+/**
+ * Hit the Github API for the repositories for a particular user
+ */
 function getReposForUserModel(userModel, callback) {
     var path = '/users/' + userModel.login + '/repos';
     collection.GET(path, function(err, repos) {
@@ -83,6 +87,7 @@ function reposForUser(userModel) {
     });
 }
 
+
 function listFollowers(userModel) {
     var spinner = '<div class="fork-body">' +
         '<div class="spinner fork-spinner" style="margin-top: 30px !important; margin-bottom: 10px">' +
@@ -100,7 +105,6 @@ function listFollowers(userModel) {
     $('.confirm').attr('disabled', true);
     var path = '/users/' + userModel.login + '/followers';
     collection.GET(path, function(err, users) {
-        console.log('users', users);
         if (err) {
             // TODO                 
         } else {
@@ -268,9 +272,12 @@ function fadeVisualisationOut(cb) {
     $('#visualisation').finish().fadeOut(300, cb);
 }
 
-function init(cb) {
+function configureCollection() {
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
+}
+
+function configureMappings() {
     Repo = collection.mapping('Repo', {
         id: 'id',
         attributes: ['name', 'full_name', 'description', 'html_url', 'watchers_count', 'stargazers_count', 'forks'],
@@ -314,6 +321,9 @@ function init(cb) {
         id: 'id',
         attributes: ['login', 'avatar_url', 'html_url']
     });
+}
+
+function configureDescriptors() {
     collection.responseDescriptor({
         path: '/search/repositories',
         mapping: Repo,
@@ -340,6 +350,13 @@ function init(cb) {
         mapping: User,
         method: 'GET'
     });
+}
+
+
+function init(cb) {
+    configureCollection();
+    configureMappings();
+    configureDescriptors();
     collection.install(function(err) {
         console.log('User', User);
         cb(err);

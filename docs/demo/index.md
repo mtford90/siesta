@@ -6,27 +6,24 @@ title: Demo
 <head lang="en">
     <meta charset="UTF-8">
     <title>Example</title>
-    <script src="http://underscorejs.org/underscore.js"></script>
-    <script src="http://underscorejs.org/underscore-min.js"></script>
-    <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="siesta/siesta.js"></script>
-    <script src="siesta/siesta.http.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="sweetalert/lib/sweet-alert.js"></script>
+    <script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/async/0.9.0/async.js"></script>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="sweetalert/lib/sweet-alert.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="siesta/siesta.js"></script>
+    <script type="text/javascript" src="siesta/siesta.http.js"></script>
+    <script type="text/javascript" src="vis.js"></script>
+    <script type="text/javascript" src="index.js"></script>
     <link rel="stylesheet" type="text/css" href="sweetalert/lib/sweet-alert.css">
+    <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800'>
+    <link rel="stylesheet" type='text/css' href="font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="intro/introjs.css">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="spinner.css">
     <link rel="stylesheet" type="text/css" href="vis.css">
-    <script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>
-    <script src="http://underscorejs.org/underscore.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/async/0.9.0/async.js"></script>
-    <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
-    <script type="text/javascript" src="vis.js"></script>
-    <script type="text/javascript" src="index.js"></script>
-    <link rel="stylesheet" type="text/css" href="intro/introjs.css">
 </head>
 <body>
 <div class="outer-spinner outer-overlay" id="spinner" style="display: none">
