@@ -1,3 +1,8 @@
+/**
+ * Visualises the Siesta object graph using d3.js.
+ * Call showVis to begin the visualisation.
+ */
+
 function getUsers(cb) {
     User.all(function(err, users) {
         cb(err, users);
@@ -22,24 +27,27 @@ function getForks(cb) {
     });
 }
 
-function showVis() {
 
-    // getUsers(function (err, users) {
+function showVis() {
     getRepos(function(err, repoModels) {
-        console.log('repoModels', repoModels);
         getFollows(function(err, follows) {
-            console.log('followModels', follows);
             getForks(function(err, forks) {
-                console.log('forkModels', forks);
                 var users = {};
                 var repos = {};
                 var ownedLinks = _.map(repoModels, function(r) {
                     if (!repos[r._id]) {
                         var repoName = r.name + '(' + r.owner.login + ')';
-                        repos[r._id] = {name: repoName, type: 'Repo'};
+                        repos[r._id] = {
+                            name: repoName,
+                            type: 'Repo'
+                        };
                     }
                     if (!users[r.owner._id]) {
-                        users[r.owner._id] = {name: r.owner.login, url: r.owner.avatar_url, type:'User'};
+                        users[r.owner._id] = {
+                            name: r.owner.login,
+                            url: r.owner.avatar_url,
+                            type: 'User'
+                        };
                     }
                     return {
                         source: users[r.owner._id],
@@ -52,13 +60,17 @@ function showVis() {
                     var forkRepo = f.fork;
                     var forkRepoName = forkRepo.name + '(' + forkRepo.owner.login + ')';
                     var sourceRepoName = sourceRepo.name + '(' + sourceRepo.owner.login + ')';
-                    console.log('forkRepo', forkRepo);
-                    console.log('sourceRepo', sourceRepo);
                     if (!repos[forkRepo._id]) {
-                        repos[forkRepo._id] = {name: forkRepoName, type: 'Repo'};
+                        repos[forkRepo._id] = {
+                            name: forkRepoName,
+                            type: 'Repo'
+                        };
                     }
                     if (!repos[sourceRepo._id]) {
-                        repos[sourceRepo._id] = {name: sourceRepoName, type: 'Repo'};
+                        repos[sourceRepo._id] = {
+                            name: sourceRepoName,
+                            type: 'Repo'
+                        };
                     }
                     return {
                         source: repos[sourceRepo._id],
@@ -71,10 +83,18 @@ function showVis() {
                     var followed = f.followed;
                     var follower = f.follower;
                     if (!users[followed._id]) {
-                        users[followed._id] = {name: followed.login, url: followed.avatar_url, type: 'User'};
+                        users[followed._id] = {
+                            name: followed.login,
+                            url: followed.avatar_url,
+                            type: 'User'
+                        };
                     }
                     if (!users[follower._id]) {
-                        users[follower._id] = {name: follower.login, url: follower.avatar_url, type: 'User'};
+                        users[follower._id] = {
+                            name: follower.login,
+                            url: follower.avatar_url,
+                            type: 'User'
+                        };
                     }
                     return {
                         source: users[followed._id],
@@ -93,22 +113,12 @@ function showVis() {
                     link.target = nodes[targetName] || (nodes[targetName] = link.target);
                 });
 
-                console.log('ownedLinks', ownedLinks);
-                console.log('forkedLinks', forkedLinks);
-                console.log('followLinks', followLinks);
-                console.log('links', links);
-                console.log('nodes', nodes);
-                console.log('users', users);
-                console.log('repos', repos);
-
                 var margin = {
-                        top: -5,
-                        right: -5,
-                        bottom: -5,
-                        left: -5
-                    },
-                    width = 960,
-                    height = 500;
+                    top: -5,
+                    right: -5,
+                    bottom: -5,
+                    left: -5
+                };
 
                 var force = d3.layout.force()
                     .nodes(d3.values(nodes))
@@ -231,6 +241,4 @@ function showVis() {
             });
         });
     });
- 
-
 }

@@ -2,9 +2,10 @@ var collection, repositories = [];
 
 var User, Fork, Repo, Follow;
 
-/**
- * Show the forks for a particular model.
- */
+/******************/
+/* USER INTERFACE */
+/******************/
+
 function showForks(repoModel) {
     fadeReposOutGradually(function() {
         removeAllRepoElements();
@@ -46,47 +47,6 @@ function showForks(repoModel) {
         });
     });
 }
-
-/**
- * Hit the Github API for the repositories for a particular user
- */
-function getReposForUserModel(userModel, callback) {
-    var path = '/users/' + userModel.login + '/repos';
-    collection.GET(path, function(err, repos) {
-        if (err) {
-            callback(err);
-        } else {
-            if (err) {
-                callback(err);
-            } else {
-                callback(null, repos);
-            }
-        }
-    });
-}
-
-function reposForUser(userModel) {
-    fadeReposOutGradually(function() {
-        removeAllRepoElements();
-        fadeSpinnerIn(function() {
-            getReposForUserModel(userModel, function(err, repos) {
-                if (err) {
-                    // TODO
-                } else {
-                    repositories = repos;
-                    console.log('repos!', repositories);
-                    createRepoElements();
-                    fadeSpinnerOutGradually(function() {
-                        fadeReposIn(function() {
-
-                        });
-                    });
-                }
-            });
-        });
-    });
-}
-
 
 function listFollowers(userModel) {
     var spinner = '<div class="fork-body">' +
@@ -170,7 +130,6 @@ function listFollowers(userModel) {
             });
         }
     });
-
 }
 
 function createRepoElement(repoModel) {
@@ -272,6 +231,22 @@ function fadeVisualisationOut(cb) {
     $('#visualisation').finish().fadeOut(300, cb);
 }
 
+function removeAllRepoElements() {
+    $('#content #repos .row').remove();
+}
+
+function createRepoElements() {
+    if (!repositories.length) {
+        $('#no-results').fadeIn(300);
+    }
+    _.each(repositories, createRepoElement);
+    fadeReposIn();
+}
+
+/**********/
+/* SIESTA */
+/**********/
+
 function configureCollection() {
     collection = new siesta.Collection('MyCollection');
     collection.baseURL = 'https://api.github.com';
@@ -352,6 +327,50 @@ function configureDescriptors() {
     });
 }
 
+function searchForRepo(query, cb) {
+    collection.GET('/search/repositories', {
+        data: {
+            q: query
+        }
+    }, cb);
+}
+
+function getReposForUserModel(userModel, callback) {
+    var path = '/users/' + userModel.login + '/repos';
+    collection.GET(path, function(err, repos) {
+        if (err) {
+            callback(err);
+        } else {
+            if (err) {
+                callback(err);
+            } else {
+                callback(null, repos);
+            }
+        }
+    });
+}
+
+function reposForUser(userModel) {
+    fadeReposOutGradually(function() {
+        removeAllRepoElements();
+        fadeSpinnerIn(function() {
+            getReposForUserModel(userModel, function(err, repos) {
+                if (err) {
+                    // TODO
+                } else {
+                    repositories = repos;
+                    console.log('repos!', repositories);
+                    createRepoElements();
+                    fadeSpinnerOutGradually(function() {
+                        fadeReposIn(function() {
+
+                        });
+                    });
+                }
+            });
+        });
+    });
+}
 
 function init(cb) {
     configureCollection();
@@ -363,17 +382,6 @@ function init(cb) {
     });
 }
 
-function removeAllRepoElements() {
-    $('#content #repos .row').remove();
-}
-
-function createRepoElements() {
-    if (!repositories.length) {
-        $('#no-results').fadeIn(300);
-    }
-    _.each(repositories, createRepoElement);
-    fadeReposIn();
-}
 
 function _query() {
     var text = $('#INPUT_1').val();
@@ -382,11 +390,7 @@ function _query() {
 
     function remoteQuery(err) {
         if (!err) {
-            collection.GET('/search/repositories', {
-                data: {
-                    q: text
-                }
-            }, function(err, repos) {
+            searchForRepo(text, function(err, repos) {
                 if (err) {
                     fadeSpinnerOutGradually(function() {
                         alert('TODO: Nicer errors: ' + err);
@@ -427,10 +431,6 @@ function queryKeyPress(e) {
         query();
     }
 }
-
-window.onload = function() {
-    fadeReposOutImmediately();
-};
 
 function backToRepos(cb) {
     $('#svg').remove();
@@ -504,6 +504,12 @@ function showStats() {
 
     _showStats();
 }
+window.onload = function() {
+    fadeReposOutImmediately();
+};
+
+
+
 
 function getSiesta(cb) {
     function _getSiesta() {
