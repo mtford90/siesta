@@ -6,9 +6,13 @@
             ".idea",
             "bower_components",
             "node_modules",
+            "_site",
+            "build"
+        ],
+        "file_exclude_patterns": [
             ".gitmodules",
             ".gitignore",
-            "_site"
+            "LICENSE"
         ]
     }]
 }
