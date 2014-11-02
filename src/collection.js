@@ -218,14 +218,16 @@ Collection.prototype.descriptor = function(opts) {
         if (unsafe.length) {
             var requestDescriptor = extend({}, opts);
             requestDescriptor.method = unsafe;
+            requestDescriptor = new siesta.ext.http.RequestDescriptor(requestDescriptor);
             siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-            descriptors.push(new siesta.ext.http.RequestDescriptor(requestDescriptor));
+            descriptors.push(requestDescriptor);
         }
         if (safe.length) {
             var responseDescriptor = extend({}, opts);
             responseDescriptor.method = safe;
-            descriptors.push(new siesta.ext.http.ResponseDescriptor(responseDescriptor));
+            responseDescriptor = new siesta.ext.http.ResponseDescriptor(responseDescriptor);
             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+            descriptors.push(responseDescriptor);
         }
     } else {
         throw new InternalSiestaError('HTTP module not installed');

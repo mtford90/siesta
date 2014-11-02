@@ -299,28 +299,28 @@ function configureMappings() {
 }
 
 function configureDescriptors() {
-    collection.responseDescriptor({
+    collection.descriptor({
         path: '/search/repositories',
         mapping: Repo,
         method: 'GET',
         data: 'items'
     });
-    collection.responseDescriptor({
+    collection.descriptor({
         path: '/repos/(.*)/(.*)/forks',
         mapping: Repo,
         method: 'GET'
     });
-    collection.responseDescriptor({
+    collection.descriptor({
         path: '/repos/(.*)/(.*)',
         mapping: Repo,
         method: 'GET'
     });
-    collection.responseDescriptor({
+    collection.descriptor({
         path: '/users/(.*)/repos',
         mapping: Repo,
         method: 'GET'
     });
-    collection.responseDescriptor({
+    collection.descriptor({
         path: '/users/(.*)/followers',
         mapping: User,
         method: 'GET'

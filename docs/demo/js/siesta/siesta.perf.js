@@ -1,3 +1,7 @@
+/**
+ * @module performance
+ */
+
 (function () {
     if (!siesta) {
         throw new Error('Could not find siesta');
