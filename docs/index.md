@@ -10,25 +10,19 @@ title: Fount
 </p>
 <hr/>
 
-The main idea behind Siesta is that models should have a **single source of truth** - that is - only one local object should
-ever represent a remote resource.
+The main idea behind Siesta is that models should have a **single source of truth** - that is - only one local object should ever represent a remote resource.
 
-A traditional ORM maps rows from a relational database to objects. Siesta maps objects to and from data transport formats
-(e.g. JSON) and replaces the SQL queries with HTTP requests.
+A traditional ORM maps rows from a relational database to objects. Siesta maps objects to and from data transport formats (e.g. JSON) and replaces the SQL queries with HTTP requests.
 
-Siesta provides a declarative API through which we describe the web services that we'd like to interact with.
-When data is received from these web services, each object is mapped onto its corresponding local
-representation *including* any nested related objects. 
+Siesta provides a declarative API through which we describe the web services that we'd like to interact with. When data is received from these web services, each object is mapped onto its corresponding local representation *including* any nested related objects. 
 
-Siesta then presents powerful ways in which to query and store local objects (thanks to <a href="http://pouchdb.com/">PouchDB</a>) in a 
-browser-agnostic fashion, reducing the number of requests we need to make against each web service.
+Siesta then presents methods with which to query local data.
 
 ###The Problem
 
 As ever, this problem is best explained through an example.
 
-Let's say we're interacting with a web service describing vehicles and their owners. We fire off a request
-to obtain Mike's user details:
+Let's say we're interacting with a web service describing vehicles and their owners. We fire off a request to obtain Mike's user details:
 
 ```javascript
 // GET /users/Mike/
@@ -55,9 +49,7 @@ var carData = {
 
 Notice that since our last query, Mike's Bentley has been painted red.
 
-Using traditional methods of interacting with web services we would now 
-have two Javascript objects representing our Bentley with id `11`. One is nested in the user object
-we received from our first request, and the second is the result of our second request:
+Using traditional methods of interacting with web services we would now have two Javascript objects representing our Bentley with id `11`. One is nested in the user object we received from our first request, and the second is the result of our second request:
 
 ```javascript
 userData.cars[0] === carData; // False
@@ -70,14 +62,11 @@ console.log(userData.cars[0].colour); // Black
 console.log(carData.colour); // Red
 ```
 
-So not only do we now have **two** distinct live objects representing the same remote resource, but one of those
-objects is now out of sync - we have two sources of truth, and one of those sources is a blatantly lying to us.
+So not only do we now have **two** distinct live objects representing the same remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is a blatantly lying to us.
 
 ###The Solution
 
-Siesta solves this issue through the use of object mapping. A **mapping**
-describes the remote object that we want to model. A **collection** groups together these mappings. For example 
-we could have define a collection to represent each web service that we will interact with.
+Siesta solves this issue through the use of object mapping. A **mapping** describes the remote object that we want to model. A **collection** groups together these mappings. For example we could have define a collection to represent each web service that we will interact with.
 
 ```javascript
 var collection = new Collection('MyCollection');
@@ -101,8 +90,7 @@ var Car = collection.mapping({
 });
 ```
 
-We can then map the raw data into Siesta, which will use the mappings we defined early to decide which
-data should to which local object. 
+We can then map the raw data into Siesta, which will use the mappings we defined early to decide which data should to which local object. 
 
 ```javascript
 User.map(userData, function (userObject) {
@@ -113,11 +101,8 @@ User.map(userData, function (userObject) {
 });
 ```
 
-**Note:** we will rarely need to map data ourselves. Siesta provides an API for sending and receiving
-HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more
-about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
+**Note:** we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
 
 ###What next?
 
-Visit our <a href="{{site.baseurl}}/docs.html">Getting Started</a> guide which will walk you through installing
-and configuring Siesta.</br>
+Visit our <a href="{{site.baseurl}}/docs.html">Getting Started</a> guide which will walk you through installing and configuring Siesta.</br>
