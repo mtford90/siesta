@@ -402,3 +402,7 @@ button.confirm:disabled, button.confirm:disabled:hover {
     cursor: pointer;
 }
 
+.introjs-helperNumberLayer {
+    display: none;
+}
+
