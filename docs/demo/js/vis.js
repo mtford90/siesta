@@ -198,7 +198,7 @@ function showVis() {
                     .attr('width', 20)
                     .attr('xlink:href', function(d) {
                         if (d.type == 'Repo') {
-                            return 'repo.svg'
+                            return 'img/repo.svg'
                         } else if (d.type == 'User') {
                             return d.url;
                         }

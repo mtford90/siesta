@@ -154,7 +154,7 @@ function createRepoElement(repoModel) {
     cloned.find('.user .username').text(repoModel.owner.login);
     cloned.find('h3.name').text(repoModel.name);
     cloned.find('.description').text(repoModel.description);
-    cloned.find('.watchers .num').text(repoModel.watchers_count || 0);
+    cloned.find('.watchers .num').text(repoModel.subscribers_count || 0);
     cloned.find('.stars .num').text(repoModel.stargazers_count || 0);
     cloned.find('.forks .num').text(repoModel.forks || 0);
     var $forks = cloned.find('.forks');
@@ -165,7 +165,7 @@ function createRepoElement(repoModel) {
         $(this).removeClass('hovered');
         $repo.addClass('hovered');
     });
-    var url = repoModel.owner.avatar_url;
+    var url = repoModel.owner.avatar_url; 
     cloned.find('img').attr('src', url);
     $repo.on('click', function() {
         var path = repoModel.html_url;
@@ -255,7 +255,7 @@ function configureCollection() {
 function configureMappings() {
     Repo = collection.mapping('Repo', {
         id: 'id',
-        attributes: ['name', 'full_name', 'description', 'html_url', 'watchers_count', 'stargazers_count', 'forks'],
+        attributes: ['name', 'full_name', 'description', 'html_url', 'subscribers_count', 'stargazers_count', 'forks'],
         relationships: {
             owner: {
                 mapping: 'User',
