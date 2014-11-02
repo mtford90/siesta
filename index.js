@@ -280,6 +280,28 @@ Object.defineProperty(siesta.serialisers, 'depth', {
     }
 });
 
+// * `siesta.map` is equivalent to [_.map](http://underscorejs.org/#map)
+// * `siesta.each` is equivalent to [_.each](http://underscorejs.org/#each)
+// * `siesta.partial` is equivalent to [_.partial](http://underscorejs.org/#partial)
+// * `siesta.bind` is equivalent to [_.bind](http://underscorejs.org/#bind)
+// * `siesta.pluck` is equivalent to [_.pluck](http://underscorejs.org/#pluck)
+// * `siesta.property` is equivalent to [_.property](http://underscorejs.org/#property)
+// * `siesta.sortBy` is equivalent to [_.sortBy](http://underscorejs.org/#sortBy)
+// * `siesta.parallel` is equivalent to [async.parallel](https://github.com/caolan/async#parallel)
+// * `siesta.series` is equivalent to [async.series](https://github.com/caolan/async#series)
+// * `siesta.q` is the entire [q promises library](https://github.com/kriskowal/q)
+
+siesta.map = util._.map;
+siesta.each = util._.each;
+siesta.partial = util._.partial;
+siesta.bind = util._.bind;
+siesta.pluck = util._.pluck;
+siesta.property = util._.pluck;
+siesta.sortBy = util._.sortBy;
+siesta.series = util.series;
+siesta.parallel = util.parallel;
+siesta.q = q;
+
 // Object.defineProperty(siesta, 'isDirty', {
 //     get: function() {
 //         return Collection.isDirty

@@ -1,10 +1,7 @@
-var collection, repositories = [];
-
-var User, Fork, Repo, Follow;
-
-/******************/
-/* USER INTERFACE */
-/******************/
+/**
+ * Demo UI code.
+ * Essentially acts as controller between Siesta & DOM.
+ */
 
 function showForks(repoModel) {
     fadeReposOutGradually(function() {
@@ -62,9 +59,8 @@ function listFollowers(userModel) {
         '</div>' +
         '</div>';
     sweetAlert(userModel.login, spinner);
-    $('.confirm').attr('disabled', true);
-    var path = '/users/' + userModel.login + '/followers';
-    collection.GET(path, function(err, users) {
+    $('.confirm').attr('disabled', true);  
+    getFollowers(userModel, function(err, users) {
         if (err) {
             // TODO                 
         } else {
@@ -97,7 +93,7 @@ function listFollowers(userModel) {
                                     elem.append($repoButton);
                                     $forks.find('#repos').append(elem);
                                     $repoButton.on('click', function() {
-                                        reposForUser(userModel);
+                                        showReposForUserModel(userModel);
                                         closeModal();
                                     });
                                     $('#forks').fadeIn(300, function() {
@@ -243,114 +239,7 @@ function createRepoElements() {
     fadeReposIn();
 }
 
-/**********/
-/* SIESTA */
-/**********/
-
-function configureCollection() {
-    collection = new siesta.Collection('MyCollection');
-    collection.baseURL = 'https://api.github.com';
-}
-
-function configureMappings() {
-    Repo = collection.mapping('Repo', {
-        id: 'id',
-        attributes: ['name', 'full_name', 'description', 'html_url', 'subscribers_count', 'stargazers_count', 'forks'],
-        relationships: {
-            owner: {
-                mapping: 'User',
-                type: 'OneToMany',
-                reverse: 'repositories'
-            }
-        }
-    });
-    Fork = collection.mapping('Fork', {
-        relationships: {
-            source: {
-                mapping: 'Repo',
-                type: 'OneToMany',
-                reverse: 'forked_to'
-            },
-            fork: {
-                mapping: 'Repo',
-                type: 'OneToOne',
-                reverse: 'forked_from'
-            }
-        }
-    });
-    Follow = collection.mapping('Follow', {
-        relationships: {
-            followed: {
-                mapping: 'User',
-                type: 'OneToMany',
-                reverse: 'followers'
-            },
-            follower: {
-                mapping: 'User',
-                type: 'OneToMany',
-                reverse: 'following'
-            }
-        }
-    });
-    User = collection.mapping('User', {
-        id: 'id',
-        attributes: ['login', 'avatar_url', 'html_url']
-    });
-}
-
-function configureDescriptors() {
-    collection.descriptor({
-        path: '/search/repositories',
-        mapping: Repo,
-        method: 'GET',
-        data: 'items'
-    });
-    collection.descriptor({
-        path: '/repos/(.*)/(.*)/forks',
-        mapping: Repo,
-        method: 'GET'
-    });
-    collection.descriptor({
-        path: '/repos/(.*)/(.*)',
-        mapping: Repo,
-        method: 'GET'
-    });
-    collection.descriptor({
-        path: '/users/(.*)/repos',
-        mapping: Repo,
-        method: 'GET'
-    });
-    collection.descriptor({
-        path: '/users/(.*)/followers',
-        mapping: User,
-        method: 'GET'
-    });
-}
-
-function searchForRepo(query, cb) {
-    collection.GET('/search/repositories', {
-        data: {
-            q: query
-        }
-    }, cb);
-}
-
-function getReposForUserModel(userModel, callback) {
-    var path = '/users/' + userModel.login + '/repos';
-    collection.GET(path, function(err, repos) {
-        if (err) {
-            callback(err);
-        } else {
-            if (err) {
-                callback(err);
-            } else {
-                callback(null, repos);
-            }
-        }
-    });
-}
-
-function reposForUser(userModel) {
+function showReposForUserModel(userModel) {
     fadeReposOutGradually(function() {
         removeAllRepoElements();
         fadeSpinnerIn(function() {
@@ -371,17 +260,6 @@ function reposForUser(userModel) {
         });
     });
 }
-
-function init(cb) {
-    configureCollection();
-    configureMappings();
-    configureDescriptors();
-    collection.install(function(err) {
-        console.log('User', User);
-        cb(err);
-    });
-}
-
 
 function _query() {
     var text = $('#INPUT_1').val();
@@ -483,7 +361,7 @@ function showStats() {
                 collection.User.count(cb);
             }
         ];
-        siesta._internal.util.parallel(tasks, function(err, res) {
+        siesta.parallel(tasks, function(err, res) {
             stats = stats.replace('$NUM_REPOS', res[0]);
             stats = stats.replace('$NUM_USERS', res[1]);
             sweetAlert('Statistics', stats);
@@ -504,27 +382,8 @@ function showStats() {
 
     _showStats();
 }
-window.onload = function() {
-    fadeReposOutImmediately();
-};
 
 
-
-
-function getSiesta(cb) {
-    function _getSiesta() {
-        collection.GET('/repos/mtford90/siesta', function(err, repo) {
-            if (cb) cb(err, repo);
-        });
-    }
-    if (!collection) {
-        init(function() {
-            _getSiesta(cb);
-        });
-    } else {
-        _getSiesta(cb);
-    }
-}
  
 /**
  * Add overlay layer to the page.
@@ -603,16 +462,3 @@ function startIntro() {
     });
 }
 
-$(document).ready(function() {
-    fadeReposOutImmediately();
-    addOverlayLayer(function(layer) {
-        getSiesta(function(err, siestaRepo) {
-            repositories = [siestaRepo];
-            createRepoElements();
-            fadeReposIn(function() {
-                startIntro();
-                $(layer).find('#spinner').remove();
-            });
-        });
-    });
-})

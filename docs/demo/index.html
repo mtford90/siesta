@@ -8,10 +8,12 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="vendor/sweetalert/lib/sweet-alert.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="vendor/intro/intro.js"></script></p>
     <script type="text/javascript" src="js/siesta/siesta.js"></script>
     <script type="text/javascript" src="js/siesta/siesta.http.js"></script>
     <script type="text/javascript" src="js/vis.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/data.js"></script>
+    <script type="text/javascript" src="js/ui.js"></script>
     <link rel="stylesheet" type="text/css" href="vendor/sweetalert/lib/sweet-alert.css">
     <link rel="stylesheet" type='text/css' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
     <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800'>
@@ -91,8 +93,21 @@
         <a class="button" id="visualise" onclick="visualisePressed(this)">Visualise</a>
     </div>
 </div>
-    <script type="text/javascript" src="vendor/intro/intro.js"></script></p>
-
+<script type="text/javascript">
+    var collection, repositories = [];
+    var User, Fork, Repo, Follow;
+    fadeReposOutImmediately();
+    addOverlayLayer(function(layer) {
+        getSiesta(function(err, siestaRepo) {
+            repositories = [siestaRepo];
+            createRepoElements();
+            fadeReposIn(function() {
+                startIntro();
+                $(layer).find('#spinner').remove();
+            });
+        });
+    });
+</script>
 </body>
 </html>
 
