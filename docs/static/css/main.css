@@ -3935,7 +3935,7 @@ Homepage
   margin-bottom: 0;
 }
 .homepage-hero .container {
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 .homepage-hero .text-center {
   font-family: 'Roboto Slab', "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -4589,6 +4589,19 @@ table tr td:last-child {
   margin-left: -20px;
   margin-right: -20px;
 }
+#daux-fork {
+  font-size: 10px;
+  font-weight: 300;
+  margin-top: 15px;
+}
+#daux-fork a {
+  color: #3f4657;
+  text-decoration: underline;
+}
+#daux-fork a:hover {
+  color: #6e7995;
+  text-decoration: none;
+}
 /* ===========================================================================================
 Markdown editor
 ============================================================================================== */
@@ -4667,7 +4680,7 @@ Code Highlighting
 .hljs-diff .hljs-header,
 .hljs-chunk,
 .hljs-markdown .hljs-blockquote {
-  color: #d8f0f4;
+  color: #738f8c;
 }
 .hljs-number,
 .hljs-date,
