@@ -47,11 +47,12 @@ describe('notifications', function() {
                             done(err);
                         } else {
                             car = _car;
+
                             function checkDone() {
-                                if (notif && 
-                                    genericNotif && 
+                                if (notif &&
+                                    genericNotif &&
                                     collectionNotif &&
-                                    localIdNotif && 
+                                    localIdNotif &&
                                     remoteIdNotif) {
                                     done();
                                 }
@@ -67,12 +68,12 @@ describe('notifications', function() {
                             s.once('Siesta', function(n) {
                                 genericNotif = n;
                                 checkDone();
-                            });  
-                            s.once(_car._id, function (n) {
+                            });
+                            s.once(_car._id, function(n) {
                                 localIdNotif = n;
                                 checkDone();
                             });
-                            s.once('myCollection:Car:xyz', function (n) {
+                            s.once('myCollection:Car:xyz', function(n) {
                                 remoteIdNotif = n;
                                 checkDone();
                             });
@@ -83,7 +84,7 @@ describe('notifications', function() {
 
             });
 
-            it('all notifs equal', function () {
+            it('all notifs equal', function() {
                 assert.equal(notif, genericNotif);
                 assert.equal(genericNotif, collectionNotif);
                 assert.equal(collectionNotif, localIdNotif);
@@ -151,6 +152,7 @@ describe('notifications', function() {
                     s.once(_car._id, listener);
                     s.once('myCollection:Car:xyz', listener);
                     car.colours.push('green');
+                    s.notify();
                 });
             });
 
@@ -168,7 +170,7 @@ describe('notifications', function() {
                             done();
                         });
                         car.colours.push('green');
-
+                        s.notify();
                     });
                 });
 
@@ -208,6 +210,7 @@ describe('notifications', function() {
                             done();
                         });
                         car.colours.pop();
+                        s.notify();
                     });
                 });
 
@@ -247,6 +250,7 @@ describe('notifications', function() {
                             done();
                         });
                         car.colours.shift();
+                        s.notify();
                     });
                 });
 
@@ -289,6 +293,7 @@ describe('notifications', function() {
                             done();
                         });
                         car.colours.unshift('green');
+                        s.notify();
                     });
 
                 });
@@ -336,7 +341,7 @@ describe('notifications', function() {
                         };
                         s.on('myCollection:Car', listener);
                         car.colours.sort();
-
+                        s.notify();
                     });
                 });
 
