@@ -226,8 +226,9 @@ function showVis() {
                     .attr('width', 20)
                     .attr('xlink:href', function(d) {
                         if (d.type == 'Repo') {
-                            return 'img/repo.svg'
+                            return 'http://i.imgur.com/6IeJjA8.png';
                         } else if (d.type == 'User') {
+                            console.log('url', d.url);
                             return d.url;
                         }
                     })
