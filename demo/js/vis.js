@@ -15,18 +15,46 @@ function getRepos(cb) {
     });
 }
 
+/**
+ * Reduce follows down into individual objects so can be represented in a graph.
+ * @param  {Function} cb callback
+ */
 function getFollows(cb) {
-    Follow.all(function(err, follows) {
+    getUsers(function(err, users) {
+        var follows;
+        if (!err) {
+            follows = _.reduce(users, function(memo, u) {
+                _.each(u.followers, function(f) {
+                    memo.push({
+                        followed: u,
+                        follower: f
+                    });
+                });
+                return memo;
+            }, []);
+        }
         cb(err, follows);
     });
 }
 
 function getForks(cb) {
-    Fork.all(function(err, forks) {
+    getRepos(function(err, repoModels) {
+        var forks;
+        if (!err) {
+            forks = _.reduce(repoModels, function(memo, r) {
+                _.each(r.forked_to, function(f) {
+                    memo.push({
+                        source: r,
+                        fork: f
+                    });
+                });
+                return memo;
+            }, []);
+        }
+        console.log('forks', forks);
         cb(err, forks);
     });
 }
-
 
 function showVis() {
     getRepos(function(err, repoModels) {
@@ -198,14 +226,15 @@ function showVis() {
                     .attr('width', 20)
                     .attr('xlink:href', function(d) {
                         if (d.type == 'Repo') {
-                            return 'img/repo.svg'
+                            return 'http://i.imgur.com/6IeJjA8.png';
                         } else if (d.type == 'User') {
+                            console.log('url', d.url);
                             return d.url;
                         }
                     })
                     .on('click', function() {
                         console.log('clicked!');
-                    })
+                    });
                     .call(drag);
 
                 var text = container.append("g").selectAll("text")
