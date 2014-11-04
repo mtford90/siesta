@@ -30,14 +30,51 @@ The below lists ongoing and suggested features. Ideas and contributions are most
 
 # Contributing
 
-## Setup
+Note that if you intend to make a pull request you should fork and clone your own repo.
 
-TODO 
+```bash
+# git clone https://github.com/<username>/siesta.git if you're cloning your own repo.
+git clone https://github.com/mtford90/siesta.git 
+cd siesta
+npm install 
+bower install 
+# Siesta depends on forks of some Javascript projects, and the gh-pages branch is also a submodule.
+git pull && git submodule init && git submodule update && git submodule status
+```
+
+To make sure that all is well, run the tests:
+
+```bash
+grunt test
+```
+
+We can automatically run tests when changes are detected by running the following commands:
+
+```bash
+# Watch for changes to everything, including the website and docs.
+grunt watch
+# Watch, but do not run the tests initially (will run on the next change)
+grunt watch-no-test
+# Do not watch for changes to the documentation/website, and do not serve a local server 
+grunt watch-no-jekyll 
+```
 
 ## Website/Documentation
 
-TODO
+```bash
+# Watches for changes to the documentation/website and also serves the site at localhost:4000
+grunt watch
+# Build the documentation/website for use locally.
+grunt build-jekyll
+# Build the documentation/website for use on gh-pages, commit and push the website (will be in production)
+grunt compile-jekyll 
+```
 
-## Release
+We can build and compile siesta using:
 
-TODO
+```bash
+# Generate build/siesta.js, build/siesta.http.js... etc
+grunt build
+# Generate build/siesta.*.js as well as build/siesta.*.min.js and build/siesta.*.min.js.gz
+grunt compile
+```
