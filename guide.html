@@ -82,18 +82,14 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    <h1>Guide</h1>
-
-<p>This guide covers all of Siesta&#39;s features and uses the GitHub API to illustrate usage.</p>
-
-<ul>
-<li><a href="#collection">Create a collection</a></li>
+    <ul>
 <li><a href="#">Configure mappings</a></li>
 <li><a href="#">Configure descriptors</a></li>
 <li><a href="#http">Send HTTP requests</a></li>
 <li><a href="#">Mapping data without HTTP requests</a></li>
 <li><a href="#">Listen to change notifications</a></li>
 <li><a href="#">Query for local data</a></li>
+<li><a href="#">Logging</a></li>
 <li><a href="#">Utils</a></li>
 </ul>
 
@@ -143,6 +139,7 @@
             <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;repositories&#39;</span> 
         <span class="p">},</span>
         <span class="nx">forkedFrom</span><span class="o">:</span> <span class="p">{</span>
+            <span class="c1">// Note that it&#39;s completely possible to add recursive relationships!</span>
             <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Repo&#39;</span><span class="p">,</span>
             <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;OneToMany&#39;</span><span class="p">,</span>
             <span class="c1">// A &#39;forks&#39; property will be added to all Repo instances.</span>
@@ -525,6 +522,46 @@
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">name</span><span class="p">);</span>
     <span class="p">});</span>
 <span class="p">});</span>
+</code></pre></div>
+<h2>Logging</h2>
+
+<p><code>siesta.setLogLevel(loggerName, logLevel)</code> is used for configuring logging in Siesta.</p>
+
+<p>Logging for various Siesta subsystems can be configured using the following log levels:</p>
+
+<ul>
+<li><code>siesta.LogLevel.trace</code></li>
+<li><code>siesta.LogLevel.debug</code></li>
+<li><code>siesta.LogLevel.info</code></li>
+<li><code>siesta.LogLevel.warn</code></li>
+<li><code>siesta.LogLevel.error</code></li>
+<li><code>siesta.LogLevel.fatal</code></li>
+</ul>
+
+<p>The various loggers are listed below:</p>
+
+<ul>
+<li><code>Descriptor</code>: Logger used by HTTP request/response descriptors.</li>
+<li><code>RequestDescriptor</code>: Logger used by request descriptors specifically.</li>
+<li><code>ResponseDescriptor</code>: Logger used by response descriptors specifically.</li>
+<li><code>DescriptorRegistry</code>: All descriptors are registered in the DescriptorRegistry.</li>
+<li><code>HTTP</code>: Logger used by HTTP requests/responses.</li>
+<li><code>LocalCache</code>: Objects are cached by local id (_id) or their remote id. This logger is used by the local object cache.</li>
+<li><code>RemoteCache</code>:  Objects are cached by local id (_id) or their remote id. This logger is used by the remote object cache.</li>
+<li><code>changes</code>: The logger used by change notifications.</li>
+<li><code>Collection</code>: The logger used by the Collection class, which is used to describe a set of mappings.</li>
+<li><code>Mapping</code>: The logger used by the Mapping class.</li>
+<li><code>MappingOperation</code>: The logger used during mapping operations, i.e. mapping data onto the object graph.</li>
+<li><code>SiestaModel</code>: The logger used by the SiestaModel class, which makes up the individual nodes of the object graph.</li>
+<li><code>Performance</code>: The logger used by the performance monitoring extension (siesta.perf.js)</li>
+<li><code>Query</code>: The logger used during local queries against the object graph.</li>
+<li><code>Store</code>: </li>
+<li><code>Operation</code>: Much logic in Siesta is tied up in &#39;Operations&#39;.</li>
+<li><code>OperationQueue</code>: Siesta makes use of queues of operations for managing concurrency and concurrent operation limits.</li>
+</ul>
+
+<p>For example:</p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">setLogLevel</span><span class="p">(</span><span class="s1">&#39;HTTP&#39;</span><span class="p">,</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">logLevel</span><span class="p">.</span><span class="nx">trace</span><span class="p">);</span>
 </code></pre></div>
 <h2>Utils</h2>
 

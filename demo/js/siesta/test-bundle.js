@@ -16980,7 +16980,7 @@ describe('perform mapping', function() {
 
     var SiestaModel = require('../../src/object').SiestaModel;
     var cache = require('../../src/cache');
-    var Operation = require('../../vendor/operations.js/src/operation').Operation;
+    var Operation = require('./operation/operation').Operation;
 
     var collection, carMapping, personMapping;
 
@@ -18813,7 +18813,7 @@ describe('perform mapping', function() {
 
     });
 });
-},{"../../index":1,"../../src/cache":43,"../../src/collection":45,"../../src/object":53,"../../src/relationship":58,"../../vendor/operations.js/src/operation":108,"chai":9}],70:[function(require,module,exports){
+},{"../../index":1,"../../src/cache":43,"../../src/collection":45,"../../src/object":53,"../../src/relationship":58,"./operation/operation":108,"chai":9}],70:[function(require,module,exports){
 var s = require('../../index')
     , assert = require('chai').assert;
 
@@ -24771,7 +24771,7 @@ describe('statistics', function() {
 
 //     var SiestaModel = require('../../src/object').SiestaModel;
 //     var cache = require('../../src/cache');
-//     var Operation = require('../../vendor/operations.js/src/operation').Operation;
+//     var Operation = require('./operation/operation').Operation;
 
 //     var collection, carMapping, personMapping;
 
