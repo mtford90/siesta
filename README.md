@@ -24,8 +24,8 @@ The below lists ongoing and suggested features. Ideas and contributions are most
 ## 0.3
 * Persistence
     * Indexeddb
-    * WebSQL
-    * Possibly PouchDB
+    * WebSQL (Probably via Indexeddb shim, as w3 has discontinued this)
+    * Possibly PouchDB (The sync-to-couchdb features are pretty awesome)
 
 ## Later/Possible
 * Attribute verification
