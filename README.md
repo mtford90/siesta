@@ -20,11 +20,12 @@ The below lists ongoing and suggested features. Ideas and contributions are most
 * More powerful queries
 	* Contains
 	* OR/AND
+* Convert visualiser in the demo into an actual tool that can be used with any Siesta project.
 
 ## 0.3
 * Persistence
     * Indexeddb
-    * WebSQL (Probably via Indexeddb shim, as w3 has discontinued this)
+    * WebSQL (Probably via Indexeddb shim, as w3 has discontinued websql however required for backwards compat with safari/safari iOS etc)
     * Possibly PouchDB (The sync-to-couchdb features are pretty awesome)
 
 ## Later/Possible

@@ -6,7 +6,7 @@ sidebar: nav2.html
 
 ## {{page.title}}
 
-This guide will get you up and running quickly with minimal effort.
+This guide will get you up and running with Siesta with minimal effort.
 
 ### Step 1: Installation
 
@@ -28,15 +28,13 @@ If you prefer to pick and choose the components that you want to use, head to th
 A `Collection` describes a set of models and optionally a REST API containing the resources the collection will represent.
 
 ```javascript
-var collection = new Collection('MyCollection');
+var collection = new siesta.Collection('MyCollection');
 collection.baseURL = 'http://api.mysite.com';
 ```
 
 ### Step 3: Configure object mappings
 
-The mapping is the Siesta equivalent to models in traditional database ORMs. It describes 
-how attributes and relationships in resources are mapped onto Javascript objects.
-
+The mapping is the Siesta equivalent to models in traditional database ORMs. It describes how attributes and relationships in resources are mapped onto Javascript objects.
 
 A simple mapping will only declare attributes:
 
@@ -46,62 +44,54 @@ collection.mapping('Person', {
 });
 ```
 
-A more complex mapping:
+A more complex mapping will define relationships with others:
 
 ```javascript
 collection.mapping('Car', {
     // The field that uniquely identifies a Car object.
     id: 'id',
+    // Attributes represent simple data types such as strings and integers.
+    attributes: ['model', 'colour', 'licensePlate'],
     // Relationships with other remote objects. 
     // In this case a Car has an owner, and a Person can own many cars.
     relationships: {
         owner: {
             mapping: 'Person',
-            type: 'ForeignKey',
+            type: 'OneToMany',
             reverse: 'cars' 
         }
-    },
-    // Attributes represent simple data types such as strings and integers.
-    attributes: ['model', 'colour', 'licensePlate'],
-    // If our application will be querying a field, we can create a (PouchDB) index to speed things up.
-    // Note that this is only useful if using the Siesta storage module.
-    indexes: ['colour']
+    }
 });
 ```
 
 ### Step 4: Configure request/response descriptors
 
-Descriptors are a component within the HTTP module and are used to *describe* web services with which
-we want to interact. When a HTTP request is sent, the descriptors are used to automatically map data
-to and from the correct mappings.
+Descriptors are a component within the HTTP module and are used to *describe* web services with which we want to interact. When a HTTP request is sent, the descriptors are used to automatically map data to and from the correct mappings as well determining how to serialise outgoing objects.
 
 ```javascript
-collection.requestDescriptor({
+collection.descriptor({
     path: 'cars/',
     method: 'POST',
     mapping: 'Car'
 });
 ```
 
-A more complex request descriptor could include attributes in the path which can be a regular expression with named
-groups. The values of these matches will be mapped onto the object that is sent/received.
+A more complex descriptor could include attributes in the path which can be a regular expression with named groups. The values of these matches will be mapped onto the object that is sent/received.
 
 ```javascript
-collection.requestDescriptor({
+collection.descriptor({
     path: 'cars/(?P<id>)/'
-    method: 'PUT',
+    method: ['PUT', 'PATCH'],
     mapping: 'Car',
     data: 'data' // Serialise to {data: {...}} when sending the request.
 });
 ```
 
-Response descriptors are almost identical, however will be used in HTTP responses rather than requests
-
 ```javascript
-collection.responseDescriptor({
+collection.descriptor({
     path: 'cars/(.*)/',
     // Accept any HTTP method
-    method: '*', 
+    method: 'GET', 
     mapping: 'Car',
     // Deserialise from data field in JSON response when receiving.
     data: 'data' 
@@ -110,8 +100,7 @@ collection.responseDescriptor({
 
 ### Step 5: Install the collection
 
-Before we can use our collection we need to install it. If the storage module is in use
-then this ensures that indexes are installed and the database is setup among other things.
+Before we can use our collection we need to install it. This will configure the descriptors and mappings, hooking up any relationships and will return an error if anything is incorrect with the declarations.
 
 ```javascript
 collection.install(function (err) {
@@ -126,52 +115,46 @@ collection.install(function (err) {
 
 ### Step 5: Obtain some remote data
 
-The response descriptors declared earlier will be used to determine how to map the response bodies onto objects
-that we have locally.
+The descriptors declared earlier will be used to determine how to map the response bodies onto objects that we have locally.
 
 ```javascript
-collection.GET('cars/', function (err, cars) {
+collection.GET('cars/').then(function (cars) {
     console.log('I got me some cars!', cars);
 });
 
-collection.GET('cars/5', function (err, car) {
+collection.GET('cars/5').then(function (car) {
     console.log('I got me a car!', car);
 });
 ```
 
 ### Step 6: Create some remote data
 
-The request descriptors declared above will be used to determine how to serialise our models when sending them to 
-the server.
+The descriptors declared above will also be used to determine how to serialise our models when sending them to the server.
 
 ```javascript
-var person = new collection.Person({name: 'Michael'});
-
-collection.POST('people/', person, function (err) {
-    // Done.
+Person.map({name: 'Bob'}).then(function (person){
+    collection.POST('people/', person, function (err) {
+        // Done.
+    });
 });
-
-// ... which is equivalent to
-
-person.POST('people/', function (err) {
-
-});
-
 ```
 
 ### Step 7: Query local data
 
-We can query for objects that have been mapped and held locally (either in-memory or persisted) by using the local
-query API.
+We can query for objects that have been mapped and held locally (either in-memory or persisted) by using the local query API.
 
-```javascript
+```js
 
-collection.Car.all(function (err, allCars) {
-    // ... all cars.
+collection.Car.all().then(function (allCars) {
+    // ...
 });
 
-collection.Car.query({colour: 'Red'}, function (err, redCars) {
-    // This query will be faster if we specify that colour should be indexed when creating the mappings.
+collection.Car.query({colour: 'Red'}).then(function (redCars) {
+    // ...
+});
+
+collection.Person.query({age__lt: 30}).then(function (peopleUnderThirty) {
+    // ...
 });
 
 ```

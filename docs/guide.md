@@ -4,17 +4,13 @@ title: Guide
 sidebar: nav2.html
 ---
 
-# Guide
-
-This guide covers all of Siesta's features and uses the GitHub API to illustrate usage.
-
-* [Create a collection](#collection)
 * [Configure mappings](#)
 * [Configure descriptors](#)
 * [Send HTTP requests](#http)
 * [Mapping data without HTTP requests](#)
 * [Listen to change notifications](#)
 * [Query for local data](#)
+* [Logging](#)
 * [Utils](#)
 
 <a id="collection"></a>
@@ -75,6 +71,7 @@ var Repo = GitHub.mapping({
 			reverse: 'repositories' 
 		},
 		forkedFrom: {
+			// Note that it's completely possible to add recursive relationships!
 			mapping: 'Repo',
 			type: 'OneToMany',
 			// A 'forks' property will be added to all Repo instances.
@@ -541,6 +538,45 @@ User.query({login__contains: 'abc'}, function (err, users) {
 		console.log(u.name);
 	});
 });
+```
+
+## Logging
+
+`siesta.setLogLevel(loggerName, logLevel)` is used for configuring logging in Siesta.
+
+Logging for various Siesta subsystems can be configured using the following log levels:
+
+* `siesta.LogLevel.trace`
+* `siesta.LogLevel.debug`
+* `siesta.LogLevel.info`
+* `siesta.LogLevel.warn`
+* `siesta.LogLevel.error`
+* `siesta.LogLevel.fatal`
+
+The various loggers are listed below:
+
+* `Descriptor`: Logger used by HTTP request/response descriptors.
+* `RequestDescriptor`: Logger used by request descriptors specifically.
+* `ResponseDescriptor`: Logger used by response descriptors specifically.
+* `DescriptorRegistry`: All descriptors are registered in the DescriptorRegistry.
+* `HTTP`: Logger used by HTTP requests/responses.
+* `LocalCache`: Objects are cached by local id (_id) or their remote id. This logger is used by the local object cache.
+* `RemoteCache`:  Objects are cached by local id (_id) or their remote id. This logger is used by the remote object cache.
+* `changes`: The logger used by change notifications.
+* `Collection`: The logger used by the Collection class, which is used to describe a set of mappings.
+* `Mapping`: The logger used by the Mapping class.
+* `MappingOperation`: The logger used during mapping operations, i.e. mapping data onto the object graph.
+* `SiestaModel`: The logger used by the SiestaModel class, which makes up the individual nodes of the object graph.
+* `Performance`: The logger used by the performance monitoring extension (siesta.perf.js)
+* `Query`: The logger used during local queries against the object graph.
+* `Store`: 
+* `Operation`: Much logic in Siesta is tied up in 'Operations'.
+* `OperationQueue`: Siesta makes use of queues of operations for managing concurrency and concurrent operation limits.
+
+For example:
+
+```js
+siesta.setLogLevel('HTTP', siesta.logLevel.trace);
 ```
 
 ## Utils

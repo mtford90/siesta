@@ -13,9 +13,6 @@ var cache = require('../src/cache');
 var collection;
 var Repo, User;
 
-
-
-
 assert.arrEqual = function(arr1, arr2) {
     if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
     if (!util.isArray(arr2)) throw new chai.AssertionError(arr2.toString() + ' is not an array');
