@@ -12,6 +12,7 @@ module.exports = function (karma) {
             'node_modules/es5-shim/es5-shim.min.js', // Otherwise PouchDB doesn't work.
             'node_modules/q/q.js', // For mocking $q
             'node_modules/jquery/dist/jquery.js',
+            'node_modules/underscore/underscore.js',
             <% scripts.forEach( function ( file ) { %>'<%= file %>',
                 <% }); %>
             'build/test-bundle.js',

@@ -11,7 +11,7 @@ describe('mapping new object', function () {
     var RelationshipType = require('../../src/relationship').RelationshipType;
     var OneToManyProxy = require('../../src/oneToManyProxy').OneToManyProxy;
     var cache = require('../../src/cache');
-    
+
 
     beforeEach(function () {
         s.reset(true);
