@@ -64,9 +64,23 @@ collection.mapping('Car', {
 });
 ```
 
-### Step 4: Configure request/response descriptors
+### Step 4: Configure descriptors
 
-Descriptors are a component within the HTTP module and are used to *describe* web services with which we want to interact. When a HTTP request is sent, the descriptors are used to automatically map data to and from the correct mappings as well determining how to serialise outgoing objects.
+Descriptors are used to *describe* web services with which we want to interact. When a HTTP request is sent or a HTTP response is received, descriptors are used to map data to the object graph in the case of HTTP responses and to serialise data into JSON in the case of HTTP requests.
+
+An example response descriptor:
+
+```javascript
+collection.descriptor({
+    path: 'cars/(.*)/',
+    method: 'GET', 
+    mapping: 'Car',
+    // Deserialise from data field in JSON response when receiving.
+    data: 'data' 
+});
+```
+
+An example request descriptor:
 
 ```javascript
 collection.descriptor({
@@ -87,18 +101,7 @@ collection.descriptor({
 });
 ```
 
-```javascript
-collection.descriptor({
-    path: 'cars/(.*)/',
-    // Accept any HTTP method
-    method: 'GET', 
-    mapping: 'Car',
-    // Deserialise from data field in JSON response when receiving.
-    data: 'data' 
-});
-```
-
-### Step 5: Install the collection
+### Step 6: Install the collection
 
 Before we can use our collection we need to install it. This will configure the descriptors and mappings, hooking up any relationships and will return an error if anything is incorrect with the declarations.
 
@@ -113,7 +116,7 @@ collection.install(function (err) {
 });
 ```
 
-### Step 5: Obtain some remote data
+### Step 7: Obtain some remote data
 
 The descriptors declared earlier will be used to determine how to map the response bodies onto objects that we have locally.
 
@@ -127,7 +130,7 @@ collection.GET('cars/5').then(function (car) {
 });
 ```
 
-### Step 6: Create some remote data
+### Step 8: Create some remote data
 
 The descriptors declared above will also be used to determine how to serialise our models when sending them to the server.
 
@@ -139,12 +142,11 @@ Person.map({name: 'Bob'}).then(function (person){
 });
 ```
 
-### Step 7: Query local data
+### Step 9: Query local data
 
 We can query for objects that have been mapped and held locally (either in-memory or persisted) by using the local query API.
 
 ```js
-
 collection.Car.all().then(function (allCars) {
     // ...
 });
@@ -156,5 +158,4 @@ collection.Car.query({colour: 'Red'}).then(function (redCars) {
 collection.Person.query({age__lt: 30}).then(function (peopleUnderThirty) {
     // ...
 });
-
 ```
