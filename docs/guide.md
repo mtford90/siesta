@@ -4,14 +4,17 @@ title: Guide
 sidebar: nav2.html
 ---
 
-* [Configure mappings](#)
-* [Configure descriptors](#)
-* [Send HTTP requests](#http)
-* [Mapping data without HTTP requests](#)
-* [Listen to change notifications](#)
-* [Query for local data](#)
-* [Logging](#)
-* [Utils](#)
+# API Guide
+
+* [Collection](#collection)
+* [Mappings](#mappings)
+* [Descriptors](#descriptors)
+* [HTTP](#http)
+* [Mapping data without HTTP requests](#mappingData)
+* [Listen to change notifications](#changeNotifications)
+* [Query for local data](#queries)
+* [Logging](#logging)
+* [Utils](#utils)
 
 <a id="collection"></a>
 ## Create a collection
@@ -141,7 +144,7 @@ siesta.series([
 ```
 
 <a id="descriptors"></a>
-## Configure descriptors
+## Descriptors
 
 `Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Mapping.prototype.map` which is also available for mapping arbritrary data onto the graph outside of HTTP.
 
@@ -278,7 +281,7 @@ GitHub.descriptor({
 ```
 
 <a id="http"></a>
-## Send HTTP requests
+## HTTP
 
 `Collection.prototype.<SAFE_HTTP_METHOD>(path, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
@@ -490,7 +493,7 @@ siesta.notify().then(function () {
 In browsers that implement `Object.observe`, `siesta.notify()` simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.
 
 <a id="queries"></a>
-### Query for local data
+### Local Queries
 
 `Mapping.prototype.all(callback)` will return all models mapped by a particular mapping.
 
@@ -540,6 +543,7 @@ User.query({login__contains: 'abc'}, function (err, users) {
 });
 ```
 
+<a id="logging"></a>
 ## Logging
 
 `siesta.setLogLevel(loggerName, logLevel)` is used for configuring logging in Siesta.
@@ -578,7 +582,7 @@ For example:
 ```js
 siesta.setLogLevel('HTTP', siesta.logLevel.trace);
 ```
-
+<a id="utils"></a>
 ## Utils
 
 Siesta makes available various utilities from underscore, asyncjs and q used throughout the library itself. These are often useful for Siesta users and hence are exposed via the `siesta` object. Note that if you require the full underscore or asyncjs libraries you will need to include these yourself.
