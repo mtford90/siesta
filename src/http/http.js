@@ -19,6 +19,7 @@ var _i = siesta._internal,
 
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
+
 var Logger = log.loggerWithName('HTTP');
 Logger.setLevel(log.Level.warn);
 
@@ -109,7 +110,7 @@ function _httpResponse(method, path) {
     };
     if (Logger.trace.isEnabled)
         Logger.trace('Ajax request:', opts);
-    $.ajax(opts);
+    siesta.ext.http.ajax(opts);
 };
 
 function _serialiseObject(opts, obj, cb) {
@@ -339,12 +340,13 @@ function PATCH(collection) {
     return _.partial(HTTP_METHOD, collection, true, 'PATCH').apply(this, args);
 }
 
-var ajax;
 
 if (!siesta.ext) {
     siesta.ext = {};
 }
 
+
+var ajax;
 
 
 siesta.ext.http = {
