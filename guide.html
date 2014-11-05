@@ -50,23 +50,10 @@
 <ul class="nav nav-list">
     <li><a href="/siesta/docs.html">Getting Started</a></li>
     <li><a href="/siesta/concepts.html">Concepts</a></li>
-    <li><a href="/siesta/guide.html">Guide</a>
-        <!-- <a href="/siesta/guide.html" class="aj-nav folder">Guide</a> -->
-<!--         <ul class="nav nav-list">
-            <li><a href="/siesta/object_mapping.html">Mapping</a></li>
-            <li><a href="/siesta/http.html">HTTP</a></li>
-            <li><a href="/siesta/local_queries.html">Local Queries</a></li>
-            <li><a href="/siesta/notifications.html">Notifications</a></li>
-            <li><a href="/siesta/persistence.html">Persistence</a></li>
-        </ul> -->
-    </li>
-<!--     <li>
-        <a href="/siesta/api.html" class="aj-nav folder">API</a>
-    </li> -->
+    <li><a href="/siesta/guide.html">Guide</a></li>
     <li><a href="/siesta">Recipes</a></li>
 </ul>
 <div class="well well-sidebar">
-    <!-- Links -->
     <a href="/siesta/download.html" target="_blank">Download</a><br><a
         href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a><br><a
         href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a><br>
@@ -82,15 +69,18 @@
 <div class="right-column float-view content-area col-sm-9">
 <div class="content-page">
 <article>
-    <ul>
-<li><a href="#">Configure mappings</a></li>
-<li><a href="#">Configure descriptors</a></li>
-<li><a href="#http">Send HTTP requests</a></li>
-<li><a href="#">Mapping data without HTTP requests</a></li>
-<li><a href="#">Listen to change notifications</a></li>
-<li><a href="#">Query for local data</a></li>
-<li><a href="#">Logging</a></li>
-<li><a href="#">Utils</a></li>
+    <h1>API Guide</h1>
+
+<ul>
+<li><a href="#collection">Collection</a></li>
+<li><a href="#mappings">Mappings</a></li>
+<li><a href="#descriptors">Descriptors</a></li>
+<li><a href="#http">HTTP</a></li>
+<li><a href="#mappingData">Mapping data without HTTP requests</a></li>
+<li><a href="#changeNotifications">Listen to change notifications</a></li>
+<li><a href="#queries">Query for local data</a></li>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#utils">Utils</a></li>
 </ul>
 
 <p><a id="collection"></a></p>
@@ -200,7 +190,7 @@
 </code></pre></div>
 <p><a id="descriptors"></a></p>
 
-<h2>Configure descriptors</h2>
+<h2>Descriptors</h2>
 
 <p><code>Collection.prototype.descriptor(opts)</code> registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of <code>Mapping.prototype.map</code> which is also available for mapping arbritrary data onto the graph outside of HTTP.</p>
 
@@ -308,7 +298,7 @@
 </code></pre></div>
 <p><a id="http"></a></p>
 
-<h2>Send HTTP requests</h2>
+<h2>HTTP</h2>
 
 <p><code>Collection.prototype.&lt;SAFE_HTTP_METHOD&gt;(path, ajaxOptsOrCallback, callbackIfOpts)</code> sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;/users/mtford90/repos&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
@@ -488,7 +478,7 @@
 
 <p><a id="queries"></a></p>
 
-<h3>Query for local data</h3>
+<h3>Local Queries</h3>
 
 <p><code>Mapping.prototype.all(callback)</code> will return all models mapped by a particular mapping.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">User</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">users</span><span class="p">)</span> <span class="p">{</span>
@@ -523,6 +513,8 @@
     <span class="p">});</span>
 <span class="p">});</span>
 </code></pre></div>
+<p><a id="logging"></a></p>
+
 <h2>Logging</h2>
 
 <p><code>siesta.setLogLevel(loggerName, logLevel)</code> is used for configuring logging in Siesta.</p>
@@ -563,6 +555,8 @@
 <p>For example:</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">setLogLevel</span><span class="p">(</span><span class="s1">&#39;HTTP&#39;</span><span class="p">,</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">logLevel</span><span class="p">.</span><span class="nx">trace</span><span class="p">);</span>
 </code></pre></div>
+<p><a id="utils"></a></p>
+
 <h2>Utils</h2>
 
 <p>Siesta makes available various utilities from underscore, asyncjs and q used throughout the library itself. These are often useful for Siesta users and hence are exposed via the <code>siesta</code> object. Note that if you require the full underscore or asyncjs libraries you will need to include these yourself.</p>
