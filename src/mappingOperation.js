@@ -4,8 +4,8 @@
 
 var Store = require('./store');
 var SiestaModel = require('./object').SiestaModel;
-var log = require('../vendor/operations.js/src/log');
-var Operation = require('../vendor/operations.js/src/operation').Operation;
+var log = require('./operation/log');
+var Operation = require('./operation/operation').Operation;
 var InternalSiestaError = require('../src/error').InternalSiestaError;
 var Query = require('./query').Query;
 

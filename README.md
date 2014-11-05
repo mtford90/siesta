@@ -70,6 +70,8 @@ grunt build-jekyll
 grunt compile-jekyll 
 ```
 
+## Build/Compilation
+
 We can build and compile siesta using:
 
 ```bash

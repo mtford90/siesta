@@ -9,7 +9,7 @@ describe('perform mapping', function() {
 
     var SiestaModel = require('../../src/object').SiestaModel;
     var cache = require('../../src/cache');
-    var Operation = require('../../vendor/operations.js/src/operation').Operation;
+    var Operation = require('../../src/operation/operation').Operation;
 
     var collection, carMapping, personMapping;
 

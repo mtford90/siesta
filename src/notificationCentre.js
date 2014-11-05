@@ -4,7 +4,7 @@ notificationCentre.setMaxListeners(100);
 var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 var coreChanges = require('./changes');
 var ChangeType = coreChanges.ChangeType;
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 
 /**
 * Wraps the methods of a javascript array object so that notifications are sent

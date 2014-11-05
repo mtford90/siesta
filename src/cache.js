@@ -3,7 +3,7 @@
  * Lookups are performed against the cache when mapping.
  * @module cache
  */
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var LocalCacheLogger = log.loggerWithName('LocalCache');
 LocalCacheLogger.setLevel(log.Level.warn);
 var RemoteCacheLogger = log.loggerWithName('RemoteCache');

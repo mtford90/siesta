@@ -2,12 +2,12 @@
  * @module collection
  */
 
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var Logger = log.loggerWithName('Collection');
 Logger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var Operation = require('../vendor/operations.js/src/operation').Operation;
+var Operation = require('./operation/operation').Operation;
 var InternalSiestaError = require('./error').InternalSiestaError;
 var Mapping = require('./mapping').Mapping;
 var extend = require('extend');

@@ -2,7 +2,7 @@
  * @module query
  */
 
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var cache = require('./cache');
 var Logger = log.loggerWithName('Query');
 var q = require('q');

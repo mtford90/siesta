@@ -9,7 +9,7 @@
 var defineSubProperty = require('./misc').defineSubProperty;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 var InternalSiestaError = require('./error').InternalSiestaError;
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 var Logger = log.loggerWithName('changes');

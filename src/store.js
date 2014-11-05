@@ -7,7 +7,7 @@
 
 var wrappedCallback = require('./misc').wrappedCallback;
 var InternalSiestaError = require('./error').InternalSiestaError;
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
 

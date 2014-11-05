@@ -2,7 +2,7 @@
  * @module mapping
  */
 
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var Logger = log.loggerWithName('Mapping');
 Logger.setLevel(log.Level.warn);
 
@@ -12,7 +12,7 @@ var InternalSiestaError = require('./error').InternalSiestaError;
 var relationship = require('./relationship');
 var RelationshipType = relationship.RelationshipType;
 var Query = require('./query').Query;
-var Operation = require('../vendor/operations.js/src/operation').Operation;
+var Operation = require('./operation/operation').Operation;
 var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
 var SiestaModel = require('./object').SiestaModel;
 var guid = require('./misc').guid;

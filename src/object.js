@@ -1,4 +1,4 @@
-var log = require('../vendor/operations.js/src/log');
+var log = require('./operation/log');
 var Logger = log.loggerWithName('SiestaModel');
 Logger.setLevel(log.Level.warn);
 

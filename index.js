@@ -10,10 +10,10 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry,
     cache = require('./src/cache'),
     Mapping = require('./src/mapping').Mapping,
     notificationCentre = require('./src/notificationCentre').notificationCentre,
-    Operation = require('./vendor/operations.js/src/operation').Operation,
-    OperationQueue = require('./vendor/operations.js/src/queue').OperationQueue,
+    Operation = require('./src/operation/operation').Operation,
+    OperationQueue = require('./src/operation/queue').OperationQueue,
     RelationshipType = require('./src/relationship').RelationshipType,
-    log = require('./vendor/operations.js/src/log'),
+    log = require('./src/operation/log'),
     q = require('q'),
     _ = util._;
 
