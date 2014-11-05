@@ -338,6 +338,11 @@ if (typeof(/./) !== 'function') {
     };
 }
 
+_.isObject = function(obj) {
+    var type = typeof obj;
+    return type === 'function' || type === 'object' && !!obj;
+};
+
 // An internal function to generate lookup iterators.
 var lookupIterator = function(value) {
     if (value == null) return _.identity;
@@ -380,12 +385,61 @@ _.bind = function(func, context) {
         ctor.prototype = func.prototype;
         var self = new ctor;
         ctor.prototype = null;
+        u
         var result = func.apply(self, args.concat(slice.call(arguments)));
         if (Object(result) === result) return result;
         return self;
     };
 };
 
+_.identity = function(value) {
+    return value;
+};
+
+_.iteratee = function(value, context, argCount) {
+    if (value == null) return _.identity;
+    if (_.isFunction(value)) return createCallback(value, context, argCount);
+    if (_.isObject(value)) return _.matches(value);
+    return _.property(value);
+};
+
+_.pairs = function(obj) {
+    var keys = _.keys(obj);
+    var length = keys.length;
+    var pairs = Array(length);
+    for (var i = 0; i < length; i++) {
+        pairs[i] = [keys[i], obj[keys[i]]];
+    }
+    return pairs;
+};
+
+_.matches = function(attrs) {
+    var pairs = _.pairs(attrs),
+        length = pairs.length;
+    return function(obj) {
+        if (obj == null) return !length;
+        obj = new Object(obj);
+        for (var i = 0; i < length; i++) {
+            var pair = pairs[i],
+                key = pair[0];
+            if (pair[1] !== obj[key] || !(key in obj)) return false;
+        }
+        return true;
+    };
+};
+
+_.some = function(obj, predicate, context) {
+    if (obj == null) return false;
+    predicate = _.iteratee(predicate, context);
+    var keys = obj.length !== +obj.length && _.keys(obj),
+        length = (keys || obj).length,
+        index, currentKey;
+    for (index = 0; index < length; index++) {
+        currentKey = keys ? keys[index] : index;
+        if (predicate(obj[currentKey], currentKey, obj)) return true;
+    }
+    return false;
+};
 
 // END underscore.js //
 

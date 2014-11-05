@@ -16,7 +16,7 @@ module.exports = function (karma) {
             'build/test-bundle.js',
             'build/siesta.http.js'
             // 'build/siesta.perf.js'
-    ],
+        ],
     exclude: [
     ],
     frameworks: [ 'mocha', 'chai-things', 'chai'],
