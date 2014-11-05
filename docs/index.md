@@ -17,9 +17,7 @@ Siesta provides a declarative API through which we describe the web services tha
 
 Siesta aims to cover **M** in **M**VC and takes inspiration from:
 
-* [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
-* [RestKit](http://restkit.org/)
-* [Django](https://www.djangoproject.com/)
+
 
 ###The Problem
 
@@ -65,7 +63,7 @@ console.log(userData.cars[0].colour); // Black
 console.log(carData.colour); // Red
 ```
 
-So not only do we now have **two** distinct live objects representing the same remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is a blatantly lying to us.
+So not only do we now have **two** distinct live objects representing the same remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is blatantly lying to us.
 
 ###The Solution
 
@@ -75,10 +73,12 @@ Siesta solves this issue through the use of object mapping. A **mapping** descri
 var collection = new Collection('MyCollection');
 
 var User = collection.mapping({
+    name: 'User',
     id: 'username'
 });
                                    
 var Car = collection.mapping({
+    name: 'Car',
     id: 'id',
     attributes: [
         "colour",
