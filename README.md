@@ -11,6 +11,16 @@ Siesta is an object mapping framework for Javascript. It makes it easier to mode
 * [Installation/Download](http://mtford90.github.io/siesta/download.html)
 * [Demo App](http://mtford90.github.io/siesta/demo)
 
+Siesta is inspired by:
+
+* [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
+* [RestKit](http://restkit.org/)
+* [Django](https://www.djangoproject.com/)
+
+Similar projects:
+
+* [EmberJS-Data](https://github.com/emberjs/data): Similar to Siesta however abstraction heavy in the typical Ember manner.
+
 # Roadmap
 
 The below lists ongoing and suggested features. Ideas and contributions are most welcome. Until 1.0, the API should be considered unstable.

@@ -5,8 +5,7 @@ title: Fount
 
 <div>
   <p class="lead">
-    <strong>Siesta</strong> is an object mapping framework for Javascript. It makes it easier to model, consume and 
-    interact with RESTful web services.
+    <strong>Siesta</strong> is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
 </p>
 <hr/>
 
@@ -16,7 +15,11 @@ A traditional ORM maps rows from a relational database to objects. Siesta maps o
 
 Siesta provides a declarative API through which we describe the web services that we'd like to interact with. When data is received from these web services, each object is mapped onto its corresponding local representation *including* any nested related objects. 
 
-Siesta then presents methods with which to query local data.
+Siesta aims to cover **M** in **M**VC and takes inspiration from:
+
+* [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
+* [RestKit](http://restkit.org/)
+* [Django](https://www.djangoproject.com/)
 
 ###The Problem
 
