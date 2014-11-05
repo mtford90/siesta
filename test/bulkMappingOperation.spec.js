@@ -5,22 +5,27 @@ var s = require('../index'),
 var mappingOperation = require('../src/mappingOperation');
 var BulkMappingOperation = mappingOperation.BulkMappingOperation;
 var util = require('../src/util');
+var _ = util._;
+
 var RelationshipType = require('../src/relationship').RelationshipType;
 var Collection = require('../src/collection').Collection;
 var cache = require('../src/cache');
 var collection;
 var Repo, User;
 
+
+
+
 assert.arrEqual = function(arr1, arr2) {
     if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
     if (!util.isArray(arr2)) throw new chai.AssertionError(arr2.toString() + ' is not an array');
-    _.chain(arr1).zip(arr2).each(function(x) {
+    _.each(_.zip(arr1, arr2), function(x) {
         if (util.isArray(x[0]) && util.isArray(x[1])) {
             assert.arrEqual(x[0], x[1]);
         } else if (x[0] != x[1]) {
             throw new chai.AssertionError(arr1.toString() + ' != ' + arr2.toString());
         }
-    });
+    })
 };
 
 describe('array flattening', function() {

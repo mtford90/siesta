@@ -396,6 +396,43 @@ _.identity = function(value) {
     return value;
 };
 
+_.zip = function(array) {
+    if (array == null) return [];
+    var length = _.max(arguments, 'length').length;
+    var results = Array(length);
+    for (var i = 0; i < length; i++) {
+        results[i] = _.pluck(arguments, i);
+    }
+    return results;
+};
+
+// Return the maximum element (or element-based computation).
+_.max = function(obj, iteratee, context) {
+    var result = -Infinity,
+        lastComputed = -Infinity,
+        value, computed;
+    if (iteratee == null && obj != null) {
+        obj = obj.length === +obj.length ? obj : _.values(obj);
+        for (var i = 0, length = obj.length; i < length; i++) {
+            value = obj[i];
+            if (value > result) {
+                result = value;
+            }
+        }
+    } else {
+        iteratee = _.iteratee(iteratee, context);
+        _.each(obj, function(value, index, list) {
+            computed = iteratee(value, index, list);
+            if (computed > lastComputed || computed === -Infinity && result === -Infinity) {
+                result = value;
+                lastComputed = computed;
+            }
+        });
+    }
+    return result;
+};
+
+
 _.iteratee = function(value, context, argCount) {
     if (value == null) return _.identity;
     if (_.isFunction(value)) return createCallback(value, context, argCount);
