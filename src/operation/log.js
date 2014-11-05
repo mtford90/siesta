@@ -1,3 +1,5 @@
+var _ = require('../util')._;
+
 function Logger (name) {
     if (!this) return new Logger(name);
     this.name = name;
