@@ -23,7 +23,6 @@ function bugFix(data) {
     return data.replace(/(\*+(.*)\*+)(.*)\n```javascript/g, '$1\n\n```js');
 }
 
-
 module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
@@ -68,15 +67,13 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {
-                    '<%= build_dir %>/siesta.js': ['index.js'],
-                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js'],
+                    '<%= build_dir %>/siesta.core.js': ['index.js'],
                     '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
                 }
             },
             test: {
                 files: {
                     '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
-                    '<%= build_dir %>/siesta.storage.js': ['src/pouch/storage.js'],
                     '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
                 }
             }
@@ -121,11 +118,9 @@ module.exports = function(grunt) {
         uglify: {
             compile: {
                 files: {
-                    '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js',
+                    '<%= build_dir %>/siesta.core.min.js': '<%= build_dir %>/siesta.core.js',
                     '<%= build_dir %>/siesta.http.min.js': '<%= build_dir %>/siesta.http.js',
-                    '<%= build_dir %>/siesta.perf.min.js': '<%= build_dir %>/siesta.perf.js',
-                    '<%= build_dir %>/siesta.storage.min.js': '<%= build_dir %>/siesta.storage.js',
-                    '<%= build_dir %>/siesta.bundle.min.js': '<%= build_dir %>/siesta.bundle.js'
+                    '<%= build_dir %>/siesta.min.js': '<%= build_dir %>/siesta.js'
                 }
             }
         },
@@ -307,9 +302,8 @@ module.exports = function(grunt) {
                 src: [
                     '<%= build_dir %>/siesta.js',
                     '<%= build_dir %>/siesta.http.js',
-                    '<%= build_dir %>/siesta.storage.js'
                 ],
-                dest: '<%= build_dir %>/siesta.bundle.js'
+                dest: '<%= build_dir %>/siesta.js'
             }
         },
 
@@ -319,17 +313,14 @@ module.exports = function(grunt) {
                     src: ['<%= build_dir %>/siesta.http.min.js'],
                     dest: '<%= build_dir %>/siesta.http.min.js.gz'
                 }, {
-                    src: ['<%= build_dir %>/siesta.bundle.min.js'],
-                    dest: '<%= build_dir %>/siesta.bundle.min.js.gz'
-                }, {
-                    src: ['<%= build_dir %>/siesta.perf.min.js'],
-                    dest: '<%= build_dir %>/siesta.perf.min.js.gz'
-                }, {
-                    src: ['<%= build_dir %>/siesta.storage.min.js'],
-                    dest: '<%= build_dir %>/siesta.storage.min.js.gz'
+                    src: ['<%= build_dir %>/siesta.core.min.js'],
+                    dest: '<%= build_dir %>/siesta.core.min.js.gz'
                 }, {
                     src: ['<%= build_dir %>/siesta.min.js'],
                     dest: '<%= build_dir %>/siesta.min.js.gz'
+                }, {
+                    src: ['<%= build_dir %>/siesta.perf.min.js'],
+                    dest: '<%= build_dir %>/siesta.perf.min.js.gz'
                 }]
             }
         }
