@@ -17,19 +17,16 @@ module.exports = function (karma) {
                 <% }); %>
             'build/test-bundle.js',
             'build/siesta.http.js'
-            // 'build/siesta.perf.js'
         ],
-    exclude: [
-    ],
-    frameworks: [ 'mocha', 'chai-things', 'chai'],
+    exclude: [],
+    frameworks: [ 'mocha', 'chai-things', 'chai' ],
     plugins: [ 'karma-mocha',
                'karma-chai-things',
                'karma-chai',
                'karma-phantomjs-launcher',
                'karma-chrome-launcher',
                'karma-safari-launcher',
-               'karma-sourcemap-loader'
-               ],
+               'karma-sourcemap-loader' ],
 
     preprocessors: {
         'build/test-bundle.js': ['sourcemap']

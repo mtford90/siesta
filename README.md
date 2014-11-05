@@ -1,6 +1,8 @@
 Siesta
 ======
 
+[![Build Status](https://travis-ci.org/mtford90/siesta.svg?branch=master)](https://travis-ci.org/mtford90/siesta)
+
 Siesta is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
 
 * [Website](http://mtford90.github.io/siesta/)
