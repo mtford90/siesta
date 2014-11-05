@@ -9,8 +9,7 @@ the components that you'd like to use.
 Siesta currently offers four components:
 
 * Core - object mapping
-* HTTP - an interface to <a href="http://jquery.com/">jQuery</a>/jQuery-like ajax libraries such as <a href="http://zeptojs.com/">Zepto</a>.
-* Storage - an interface to <a href="http://pouchdb.com/">PouchDB</a> for persistence 
+* HTTP - provides a facility to describe web services and automatically maps data to and from the object graph. Can be configured with ajax libraries such as those offered by JQuery and Zepto.
 * Performance Monitoring: Logs timing information around mapping, HTTP requests etc.
 
 ### Bundle
@@ -47,15 +46,6 @@ The Siesta bundle includes Core, HTTP and Storage.
 </div>
 
 <div class="row btn-row">
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.storage.js">
-        <button class="btn">siesta.storage.js</button>
-    </a>
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.storage.min.js">
-        <button class="btn">siesta.storage.min.js</button>
-    </a>
-</div>
-
-<div class="row btn-row">
     <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.perf.js">
         <button class="btn">siesta.perf.js</button>
     </a>
@@ -73,7 +63,6 @@ Modules should be included after siesta core:
 <body>
 <script src="siesta.js"></script>
 <script src="siesta.http.js"></script>
-<script src="siesta.storage.js"></script>
 <script src="siesta.perf.js"></script>
 
 <!-- ... -->

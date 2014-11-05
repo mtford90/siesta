@@ -17,7 +17,9 @@ Siesta provides a declarative API through which we describe the web services tha
 
 Siesta aims to cover **M** in **M**VC and takes inspiration from:
 
-
+* [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
+* [RestKit](http://restkit.org/)
+* [Django](https://www.djangoproject.com/)
 
 ###The Problem
 
