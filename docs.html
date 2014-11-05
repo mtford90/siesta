@@ -130,9 +130,20 @@
     <span class="p">}</span>
 <span class="p">});</span>
 </code></pre></div>
-<h3>Step 4: Configure request/response descriptors</h3>
+<h3>Step 4: Configure descriptors</h3>
 
-<p>Descriptors are a component within the HTTP module and are used to <em>describe</em> web services with which we want to interact. When a HTTP request is sent, the descriptors are used to automatically map data to and from the correct mappings as well determining how to serialise outgoing objects.</p>
+<p>Descriptors are used to <em>describe</em> web services with which we want to interact. When a HTTP request is sent or a HTTP response is received, descriptors are used to map data to the object graph in the case of HTTP responses and to serialise data into JSON in the case of HTTP requests.</p>
+
+<p>An example response descriptor:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span> 
+    <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
+    <span class="c1">// Deserialise from data field in JSON response when receiving.</span>
+    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span> 
+<span class="p">});</span>
+</code></pre></div>
+<p>An example request descriptor:</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
     <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/&#39;</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
@@ -146,16 +157,8 @@
     <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
     <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span> <span class="c1">// Serialise to {data: {...}} when sending the request.</span>
 <span class="p">});</span>
-</code></pre></div><div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/(.*)/&#39;</span><span class="p">,</span>
-    <span class="c1">// Accept any HTTP method</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span> 
-    <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
-    <span class="c1">// Deserialise from data field in JSON response when receiving.</span>
-    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span> 
-<span class="p">});</span>
 </code></pre></div>
-<h3>Step 5: Install the collection</h3>
+<h3>Step 6: Install the collection</h3>
 
 <p>Before we can use our collection we need to install it. This will configure the descriptors and mappings, hooking up any relationships and will return an error if anything is incorrect with the declarations.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
@@ -167,7 +170,7 @@
     <span class="p">}</span>
 <span class="p">});</span>
 </code></pre></div>
-<h3>Step 5: Obtain some remote data</h3>
+<h3>Step 7: Obtain some remote data</h3>
 
 <p>The descriptors declared earlier will be used to determine how to map the response bodies onto objects that we have locally.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;cars/&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">cars</span><span class="p">)</span> <span class="p">{</span>
@@ -178,7 +181,7 @@
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;I got me a car!&#39;</span><span class="p">,</span> <span class="nx">car</span><span class="p">);</span>
 <span class="p">});</span>
 </code></pre></div>
-<h3>Step 6: Create some remote data</h3>
+<h3>Step 8: Create some remote data</h3>
 
 <p>The descriptors declared above will also be used to determine how to serialise our models when sending them to the server.</p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">Person</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">person</span><span class="p">){</span>
@@ -187,7 +190,7 @@
     <span class="p">});</span>
 <span class="p">});</span>
 </code></pre></div>
-<h3>Step 7: Query local data</h3>
+<h3>Step 9: Query local data</h3>
 
 <p>We can query for objects that have been mapped and held locally (either in-memory or persisted) by using the local query API.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">collection</span><span class="p">.</span><span class="nx">Car</span><span class="p">.</span><span class="nx">all</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">allCars</span><span class="p">)</span> <span class="p">{</span>
