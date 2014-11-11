@@ -16,9 +16,6 @@ var _i = siesta._internal,
 
 var Logger = log.loggerWithName('Descriptor');
 Logger.setLevel(log.Level.warn);
-// The XRegExp object has these properties that we want to ignore when matching.
-var ignore = ['index', 'input'];
-var XRegExp = require('xregexp').XRegExp;
 
 var httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
 
@@ -53,13 +50,25 @@ function Descriptor(opts) {
     this._rawOpts = extend(true, {}, opts);
     this._opts = opts;
 
-    // Convert path string into XRegExp if not already.
     if (this._opts.path) {
-        if (!(this._opts.path instanceof XRegExp)) {
-            this._opts.path = XRegExp(this._opts.path);
+        // TODO: This is a bit hacky.
+        // Essentially hacking named groups into javascript regular expressions.
+        // Originally was using XRegExp but that library is 300kb, 30k gunzipped. Fuck that.
+        // I do suspect that this is a bit sketchy tho...
+        var raw = this._opts.path;
+        var r = /\?<([0-9a-zA-Z_-]*)>/g;
+        var match, names = [];
+        while (match = r.exec(raw)) {
+            var name = match[1];
+            names.push(name);
         }
+        raw = raw.replace(r, '');
+        //console.log('raw', raw);
+        this._opts.path = new RegExp(raw, 'g');
+        this.names = names;
     } else {
         this._opts.path = '';
+        this.names = [];
     }
 
     this._opts.method = resolveMethod(this._opts.method);
@@ -163,18 +172,23 @@ Descriptor.prototype.httpMethods = httpMethods;
  * ```
  */
 Descriptor.prototype._matchPath = function(path) {
-    var match = XRegExp.exec(path, this.path);
-    var matched = null;
+    var matches = [];
+    //console.log('path', path);
+    var match = this._opts.path.exec(path);
     if (match) {
-        matched = {};
-        for (var prop in match) {
-            if (match.hasOwnProperty(prop)) {
-                if (isNaN(parseInt(prop)) && ignore.indexOf(prop) < 0) {
-                    matched[prop] = match[prop];
-                }
-            }
+        for (var i=1;i<match.length;i++) {
+            matches.push(match[i]);
         }
     }
+    //console.log('matches', matches);
+    var matched;
+    if (matches.length == this.names.length) {
+        matched = {};
+        _.each(matches, function (m, i) {
+            matched[this.names[i]] = m;
+        }.bind(this))
+    }
+    //console.log('matched', matched);
     return matched;
 };
 

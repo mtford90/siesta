@@ -35,12 +35,10 @@ describe('request descriptor', function() {
         describe('path', function() {
             it('match id', function() {
                 var r = new siesta.ext.http.Descriptor({
-                    path: '/cars/(?<id>[0-9])/?',
+                    path: '/cars/(?<id>[0-9]+)/?',
                     mapping: carMapping
                 });
                 var match = r._matchPath('/cars/5/');
-                assert.equal(match.id, '5');
-                match = r._matchPath('/cars/5');
                 assert.equal(match.id, '5');
             });
 
