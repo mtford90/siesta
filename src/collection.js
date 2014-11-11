@@ -292,7 +292,7 @@ Collection.prototype._http = function(method) {
  * @returns {Promise}
  */
 Collection.prototype.GET = function() {
-    _.partial(this._http, 'GET').apply(this, arguments);
+    return _.partial(this._http, 'GET').apply(this, arguments);
 };
 
 /**
@@ -303,7 +303,7 @@ Collection.prototype.GET = function() {
  * @returns {Promise}
  */
 Collection.prototype.OPTIONS = function() {
-    _.partial(this._http, 'OPTIONS').apply(this, arguments);
+    return _.partial(this._http, 'OPTIONS').apply(this, arguments);
 };
 
 /**
@@ -314,7 +314,7 @@ Collection.prototype.OPTIONS = function() {
  * @returns {Promise}
  */
 Collection.prototype.TRACE = function() {
-    _.partial(this._http, 'TRACE').apply(this, arguments);
+    return _.partial(this._http, 'TRACE').apply(this, arguments);
 };
 
 /**
@@ -325,7 +325,7 @@ Collection.prototype.TRACE = function() {
  * @returns {Promise}
  */
 Collection.prototype.HEAD = function() {
-    _.partial(this._http, 'HEAD').apply(this, arguments);
+    return _.partial(this._http, 'HEAD').apply(this, arguments);
 };
 
 /**
@@ -337,7 +337,7 @@ Collection.prototype.HEAD = function() {
  * @returns {Promise}
  */
 Collection.prototype.POST = function() {
-    _.partial(this._http, 'POST').apply(this, arguments);
+    return _.partial(this._http, 'POST').apply(this, arguments);
 };
 
 /**
@@ -361,7 +361,7 @@ Collection.prototype.PUT = function() {
  * @returns {Promise}
  */
 Collection.prototype.PATCH = function() {
-    _.partial(this._http, 'PATCH').apply(this, arguments);
+    return _.partial(this._http, 'PATCH').apply(this, arguments);
 };
 
 /**
@@ -373,7 +373,7 @@ Collection.prototype.PATCH = function() {
  * @returns {Promise}
  */
 Collection.prototype.DELETE = function(path, object) {
-    _.partial(this._http, 'DELETE').apply(this, arguments);
+    return _.partial(this._http, 'DELETE').apply(this, arguments);
 };
 
 /**
