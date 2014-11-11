@@ -8,6 +8,7 @@
  * ...
  * ```
  *
+ *
  * instead of
  *
  * **Example**
@@ -300,7 +301,7 @@ module.exports = function(grunt) {
             },
             bundle: {
                 src: [
-                    '<%= build_dir %>/siesta.js',
+                    '<%= build_dir %>/siesta.core.js',
                     '<%= build_dir %>/siesta.http.js',
                 ],
                 dest: '<%= build_dir %>/siesta.js'

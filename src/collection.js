@@ -204,6 +204,7 @@ Collection.prototype.mapping = function() {
 Collection.prototype.descriptor = function(opts) {
     var descriptors = [];
     if (siesta.ext.httpEnabled) {
+        opts.collection = this;
         var methods = siesta.ext.http._resolveMethod(opts.method);
         var unsafe = [];
         var safe = [];

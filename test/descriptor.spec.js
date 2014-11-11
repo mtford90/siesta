@@ -163,7 +163,7 @@ describe('request descriptor', function() {
         it('should throw an exception if passed as string without collection', function() {
             assert.throws(_.partial(siesta.ext.http.Descriptor, {
                 mapping: 'Car'
-            }), InternalSiestaError);
+            }), Error);
         });
     });
 
@@ -435,8 +435,8 @@ describe('request descriptor', function() {
                 new siesta.ext.http.Descriptor({
                     data: 'data'
                 })
-            }, InternalSiestaError);
-        });
+            }, Error);
+        }); 
     });
 
     describe('siesta.ext.http.RequestDescriptor', function() {

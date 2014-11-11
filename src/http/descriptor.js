@@ -79,26 +79,26 @@ function Descriptor(opts) {
                     if (actualMapping) {
                         this._opts.mapping = actualMapping;
                     } else {
-                        throw new InternalSiestaError('Mapping ' + this._opts.mapping + ' does not exist', {
+                        throw new Error('Mapping ' + this._opts.mapping + ' does not exist', {
                             opts: opts,
                             descriptor: this
                         });
                     }
                 } else {
-                    throw new InternalSiestaError('Collection ' + this._opts.collection + ' does not exist', {
+                    throw new Error('Collection ' + this._opts.collection + ' does not exist', {
                         opts: opts,
                         descriptor: this
                     });
                 }
             } else {
-                throw new InternalSiestaError('Passed mapping as string, but did not specify the collection it belongs to', {
+                throw new Error('Passed mapping as string, but did not specify the collection it belongs to', {
                     opts: opts,
                     descriptor: this
                 });
             }
         }
     } else {
-        throw new InternalSiestaError('Descriptors must be initialised with a mapping', {
+        throw new Error('Descriptors must be initialised with a mapping', {
             opts: opts,
             descriptor: this
         });

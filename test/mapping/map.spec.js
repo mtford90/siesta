@@ -113,8 +113,6 @@ describe('perform mapping', function() {
                 assert.equal(obj.id, 'dfadf');
                 assert.ok(obj._id);
             });
-
-
         });
 
         describe('existing in cache', function() {
