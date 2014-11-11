@@ -21,7 +21,6 @@ var _i = siesta._internal
     , Change = coreChanges.Change
     , ChangeType = coreChanges.ChangeType
     , collection = _i.collection
-    , q = _i.q
     ;
 
 var pouch = require('./pouch');

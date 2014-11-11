@@ -13,7 +13,6 @@
     var log = _i.log
         , Mapping = _i.Mapping
         , util = _i.util
-        , q = _i.q
     ;
 
     var Logger = log.loggerWithName('Performance');

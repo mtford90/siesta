@@ -30,7 +30,6 @@ var ManyToManyProxy = require('./manyToManyProxy').ManyToManyProxy;
 
 var util = require('./util');
 var _ = util._;
-var q = require('q');
 
 /**
  * 

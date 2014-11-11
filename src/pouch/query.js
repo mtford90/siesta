@@ -6,7 +6,6 @@ var _i = siesta._internal
     , log = _i.log
     , InternalSiestaError = _i.error.InternalSiestaError
     , Query = _i.query.Query
-    , q = _i.q
 ;
 
 var Logger = log.loggerWithName('RawQuery');

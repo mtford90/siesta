@@ -14,7 +14,6 @@ var proxy = require('./proxy')
     , SiestaModel = require('./object').SiestaModel
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
-    , q = require('q')
 ;
 
 /**

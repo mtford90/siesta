@@ -2,7 +2,6 @@
 
     var _i = siesta._internal
         , mapping = _i.mapping
-        , q = _i.q
         , util = _i.util
         , extend = _.extend
         , Mapping = mapping.Mapping

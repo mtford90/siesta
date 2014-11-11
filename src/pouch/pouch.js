@@ -5,7 +5,6 @@ var _i = siesta._internal
     , cache = _i.cache
     , guid = _i.misc.guid
     , InternalSiestaError = _i.error.InternalSiestaError
-    , q = _i.q
     , CollectionRegistry = _i.CollectionRegistry;
 
 var Logger = log.loggerWithName('Pouch');

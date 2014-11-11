@@ -14,7 +14,6 @@ var proxy = require('./proxy')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
-    , q = require('q')
     ;
 
 /**

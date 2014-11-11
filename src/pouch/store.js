@@ -6,7 +6,6 @@ var _i = siesta._internal
     , InternalSiestaError = _i.error.InternalSiestaError
     , log = _i.log
     , coreStore = _i.store
-    , q = _i.q
 ;
 
 var Logger = log.loggerWithName('Store');

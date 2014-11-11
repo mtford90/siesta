@@ -14,13 +14,12 @@ var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry,
     OperationQueue = require('./src/operation/queue').OperationQueue,
     RelationshipType = require('./src/relationship').RelationshipType,
     log = require('./src/operation/log'),
-    q = require('q'),
     _ = util._;
 
+if (window.Q) window.q = window.Q;
 
 Operation.logLevel = log.Level.warn;
 OperationQueue.logLevel = log.Level.warn;
-
 
 var siesta;
 if (typeof module != 'undefined') {
@@ -28,20 +27,6 @@ if (typeof module != 'undefined') {
 } else {
     siesta = {};
 }
-
-// siesta.save = function save(callback) {
-//     var deferred = q.defer();
-//     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-//     if (siesta.ext.storageEnabled) {
-//         util.next(function() {
-//             var mergeChanges = siesta.ext.storage.changes.mergeChanges;
-//             mergeChanges(callback);
-//         });
-//     } else {
-//         callback('Storage module not installed');
-//     }
-//     return deferred.promise;
-// };
 
 /**
  * Wipe everything!
@@ -125,8 +110,7 @@ siesta._internal = {
     util: util,
     _: util._,
     query: require('./src/query'),
-    store: require('./src/store'),
-    q: require('q')
+    store: require('./src/store')
 };
 
 siesta.performanceMonitoringEnabled = false;
@@ -289,7 +273,6 @@ Object.defineProperty(siesta.serialisers, 'depth', {
 // * `siesta.sortBy` is equivalent to [_.sortBy](http://underscorejs.org/#sortBy)
 // * `siesta.parallel` is equivalent to [async.parallel](https://github.com/caolan/async#parallel)
 // * `siesta.series` is equivalent to [async.series](https://github.com/caolan/async#series)
-// * `siesta.q` is the entire [q promises library](https://github.com/kriskowal/q)
 
 siesta.map = util._.map;
 siesta.each = util._.each;
@@ -300,15 +283,7 @@ siesta.property = util._.pluck;
 siesta.sortBy = util._.sortBy;
 siesta.series = util.series;
 siesta.parallel = util.parallel;
-siesta.q = q;
 
-// Object.defineProperty(siesta, 'isDirty', {
-//     get: function() {
-//         return Collection.isDirty
-//     },
-//     configurable: true,
-//     enumerable: true
-// });
 
 if (typeof window != 'undefined') {
     window.siesta = siesta;

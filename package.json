@@ -61,7 +61,7 @@
     "load-grunt-tasks": "~0.5.0",
     "memdown": "~0.10.2",
     "mocha": "~1.20.1",
-    "q": "~1.0.1",
+    "q": "^1.1.1",
     "sinon": "~1.10.3",
     "time-grunt": "~0.3.2",
     "underscore": "^1.7.0"

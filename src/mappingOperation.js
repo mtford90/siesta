@@ -17,7 +17,6 @@ var util = require('./util');
 var _ = util._;
 var defineSubProperty = require('./misc').defineSubProperty;
 var ChangeType = require('./changes').ChangeType;
-var q = require('q');
 
 function flattenArray(arr) {
     return _.reduce(arr, function(memo, e) {

@@ -16,8 +16,6 @@ var observe = require('../vendor/observe-js/src/observe').Platform;
 var util = require('./util');
 var _ = util._;
 
-var q = require('q');
-
 var cache = require('./cache');
 
 var SAFE_METHODS = ['GET', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT'];

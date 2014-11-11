@@ -2,11 +2,10 @@
  * @module query
  */
 
-var log = require('./operation/log');
-var cache = require('./cache');
-var Logger = log.loggerWithName('Query');
-var q = require('q');
-var util = require('./util');
+var log = require('./operation/log')
+    , cache = require('./cache')
+    , Logger = log.loggerWithName('Query')
+    , util = require('./util');
 Logger.setLevel(log.Level.warn);
 
 /**
@@ -32,7 +31,7 @@ function _executeUsingStorageExtension(callback) {
     var RawQuery = storageExtension.RawQuery;
     var Pouch = storageExtension.Pouch;
     var rawQuery = new RawQuery(this.mapping.collection, this.mapping.type, this.query);
-    rawQuery.execute(function(err, results) {
+    rawQuery.execute(function (err, results) {
         if (err) {
             callback(err);
         } else {
@@ -130,7 +129,7 @@ function _executeInMemory(callback) {
     return deferred.promise;
 }
 
-Query.prototype.execute = function(callback) {
+Query.prototype.execute = function (callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     // if (siesta.ext.storageEnabled) {
@@ -142,7 +141,7 @@ Query.prototype.execute = function(callback) {
     return deferred.promise;
 };
 
-Query.prototype._dump = function(asJson) {
+Query.prototype._dump = function (asJson) {
     // TODO
     return asJson ? '{}' : {};
 };

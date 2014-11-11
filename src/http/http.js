@@ -14,8 +14,7 @@ var _i = siesta._internal,
     util = _i.util,
     _ = util._,
     descriptor = require('./descriptor'),
-    InternalSiestaError = _i.error.InternalSiestaError,
-    q = _i.q;
+    InternalSiestaError = _i.error.InternalSiestaError;
 
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 

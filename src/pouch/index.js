@@ -3,7 +3,6 @@ var _i = siesta._internal
     , mapping = _i.mapping
     , log = _i.log
     , util = _i.util
-    , q = _i.q
     , _ = util._
     ;
 

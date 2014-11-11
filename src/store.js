@@ -14,7 +14,6 @@ Logger.setLevel(log.Level.warn);
 var util = require('./util');
 var _ = util._;
 var cache = require('./cache');
-var q = require('q');
 
 
 /**

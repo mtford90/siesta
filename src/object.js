@@ -10,8 +10,6 @@ var error = require('./error');
 var InternalSiestaError = error.InternalSiestaError;
 var coreChanges = require('./changes');
 
-var q = require('q');
-
 var cache = require('./cache');
 
 //var queues = {};
