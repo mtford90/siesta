@@ -281,7 +281,7 @@ function get(opts) {
 }
 
 /**
- * Insert an objet into the cache.
+ * Insert an object into the cache.
  * @param  {SiestaModel} obj
  * @throws {InternalSiestaError} An object with _id/remoteId already exists. Not thrown if same obhect.
  */
@@ -298,7 +298,7 @@ function insert(obj) {
                 LocalCacheLogger.trace('Local cache now looks like: ' + localDump(true));
             if (!localCache[collectionName]) localCache[collectionName] = {};
             if (!localCache[collectionName][mappingName]) localCache[collectionName][mappingName] = {};
-            localCache[collectionName][obj.type][localId] = obj;
+            localCache[collectionName][mappingName][localId] = obj;
         } else {
             // Something has gone badly wrong here. Two objects should never exist with the same _id
             if (localCacheById[localId] != obj) {

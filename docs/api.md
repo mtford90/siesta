@@ -1425,7 +1425,7 @@ cache.get({remoteId: '5', mapping: myMapping}); // Query by remote id
 
 <a name="module_cache..insert"></a>
 ##cache~insert(obj)
-Insert an objet into the cache.
+Insert an object into the cache.
 
 **Params**
 

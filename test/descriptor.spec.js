@@ -436,7 +436,7 @@ describe('request descriptor', function() {
                     data: 'data'
                 })
             }, Error);
-        }); 
+        });
     });
 
     describe('siesta.ext.http.RequestDescriptor', function() {

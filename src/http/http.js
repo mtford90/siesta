@@ -65,7 +65,6 @@ function _httpResponse(method, path) {
 
             for (var i = 0; i < descriptors.length; i++) {
                 var descriptor = descriptors[i];
-                console.log('descriptor', descriptor);
                 extractedData = descriptor.match(opts, data);
                 if (extractedData) {
                     matchedDescriptor = descriptor;
