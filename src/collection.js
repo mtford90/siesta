@@ -75,7 +75,7 @@ function Collection(name) {
  * @param callback
  */
 Collection.prototype.install = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     var self = this;
     if (!this.installed) {
         var mappingsToInstall = [];
@@ -130,7 +130,7 @@ Collection.prototype.install = function(callback) {
         var err = new InternalSiestaError('Collection "' + this._name + '" has already been installed');
         self._finaliseInstallation(err, callback);
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 /**
@@ -266,7 +266,7 @@ Collection.prototype._dump = function(asJson) {
 //     } else {
 //         callback('Storage module not installed');
 //     }
-//     return deferred.promise;
+//     return deferred ? deferred.promise : null;
 // };
 
 
@@ -395,7 +395,7 @@ Collection.prototype.count = function(callback) {
         }
         callback(err, n);
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 exports.Collection = Collection;

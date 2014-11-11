@@ -65,7 +65,7 @@ RequestDescriptor.prototype._serialise = function (obj, callback) {
         if (Logger.trace.isEnabled)
             Logger.trace('serialiser uses a callback', this.serialiser);
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 RequestDescriptor.prototype._dump = function (asJson) {

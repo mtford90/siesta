@@ -103,7 +103,7 @@ SiestaModel.prototype.get = function(callback) {
     var deferred = q.defer();
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     callback(null, this);
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 SiestaModel.prototype.remove = function(callback) {
@@ -121,7 +121,7 @@ SiestaModel.prototype.remove = function(callback) {
         obj: this
     });
     callback(null, this);
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 SiestaModel.prototype.restore = function(callback) {
@@ -141,7 +141,7 @@ SiestaModel.prototype.restore = function(callback) {
         obj: this
     });
     callback(null, this);
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 exports.SiestaModel = SiestaModel;

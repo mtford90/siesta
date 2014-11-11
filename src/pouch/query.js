@@ -45,7 +45,7 @@ function resultsCallback(callback, err, resp) {
         var results = _.pluck(resp.rows, 'value');
         if (callback) callback(null, results);
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 RawQuery.prototype.execute = function (callback) {
@@ -100,7 +100,7 @@ RawQuery.prototype.execute = function (callback) {
             }
         }
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 RawQuery.prototype._getFields = function () {

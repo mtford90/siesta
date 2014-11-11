@@ -204,7 +204,7 @@ Mapping.prototype.query = function(query, callback) {
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var _query = new Query(this, query);
     _query.execute(callback);
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Mapping.prototype.get = function(idOrCallback, callback) {
@@ -254,7 +254,7 @@ Mapping.prototype.get = function(idOrCallback, callback) {
         }
 
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Mapping.prototype.all = function(callback) {
@@ -262,7 +262,7 @@ Mapping.prototype.all = function(callback) {
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var query = new Query(this, {});
     query.execute(callback);
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Mapping.prototype.install = function(callback) {
@@ -280,7 +280,7 @@ Mapping.prototype.install = function(callback) {
     } else {
         throw new InternalSiestaError('Mapping "' + this.type + '" has already been installed');
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Mapping.prototype._validate = function() {
@@ -324,7 +324,7 @@ Mapping.prototype.map = function(data, callback, override) {
     } else {
         throw new InternalSiestaError('Mapping must be fully installed before creating any models');
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Mapping.prototype._mapBulk = function(data, callback, override) {
@@ -346,7 +346,7 @@ Mapping.prototype._mapBulk = function(data, callback, override) {
         }
     });
     op.start();
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 function _countCache() {
@@ -380,7 +380,7 @@ Mapping.prototype.count = function(callback) {
     } else {
         callback(null, Object.keys(hash).length)
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 /**

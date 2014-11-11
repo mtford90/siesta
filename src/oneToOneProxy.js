@@ -71,7 +71,7 @@ OneToOneProxy.prototype.get = function (callback) {
             }
         })
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 exports.OneToOneProxy = OneToOneProxy;

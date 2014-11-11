@@ -40,7 +40,7 @@ function _executeUsingStorageExtension(callback) {
             if (callback) callback(null, Pouch.toSiesta(results));
         }
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 /**
@@ -126,7 +126,7 @@ function _executeInMemory(callback) {
     } else if (callback) {
         callback(null, []);
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 Query.prototype.execute = function (callback) {
@@ -138,7 +138,7 @@ Query.prototype.execute = function (callback) {
     // else {
     _executeInMemory.call(this, callback);
     // }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Query.prototype._dump = function (asJson) {

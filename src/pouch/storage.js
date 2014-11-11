@@ -63,7 +63,7 @@
                 callback(err);
             }
         });
-        return deferred.promise;
+        return deferred ? deferred.promise : null;
     };
 
     if (!siesta.ext) {

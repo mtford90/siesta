@@ -63,7 +63,7 @@ function installIndexes(collection, modelName, fields, callback) {
             }
         });
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 
@@ -154,7 +154,7 @@ Index.prototype.install = function (callback) {
         }
         callback(err, resp);
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 Index.indexes = [];

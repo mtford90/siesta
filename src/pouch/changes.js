@@ -407,7 +407,7 @@ function mergeChanges(callback) {
             Logger.debug('Nothing to merge');
         callback();
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 /**

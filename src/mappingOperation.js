@@ -268,7 +268,7 @@ BulkMappingOperation.prototype._lookup = function(callback) {
             }
         ],
         callback);
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 BulkMappingOperation.prototype._lookupSingleton = function(callback) {
@@ -304,7 +304,7 @@ BulkMappingOperation.prototype._lookupSingleton = function(callback) {
         }
         callback();
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 BulkMappingOperation.prototype._start = function(done) {

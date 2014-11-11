@@ -57,7 +57,7 @@
         else {
             origMappingGet.call(this, c);
         }
-        return deferred.promise;
+        return deferred ? deferred.promise : null;
     };
 
     var origMappingMapBulk = Mapping.prototype._mapBulk;
@@ -71,7 +71,7 @@
             m.end();
             callback.apply(callback, arguments);
         }, override);
-        return deferred.promise;
+        return deferred ? deferred.promise : null;
     };
 
 })();

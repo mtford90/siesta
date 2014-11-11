@@ -181,7 +181,7 @@ function _httpRequest(method, path, object) {
             Logger.trace('Did not match descriptor');
         callback(null, null, null);
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 /**
@@ -221,7 +221,7 @@ function DELETE(collection, path, object) {
     if (deletionMode == 'now' || deletionMode == 'restore') {
         object.remove();
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 /**

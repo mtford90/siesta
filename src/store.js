@@ -126,7 +126,7 @@ function get(opts, callback) {
         Logger.error(msg, context);
         wrappedCallback(callback)(new InternalSiestaError(msg, context));
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 function getMultiple(optsArray, callback) {
@@ -152,7 +152,7 @@ function getMultiple(optsArray, callback) {
             }
         });
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 /**
  * Uses pouch bulk fetch API. Much faster than getMultiple.
@@ -193,7 +193,7 @@ function getMultipleLocal(localIdentifiers, callback) {
     } else {
         finish();
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 function getMultipleRemote(remoteIdentifiers, mapping, callback) {
@@ -233,7 +233,7 @@ function getMultipleRemote(remoteIdentifiers, mapping, callback) {
     } else {
         finish();
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 exports.get = get;

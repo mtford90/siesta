@@ -40,7 +40,7 @@ function getMultipleLocalFromCouch(results, callback) {
             callback();
         }
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callback) {
@@ -69,7 +69,7 @@ function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callbac
             callback();
         }
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 exports.getFromPouch = getFromPouch;

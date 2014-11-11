@@ -150,7 +150,7 @@ OneToManyProxy.prototype.get = function (callback) {
     else {
         if (callback) callback(null, this.related);
     }
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 };
 
 /**

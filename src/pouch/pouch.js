@@ -55,7 +55,7 @@ function retryUntilWrittenMultiple(docId, newValues, callback) {
             });
         }
     });
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 function configureChangeEmitter() {
@@ -98,7 +98,7 @@ function reset(inMemory, callback) {
     }
     _reset(inMemory);
     if (callback) callback();
-    return deferred.promise;
+    return deferred ? deferred.promise : null;
 }
 
 function getPouch() {
