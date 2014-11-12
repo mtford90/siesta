@@ -100,14 +100,14 @@ SiestaModel.prototype._dump = function(asJson) {
 
 
 SiestaModel.prototype.get = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     callback(null, this);
     return deferred ? deferred.promise : null;
 };
 
 SiestaModel.prototype.remove = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     cache.remove(this);
     this.removed = true;
@@ -125,7 +125,7 @@ SiestaModel.prototype.remove = function(callback) {
 }
 
 SiestaModel.prototype.restore = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.removed) {
         cache.insert(this);

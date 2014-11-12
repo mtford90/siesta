@@ -200,7 +200,7 @@ Mapping.prototype.installReverseRelationships = function() {
 };
 
 Mapping.prototype.query = function(query, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var _query = new Query(this, query);
     _query.execute(callback);
@@ -208,7 +208,7 @@ Mapping.prototype.query = function(query, callback) {
 };
 
 Mapping.prototype.get = function(idOrCallback, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
 
     function finish(err, res) {
@@ -258,7 +258,7 @@ Mapping.prototype.get = function(idOrCallback, callback) {
 };
 
 Mapping.prototype.all = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var query = new Query(this, {});
     query.execute(callback);
@@ -267,7 +267,7 @@ Mapping.prototype.all = function(callback) {
 
 Mapping.prototype.install = function(callback) {
     if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (!this._installed) {
         var errors = this._validate();
@@ -303,7 +303,7 @@ Mapping.prototype._validate = function() {
  * @param override Force mapping to this object
  */
 Mapping.prototype.map = function(data, callback, override) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.installed) {
         if (util.isArray(data)) {
@@ -328,7 +328,7 @@ Mapping.prototype.map = function(data, callback, override) {
 };
 
 Mapping.prototype._mapBulk = function(data, callback, override) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var opts = {
         mapping: this,
@@ -359,7 +359,7 @@ function _countCache() {
 }
 
 Mapping.prototype.count = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var hash = _countCache.call(this);
     if (siesta.ext.storageEnabled) {

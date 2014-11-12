@@ -63,7 +63,6 @@ function Descriptor(opts) {
             names.push(name);
         }
         raw = raw.replace(r, '');
-        //console.log('raw', raw);
         this._opts.path = new RegExp(raw, 'g');
         this.names = names;
     } else {

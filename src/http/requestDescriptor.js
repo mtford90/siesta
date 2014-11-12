@@ -42,7 +42,7 @@ RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
 
 RequestDescriptor.prototype._serialise = function (obj, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (Logger.trace.isEnabled)

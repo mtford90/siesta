@@ -36,7 +36,7 @@
     var origMappingGet = Mapping.prototype.get;
 
     Mapping.prototype.get = function (idOrCallback, callback) {
-        var deferred = q.defer();
+        var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var m = new PerformanceMonitor('Mapping.get');
         var id;
@@ -63,7 +63,7 @@
     var origMappingMapBulk = Mapping.prototype._mapBulk;
 
     Mapping.prototype._mapBulk = function (data, callback, override) {
-        var deferred = q.defer();
+        var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var m = new PerformanceMonitor('_mapBulk');
         m.start();

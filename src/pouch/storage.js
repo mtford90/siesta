@@ -48,7 +48,7 @@
     };
 
     Mapping.prototype.install = function (callback) {
-        var deferred = q.defer();
+        var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var self = this;
         oldInstall.call(this, function (err) {

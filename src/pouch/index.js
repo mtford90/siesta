@@ -45,7 +45,7 @@ function constructIndexes(collection, modelName, fields) {
 }
 
 function installIndexes(collection, modelName, fields, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var indexes = constructIndexes(collection, modelName, fields);
     var numCompleted = 0;
@@ -133,7 +133,7 @@ Index.prototype._getName = function () {
 };
 
 Index.prototype.install = function (callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     this._validate();
     var self = this;

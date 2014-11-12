@@ -381,7 +381,7 @@ Collection.prototype.DELETE = function(path, object) {
  * @returns {Promise}
  */
 Collection.prototype.count = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var tasks = _.map(this._mappings, function(m) {
         return _.bind(m.count, m);

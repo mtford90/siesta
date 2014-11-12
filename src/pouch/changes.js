@@ -303,7 +303,7 @@ function changesForIdentifier(ident) {
  * Merge unmergedChanges into PouchDB
  */
 function mergeChanges(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var changesByIdents = changesByIdentifiers();
     var numChanges = _.keys(changesByIdents).length;

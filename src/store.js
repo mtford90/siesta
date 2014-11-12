@@ -31,7 +31,7 @@ var cache = require('./cache');
  * ```
  */
 function get(opts, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (Logger.debug.isEnabled)
         Logger.debug('get', opts);
@@ -130,7 +130,7 @@ function get(opts, callback) {
 }
 
 function getMultiple(optsArray, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var docs = [];
     var errors = [];
@@ -160,7 +160,7 @@ function getMultiple(optsArray, callback) {
  * @param callback
  */
 function getMultipleLocal(localIdentifiers, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var results = _.reduce(localIdentifiers, function(memo, _id) {
         var obj = cache.get({
@@ -197,7 +197,7 @@ function getMultipleLocal(localIdentifiers, callback) {
 }
 
 function getMultipleRemote(remoteIdentifiers, mapping, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var results = _.reduce(remoteIdentifiers, function(memo, id) {
         var cacheQuery = {

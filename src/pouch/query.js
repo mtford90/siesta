@@ -36,7 +36,7 @@ function RawQuery(collection, modelName, query) {
 }
 
 function resultsCallback(callback, err, resp) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (err) {
         if (callback) callback(err);
@@ -49,7 +49,7 @@ function resultsCallback(callback, err, resp) {
 }
 
 RawQuery.prototype.execute = function (callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (this.mapping) { // During unit testing, we don't populate this.mapping, but rather configure Pouch manually.
         if (!this.mapping.installed) {

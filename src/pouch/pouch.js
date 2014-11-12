@@ -20,7 +20,7 @@ configureChangeEmitter();
 var POUCH_EVENT = 'change';
 
 function retryUntilWrittenMultiple(docId, newValues, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     getPouch().get(docId, function (err, doc) {
         if (err) {
@@ -91,7 +91,7 @@ function _reset(inMemory) {
 }
 
 function reset(inMemory, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     if (pouch) {
         pouch.destroy();

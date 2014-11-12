@@ -143,7 +143,7 @@ BulkMappingOperation.prototype._map = function() {
  * @private
  */
 BulkMappingOperation.prototype._lookup = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     var remoteLookups = [];
@@ -272,7 +272,7 @@ BulkMappingOperation.prototype._lookup = function(callback) {
 };
 
 BulkMappingOperation.prototype._lookupSingleton = function(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     var cachedSingleton = cache.get({

@@ -103,7 +103,7 @@ function wrapArray(arr) {
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
 
 ManyToManyProxy.prototype.get = function (callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (this.isFault) {

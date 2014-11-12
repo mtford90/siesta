@@ -57,7 +57,7 @@ OneToOneProxy.prototype.set = function (obj) {
 };
 
 OneToOneProxy.prototype.get = function (callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var self = this;
     if (this._id) {

@@ -25,7 +25,7 @@ function Query(mapping, opts) {
  * @private
  */
 function _executeUsingStorageExtension(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var storageExtension = siesta.ext.storage;
     var RawQuery = storageExtension.RawQuery;
@@ -96,7 +96,7 @@ function objectMatchesQuery(obj) {
  * @private
  */
 function _executeInMemory(callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var cacheByType = cache._localCacheByType;
     var mappingName = this.mapping.type;
@@ -130,7 +130,7 @@ function _executeInMemory(callback) {
 }
 
 Query.prototype.execute = function (callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     // if (siesta.ext.storageEnabled) {
     //     _executeUsingStorageExtension.call(this, callback);

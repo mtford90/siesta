@@ -41,7 +41,7 @@ function _httpResponse(method, path) {
         opts = args[0];
         callback = args[1];
     }
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     opts.type = method;
     if (!opts.url) { // Allow overrides.
@@ -143,7 +143,7 @@ function _httpRequest(method, path, object) {
         opts = args[0];
         callback = args[1];
     }
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     args = Array.prototype.slice.call(args, 2);
     var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
@@ -194,7 +194,7 @@ function _httpRequest(method, path, object) {
  * @returns {Promise}
  */
 function DELETE(collection, path, object) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     var args = Array.prototype.slice.call(arguments, 3);
     var opts = {};
     var callback;

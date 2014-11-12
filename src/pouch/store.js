@@ -23,7 +23,7 @@ function getFromPouch(opts, callback) {
 }
 
 function getMultipleLocalFromCouch(results, callback) {
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     PouchAdapter.getPouch().allDocs({keys: results.notCached, include_docs: true}, function (err, docs) {
         if (err) {
@@ -45,7 +45,7 @@ function getMultipleLocalFromCouch(results, callback) {
 
 function getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, callback) {
     if (Logger.trace.isEnabled) Logger.trace('getMultipleRemoteFrompouch(' + mapping.type + '):', remoteIdentifiers);
-    var deferred = q.defer();
+    var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var i = new Index(mapping.collection, mapping.type, [mapping.id]);
     var name = i._getName();
