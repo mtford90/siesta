@@ -67,12 +67,7 @@ describe('new object proxy', function() {
                     proxy.install(car);
                 });
 
-                it('installs setter', function() {
-                    assert.ok(car['setOwner']);
-                });
-                it('installs getter', function() {
-                    assert.ok(car['getOwner']);
-                });
+
 
                 describe('faults', function() {
                     it('is forward', function() {

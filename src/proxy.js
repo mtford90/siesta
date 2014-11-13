@@ -123,8 +123,6 @@ RelationshipProxy.prototype.install = function(obj) {
                 configurable: true,
                 enumerable: true
             });
-            obj[('get' + util.capitaliseFirstLetter(name))] = _.bind(this.get, this);
-            obj[('set' + util.capitaliseFirstLetter(name))] = _.bind(this.set, this);
             if (!obj.__proxies) obj.__proxies = {};
             obj.__proxies[name] = this;
             if (!obj._proxies) {
