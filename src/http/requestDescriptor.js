@@ -7,6 +7,7 @@ var Descriptor = require('./descriptor').Descriptor
 
 var _i = siesta._internal
     , util = _i.util
+    , _ = util._
     , log = _i.log
     , defineSubProperty = _i.misc.defineSubProperty
 ;
@@ -40,61 +41,61 @@ function RequestDescriptor(opts) {
 
 RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
-
-RequestDescriptor.prototype._serialise = function (obj, callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var self = this;
-    if (Logger.trace.isEnabled)
-        Logger.trace('_serialise');
-    var finished;
-    var data = this.serialiser(obj, function (err, data) {
-        if (!finished) {
+_.extend(RequestDescriptor.prototype, {
+    _serialise: function (obj, callback) {
+        var deferred = window.q ? window.q.defer() : null;
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        var self = this;
+        if (Logger.trace.isEnabled)
+            Logger.trace('_serialise');
+        var finished;
+        var data = this.serialiser(obj, function (err, data) {
+            if (!finished) {
+                data = self._transformData(data);
+                if (callback) callback(err, self._embedData(data));
+            }
+        });
+        if (data !== undefined) {
+            if (Logger.trace.isEnabled)
+                Logger.trace('serialiser doesnt use a callback');
+            finished = true;
             data = self._transformData(data);
-            if (callback) callback(err, self._embedData(data));
+            if (callback) callback(null, self._embedData(data));
         }
-    });
-    if (data !== undefined) {
-        if (Logger.trace.isEnabled)
-            Logger.trace('serialiser doesnt use a callback');
-        finished = true;
-        data = self._transformData(data);
-        if (callback) callback(null, self._embedData(data));
-    }
-    else {
-        if (Logger.trace.isEnabled)
-            Logger.trace('serialiser uses a callback', this.serialiser);
-    }
-    return deferred ? deferred.promise : null;
-};
-
-RequestDescriptor.prototype._dump = function (asJson) {
-    var obj = {};
-    obj.methods = this.method;
-    obj.mapping = this.mapping.type;
-    obj.path = this._rawOpts.path;
-    var serialiser;
-    if (typeof(this._rawOpts.serialiser) == 'function') {
-        serialiser = 'function () { ... }'
-    }
-    else {
-        serialiser = this._rawOpts.serialiser;
-    }
-    obj.serialiser = serialiser;
-    var transforms = {};
-    for (var f in this.transforms) {
-        if (this.transforms.hasOwnProperty(f)) {
-            var transform = this.transforms[f];
-            if (typeof(transform) == 'function') {
-                transforms[f] = 'function () { ... }'
-            }
-            else {
-                transforms[f] = this.transforms[f];
+        else {
+            if (Logger.trace.isEnabled)
+                Logger.trace('serialiser uses a callback', this.serialiser);
+        }
+        return deferred ? deferred.promise : null;
+    },
+    _dump: function (asJson) {
+        var obj = {};
+        obj.methods = this.method;
+        obj.mapping = this.mapping.type;
+        obj.path = this._rawOpts.path;
+        var serialiser;
+        if (typeof(this._rawOpts.serialiser) == 'function') {
+            serialiser = 'function () { ... }'
+        }
+        else {
+            serialiser = this._rawOpts.serialiser;
+        }
+        obj.serialiser = serialiser;
+        var transforms = {};
+        for (var f in this.transforms) {
+            if (this.transforms.hasOwnProperty(f)) {
+                var transform = this.transforms[f];
+                if (typeof(transform) == 'function') {
+                    transforms[f] = 'function () { ... }'
+                }
+                else {
+                    transforms[f] = this.transforms[f];
+                }
             }
         }
+        obj.transforms = transforms;
+        return asJson ? JSON.stringify(obj, null, 4) : obj;
     }
-    obj.transforms = transforms;
-    return asJson ? JSON.stringify(obj, null, 4) : obj;
-};
+});
 
 exports.RequestDescriptor = RequestDescriptor;

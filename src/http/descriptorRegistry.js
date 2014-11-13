@@ -3,7 +3,10 @@ var log = _i.log;
 var Logger = log.loggerWithName('DescriptorRegistry');
 Logger.setLevel(log.Level.warn);
 
-var assert = _i.misc.assert;
+var assert = _i.misc.assert,
+    util = _i.util,
+    _ = util._;
+
 
 /**
  * @class Entry point for descriptor registration.
@@ -29,16 +32,6 @@ function _registerDescriptor(descriptors, descriptor) {
     descriptors[collection].push(descriptor);
 }
 
-DescriptorRegistry.prototype.registerRequestDescriptor = function (requestDescriptor) {
-    _registerDescriptor(this.requestDescriptors, requestDescriptor);
-};
-
-DescriptorRegistry.prototype.registerResponseDescriptor = function (responseDescriptor) {
-    if (Logger.trace.isEnabled)
-        Logger.trace('registerResponseDescriptor');
-    _registerDescriptor(this.responseDescriptors, responseDescriptor);
-};
-
 function _descriptorsForCollection(descriptors, collection) {
     var descriptorsForCollection;
     if (typeof(collection) == 'string') {
@@ -50,22 +43,30 @@ function _descriptorsForCollection(descriptors, collection) {
     return descriptorsForCollection;
 }
 
-DescriptorRegistry.prototype.requestDescriptorsForCollection = function (collection) {
-    return _descriptorsForCollection(this.requestDescriptors, collection);
-};
-
-DescriptorRegistry.prototype.responseDescriptorsForCollection = function (collection) {
-    var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
-    if (!descriptorsForCollection.length) {
-        if (Logger.debug.isEnabled)
-            Logger.debug('No response descriptors for collection ', this.responseDescriptors);
+_.extend(DescriptorRegistry.prototype, {
+    registerRequestDescriptor: function (requestDescriptor) {
+        _registerDescriptor(this.requestDescriptors, requestDescriptor);
+    },
+    registerResponseDescriptor: function (responseDescriptor) {
+        if (Logger.trace.isEnabled)
+            Logger.trace('registerResponseDescriptor');
+        _registerDescriptor(this.responseDescriptors, responseDescriptor);
+    },
+    requestDescriptorsForCollection: function (collection) {
+        return _descriptorsForCollection(this.requestDescriptors, collection);
+    },
+    responseDescriptorsForCollection: function (collection) {
+        var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
+        if (!descriptorsForCollection.length) {
+            if (Logger.debug.isEnabled)
+                Logger.debug('No response descriptors for collection ', this.responseDescriptors);
+        }
+        return descriptorsForCollection;
+    },
+    reset: function () {
+        this.requestDescriptors = {};
+        this.responseDescriptors = {};
     }
-    return  descriptorsForCollection;
-};
-
-DescriptorRegistry.prototype.reset = function () {
-    this.requestDescriptors = {};
-    this.responseDescriptors = {};
-};
+});
 
 exports.DescriptorRegistry = new DescriptorRegistry();

@@ -22,7 +22,7 @@ function SiestaModel(mapping) {
     var self = this;
     this.mapping = mapping;
     Object.defineProperty(this, 'idField', {
-        get: function() {
+        get: function () {
             return self.mapping.id || 'id';
         },
         enumerable: true,
@@ -32,9 +32,9 @@ function SiestaModel(mapping) {
     defineSubProperty.call(this, 'collection', this.mapping);
     defineSubProperty.call(this, '_fields', this.mapping);
     Object.defineProperty(this, '_relationshipFields', {
-        get: function() {
+        get: function () {
             var proxies = _.map(Object.keys(self.__proxies), function (x) {return self.__proxies[x]});
-            return _.map(proxies, function(p) {
+            return _.map(proxies, function (p) {
                 if (p.isForward) {
                     return p.forwardName;
                 } else {
@@ -50,7 +50,7 @@ function SiestaModel(mapping) {
     this.isFault = false;
 
     Object.defineProperty(this, 'isSaved', {
-        get: function() {
+        get: function () {
             return !!self._rev;
         },
         enumerable: true,
@@ -67,87 +67,86 @@ function SiestaModel(mapping) {
  * @returns {*}
  * @private
  */
-SiestaModel.prototype._dump = function(asJson) {
-    var self = this;
-    var cleanObj = {};
-    cleanObj.mapping = this.mapping.type;
-    cleanObj.collection = this.collection;
-    cleanObj._id = this._id;
-    cleanObj = _.reduce(this._fields, function(memo, f) {
-        if (self[f]) {
-            memo[f] = self[f];
-        }
-        return memo;
-    }, cleanObj);
-    cleanObj = _.reduce(this._relationshipFields, function(memo, f) {
-        var proxy = self.__proxies[f];
-        if (proxy) {
-            if (proxy.hasOwnProperty('_id')) {
-                if (util.isArray(proxy._id)) {
-                    if (self[f].length) {
-                        memo[f] = proxy._id;
-                    }
-                } else if (proxy._id) {
-                    memo[f] = proxy._id;
-                }
-            } else {
+
+_.extend(SiestaModel.prototype, {
+    _dump: function (asJson) {
+        var self = this;
+        var cleanObj = {};
+        cleanObj.mapping = this.mapping.type;
+        cleanObj.collection = this.collection;
+        cleanObj._id = this._id;
+        cleanObj = _.reduce(this._fields, function (memo, f) {
+            if (self[f]) {
                 memo[f] = self[f];
             }
+            return memo;
+        }, cleanObj);
+        cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
+            var proxy = self.__proxies[f];
+            if (proxy) {
+                if (proxy.hasOwnProperty('_id')) {
+                    if (util.isArray(proxy._id)) {
+                        if (self[f].length) {
+                            memo[f] = proxy._id;
+                        }
+                    } else if (proxy._id) {
+                        memo[f] = proxy._id;
+                    }
+                } else {
+                    memo[f] = self[f];
+                }
+            }
+            return memo;
+        }, cleanObj);
+
+        return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
+    },
+    get: function (callback) {
+        var deferred = window.q ? window.q.defer() : null;
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback(null, this);
+        return deferred ? deferred.promise : null;
+    },
+    remove: function (callback) {
+        var deferred = window.q ? window.q.defer() : null;
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        cache.remove(this);
+        this.removed = true;
+        coreChanges.registerChange({
+            collection: this.collection,
+            mapping: this.mapping.type,
+            _id: this._id,
+            oldId: this._id,
+            old: this,
+            type: coreChanges.ChangeType.Remove,
+            obj: this
+        });
+        callback(null, this);
+        return deferred ? deferred.promise : null;
+    },
+    restore: function (callback) {
+        var deferred = window.q ? window.q.defer() : null;
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        if (this.removed) {
+            cache.insert(this);
+            this.removed = false;
         }
-        return memo;
-    }, cleanObj);
-
-    return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
-};
-
-
-SiestaModel.prototype.get = function(callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    callback(null, this);
-    return deferred ? deferred.promise : null;
-};
-
-SiestaModel.prototype.remove = function(callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    cache.remove(this);
-    this.removed = true;
-    coreChanges.registerChange({
-        collection: this.collection,
-        mapping: this.mapping.type,
-        _id: this._id,
-        oldId: this._id,
-        old: this,
-        type: coreChanges.ChangeType.Remove,
-        obj: this
-    });
-    callback(null, this);
-    return deferred ? deferred.promise : null;
-}
-
-SiestaModel.prototype.restore = function(callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    if (this.removed) {
-        cache.insert(this);
-        this.removed = false;
+        coreChanges.registerChange({
+            collection: this.collection,
+            mapping: this.mapping.type,
+            _id: this._id,
+            newId: this._id,
+            new: this,
+            type: coreChanges.ChangeType.New,
+            obj: this
+        });
+        callback(null, this);
+        return deferred ? deferred.promise : null;
     }
-    coreChanges.registerChange({
-        collection: this.collection,
-        mapping: this.mapping.type,
-        _id: this._id,
-        newId: this._id,
-        new: this,
-        type: coreChanges.ChangeType.New,
-        obj: this
-    });
-    callback(null, this);
-    return deferred ? deferred.promise : null;
-}
+});
 
 exports.SiestaModel = SiestaModel;
-exports.dumpSaveQueues = function() {
+exports.dumpSaveQueues = function () {
     var dumped = {};
     for (var id in queues) {
         if (queues.hasOwnProperty(id)) {
