@@ -1,5 +1,5 @@
 /**
- * @module collection 
+ * @module collection
  */
 var _ = require('./util')._;
 
@@ -8,18 +8,19 @@ function CollectionRegistry() {
     this.collectionNames = [];
 }
 
-CollectionRegistry.prototype.register = function (collection) {
-    var name = collection._name;
-    this[name] = collection;
-    this.collectionNames.push(name);
-};
-
-CollectionRegistry.prototype.reset = function () {
-    var self = this;
-    _.each(this.collectionNames, function (name) {
-        delete self[name];
-    });
-    this.collectionNames = [];
-};
+_.extend(CollectionRegistry.prototype, {
+    register: function (collection) {
+        var name = collection._name;
+        this[name] = collection;
+        this.collectionNames.push(name);
+    },
+    reset: function () {
+        var self = this;
+        _.each(this.collectionNames, function (name) {
+            delete self[name];
+        });
+        this.collectionNames = [];
+    }
+});
 
 exports.CollectionRegistry = new CollectionRegistry();
