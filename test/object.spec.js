@@ -24,10 +24,6 @@ describe('object!!', function() {
 
     describe('fields', function() {
 
-        it('idField', function() {
-            var r = new SiestaModel(mapping);
-            assert.equal(r.idField, 'id');
-        });
 
         it('type field', function() {
             var r = new SiestaModel(mapping);

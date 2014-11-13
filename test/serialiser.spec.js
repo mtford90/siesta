@@ -55,8 +55,7 @@ describe('serialisers', function() {
         });
         it('should return null if no id field', function(done) {
             personMapping.map({
-                name: 'Michael Ford',
-                id: 5
+                name: 'Michael Ford'
             }, function(err, car) {
                 if (err) done(err);
                 assert.equal(siesta.ext.http.Serialiser.idSerialiser(car), null);

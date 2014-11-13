@@ -13,8 +13,6 @@
 //var siesta = require('../../index');
 //var assert = require('chai').assert;
 //
-//
-//
 //describe('hacker news integration test', function () {
 //    // When @HiroAgustin tried to pass name of mapping to descriptor
 //    // an error was thrown :(
@@ -54,7 +52,6 @@
 //    });
 //
 //    it('Issue with regexp returning some array-like object', function (done) {
-//        this.timeout(10000);
 //        var HackerNews = new siesta.Collection('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.mapping('Item', {
@@ -85,7 +82,7 @@
 //                    try {
 //                        assert.ok(item);
 //                    }
-//                    catch(e) {
+//                    catch (e) {
 //                        err = e;
 //                    }
 //                    done(err);
@@ -94,5 +91,40 @@
 //        });
 //    });
 //
+//    it('default id works', function (done) {
+//        var HackerNews = new siesta.Collection('HackerNews');
+//        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
+//        var Item = HackerNews.mapping('Item', {
+//            attributes: [
+//                'score'
+//                , 'time'
+//                , 'title'
+//                , 'type'
+//                , 'url'
+//            ]
+//        });
+//        HackerNews.descriptor({
+//            path: 'item/*',
+//            method: 'GET',
+//            mapping: 'Item'
+//        });
 //
+//        HackerNews.install(function (err) {
+//            if (err) {
+//                done(err);
+//            }
+//            else {
+//                server.respondWith("GET", "https://hacker-news.firebaseio.com/v0/item/8582985.json",
+//                    [200, {"Content-Type": "application/json"},
+//                        JSON.stringify(data)]);
+//                HackerNews.GET('item/8582985.json', function (err, item) {
+//                    if (err) done(err);
+//                    console.log('values', item.__values);
+//                    assert.ok(item.id, 'should have id');
+//                    assert.ok(item.__values.id, 'should have id');
+//                    done(err);
+//                });
+//            }
+//        });
+//    });
 //});
