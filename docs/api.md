@@ -8,24 +8,39 @@ sidebar: nav2.html
 **Modules**
 
 * [collection](#module_collection)
+  * [collection~GET(path, optsOrCallback, callback)](#module_collection..GET)
+  * [collection~OPTIONS(path, optsOrCallback, callback)](#module_collection..OPTIONS)
+  * [collection~TRACE(path, optsOrCallback, callback)](#module_collection..TRACE)
+  * [collection~HEAD(path, optsOrCallback, callback)](#module_collection..HEAD)
+  * [collection~POST(path, model, optsOrCallback, callback)](#module_collection..POST)
+  * [collection~PUT(path, model, optsOrCallback, callback)](#module_collection..PUT)
+  * [collection~PATCH(path, model, optsOrCallback, callback)](#module_collection..PATCH)
+  * [collection~DELETE(path, model, optsOrCallback, callback)](#module_collection..DELETE)
+  * [collection~count(callback)](#module_collection..count)
   * [class: collection~Collection](#module_collection..Collection)
     * [new collection~Collection(name)](#new_module_collection..Collection)
     * [collection.baseURL](#module_collection..Collection#baseURL)
     * [collection.installed](#module_collection..Collection#installed)
-    * [collection.install(callback)](#module_collection..Collection#install)
-    * [collection._finaliseInstallation(err, callback)](#module_collection..Collection#_finaliseInstallation)
-    * [collection._mapping(name, mapping)](#module_collection..Collection#_mapping)
-    * [collection.mapping(optsOrName, opts)](#module_collection..Collection#mapping)
-    * [collection._dump(asJson)](#module_collection..Collection#_dump)
-    * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
-    * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
-    * [collection.TRACE(path, optsOrCallback, callback)](#module_collection..Collection#TRACE)
-    * [collection.HEAD(path, optsOrCallback, callback)](#module_collection..Collection#HEAD)
-    * [collection.POST(path, model, optsOrCallback, callback)](#module_collection..Collection#POST)
-    * [collection.PUT(path, model, optsOrCallback, callback)](#module_collection..Collection#PUT)
-    * [collection.PATCH(path, model, optsOrCallback, callback)](#module_collection..Collection#PATCH)
-    * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
-    * [collection.count(callback)](#module_collection..Collection#count)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(callback)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(err, callback)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(name, opts)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(optsOrName, opts)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(asJson)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
 * [http](#module_http)
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
@@ -119,6 +134,153 @@ sidebar: nav2.html
  
 <a name="module_collection"></a>
 #collection
+**Members**
+
+* [collection](#module_collection)
+  * [collection~GET(path, optsOrCallback, callback)](#module_collection..GET)
+  * [collection~OPTIONS(path, optsOrCallback, callback)](#module_collection..OPTIONS)
+  * [collection~TRACE(path, optsOrCallback, callback)](#module_collection..TRACE)
+  * [collection~HEAD(path, optsOrCallback, callback)](#module_collection..HEAD)
+  * [collection~POST(path, model, optsOrCallback, callback)](#module_collection..POST)
+  * [collection~PUT(path, model, optsOrCallback, callback)](#module_collection..PUT)
+  * [collection~PATCH(path, model, optsOrCallback, callback)](#module_collection..PATCH)
+  * [collection~DELETE(path, model, optsOrCallback, callback)](#module_collection..DELETE)
+  * [collection~count(callback)](#module_collection..count)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(name)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(callback)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(err, callback)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(name, opts)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(optsOrName, opts)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+  * [class: collection~Collection](#module_collection..Collection)
+    * [new collection~Collection(asJson)](#new_module_collection..Collection)
+    * [collection.baseURL](#module_collection..Collection#baseURL)
+    * [collection.installed](#module_collection..Collection#installed)
+
+<a name="module_collection..GET"></a>
+##collection~GET(path, optsOrCallback, callback)
+Send a GET request
+
+**Params**
+
+- path `String` - The path to the resource we want to GET  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..OPTIONS"></a>
+##collection~OPTIONS(path, optsOrCallback, callback)
+Send a OPTIONS request
+
+**Params**
+
+- path `String` - The path to the resource to which we want to send an OPTIONS request  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..TRACE"></a>
+##collection~TRACE(path, optsOrCallback, callback)
+Send a TRACE request
+
+**Params**
+
+- path `path` - The path to the resource to which we want to send a TRACE request  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..HEAD"></a>
+##collection~HEAD(path, optsOrCallback, callback)
+Send a HEAD request
+
+**Params**
+
+- path `String` - The path to the resource to which we want to send a HEAD request  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..POST"></a>
+##collection~POST(path, model, optsOrCallback, callback)
+Send a POST request
+
+**Params**
+
+- path `String` - The path to the resource to which we want to send a POST request  
+- model `SiestaModel` - The model that we would like to POST  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..PUT"></a>
+##collection~PUT(path, model, optsOrCallback, callback)
+Send a PUT request
+
+**Params**
+
+- path `String` - The path to the resource to which we want to send a PUT request  
+- model `SiestaModel` - The model that we would like to PUT  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..PATCH"></a>
+##collection~PATCH(path, model, optsOrCallback, callback)
+Send a PATCH request
+
+**Params**
+
+- path `String` - The path to the resource to which we want to send a PATCH request  
+- model `SiestaModel` - The model that we would like to PATCH  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..DELETE"></a>
+##collection~DELETE(path, model, optsOrCallback, callback)
+Send a DELETE request. Also removes the object.
+
+**Params**
+
+- path `String` - The path to the resource to which we want to DELETE  
+- model `SiestaModel` - The model that we would like to PATCH  
+- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
+- callback `function` - Callback if opts specified.  
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
+<a name="module_collection..count"></a>
+##collection~count(callback)
+Returns the number of objects in this collection.
+
+**Params**
+
+- callback   
+
+**Scope**: inner function of [collection](#module_collection)  
+**Returns**: `Promise`  
 <a name="module_collection..Collection"></a>
 ##class: collection~Collection
 **Members**
@@ -127,20 +289,6 @@ sidebar: nav2.html
   * [new collection~Collection(name)](#new_module_collection..Collection)
   * [collection.baseURL](#module_collection..Collection#baseURL)
   * [collection.installed](#module_collection..Collection#installed)
-  * [collection.install(callback)](#module_collection..Collection#install)
-  * [collection._finaliseInstallation(err, callback)](#module_collection..Collection#_finaliseInstallation)
-  * [collection._mapping(name, mapping)](#module_collection..Collection#_mapping)
-  * [collection.mapping(optsOrName, opts)](#module_collection..Collection#mapping)
-  * [collection._dump(asJson)](#module_collection..Collection#_dump)
-  * [collection.GET(path, optsOrCallback, callback)](#module_collection..Collection#GET)
-  * [collection.OPTIONS(path, optsOrCallback, callback)](#module_collection..Collection#OPTIONS)
-  * [collection.TRACE(path, optsOrCallback, callback)](#module_collection..Collection#TRACE)
-  * [collection.HEAD(path, optsOrCallback, callback)](#module_collection..Collection#HEAD)
-  * [collection.POST(path, model, optsOrCallback, callback)](#module_collection..Collection#POST)
-  * [collection.PUT(path, model, optsOrCallback, callback)](#module_collection..Collection#PUT)
-  * [collection.PATCH(path, model, optsOrCallback, callback)](#module_collection..Collection#PATCH)
-  * [collection.DELETE(path, model, optsOrCallback, callback)](#module_collection..Collection#DELETE)
-  * [collection.count(callback)](#module_collection..Collection#count)
 
 <a name="new_module_collection..Collection"></a>
 ###new collection~Collection(name)
@@ -172,16 +320,45 @@ The URL of the API e.g. http://api.github.com
 Set to true if installation has succeeded. You cannot use the collectio
 
 **Type**: `boolean`  
-<a name="module_collection..Collection#install"></a>
-###collection.install(callback)
+<a name="module_collection..Collection"></a>
+##class: collection~Collection
+**Members**
+
+* [class: collection~Collection](#module_collection..Collection)
+  * [new collection~Collection(callback)](#new_module_collection..Collection)
+  * [collection.baseURL](#module_collection..Collection#baseURL)
+  * [collection.installed](#module_collection..Collection#installed)
+
+<a name="new_module_collection..Collection"></a>
+###new collection~Collection(callback)
 Ensure mappings are installed.
 
 **Params**
 
 - callback   
 
-<a name="module_collection..Collection#_finaliseInstallation"></a>
-###collection._finaliseInstallation(err, callback)
+**Scope**: inner class of [collection](#module_collection)  
+<a name="module_collection..Collection#baseURL"></a>
+###collection.baseURL
+The URL of the API e.g. http://api.github.com
+
+**Type**: `string`  
+<a name="module_collection..Collection#installed"></a>
+###collection.installed
+Set to true if installation has succeeded. You cannot use the collectio
+
+**Type**: `boolean`  
+<a name="module_collection..Collection"></a>
+##class: collection~Collection
+**Members**
+
+* [class: collection~Collection](#module_collection..Collection)
+  * [new collection~Collection(err, callback)](#new_module_collection..Collection)
+  * [collection.baseURL](#module_collection..Collection#baseURL)
+  * [collection.installed](#module_collection..Collection#installed)
+
+<a name="new_module_collection..Collection"></a>
+###new collection~Collection(err, callback)
 Mark this collection as installed, and place the collection on the global Siesta object.
 
 **Params**
@@ -189,19 +366,59 @@ Mark this collection as installed, and place the collection on the global Siesta
 - err `Object`  
 - callback `function`  
 
-<a name="module_collection..Collection#_mapping"></a>
-###collection._mapping(name, mapping)
+**Scope**: inner class of [collection](#module_collection)  
+<a name="module_collection..Collection#baseURL"></a>
+###collection.baseURL
+The URL of the API e.g. http://api.github.com
+
+**Type**: `string`  
+<a name="module_collection..Collection#installed"></a>
+###collection.installed
+Set to true if installation has succeeded. You cannot use the collectio
+
+**Type**: `boolean`  
+<a name="module_collection..Collection"></a>
+##class: collection~Collection
+**Members**
+
+* [class: collection~Collection](#module_collection..Collection)
+  * [new collection~Collection(name, opts)](#new_module_collection..Collection)
+  * [collection.baseURL](#module_collection..Collection#baseURL)
+  * [collection.installed](#module_collection..Collection#installed)
+
+<a name="new_module_collection..Collection"></a>
+###new collection~Collection(name, opts)
 Given the name of a mapping and an options object describing the mapping, creating a Mapping
 object, install it and return it.
 
 **Params**
 
 - name `String`  
-- mapping `Object`  
+- opts `Object`  
 
+**Scope**: inner class of [collection](#module_collection)  
 **Returns**: `Mapping`  
-<a name="module_collection..Collection#mapping"></a>
-###collection.mapping(optsOrName, opts)
+<a name="module_collection..Collection#baseURL"></a>
+###collection.baseURL
+The URL of the API e.g. http://api.github.com
+
+**Type**: `string`  
+<a name="module_collection..Collection#installed"></a>
+###collection.installed
+Set to true if installation has succeeded. You cannot use the collectio
+
+**Type**: `boolean`  
+<a name="module_collection..Collection"></a>
+##class: collection~Collection
+**Members**
+
+* [class: collection~Collection](#module_collection..Collection)
+  * [new collection~Collection(optsOrName, opts)](#new_module_collection..Collection)
+  * [collection.baseURL](#module_collection..Collection#baseURL)
+  * [collection.installed](#module_collection..Collection#installed)
+
+<a name="new_module_collection..Collection"></a>
+###new collection~Collection(optsOrName, opts)
 Registers a mapping with this collection.
 
 **Params**
@@ -209,117 +426,47 @@ Registers a mapping with this collection.
 - optsOrName `String` | `Object` - An options object or the name of the mapping. Must pass options as second param if specify name.  
 - opts `Object` - Options if name already specified.  
 
+**Scope**: inner class of [collection](#module_collection)  
 **Returns**: `Mapping`  
-<a name="module_collection..Collection#_dump"></a>
-###collection._dump(asJson)
+<a name="module_collection..Collection#baseURL"></a>
+###collection.baseURL
+The URL of the API e.g. http://api.github.com
+
+**Type**: `string`  
+<a name="module_collection..Collection#installed"></a>
+###collection.installed
+Set to true if installation has succeeded. You cannot use the collectio
+
+**Type**: `boolean`  
+<a name="module_collection..Collection"></a>
+##class: collection~Collection
+**Members**
+
+* [class: collection~Collection](#module_collection..Collection)
+  * [new collection~Collection(asJson)](#new_module_collection..Collection)
+  * [collection.baseURL](#module_collection..Collection#baseURL)
+  * [collection.installed](#module_collection..Collection#installed)
+
+<a name="new_module_collection..Collection"></a>
+###new collection~Collection(asJson)
 Dump this collection as JSON
 
 **Params**
 
 - asJson `Boolean` - Whether or not to apply JSON.stringify  
 
+**Scope**: inner class of [collection](#module_collection)  
 **Returns**: `String` | `Object`  
-<a name="module_collection..Collection#GET"></a>
-###collection.GET(path, optsOrCallback, callback)
-Send a GET request
+<a name="module_collection..Collection#baseURL"></a>
+###collection.baseURL
+The URL of the API e.g. http://api.github.com
 
-**Params**
+**Type**: `string`  
+<a name="module_collection..Collection#installed"></a>
+###collection.installed
+Set to true if installation has succeeded. You cannot use the collectio
 
-- path `String` - The path to the resource we want to GET  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#OPTIONS"></a>
-###collection.OPTIONS(path, optsOrCallback, callback)
-Send a OPTIONS request
-
-**Params**
-
-- path `String` - The path to the resource to which we want to send an OPTIONS request  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#TRACE"></a>
-###collection.TRACE(path, optsOrCallback, callback)
-Send a TRACE request
-
-**Params**
-
-- path `path` - The path to the resource to which we want to send a TRACE request  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#HEAD"></a>
-###collection.HEAD(path, optsOrCallback, callback)
-Send a HEAD request
-
-**Params**
-
-- path `String` - The path to the resource to which we want to send a HEAD request  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#POST"></a>
-###collection.POST(path, model, optsOrCallback, callback)
-Send a POST request
-
-**Params**
-
-- path `String` - The path to the resource to which we want to send a POST request  
-- model `SiestaModel` - The model that we would like to POST  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#PUT"></a>
-###collection.PUT(path, model, optsOrCallback, callback)
-Send a PUT request
-
-**Params**
-
-- path `String` - The path to the resource to which we want to send a PUT request  
-- model `SiestaModel` - The model that we would like to PUT  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#PATCH"></a>
-###collection.PATCH(path, model, optsOrCallback, callback)
-Send a PATCH request
-
-**Params**
-
-- path `String` - The path to the resource to which we want to send a PATCH request  
-- model `SiestaModel` - The model that we would like to PATCH  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#DELETE"></a>
-###collection.DELETE(path, model, optsOrCallback, callback)
-Send a DELETE request. Also removes the object.
-
-**Params**
-
-- path `String` - The path to the resource to which we want to DELETE  
-- model `SiestaModel` - The model that we would like to PATCH  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
-
-**Returns**: `Promise`  
-<a name="module_collection..Collection#count"></a>
-###collection.count(callback)
-Returns the number of objects in this collection.
-
-**Params**
-
-- callback   
-
-**Returns**: `Promise`  
+**Type**: `boolean`  
 <a name="module_http"></a>
 #http
 Provisions usage of $.ajax and similar functions to send HTTP requests mapping
