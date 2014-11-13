@@ -23,7 +23,7 @@ function SiestaModel(mapping) {
     this.mapping = mapping;
     Object.defineProperty(this, 'idField', {
         get: function() {
-            return self.mapping.id ? self.mapping.id : 'id';
+            return self.mapping.id || 'id';
         },
         enumerable: true,
         configurable: true

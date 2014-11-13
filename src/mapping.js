@@ -393,7 +393,7 @@ Mapping.prototype._new = function(data) {
         var self = this;
         var _id;
         if (data) {
-            _id = data._id ? data._id : guid();
+            _id = data._id || guid();
         } else {
             _id = guid();
         }
