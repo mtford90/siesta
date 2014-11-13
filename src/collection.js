@@ -207,7 +207,6 @@ _.extend(Collection.prototype, {
 
     descriptor: function (opts) {
         var descriptors = [];
-        console.log('http', siesta.ext);
         if (siesta.ext.httpEnabled) {
             opts.collection = this;
             var methods = siesta.ext.http._resolveMethod(opts.method);

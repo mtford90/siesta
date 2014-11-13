@@ -40,7 +40,7 @@ function OneToManyProxy(opts) {
                 if (self._id) {
                     if (self.related) {
                         if (self._id.length != self.related.length) {
-                            validateRelated.call(this);
+                            self.validateRelated();
                             return true;
                         }
                         else {
@@ -65,7 +65,7 @@ function OneToManyProxy(opts) {
                     else {
                         self._id = [];
                         self.related = [];
-                        wrapArray.call(self, self.related);
+                        this.wrapArray(self.related);
                     }
                 }
             }
@@ -77,144 +77,138 @@ function OneToManyProxy(opts) {
 
 OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
 
-
-function clearReverse(removed) {
-    var self = this;
-    _.each(removed, function (removedObject) {
-        var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
-        proxy.set.call(reverseProxy, null);
-    });
-}
-
-function setReverse(added) {
-    var self = this;
-    _.each(added, function (added) {
-        var forwardProxy = proxy.getReverseProxyForObject.call(self, added);
-        proxy.set.call(forwardProxy, self.object);
-    });
-}
-
-function wrapArray(arr) {
-    var self = this;
-    wrapArrayForAttributes(arr, this.reverseName, this.object);
-    if (!arr.oneToManyObserver) {
-        arr.oneToManyObserver = new ArrayObserver(arr);
-        var observerFunction = function (splices) {
-            splices.forEach(function (splice) {
-                var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
-                var removed = splice.removed;
-                clearReverse.call(self, removed);
-                setReverse.call(self, added);
-                var mapping = proxy.getForwardMapping.call(self);
-                coreChanges.registerChange({
-                    collection: mapping.collection,
-                    mapping: mapping.type,
-                    _id: self.object._id,
-                    field: proxy.getForwardName.call(self),
-                    removed: removed,
-                    added: added,
-                    removedId: _.pluck(removed, '_id'),
-                    addedId: _.pluck(added, '_id'),
-                    type: ChangeType.Splice,
-                    index: splice.index,
-                    obj: self.object
+_.extend(OneToManyProxy.prototype, {
+    clearReverse: function (removed) {
+        var self = this;
+        _.each(removed, function (removedObject) {
+            var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
+            proxy.set.call(reverseProxy, null);
+        });
+    },
+    setReverse: function (added) {
+        var self = this;
+        _.each(added, function (added) {
+            var forwardProxy = proxy.getReverseProxyForObject.call(self, added);
+            proxy.set.call(forwardProxy, self.object);
+        });
+    },
+    wrapArray: function (arr) {
+        var self = this;
+        wrapArrayForAttributes(arr, this.reverseName, this.object);
+        if (!arr.oneToManyObserver) {
+            arr.oneToManyObserver = new ArrayObserver(arr);
+            var observerFunction = function (splices) {
+                splices.forEach(function (splice) {
+                    var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
+                    var removed = splice.removed;
+                    self.clearReverse(removed);
+                    self.setReverse(added);
+                    var mapping = proxy.getForwardMapping.call(self);
+                    coreChanges.registerChange({
+                        collection: mapping.collection,
+                        mapping: mapping.type,
+                        _id: self.object._id,
+                        field: proxy.getForwardName.call(self),
+                        removed: removed,
+                        added: added,
+                        removedId: _.pluck(removed, '_id'),
+                        addedId: _.pluck(added, '_id'),
+                        type: ChangeType.Splice,
+                        index: splice.index,
+                        obj: self.object
+                    });
                 });
-            });
-        };
-        arr.oneToManyObserver.open(observerFunction);
-    }
-}
-
-
-OneToManyProxy.prototype.get = function (callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var self = this;
-    if (this.isFault) {
-        if (this._id.length) {
-            var storeOpts = {_id: this._id};
-            Store.get(storeOpts, function (err, stored) {
-                if (err) {
-                    if (callback) callback(err);
-                }
-                else {
-                    self.related = stored;
-                    if (callback) callback(null, stored);
-                }
-            });
+            };
+            arr.oneToManyObserver.open(observerFunction);
         }
-        else if (callback) {
-            callback(null, this.related);
+    },
+    get: function (callback) {
+        var deferred = window.q ? window.q.defer() : null;
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        var self = this;
+        if (this.isFault) {
+            if (this._id.length) {
+                var storeOpts = {_id: this._id};
+                Store.get(storeOpts, function (err, stored) {
+                    if (err) {
+                        if (callback) callback(err);
+                    }
+                    else {
+                        self.related = stored;
+                        if (callback) callback(null, stored);
+                    }
+                });
+            }
+            else if (callback) {
+                callback(null, this.related);
+            }
         }
-    }
-    else {
-        if (callback) callback(null, this.related);
-    }
-    return deferred ? deferred.promise : null;
-};
-
-/**
- * Validate the object that we're setting
- * @param obj
- * @returns {string|null} An error message or null
- */
-function validate(obj) {
-    var str = Object.prototype.toString.call(obj);
-    if (this.isForward) {
-        if (str == '[object Array]') {
-            return 'Cannot assign array forward oneToMany (' + str + '): ' + this.forwardName;
+        else {
+            if (callback) callback(null, this.related);
         }
-    }
-    else {
-        if (str != '[object Array]') {
-            return 'Cannot scalar to reverse oneToMany (' + str + '): ' + this.reverseName;
+        return deferred ? deferred.promise : null;
+    },
+    /**
+     * Validate the object that we're setting
+     * @param obj
+     * @returns {string|null} An error message or null
+     * @class OneToManyProxy
+     */
+    validate: function (obj) {
+        var str = Object.prototype.toString.call(obj);
+        if (this.isForward) {
+            if (str == '[object Array]') {
+                return 'Cannot assign array forward oneToMany (' + str + '): ' + this.forwardName;
+            }
         }
-    }
-    return null;
-}
-
-function validateRelated() {
-    var self = this;
-    if (self._id) {
-        if (self.related) {
-            if (self._id.length != self.related.length) {
-                if (self.related.length > 0) {
-                    throw new InternalSiestaError('_id and related are somehow out of sync');
+        else {
+            if (str != '[object Array]') {
+                return 'Cannot scalar to reverse oneToMany (' + str + '): ' + this.reverseName;
+            }
+        }
+        return null;
+    },
+    validateRelated: function () {
+        var self = this;
+        if (self._id) {
+            if (self.related) {
+                if (self._id.length != self.related.length) {
+                    if (self.related.length > 0) {
+                        throw new InternalSiestaError('_id and related are somehow out of sync');
+                    }
                 }
             }
         }
-    }
-}
-
-OneToManyProxy.prototype.set = function (obj) {
-    proxy.checkInstalled.call(this);
-    var self = this;
-    if (obj) {
-        var errorMessage;
-        if (errorMessage = validate.call(this, obj)) {
-            return errorMessage;
+    },
+    set: function (obj) {
+        proxy.checkInstalled.call(this);
+        var self = this;
+        if (obj) {
+            var errorMessage;
+            if (errorMessage = this.validate(obj)) {
+                return errorMessage;
+            }
+            else {
+                proxy.clearReverseRelated.call(this);
+                proxy.set.call(self, obj);
+                if (self.isReverse) {
+                    this.wrapArray(self.related);
+                }
+                proxy.setReverse.call(self, obj);
+            }
         }
         else {
             proxy.clearReverseRelated.call(this);
             proxy.set.call(self, obj);
-            if (self.isReverse) {
-                wrapArray.call(this, self.related);
-            }
-            proxy.setReverse.call(self, obj);
+        }
+    },
+    install: function (obj) {
+        RelationshipProxy.prototype.install.call(this, obj);
+        if (this.isReverse) {
+            obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
         }
     }
-    else {
-        proxy.clearReverseRelated.call(this);
-        proxy.set.call(self, obj);
-    }
-};
-
-OneToManyProxy.prototype.install = function (obj) {
-    RelationshipProxy.prototype.install.call(this, obj);
-    if (this.isReverse) {
-        obj[ ('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
-    }
-};
+});
 
 
 exports.OneToManyProxy = OneToManyProxy;
