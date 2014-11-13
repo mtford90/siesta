@@ -14,7 +14,7 @@ var proxy = require('./proxy')
     , SiestaModel = require('./object').SiestaModel
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
-;
+    ;
 
 /**
  * [ManyToManyProxy description]
@@ -39,7 +39,7 @@ function ManyToManyProxy(opts) {
                 if (!self._id) {
                     self._id = [];
                     self.related = [];
-                    wrapArray.call(self, self.related);
+                    self.wrapArray(self.related);
                 }
             }
         }
@@ -47,113 +47,111 @@ function ManyToManyProxy(opts) {
     this._reverseIsArray = true;
 }
 
-
-function clearReverse(removed) {
-    var self = this;
-    _.each(removed, function (removedObject) {
-        var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
-        var idx = reverseProxy._id.indexOf(self.object._id);
-        proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function (){
-            proxy.splice.call(reverseProxy, idx, 1);
-        });
-    });
-}
-
-function setReverse(added) {
-    var self = this;
-    _.each(added, function (addedObject) {
-        var reverseProxy = proxy.getReverseProxyForObject.call(self, addedObject);
-        proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function (){
-            proxy.splice.call(reverseProxy, 0, 0, self.object);
-        });
-    });
-}
-
-function wrapArray(arr) {
-    var self = this;
-    wrapArrayForAttributes(arr, this.reverseName, this.object);
-    if (!arr.oneToManyObserver) {
-        arr.oneToManyObserver = new ArrayObserver(arr);
-        var observerFunction = function (splices) {
-            splices.forEach(function (splice) {
-                var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
-                var removed = splice.removed;
-                clearReverse.call(self, removed);
-                setReverse.call(self, added);
-                var mapping = proxy.getForwardMapping.call(self);
-                coreChanges.registerChange({
-                    collection: mapping.collection,
-                    mapping: mapping.type,
-                    _id: self.object._id,
-                    field: proxy.getForwardName.call(self),
-                    removed: removed,
-                    added: added,
-                    removedId: _.pluck(removed, '_id'),
-                    addedId: _.pluck(added, '_id'),
-                    type: ChangeType.Splice,
-                    index: splice.index,
-                    obj: self.object
-                });
-            });
-        };
-        arr.oneToManyObserver.open(observerFunction);
-    }
-}
-
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
 
-ManyToManyProxy.prototype.get = function (callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var self = this;
-    if (this.isFault) {
-        Store.get({_id: this._id}, function (err, stored) {
-            if (err) {
-                if (callback) callback(err);
-            }
-            else {
-                self.related = stored;
-                if (callback) callback(null, stored);
-            }
-        })
-    }
-    else {
-        if (callback) callback(null, this.related);
-    }
-    return deferred ? deferred.promise : null;
-};
-
-function validate(obj) {
-    if (Object.prototype.toString.call(obj) != '[object Array]') {
+_.extend(ManyToManyProxy.prototype, {
+    clearReverse: function (removed) {
+        var self = this;
+        _.each(removed, function (removedObject) {
+            var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
+            var idx = reverseProxy._id.indexOf(self.object._id);
+            proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
+                proxy.splice.call(reverseProxy, idx, 1);
+            });
+        });
+    },
+    setReverse: function (added) {
+        var self = this;
+        _.each(added, function (addedObject) {
+            var reverseProxy = proxy.getReverseProxyForObject.call(self, addedObject);
+            proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
+                proxy.splice.call(reverseProxy, 0, 0, self.object);
+            });
+        });
+    },
+    wrapArray: function (arr) {
+        var self = this;
+        wrapArrayForAttributes(arr, this.reverseName, this.object);
+        if (!arr.oneToManyObserver) {
+            arr.oneToManyObserver = new ArrayObserver(arr);
+            var observerFunction = function (splices) {
+                splices.forEach(function (splice) {
+                    var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
+                    var removed = splice.removed;
+                    self.clearReverse(removed);
+                    self.setReverse(added);
+                    var mapping = proxy.getForwardMapping.call(self);
+                    coreChanges.registerChange({
+                        collection: mapping.collection,
+                        mapping: mapping.type,
+                        _id: self.object._id,
+                        field: proxy.getForwardName.call(self),
+                        removed: removed,
+                        added: added,
+                        removedId: _.pluck(removed, '_id'),
+                        addedId: _.pluck(added, '_id'),
+                        type: ChangeType.Splice,
+                        index: splice.index,
+                        obj: self.object
+                    });
+                });
+            };
+            arr.oneToManyObserver.open(observerFunction);
+        }
+    },
+    get: function (callback) {
+        var deferred = window.q ? window.q.defer() : null;
+        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        var self = this;
+        if (this.isFault) {
+            Store.get({_id: this._id}, function (err, stored) {
+                if (err) {
+                    if (callback) callback(err);
+                }
+                else {
+                    self.related = stored;
+                    if (callback) callback(null, stored);
+                }
+            })
+        }
+        else {
+            if (callback) callback(null, this.related);
+        }
+        return deferred ? deferred.promise : null;
+    },
+    validate: function (obj) {
+        if (Object.prototype.toString.call(obj) != '[object Array]') {
             return 'Cannot assign scalar to many to many';
         }
-    return null;
-}
-
-ManyToManyProxy.prototype.set = function (obj) {
-    proxy.checkInstalled.call(this);
-    var self = this;
-    if (obj) {
-        var errorMessage;
-        if (errorMessage = validate.call(this, obj)) {
-            return errorMessage;
+        return null;
+    },
+    set: function (obj) {
+        proxy.checkInstalled.call(this);
+        var self = this;
+        if (obj) {
+            var errorMessage;
+            if (errorMessage = this.validate(obj)) {
+                return errorMessage;
+            }
+            else {
+                proxy.clearReverseRelated.call(this);
+                proxy.set.call(self, obj);
+                this.wrapArray(obj);
+                proxy.setReverse.call(self, obj);
+            }
         }
         else {
             proxy.clearReverseRelated.call(this);
             proxy.set.call(self, obj);
-            wrapArray.call(self, obj);
-            proxy.setReverse.call(self, obj);
         }
+    },
+    install: function (obj) {
+        RelationshipProxy.prototype.install.call(this, obj);
+        obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
     }
-    else {
-        proxy.clearReverseRelated.call(this);
-        proxy.set.call(self, obj);
-    }
-};
 
-ManyToManyProxy.prototype.install = function (obj) {
-    RelationshipProxy.prototype.install.call(this, obj);
-    obj[ ('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
-};
+
+});
+
 
 exports.ManyToManyProxy = ManyToManyProxy;

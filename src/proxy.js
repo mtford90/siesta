@@ -25,7 +25,7 @@ function Fault(proxy) {
     var self = this;
     this.proxy = proxy;
     Object.defineProperty(this, 'isFault', {
-        get: function() {
+        get: function () {
             return self.proxy.isFault;
         },
         enumerable: true,
@@ -33,13 +33,15 @@ function Fault(proxy) {
     });
 }
 
-Fault.prototype.get = function() {
-    this.proxy.get.apply(this.proxy, arguments);
-};
+_.extend(Fault.prototype, {
+    get: function () {
+        this.proxy.get.apply(this.proxy, arguments);
+    },
+    set: function () {
+        this.proxy.set.apply(this.proxy, arguments);
+    }
+});
 
-Fault.prototype.set = function() {
-    this.proxy.set.apply(this.proxy, arguments);
-};
 
 /**
  * @class  [RelationshipProxy description]
@@ -55,7 +57,7 @@ function RelationshipProxy(opts) {
     this._id = undefined;
     this.related = null;
     Object.defineProperty(this, 'isFault', {
-        get: function() {
+        get: function () {
             if (self._id) {
                 return !self.related;
             } else if (self._id === null) {
@@ -63,7 +65,7 @@ function RelationshipProxy(opts) {
             }
             return true;
         },
-        set: function(v) {
+        set: function (v) {
             if (v) {
                 self._id = undefined;
                 self.related = null;
@@ -82,7 +84,7 @@ function RelationshipProxy(opts) {
     defineSubProperty.call(this, 'reverseName', this._opts);
     defineSubProperty.call(this, 'isReverse', this._opts);
     Object.defineProperty(this, 'isForward', {
-        get: function() {
+        get: function () {
             return !self.isReverse;
         },
         set: function (v) {
@@ -97,53 +99,53 @@ function RelationshipProxy(opts) {
     else if (this._opts.isReverse === undefined && this._opts.isForward === undefined) {
         throw InternalSiestaError('Must specify either isReverse or isForward when configuring relationship proxy.');
     }
- }
+}
 
-RelationshipProxy.prototype._dump = function(asJson) {
-    var dumped = {};
-};
-
-RelationshipProxy.prototype.install = function(obj) {
-    if (obj) {
-        if (!this.object) {
-            this.object = obj;
-            var self = this;
-            var name = getForwardName.call(this);
-            Object.defineProperty(obj, name, {
-                get: function() {
-                    if (self.isFault) {
-                        return self.fault;
-                    } else {
-                        return self.related;
-                    }
-                },
-                set: function(v) {
-                    self.set(v);
-                },
-                configurable: true,
-                enumerable: true
-            });
-            if (!obj.__proxies) obj.__proxies = {};
-            obj.__proxies[name] = this;
-            if (!obj._proxies) {
-                obj._proxies = [];
+_.extend(RelationshipProxy.prototype, {
+    _dump: function (asJson) {
+        var dumped = {};
+    },
+    install: function (obj) {
+        if (obj) {
+            if (!this.object) {
+                this.object = obj;
+                var self = this;
+                var name = getForwardName.call(this);
+                Object.defineProperty(obj, name, {
+                    get: function () {
+                        if (self.isFault) {
+                            return self.fault;
+                        } else {
+                            return self.related;
+                        }
+                    },
+                    set: function (v) {
+                        self.set(v);
+                    },
+                    configurable: true,
+                    enumerable: true
+                });
+                if (!obj.__proxies) obj.__proxies = {};
+                obj.__proxies[name] = this;
+                if (!obj._proxies) {
+                    obj._proxies = [];
+                }
+                obj._proxies.push(this);
+            } else {
+                throw new InternalSiestaError('Already installed.');
             }
-            obj._proxies.push(this);
         } else {
-            throw new InternalSiestaError('Already installed.');
+            throw new InternalSiestaError('No object passed to relationship install');
         }
-    } else {
-        throw new InternalSiestaError('No object passed to relationship install');
+    },
+    set: function () {
+        throw new InternalSiestaError('Must subclass RelationshipProxy');
+    },
+    get: function () {
+        throw new InternalSiestaError('Must subclass RelationshipProxy');
     }
-};
+});
 
-RelationshipProxy.prototype.set = function(obj) {
-    throw new InternalSiestaError('Must subclass RelationshipProxy');
-};
-
-RelationshipProxy.prototype.get = function(callback) {
-    throw new InternalSiestaError('Must subclass RelationshipProxy');
-};
 
 function verifyMapping(obj, mapping) {
     if (obj.mapping != mapping) {
@@ -268,10 +270,10 @@ function clearReverseRelated() {
         if (this.related) {
             var reverseProxy = getReverseProxyForObject.call(this, this.related);
             var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-            _.each(reverseProxies, function(p) {
+            _.each(reverseProxies, function (p) {
                 if (util.isArray(p._id)) {
                     var idx = p._id.indexOf(self.object._id);
-                    makeChangesToRelatedWithoutObservations.call(p, function() {
+                    makeChangesToRelatedWithoutObservations.call(p, function () {
                         splice.call(p, idx, 1);
                     });
                 } else {
@@ -285,7 +287,7 @@ function clearReverseRelated() {
             var reverseMapping = getReverseMapping.call(this);
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
-                _.each(identifiers, function(_id) {
+                _.each(identifiers, function (_id) {
                     coreChanges.registerChange({
                         collection: reverseMapping.collection,
                         mapping: reverseMapping.type,
@@ -298,7 +300,7 @@ function clearReverseRelated() {
                     });
                 });
             } else {
-                _.each(identifiers, function(_id) {
+                _.each(identifiers, function (_id) {
                     coreChanges.registerChange({
                         collection: reverseMapping.collection,
                         mapping: reverseMapping.type,
@@ -336,9 +338,9 @@ function setReverse(obj) {
     var self = this;
     var reverseProxy = getReverseProxyForObject.call(this, obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-    _.each(reverseProxies, function(p) {
+    _.each(reverseProxies, function (p) {
         if (util.isArray(p._id)) {
-            makeChangesToRelatedWithoutObservations.call(p, function() {
+            makeChangesToRelatedWithoutObservations.call(p, function () {
                 splice.call(p, p._id.length, 0, self.object);
             });
         } else {
@@ -407,8 +409,8 @@ function wrapArray(arr) {
     wrapArrayForAttributes(arr, this.reverseName, this.object);
     if (!arr.oneToManyObserver) {
         arr.oneToManyObserver = new ArrayObserver(arr);
-        var observerFunction = function(splices) {
-            splices.forEach(function(splice) {
+        var observerFunction = function (splices) {
+            splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                 var mapping = getForwardMapping.call(self);
                 coreChanges.registerChange({
