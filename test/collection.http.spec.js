@@ -6,7 +6,7 @@ describe('http!', function () {
 
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
     var InternalSiestaError = require('../src/error').InternalSiestaError;
 
     var collection, carMapping, personMapping, vitalSignsMapping;

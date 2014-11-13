@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 describe('cache...', function() {
     var mapping;
 
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
     var Collection = require('../src/collection').Collection;
     var RelationshipType = require('../src/relationship').RelationshipType;
     var cache = require('../src/cache');

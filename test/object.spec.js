@@ -3,7 +3,7 @@ var s = require('../index'),
 
 describe('object!!', function() {
 
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
     var Mapping = require('../src/mapping').Mapping;
     var cache = require('../src/cache');
     var Collection = require('../src/collection').Collection;

@@ -3,7 +3,7 @@ var s = require('../index'),
 
 describe('singleton mapping', function() {
 
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');
     var store = require('../src/store');

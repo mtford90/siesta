@@ -7,7 +7,7 @@ describe('new object proxy', function() {
     var OneToOneProxy = require('../src/oneToOneProxy');
     var OneToManyProxy = require('../src/oneToManyProxy');
     var ManyToManyProxy = require('../src/manyToManyProxy');
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
     var Fault = require('../src/proxy').Fault;
     var InternalSiestaError = require('../src/error').InternalSiestaError;
     var Collection = require('../src/collection').Collection;

@@ -4,7 +4,7 @@ var s = require('../index'),
 describe('query', function() {
     var Query = require('../src/query').Query;
     var Collection = require('../src/collection').Collection;
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
 
     beforeEach(function() {
         s.reset(true);

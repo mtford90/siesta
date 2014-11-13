@@ -3,7 +3,7 @@ var s = require('../index')
 
 describe('subclassing', function () {
 
-    var SiestaModel = require('../src/object').SiestaModel;
+    var SiestaModel = require('../src/siestaModel').SiestaModel;
     var InternalSiestaError = require('../src/error').InternalSiestaError;
     var Collection = require('../src/collection').Collection;
     var cache = require('../src/cache');

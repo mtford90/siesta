@@ -7,7 +7,7 @@ var proxy = require('./proxy')
     , Store = require('./store')
     , util = require('./util')
     , InternalSiestaError = require('./error').InternalSiestaError
-    , SiestaModel = require('./object').SiestaModel;
+    , SiestaModel = require('./siestaModel').SiestaModel;
 
 /**
  * [OneToOneProxy description]
