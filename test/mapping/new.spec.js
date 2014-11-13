@@ -101,12 +101,12 @@ describe('mapping new object', function () {
 
             it('installs forward related object proxy', function () {
                 var carObject = carMapping._new();
-                assert.instanceOf(carObject.ownerProxy, OneToManyProxy);
+                assert.instanceOf(carObject.__proxies['owner'], OneToManyProxy);
             });
 
             it('installs reverse related object proxy', function () {
                 var personObject = personMapping._new();
-                assert.instanceOf(personObject.carsProxy, OneToManyProxy);
+                assert.instanceOf(personObject.__proxies['cars'], OneToManyProxy);
             });
 
         });

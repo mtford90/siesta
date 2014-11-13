@@ -190,7 +190,7 @@ function applySetToSiestaModel(isField, model) {
     else {
         var identifier = this.newId || (this.new ? this.new._id : null);
         var oldIdentifier = this.oldId || (this.old ? this.old._id : null);
-        var proxy = model[this.field + 'Proxy'];
+        var proxy = model.__proxies[this.field];
 //        var isFaulted = proxy.isFault;
         applySet.call(this, proxy, '_id', identifier, oldIdentifier);
         var _new = this.new || (this.newId ? cache.get({_id: this.newId}) : null);
@@ -212,7 +212,7 @@ function applySpliceToSiestaModel(isField, model) {
     else {
         var removedIdentifiers = this.removedId || (this.removed ? _.pluck(this.removed, '_id') : []);
         var addedIdentifiers = this.addedId || (this.added ? _.pluck(this.added, '_id') : []);
-        var proxy = model[this.field + 'Proxy'];
+        var proxy = model.__proxies[this.field];
         var isFaulted = proxy.isFault;
         applySplice.call(this, proxy, '_id', this.index, removedIdentifiers, addedIdentifiers);
         if (!isFaulted) {
@@ -241,7 +241,7 @@ function applyRemoveToSiestaModel(isField, model) {
     }
     else {
         var removed = this.removedId || (this.removed ? _.pluck(this.removed, '_id') : []);
-        var proxy = model[this.field + 'Proxy'];
+        var proxy = model.__proxies[this.field];
         var isFaulted = proxy.isFault;
         applyRemove.call(this, '_id', removed, proxy);
         if (!isFaulted && this.removed) {

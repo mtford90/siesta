@@ -125,7 +125,6 @@ RelationshipProxy.prototype.install = function(obj) {
             });
             obj[('get' + util.capitaliseFirstLetter(name))] = _.bind(this.get, this);
             obj[('set' + util.capitaliseFirstLetter(name))] = _.bind(this.set, this);
-            obj[name + 'Proxy'] = this;
             if (!obj.__proxies) obj.__proxies = {};
             obj.__proxies[name] = this;
             if (!obj._proxies) {
@@ -159,19 +158,16 @@ function verifyMapping(obj, mapping) {
 
 function getReverseProxyForObject(obj) {
     var reverseName = getReverseName.call(this);
-    var proxyName = (reverseName + 'Proxy');
     var reverseMapping = this.reverseMapping;
     // This should never happen. Should g   et caught in the mapping operation?
     if (util.isArray(obj)) {
-        // _.each(obj, function(o) {
-        //     verifyMapping(o, this.forwardMapping);
-        // });
-        return _.pluck(obj, proxyName);
+        return _.map(obj, function (o) {
+            return o.__proxies[reverseName];
+        })
     } else {
-        // verifyMapping(obj, this.forwardMapping);
-        var proxy = obj[proxyName];
+        var proxy = obj.__proxies[reverseName];
         if (!proxy) {
-            var err = 'No proxy with name "' + proxyName + '" on mapping ' + reverseMapping.type;
+            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseMapping.type;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -180,18 +176,15 @@ function getReverseProxyForObject(obj) {
 
 function getForwardProxyForObject(obj) {
     var forwardName = getForwardName.call(this);
-    var proxyName = forwardName + 'Proxy';
     var forwardMapping = this.forwardMapping;
     if (util.isArray(obj)) {
-        // _.each(obj, function(o) {
-        //     verifyMapping(o, this.reverseMapping);
-        // });
-        return _.pluck(obj, proxyName);
+        return _.map(obj, function (o) {
+            return o.__proxies[forwardName];
+        })
     } else {
-        // verifyMapping(obj, this.reverseMapping);
-        var proxy = obj[proxyName];
+        var proxy = obj.__proxies[forwardName];
         if (!proxy) {
-            var err = 'No proxy with name "' + proxyName + '" on mapping ' + forwardMapping.type;
+            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardMapping.type;
             throw new InternalSiestaError(err);
         }
         return proxy;

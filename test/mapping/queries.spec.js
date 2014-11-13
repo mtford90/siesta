@@ -97,8 +97,6 @@ describe('mapping queries', function() {
             collection.install(done);
         });
 
-
-
         it('cached', function(done) {
             carMapping.map({
                 colour: 'red',
@@ -114,7 +112,7 @@ describe('mapping queries', function() {
                 personMapping.get('2', function(err, p) {
                     if (err) done(err);
                     assert.ok(p, 'Should be able to fetch the person');
-                    p.carsProxy.get(function(err, cars) {
+                    p.__proxies['cars'].get(function(err, cars) {
                         assert.equal(cars.length, 1);
                         assert.equal(cars[0].owner, p);
                         done(err);
@@ -123,6 +121,4 @@ describe('mapping queries', function() {
             });
         });
     });
-
-
 });

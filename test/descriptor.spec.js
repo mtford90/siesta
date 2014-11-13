@@ -763,7 +763,7 @@ describe('request descriptor', function() {
                             data[field] = car[field];
                         }
                     }
-                    car.ownerProxy.get(function(err, person) {
+                    car.__proxies['owner'].get(function(err, person) {
                         if (err) {
                             done(err);
                         } else {

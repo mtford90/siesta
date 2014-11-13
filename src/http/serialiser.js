@@ -52,7 +52,7 @@ function depthSerialiser(depth, obj, done) {
     _.each(obj._relationshipFields, function (f) {
         if (Logger.trace.isEnabled)
             Logger.trace('relationshipField', f);
-        var proxy = obj[f + 'Proxy'];
+        var proxy = obj.__proxies[f];
         if (proxy.isForward) { // By default only forward relationship.
             if (Logger.debug.isEnabled)
                 Logger.debug(f);
@@ -70,7 +70,7 @@ function depthSerialiser(depth, obj, done) {
                 else if (v) {
                     if (!depth) {
                         finished.push(f);
-                        data[f] = v[obj[f + 'Proxy'].forwardMapping.id];
+                        data[f] = v[obj.__proxies[f].forwardMapping.id];
                         result[f] = {err: err, v: v};
                         if ((waiting.length == finished.length) && done) {
                             done(errors.length ? errors : null, data, result);

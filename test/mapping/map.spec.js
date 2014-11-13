@@ -218,14 +218,14 @@ describe('perform mapping', function() {
 
                         it('owner of car should be michael', function(done) {
                             assert.equal(car.owner, person);
-                            car.ownerProxy.get(function(err, owner) {
+                            car.__proxies['owner'].get(function(err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function(done) {
-                            person.carsProxy.get(function(err, cars) {
+                            person.__proxies['cars'].get(function(err, cars) {
                                 if (err) done(err);
                                 assert.include(cars, car);
                                 done();
@@ -249,10 +249,10 @@ describe('perform mapping', function() {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function(done) {
-                            car.ownerProxy.get(function(err, person) {
+                            car.__proxies['owner'].get(function(err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.carsProxy.get(function(err, cars) {
+                                person.__proxies['cars'].get(function(err, cars) {
                                     if (err) done(err);
                                     assert.equal(cars.length, 1);
                                     assert.include(cars, car);
@@ -334,7 +334,7 @@ describe('perform mapping', function() {
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function(done) {
-                            person.carsProxy.get(function(err, cars) {
+                            person.__proxies['cars'].get(function(err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function(car) {
@@ -385,7 +385,7 @@ describe('perform mapping', function() {
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function(done) {
-                            person.carsProxy.get(function(err, cars) {
+                            person.__proxies['cars'].get(function(err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function(car) {
@@ -424,14 +424,14 @@ describe('perform mapping', function() {
                         });
                     });
                     it('owner of car should be michael', function(done) {
-                        car.ownerProxy.get(function(err, owner) {
+                        car.__proxies['owner'].get(function(err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should the car', function(done) {
-                        person.carsProxy.get(function(err, cars) {
+                        person.__proxies['cars'].get(function(err, cars) {
                             if (err) done(err);
                             assert.include(cars, car);
                             done();
@@ -515,14 +515,14 @@ describe('perform mapping', function() {
                         });
                     });
                     it('owner of car should be michael', function(done) {
-                        car.ownerProxy.get(function(err, owner) {
+                        car.__proxies['owner'].get(function(err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should the car', function(done) {
-                        person.carsProxy.get(function(err, cars) {
+                        person.__proxies['cars'].get(function(err, cars) {
                             if (err) done(err);
                             assert.include(cars, car);
                             done();
@@ -614,14 +614,14 @@ describe('perform mapping', function() {
                             });
                         });
                         it('owner of car should be michael', function(done) {
-                            car.ownerProxy.get(function(err, owner) {
+                            car.__proxies['owner'].get(function(err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should the car', function(done) {
-                            person.carsProxy.get(function(err, cars) {
+                            person.__proxies['cars'].get(function(err, cars) {
                                 if (err) done(err);
                                 assert.include(cars, car);
                                 done();
@@ -646,10 +646,10 @@ describe('perform mapping', function() {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function(done) {
-                            car.ownerProxy.get(function(err, person) {
+                            car.__proxies['owner'].get(function(err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.carsProxy.get(function(err, cars) {
+                                person.__proxies['cars'].get(function(err, cars) {
                                     if (err) done(err);
                                     assert.equal(cars.length, 1);
                                     assert.include(cars, car);
@@ -746,7 +746,7 @@ describe('perform mapping', function() {
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function(done) {
-                            person.carsProxy.get(function(err, cars) {
+                            person.__proxies['cars'].get(function(err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function(car) {
@@ -803,7 +803,7 @@ describe('perform mapping', function() {
                         });
 
                         it('person has 3 new cars, and those cars are owned by the person', function(done) {
-                            person.carsProxy.get(function(err, cars) {
+                            person.__proxies['cars'].get(function(err, cars) {
                                 done(err);
                                 assert.equal(cars.length, 3);
                                 _.each(cars, function(car) {
@@ -874,14 +874,14 @@ describe('perform mapping', function() {
 
                         });
                         it('owner of car should be michael', function(done) {
-                            car.ownerProxy.get(function(err, owner) {
+                            car.__proxies['owner'].get(function(err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function(done) {
-                            person.carProxy.get(function(err, personsCar) {
+                            person.__proxies['car'].get(function(err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -903,10 +903,10 @@ describe('perform mapping', function() {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function(done) {
-                            car.ownerProxy.get(function(err, person) {
+                            car.__proxies['owner'].get(function(err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.carProxy.get(function(err, personsCar) {
+                                person.__proxies['car'].get(function(err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -943,14 +943,14 @@ describe('perform mapping', function() {
                             });
                         });
                         it('owner of car should be michael', function(done) {
-                            car.ownerProxy.get(function(err, owner) {
+                            car.__proxies['owner'].get(function(err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function(done) {
-                            person.carProxy.get(function(err, personsCar) {
+                            person.__proxies['car'].get(function(err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -973,10 +973,10 @@ describe('perform mapping', function() {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function(done) {
-                            car.ownerProxy.get(function(err, person) {
+                            car.__proxies['owner'].get(function(err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.carProxy.get(function(err, personsCar) {
+                                person.__proxies['car'].get(function(err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -1019,14 +1019,14 @@ describe('perform mapping', function() {
                             });
                         });
                         it('owner of car should be michael', function(done) {
-                            car.ownerProxy.get(function(err, owner) {
+                            car.__proxies['owner'].get(function(err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function(done) {
-                            person.carProxy.get(function(err, personsCar) {
+                            person.__proxies['car'].get(function(err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -1051,10 +1051,10 @@ describe('perform mapping', function() {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function(done) {
-                            car.ownerProxy.get(function(err, person) {
+                            car.__proxies['owner'].get(function(err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.carProxy.get(function(err, personsCar) {
+                                person.__proxies['car'].get(function(err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -1093,14 +1093,14 @@ describe('perform mapping', function() {
                             });
                         });
                         it('owner of car should be michael', function(done) {
-                            car.ownerProxy.get(function(err, owner) {
+                            car.__proxies['owner'].get(function(err, owner) {
                                 if (err) done(err);
                                 assert.equal(owner, person);
                                 done();
                             })
                         });
                         it('michael should own the car', function(done) {
-                            person.carProxy.get(function(err, personsCar) {
+                            person.__proxies['car'].get(function(err, personsCar) {
                                 if (err) done(err);
                                 assert.equal(car, personsCar);
                                 done();
@@ -1125,10 +1125,10 @@ describe('perform mapping', function() {
                             });
                         });
                         it('car should have a new owner and new owner should have a car', function(done) {
-                            car.ownerProxy.get(function(err, person) {
+                            car.__proxies['owner'].get(function(err, person) {
                                 if (err) done(err);
                                 assert.equal(person.id, 'personRemoteId');
-                                person.carProxy.get(function(err, personsCar) {
+                                person.__proxies['car'].get(function(err, personsCar) {
                                     if (err) done(err);
                                     assert.equal(personsCar, car);
                                     done();
@@ -1170,14 +1170,14 @@ describe('perform mapping', function() {
                         });
                     });
                     it('owner of car should be michael', function(done) {
-                        car.ownerProxy.get(function(err, owner) {
+                        car.__proxies['owner'].get(function(err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function(done) {
-                        person.carProxy.get(function(err, personsCar) {
+                        person.__proxies['car'].get(function(err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1212,14 +1212,14 @@ describe('perform mapping', function() {
                         });
                     });
                     it('owner of car should be michael', function(done) {
-                        car.ownerProxy.get(function(err, owner) {
+                        car.__proxies['owner'].get(function(err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function(done) {
-                        person.carProxy.get(function(err, personsCar) {
+                        person.__proxies['car'].get(function(err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1257,14 +1257,14 @@ describe('perform mapping', function() {
                         });
                     });
                     it('owner of car should be michael', function(done) {
-                        car.ownerProxy.get(function(err, owner) {
+                        car.__proxies['owner'].get(function(err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function(done) {
-                        person.carProxy.get(function(err, personsCar) {
+                        person.__proxies['car'].get(function(err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();
@@ -1297,14 +1297,14 @@ describe('perform mapping', function() {
                         });
                     });
                     it('owner of car should be michael', function(done) {
-                        car.ownerProxy.get(function(err, owner) {
+                        car.__proxies['owner'].get(function(err, owner) {
                             if (err) done(err);
                             assert.equal(owner, person);
                             done();
                         })
                     });
                     it('michael should own the car', function(done) {
-                        person.carProxy.get(function(err, personsCar) {
+                        person.__proxies['car'].get(function(err, personsCar) {
                             if (err) done(err);
                             assert.equal(car, personsCar);
                             done();

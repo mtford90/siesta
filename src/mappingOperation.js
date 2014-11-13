@@ -111,6 +111,7 @@ function mapAttributes() {
 
 BulkMappingOperation.prototype._map = function() {
     var self = this;
+    var err;
     var numHits = mapAttributes.call(this);
     var relationshipFields = _.keys(self.subOps);
     _.each(relationshipFields, function(f) {
@@ -122,12 +123,12 @@ BulkMappingOperation.prototype._map = function() {
             var idx = indexes[i];
             // Errors are plucked from the suboperations.
             var error = self.errors[idx];
-            var err = error ? error[f] : null;
+            err = error ? error[f] : null;
             if (!err) {
                 var related = unflattenedObjects[i]; // Can be array or scalar.
                 var object = self.objects[idx];
                 if (object) {
-                    var err = object[f + 'Proxy'].set(related);
+                    err = object.__proxies[f].set(related);
                     if (err) {
                         if (!self.errors[idx]) self.errors[idx] = {};
                         self.errors[idx][f] = err;

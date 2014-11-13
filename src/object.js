@@ -80,14 +80,15 @@ SiestaModel.prototype._dump = function(asJson) {
         return memo;
     }, cleanObj);
     cleanObj = _.reduce(this._relationshipFields, function(memo, f) {
-        if (self[f + 'Proxy']) {
-            if (self[f + 'Proxy'].hasOwnProperty('_id')) {
-                if (util.isArray(self[f + 'Proxy']._id)) {
+        var proxy = self.__proxies[f];
+        if (proxy) {
+            if (proxy.hasOwnProperty('_id')) {
+                if (util.isArray(proxy._id)) {
                     if (self[f].length) {
-                        memo[f] = self[f + 'Proxy']._id;
+                        memo[f] = proxy._id;
                     }
-                } else if (self[f + 'Proxy']._id) {
-                    memo[f] = self[f + 'Proxy']._id;
+                } else if (proxy._id) {
+                    memo[f] = proxy._id;
                 }
             } else {
                 memo[f] = self[f];
