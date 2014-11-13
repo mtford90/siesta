@@ -203,7 +203,8 @@ function from(obj) {
             adapted[f] = v;
         }
     });
-    _.each(obj._proxies, function (p) {
+    var proxies = _.map(Object.keys(obj.__proxies), function (x) {return obj.__proxies[x]});
+    _.each(proxies, function (p) {
         // Only forward relationships are stored in the database.
         if (p.isForward) {
             var name = p.forwardName;
