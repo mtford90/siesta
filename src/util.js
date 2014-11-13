@@ -478,6 +478,24 @@ _.some = function(obj, predicate, context) {
     return false;
 };
 
+
+// Extend a given object with all the properties in passed-in object(s).
+_.extend = function(obj) {
+    if (!_.isObject(obj)) return obj;
+    var source, prop;
+    for (var i = 1, length = arguments.length; i < length; i++) {
+        source = arguments[i];
+        for (prop in source) {
+            //noinspection JSUnfilteredForInLoop
+            if (hasOwnProperty.call(source, prop)) {
+                //noinspection JSUnfilteredForInLoop
+                obj[prop] = source[prop];
+            }
+        }
+    }
+    return obj;
+};
+
 // END underscore.js //
 
 exports._ = _;
