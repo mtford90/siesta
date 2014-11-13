@@ -154,4 +154,4 @@ _.extend(ManyToManyProxy.prototype, {
 });
 
 
-exports.ManyToManyProxy = ManyToManyProxy;
+module.exports = ManyToManyProxy;

@@ -2,34 +2,33 @@
  * @module mapping
  */
 
-var log = require('./operation/log');
+var log = require('./operation/log')
+    , misc = require('./misc')
+    , defineSubProperty = misc.defineSubProperty
+    , CollectionRegistry = require('./collectionRegistry').CollectionRegistry
+    , InternalSiestaError = require('./error').InternalSiestaError
+    , relationship = require('./relationship')
+    , Query = require('./query').Query
+    , Operation = require('./operation/operation').Operation
+    , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
+    , SiestaModel = require('./object').SiestaModel
+    , util = require('./util')
+    , cache = require('./cache')
+    , store = require('./store')
+    , extend = require('extend')
+    , coreChanges = require('./changes')
+    , wrapArray = require('./notificationCentre').wrapArray
+    , OneToManyProxy = require('./oneToManyProxy')
+    , OneToOneProxy = require('./oneToOneProxy')
+    , ManyToManyProxy = require('./manyToManyProxy');
+
+var _ = util._;
+var RelationshipType = relationship.RelationshipType;
+var guid = misc.guid;
+var ChangeType = coreChanges.ChangeType;
+
 var Logger = log.loggerWithName('Mapping');
 Logger.setLevel(log.Level.warn);
-
-var defineSubProperty = require('./misc').defineSubProperty;
-var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var InternalSiestaError = require('./error').InternalSiestaError;
-var relationship = require('./relationship');
-var RelationshipType = relationship.RelationshipType;
-var Query = require('./query').Query;
-var Operation = require('./operation/operation').Operation;
-var BulkMappingOperation = require('./mappingOperation').BulkMappingOperation;
-var SiestaModel = require('./object').SiestaModel;
-var guid = require('./misc').guid;
-var cache = require('./cache');
-var store = require('./store');
-var extend = require('extend');
-
-var coreChanges = require('./changes');
-var ChangeType = coreChanges.ChangeType;
-var wrapArray = require('./notificationCentre').wrapArray;
-
-var OneToManyProxy = require('./oneToManyProxy').OneToManyProxy;
-var OneToOneProxy = require('./oneToOneProxy').OneToOneProxy;
-var ManyToManyProxy = require('./manyToManyProxy').ManyToManyProxy;
-
-var util = require('./util');
-var _ = util._;
 
 /**
  *

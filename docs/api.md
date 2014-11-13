@@ -54,16 +54,16 @@ sidebar: nav2.html
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~_matchPath(path)](#module_http.._matchPath)
+  * [http~_matchMethod(method)](#module_http.._matchMethod)
   * [http~bury(obj, data)](#module_http..bury)
+  * [http~_extractData(data)](#module_http.._extractData)
+  * [http~_matchConfig(config)](#module_http.._matchConfig)
+  * [http~_matchData(data)](#module_http.._matchData)
+  * [http~match(config, data)](#module_http..match)
+  * [http~_transformData(data)](#module_http.._transformData)
   * [class: http~Descriptor](#module_http..Descriptor)
     * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-    * [descriptor.match(config, data)](#module_http..Descriptor#match)
-    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
   * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
     * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 * [store](#module_store)
@@ -82,16 +82,16 @@ sidebar: nav2.html
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~_matchPath(path)](#module_http.._matchPath)
+  * [http~_matchMethod(method)](#module_http.._matchMethod)
   * [http~bury(obj, data)](#module_http..bury)
+  * [http~_extractData(data)](#module_http.._extractData)
+  * [http~_matchConfig(config)](#module_http.._matchConfig)
+  * [http~_matchData(data)](#module_http.._matchData)
+  * [http~match(config, data)](#module_http..match)
+  * [http~_transformData(data)](#module_http.._transformData)
   * [class: http~Descriptor](#module_http..Descriptor)
     * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-    * [descriptor.match(config, data)](#module_http..Descriptor#match)
-    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
   * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
     * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 * [http](#module_http)
@@ -107,16 +107,16 @@ sidebar: nav2.html
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~_matchPath(path)](#module_http.._matchPath)
+  * [http~_matchMethod(method)](#module_http.._matchMethod)
   * [http~bury(obj, data)](#module_http..bury)
+  * [http~_extractData(data)](#module_http.._extractData)
+  * [http~_matchConfig(config)](#module_http.._matchConfig)
+  * [http~_matchData(data)](#module_http.._matchData)
+  * [http~match(config, data)](#module_http..match)
+  * [http~_transformData(data)](#module_http.._transformData)
   * [class: http~Descriptor](#module_http..Descriptor)
     * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-    * [descriptor.match(config, data)](#module_http..Descriptor#match)
-    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
   * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
     * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 * [cache](#module_cache)
@@ -487,16 +487,16 @@ the results back onto the object graph automatically.
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~_matchPath(path)](#module_http.._matchPath)
+  * [http~_matchMethod(method)](#module_http.._matchMethod)
   * [http~bury(obj, data)](#module_http..bury)
+  * [http~_extractData(data)](#module_http.._extractData)
+  * [http~_matchConfig(config)](#module_http.._matchConfig)
+  * [http~_matchData(data)](#module_http.._matchData)
+  * [http~match(config, data)](#module_http..match)
+  * [http~_transformData(data)](#module_http.._transformData)
   * [class: http~Descriptor](#module_http..Descriptor)
     * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-    * [descriptor.match(config, data)](#module_http..Descriptor#match)
-    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
   * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
     * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 
@@ -649,43 +649,8 @@ Send an PATCH request
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
-<a name="module_http..bury"></a>
-##http~bury(obj, data)
-Performs a breadth-first search through data, embedding obj in the first leaf.
-
-**Params**
-
-- obj `Object`  
-- data `Object`  
-
-**Scope**: inner function of [http](#module_http)  
-**Returns**: `Object`  
-<a name="module_http..Descriptor"></a>
-##class: http~Descriptor
-**Members**
-
-* [class: http~Descriptor](#module_http..Descriptor)
-  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-  * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-  * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-  * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-  * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-  * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-  * [descriptor.match(config, data)](#module_http..Descriptor#match)
-  * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
-
-<a name="new_module_http..Descriptor"></a>
-###new http~Descriptor(opts)
-A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
-intercept a HTTP request/response and perform a mapping.
-
-**Params**
-
-- opts `Object`  
-
-**Scope**: inner class of [http](#module_http)  
-<a name="module_http..Descriptor#_matchPath"></a>
-###descriptor._matchPath(path)
+<a name="module_http.._matchPath"></a>
+##http~_matchPath(path)
 Takes a regex path and returns an object if matched.
 If any regular expression groups were defined, the returned object will contain the matches.
 
@@ -693,6 +658,7 @@ If any regular expression groups were defined, the returned object will contain 
 
 - path `String` | `RegExp`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
 **Example**
 
@@ -704,14 +670,15 @@ var matched = d._matchPath('/resource/2');
 console.log(matched); // {id: '2'}
 ```
 
-<a name="module_http..Descriptor#_matchMethod"></a>
-###descriptor._matchMethod(method)
+<a name="module_http.._matchMethod"></a>
+##http~_matchMethod(method)
 Returns true if the descriptor accepts the HTTP method.
 
 **Params**
 
 - method `String`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `boolean`  
 **Example**
 
@@ -722,35 +689,49 @@ var d = new Descriptor({
 console.log(d._matchMethod('GET')); // false
 ```
 
-<a name="module_http..Descriptor#_extractData"></a>
-###descriptor._extractData(data)
+<a name="module_http..bury"></a>
+##http~bury(obj, data)
+Performs a breadth-first search through data, embedding obj in the first leaf.
+
+**Params**
+
+- obj `Object`  
+- data `Object`  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Object`  
+<a name="module_http.._extractData"></a>
+##http~_extractData(data)
 If nested data has been specified in the descriptor, extract the data.
 
 **Params**
 
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#_matchConfig"></a>
-###descriptor._matchConfig(config)
+<a name="module_http.._matchConfig"></a>
+##http~_matchConfig(config)
 Returns this descriptors mapping if the request config matches.
 
 **Params**
 
 - config `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#_matchData"></a>
-###descriptor._matchData(data)
+<a name="module_http.._matchData"></a>
+##http~_matchData(data)
 Returns data if the data matches, performing any extraction as specified in opts.data
 
 **Params**
 
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#match"></a>
-###descriptor.match(config, data)
+<a name="module_http..match"></a>
+##http~match(config, data)
 Check if the HTTP config and returned data match this descriptor definition.
 
 **Params**
@@ -758,16 +739,35 @@ Check if the HTTP config and returned data match this descriptor definition.
 - config `Object` - Config object for $.ajax and similar  
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object` - Extracted data  
-<a name="module_http..Descriptor#_transformData"></a>
-###descriptor._transformData(data)
+<a name="module_http.._transformData"></a>
+##http~_transformData(data)
 Apply any transforms.
 
 **Params**
 
 - data `Object` - Serialised data.  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object` - Serialised data with applied transformations.  
+<a name="module_http..Descriptor"></a>
+##class: http~Descriptor
+**Members**
+
+* [class: http~Descriptor](#module_http..Descriptor)
+  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+
+<a name="new_module_http..Descriptor"></a>
+###new http~Descriptor(opts)
+A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
 <a name="module_http..ResponseDescriptor"></a>
 ##class: http~ResponseDescriptor
 **Members**
@@ -849,16 +849,16 @@ with HTTP request/response bodies.
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~_matchPath(path)](#module_http.._matchPath)
+  * [http~_matchMethod(method)](#module_http.._matchMethod)
   * [http~bury(obj, data)](#module_http..bury)
+  * [http~_extractData(data)](#module_http.._extractData)
+  * [http~_matchConfig(config)](#module_http.._matchConfig)
+  * [http~_matchData(data)](#module_http.._matchData)
+  * [http~match(config, data)](#module_http..match)
+  * [http~_transformData(data)](#module_http.._transformData)
   * [class: http~Descriptor](#module_http..Descriptor)
     * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-    * [descriptor.match(config, data)](#module_http..Descriptor#match)
-    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
   * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
     * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 
@@ -1011,43 +1011,8 @@ Send an PATCH request
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
-<a name="module_http..bury"></a>
-##http~bury(obj, data)
-Performs a breadth-first search through data, embedding obj in the first leaf.
-
-**Params**
-
-- obj `Object`  
-- data `Object`  
-
-**Scope**: inner function of [http](#module_http)  
-**Returns**: `Object`  
-<a name="module_http..Descriptor"></a>
-##class: http~Descriptor
-**Members**
-
-* [class: http~Descriptor](#module_http..Descriptor)
-  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-  * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-  * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-  * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-  * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-  * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-  * [descriptor.match(config, data)](#module_http..Descriptor#match)
-  * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
-
-<a name="new_module_http..Descriptor"></a>
-###new http~Descriptor(opts)
-A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
-intercept a HTTP request/response and perform a mapping.
-
-**Params**
-
-- opts `Object`  
-
-**Scope**: inner class of [http](#module_http)  
-<a name="module_http..Descriptor#_matchPath"></a>
-###descriptor._matchPath(path)
+<a name="module_http.._matchPath"></a>
+##http~_matchPath(path)
 Takes a regex path and returns an object if matched.
 If any regular expression groups were defined, the returned object will contain the matches.
 
@@ -1055,6 +1020,7 @@ If any regular expression groups were defined, the returned object will contain 
 
 - path `String` | `RegExp`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
 **Example**
 
@@ -1066,14 +1032,15 @@ var matched = d._matchPath('/resource/2');
 console.log(matched); // {id: '2'}
 ```
 
-<a name="module_http..Descriptor#_matchMethod"></a>
-###descriptor._matchMethod(method)
+<a name="module_http.._matchMethod"></a>
+##http~_matchMethod(method)
 Returns true if the descriptor accepts the HTTP method.
 
 **Params**
 
 - method `String`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `boolean`  
 **Example**
 
@@ -1084,35 +1051,49 @@ var d = new Descriptor({
 console.log(d._matchMethod('GET')); // false
 ```
 
-<a name="module_http..Descriptor#_extractData"></a>
-###descriptor._extractData(data)
+<a name="module_http..bury"></a>
+##http~bury(obj, data)
+Performs a breadth-first search through data, embedding obj in the first leaf.
+
+**Params**
+
+- obj `Object`  
+- data `Object`  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Object`  
+<a name="module_http.._extractData"></a>
+##http~_extractData(data)
 If nested data has been specified in the descriptor, extract the data.
 
 **Params**
 
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#_matchConfig"></a>
-###descriptor._matchConfig(config)
+<a name="module_http.._matchConfig"></a>
+##http~_matchConfig(config)
 Returns this descriptors mapping if the request config matches.
 
 **Params**
 
 - config `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#_matchData"></a>
-###descriptor._matchData(data)
+<a name="module_http.._matchData"></a>
+##http~_matchData(data)
 Returns data if the data matches, performing any extraction as specified in opts.data
 
 **Params**
 
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#match"></a>
-###descriptor.match(config, data)
+<a name="module_http..match"></a>
+##http~match(config, data)
 Check if the HTTP config and returned data match this descriptor definition.
 
 **Params**
@@ -1120,16 +1101,35 @@ Check if the HTTP config and returned data match this descriptor definition.
 - config `Object` - Config object for $.ajax and similar  
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object` - Extracted data  
-<a name="module_http..Descriptor#_transformData"></a>
-###descriptor._transformData(data)
+<a name="module_http.._transformData"></a>
+##http~_transformData(data)
 Apply any transforms.
 
 **Params**
 
 - data `Object` - Serialised data.  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object` - Serialised data with applied transformations.  
+<a name="module_http..Descriptor"></a>
+##class: http~Descriptor
+**Members**
+
+* [class: http~Descriptor](#module_http..Descriptor)
+  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+
+<a name="new_module_http..Descriptor"></a>
+###new http~Descriptor(opts)
+A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
 <a name="module_http..ResponseDescriptor"></a>
 ##class: http~ResponseDescriptor
 **Members**
@@ -1163,16 +1163,16 @@ Describes what to do with a HTTP response.
   * [http~POST(collection, path, model, optsOrCallback, callback)](#module_http..POST)
   * [http~PUT(collection, path, model, optsOrCallback, callback)](#module_http..PUT)
   * [http~PATCH(collection, path, model, optsOrCallback, callback)](#module_http..PATCH)
+  * [http~_matchPath(path)](#module_http.._matchPath)
+  * [http~_matchMethod(method)](#module_http.._matchMethod)
   * [http~bury(obj, data)](#module_http..bury)
+  * [http~_extractData(data)](#module_http.._extractData)
+  * [http~_matchConfig(config)](#module_http.._matchConfig)
+  * [http~_matchData(data)](#module_http.._matchData)
+  * [http~match(config, data)](#module_http..match)
+  * [http~_transformData(data)](#module_http.._transformData)
   * [class: http~Descriptor](#module_http..Descriptor)
     * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-    * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-    * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-    * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-    * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-    * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-    * [descriptor.match(config, data)](#module_http..Descriptor#match)
-    * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
   * [class: http~ResponseDescriptor](#module_http..ResponseDescriptor)
     * [new http~ResponseDescriptor(opts)](#new_module_http..ResponseDescriptor)
 
@@ -1325,43 +1325,8 @@ Send an PATCH request
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
-<a name="module_http..bury"></a>
-##http~bury(obj, data)
-Performs a breadth-first search through data, embedding obj in the first leaf.
-
-**Params**
-
-- obj `Object`  
-- data `Object`  
-
-**Scope**: inner function of [http](#module_http)  
-**Returns**: `Object`  
-<a name="module_http..Descriptor"></a>
-##class: http~Descriptor
-**Members**
-
-* [class: http~Descriptor](#module_http..Descriptor)
-  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
-  * [descriptor._matchPath(path)](#module_http..Descriptor#_matchPath)
-  * [descriptor._matchMethod(method)](#module_http..Descriptor#_matchMethod)
-  * [descriptor._extractData(data)](#module_http..Descriptor#_extractData)
-  * [descriptor._matchConfig(config)](#module_http..Descriptor#_matchConfig)
-  * [descriptor._matchData(data)](#module_http..Descriptor#_matchData)
-  * [descriptor.match(config, data)](#module_http..Descriptor#match)
-  * [descriptor._transformData(data)](#module_http..Descriptor#_transformData)
-
-<a name="new_module_http..Descriptor"></a>
-###new http~Descriptor(opts)
-A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
-intercept a HTTP request/response and perform a mapping.
-
-**Params**
-
-- opts `Object`  
-
-**Scope**: inner class of [http](#module_http)  
-<a name="module_http..Descriptor#_matchPath"></a>
-###descriptor._matchPath(path)
+<a name="module_http.._matchPath"></a>
+##http~_matchPath(path)
 Takes a regex path and returns an object if matched.
 If any regular expression groups were defined, the returned object will contain the matches.
 
@@ -1369,6 +1334,7 @@ If any regular expression groups were defined, the returned object will contain 
 
 - path `String` | `RegExp`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
 **Example**
 
@@ -1380,14 +1346,15 @@ var matched = d._matchPath('/resource/2');
 console.log(matched); // {id: '2'}
 ```
 
-<a name="module_http..Descriptor#_matchMethod"></a>
-###descriptor._matchMethod(method)
+<a name="module_http.._matchMethod"></a>
+##http~_matchMethod(method)
 Returns true if the descriptor accepts the HTTP method.
 
 **Params**
 
 - method `String`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `boolean`  
 **Example**
 
@@ -1398,35 +1365,49 @@ var d = new Descriptor({
 console.log(d._matchMethod('GET')); // false
 ```
 
-<a name="module_http..Descriptor#_extractData"></a>
-###descriptor._extractData(data)
+<a name="module_http..bury"></a>
+##http~bury(obj, data)
+Performs a breadth-first search through data, embedding obj in the first leaf.
+
+**Params**
+
+- obj `Object`  
+- data `Object`  
+
+**Scope**: inner function of [http](#module_http)  
+**Returns**: `Object`  
+<a name="module_http.._extractData"></a>
+##http~_extractData(data)
 If nested data has been specified in the descriptor, extract the data.
 
 **Params**
 
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#_matchConfig"></a>
-###descriptor._matchConfig(config)
+<a name="module_http.._matchConfig"></a>
+##http~_matchConfig(config)
 Returns this descriptors mapping if the request config matches.
 
 **Params**
 
 - config `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#_matchData"></a>
-###descriptor._matchData(data)
+<a name="module_http.._matchData"></a>
+##http~_matchData(data)
 Returns data if the data matches, performing any extraction as specified in opts.data
 
 **Params**
 
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object`  
-<a name="module_http..Descriptor#match"></a>
-###descriptor.match(config, data)
+<a name="module_http..match"></a>
+##http~match(config, data)
 Check if the HTTP config and returned data match this descriptor definition.
 
 **Params**
@@ -1434,16 +1415,35 @@ Check if the HTTP config and returned data match this descriptor definition.
 - config `Object` - Config object for $.ajax and similar  
 - data `Object`  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object` - Extracted data  
-<a name="module_http..Descriptor#_transformData"></a>
-###descriptor._transformData(data)
+<a name="module_http.._transformData"></a>
+##http~_transformData(data)
 Apply any transforms.
 
 **Params**
 
 - data `Object` - Serialised data.  
 
+**Scope**: inner function of [http](#module_http)  
 **Returns**: `Object` - Serialised data with applied transformations.  
+<a name="module_http..Descriptor"></a>
+##class: http~Descriptor
+**Members**
+
+* [class: http~Descriptor](#module_http..Descriptor)
+  * [new http~Descriptor(opts)](#new_module_http..Descriptor)
+
+<a name="new_module_http..Descriptor"></a>
+###new http~Descriptor(opts)
+A descriptor 'describes' possible HTTP requests against an API, and is used to decide whether or not to
+intercept a HTTP request/response and perform a mapping.
+
+**Params**
+
+- opts `Object`  
+
+**Scope**: inner class of [http](#module_http)  
 <a name="module_http..ResponseDescriptor"></a>
 ##class: http~ResponseDescriptor
 **Members**

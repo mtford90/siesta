@@ -4,9 +4,9 @@ var s = require('../index'),
 describe('new object proxy', function() {
 
     var RelationshipProxy = require('../src/proxy').RelationshipProxy;
-    var OneToOneProxy = require('../src/oneToOneProxy').OneToOneProxy;
-    var OneToManyProxy = require('../src/oneToManyProxy').OneToManyProxy;
-    var ManyToManyProxy = require('../src/manyToManyProxy').ManyToManyProxy;
+    var OneToOneProxy = require('../src/oneToOneProxy');
+    var OneToManyProxy = require('../src/oneToManyProxy');
+    var ManyToManyProxy = require('../src/manyToManyProxy');
     var SiestaModel = require('../src/object').SiestaModel;
     var Fault = require('../src/proxy').Fault;
     var InternalSiestaError = require('../src/error').InternalSiestaError;

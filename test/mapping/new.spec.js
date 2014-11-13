@@ -8,7 +8,7 @@ var s = require('../../index')
 describe('mapping new object', function () {
     var Collection = require('../../src/collection').Collection;
     var RelationshipType = require('../../src/relationship').RelationshipType;
-    var OneToManyProxy = require('../../src/oneToManyProxy').OneToManyProxy;
+    var OneToManyProxy = require('../../src/oneToManyProxy');
     var cache = require('../../src/cache');
 
     beforeEach(function () {

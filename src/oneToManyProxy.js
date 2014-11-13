@@ -211,4 +211,4 @@ _.extend(OneToManyProxy.prototype, {
 });
 
 
-exports.OneToManyProxy = OneToManyProxy;
+module.exports = OneToManyProxy;

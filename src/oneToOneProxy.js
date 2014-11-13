@@ -76,4 +76,4 @@ _.extend(OneToOneProxy.prototype, {
 });
 
 
-exports.OneToOneProxy = OneToOneProxy;
+module.exports = OneToOneProxy;
