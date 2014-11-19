@@ -50,12 +50,11 @@ function Descriptor(opts) {
     this._rawOpts = extend(true, {}, opts);
     this._opts = opts;
 
-    if (this._opts.path) {
-        // TODO: This is a bit hacky.
-        // Essentially hacking named groups into javascript regular expressions.
-        // Originally was using XRegExp but that library is 300kb, 30k gunzipped. Fuck that.
-        // I do suspect that this is a bit sketchy tho...
-        var raw = this._opts.path;
+    // TODO: This is a bit hacky.
+    // Essentially hacking named groups into javascript regular expressions.
+    // Originally was using XRegExp but that library is 300kb, 30k gunzipped. Fuck that.
+    // I do suspect that this is a bit sketchy tho...
+    var processPath = function (raw) {
         var r = /\?<([0-9a-zA-Z_-]*)>/g;
         var match, names = [];
         while (match = r.exec(raw)) {
@@ -63,11 +62,27 @@ function Descriptor(opts) {
             names.push(name);
         }
         raw = raw.replace(r, '');
-        this._opts.path = new RegExp(raw, 'g');
-        this.names = names;
-    } else {
-        this._opts.path = '';
+        var regExp = new RegExp(raw, 'g');
+        return {names: names, regExp: regExp};
+    }.bind(this);
+
+    if (this._opts.path) {
+        var paths = this._opts.path;
+        if (!util.isArray(paths)) {
+            paths = [paths];
+        }
+
+        this._opts.path = [];
         this.names = [];
+
+        _.each(paths, function (p) {
+            var __ret = processPath.call(this, p);
+            this._opts.path.push(__ret.regExp);
+            this.names.push(__ret.names);
+        }.bind(this));
+    } else {
+        this._opts.path = [''];
+        this.names = [[]];
     }
 
     this._opts.method = resolveMethod(this._opts.method);
@@ -171,24 +186,27 @@ _.extend(Descriptor.prototype, {
      * ```
      */
     _matchPath: function (path) {
+        var i;
         var matches = [];
-        //console.log('path', path);
-        var match = this._opts.path.exec(path);
-        if (match) {
-            for (var i = 1; i < match.length; i++) {
-                matches.push(match[i]);
+        for (i=0; i<this._opts.path.length; i++) {
+            var names = this.names[i];
+            var regExp = this._opts.path[i];
+            var match = regExp.exec(path);
+            if (match) {
+                for (i = 1; i < match.length; i++) {
+                    matches.push(match[i]);
+                }
+                var matched;
+                if (matches.length == names.length) {
+                    matched = {};
+                    _.each(matches, function (m, i) {
+                        matched[names[i]] = m;
+                    }.bind(this));
+                    return matched;
+                }
             }
         }
-        //console.log('matches', matches);
-        var matched;
-        if (matches.length == this.names.length) {
-            matched = {};
-            _.each(matches, function (m, i) {
-                matched[this.names[i]] = m;
-            }.bind(this))
-        }
-        //console.log('matched', matched);
-        return matched;
+        return null;
     },
     /**
      * Returns true if the descriptor accepts the HTTP method.
