@@ -1,6 +1,6 @@
 /*global describe,it,beforeEach */
 
-var s = require('../../index'),
+var s = require('../../src/index'),
     chai = require('chai'),
     assert = chai.assert,
     _ = require('../../src/util')._;

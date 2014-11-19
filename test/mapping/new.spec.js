@@ -2,7 +2,7 @@
  These tests deal with the creation of new SiestaModel objects.
  */
 
-var s = require('../../index')
+var s = require('../../src/index')
     , assert = require('chai').assert;
 
 describe('mapping new object', function () {

@@ -1,4 +1,4 @@
-var s = require('../index'),
+var s = require('../src/index'),
     assert = require('chai').assert;
 
 describe('request descriptor', function () {
@@ -52,7 +52,7 @@ describe('request descriptor', function () {
                 assert.equal(match.id, '5');
             });
 
-            describe.only('array of paths', function () {
+            describe('array of paths', function () {
                 it('multiple', function () {
                     var descriptor = new siesta.ext.http.Descriptor({
                         method: '*',

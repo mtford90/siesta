@@ -1,5 +1,5 @@
 
-var s = require('../index');
+var s = require('../src/index');
 
 var assert = require('chai').assert;
 var notificationCentre = require('../src/notificationCentre').notificationCentre;

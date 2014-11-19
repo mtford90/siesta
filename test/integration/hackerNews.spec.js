@@ -10,7 +10,7 @@
 //    "url": "http://shorttermmemoryloss.com/nor/2014/11/07/all-cameras-are-police-cameras/"
 //};
 //
-//var siesta = require('../../index');
+//var siesta = require('../../src/index');
 //var assert = require('chai').assert;
 //
 //describe('hacker news integration test', function () {

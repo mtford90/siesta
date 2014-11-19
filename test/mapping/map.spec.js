@@ -1,4 +1,4 @@
-var s = require('../../index'),
+var s = require('../../src/index'),
     assert = require('chai').assert;
 
 describe('perform mapping', function() {

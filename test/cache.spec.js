@@ -1,4 +1,4 @@
-var siesta = require('../index');
+var siesta = require('../src/index');
 var assert = require('chai').assert;
 
 describe('cache...', function() {

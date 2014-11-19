@@ -5,7 +5,7 @@
  * We then proceed to test various aspects of the system.
  */
 
-var s = require('../index'),
+var s = require('../src/index'),
     assert = require('chai').assert;
 
 var Collection = require('../src/collection').Collection;

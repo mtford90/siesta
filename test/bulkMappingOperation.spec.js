@@ -1,5 +1,5 @@
 var chai = require('chai');
-var s = require('../index'),
+var s = require('../src/index'),
     assert = chai.assert;
 
 var mappingOperation = require('../src/mappingOperation');
