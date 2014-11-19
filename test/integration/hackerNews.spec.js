@@ -127,4 +127,40 @@
 //            }
 //        });
 //    });
+//
+//    it('kids', function (done) {
+//        var HackerNews = new siesta.Collection('HackerNews');
+//        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
+//        HackerNews.mapping('Item', {
+//            attributes: [
+//                'score'
+//                , 'time'
+//                , 'title'
+//                , 'type'
+//                , 'url'
+//            ],
+//            relationships: {
+//                parent: {
+//                    mapping: 'Item'
+//                    , type: 'OneToMany'
+//                    , reverse: 'kids'
+//                }
+//            }
+//        });
+//        HackerNews.descriptor({
+//            path: 'item/*'
+//            , method: 'GET'
+//            , mapping: 'Item'
+//        });
+//        HackerNews.install(function () {
+//            server.respondWith("GET", "https://hacker-news.firebaseio.com/v0/item/8582985.json",
+//                [200, {"Content-Type": "application/json"},
+//                    JSON.stringify(data)]);
+//            HackerNews.GET('item/8582985.json', function (err, item) {
+//                console.log('err', err);
+//                console.log('item', item);
+//                done();
+//            });
+//        });
+//    });
 //});
