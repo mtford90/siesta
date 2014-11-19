@@ -188,6 +188,7 @@ _.extend(Descriptor.prototype, {
     _matchPath: function (path) {
         var i;
         var matches = [];
+        var matched;
         for (i=0; i<this._opts.path.length; i++) {
             var names = this.names[i];
             var regExp = this._opts.path[i];
@@ -196,17 +197,16 @@ _.extend(Descriptor.prototype, {
                 for (i = 1; i < match.length; i++) {
                     matches.push(match[i]);
                 }
-                var matched;
                 if (matches.length == names.length) {
                     matched = {};
                     _.each(matches, function (m, i) {
                         matched[names[i]] = m;
                     }.bind(this));
-                    return matched;
+                    break;
                 }
             }
         }
-        return null;
+        return matched;
     },
     /**
      * Returns true if the descriptor accepts the HTTP method.

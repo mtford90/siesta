@@ -57,8 +57,6 @@ describe('http!', function () {
 
 
     describe('path regex', function () {
-
-
         describe('check', function () {
 
             beforeEach(function (done) {
@@ -648,6 +646,12 @@ describe('http!', function () {
             var err, obj, resp;
             beforeEach(function (done) {
                 configureCollection(done);
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                    method: 'OPTIONS',
+                    mapping: carMapping,
+                    path: 'something/?'
+                });
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
             });
 
             describe('success', function () {
@@ -686,6 +690,12 @@ describe('http!', function () {
             var err, obj, resp;
             beforeEach(function (done) {
                 configureCollection(done);
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                    method: 'HEAD',
+                    mapping: carMapping,
+                    path: 'something/?'
+                });
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
             });
 
             describe('success', function () {
@@ -869,6 +879,71 @@ describe('http!', function () {
         it('xyz', function () {
             dump('hello');
         });
+    });
+
+    describe('no descriptor matches', function () {
+        it('GET', function (done) {
+            collection = new Collection('myCollection');
+            personMapping = collection.mapping('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            carMapping = collection.mapping('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.OneToMany,
+                        reverse: 'cars'
+                    }
+                }
+            });
+            vitalSignsMapping = collection.mapping('VitalSigns', {
+                id: 'id',
+                attributes: ['heartRate', 'bloodPressure'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.OneToOne,
+                        reverse: 'vitalSigns'
+                    }
+                }
+            });
+            collection.baseURL = 'http://mywebsite.co.uk/';
+            collection.descriptor({
+                method: 'GET',
+                mapping: carMapping,
+                path: '/cars/?$'
+            });
+            collection.install(function (err) {
+                if (err) {
+                    done(err);
+                }
+                else {
+                    var path = "http://mywebsite.co.uk/cars/red/";
+                    var method = "GET";
+                    var status = 200;
+                    var raw = {
+                        colour: 'orange',
+                        name: 'Aston Martin',
+                        owner: '093hodhfno',
+                        id: '1'
+                    };
+                    var headers = {
+                        "Content-Type": "application/json"
+                    };
+                    server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                    collection.GET('cars/red/', function (err, obj, resp) {
+                        assert.ok(err, 'should get an error when no descriptors match');
+                        assert.notOk(obj);
+                        done();
+                    });
+                    server.respond();
+                }
+
+            });
+        })
     });
 
 });

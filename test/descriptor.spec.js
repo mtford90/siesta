@@ -437,6 +437,7 @@ describe('request descriptor', function () {
             };
             assert.ok(descriptor.match(config, data));
         });
+
     });
 
     describe('defaults', function () {

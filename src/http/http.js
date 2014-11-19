@@ -71,6 +71,7 @@ function _httpResponse(method, path) {
                 }
             }
 
+
             if (matchedDescriptor) {
                 if (Logger.trace.isEnabled)
                     Logger.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
@@ -87,7 +88,7 @@ function _httpResponse(method, path) {
                 }
             } else if (callback) {
                 if (name) {
-                    callback(null, null, resp);
+                    callback('No descriptor matched.', null, resp);
                 } else {
                     // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
                     throw new InternalSiestaError('Unnamed collection');
@@ -179,7 +180,7 @@ function _httpRequest(method, path, object) {
     } else if (callback) {
         if (Logger.trace.isEnabled)
             Logger.trace('Did not match descriptor');
-        callback(null, null, null);
+        callback('No descriptor matched', null, null);
     }
     return deferred ? deferred.promise : null;
 };
