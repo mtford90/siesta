@@ -12,5 +12,12 @@
   },
   "devDependencies": {
     "async": "~0.9.0"
-  }
+  },
+  "ignore": [
+    "CONTRIBUTING.md",
+    "README.md",
+    "Gruntfile.js",
+    "build.config.js",
+    "LICENSE"
+  ]
 }

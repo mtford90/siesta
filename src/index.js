@@ -2,18 +2,18 @@
  * @module siesta
  */
 
-var collection = require('./src/collection');
-var util = require('./src/util');
+var collection = require('./collection');
+var util = require('./util');
 
-var CollectionRegistry = require('./src/collectionRegistry').CollectionRegistry,
+var CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     Collection = collection.Collection,
-    cache = require('./src/cache'),
-    Mapping = require('./src/mapping').Mapping,
-    notificationCentre = require('./src/notificationCentre').notificationCentre,
-    Operation = require('./src/operation/operation').Operation,
-    OperationQueue = require('./src/operation/queue').OperationQueue,
-    RelationshipType = require('./src/relationship').RelationshipType,
-    log = require('./src/operation/log'),
+    cache = require('./cache'),
+    Mapping = require('./mapping').Mapping,
+    notificationCentre = require('./notificationCentre').notificationCentre,
+    Operation = require('./operation/operation').Operation,
+    OperationQueue = require('./operation/queue').OperationQueue,
+    RelationshipType = require('./relationship').RelationshipType,
+    log = require('./operation/log'),
     _ = util._;
 
 if (window.Q) window.q = window.Q;
@@ -86,31 +86,31 @@ siesta.Collection = Collection;
 siesta.RelationshipType = RelationshipType;
 
 // Used by modules.
-var coreChanges = require('./src/changes');
+var coreChanges = require('./changes');
 
 // Make available modules to extensions.
 siesta._internal = {
     log: log,
     Mapping: Mapping,
-    mapping: require('./src/mapping'),
-    error: require('./src/error'),
+    mapping: require('./mapping'),
+    error: require('./error'),
     ChangeType: coreChanges.ChangeType,
-    siestaModel: require('./src/siestaModel'),
+    siestaModel: require('./siestaModel'),
     extend: require('extend'),
-    notificationCentre: require('./src/notificationCentre'),
-    cache: require('./src/cache'),
-    misc: require('./src/misc'),
+    notificationCentre: require('./notificationCentre'),
+    cache: require('./cache'),
+    misc: require('./misc'),
     Operation: Operation,
     OperationQueue: OperationQueue,
     coreChanges: coreChanges,
-    CollectionRegistry: require('./src/collectionRegistry').CollectionRegistry,
+    CollectionRegistry: require('./collectionRegistry').CollectionRegistry,
     Collection: collection.Collection,
     collection: collection,
     utils: util,
     util: util,
     _: util._,
-    query: require('./src/query'),
-    store: require('./src/store')
+    query: require('./query'),
+    store: require('./store')
 };
 
 siesta.performanceMonitoringEnabled = false;

@@ -68,7 +68,7 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {
-                    '<%= build_dir %>/siesta.core.js': ['index.js'],
+                    '<%= build_dir %>/siesta.core.js': ['src/index.js'],
                     '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
                 }
             },

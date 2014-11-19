@@ -145,7 +145,7 @@ _.extend(Collection.prototype, {
     _finaliseInstallation: function (err, callback) {
         if (!err) {
             this.installed = true;
-            var index = require('../index');
+            var index = require('./index');
             index[this._name] = this;
         }
         if (callback) callback(err);
