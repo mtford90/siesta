@@ -1,14 +1,14 @@
 {
   "author": "Michael Ford",
   "name": "siesta",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha1",
   "homepage": "https://github.com/mtford90/siesta",
   "bugs": "https://github.com/mtford90/siesta",
   "repository": {
     "type": "git",
     "url": "git@github.com:mtford90/siesta"
   },
-  "main": "index.js",
+  "main": "src/index.js",
   "dependencies": {
     "extend": "~1.3.0",
     "jstream": "~0.2.7",
