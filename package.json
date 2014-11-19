@@ -1,12 +1,12 @@
 {
   "author": "Michael Ford",
-  "name": "rest",
+  "name": "siesta",
   "version": "0.0.1",
-  "homepage": "https://github.com/mtford90/rest",
-  "bugs": "https://github.com/mtford90/rest",
+  "homepage": "https://github.com/mtford90/siesta",
+  "bugs": "https://github.com/mtford90/siesta",
   "repository": {
     "type": "git",
-    "url": "git@github.com:mtford90/rest"
+    "url": "git@github.com:mtford90/siesta"
   },
   "main": "index.js",
   "dependencies": {
