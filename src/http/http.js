@@ -4,9 +4,12 @@
  * @module http
  */
 
-if (!siesta) {
-    throw new Error('Could not find siesta');
+if (typeof siesta == 'undefined' && typeof module == 'undefined') {
+    throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
 }
+
+
+
 
 var _i = siesta._internal,
     Collection = siesta.Collection,
@@ -183,15 +186,13 @@ function _httpRequest(method, path, object) {
         callback('No descriptor matched', null, null);
     }
     return deferred ? deferred.promise : null;
-};
+}
 
 /**
  * Send a DELETE request. Also removes the object.
  * @param {Collection} collection
- * @param {Stirng} path The path to the resource to which we want to DELETE
- * @param {SiestaModel} model The model that we would like to PATCH
- * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
- * @param {Function} callback Callback if opts specified.
+ * @param {String} path The path to the resource to which we want to DELETE
+ * @param {SiestaModel} object The model that we would like to PATCH
  * @returns {Promise}
  */
 function DELETE(collection, path, object) {
@@ -340,15 +341,14 @@ function PATCH(collection) {
 }
 
 
-if (!siesta.ext) {
-    siesta.ext = {};
-}
+
+
 
 
 var ajax;
 
 
-siesta.ext.http = {
+var http = {
     RequestDescriptor: require('./requestDescriptor').RequestDescriptor,
     ResponseDescriptor: require('./responseDescriptor').ResponseDescriptor,
     Descriptor: descriptor.Descriptor,
@@ -372,7 +372,7 @@ siesta.ext.http = {
     _serialiseObject: _serialiseObject
 };
 
-Object.defineProperty(siesta.ext.http, 'ajax', {
+Object.defineProperty(http, 'ajax', {
     get: function() {
         var a = ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
         if (!a) {
@@ -384,3 +384,14 @@ Object.defineProperty(siesta.ext.http, 'ajax', {
         ajax = v;
     }
 });
+
+if (typeof siesta != 'undefined') {
+    if (!siesta.ext) {
+        siesta.ext = {};
+    }
+    siesta.ext.http = http;
+}
+
+if (typeof module != 'undefined') {
+    module.exports = http;
+}

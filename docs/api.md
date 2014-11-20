@@ -45,7 +45,7 @@ sidebar: nav2.html
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
-  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~DELETE(collection, path, object)](#module_http..DELETE)
   * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
   * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
   * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
@@ -73,7 +73,7 @@ sidebar: nav2.html
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
-  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~DELETE(collection, path, object)](#module_http..DELETE)
   * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
   * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
   * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
@@ -98,7 +98,7 @@ sidebar: nav2.html
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
-  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~DELETE(collection, path, object)](#module_http..DELETE)
   * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
   * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
   * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
@@ -478,7 +478,7 @@ the results back onto the object graph automatically.
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
-  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~DELETE(collection, path, object)](#module_http..DELETE)
   * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
   * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
   * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
@@ -530,16 +530,14 @@ Send a HTTP request to the given method and path
 
 **Scope**: inner function of [http](#module_http)  
 <a name="module_http..DELETE"></a>
-##http~DELETE(collection, path, model, optsOrCallback, callback)
+##http~DELETE(collection, path, object)
 Send a DELETE request. Also removes the object.
 
 **Params**
 
 - collection `Collection`  
-- path `Stirng` - The path to the resource to which we want to DELETE  
-- model `SiestaModel` - The model that we would like to PATCH  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
+- path `String` - The path to the resource to which we want to DELETE  
+- object `SiestaModel` - The model that we would like to PATCH  
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
@@ -840,7 +838,7 @@ with HTTP request/response bodies.
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
-  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~DELETE(collection, path, object)](#module_http..DELETE)
   * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
   * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
   * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
@@ -892,16 +890,14 @@ Send a HTTP request to the given method and path
 
 **Scope**: inner function of [http](#module_http)  
 <a name="module_http..DELETE"></a>
-##http~DELETE(collection, path, model, optsOrCallback, callback)
+##http~DELETE(collection, path, object)
 Send a DELETE request. Also removes the object.
 
 **Params**
 
 - collection `Collection`  
-- path `Stirng` - The path to the resource to which we want to DELETE  
-- model `SiestaModel` - The model that we would like to PATCH  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
+- path `String` - The path to the resource to which we want to DELETE  
+- object `SiestaModel` - The model that we would like to PATCH  
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
@@ -1154,7 +1150,7 @@ Describes what to do with a HTTP response.
   * [http~path](#module_http..path)
   * [http~_httpResponse(method, path, optsOrCallback, callback)](#module_http.._httpResponse)
   * [http~_httpRequest(method, path, object, optsOrCallback, callback)](#module_http.._httpRequest)
-  * [http~DELETE(collection, path, model, optsOrCallback, callback)](#module_http..DELETE)
+  * [http~DELETE(collection, path, object)](#module_http..DELETE)
   * [http~HTTP_METHOD(collection, request, method)](#module_http..HTTP_METHOD)
   * [http~GET(collection, path, optsOrCallback, callback)](#module_http..GET)
   * [http~OPTIONS(collection, path, optsOrCallback, callback)](#module_http..OPTIONS)
@@ -1206,16 +1202,14 @@ Send a HTTP request to the given method and path
 
 **Scope**: inner function of [http](#module_http)  
 <a name="module_http..DELETE"></a>
-##http~DELETE(collection, path, model, optsOrCallback, callback)
+##http~DELETE(collection, path, object)
 Send a DELETE request. Also removes the object.
 
 **Params**
 
 - collection `Collection`  
-- path `Stirng` - The path to the resource to which we want to DELETE  
-- model `SiestaModel` - The model that we would like to PATCH  
-- optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
-- callback `function` - Callback if opts specified.  
+- path `String` - The path to the resource to which we want to DELETE  
+- object `SiestaModel` - The model that we would like to PATCH  
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  

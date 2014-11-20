@@ -21,12 +21,19 @@ if (window.Q) window.q = window.Q;
 Operation.logLevel = log.Level.warn;
 OperationQueue.logLevel = log.Level.warn;
 
-var siesta;
-if (typeof module != 'undefined') {
-    siesta = module.exports;
-} else {
-    siesta = {};
-}
+/**
+ * @param ext - Extensions to include
+ * @example
+ * var siesta = require('siesta');
+ * @example
+ * var siesta = require('siesta')({http: require('http')});
+ * @return {siesta}
+ */
+var siesta = function (ext) {
+    if (!this.ext) this.ext = {};
+    _.extend(this.ext, ext || {});
+    return this;
+};
 
 /**
  * Wipe everything!
@@ -289,4 +296,4 @@ if (typeof window != 'undefined') {
     window.siesta = siesta;
 }
 
-exports.siesta = siesta;
+module.exports = siesta;

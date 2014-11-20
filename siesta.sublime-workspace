@@ -351,11 +351,11 @@
 		"/Users/mtford/Playground/rest/docs/collections.md.template",
 		"/Users/mtford/Playground/rest/src/collection.js",
 		"/Users/mtford/Playground/rest/build/karma-unit.js",
-		"/Users/mtford/Playground/rest/docs/demo/index.js",
+		"/Users/mtford/Playground/rest/docs/demo/http.js",
 		"/Users/mtford/Playground/rest/package.json",
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/dist/pouchdb.idb-alt.js",
 		"/Users/mtford/Playground/rest/src/proxy.js",
-		"/Users/mtford/Playground/rest/_site/demo/index.js",
+		"/Users/mtford/Playground/rest/_site/demo/http.js",
 		"/Users/mtford/Desktop/unicode.mdown",
 		"/Users/mtford/Playground/rest/test/cache.spec.js",
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/level-js/node_modules/idb-wrapper/test/idbwrapper_spec.js",
@@ -364,7 +364,7 @@
 		"/Users/mtford/Playground/rest/node_modules/grunt-contrib-uglify/test/fixtures/expected/sourcemap_prefix",
 		"/Users/mtford/Playground/rest/test/singleton.spec.js",
 		"/Users/mtford/Playground/rest/_site/Gruntfile.js",
-		"/Users/mtford/Playground/rest/index.js",
+		"/Users/mtford/Playground/rest/http.js",
 		"/Users/mtford/Playground/rest/node_modules/grunt/node_modules/eventemitter2/lib/eventemitter2.js",
 		"/Users/mtford/Playground/rest/bower_components/jquery/src/event.js",
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/lib/evalView.js",
@@ -432,12 +432,12 @@
 		"/Users/mtford/Playground/rest/src/manyToManyProxy.js",
 		"/Users/mtford/Playground/rest/src/misc.js",
 		"/Users/mtford/Playground/rest/src/pouch/changes.js",
-		"/Users/mtford/Playground/rest/src/pouch/index.js",
+		"/Users/mtford/Playground/rest/src/pouch/http.js",
 		"/Users/mtford/Playground/rest/src/pouch/pouch.js",
 		"/Users/mtford/Playground/rest/src/pouch/query.js",
 		"/Users/mtford/Playground/rest/src/pouch/store.js",
 		"/Users/mtford/Playground/rest/src/pouch2/changes.js",
-		"/Users/mtford/Playground/rest/src/pouch2/index.js",
+		"/Users/mtford/Playground/rest/src/pouch2/http.js",
 		"/Users/mtford/Playground/rest/src/pouch2/pouch.js",
 		"/Users/mtford/Playground/rest/src/pouch2/query.js",
 		"/Users/mtford/Playground/rest/src/relationship.js",
@@ -446,7 +446,7 @@
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/manifest.json",
 		"/Users/mtford/Playground/rest/node_modules/grunt-browserify/test/fixtures/ignore/ignore.js",
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/level-sublevel/node_modules/xtend/node_modules/object-keys/node_modules/foreach/.npmignore",
-		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/request/node_modules/forever-agent/index.js",
+		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/request/node_modules/forever-agent/http.js",
 		"/Users/mtford/Playground/rest/node_modules/glob/node_modules/minimatch/node_modules/lru-cache/test/foreach.js",
 		"/Users/mtford/Playground/rest/node_modules/karma/lib/init/formatters.js",
 		"/Users/mtford/Playground/rest/node_modules/karma/node_modules/log4js/examples/flush-on-exit.js",
@@ -983,7 +983,7 @@
 			],
 			[
 				"index.",
-				"index.js"
+				"http.js"
 			],
 			[
 				"http",
@@ -1126,8 +1126,8 @@
 				"index.md"
 			],
 			[
-				"index.js",
-				"demo/index.js"
+				"http.js",
+				"demo/http.js"
 			],
 			[
 				"vis.js",
@@ -1139,7 +1139,7 @@
 			],
 			[
 				"index",
-				"demo/index.js"
+				"demo/http.js"
 			]
 		],
 		"width": 0.0
