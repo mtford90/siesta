@@ -1,5 +1,5 @@
 /*globals describe,it */
-var http = require('../src/http/http');
+var http = require('../src/http');
 var siesta = require('../src/index')({http: http});
 
 describe('qwerty', function () {

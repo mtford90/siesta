@@ -69,13 +69,13 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     '<%= build_dir %>/siesta.core.js': ['src/index.js'],
-                    '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
+                    '<%= build_dir %>/siesta.http.js': ['src/http/index.js']
                 }
             },
             test: {
                 files: {
                     '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
-                    '<%= build_dir %>/siesta.http.js': ['src/http/http.js']
+                    '<%= build_dir %>/siesta.http.js': ['src/http/index.js']
                 }
             }
         },
@@ -273,7 +273,7 @@ module.exports = function(grunt) {
                         } else extracted('api.md', stdout, cb);
                     }
                 },
-                command: 'jsdoc2md src/collection.js src/http/http.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js src/cache.js'
+                command: 'jsdoc2md src/collection.js src/http/index.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js src/cache.js'
             },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
@@ -302,7 +302,7 @@ module.exports = function(grunt) {
             bundle: {
                 src: [
                     '<%= build_dir %>/siesta.core.js',
-                    '<%= build_dir %>/siesta.http.js',
+                    '<%= build_dir %>/siesta.http.js'
                 ],
                 dest: '<%= build_dir %>/siesta.js'
             }

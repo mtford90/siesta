@@ -120,6 +120,8 @@ siesta._internal = {
     store: require('./store')
 };
 
+siesta.Collection = collection.Collection;
+
 siesta.performanceMonitoringEnabled = false;
 siesta.httpEnabled = false;
 siesta.storageEnabled = false;
