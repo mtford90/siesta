@@ -30,9 +30,10 @@ OperationQueue.logLevel = log.Level.warn;
  * @return {siesta}
  */
 var siesta = function (ext) {
-    if (!this.ext) this.ext = {};
-    _.extend(this.ext, ext || {});
-    return this;
+    if (!siesta.ext) siesta.ext = {};
+    _.extend(siesta.ext, ext || {});
+    console.log('siesta this', siesta);
+    return siesta;
 };
 
 /**
