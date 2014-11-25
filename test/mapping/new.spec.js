@@ -2,14 +2,14 @@
  These tests deal with the creation of new SiestaModel objects.
  */
 
-var s = require('../../src/index')
+var s = require('../../core/index')
     , assert = require('chai').assert;
 
 describe('mapping new object', function () {
-    var Collection = require('../../src/collection').Collection;
-    var RelationshipType = require('../../src/relationship').RelationshipType;
-    var OneToManyProxy = require('../../src/oneToManyProxy');
-    var cache = require('../../src/cache');
+    var Collection = require('../../core/collection').Collection;
+    var RelationshipType = require('../../core/relationship').RelationshipType;
+    var OneToManyProxy = require('../../core/oneToManyProxy');
+    var cache = require('../../core/cache');
 
     beforeEach(function () {
         s.reset(true);

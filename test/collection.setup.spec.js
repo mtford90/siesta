@@ -1,11 +1,11 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 
 describe('collection setup', function() {
 
-    var Collection = require('../src/collection').Collection;
-    var InternalSiestaError = require('../src/error').InternalSiestaError;
+    var Collection = require('../core/collection').Collection;
+    var InternalSiestaError = require('../core/error').InternalSiestaError;
 
     beforeEach(function() {
         s.reset(true);

@@ -1,11 +1,11 @@
 /*global describe,it,beforeEach */
 
-var s = require('../../src/index'),
+var s = require('../../core/index'),
     chai = require('chai'),
     assert = chai.assert,
-    _ = require('../../src/util')._;
+    _ = require('../../core/util')._;
 
-var Operation = require('../../src/operation/operation').Operation;
+var Operation = require('../../core/operation/operation').Operation;
 
 describe('registration', function () {
     describe('of operations', function () {

@@ -1,10 +1,10 @@
-var s = require('../src/index')
+var s = require('../core/index')
     , assert = require('chai').assert;
 
 describe('change identifiers', function () {
 
-    var Collection = require('../src/collection').Collection;
-    var cache = require('../src/cache');
+    var Collection = require('../core/collection').Collection;
+    var cache = require('../core/cache');
     var collection, carMapping;
 
     var car;

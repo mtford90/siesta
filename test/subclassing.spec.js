@@ -1,12 +1,12 @@
-var s = require('../src/index')
+var s = require('../core/index')
     , assert = require('chai').assert;
 
 describe('subclassing', function () {
 
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
-    var InternalSiestaError = require('../src/error').InternalSiestaError;
-    var Collection = require('../src/collection').Collection;
-    var cache = require('../src/cache');
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var InternalSiestaError = require('../core/error').InternalSiestaError;
+    var Collection = require('../core/collection').Collection;
+    var cache = require('../core/cache');
 
     var collection, carMapping;
 

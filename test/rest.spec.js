@@ -1,10 +1,10 @@
-var s = require('../src/index')
+var s = require('../core/index')
     , assert = require('chai').assert;
 
 
 describe('rest', function () {
-    var Collection = require('../src/collection').Collection;
-    var CollectionRegistry = require('../src/collectionRegistry').CollectionRegistry;
+    var Collection = require('../core/collection').Collection;
+    var CollectionRegistry = require('../core/collectionRegistry').CollectionRegistry;
     var collection;
 
 

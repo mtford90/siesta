@@ -1,12 +1,12 @@
-var s = require('../../src/index'),
+var s = require('../../core/index'),
     assert = require('chai').assert;
 
 describe('mapping queries', function() {
 
-    var SiestaModel = require('../../src/siestaModel').SiestaModel;
-    var Collection = require('../../src/collection').Collection;
-    var RelationshipType = require('../../src/relationship').RelationshipType;
-    var cache = require('../../src/cache');
+    var SiestaModel = require('../../core/siestaModel').SiestaModel;
+    var Collection = require('../../core/collection').Collection;
+    var RelationshipType = require('../../core/relationship').RelationshipType;
+    var cache = require('../../core/cache');
 
     beforeEach(function() {
         s.reset(true);

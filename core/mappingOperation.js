@@ -6,7 +6,7 @@ var Store = require('./store');
 var SiestaModel = require('./siestaModel').SiestaModel;
 var log = require('./operation/log');
 var Operation = require('./operation/operation').Operation;
-var InternalSiestaError = require('../src/error').InternalSiestaError;
+var InternalSiestaError = require('./error').InternalSiestaError;
 var Query = require('./query').Query;
 
 var Logger = log.loggerWithName('MappingOperation');

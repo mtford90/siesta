@@ -1,12 +1,12 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('object!!', function() {
 
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
-    var Mapping = require('../src/mapping').Mapping;
-    var cache = require('../src/cache');
-    var Collection = require('../src/collection').Collection;
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var Mapping = require('../core/mapping').Mapping;
+    var cache = require('../core/cache');
+    var Collection = require('../core/collection').Collection;
 
     var mapping, collection;
 

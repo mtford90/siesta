@@ -1,18 +1,18 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('new object proxy', function() {
 
-    var RelationshipProxy = require('../src/proxy').RelationshipProxy;
-    var OneToOneProxy = require('../src/oneToOneProxy');
-    var OneToManyProxy = require('../src/oneToManyProxy');
-    var ManyToManyProxy = require('../src/manyToManyProxy');
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
-    var Fault = require('../src/proxy').Fault;
-    var InternalSiestaError = require('../src/error').InternalSiestaError;
-    var Collection = require('../src/collection').Collection;
-    var cache = require('../src/cache');
-    var ChangeType = require('../src/changes').ChangeType;
+    var RelationshipProxy = require('../core/proxy').RelationshipProxy;
+    var OneToOneProxy = require('../core/oneToOneProxy');
+    var OneToManyProxy = require('../core/oneToManyProxy');
+    var ManyToManyProxy = require('../core/manyToManyProxy');
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var Fault = require('../core/proxy').Fault;
+    var InternalSiestaError = require('../core/error').InternalSiestaError;
+    var Collection = require('../core/collection').Collection;
+    var cache = require('../core/cache');
+    var ChangeType = require('../core/changes').ChangeType;
 
     var carMapping, personMapping;
 

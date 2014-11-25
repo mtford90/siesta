@@ -1,4 +1,4 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 /**

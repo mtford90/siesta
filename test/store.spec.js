@@ -1,11 +1,11 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('store......', function() {
-    var Store = require('../src/store');
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
-    var Collection = require('../src/collection').Collection;
-    var cache = require('../src/cache');
+    var Store = require('../core/store');
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var Collection = require('../core/collection').Collection;
+    var cache = require('../core/cache');
 
     var carMapping, collection;
 

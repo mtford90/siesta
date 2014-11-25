@@ -1,13 +1,13 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 
 describe('http!', function () {
 
-    var Collection = require('../src/collection').Collection;
-    var RelationshipType = require('../src/relationship').RelationshipType;
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
-    var InternalSiestaError = require('../src/error').InternalSiestaError;
+    var Collection = require('../core/collection').Collection;
+    var RelationshipType = require('../core/relationship').RelationshipType;
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var InternalSiestaError = require('../core/error').InternalSiestaError;
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 

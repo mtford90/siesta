@@ -1,10 +1,10 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('query', function() {
-    var Query = require('../src/query').Query;
-    var Collection = require('../src/collection').Collection;
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
+    var Query = require('../core/query').Query;
+    var Collection = require('../core/collection').Collection;
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
 
     beforeEach(function() {
         s.reset(true);

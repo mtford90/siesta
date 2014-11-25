@@ -1,14 +1,14 @@
 /*global describe,it,beforeEach */
 var Operation, OperationQueue, Logger, _;
 
-var s = require('../../src/index'),
+var s = require('../../core/index'),
     chai = require('chai'),
     assert = chai.assert,
-    _ = require('../../src/util')._;
+    _ = require('../../core/util')._;
 
-var Operation = require('../../src/operation/operation').Operation,
-    OperationQueue = require('../../src/operation/queue').OperationQueue,
-    Logger = require('../../src/operation/log');
+var Operation = require('../../core/operation/operation').Operation,
+    OperationQueue = require('../../core/operation/queue').OperationQueue,
+    Logger = require('../../core/operation/log');
 
 describe('LocalCacheLogger', function () {
     it('set level', function () {

@@ -1,15 +1,15 @@
 var chai = require('chai');
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = chai.assert;
 
-var mappingOperation = require('../src/mappingOperation');
+var mappingOperation = require('../core/mappingOperation');
 var BulkMappingOperation = mappingOperation.BulkMappingOperation;
-var util = require('../src/util');
+var util = require('../core/util');
 var _ = util._;
 
-var RelationshipType = require('../src/relationship').RelationshipType;
-var Collection = require('../src/collection').Collection;
-var cache = require('../src/cache');
+var RelationshipType = require('../core/relationship').RelationshipType;
+var Collection = require('../core/collection').Collection;
+var cache = require('../core/cache');
 var collection;
 var Repo, User;
 

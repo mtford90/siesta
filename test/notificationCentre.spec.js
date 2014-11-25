@@ -1,8 +1,8 @@
 
-var s = require('../src/index');
+var s = require('../core/index');
 
 var assert = require('chai').assert;
-var notificationCentre = require('../src/notificationCentre').notificationCentre;
+var notificationCentre = require('../core/notificationCentre').notificationCentre;
 
 describe('Notification Centre', function () {
     beforeEach(function () {

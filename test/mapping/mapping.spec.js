@@ -1,8 +1,8 @@
-var s = require('../../src/index')
+var s = require('../../core/index')
     , assert = require('chai').assert;
 
 describe('mapping!', function () {
-    var Mapping = require('../../src/mapping').Mapping;
+    var Mapping = require('../../core/mapping').Mapping;
 
     beforeEach(function () {
         s.reset(true);

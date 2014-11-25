@@ -1,15 +1,15 @@
-var s = require('../../src/index'),
+var s = require('../../core/index'),
     assert = require('chai').assert;
 
 describe('perform mapping', function() {
 
 
-    var Collection = require('../../src/collection').Collection;
-    var RelationshipType = require('../../src/relationship').RelationshipType;
+    var Collection = require('../../core/collection').Collection;
+    var RelationshipType = require('../../core/relationship').RelationshipType;
 
-    var SiestaModel = require('../../src/siestaModel').SiestaModel;
-    var cache = require('../../src/cache');
-    var Operation = require('../../src/operation/operation').Operation;
+    var SiestaModel = require('../../core/siestaModel').SiestaModel;
+    var cache = require('../../core/cache');
+    var Operation = require('../../core/operation/operation').Operation;
 
     var collection, carMapping, personMapping;
 

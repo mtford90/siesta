@@ -32,7 +32,6 @@ OperationQueue.logLevel = log.Level.warn;
 var siesta = function (ext) {
     if (!siesta.ext) siesta.ext = {};
     _.extend(siesta.ext, ext || {});
-    console.log('siesta this', siesta);
     return siesta;
 };
 
@@ -45,7 +44,6 @@ siesta.reset = function() {
     siesta.ext.http.DescriptorRegistry.reset();
     //noinspection JSAccessibilityCheck
 };
-
 
 /**
  * Listen to notificatons.

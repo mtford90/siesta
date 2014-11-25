@@ -1,12 +1,12 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('notifications', function() {
 
-    var Collection = require('../src/collection').Collection,
-        ChangeType = require('../src/changes').ChangeType,
-        util = require('../src/util')
-    notificationCentre = require('../src/notificationCentre').notificationCentre;
+    var Collection = require('../core/collection').Collection,
+        ChangeType = require('../core/changes').ChangeType,
+        util = require('../core/util')
+    notificationCentre = require('../core/notificationCentre').notificationCentre;
 
     beforeEach(function() {
         s.reset(true);
@@ -388,7 +388,7 @@ describe('notifications', function() {
         var car, person;
         var carMapping, personMapping;
 
-        var Collection = require('../src/collection').Collection;
+        var Collection = require('../core/collection').Collection;
 
 
         beforeEach(function(done) {

@@ -1,11 +1,11 @@
-var siesta = require('../src/index');
+var siesta = require('../core/index');
 var assert = require('chai').assert;
 
 describe('statistics', function() {
     var Car, Person, coll;
 
-    var Collection = require('../src/collection').Collection;
-    var cache = require('../src/cache');
+    var Collection = require('../core/collection').Collection;
+    var cache = require('../core/cache');
 
     beforeEach(function(done) {
         siesta.reset(true);

@@ -1,11 +1,11 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('request descriptor', function () {
 
-    var Collection = require('../src/collection').Collection;
-    var InternalSiestaError = require('../src/error').InternalSiestaError;
-    var RelationshipType = require('../src/relationship').RelationshipType;
+    var Collection = require('../core/collection').Collection;
+    var InternalSiestaError = require('../core/error').InternalSiestaError;
+    var RelationshipType = require('../core/relationship').RelationshipType;
 
     var collection, carMapping, personMapping;
 

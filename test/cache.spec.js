@@ -1,13 +1,13 @@
-var siesta = require('../src/index');
+var siesta = require('../core/index');
 var assert = require('chai').assert;
 
 describe('cache...', function() {
     var mapping;
 
-    var SiestaModel = require('../src/siestaModel').SiestaModel;
-    var Collection = require('../src/collection').Collection;
-    var RelationshipType = require('../src/relationship').RelationshipType;
-    var cache = require('../src/cache');
+    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var Collection = require('../core/collection').Collection;
+    var RelationshipType = require('../core/relationship').RelationshipType;
+    var cache = require('../core/cache');
 
     beforeEach(function(done) {
         siesta.reset(true); 

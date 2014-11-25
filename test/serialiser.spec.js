@@ -1,10 +1,10 @@
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('serialisers', function() {
 
-    var Collection = require('../src/collection').Collection;
-    var RelationshipType = require('../src/relationship').RelationshipType;
+    var Collection = require('../core/collection').Collection;
+    var RelationshipType = require('../core/relationship').RelationshipType;
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 

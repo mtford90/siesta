@@ -5,12 +5,12 @@
  * We then proceed to test various aspects of the system.
  */
 
-var s = require('../src/index'),
+var s = require('../core/index'),
     assert = require('chai').assert;
 
-var Collection = require('../src/collection').Collection;
-var RelationshipType = require('../src/relationship').RelationshipType;
-var cache = require('../src/cache');
+var Collection = require('../core/collection').Collection;
+var RelationshipType = require('../core/relationship').RelationshipType;
+var cache = require('../core/cache');
 
 var async = require('async');
 

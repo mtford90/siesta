@@ -1,8 +1,8 @@
-var s = require('../src/index')
+var s = require('../core/index')
     , assert = require('chai').assert;
 
 
-var util = require('../src/util');
+var util = require('../core/util');
 var q = require('q');
 
 describe('constructCallbackAndPromiseHandler', function () {
