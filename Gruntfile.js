@@ -323,7 +323,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('watch-no-test', [
         'clean',
-        'copy:build_extensionjs',
         'browserify:test',
         'karmaconfig',
         'build-jekyll',
@@ -340,7 +339,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask('build', [
         'clean',
-        'copy:build_extensionjs',
         'browserify:test',
         'karmaconfig',
         'karma:continuous'
