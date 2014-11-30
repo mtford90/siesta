@@ -3,7 +3,8 @@ module.exports = function (grunt) {
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
     var fs = require('fs'),
-        sh = require('execSync');
+        sh = require('execSync'),
+        _ = require('underscore');
 
     var userConfig = require('./build.config.js');
     var taskConfig = {
@@ -20,7 +21,7 @@ module.exports = function (grunt) {
                 updateConfigs: [],
                 commit: true,
                 commitMessage: 'Release v%VERSION%',
-                commitFiles: ['package.json', 'bower.json'],
+                commitFiles: ['dist', 'core', 'test', 'package.json', 'bower.json', 'karma'],
                 createTag: true,
                 tagName: '%VERSION%',
                 tagMessage: 'Version %VERSION%',
@@ -269,7 +270,32 @@ module.exports = function (grunt) {
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
     grunt.renameTask('watch', 'delta');
+
     grunt.registerTask('default', ['build', 'compile']);
+
+    grunt.registerTask('dist', function () {
+        sh.run('cp -r dist/* build');
+        sh.run('rm -f dist/*.gz dist/test-bundle.js');
+    });
+
+    grunt.registerTask('npmPublish', function () {
+        sh.run('npm publish ./');
+    });
+
+    // Construct release tasks centred around bump
+    _.each([
+        {bump: 'prerelease', cmd: 'pre', desc: 'Perform a pre-release e.g. 0.0.6 -> 0.0.6-1'},
+        {bump: 'patch', cmd: 'patch', desc: 'Perform a pre-release e.g. 0.0.6 -> 0.0.7'},
+        {bump: 'minor', cmd: 'minor', desc: 'Perform a minor release e.g. 0.0.6 -> 0.1.6'},
+        {bump: 'major', cmd: 'major', desc: 'Perform a major release e.g. 0.0.6 -> 1.0.6'}
+    ], function (opts) {
+        grunt.registerTask('release-' + opts.cmd, opts.desc, [
+            'compile',
+            'dist',
+            'bump:' + opts.bump,
+            'npmPublish'
+        ])
+    });
 
     grunt.registerTask('watch', [
         'build',
@@ -335,6 +361,7 @@ module.exports = function (grunt) {
             }
         });
     });
+
 
     grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
         var jsFiles = filterForJS(this.filesSrc);
