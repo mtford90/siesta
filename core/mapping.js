@@ -124,6 +124,10 @@ _.extend(Mapping.prototype, {
             }
         }
     },
+    /**
+     * Install relationships. Returns error in form of string if fails.
+     * @return {String|null}
+     */
     installRelationships: function () {
         if (!this._relationshipsInstalled) {
             var self = this;
@@ -153,11 +157,7 @@ _.extend(Mapping.prototype, {
                                     mappingName = arr[1];
                                     var otherCollection = CollectionRegistry[collectionName];
                                     if (!otherCollection) {
-                                        var err = 'Collection with name "' + collectionName + '" does not exist.';
-                                        console.error(err, {
-                                            registry: CollectionRegistry
-                                        });
-                                        return err;
+                                        return 'Collection with name "' + collectionName + '" does not exist.';
                                     }
                                     reverseMapping = otherCollection[mappingName];
                                 }
@@ -248,7 +248,7 @@ _.extend(Mapping.prototype, {
                     var obj = null;
                     if (!err && rows.length) {
                         if (rows.length > 1) {
-                            err = 'More than one object with id=' + idOrCallback.toString();
+                            throw new InternalSiestaError('More than one object with id=' + idOrCallback.toString());
                         } else {
                             obj = rows[0];
                         }
