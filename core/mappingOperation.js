@@ -50,7 +50,7 @@ function unflattenArray(arr, modelArr) {
 
 /**
  * Defines an encapsulated mapping operation where opts takes a mappin
- * @param {Objects} opts
+ * @param {Object} opts
  */
 function BulkMappingOperation(opts) {
     Operation.call(this);

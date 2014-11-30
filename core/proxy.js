@@ -1,4 +1,5 @@
 /**
+ * Base functionality for relationships
  * @module relationships
  */
 
@@ -216,6 +217,7 @@ function checkInstalled() {
 /**
  * Configure _id and related with the new related object.
  * @param obj
+ * @returns {String|undefined} - Error message or undefined
  */
 function set(obj) {
     registerSetChange.call(this, obj);

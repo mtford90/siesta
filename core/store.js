@@ -5,16 +5,15 @@
  * @module store
  */
 
-var wrappedCallback = require('./misc').wrappedCallback;
-var InternalSiestaError = require('./error').InternalSiestaError;
-var log = require('./operation/log');
+var InternalSiestaError = require('./error').InternalSiestaError
+    , log = require('./operation/log')
+    , util = require('./util')
+    , _ = util._
+    , cache = require('./cache');
+
+
 var Logger = log.loggerWithName('Store');
 Logger.setLevel(log.Level.warn);
-
-var util = require('./util');
-var _ = util._;
-var cache = require('./cache');
-
 
 /**
  * [get description]
@@ -39,7 +38,7 @@ function get(opts, callback) {
     if (opts._id) {
         if (util.isArray(opts._id)) {
             // Proxy onto getMultiple instead.
-            getMultiple(_.map(opts._id, function(id) {
+            getMultiple(_.map(opts._id, function (id) {
                 return {
                     _id: id
                 }
@@ -52,11 +51,11 @@ function get(opts, callback) {
                         opts: opts,
                         obj: siestaModel
                     });
-                wrappedCallback(callback)(null, siestaModel);
+                if (callback) callback(null, siestaModel);
             } else {
                 if (util.isArray(opts._id)) {
                     // Proxy onto getMultiple instead.
-                    getMultiple(_.map(opts._id, function(id) {
+                    getMultiple(_.map(opts._id, function (id) {
                         return {
                             _id: id
                         }
@@ -66,7 +65,7 @@ function get(opts, callback) {
                     if (storage) {
                         storage.store.getFromPouch(opts, callback);
                     } else {
-                        throw 'Storage module not installed'
+                        throw new Error('Storage module not installed');
                     }
                 }
             }
@@ -74,7 +73,7 @@ function get(opts, callback) {
     } else if (opts.mapping) {
         if (util.isArray(opts[opts.mapping.id])) {
             // Proxy onto getMultiple instead.
-            getMultiple(_.map(opts[opts.mapping.id], function(id) {
+            getMultiple(_.map(opts[opts.mapping.id], function (id) {
                 var o = {};
                 o[opts.mapping.id] = id;
                 o.mapping = opts.mapping;
@@ -88,7 +87,7 @@ function get(opts, callback) {
                         opts: opts,
                         obj: siestaModel
                     });
-                wrappedCallback(callback)(null, siestaModel);
+                if (callback) callback(null, siestaModel);
             } else {
                 var mapping = opts.mapping;
                 if (mapping.singleton) {
@@ -97,7 +96,7 @@ function get(opts, callback) {
                     var idField = mapping.id;
                     var id = opts[idField];
                     if (id) {
-                        mapping.get(id, function(err, obj) {
+                        mapping.get(id, function (err, obj) {
                             if (!err) {
                                 if (obj) {
                                     callback(null, obj);
@@ -109,9 +108,7 @@ function get(opts, callback) {
                             }
                         });
                     } else {
-                        wrappedCallback(callback)(new InternalSiestaError('Invalid options given to store. Missing "' + idField.toString() + '."', {
-                            opts: opts
-                        }));
+                        throw new InternalSiestaError('Invalid options given to store. Missing "' + idField.toString() + '."');
                     }
                 }
 
@@ -123,8 +120,7 @@ function get(opts, callback) {
             opts: opts
         };
         var msg = 'Invalid options given to store';
-        Logger.error(msg, context);
-        wrappedCallback(callback)(new InternalSiestaError(msg, context));
+        throw new InternalSiestaError(msg, context);
     }
     return deferred ? deferred.promise : null;
 }
@@ -134,8 +130,8 @@ function getMultiple(optsArray, callback) {
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var docs = [];
     var errors = [];
-    _.each(optsArray, function(opts) {
-        get(opts, function(err, doc) {
+    _.each(optsArray, function (opts) {
+        get(opts, function (err, doc) {
             if (err) {
                 errors.push(err);
             } else {
@@ -162,7 +158,7 @@ function getMultiple(optsArray, callback) {
 function getMultipleLocal(localIdentifiers, callback) {
     var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var results = _.reduce(localIdentifiers, function(memo, _id) {
+    var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({
             _id: _id
         });
@@ -182,12 +178,13 @@ function getMultipleLocal(localIdentifiers, callback) {
             if (err) {
                 callback(err);
             } else {
-                callback(null, _.map(localIdentifiers, function(_id) {
+                callback(null, _.map(localIdentifiers, function (_id) {
                     return results.cached[_id];
                 }));
             }
         }
     }
+
     if (siesta.ext.storageEnabled && results.notCached.length) {
         siesta.ext.storage.store.getMultipleLocalFromCouch(results, finish);
     } else {
@@ -199,7 +196,7 @@ function getMultipleLocal(localIdentifiers, callback) {
 function getMultipleRemote(remoteIdentifiers, mapping, callback) {
     var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-    var results = _.reduce(remoteIdentifiers, function(memo, id) {
+    var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {
             mapping: mapping
         };
@@ -221,7 +218,7 @@ function getMultipleRemote(remoteIdentifiers, mapping, callback) {
             if (err) {
                 callback(err);
             } else {
-                callback(null, _.map(remoteIdentifiers, function(id) {
+                callback(null, _.map(remoteIdentifiers, function (id) {
                     return results.cached[id];
                 }));
             }

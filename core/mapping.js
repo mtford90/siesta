@@ -457,8 +457,6 @@ _.extend(Mapping.prototype, {
                 enumerable: true,
                 configurable: true
             });
-
-
             for (var name in this.relationships) {
                 var proxy;
                 if (this.relationships.hasOwnProperty(name)) {

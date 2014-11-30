@@ -44,13 +44,7 @@ var guid = (function () {
     };
 })();
 
-function wrappedCallback (callback) {
-    return function (err, res) {
-        if (callback) callback(err, res);
-    }
-}
 
 exports.assert = assert;
 exports.defineSubProperty = defineSubProperty;
 exports.guid = guid;
-exports.wrappedCallback = wrappedCallback;
