@@ -40,8 +40,7 @@ var UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'];
  */
 function Collection(name) {
     var self = this;
-    if (!this) return new Collection(name);
-    if (!name) throw new InternalSiestaError('Collection must have a name');
+    if (!name) throw new Error('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
     this._rawMappings = {};
@@ -169,7 +168,7 @@ _.extend(Collection.prototype, {
             this[name] = mappingObject;
             return mappingObject;
         } else {
-            throw new InternalSiestaError('No name specified when creating mapping');
+            throw new Error('No name specified when creating mapping');
         }
     },
 
@@ -235,7 +234,7 @@ _.extend(Collection.prototype, {
                 descriptors.push(responseDescriptor);
             }
         } else {
-            throw new InternalSiestaError('HTTP module not installed');
+            throw new Error('HTTP module not installed.');
         }
         return descriptors;
     },
@@ -262,7 +261,7 @@ _.extend(Collection.prototype, {
             var f = siesta.ext.http[method];
             f.apply(f, args);
         } else {
-            throw InternalSiestaError('HTTP module not enabled');
+            throw new Error('HTTP module not installed.');
         }
     },
 

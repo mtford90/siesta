@@ -101,7 +101,7 @@ describe('collection setup', function() {
                         id: 'id',
                         attributes: ['attr1', 'attr2']
                     });
-                }, InternalSiestaError);
+                }, Error);
             });
 
             it('vararg', function(done) {

@@ -94,14 +94,15 @@ function broadcast(collectionName, mappingName, c) {
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + localIdNotif + '" of type ' + c.type);
     notificationCentre.emit(localIdNotif, c);
     var collection = collectionRegistry[collectionName];
+    var err;
     if (!collection) {
-        var err = 'No such collection "' + collectionName + '"';
+        err = 'No such collection "' + collectionName + '"';
         Logger.error(err, collectionRegistry);
         throw new InternalSiestaError(err);
     }
     var mapping = collection[mappingName];
     if (!mapping) {
-        var err = 'No such mapping "' + mappingName + '"';
+        err = 'No such mapping "' + mappingName + '"';
         Logger.error(err, collectionRegistry);
         throw new InternalSiestaError(err);
     }
