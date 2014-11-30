@@ -20,12 +20,12 @@ var log = require('./operation/log')
     , wrapArray = require('./notificationCentre').wrapArray
     , OneToManyProxy = require('./oneToManyProxy')
     , OneToOneProxy = require('./oneToOneProxy')
-    , ManyToManyProxy = require('./manyToManyProxy');
-
-var _ = util._;
-var RelationshipType = relationship.RelationshipType;
-var guid = misc.guid;
-var ChangeType = coreChanges.ChangeType;
+    , ManyToManyProxy = require('./manyToManyProxy')
+    , _ = util._
+    , RelationshipType = relationship.RelationshipType
+    , guid = misc.guid
+    , ChangeType = coreChanges.ChangeType
+    ;
 
 var Logger = log.loggerWithName('Mapping');
 Logger.setLevel(log.Level.warn);
@@ -509,125 +509,4 @@ _.extend(Mapping.prototype, {
     }
 });
 
-
-/**
- * A subclass of InternalSiestaError specifcally for errors that occur during mapping.
- * @param message
- * @param context
- * @param ssf
- * @returns {MappingError}
- * @constructor
- */
-function MappingError(message, context, ssf) {
-    if (!this) {
-        return new MappingError(message, context);
-    }
-
-    this.message = message;
-
-    this.context = context;
-    // capture stack trace
-    ssf = ssf || arguments.callee;
-    if (ssf && InternalSiestaError.captureStackTrace) {
-        InternalSiestaError.captureStackTrace(this, ssf);
-    }
-}
-
-MappingError.prototype = Object.create(InternalSiestaError.prototype);
-MappingError.prototype.name = 'MappingError';
-MappingError.prototype.constructor = MappingError;
-
-function arrayAsString(arr) {
-    var arrContents = _.reduce(arr, function (memo, f) {
-        return memo + '"' + f + '",'
-    }, '');
-    arrContents = arrContents.substring(0, arrContents.length - 1);
-    return '[' + arrContents + ']';
-}
-
-
-function constructMapFunction(collection, type, fields) {
-    var mapFunc;
-    var onlyEmptyFieldSetSpecified = (fields.length == 1 && !fields[0].length);
-    var noFieldSetsSpecified = !fields.length || onlyEmptyFieldSetSpecified;
-
-    var arr = arrayAsString(fields);
-    if (noFieldSetsSpecified) {
-        mapFunc = function (doc) {
-            var type = "$2";
-            var collection = "$3";
-            if (doc.type == type && doc.collection == collection) {
-                emit(doc.type, doc);
-            }
-        }.toString();
-    } else {
-        mapFunc = function (doc) {
-            var type = "$2";
-            var collection = "$3";
-            if (doc.type == type && doc.collection == collection) {
-                //noinspection JSUnresolvedVariable
-                var fields = $1;
-                var aggField = '';
-                for (var idx in fields) {
-                    //noinspection JSUnfilteredForInLoop
-                    var field = fields[idx];
-                    var value = doc[field];
-                    if (value !== null && value !== undefined) {
-                        aggField += value.toString() + '_';
-                    } else if (value === null) {
-                        aggField += 'null_';
-                    } else {
-                        aggField += 'undefined_';
-                    }
-                }
-                aggField = aggField.substring(0, aggField.length - 1);
-                emit(aggField, doc);
-            }
-        }.toString();
-        mapFunc = mapFunc.replace('$1', arr);
-    }
-    mapFunc = mapFunc.replace('$2', type);
-    mapFunc = mapFunc.replace('$3', collection);
-    return mapFunc;
-}
-
-
-function constructMapFunction2(collection, type, fields) {
-    var mapFunc;
-    var onlyEmptyFieldSetSpecified = (fields.length == 1 && !fields[0].length);
-    var noFieldSetsSpecified = !fields.length || onlyEmptyFieldSetSpecified;
-
-    if (noFieldSetsSpecified) {
-        mapFunc = function (doc) {
-            if (doc.type == type && doc.collection == collection) {
-                emit(doc.type, doc);
-            }
-        };
-    } else {
-        mapFunc = function (doc) {
-            if (doc.type == type && doc.collection == collection) {
-                var aggField = '';
-                for (var idx in fields) {
-                    //noinspection JSUnfilteredForInLoop
-                    var field = fields[idx];
-                    var value = doc[field];
-                    if (value !== null && value !== undefined) {
-                        aggField += value.toString() + '_';
-                    } else if (value === null) {
-                        aggField += 'null_';
-                    } else {
-                        aggField += 'undefined_';
-                    }
-                }
-                aggField = aggField.substring(0, aggField.length - 1);
-                emit(aggField, doc);
-            }
-        };
-    }
-    return mapFunc;
-}
-
 exports.Mapping = Mapping;
-exports.MappingError = MappingError;
-exports.constructMapFunction2 = constructMapFunction2;
-exports.constructMapFunction = constructMapFunction;

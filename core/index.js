@@ -2,10 +2,9 @@
  * @module siesta
  */
 
-var collection = require('./collection');
-var util = require('./util');
-
-var CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+var collection = require('./collection'),
+    util = require('./util'),
+    CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     Collection = collection.Collection,
     cache = require('./cache'),
     Mapping = require('./mapping').Mapping,
@@ -38,7 +37,7 @@ var siesta = function (ext) {
 /**
  * Wipe everything!
  */
-siesta.reset = function() {
+siesta.reset = function () {
     cache.reset();
     CollectionRegistry.reset();
     siesta.ext.http.DescriptorRegistry.reset();
@@ -61,7 +60,7 @@ siesta.addListener = siesta.on;
 
 /**
  * Stop listening to a particular notification
- * 
+ *
  * @param {String} notificationName
  * @param {Function} handler
  */
@@ -69,7 +68,7 @@ siesta.off = _.bind(notificationCentre.removeListener, notificationCentre);
 
 /**
  * Stop listening to a particular notification
- * 
+ *
  * @param {String} notificationName
  * @param {Function} handler
  */
@@ -77,7 +76,7 @@ siesta.removeListener = siesta.off;
 
 /**
  * Listen to one and only one notification.
- * 
+ *
  * @param {String} notificationName
  * @param {Function} handler
  */
@@ -127,38 +126,17 @@ siesta.storageEnabled = false;
 
 siesta.ext = {};
 
-// Object.defineProperty(siesta, 'setPouch', {
-//     get: function() {
-//         if (siesta.ext.storageEnabled) {
-//             return siesta.ext.storage.pouch.setPouch;
-//         }
-//         return null;
-//     }
-// });
-
-// Object.defineProperty(siesta.ext, 'storageEnabled', {
-//     get: function() {
-//         if (siesta.ext._storageEnabled !== undefined) {
-//             return siesta.ext._storageEnabled;
-//         }
-//         return !!siesta.ext.storage;
-//     },
-//     set: function(v) {
-//         siesta.ext._storageEnabled = v;
-//     }
-// });
-
 /**
  * True if siesta.http.js is installed correctly (or siesta.bundle.js is being used instead).
  */
 Object.defineProperty(siesta.ext, 'httpEnabled', {
-    get: function() {
+    get: function () {
         if (siesta.ext._httpEnabled !== undefined) {
             return siesta.ext._httpEnabled;
         }
         return !!siesta.ext.http;
     },
-    set: function(v) {
+    set: function (v) {
         siesta.ext._httpEnabled = v;
     }
 });
@@ -169,7 +147,7 @@ Object.defineProperty(siesta.ext, 'httpEnabled', {
  * @param  {[type]} opts
  * @return {Collection}
  */
-siesta.collection = function(name, opts) {
+siesta.collection = function (name, opts) {
     return new Collection(name, opts);
 };
 
@@ -180,7 +158,7 @@ siesta.collection = function(name, opts) {
  * // Use zepto instead of jQuery for http ajax requests.
  * siesta.setAjax(zepto.ajax);
  */
-siesta.setAjax = function(ajax) {
+siesta.setAjax = function (ajax) {
     if (siesta.ext.httpEnabled) {
         siesta.ext.http.ajax = ajax;
     } else {
@@ -192,7 +170,7 @@ siesta.setAjax = function(ajax) {
  * Returns the ajax function being used.
  * @return {Function}
  */
-siesta.getAjax = function() {
+siesta.getAjax = function () {
     return siesta.ext.http.ajax;
 };
 
@@ -244,18 +222,17 @@ siesta.LogLevel = log.Level;
  * // Siesta makes use of queues of operations for managing concurrency and concurrent operation limits.
  * siesta.setLogLevel('OperationQueue', siesta.LogLevel.trace);
  */
-siesta.setLogLevel = function(loggerName, level) {
+siesta.setLogLevel = function (loggerName, level) {
     var Logger = log.loggerWithName(loggerName);
     Logger.setLevel(level);
 };
-
 
 
 siesta.serialisers = {};
 siesta.serializers = siesta.serialisers;
 
 Object.defineProperty(siesta.serialisers, 'id', {
-    get: function() {
+    get: function () {
         if (siesta.ext.httpEnabled) {
             return siesta.ext.http.Serialiser.idSerialiser;
         }
@@ -264,7 +241,7 @@ Object.defineProperty(siesta.serialisers, 'id', {
 });
 
 Object.defineProperty(siesta.serialisers, 'depth', {
-    get: function() {
+    get: function () {
         if (siesta.ext.httpEnabled) {
             return siesta.ext.http.Serialiser.depthSerializer;
         }
@@ -279,8 +256,8 @@ Object.defineProperty(siesta.serialisers, 'depth', {
 // * `siesta.pluck` is equivalent to [_.pluck](http://underscorejs.org/#pluck)
 // * `siesta.property` is equivalent to [_.property](http://underscorejs.org/#property)
 // * `siesta.sortBy` is equivalent to [_.sortBy](http://underscorejs.org/#sortBy)
-// * `siesta.parallel` is equivalent to [async.parallel](https://github.com/caolan/async#parallel)
 // * `siesta.series` is equivalent to [async.series](https://github.com/caolan/async#series)
+// * `siesta.parallel` is equivalent to [async.parallel](https://github.com/caolan/async#parallel)
 
 siesta.map = util._.map;
 siesta.each = util._.each;
