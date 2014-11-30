@@ -2,7 +2,7 @@ var s = require('../core/index'),
     assert = require('chai').assert,
     testUtil = require('./util');
 
-
+/*globals describe, it, beforeEach, before, after */
 describe('http!', function () {
 
     var Collection = require('../core/collection').Collection;
@@ -221,11 +221,11 @@ describe('http!', function () {
                     });
 
                     it('returns text status', function () {
-                        assert.equal(resp.textStatus, 'success');
+                        assert.equal(resp.status, 'success');
                     });
 
                     it('returns jqxhr', function () {
-                        assert.ok(resp.jqXHR);
+                        assert.ok(resp.xhr);
                     });
 
                     it('returns a car object', function () {
@@ -330,11 +330,11 @@ describe('http!', function () {
                     });
 
                     it('returns text status', function () {
-                        assert.equal(resp.textStatus, 'success');
+                        assert.equal(resp.status, 'success');
                     });
 
                     it('returns jqxhr', function () {
-                        assert.ok(resp.jqXHR);
+                        assert.ok(resp.xhr);
                     });
 
                     it('returns no object', function () {
@@ -749,7 +749,7 @@ describe('http!', function () {
                     assert.ok(obj);
                 });
                 it('resp', function () {
-                    assert.equal(resp.jqXHR.responseText, '{"colour":"red"}');
+                    assert.equal(resp.xhr.responseText, '{"colour":"red"}');
                     assert.ok(resp);
                 })
             });
@@ -761,7 +761,7 @@ describe('http!', function () {
         var dollar;
         var fakeDollar = {
             ajax: function () {}
-        }
+        };
 
         before(function () {
             dollar = $;

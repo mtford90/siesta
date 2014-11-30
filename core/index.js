@@ -152,7 +152,7 @@ siesta.collection = function (name, opts) {
 
 /**
  * Sets the ajax function to use e.g. $.ajax
- * @param {Function} ajax
+ * @param {Function} ajax - a jquery-like ajax function
  * @example
  * // Use zepto instead of jQuery for http ajax requests.
  * siesta.setAjax(zepto.ajax);

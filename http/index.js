@@ -8,9 +8,6 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
     throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
 }
 
-
-
-
 var _i = siesta._internal,
     Collection = siesta.Collection,
     log = _i.log,
@@ -52,13 +49,13 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         opts.url = baseURL + path;
     }
     if (opts.parseResponse === undefined) opts.parseResponse = true;
-    opts.success = function(data, textStatus, jqXHR) {
+    opts.success = function(data, status, xhr) {
         if (Logger.trace.isEnabled)
-            Logger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
+            Logger.trace(opts.type + ' ' + xhr.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
         var resp = {
             data: data,
-            textStatus: textStatus,
-            jqXHR: jqXHR
+            status: status,
+            xhr: xhr
         };
         if (opts.parseResponse) {
             var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
@@ -106,11 +103,11 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         }
 
     };
-    opts.error = function(jqXHR, textStatus, errorThrown) {
+    opts.error = function(xhr, status, error) {
         var resp = {
-            jqXHR: jqXHR,
-            textStatus: textStatus,
-            errorThrown: errorThrown
+            xhr: xhr,
+            status: status,
+            error: error
         };
         if (callback) callback(resp, null, resp);
     };
