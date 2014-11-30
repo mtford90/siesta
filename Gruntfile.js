@@ -1,62 +1,34 @@
-/**
- * Hack in a bug fix whereby code blocks would not be newlines by jsdoc2md.
- *
- * e.g. jsdoc2md would spit out
- *
- * **Example**
- * ```js
- * ...
- * ```
- *
- *
- * instead of
- *
- * **Example**
- *
- * ```js
- * ...
- * ```
- *
- * The newline is very much important in terms of rendering correctly.
- */
-function bugFix(data) {
-    data = data.replace(/(\*+(.*)\*+)(.*)\n```js/g, '$1\n\n```js');
-    return data.replace(/(\*+(.*)\*+)(.*)\n```javascript/g, '$1\n\n```js');
-}
-
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
-    var exec = require('child_process').exec,
-        fs = require('fs'),
+    var fs = require('fs'),
         sh = require('execSync');
 
-
     var userConfig = require('./build.config.js');
-
-    function extracted(outputFile, data, cb) {
-        var templateFile = 'docs/' + outputFile + '.template';
-        var prefix = fs.readFileSync(templateFile);
-        data = prefix + '\n' + data;
-        data = bugFix(data);
-        fs.writeFile('docs/' + outputFile, data, cb);
-    }
-
-    var license = require('fs').readFileSync('LICENSE');
-
     var taskConfig = {
         pkg: grunt.file.readJSON("package.json"),
 
-        meta: {
-            banner: '/**\n' +
-                ' * <%= pkg.name %> - v<%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-                ' * <%= pkg.homepage %>\n' +
-                ' *\n' +
-                ' * Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %> - All Rights Reserved\n' +
-                ' * Unauthorized copying of this file, via any medium is strictly prohibited\n' +
-                ' * Proprietary and Confidential\n' +
-                ' */\n'
+        // https://github.com/vojtajina/grunt-bump
+        // grunt bump:patch e.g. 0.0.6 -> 0.0.7
+        // grunt bump:minor e.g. 0.0.6 -> 0.1.6
+        // grunt bump:major e.g. 0.0.6 -> 1.0.6
+        // grunt bump:prerelease e.g. 0.0.6 -> 0.0.6-1
+        bump: {
+            options: {
+                files: ['package.json', 'bower.json'],
+                updateConfigs: [],
+                commit: true,
+                commitMessage: 'Release v%VERSION%',
+                commitFiles: ['package.json', 'bower.json'],
+                createTag: true,
+                tagName: '%VERSION%',
+                tagMessage: 'Version %VERSION%',
+                push: true,
+                pushTo: 'upstream',
+                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
+                globalReplace: false
+            }
         },
 
         browserify: {
@@ -68,14 +40,14 @@ module.exports = function(grunt) {
             },
             build: {
                 files: {
-                    '<%= build_dir %>/siesta.core.js': ['src/index.js'],
-                    '<%= build_dir %>/siesta.http.js': ['src/http/index.js']
+                    '<%= build_dir %>/siesta.core.js': ['core/index.js'],
+                    '<%= build_dir %>/siesta.http.js': ['http/index.js']
                 }
             },
             test: {
                 files: {
                     '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
-                    '<%= build_dir %>/siesta.http.js': ['src/http/index.js']
+                    '<%= build_dir %>/siesta.http.js': ['http/index.js']
                 }
             }
         },
@@ -244,18 +216,6 @@ module.exports = function(grunt) {
         },
 
         shell: {
-            api: {
-                options: {
-                    stderr: false,
-                    callback: function(err, stdout, stderr, cb) {
-                        if (err) {
-                            console.error(err);
-                            cb(err);
-                        } else extracted('api.md', stdout, cb);
-                    }
-                },
-                command: 'jsdoc2md src/collection.js src/http/index.js src/store.js src/http/descriptor.js src/http/responseDescriptor.js src/cache.js'
-            },
             jekyllBuild: {
                 command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
             },
@@ -308,8 +268,6 @@ module.exports = function(grunt) {
 
     grunt.initConfig(grunt.util._.extend(taskConfig, userConfig));
 
-
-
     grunt.renameTask('watch', 'delta');
     grunt.registerTask('default', ['build', 'compile']);
 
@@ -317,22 +275,6 @@ module.exports = function(grunt) {
         'build',
         'build-jekyll',
         'connect:site',
-        'karma:unit',
-        'delta'
-    ]);
-
-    grunt.registerTask('watch-no-test', [
-        'clean',
-        'browserify:test',
-        'karmaconfig',
-        'build-jekyll',
-        'connect:site',
-        'karma:unit',
-        'delta'
-    ]);
-
-    grunt.registerTask('watch-no-jekyll', [
-        'build',
         'karma:unit',
         'delta'
     ]);
@@ -350,19 +292,13 @@ module.exports = function(grunt) {
 
     grunt.registerTask('compile', [
         'browserify:build',
-        'copy:build_extensionjs',
         'concat:bundle',
         'uglify',
         'compress'
     ]);
 
-    //grunt.registerTask('build-docs', [
-    //    'shell:api'
-    //]);
-
     grunt.registerTask('build-jekyll', [
         'less:dev',
-        //'build-docs',
         'shell:jekyllBuild'
     ]);
 
@@ -378,19 +314,19 @@ module.exports = function(grunt) {
     ]);
 
     function filterForJS(files) {
-        return files.filter(function(file) {
+        return files.filter(function (file) {
             return file.match(/\.js$/);
         });
     }
 
-    grunt.registerMultiTask('index', 'Process index.html template', function() {
+    grunt.registerMultiTask('index', 'Process index.html template', function () {
         var dirRE = new RegExp('^(' + grunt.config('build_dir') + '|' + grunt.config('compile_dir') + ')\/', 'g');
-        var jsFiles = filterForJS(this.filesSrc).map(function(file) {
+        var jsFiles = filterForJS(this.filesSrc).map(function (file) {
             return '../' + file.replace(dirRE, '');
         });
 
         grunt.file.copy('etest/index.tpl.html', this.data.dir + '/index.html', {
-            process: function(contents, path) {
+            process: function (contents, path) {
                 return grunt.template.process(contents, {
                     data: {
                         specs: jsFiles
@@ -400,9 +336,9 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function() {
+    grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
         var jsFiles = filterForJS(this.filesSrc);
-        var process = function(contents, path) {
+        var process = function (contents, path) {
             return grunt.template.process(contents, {
                 data: {
                     scripts: jsFiles
@@ -414,19 +350,20 @@ module.exports = function(grunt) {
         });
     });
 
-    grunt.event.on('watch', function(action, filepath, target) {
+    grunt.event.on('watch', function (action, filepath, target) {
         if (action == 'changed') {
             if (target == 'demo') {
+                var cmd;
                 // Optimisation to avoid copying every single demo file on changes.
                 if (fs.existsSync('_site/demo')) {
                     var split = filepath.split('/');
                     split[0] = '_site';
                     var targetFilePath = split.join('/');
-                    var cmd = 'cp ' + filepath + ' ' + targetFilePath;
+                    cmd = 'cp ' + filepath + ' ' + targetFilePath;
                     grunt.log.writeln(cmd);
                     sh.run(cmd);
                 } else {
-                    var cmd = 'cp -r docs/demo _site/demo';
+                    cmd = 'cp -r docs/demo _site/demo';
                     sh.run(cmd);
                     grunt.log.writeln(cmd);
                 }
