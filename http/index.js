@@ -15,6 +15,7 @@ var _i = siesta._internal,
     Collection = siesta.Collection,
     log = _i.log,
     util = _i.util,
+    error = _i.error,
     _ = util._,
     descriptor = require('./descriptor'),
     InternalSiestaError = _i.error.InternalSiestaError;
@@ -90,7 +91,11 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                 }
             } else if (callback) {
                 if (name) {
-                    callback('No descriptor matched.', null, resp);
+                    var err = {};
+                    var code = error.ErrorCode.NoDescriptorMatched;
+                    err[error.ErrorField.Code] = code;
+                    err[error.ErrorField.Message] = error.Message[code];
+                    callback(err, null, resp);
                 } else {
                     // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
                     throw new InternalSiestaError('Unnamed collection');
