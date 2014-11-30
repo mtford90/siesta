@@ -2,21 +2,20 @@
  * @module mapping
  */
 
-var Store = require('./store');
-var SiestaModel = require('./siestaModel').SiestaModel;
-var log = require('./operation/log');
-var Operation = require('./operation/operation').Operation;
-var InternalSiestaError = require('./error').InternalSiestaError;
-var Query = require('./query').Query;
+var Store = require('./store')
+    , SiestaModel = require('./siestaModel').SiestaModel
+    , log = require('./operation/log')
+    , Operation = require('./operation/operation').Operation
+    , InternalSiestaError = require('./error').InternalSiestaError
+    , Query = require('./query').Query
+    , cache = require('./cache')
+    , util = require('./util')
+    , _ = util._
+    , defineSubProperty = util.defineSubProperty
+    , ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
 Logger.setLevel(log.Level.warn);
-
-var cache = require('./cache');
-var util = require('./util');
-var _ = util._;
-var defineSubProperty = require('./misc').defineSubProperty;
-var ChangeType = require('./changes').ChangeType;
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {

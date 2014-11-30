@@ -1,21 +1,16 @@
-var log = require('./operation/log');
+var log = require('./operation/log')
+    , util = require('./util')
+    , defineSubProperty = util.defineSubProperty
+    , _ = util._
+    , error = require('./error')
+    , InternalSiestaError = error.InternalSiestaError
+    , coreChanges = require('./changes')
+    , cache = require('./cache');
+
 var Logger = log.loggerWithName('SiestaModel');
 Logger.setLevel(log.Level.warn);
 
-var defineSubProperty = require('./misc').defineSubProperty;
-//var OperationQueue = require('../vendor/operations.js/src/queue').OperationQueue;
-var util = require('./util');
-var _ = util._;
-var error = require('./error');
-var InternalSiestaError = error.InternalSiestaError;
-var coreChanges = require('./changes');
-
-var cache = require('./cache');
-
-//var queues = {};
-
 function SiestaModel(mapping) {
-
     if (!this) {
         return new SiestaModel(mapping);
     }

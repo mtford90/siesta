@@ -3,8 +3,6 @@
  */
 
 var log = require('./operation/log')
-    , misc = require('./misc')
-    , defineSubProperty = misc.defineSubProperty
     , CollectionRegistry = require('./collectionRegistry').CollectionRegistry
     , InternalSiestaError = require('./error').InternalSiestaError
     , relationship = require('./relationship')
@@ -13,6 +11,7 @@ var log = require('./operation/log')
     , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
     , SiestaModel = require('./siestaModel').SiestaModel
     , util = require('./util')
+    , defineSubProperty = util.defineSubProperty
     , cache = require('./cache')
     , store = require('./store')
     , extend = require('extend')
@@ -23,7 +22,7 @@ var log = require('./operation/log')
     , ManyToManyProxy = require('./manyToManyProxy')
     , _ = util._
     , RelationshipType = relationship.RelationshipType
-    , guid = misc.guid
+    , guid = util.guid
     , ChangeType = coreChanges.ChangeType
     ;
 

@@ -1,12 +1,11 @@
-var _i = siesta._internal;
-var log = _i.log;
+var _i = siesta._internal,
+    util = _i.util,
+    assert = util.assert,
+    _ = util._,
+    log = _i.log;
+
 var Logger = log.loggerWithName('DescriptorRegistry');
 Logger.setLevel(log.Level.warn);
-
-var assert = _i.misc.assert,
-    util = _i.util,
-    _ = util._;
-
 
 /**
  * @class Entry point for descriptor registration.
@@ -42,6 +41,8 @@ function _descriptorsForCollection(descriptors, collection) {
     }
     return descriptorsForCollection;
 }
+
+console.log('_', _);
 
 _.extend(DescriptorRegistry.prototype, {
     registerRequestDescriptor: function (requestDescriptor) {

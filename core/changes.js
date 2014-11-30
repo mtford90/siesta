@@ -1,16 +1,16 @@
 /**
- * The changes module deals with changes to SiestaModel instances. In the in-memory case this 
+ * The changes module deals with changes to SiestaModel instances. In the in-memory case this
  * just means that notifications are sent on any change. If the storage module is being used,
  * the changes module is extended to deal with merging changes into whatever persistant storage
  * method is being used.
  * @module changes
  */
 
-var defineSubProperty = require('./misc').defineSubProperty;
-var notificationCentre = require('./notificationCentre').notificationCentre;
-var InternalSiestaError = require('./error').InternalSiestaError;
-var log = require('./operation/log');
-var collectionRegistry = require('./collectionRegistry').CollectionRegistry;
+var defineSubProperty = require('./util').defineSubProperty
+    , notificationCentre = require('./notificationCentre').notificationCentre
+    , InternalSiestaError = require('./error').InternalSiestaError
+    , log = require('./operation/log')
+    , collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 var Logger = log.loggerWithName('changes');
 Logger.setLevel(log.Level.warn);

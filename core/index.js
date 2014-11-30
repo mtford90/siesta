@@ -104,7 +104,6 @@ siesta._internal = {
     extend: require('extend'),
     notificationCentre: require('./notificationCentre'),
     cache: require('./cache'),
-    misc: require('./misc'),
     Operation: Operation,
     OperationQueue: OperationQueue,
     coreChanges: coreChanges,

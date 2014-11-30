@@ -9,7 +9,7 @@ var _i = siesta._internal
     , util = _i.util
     , _ = util._
     , log = _i.log
-    , defineSubProperty = _i.misc.defineSubProperty
+    , defineSubProperty = util.defineSubProperty
 ;
 
 var Logger = log.loggerWithName('RequestDescriptor');

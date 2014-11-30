@@ -7,11 +7,11 @@
 var _i = siesta._internal,
     log = _i.log,
     InternalSiestaError = _i.error.InternalSiestaError,
-    assert = _i.misc.assert,
-    defineSubProperty = _i.misc.defineSubProperty,
+    util = _i.util,
+    assert = util.assert,
+    defineSubProperty = util.defineSubProperty,
     CollectionRegistry = _i.CollectionRegistry,
     extend = _i.extend,
-    util = _i.util,
     _ = util._;
 
 var Logger = log.loggerWithName('Descriptor');
