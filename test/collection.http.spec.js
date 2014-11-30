@@ -1,5 +1,6 @@
 var s = require('../core/index'),
-    assert = require('chai').assert;
+    assert = require('chai').assert,
+    testUtil = require('./util');
 
 
 describe('http!', function () {
@@ -15,15 +16,19 @@ describe('http!', function () {
 
     beforeEach(function () {
         s.reset(true);
-        server = sinon.fakeServer.create();
     });
 
-    afterEach(function () {
-        // Restore original server implementation.
-        server.restore();
+    before(function () {
+        server = testUtil.fakeServer();
     });
 
-    function configureCollection(callback) {
+    //
+    //after(function () {
+    //    // Restore original server implementation.
+    //    server.restore();
+    //});
+
+    function constructCollection() {
         collection = new Collection('myCollection');
         personMapping = collection.mapping('Person', {
             id: 'id',
@@ -52,6 +57,10 @@ describe('http!', function () {
             }
         });
         collection.baseURL = 'http://mywebsite.co.uk/';
+    }
+
+    function configureCollection(callback) {
+        constructCollection();
         collection.install(callback);
     }
 
@@ -667,50 +676,6 @@ describe('http!', function () {
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
                     collection.OPTIONS('something/', function (_err, _obj, _resp) {
-                        err = _err;
-                        obj = _obj;
-                        resp = _resp;
-                        done();
-                    });
-                    server.respond();
-                });
-                it('no err', function () {
-                    assert.notOk(err);
-                });
-                it('no obj', function () {
-                    assert.notOk(obj);
-                });
-                it('resp', function () {
-                    assert.ok(resp);
-                })
-            });
-        });
-
-        describe('HEAD', function () {
-            var err, obj, resp;
-            beforeEach(function (done) {
-                configureCollection(done);
-                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    method: 'HEAD',
-                    mapping: carMapping,
-                    path: 'something/?'
-                });
-                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-            });
-
-            describe('success', function () {
-                beforeEach(function (done) {
-                    var raw = {
-                        option: 'something'
-                    };
-                    var headers = {
-                        "Content-Type": "application/json"
-                    };
-                    var path = "http://mywebsite.co.uk/something/";
-                    var method = "HEAD";
-                    var status = 200;
-                    server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    collection.HEAD('something/', function (_err, _obj, _resp) {
                         err = _err;
                         obj = _obj;
                         resp = _resp;

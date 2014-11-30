@@ -32,10 +32,9 @@ Logger.setLevel(log.Level.warn);
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  */
-function _httpResponse(method, path) {
+function _httpResponse(method, path, optsOrCallback, callback) {
     var self = this;
     var args = Array.prototype.slice.call(arguments, 2);
-    var callback;
     var opts = {};
     var name = this._name;
     if (typeof(args[0]) == 'function') {
@@ -113,7 +112,7 @@ function _httpResponse(method, path) {
     if (Logger.trace.isEnabled)
         Logger.trace('Ajax request:', opts);
     siesta.ext.http.ajax(opts);
-};
+}
 
 function _serialiseObject(opts, obj, cb) {
     this._serialise(obj, function (err, data) {

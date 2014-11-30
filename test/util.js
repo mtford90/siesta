@@ -9,10 +9,10 @@ var util = require('../core/util');
  * @param arr2
  * @param [msg]
  */
-assert.arrEqual = function(arr1, arr2, msg) {
+assert.arrEqual = function (arr1, arr2, msg) {
     if (!util.isArray(arr1)) throw new chai.AssertionError(arr1.toString() + ' is not an array');
     if (!util.isArray(arr2)) throw new chai.AssertionError(arr2.toString() + ' is not an array');
-    _.each(_.zip(arr1, arr2), function(x) {
+    _.each(_.zip(arr1, arr2), function (x) {
         if (util.isArray(x[0]) && util.isArray(x[1])) {
             assert.arrEqual(x[0], x[1]);
         } else if (x[0] != x[1]) {
@@ -23,5 +23,16 @@ assert.arrEqual = function(arr1, arr2, msg) {
     })
 };
 
+var server;
 
-exports.assert = assert;
+// Avoid making multiple fake servers. Seems to cause issues...
+function fakeServer() {
+    if (!server)
+        server = sinon.fakeServer.create();
+    return server;
+}
+
+module.exports = {
+    assert: assert,
+    fakeServer: fakeServer
+};

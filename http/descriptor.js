@@ -189,7 +189,7 @@ _.extend(Descriptor.prototype, {
         var i;
         var matches = [];
         var matched;
-        for (i=0; i<this._opts.path.length; i++) {
+        for (i = 0; i < this._opts.path.length; i++) {
             var names = this.names[i];
             var regExp = this._opts.path[i];
             var match = regExp.exec(path);
@@ -325,6 +325,9 @@ _.extend(Descriptor.prototype, {
      * @return {Object}
      */
     _matchData: function (data) {
+        if (Logger.trace.isEnabled) {
+            Logger.trace('_matchData', data);
+        }
         var extractedData = null;
         if (this.data) {
             if (data) {
@@ -346,11 +349,14 @@ _.extend(Descriptor.prototype, {
      * @return {Object} Extracted data
      */
     match: function (config, data) {
+        if (Logger.trace.isEnabled) {
+            Logger.trace('match', config, data);
+        }
         var regexMatches = this._matchConfig(config);
         var matches = !!regexMatches;
         var extractedData = false;
         if (matches) {
-            Logger.trace('config matches');
+            if (Logger.trace.isEnabled) Logger.trace('config matches');
             extractedData = this._matchData(data);
             matches = !!extractedData;
             if (matches) {
@@ -370,12 +376,13 @@ _.extend(Descriptor.prototype, {
                         }
                     }
                 }
-                Logger.trace('data matches');
-            } else {
-                Logger.trace('data doesnt match');
+                if (Logger.trace.isEnabled) Logger.trace('data matches');
+            }
+            else {
+                if (Logger.trace.isEnabled) Logger.trace('data doesnt match');
             }
         } else {
-            Logger.trace('config doesnt match');
+            if (Logger.trace.isEnabled)  Logger.trace('config doesnt match');
         }
         return extractedData;
     },
