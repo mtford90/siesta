@@ -504,7 +504,6 @@ function next(callback) {
     setTimeout(callback);
 }
 
-
 /**
  * Performs dirty check/Object.observe callbacks depending on the browser.
  *

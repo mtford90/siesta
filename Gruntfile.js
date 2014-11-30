@@ -358,13 +358,13 @@ module.exports = function(grunt) {
         'compress'
     ]);
 
-    grunt.registerTask('build-docs', [
-        'shell:api'
-    ]);
+    //grunt.registerTask('build-docs', [
+    //    'shell:api'
+    //]);
 
     grunt.registerTask('build-jekyll', [
         'less:dev',
-        'build-docs',
+        //'build-docs',
         'shell:jekyllBuild'
     ]);
 
