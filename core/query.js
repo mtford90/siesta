@@ -4,8 +4,9 @@
 
 var log = require('./operation/log')
     , cache = require('./cache')
-    , Logger = log.loggerWithName('Query')
     , util = require('./util');
+
+var Logger = log.loggerWithName('Query');
 Logger.setLevel(log.Level.warn);
 
 /**
@@ -22,16 +23,10 @@ _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        // if (siesta.ext.storageEnabled) {
-        //     _executeUsingStorageExtension.call(this, callback);
-        // }
-        // else {
         this._executeInMemory(callback);
-        // }
         return deferred ? deferred.promise : null;
     },
     _dump: function (asJson) {
-        // TODO
         return asJson ? '{}' : {};
     },
     _executeInMemory: function (callback) {

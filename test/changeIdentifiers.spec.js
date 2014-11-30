@@ -22,7 +22,7 @@ describe('change identifiers', function () {
                 if (err) done(err);
                 car = _car;
                 done();
-            })
+            }) 
         });
     });
 

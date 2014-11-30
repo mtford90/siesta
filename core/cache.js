@@ -3,21 +3,24 @@
  * Lookups are performed against the cache when mapping.
  * @module cache
  */
-var log = require('./operation/log');
-var LocalCacheLogger = log.loggerWithName('LocalCache');
-LocalCacheLogger.setLevel(log.Level.warn);
-var RemoteCacheLogger = log.loggerWithName('RemoteCache');
+var log = require('./operation/log')
+    , InternalSiestaError = require('./error').InternalSiestaError
+    , util = require('./util');
+
+
+var LocalCacheLogger = log.loggerWithName('LocalCache')
+    , RemoteCacheLogger = log.loggerWithName('RemoteCache');
 RemoteCacheLogger.setLevel(log.Level.warn);
-var InternalSiestaError = require('./error').InternalSiestaError;
-var util = require('./util');
+LocalCacheLogger.setLevel(log.Level.warn);
 
 
-var localCacheById = {};
-var localCache = {};
+var localCacheById,
+    localCache,
+    remoteCache;
 
-
-var remoteCache = {};
-
+/**
+ * Clear out the cache.
+ */
 function reset() {
     remoteCache = {};
     localCacheById = {};
@@ -63,8 +66,8 @@ function getSingleton(mapping) {
             }
             if (objs.length > 1) {
                 throw new InternalSiestaError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
-                    'Either a mapping has been modified after objects have already been created, or something has gone' +
-                    'very wrong. Please file a bug report if the latter.');
+                'Either a mapping has been modified after objects have already been created, or something has gone' +
+                'very wrong. Please file a bug report if the latter.');
             } else if (objs.length) {
                 return objs[0];
             }
@@ -363,18 +366,10 @@ function remove(obj) {
 }
 
 
-function dump(asJson) {
-    var dumped = {
-        localCache: localDump(),
-        remoteCache: remoteDump()
-    };
-    return asJson ? JSON.stringify(dumped, null, 4) : dumped;
-}
-
 exports._remoteCache = _remoteCache;
 exports._localCache = _localCache;
 Object.defineProperty(exports, '_localCacheByType', {
-    get: function() {
+    get: function () {
         return localCache;
     }
 });

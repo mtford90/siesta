@@ -101,17 +101,6 @@ module.exports = function(grunt) {
                     cwd: '.',
                     expand: true
                 }]
-            },
-            build_extensionjs: {
-                files: [{
-                    src: '<%= src_dir %>/performance.js',
-                    cwd: '.',
-                    expand: true,
-                    flatten: true,
-                    rename: function() {
-                        return 'build/siesta.perf.js'
-                    }
-                }]
             }
 
         },
@@ -159,17 +148,9 @@ module.exports = function(grunt) {
             jssrc: {
                 files: [
                     '<%= app_files.js %>',
-                    '!<%= src_dir %>/http/**/*.js',
-                    '!<%= src_dir %>/performance.js'
+                    '!<%= src_dir %>/http/**/*.js'
                 ],
                 tasks: ['browserify:test', 'karma:unit:run']
-            },
-
-            perf: {
-                files: [
-                    '<%= src_dir %>/performance.js'
-                ],
-                tasks: ['copy:build_extensionjs', 'karma:unit:run']
             },
 
             http: {
@@ -319,9 +300,6 @@ module.exports = function(grunt) {
                 }, {
                     src: ['<%= build_dir %>/siesta.min.js'],
                     dest: '<%= build_dir %>/siesta.min.js.gz'
-                }, {
-                    src: ['<%= build_dir %>/siesta.perf.min.js'],
-                    dest: '<%= build_dir %>/siesta.perf.min.js.gz'
                 }]
             }
         }
