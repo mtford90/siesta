@@ -274,8 +274,8 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['build', 'compile']);
 
     grunt.registerTask('dist', function () {
-        sh.run('cp -r dist/* build');
-        sh.run('rm -f dist/*.gz dist/test-bundle.js');
+        sh.run('cp -r build/* dist/');
+        sh.run('rm -f dist/*.gz dist/test-bundle.js dist/karma-unit.js');
     });
 
     grunt.registerTask('npmPublish', function () {
