@@ -2845,8 +2845,8 @@ function _httpResponse(method, path) {
             Logger.trace(opts.type + ' ' + jqXHR.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
         var resp = {
             data: data,
-            textStatus: textStatus,
-            jqXHR: jqXHR
+            status: textStatus,
+            xhr: jqXHR
         };
         if (opts.parseResponse) {
             var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
@@ -2892,8 +2892,8 @@ function _httpResponse(method, path) {
     };
     opts.error = function(jqXHR, textStatus, errorThrown) {
         var resp = {
-            jqXHR: jqXHR,
-            textStatus: textStatus,
+            xhr: jqXHR,
+            status: textStatus,
             errorThrown: errorThrown
         };
         if (callback) callback(resp, null, resp);

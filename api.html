@@ -31,7 +31,7 @@
 <div class="navbar navbar-fixed-top hidden-print">
     <div class="container-fluid">
         <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
-        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.1</a></p>
+        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.3</a></p>
     </div>
 </div>
 <div class="row columns content">
@@ -48,21 +48,16 @@
         <!-- Navigation -->
         <!--suppress HtmlUnknownTarget -->
 <ul class="nav nav-list">
-    <li><a href="/siesta/docs.html">Getting Started</a></li>
-    <li><a href="/siesta/concepts.html">Concepts</a></li>
-    <li><a href="/siesta/guide.html">Guide</a></li>
-    <li><a href="/siesta">Recipes</a></li>
+    <li ><a href="/siesta/docs.html">Quick Start</a></li>
+    <li ><a href="/siesta/concepts.html">Concepts</a></li>
+    <li ><a href="/siesta/guide.html" %}>API</a></li>
 </ul>
 <div class="well well-sidebar">
+
     <a href="/siesta/download.html" target="_blank">Download</a><br><a
         href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a><br><a
         href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a><br>
-    <a href="#"
-       id="toggleCodeBlockBtn"
-       onclick="toggleCodeBlocks();">Show
-        Code Blocks Inline</a><br>
-</div>ƒ
-
+</div>
 
     </div>
 </div>
@@ -77,24 +72,39 @@
 <li><a href="#module_collection">collection</a>
 
 <ul>
+<li><a href="#module_collection..GET">collection~GET(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..OPTIONS">collection~OPTIONS(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..TRACE">collection~TRACE(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..HEAD">collection~HEAD(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..POST">collection~POST(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..PUT">collection~PUT(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..PATCH">collection~PATCH(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..DELETE">collection~DELETE(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..count">collection~count(callback)</a></li>
 <li><a href="#module_collection..Collection">class: collection~Collection</a></li>
 <li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
 <li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
 <li><a href="#module_collection..Collection#installed">collection.installed</a></li>
-<li><a href="#module_collection..Collection#install">collection.install(callback)</a></li>
-<li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
-<li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
-<li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
-<li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#count">collection.count(callback)</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(callback)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(err, callback)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name, opts)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(optsOrName, opts)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(asJson)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
 </ul></li>
 <li><a href="#module_http">http</a>
 
@@ -102,7 +112,7 @@
 <li><a href="#module_http..path">http~path</a></li>
 <li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
-<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, object)</a></li>
 <li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
 <li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
@@ -111,16 +121,16 @@
 <li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._matchPath">http~_matchPath(path)</a></li>
+<li><a href="#module_http.._matchMethod">http~_matchMethod(method)</a></li>
 <li><a href="#module_http..bury">http~bury(obj, data)</a></li>
+<li><a href="#module_http.._extractData">http~_extractData(data)</a></li>
+<li><a href="#module_http.._matchConfig">http~_matchConfig(config)</a></li>
+<li><a href="#module_http.._matchData">http~_matchData(data)</a></li>
+<li><a href="#module_http..match">http~match(config, data)</a></li>
+<li><a href="#module_http.._transformData">http~_transformData(data)</a></li>
 <li><a href="#module_http..Descriptor">class: http~Descriptor</a></li>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 <li><a href="#module_http..ResponseDescriptor">class: http~ResponseDescriptor</a></li>
 <li><a href="#new_module_http..ResponseDescriptor">new http~ResponseDescriptor(opts)</a></li>
 </ul></li>
@@ -136,7 +146,7 @@
 <li><a href="#module_http..path">http~path</a></li>
 <li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
-<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, object)</a></li>
 <li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
 <li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
@@ -145,16 +155,16 @@
 <li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._matchPath">http~_matchPath(path)</a></li>
+<li><a href="#module_http.._matchMethod">http~_matchMethod(method)</a></li>
 <li><a href="#module_http..bury">http~bury(obj, data)</a></li>
+<li><a href="#module_http.._extractData">http~_extractData(data)</a></li>
+<li><a href="#module_http.._matchConfig">http~_matchConfig(config)</a></li>
+<li><a href="#module_http.._matchData">http~_matchData(data)</a></li>
+<li><a href="#module_http..match">http~match(config, data)</a></li>
+<li><a href="#module_http.._transformData">http~_transformData(data)</a></li>
 <li><a href="#module_http..Descriptor">class: http~Descriptor</a></li>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 <li><a href="#module_http..ResponseDescriptor">class: http~ResponseDescriptor</a></li>
 <li><a href="#new_module_http..ResponseDescriptor">new http~ResponseDescriptor(opts)</a></li>
 </ul></li>
@@ -164,7 +174,7 @@
 <li><a href="#module_http..path">http~path</a></li>
 <li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
-<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, object)</a></li>
 <li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
 <li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
@@ -173,16 +183,16 @@
 <li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._matchPath">http~_matchPath(path)</a></li>
+<li><a href="#module_http.._matchMethod">http~_matchMethod(method)</a></li>
 <li><a href="#module_http..bury">http~bury(obj, data)</a></li>
+<li><a href="#module_http.._extractData">http~_extractData(data)</a></li>
+<li><a href="#module_http.._matchConfig">http~_matchConfig(config)</a></li>
+<li><a href="#module_http.._matchData">http~_matchData(data)</a></li>
+<li><a href="#module_http..match">http~match(config, data)</a></li>
+<li><a href="#module_http.._transformData">http~_transformData(data)</a></li>
 <li><a href="#module_http..Descriptor">class: http~Descriptor</a></li>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 <li><a href="#module_http..ResponseDescriptor">class: http~ResponseDescriptor</a></li>
 <li><a href="#new_module_http..ResponseDescriptor">new http~ResponseDescriptor(opts)</a></li>
 </ul></li>
@@ -207,7 +217,195 @@
 
 <h1>collection</h1>
 
-<p><a name="module_collection..Collection"></a></p>
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection">collection</a>
+
+<ul>
+<li><a href="#module_collection..GET">collection~GET(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..OPTIONS">collection~OPTIONS(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..TRACE">collection~TRACE(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..HEAD">collection~HEAD(path, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..POST">collection~POST(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..PUT">collection~PUT(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..PATCH">collection~PATCH(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..DELETE">collection~DELETE(path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_collection..count">collection~count(callback)</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(callback)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(err, callback)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name, opts)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(optsOrName, opts)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+<li><a href="#module_collection..Collection">class: collection~Collection</a></li>
+<li><a href="#new_module_collection..Collection">new collection~Collection(asJson)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+</ul></li>
+</ul>
+
+<p><a name="module_collection..GET"></a></p>
+
+<h2>collection~GET(path, optsOrCallback, callback)</h2>
+
+<p>Send a GET request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource we want to GET<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..OPTIONS"></a></p>
+
+<h2>collection~OPTIONS(path, optsOrCallback, callback)</h2>
+
+<p>Send a OPTIONS request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource to which we want to send an OPTIONS request<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..TRACE"></a></p>
+
+<h2>collection~TRACE(path, optsOrCallback, callback)</h2>
+
+<p>Send a TRACE request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>path</code> - The path to the resource to which we want to send a TRACE request<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..HEAD"></a></p>
+
+<h2>collection~HEAD(path, optsOrCallback, callback)</h2>
+
+<p>Send a HEAD request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource to which we want to send a HEAD request<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..POST"></a></p>
+
+<h2>collection~POST(path, model, optsOrCallback, callback)</h2>
+
+<p>Send a POST request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource to which we want to send a POST request<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..PUT"></a></p>
+
+<h2>collection~PUT(path, model, optsOrCallback, callback)</h2>
+
+<p>Send a PUT request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource to which we want to send a PUT request<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to PUT<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..PATCH"></a></p>
+
+<h2>collection~PATCH(path, model, optsOrCallback, callback)</h2>
+
+<p>Send a PATCH request</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource to which we want to send a PATCH request<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..DELETE"></a></p>
+
+<h2>collection~DELETE(path, model, optsOrCallback, callback)</h2>
+
+<p>Send a DELETE request. Also removes the object.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> - The path to the resource to which we want to DELETE<br></li>
+<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
+<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
+<li>callback <code>function</code> - Callback if opts specified.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..count"></a></p>
+
+<h2>collection~count(callback)</h2>
+
+<p>Returns the number of objects in this collection.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>callback<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Promise</code><br>
+<a name="module_collection..Collection"></a></p>
 
 <h2>class: collection~Collection</h2>
 
@@ -220,20 +418,6 @@
 <li><a href="#new_module_collection..Collection">new collection~Collection(name)</a></li>
 <li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
 <li><a href="#module_collection..Collection#installed">collection.installed</a></li>
-<li><a href="#module_collection..Collection#install">collection.install(callback)</a></li>
-<li><a href="#module_collection..Collection#_finaliseInstallation">collection._finaliseInstallation(err, callback)</a></li>
-<li><a href="#module_collection..Collection#_mapping">collection._mapping(name, mapping)</a></li>
-<li><a href="#module_collection..Collection#mapping">collection.mapping(optsOrName, opts)</a></li>
-<li><a href="#module_collection..Collection#_dump">collection._dump(asJson)</a></li>
-<li><a href="#module_collection..Collection#GET">collection.GET(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#OPTIONS">collection.OPTIONS(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#TRACE">collection.TRACE(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#HEAD">collection.HEAD(path, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#POST">collection.POST(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#PUT">collection.PUT(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#PATCH">collection.PATCH(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#DELETE">collection.DELETE(path, model, optsOrCallback, callback)</a></li>
-<li><a href="#module_collection..Collection#count">collection.count(callback)</a></li>
 </ul></li>
 </ul>
 
@@ -272,9 +456,25 @@ like to model.</p>
 <p>Set to true if installation has succeeded. You cannot use the collectio</p>
 
 <p><strong>Type</strong>: <code>boolean</code><br>
-<a name="module_collection..Collection#install"></a></p>
+<a name="module_collection..Collection"></a></p>
 
-<h3>collection.install(callback)</h3>
+<h2>class: collection~Collection</h2>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection..Collection">class: collection~Collection</a>
+
+<ul>
+<li><a href="#new_module_collection..Collection">new collection~Collection(callback)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_module_collection..Collection"></a></p>
+
+<h3>new collection~Collection(callback)</h3>
 
 <p>Ensure mappings are installed.</p>
 
@@ -284,9 +484,40 @@ like to model.</p>
 <li>callback<br></li>
 </ul>
 
-<p><a name="module_collection..Collection#_finaliseInstallation"></a></p>
+<p><strong>Scope</strong>: inner class of <a href="#module_collection">collection</a><br>
+<a name="module_collection..Collection#baseURL"></a></p>
 
-<h3>collection._finaliseInstallation(err, callback)</h3>
+<h3>collection.baseURL</h3>
+
+<p>The URL of the API e.g. http://api.github.com</p>
+
+<p><strong>Type</strong>: <code>string</code><br>
+<a name="module_collection..Collection#installed"></a></p>
+
+<h3>collection.installed</h3>
+
+<p>Set to true if installation has succeeded. You cannot use the collectio</p>
+
+<p><strong>Type</strong>: <code>boolean</code><br>
+<a name="module_collection..Collection"></a></p>
+
+<h2>class: collection~Collection</h2>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection..Collection">class: collection~Collection</a>
+
+<ul>
+<li><a href="#new_module_collection..Collection">new collection~Collection(err, callback)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_module_collection..Collection"></a></p>
+
+<h3>new collection~Collection(err, callback)</h3>
 
 <p>Mark this collection as installed, and place the collection on the global Siesta object.</p>
 
@@ -297,9 +528,40 @@ like to model.</p>
 <li>callback <code>function</code><br></li>
 </ul>
 
-<p><a name="module_collection..Collection#_mapping"></a></p>
+<p><strong>Scope</strong>: inner class of <a href="#module_collection">collection</a><br>
+<a name="module_collection..Collection#baseURL"></a></p>
 
-<h3>collection._mapping(name, mapping)</h3>
+<h3>collection.baseURL</h3>
+
+<p>The URL of the API e.g. http://api.github.com</p>
+
+<p><strong>Type</strong>: <code>string</code><br>
+<a name="module_collection..Collection#installed"></a></p>
+
+<h3>collection.installed</h3>
+
+<p>Set to true if installation has succeeded. You cannot use the collectio</p>
+
+<p><strong>Type</strong>: <code>boolean</code><br>
+<a name="module_collection..Collection"></a></p>
+
+<h2>class: collection~Collection</h2>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection..Collection">class: collection~Collection</a>
+
+<ul>
+<li><a href="#new_module_collection..Collection">new collection~Collection(name, opts)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_module_collection..Collection"></a></p>
+
+<h3>new collection~Collection(name, opts)</h3>
 
 <p>Given the name of a mapping and an options object describing the mapping, creating a Mapping
 object, install it and return it.</p>
@@ -308,13 +570,44 @@ object, install it and return it.</p>
 
 <ul>
 <li>name <code>String</code><br></li>
-<li>mapping <code>Object</code><br></li>
+<li>opts <code>Object</code><br></li>
 </ul>
 
-<p><strong>Returns</strong>: <code>Mapping</code><br>
-<a name="module_collection..Collection#mapping"></a></p>
+<p><strong>Scope</strong>: inner class of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Mapping</code><br>
+<a name="module_collection..Collection#baseURL"></a></p>
 
-<h3>collection.mapping(optsOrName, opts)</h3>
+<h3>collection.baseURL</h3>
+
+<p>The URL of the API e.g. http://api.github.com</p>
+
+<p><strong>Type</strong>: <code>string</code><br>
+<a name="module_collection..Collection#installed"></a></p>
+
+<h3>collection.installed</h3>
+
+<p>Set to true if installation has succeeded. You cannot use the collectio</p>
+
+<p><strong>Type</strong>: <code>boolean</code><br>
+<a name="module_collection..Collection"></a></p>
+
+<h2>class: collection~Collection</h2>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection..Collection">class: collection~Collection</a>
+
+<ul>
+<li><a href="#new_module_collection..Collection">new collection~Collection(optsOrName, opts)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_module_collection..Collection"></a></p>
+
+<h3>new collection~Collection(optsOrName, opts)</h3>
 
 <p>Registers a mapping with this collection.</p>
 
@@ -325,10 +618,41 @@ object, install it and return it.</p>
 <li>opts <code>Object</code> - Options if name already specified.<br></li>
 </ul>
 
-<p><strong>Returns</strong>: <code>Mapping</code><br>
-<a name="module_collection..Collection#_dump"></a></p>
+<p><strong>Scope</strong>: inner class of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>Mapping</code><br>
+<a name="module_collection..Collection#baseURL"></a></p>
 
-<h3>collection._dump(asJson)</h3>
+<h3>collection.baseURL</h3>
+
+<p>The URL of the API e.g. http://api.github.com</p>
+
+<p><strong>Type</strong>: <code>string</code><br>
+<a name="module_collection..Collection#installed"></a></p>
+
+<h3>collection.installed</h3>
+
+<p>Set to true if installation has succeeded. You cannot use the collectio</p>
+
+<p><strong>Type</strong>: <code>boolean</code><br>
+<a name="module_collection..Collection"></a></p>
+
+<h2>class: collection~Collection</h2>
+
+<p><strong>Members</strong></p>
+
+<ul>
+<li><a href="#module_collection..Collection">class: collection~Collection</a>
+
+<ul>
+<li><a href="#new_module_collection..Collection">new collection~Collection(asJson)</a></li>
+<li><a href="#module_collection..Collection#baseURL">collection.baseURL</a></li>
+<li><a href="#module_collection..Collection#installed">collection.installed</a></li>
+</ul></li>
+</ul>
+
+<p><a name="new_module_collection..Collection"></a></p>
+
+<h3>new collection~Collection(asJson)</h3>
 
 <p>Dump this collection as JSON</p>
 
@@ -338,144 +662,22 @@ object, install it and return it.</p>
 <li>asJson <code>Boolean</code> - Whether or not to apply JSON.stringify<br></li>
 </ul>
 
-<p><strong>Returns</strong>: <code>String</code> | <code>Object</code><br>
-<a name="module_collection..Collection#GET"></a></p>
+<p><strong>Scope</strong>: inner class of <a href="#module_collection">collection</a><br>
+<strong>Returns</strong>: <code>String</code> | <code>Object</code><br>
+<a name="module_collection..Collection#baseURL"></a></p>
 
-<h3>collection.GET(path, optsOrCallback, callback)</h3>
+<h3>collection.baseURL</h3>
 
-<p>Send a GET request</p>
+<p>The URL of the API e.g. http://api.github.com</p>
 
-<p><strong>Params</strong></p>
+<p><strong>Type</strong>: <code>string</code><br>
+<a name="module_collection..Collection#installed"></a></p>
 
-<ul>
-<li>path <code>String</code> - The path to the resource we want to GET<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
+<h3>collection.installed</h3>
 
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#OPTIONS"></a></p>
+<p>Set to true if installation has succeeded. You cannot use the collectio</p>
 
-<h3>collection.OPTIONS(path, optsOrCallback, callback)</h3>
-
-<p>Send a OPTIONS request</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> - The path to the resource to which we want to send an OPTIONS request<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#TRACE"></a></p>
-
-<h3>collection.TRACE(path, optsOrCallback, callback)</h3>
-
-<p>Send a TRACE request</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>path</code> - The path to the resource to which we want to send a TRACE request<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#HEAD"></a></p>
-
-<h3>collection.HEAD(path, optsOrCallback, callback)</h3>
-
-<p>Send a HEAD request</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> - The path to the resource to which we want to send a HEAD request<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#POST"></a></p>
-
-<h3>collection.POST(path, model, optsOrCallback, callback)</h3>
-
-<p>Send a POST request</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> - The path to the resource to which we want to send a POST request<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to POST<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#PUT"></a></p>
-
-<h3>collection.PUT(path, model, optsOrCallback, callback)</h3>
-
-<p>Send a PUT request</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> - The path to the resource to which we want to send a PUT request<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to PUT<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#PATCH"></a></p>
-
-<h3>collection.PATCH(path, model, optsOrCallback, callback)</h3>
-
-<p>Send a PATCH request</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> - The path to the resource to which we want to send a PATCH request<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#DELETE"></a></p>
-
-<h3>collection.DELETE(path, model, optsOrCallback, callback)</h3>
-
-<p>Send a DELETE request. Also removes the object.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> - The path to the resource to which we want to DELETE<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_collection..Collection#count"></a></p>
-
-<h3>collection.count(callback)</h3>
-
-<p>Returns the number of objects in this collection.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>callback<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Promise</code><br>
+<p><strong>Type</strong>: <code>boolean</code><br>
 <a name="module_http"></a></p>
 
 <h1>http</h1>
@@ -492,7 +694,7 @@ the results back onto the object graph automatically.</p>
 <li><a href="#module_http..path">http~path</a></li>
 <li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
-<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, object)</a></li>
 <li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
 <li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
@@ -501,16 +703,16 @@ the results back onto the object graph automatically.</p>
 <li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._matchPath">http~_matchPath(path)</a></li>
+<li><a href="#module_http.._matchMethod">http~_matchMethod(method)</a></li>
 <li><a href="#module_http..bury">http~bury(obj, data)</a></li>
+<li><a href="#module_http.._extractData">http~_extractData(data)</a></li>
+<li><a href="#module_http.._matchConfig">http~_matchConfig(config)</a></li>
+<li><a href="#module_http.._matchData">http~_matchData(data)</a></li>
+<li><a href="#module_http..match">http~match(config, data)</a></li>
+<li><a href="#module_http.._transformData">http~_transformData(data)</a></li>
 <li><a href="#module_http..Descriptor">class: http~Descriptor</a></li>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 <li><a href="#module_http..ResponseDescriptor">class: http~ResponseDescriptor</a></li>
 <li><a href="#new_module_http..ResponseDescriptor">new http~ResponseDescriptor(opts)</a></li>
 </ul></li>
@@ -557,7 +759,7 @@ the results back onto the object graph automatically.</p>
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <a name="module_http..DELETE"></a></p>
 
-<h2>http~DELETE(collection, path, model, optsOrCallback, callback)</h2>
+<h2>http~DELETE(collection, path, object)</h2>
 
 <p>Send a DELETE request. Also removes the object.</p>
 
@@ -565,10 +767,8 @@ the results back onto the object graph automatically.</p>
 
 <ul>
 <li>collection <code>Collection</code><br></li>
-<li>path <code>Stirng</code> - The path to the resource to which we want to DELETE<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to DELETE<br></li>
+<li>object <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 </ul>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
@@ -711,7 +911,49 @@ the results back onto the object graph automatically.</p>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_http..bury"></a></p>
+<a name="module_http.._matchPath"></a></p>
+
+<h2>http~_matchPath(path)</h2>
+
+<p>Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> | <code>RegExp</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
+<span class="p">})</span>
+<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
+</code></pre></div>
+<p><a name="module_http.._matchMethod"></a></p>
+
+<h2>http~_matchMethod(method)</h2>
+
+<p>Returns true if the descriptor accepts the HTTP method.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>method <code>String</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>boolean</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
+</code></pre></div>
+<p><a name="module_http..bury"></a></p>
 
 <h2>http~bury(obj, data)</h2>
 
@@ -726,6 +968,77 @@ the results back onto the object graph automatically.</p>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._extractData"></a></p>
+
+<h2>http~_extractData(data)</h2>
+
+<p>If nested data has been specified in the descriptor, extract the data.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._matchConfig"></a></p>
+
+<h2>http~_matchConfig(config)</h2>
+
+<p>Returns this descriptors mapping if the request config matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._matchData"></a></p>
+
+<h2>http~_matchData(data)</h2>
+
+<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http..match"></a></p>
+
+<h2>http~match(config, data)</h2>
+
+<p>Check if the HTTP config and returned data match this descriptor definition.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code> - Extracted data<br>
+<a name="module_http.._transformData"></a></p>
+
+<h2>http~_transformData(data)</h2>
+
+<p>Apply any transforms.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code> - Serialised data.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
 <a name="module_http..Descriptor"></a></p>
 
 <h2>class: http~Descriptor</h2>
@@ -737,13 +1050,6 @@ the results back onto the object graph automatically.</p>
 
 <ul>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 </ul></li>
 </ul>
 
@@ -761,112 +1067,6 @@ intercept a HTTP request/response and perform a mapping.</p>
 </ul>
 
 <p><strong>Scope</strong>: inner class of <a href="#module_http">http</a><br>
-<a name="module_http..Descriptor#_matchPath"></a></p>
-
-<h3>descriptor._matchPath(path)</h3>
-
-<p>Takes a regex path and returns an object if matched.
-If any regular expression groups were defined, the returned object will contain the matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> | <code>RegExp</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
-<span class="p">})</span>
-<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
-</code></pre></div>
-<p><a name="module_http..Descriptor#_matchMethod"></a></p>
-
-<h3>descriptor._matchMethod(method)</h3>
-
-<p>Returns true if the descriptor accepts the HTTP method.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>method <code>String</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>boolean</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
-<span class="p">});</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
-</code></pre></div>
-<p><a name="module_http..Descriptor#_extractData"></a></p>
-
-<h3>descriptor._extractData(data)</h3>
-
-<p>If nested data has been specified in the descriptor, extract the data.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#_matchConfig"></a></p>
-
-<h3>descriptor._matchConfig(config)</h3>
-
-<p>Returns this descriptors mapping if the request config matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>config <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#_matchData"></a></p>
-
-<h3>descriptor._matchData(data)</h3>
-
-<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#match"></a></p>
-
-<h3>descriptor.match(config, data)</h3>
-
-<p>Check if the HTTP config and returned data match this descriptor definition.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code> - Extracted data<br>
-<a name="module_http..Descriptor#_transformData"></a></p>
-
-<h3>descriptor._transformData(data)</h3>
-
-<p>Apply any transforms.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code> - Serialised data.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
 <a name="module_http..ResponseDescriptor"></a></p>
 
 <h2>class: http~ResponseDescriptor</h2>
@@ -964,7 +1164,7 @@ with HTTP request/response bodies.</p>
 <li><a href="#module_http..path">http~path</a></li>
 <li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
-<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, object)</a></li>
 <li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
 <li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
@@ -973,16 +1173,16 @@ with HTTP request/response bodies.</p>
 <li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._matchPath">http~_matchPath(path)</a></li>
+<li><a href="#module_http.._matchMethod">http~_matchMethod(method)</a></li>
 <li><a href="#module_http..bury">http~bury(obj, data)</a></li>
+<li><a href="#module_http.._extractData">http~_extractData(data)</a></li>
+<li><a href="#module_http.._matchConfig">http~_matchConfig(config)</a></li>
+<li><a href="#module_http.._matchData">http~_matchData(data)</a></li>
+<li><a href="#module_http..match">http~match(config, data)</a></li>
+<li><a href="#module_http.._transformData">http~_transformData(data)</a></li>
 <li><a href="#module_http..Descriptor">class: http~Descriptor</a></li>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 <li><a href="#module_http..ResponseDescriptor">class: http~ResponseDescriptor</a></li>
 <li><a href="#new_module_http..ResponseDescriptor">new http~ResponseDescriptor(opts)</a></li>
 </ul></li>
@@ -1029,7 +1229,7 @@ with HTTP request/response bodies.</p>
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <a name="module_http..DELETE"></a></p>
 
-<h2>http~DELETE(collection, path, model, optsOrCallback, callback)</h2>
+<h2>http~DELETE(collection, path, object)</h2>
 
 <p>Send a DELETE request. Also removes the object.</p>
 
@@ -1037,10 +1237,8 @@ with HTTP request/response bodies.</p>
 
 <ul>
 <li>collection <code>Collection</code><br></li>
-<li>path <code>Stirng</code> - The path to the resource to which we want to DELETE<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to DELETE<br></li>
+<li>object <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 </ul>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
@@ -1183,7 +1381,49 @@ with HTTP request/response bodies.</p>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_http..bury"></a></p>
+<a name="module_http.._matchPath"></a></p>
+
+<h2>http~_matchPath(path)</h2>
+
+<p>Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> | <code>RegExp</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
+<span class="p">})</span>
+<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
+</code></pre></div>
+<p><a name="module_http.._matchMethod"></a></p>
+
+<h2>http~_matchMethod(method)</h2>
+
+<p>Returns true if the descriptor accepts the HTTP method.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>method <code>String</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>boolean</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
+</code></pre></div>
+<p><a name="module_http..bury"></a></p>
 
 <h2>http~bury(obj, data)</h2>
 
@@ -1198,6 +1438,77 @@ with HTTP request/response bodies.</p>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._extractData"></a></p>
+
+<h2>http~_extractData(data)</h2>
+
+<p>If nested data has been specified in the descriptor, extract the data.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._matchConfig"></a></p>
+
+<h2>http~_matchConfig(config)</h2>
+
+<p>Returns this descriptors mapping if the request config matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._matchData"></a></p>
+
+<h2>http~_matchData(data)</h2>
+
+<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http..match"></a></p>
+
+<h2>http~match(config, data)</h2>
+
+<p>Check if the HTTP config and returned data match this descriptor definition.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code> - Extracted data<br>
+<a name="module_http.._transformData"></a></p>
+
+<h2>http~_transformData(data)</h2>
+
+<p>Apply any transforms.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code> - Serialised data.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
 <a name="module_http..Descriptor"></a></p>
 
 <h2>class: http~Descriptor</h2>
@@ -1209,13 +1520,6 @@ with HTTP request/response bodies.</p>
 
 <ul>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 </ul></li>
 </ul>
 
@@ -1233,112 +1537,6 @@ intercept a HTTP request/response and perform a mapping.</p>
 </ul>
 
 <p><strong>Scope</strong>: inner class of <a href="#module_http">http</a><br>
-<a name="module_http..Descriptor#_matchPath"></a></p>
-
-<h3>descriptor._matchPath(path)</h3>
-
-<p>Takes a regex path and returns an object if matched.
-If any regular expression groups were defined, the returned object will contain the matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> | <code>RegExp</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
-<span class="p">})</span>
-<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
-</code></pre></div>
-<p><a name="module_http..Descriptor#_matchMethod"></a></p>
-
-<h3>descriptor._matchMethod(method)</h3>
-
-<p>Returns true if the descriptor accepts the HTTP method.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>method <code>String</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>boolean</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
-<span class="p">});</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
-</code></pre></div>
-<p><a name="module_http..Descriptor#_extractData"></a></p>
-
-<h3>descriptor._extractData(data)</h3>
-
-<p>If nested data has been specified in the descriptor, extract the data.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#_matchConfig"></a></p>
-
-<h3>descriptor._matchConfig(config)</h3>
-
-<p>Returns this descriptors mapping if the request config matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>config <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#_matchData"></a></p>
-
-<h3>descriptor._matchData(data)</h3>
-
-<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#match"></a></p>
-
-<h3>descriptor.match(config, data)</h3>
-
-<p>Check if the HTTP config and returned data match this descriptor definition.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code> - Extracted data<br>
-<a name="module_http..Descriptor#_transformData"></a></p>
-
-<h3>descriptor._transformData(data)</h3>
-
-<p>Apply any transforms.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code> - Serialised data.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
 <a name="module_http..ResponseDescriptor"></a></p>
 
 <h2>class: http~ResponseDescriptor</h2>
@@ -1379,7 +1577,7 @@ If any regular expression groups were defined, the returned object will contain 
 <li><a href="#module_http..path">http~path</a></li>
 <li><a href="#module_http.._httpResponse">http~_httpResponse(method, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http.._httpRequest">http~_httpRequest(method, path, object, optsOrCallback, callback)</a></li>
-<li><a href="#module_http..DELETE">http~DELETE(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http..DELETE">http~DELETE(collection, path, object)</a></li>
 <li><a href="#module_http..HTTP_METHOD">http~HTTP_METHOD(collection, request, method)</a></li>
 <li><a href="#module_http..GET">http~GET(collection, path, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..OPTIONS">http~OPTIONS(collection, path, optsOrCallback, callback)</a></li>
@@ -1388,16 +1586,16 @@ If any regular expression groups were defined, the returned object will contain 
 <li><a href="#module_http..POST">http~POST(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PUT">http~PUT(collection, path, model, optsOrCallback, callback)</a></li>
 <li><a href="#module_http..PATCH">http~PATCH(collection, path, model, optsOrCallback, callback)</a></li>
+<li><a href="#module_http.._matchPath">http~_matchPath(path)</a></li>
+<li><a href="#module_http.._matchMethod">http~_matchMethod(method)</a></li>
 <li><a href="#module_http..bury">http~bury(obj, data)</a></li>
+<li><a href="#module_http.._extractData">http~_extractData(data)</a></li>
+<li><a href="#module_http.._matchConfig">http~_matchConfig(config)</a></li>
+<li><a href="#module_http.._matchData">http~_matchData(data)</a></li>
+<li><a href="#module_http..match">http~match(config, data)</a></li>
+<li><a href="#module_http.._transformData">http~_transformData(data)</a></li>
 <li><a href="#module_http..Descriptor">class: http~Descriptor</a></li>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 <li><a href="#module_http..ResponseDescriptor">class: http~ResponseDescriptor</a></li>
 <li><a href="#new_module_http..ResponseDescriptor">new http~ResponseDescriptor(opts)</a></li>
 </ul></li>
@@ -1444,7 +1642,7 @@ If any regular expression groups were defined, the returned object will contain 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <a name="module_http..DELETE"></a></p>
 
-<h2>http~DELETE(collection, path, model, optsOrCallback, callback)</h2>
+<h2>http~DELETE(collection, path, object)</h2>
 
 <p>Send a DELETE request. Also removes the object.</p>
 
@@ -1452,10 +1650,8 @@ If any regular expression groups were defined, the returned object will contain 
 
 <ul>
 <li>collection <code>Collection</code><br></li>
-<li>path <code>Stirng</code> - The path to the resource to which we want to DELETE<br></li>
-<li>model <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
-<li>optsOrCallback <code>Object</code> | <code>function</code> - Either an options object or a callback if can use defaults<br></li>
-<li>callback <code>function</code> - Callback if opts specified.<br></li>
+<li>path <code>String</code> - The path to the resource to which we want to DELETE<br></li>
+<li>object <code>SiestaModel</code> - The model that we would like to PATCH<br></li>
 </ul>
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
@@ -1598,7 +1794,49 @@ If any regular expression groups were defined, the returned object will contain 
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <strong>Returns</strong>: <code>Promise</code><br>
-<a name="module_http..bury"></a></p>
+<a name="module_http.._matchPath"></a></p>
+
+<h2>http~_matchPath(path)</h2>
+
+<p>Takes a regex path and returns an object if matched.
+If any regular expression groups were defined, the returned object will contain the matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>path <code>String</code> | <code>RegExp</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
+<span class="p">})</span>
+<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
+</code></pre></div>
+<p><a name="module_http.._matchMethod"></a></p>
+
+<h2>http~_matchMethod(method)</h2>
+
+<p>Returns true if the descriptor accepts the HTTP method.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>method <code>String</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>boolean</code><br>
+<strong>Example</strong></p>
+<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
+    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
+<span class="p">});</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
+</code></pre></div>
+<p><a name="module_http..bury"></a></p>
 
 <h2>http~bury(obj, data)</h2>
 
@@ -1613,6 +1851,77 @@ If any regular expression groups were defined, the returned object will contain 
 
 <p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
 <strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._extractData"></a></p>
+
+<h2>http~_extractData(data)</h2>
+
+<p>If nested data has been specified in the descriptor, extract the data.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._matchConfig"></a></p>
+
+<h2>http~_matchConfig(config)</h2>
+
+<p>Returns this descriptors mapping if the request config matches.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http.._matchData"></a></p>
+
+<h2>http~_matchData(data)</h2>
+
+<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code><br>
+<a name="module_http..match"></a></p>
+
+<h2>http~match(config, data)</h2>
+
+<p>Check if the HTTP config and returned data match this descriptor definition.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
+<li>data <code>Object</code><br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code> - Extracted data<br>
+<a name="module_http.._transformData"></a></p>
+
+<h2>http~_transformData(data)</h2>
+
+<p>Apply any transforms.</p>
+
+<p><strong>Params</strong></p>
+
+<ul>
+<li>data <code>Object</code> - Serialised data.<br></li>
+</ul>
+
+<p><strong>Scope</strong>: inner function of <a href="#module_http">http</a><br>
+<strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
 <a name="module_http..Descriptor"></a></p>
 
 <h2>class: http~Descriptor</h2>
@@ -1624,13 +1933,6 @@ If any regular expression groups were defined, the returned object will contain 
 
 <ul>
 <li><a href="#new_module_http..Descriptor">new http~Descriptor(opts)</a></li>
-<li><a href="#module_http..Descriptor#_matchPath">descriptor._matchPath(path)</a></li>
-<li><a href="#module_http..Descriptor#_matchMethod">descriptor._matchMethod(method)</a></li>
-<li><a href="#module_http..Descriptor#_extractData">descriptor._extractData(data)</a></li>
-<li><a href="#module_http..Descriptor#_matchConfig">descriptor._matchConfig(config)</a></li>
-<li><a href="#module_http..Descriptor#_matchData">descriptor._matchData(data)</a></li>
-<li><a href="#module_http..Descriptor#match">descriptor.match(config, data)</a></li>
-<li><a href="#module_http..Descriptor#_transformData">descriptor._transformData(data)</a></li>
 </ul></li>
 </ul>
 
@@ -1648,112 +1950,6 @@ intercept a HTTP request/response and perform a mapping.</p>
 </ul>
 
 <p><strong>Scope</strong>: inner class of <a href="#module_http">http</a><br>
-<a name="module_http..Descriptor#_matchPath"></a></p>
-
-<h3>descriptor._matchPath(path)</h3>
-
-<p>Takes a regex path and returns an object if matched.
-If any regular expression groups were defined, the returned object will contain the matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>path <code>String</code> | <code>RegExp</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/resource/(?P&lt;id&gt;)/&#39;</span>
-<span class="p">})</span>
-<span class="kd">var</span> <span class="nx">matched</span> <span class="o">=</span> <span class="nx">d</span><span class="p">.</span><span class="nx">_matchPath</span><span class="p">(</span><span class="s1">&#39;/resource/2&#39;</span><span class="p">);</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">matched</span><span class="p">);</span> <span class="c1">// {id: &#39;2&#39;}</span>
-</code></pre></div>
-<p><a name="module_http..Descriptor#_matchMethod"></a></p>
-
-<h3>descriptor._matchMethod(method)</h3>
-
-<p>Returns true if the descriptor accepts the HTTP method.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>method <code>String</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>boolean</code><br>
-<strong>Example</strong></p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">d</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Descriptor</span><span class="p">({</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">]</span>
-<span class="p">});</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">d</span><span class="p">.</span><span class="nx">_matchMethod</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">));</span> <span class="c1">// false</span>
-</code></pre></div>
-<p><a name="module_http..Descriptor#_extractData"></a></p>
-
-<h3>descriptor._extractData(data)</h3>
-
-<p>If nested data has been specified in the descriptor, extract the data.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#_matchConfig"></a></p>
-
-<h3>descriptor._matchConfig(config)</h3>
-
-<p>Returns this descriptors mapping if the request config matches.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>config <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#_matchData"></a></p>
-
-<h3>descriptor._matchData(data)</h3>
-
-<p>Returns data if the data matches, performing any extraction as specified in opts.data</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code><br>
-<a name="module_http..Descriptor#match"></a></p>
-
-<h3>descriptor.match(config, data)</h3>
-
-<p>Check if the HTTP config and returned data match this descriptor definition.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>config <code>Object</code> - Config object for $.ajax and similar<br></li>
-<li>data <code>Object</code><br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code> - Extracted data<br>
-<a name="module_http..Descriptor#_transformData"></a></p>
-
-<h3>descriptor._transformData(data)</h3>
-
-<p>Apply any transforms.</p>
-
-<p><strong>Params</strong></p>
-
-<ul>
-<li>data <code>Object</code> - Serialised data.<br></li>
-</ul>
-
-<p><strong>Returns</strong>: <code>Object</code> - Serialised data with applied transformations.<br>
 <a name="module_http..ResponseDescriptor"></a></p>
 
 <h2>class: http~ResponseDescriptor</h2>
@@ -1931,7 +2127,7 @@ return the model if cached.</p>
 
 <h2>cache~insert(obj)</h2>
 
-<p>Insert an objet into the cache.</p>
+<p>Insert an object into the cache.</p>
 
 <p><strong>Params</strong></p>
 
