@@ -48,50 +48,54 @@ We then make another query for the thread that Mike started with id `2`.
 // GET /threads/2/
 var threadData = {
     "id": 2,
-    "title": "hello world!",
+    "title": "Hello World",
+    "op": {
+        "id": 1,
+        "username": "mike",
+        "email": "mike@gmail.com"
+    }
 }
 ```
 
-Notice that since our last query, Mike's Bentley has been painted red.
+Notice that since our last query, the thread has changed name and `mike` changed his email.
 
-Using traditional methods of interacting with web services we would now have two Javascript objects representing our Bentley with id `11`. One is nested in the user object we received from our first request, and the second is the result of our second request:
+Using traditional methods of interacting with web services we would now have two local representations of `mike` and his thread.
 
 ```javascript
-userData.cars[0] === carData; // False
+userData.threads[0] === threadData; // False
+userData === threadData.op; // False
 ```
 
 And worst of all:
 
 ```javascript
-console.log(userData.cars[0].colour); // Black
-console.log(carData.colour); // Red
+console.log(userData.threads[0].title); // hello world!
+console.log(threadData.title); // Hello World
+console.log(userData.email); // mike@hotmail.com
+console.log(threadData.op.email); // mike@gmail.com
 ```
 
-So not only do we now have **two** distinct live objects representing the same remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is blatantly lying to us.
+So not only do we now have **two** distinct live objects representing each remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is blatantly lying to us.
 
 ###The Solution
 
 Siesta solves this issue through the use of object mapping. A **mapping** describes the remote object that we want to model. A **collection** groups together these mappings. For example we could have define a collection to represent each web service that we will interact with.
 
 ```javascript
-var collection = new Collection('MyCollection');
+var Forum = new Collection('Forum');
 
-var User = collection.mapping({
+var User = Forum.mapping({
     name: 'User',
-    id: 'username'
+    attributes: ['username', 'email']
 });
                                    
-var Car = collection.mapping({
-    name: 'Car',
-    id: 'id',
-    attributes: [
-        "colour",
-        "model"
-    ],
+var Thread = collection.mapping({
+    name: 'Thread',
+    attributes: ['title']
     relationships: {
-        owner: {
+        op: {
               mapping: User,
-              reverse: 'cars'
+              reverse: 'threads'
         }
     }
 });
@@ -100,15 +104,15 @@ var Car = collection.mapping({
 We can then map the raw data into Siesta, which will use the mappings we defined early to decide which data should to which local object. 
 
 ```javascript
-User.map(userData, function (userObject) {
-    Car.map(carData, function (carObject) {
-        console.log(userObject.cars[0] === carObject); // true
-        console.log(userObject.cars[0].colour; // "red"
+User.map(userData, function (user) {
+    Car.map(threadData, function (thread) {
+        user.threads[0] === thread; // true
+        user === thread.op; // true
     });
 });
 ```
 
-**Note:** we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
+We now have one local representation for each remote representation! Note that we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
 
 ###What next?
 
