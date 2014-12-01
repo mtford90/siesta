@@ -22,7 +22,7 @@
 <div class="navbar navbar-fixed-top hidden-print">
     <div class="container">
         <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
-        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.3</a>
+        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.9</a>
         </p>
     </div>
 </div>
@@ -89,23 +89,25 @@
 
 <p>As ever, this problem is best explained through an example.</p>
 
-<p>Let&#39;s say we&#39;re interacting with a web service describing vehicles and their owners. We fire off a request to obtain Mike&#39;s user details:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /users/Mike/</span>
+<p>Let&#39;s say we&#39;re interacting with an API provided by a forum application. The API provides the ability to query for users and threads.</p>
+
+<p>We fire off a request to obtain details for the user <code>mike</code>:</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /users/mike/</span>
 <span class="kd">var</span> <span class="nx">userData</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;Mike&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;cars&quot;</span><span class="o">:</span> <span class="p">[</span>
-        <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="o">:</span> <span class="s2">&quot;Bentley&quot;</span><span class="p">,</span> <span class="s2">&quot;colour&quot;</span><span class="o">:</span><span class="s2">&quot;Black&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span> <span class="mi">11</span><span class="p">},</span>
-        <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="o">:</span> <span class="s2">&quot;Aston Martin&quot;</span><span class="p">,</span> <span class="s2">&quot;colour&quot;</span><span class="o">:</span> <span class="s2">&quot;Gray&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="o">:</span><span class="mi">12</span><span class="p">}</span>
-     <span class="p">]</span>
+    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;mike&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;email&quot;</span><span class="o">:</span> <span class="s2">&quot;mike@hotmail.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;threads&quot;</span><span class="o">:</span> <span class="p">[{</span>
+        <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;hello world!&quot;</span>
+     <span class="p">}]</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>We then query again for Mike&#39;s Bentley and receive the following:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /cars/11/</span>
-<span class="kd">var</span> <span class="nx">carData</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;model&quot;</span><span class="o">:</span> <span class="s2">&quot;Bentley&quot;</span><span class="p">,</span> 
-    <span class="s2">&quot;colour&quot;</span><span class="o">:</span> <span class="s2">&quot;Red&quot;</span><span class="p">,</span> 
-    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">11</span><span class="p">,</span>
-    <span class="s2">&quot;owner&quot;</span><span class="o">:</span> <span class="p">{</span><span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;Mike&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">10</span><span class="p">}</span>
+<p>We then make another query for the thread that Mike started with id <code>2</code>.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /threads/2/</span>
+<span class="kd">var</span> <span class="nx">threadData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;hello world!&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>Notice that since our last query, Mike&#39;s Bentley has been painted red.</p>
