@@ -97,7 +97,7 @@ describe('cache...', function() {
             var desc = new siesta.ext.http.ResponseDescriptor({
                 method: 'GET',
                 mapping: carMapping,
-                path: '/cars/(?<id>[0-9])/?'
+                path: '/cars/[0-9]+'
             });
             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(desc);
             collection.install(done);

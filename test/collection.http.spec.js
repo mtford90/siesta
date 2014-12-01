@@ -71,13 +71,13 @@ describe('http!', function () {
                 configureCollection(done);
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
-                    mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/(?<colour>[a-zA-Z0-9]+)/?'
+                    mxapping: carMapping,
+                    path: '/cars/[0-9]+/[a-zA-Z0-9]+'
                 }));
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
                     mapping: carMapping,
-                    path: '/cars/(?<colour>[a-zA-Z0-9]+)/?'
+                    path: '/cars/[a-zA-Z0-9]+'
                 }));
             });
 
@@ -107,12 +107,6 @@ describe('http!', function () {
                     server.respond();
                 });
 
-                it('should map regex matches onto the object', function () {
-                    assert.instanceOf(obj, SiestaModel);
-                    assert.equal(obj.colour, 'purple');
-                    assert.equal(obj.name, 'Aston Martin');
-                    assert.equal(obj.id, '9');
-                });
             });
 
             describe('multiple', function () {
@@ -151,15 +145,7 @@ describe('http!', function () {
                     server.respond();
                 });
 
-                it('should map regex matches onto the object', function () {
-                    assert.notOk(err);
-                    assert.ok(objs.length);
-                    _.each(objs, function (obj) {
-                        assert.equal(obj.colour, 'purple');
-                        assert.equal(obj.name, 'Aston Martin');
-                    });
-
-                });
+           
             });
 
 
@@ -184,7 +170,7 @@ describe('http!', function () {
                         siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                             method: 'GET',
                             mapping: carMapping,
-                            path: '/cars/(?<id>[0-9])/?'
+                            path: '/cars/[0-9]+'
                         }));
                         var raw = {
                             colour: 'red',
@@ -305,7 +291,7 @@ describe('http!', function () {
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
                                 mapping: carMapping,
-                                path: '/cars/(?<id>[0-9])/?'
+                                path: '/cars/[0-9]+'
                             }));
                             var headers = {
                                 "Content-Type": "application/json"
@@ -358,7 +344,7 @@ describe('http!', function () {
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
                                 mapping: carMapping,
-                                path: '/cars/(?<id>[0-9])/?'
+                                path: '/cars/[0-9]+'
                             }));
                             var headers = {
                                 "Content-Type": "application/json"
@@ -392,7 +378,7 @@ describe('http!', function () {
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
                                 mapping: carMapping,
-                                path: '/cars/(?<id>[0-9])/?'
+                                path: '/cars/[0-9]+'
                             }));
                             var headers = {
                                 "Content-Type": "application/json"
@@ -426,7 +412,7 @@ describe('http!', function () {
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
                                 mapping: carMapping,
-                                path: '/cars/(?<id>[0-9])/?'
+                                path: '/cars/[0-9]+'
                             }));
                             var headers = {
                                 "Content-Type": "application/json"
@@ -519,13 +505,13 @@ describe('http!', function () {
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PUT',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'PUT',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
@@ -585,13 +571,13 @@ describe('http!', function () {
                     var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                         method: 'PATCH',
                         mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
+                        path: '/cars/[0-9]+'
                     });
                     siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                     var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                         method: 'PATCH',
                         mapping: carMapping,
-                        path: '/cars/(?<id>[0-9])/?'
+                        path: '/cars/[0-9]+'
                     });
                     siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
                     done();
@@ -807,13 +793,13 @@ describe('http!', function () {
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PATCH',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'PATCH',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
                 carMapping.map({

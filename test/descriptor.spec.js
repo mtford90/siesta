@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe.only('request descriptor', function () {
+describe('request descriptor', function () {
 
     var Collection = require('../core/collection').Collection;
     var InternalSiestaError = require('../core/error').InternalSiestaError;
@@ -35,21 +35,21 @@ describe.only('request descriptor', function () {
         describe('path', function () {
             it('match id', function () {
                 var r = new siesta.ext.http.Descriptor({
-                    path: '/cars/(?<id>[0-9]+)/?',
+                    path: '\/cars\/([0-9]+)?$',
                     mapping: carMapping
                 });
-                var match = r._matchPath('/cars/5/');
-                assert.equal(match.id, '5');
+                var match = r._matchPath('/cars/5');
+                assert.ok(match);
             });
 
             it('query params', function () {
                 var descriptor = new siesta.ext.http.Descriptor({
                     method: '*',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+'
                 });
                 var match = descriptor._matchPath('/cars/5?x=5&y=random');
-                assert.equal(match.id, '5');
+                assert.ok(match)
             });
 
             describe('array of paths', function () {
@@ -57,13 +57,12 @@ describe.only('request descriptor', function () {
                     var descriptor = new siesta.ext.http.Descriptor({
                         method: '*',
                         mapping: carMapping,
-                        path: ['/cars/(?<id>[0-9])/?', '/vehicles/(?<id>[0-9])/?']
+                        path: ['/cars/[0-9]+', '/vehicles/[0-9]+']
                     });
                     var match = descriptor._matchPath('/cars/5?x=5&y=random');
-                    console.log('match', match);
-                    assert.equal(match.id, '5');
+                    assert.ok(match);
                     match = descriptor._matchPath('/vehicles/5?x=5&y=random');
-                    assert.equal(match.id, '5');
+                    assert.ok(match);
                     match = descriptor._matchPath('/xyz/5?x=5&y=random');
                     assert.notOk(match);
                 });
@@ -72,10 +71,10 @@ describe.only('request descriptor', function () {
                     var descriptor = new siesta.ext.http.Descriptor({
                         method: '*',
                         mapping: carMapping,
-                        path: ['/cars/(?<id>[0-9])/?']
+                        path: ['/cars/[0-9]+']
                     });
                     var match = descriptor._matchPath('/cars/5?x=5&y=random');
-                    assert.equal(match.id, '5');
+                    assert.ok(match);
                 });
 
 
@@ -345,7 +344,7 @@ describe.only('request descriptor', function () {
                 descriptor = new siesta.ext.http.Descriptor({
                     method: 'POST',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+/?'
                 });
             });
             it('match', function () {
@@ -415,7 +414,7 @@ describe.only('request descriptor', function () {
             descriptor = new siesta.ext.http.Descriptor({
                 method: 'POST',
                 mapping: carMapping,
-                path: '/cars/(?<id>[0-9])/?',
+                path: '/cars/[0-9]+',
                 data: 'path.to.data'
             });
         });
@@ -475,7 +474,7 @@ describe.only('request descriptor', function () {
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'POST',
                     mapping: carMapping,
-                    path: '/cars/(?<id>[0-9])/?'
+                    path: '/cars/[0-9]+'
                 });
                 assert.notEqual(requestDescriptor.serialiser, siesta.ext.http.Serialiser.idSerialiser);
             });
@@ -488,7 +487,7 @@ describe.only('request descriptor', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
                             mapping: carMapping,
-                            path: '/cars/(?<id>[0-9])/?',
+                            path: '/cars/[0-9]+',
                             serialiser: siesta.ext.http.Serialiser.idSerialiser
                         });
                     });
@@ -517,7 +516,7 @@ describe.only('request descriptor', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
                             mapping: carMapping,
-                            path: '/cars/(?<id>[0-9])/?',
+                            path: '/cars/[0-9]+',
                             serialiser: siesta.ext.http.Serialiser.depthSerializer(0)
                         });
                     });
@@ -645,7 +644,7 @@ describe.only('request descriptor', function () {
                             requestDescriptor = new siesta.ext.http.RequestDescriptor({
                                 method: 'POST',
                                 mapping: carMapping,
-                                path: '/cars/(?<id>[0-9])/?',
+                                path: '/cars/[0-9]',
                                 serialiser: siesta.ext.http.Serialiser.depthSerializer(0),
                                 transforms: {
                                     'colour': 'path.to.colour'
@@ -689,7 +688,7 @@ describe.only('request descriptor', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
                             mapping: carMapping,
-                            path: '/cars/(?<id>[0-9])/?',
+                            path: '/cars/[0-9]+',
                             data: 'path.to',
                             serialiser: siesta.ext.http.Serialiser.idSerialiser
                         });
@@ -721,7 +720,7 @@ describe.only('request descriptor', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
                             mapping: carMapping,
-                            path: '/cars/(?<id>[0-9])/?',
+                            path: '/cars/[0-9]+',
                             data: 'path.to'
                         });
                     });
@@ -753,7 +752,7 @@ describe.only('request descriptor', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
                             mapping: carMapping,
-                            path: '/cars/(?<id>[0-9])/?',
+                            path: '/cars/[0-9]+',
                             data: 'path.to',
                             serialiser: function (obj) {
                                 return obj.id

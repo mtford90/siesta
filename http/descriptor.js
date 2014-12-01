@@ -15,7 +15,7 @@ var _i = siesta._internal,
     _ = util._;
 
 var Logger = log.loggerWithName('Descriptor');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 var httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
 
@@ -50,20 +50,11 @@ function Descriptor(opts) {
     this._rawOpts = extend(true, {}, opts);
     this._opts = opts;
 
-    // TODO: This is a bit hacky.
-    // Essentially hacking named groups into javascript regular expressions.
-    // Originally was using XRegExp but that library is 300kb, 30k gunzipped. Fuck that.
-    // I do suspect that this is a bit sketchy tho...
     var processPath = function (raw) {
-        var r = /\?<([0-9a-zA-Z_-]*)>/g;
-        var match, names = [];
-        while (match = r.exec(raw)) {
-            var name = match[1];
-            names.push(name);
+        if (!(raw instanceof RegExp)) {
+            raw = new RegExp(raw, 'g');
         }
-        raw = raw.replace(r, '');
-        var regExp = new RegExp(raw, 'g');
-        return {names: names, regExp: regExp};
+        return raw;
     }.bind(this);
 
     if (this._opts.path) {
@@ -73,16 +64,12 @@ function Descriptor(opts) {
         }
 
         this._opts.path = [];
-        this.names = [];
 
         _.each(paths, function (p) {
-            var __ret = processPath.call(this, p);
-            this._opts.path.push(__ret.regExp);
-            this.names.push(__ret.names);
+            this._opts.path.push(processPath.call(this, p));
         }.bind(this));
     } else {
         this._opts.path = [''];
-        this.names = [[]];
     }
 
     this._opts.method = resolveMethod(this._opts.method);
@@ -170,11 +157,10 @@ function Descriptor(opts) {
 _.extend(Descriptor.prototype, {
     httpMethods: httpMethods,
     /**
-     * Takes a regex path and returns an object if matched.
-     * If any regular expression groups were defined, the returned object will contain the matches.
+     * Takes a regex path and returns true if matched
      *
-     * @param  {String|RegExp} path
-     * @return {Object}
+     * @param  {String} path
+     * @return {boolean}
      * @internal
      * @example
      * ```js
@@ -187,26 +173,22 @@ _.extend(Descriptor.prototype, {
      */
     _matchPath: function (path) {
         var i;
-        var matches = [];
-        var matched;
         for (i = 0; i < this._opts.path.length; i++) {
-            var names = this.names[i];
             var regExp = this._opts.path[i];
-            var match = regExp.exec(path);
-            if (match) {
-                for (i = 1; i < match.length; i++) {
-                    matches.push(match[i]);
+            if (Logger.trace.isEnabled)
+                Logger.trace('Matching path', path, regExp.toString());
+            var matched = regExp.exec(path);
+            if (Logger.trace.isEnabled) {
+                if (matched) {
+                    Logger.trace('Matched path successfully', path, regExp.toString());
                 }
-                if (matches.length == names.length) {
-                    matched = {};
-                    _.each(matches, function (m, i) {
-                        matched[names[i]] = m;
-                    }.bind(this));
-                    break;
+                else {
+                    Logger.trace('Failed to match path', path, regExp.toString());
                 }
             }
+            if (matched) return true;
         }
-        return matched;
+        return false;
     },
 
     /**
@@ -345,26 +327,6 @@ _.extend(Descriptor.prototype, {
         var extractedData = false;
         if (matches) {
             extractedData = this._matchData(data);
-            matches = !!extractedData;
-            if (matches) {
-                var key;
-                if (util.isArray(extractedData)) {
-                    for (key in regexMatches) {
-                        if (regexMatches.hasOwnProperty(key)) {
-                            _.each(extractedData, function (datum) {
-                                datum[key] = regexMatches[key];
-                            });
-                        }
-                    }
-                } else {
-                    for (key in regexMatches) {
-                        if (regexMatches.hasOwnProperty(key)) {
-                            extractedData[key] = regexMatches[key];
-                        }
-                    }
-                }
-            }
-
         }
         return extractedData;
     },

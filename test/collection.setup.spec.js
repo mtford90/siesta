@@ -159,7 +159,7 @@ describe('collection setup', function() {
                     var descriptors = collection.descriptor({
                         method: 'POST',
                         mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
+                        path: '/path/[0-9]+'
                     });
                     assert.equal(descriptors.length, 1);
                     var requestDescriptor1 = descriptors[0];
@@ -167,7 +167,7 @@ describe('collection setup', function() {
                     descriptors = collection.descriptor({
                         method: 'POST',
                         mapping: mapping2,
-                        path: '/path/(?<id>[0-9])/?'
+                        path: '/path/[0-9]'
                     });
                     var requestDescriptor2 = descriptors[0];
                     assert.instanceOf(requestDescriptor2, siesta.ext.http.RequestDescriptor);
@@ -188,7 +188,7 @@ describe('collection setup', function() {
                     var descriptors = collection.descriptor({
                         method: 'GET',
                         mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
+                        path: '/path/[0-9]+'
                     });
                     assert.equal(descriptors.length, 1);
                     var responseDescriptor1 = descriptors[0];
@@ -196,7 +196,7 @@ describe('collection setup', function() {
                     var descriptors = collection.descriptor({
                         method: 'GET',
                         mapping: mapping2,
-                        path: '/path/(?<id>[0-9])/?'
+                        path: '/path/[0-9]+'
                     });
                     assert.equal(descriptors.length, 1);
                     var responseDescriptor2 = descriptors[0];
@@ -220,7 +220,7 @@ describe('collection setup', function() {
                     descriptors = collection.descriptor({
                         method: ['GET', 'POST'],
                         mapping: mapping1,
-                        path: '/path/(?<id>[0-9])/?'
+                        path: '/path/[0-9]'
                     }); 
                     collection.install(done)
                 });
