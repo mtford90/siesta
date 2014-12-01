@@ -65,12 +65,7 @@ grunt test
 We can automatically run tests when changes are detected by running the following commands:
 
 ```bash
-# Watch for changes to everything, including the website and docs.
 grunt watch
-# Watch, but do not run the tests initially (will run on the next change)
-grunt watch-no-test
-# Do not watch for changes to the documentation/website, and do not serve a local server 
-grunt watch-no-jekyll 
 ```
 
 ## Website/Documentation
@@ -93,4 +88,15 @@ We can build and compile siesta using:
 grunt build
 # Generate build/siesta.*.js as well as build/siesta.*.min.js and build/siesta.*.min.js.gz
 grunt compile
+```
+
+## Release
+
+The following commands will perform a version bump, compile, commit, push and release to NPM/bower:
+
+```bash
+grunt release-pre # e.g. 0.0.6 -> 0.0.6-1
+grunt release-patch # e.g. 0.0.6 -> 0.0.7
+grunt release-minor # e.g. 0.0.6 -> 0.1.6
+grunt release-major # e.g. 0.0.6 -> 1.0.6
 ```
