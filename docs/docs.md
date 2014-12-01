@@ -94,11 +94,11 @@ collection.descriptor({
 });
 ```
 
-A more complex descriptor could include attributes in the path which can be a regular expression with named groups. The values of these matches will be mapped onto the object that is sent/received.
+A more complex descriptor could use a regular expression:
 
 ```javascript
 collection.descriptor({
-    path: 'cars/(?P<id>)/'
+    path: 'cars/([a-b0-9]+)/'
     method: ['PUT', 'PATCH'],
     mapping: 'Car',
     data: 'data' // Serialise to {data: {...}} when sending the request.

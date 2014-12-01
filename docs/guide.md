@@ -171,17 +171,7 @@ The below descriptor describes the GitHub endpoint for obtaining a specific user
 
 ```js
 GitHub.descriptor({
-    path: '/users/(.*)/repos/',
-    mapping: Repo,
-    method: 'GET'
-});
-```
-
-In this case it's kind of pointless, as `login` is already a field on the JSON returned from the GitHub API, but if we want to pull information from the path we can do the following: 
-
-```js
-GitHub.descriptor({
-    path: '/users/(?P<login>)/repos/',
+    path: '/users/([a-b0-9]+)/repos/',
     mapping: Repo,
     method: 'GET'
 });
@@ -215,7 +205,7 @@ Transforms can be used for simple field conversions:
 
 ```js
 GitHub.descriptor({
-    path: '/users/(.*)/repos/',
+    path: '/users/([a-b0-9]+)/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: {
@@ -228,7 +218,7 @@ We can use dot notation to transform nested data:
 
 ```js
 GitHub.descriptor({
-    path: '/users/(.*)/repos/',
+    path: '/users/[a-b0-9]+/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: {
@@ -241,7 +231,7 @@ We can also use a function instead:
 
 ```js
 GitHub.descriptor({
-    path: '/users/(.*)/repos/',
+    path: '/users/[a-b0-9]+/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: {
@@ -256,7 +246,7 @@ Or for more complicated transformations you can define a top-level transformatio
 
 ```js
 GitHub.descriptor({
-    path: '/users/(.*)/repos/',
+    path: '/users/[a-b0-9]+/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: function (data) {
@@ -274,7 +264,7 @@ If your descriptor contains unsafe methods then additional options can be passed
 
 ```js
 GitHub.descriptor({
-	path: '/repos/(.*)/(.*)/',
+	path: '/repos/[a-b0-9]+/[a-b0-9]+/',
 	mapping: Repo,
 	method: ['PATCH', 'POST'],
 	data: 'data'
@@ -285,7 +275,7 @@ GitHub.descriptor({
 
 ```js
 GitHub.descriptor({
-	path: '/repos/(.*)/(.*)/',
+	path: '/repos/[a-b0-9]+/[a-b0-9]+/',
 	mapping: Repo,
 	method: ['PATCH', 'POST'],
 	data: 'data',
@@ -295,7 +285,7 @@ GitHub.descriptor({
 
 ```js
 GitHub.descriptor({
-	path: '/repos/(.*)/(.*)/',
+	path: '/repos/[a-b0-9]+/[a-b0-9]+/',
 	mapping: Repo,
 	method: ['PATCH', 'POST'],
 	data: 'data',
