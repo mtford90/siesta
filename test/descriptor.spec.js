@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('request descriptor', function () {
+describe.only('request descriptor', function () {
 
     var Collection = require('../core/collection').Collection;
     var InternalSiestaError = require('../core/error').InternalSiestaError;

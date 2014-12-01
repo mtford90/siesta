@@ -234,7 +234,7 @@ function showVis() {
                     })
                     .on('click', function() {
                         console.log('clicked!');
-                    });
+                    })
                     .call(drag);
 
                 var text = container.append("g").selectAll("text")

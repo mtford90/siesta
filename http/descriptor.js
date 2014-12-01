@@ -208,6 +208,7 @@ _.extend(Descriptor.prototype, {
         }
         return matched;
     },
+
     /**
      * Returns true if the descriptor accepts the HTTP method.
      *
@@ -311,10 +312,6 @@ _.extend(Descriptor.prototype, {
         if (matches) {
             matches = config.url ? this._matchPath(config.url) : {};
         }
-        if (matches) {
-            if (Logger.trace.isEnabled)
-                Logger.trace('matched config');
-        }
         return matches;
     },
 
@@ -325,9 +322,6 @@ _.extend(Descriptor.prototype, {
      * @return {Object}
      */
     _matchData: function (data) {
-        if (Logger.trace.isEnabled) {
-            Logger.trace('_matchData', data);
-        }
         var extractedData = null;
         if (this.data) {
             if (data) {
@@ -335,9 +329,6 @@ _.extend(Descriptor.prototype, {
             }
         } else {
             extractedData = data;
-        }
-        if (extractedData) {
-            Logger.trace('matched data');
         }
         return extractedData;
     },
@@ -349,14 +340,10 @@ _.extend(Descriptor.prototype, {
      * @return {Object} Extracted data
      */
     match: function (config, data) {
-        if (Logger.trace.isEnabled) {
-            Logger.trace('match', config, data);
-        }
         var regexMatches = this._matchConfig(config);
         var matches = !!regexMatches;
         var extractedData = false;
         if (matches) {
-            if (Logger.trace.isEnabled) Logger.trace('config matches');
             extractedData = this._matchData(data);
             matches = !!extractedData;
             if (matches) {
@@ -376,13 +363,8 @@ _.extend(Descriptor.prototype, {
                         }
                     }
                 }
-                if (Logger.trace.isEnabled) Logger.trace('data matches');
             }
-            else {
-                if (Logger.trace.isEnabled) Logger.trace('data doesnt match');
-            }
-        } else {
-            if (Logger.trace.isEnabled)  Logger.trace('config doesnt match');
+
         }
         return extractedData;
     },

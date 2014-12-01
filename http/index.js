@@ -57,6 +57,9 @@ function logHttpRequest(opts) {
         logger(logMessage);
     }
 }
+
+
+
 /**
  * Send a HTTP request to the given method and path parsing the response.
  * @param {String} method

@@ -14,7 +14,7 @@ var siesta = require('../../core/index')
     , assert = require('chai').assert
     , testUtil = require('../util');
 
-describe.only('hacker news integration test', function () {
+describe('hacker news integration test', function () {
     // When @HiroAgustin tried to pass name of mapping to descriptor
     // an error was thrown :(
     // Not testing anything here in particular, just ensuring that it gets to the end
