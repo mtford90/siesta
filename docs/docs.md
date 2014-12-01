@@ -10,18 +10,22 @@ This guide will get you up and running with Siesta with minimal effort.
 
 ### Step 1: Installation
 
-You can use the below code to include the entire Siesta bundle:
+Use of Siesta varies depending on your project setup. You can use a script tag:
 
 ```html
-<html>
-<body>
+<!-- Entire siesta bundle-->
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.bundle.min.js"></script>
-</body>
-</html>
+<!-- Modular -->
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.core.min.js"></script>
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.min.js"></script>
 ```
 
-If you prefer to pick and choose the components that you want to use, head to the 
-<a href="{{site.baseurl}}/download.html">download</a> page for other options.
+Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta and any extensions after running `npm install siesta-orm --save`.
+
+```js
+var siesta = require('siesta'); // No extensions
+var siesta = require('siesta')({http: require('siesta/http'))}); // HTTP extension
+```
 
 ### Step 2: Create a collection
 

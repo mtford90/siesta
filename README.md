@@ -1,6 +1,8 @@
 Siesta
 ======
 
+**WARNING:** This library is very much alpha and no guarantees are made on stability!
+
 [![Build Status](https://travis-ci.org/mtford90/siesta.svg?branch=master)](https://travis-ci.org/mtford90/siesta)
 
 Siesta is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
@@ -20,7 +22,7 @@ Siesta is inspired by:
 
 Similar projects:
 
-* [EmberJS-Data](https://github.com/emberjs/data): Similar to Siesta however abstraction heavy in the typical Ember manner.
+* [EmberJS-Data](https://github.com/emberjs/data): Similar to Siesta however abstraction heavy in the typical Ember manner... ;)
 
 # Roadmap
 

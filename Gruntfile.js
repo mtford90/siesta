@@ -330,7 +330,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('compile-jekyll', [
         'less:dev',
-        'build-docs',
         'shell:jekyllCompile'
     ]);
 

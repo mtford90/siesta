@@ -6,6 +6,7 @@ sidebar: nav2.html
 
 # API Guide
 
+* [Installation](#installation)
 * [Collection](#collection)
 * [Mappings](#mappings)
 * [Descriptors](#descriptors)
@@ -16,7 +17,29 @@ sidebar: nav2.html
 * [Logging](#logging)
 * [Utils](#utils)
 
+<a id="installation"></a>
+
+## Installation
+
+Use of Siesta varies depending on your project setup. You can use a script tag:
+
+```html
+<!-- Entire siesta bundle-->
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.bundle.min.js"></script>
+<!-- Modular -->
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.core.min.js"></script>
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.min.js"></script>
+```
+
+Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta and any extensions after running `npm install siesta-orm --save`.
+
+```js
+var siesta = require('siesta'); // No extensions
+var siesta = require('siesta')({http: require('siesta/http'))}); // HTTP extension
+```
+
 <a id="collection"></a>
+
 ## Create a collection
 
 `new siesta.Collection(collectionName)` creates a new Collection. A collection organises a set of mappings and optionally descriptors and usually you'd create one per API. 
@@ -34,18 +57,14 @@ myColl.install(function () {
 });
 ```
 
-Alternatively you can use promises, which will come in handy if you have many collections to install or other libraries that need setting up before your application can run:
+Anywhere where callbacks are available, [promises](https://github.com/kriskowal/q) are also:
 
 ```js
-function startMyApp() {
-	// ...
-}
-myColl.install().then(myOtherColl.install()).then(startMyApp)
+myColl.install().then(myOtherColl.install()).then(function () { /* ... */ } );
 ```
 
-Siesta uses the [q](https://github.com/kriskowal/q) library for promises.
-
 <a id="mappings"></a>
+
 ## Configure mappings
 
 `Collection.prototype.mapping(opts)` is used for registering object mappings in a particular collection.
@@ -168,6 +187,12 @@ GitHub.descriptor({
 });
 ```
 
+### Paths
+
+Paths take the form of Javascript regular expressions with one addition - named groups.
+
+
+
 ### Nested Data
 
 The GitHub search endpoint nests results in the `items` key. The `data` parameter can be used to deal with this:
@@ -183,8 +208,6 @@ GitHub.descriptor({
     // data: 'items.further.nesting'
 });
 ```
-
-<!-- TODO: Transforms -->  
 
 ### Transforms
 
