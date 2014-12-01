@@ -107,54 +107,58 @@
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// GET /threads/2/</span>
 <span class="kd">var</span> <span class="nx">threadData</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-    <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;hello world!&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;op&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;mike&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;email&quot;</span><span class="o">:</span> <span class="s2">&quot;mike@gmail.com&quot;</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Notice that since our last query, Mike&#39;s Bentley has been painted red.</p>
+<p>Notice that since our last query, the thread has changed name and <code>mike</code> changed his email.</p>
 
-<p>Using traditional methods of interacting with web services we would now have two Javascript objects representing our Bentley with id <code>11</code>. One is nested in the user object we received from our first request, and the second is the result of our second request:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">userData</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">carData</span><span class="p">;</span> <span class="c1">// False</span>
+<p>Using traditional methods of interacting with web services we would now have two local representations of <code>mike</code> and his thread.</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">userData</span><span class="p">.</span><span class="nx">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">threadData</span><span class="p">;</span> <span class="c1">// False</span>
+<span class="nx">userData</span> <span class="o">===</span> <span class="nx">threadData</span><span class="p">.</span><span class="nx">op</span><span class="p">;</span> <span class="c1">// False</span>
 </code></pre></div>
 <p>And worst of all:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userData</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">colour</span><span class="p">);</span> <span class="c1">// Black</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">carData</span><span class="p">.</span><span class="nx">colour</span><span class="p">);</span> <span class="c1">// Red</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userData</span><span class="p">.</span><span class="nx">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">title</span><span class="p">);</span> <span class="c1">// hello world!</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">threadData</span><span class="p">.</span><span class="nx">title</span><span class="p">);</span> <span class="c1">// Hello World</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userData</span><span class="p">.</span><span class="nx">email</span><span class="p">);</span> <span class="c1">// mike@hotmail.com</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">threadData</span><span class="p">.</span><span class="nx">op</span><span class="p">.</span><span class="nx">email</span><span class="p">);</span> <span class="c1">// mike@gmail.com</span>
 </code></pre></div>
-<p>So not only do we now have <strong>two</strong> distinct live objects representing the same remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is blatantly lying to us.</p>
+<p>So not only do we now have <strong>two</strong> distinct live objects representing each remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is blatantly lying to us.</p>
 
 <h3>The Solution</h3>
 
 <p>Siesta solves this issue through the use of object mapping. A <strong>mapping</strong> describes the remote object that we want to model. A <strong>collection</strong> groups together these mappings. For example we could have define a collection to represent each web service that we will interact with.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">collection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Collection</span><span class="p">(</span><span class="s1">&#39;MyCollection&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">Forum</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Collection</span><span class="p">(</span><span class="s1">&#39;Forum&#39;</span><span class="p">);</span>
 
-<span class="kd">var</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+<span class="kd">var</span> <span class="nx">User</span> <span class="o">=</span> <span class="nx">Forum</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
     <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;User&#39;</span><span class="p">,</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;username&#39;</span>
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">]</span>
 <span class="p">});</span>
 
-<span class="kd">var</span> <span class="nx">Car</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
-    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
-    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span>
-        <span class="s2">&quot;colour&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;model&quot;</span>
-    <span class="p">],</span>
+<span class="kd">var</span> <span class="nx">Thread</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+    <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span>
+    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
     <span class="nx">relationships</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">owner</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">op</span><span class="o">:</span> <span class="p">{</span>
               <span class="nx">mapping</span><span class="o">:</span> <span class="nx">User</span><span class="p">,</span>
-              <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;cars&#39;</span>
+              <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;threads&#39;</span>
         <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">});</span>
 </code></pre></div>
 <p>We can then map the raw data into Siesta, which will use the mappings we defined early to decide which data should to which local object. </p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">userData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">userObject</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">Car</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">carData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">carObject</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userObject</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">carObject</span><span class="p">);</span> <span class="c1">// true</span>
-        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">userObject</span><span class="p">.</span><span class="nx">cars</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">colour</span><span class="p">;</span> <span class="c1">// &quot;red&quot;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">userData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Car</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">threadData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">thread</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">user</span><span class="p">.</span><span class="nx">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">thread</span><span class="p">;</span> <span class="c1">// true</span>
+        <span class="nx">user</span> <span class="o">===</span> <span class="nx">thread</span><span class="p">.</span><span class="nx">op</span><span class="p">;</span> <span class="c1">// true</span>
     <span class="p">});</span>
 <span class="p">});</span>
 </code></pre></div>
-<p><strong>Note:</strong> we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of <code>Content-Type</code> etc. You can read more about this in the <a href="/siesta/remote_queries.html">documentation</a>.</p>
+<p>We now have one local representation for each remote representation! Note that we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of <code>Content-Type</code> etc. You can read more about this in the <a href="/siesta/remote_queries.html">documentation</a>.</p>
 
 <h3>What next?</h3>
 
