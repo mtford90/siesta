@@ -10,6 +10,7 @@ Siesta is an object mapping framework for Javascript. It makes it easier to mode
 * [Quick Start](http://mtford90.github.io/siesta/docs.html)
 * [Installation/Download](http://mtford90.github.io/siesta/download.html)
 * [Demo App](http://mtford90.github.io/siesta/demo)
+* IRC chat.freenode.net #siesta.js
 
 Siesta is inspired by:
 
