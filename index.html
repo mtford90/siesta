@@ -67,7 +67,7 @@
             <div class="col-sm-10 col-sm-offset-1">
                 <p><div>
   <p class="lead">
-    <strong>Siesta</strong> is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
+    <strong>Siesta</strong> is an object graph framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
 </p>
 <hr/></p>
 
@@ -75,7 +75,7 @@
 
 <p>A traditional ORM maps rows from a relational database to objects. Siesta maps objects to and from data transport formats (e.g. JSON) and replaces the SQL queries with HTTP requests.</p>
 
-<p>Siesta provides a declarative API through which we describe the web services that we&#39;d like to interact with. When data is received from these web services, each object is mapped onto its corresponding local representation <em>including</em> any nested related objects. </p>
+<p>As well as providing the ability to map arbitrary data onto the object graph, siesta features a declarative API through which we describe the web services that we&#39;d like to interact with. When data is received from these web services, each object is mapped onto its corresponding local representation <em>including</em> any nested related objects.</p>
 
 <p>Siesta aims to cover <strong>M</strong> in <strong>M</strong>VC and takes inspiration from:</p>
 
@@ -83,6 +83,12 @@
 <li><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html">CoreData</a></li>
 <li><a href="http://restkit.org/">RestKit</a></li>
 <li><a href="https://www.djangoproject.com/">Django</a></li>
+</ul>
+
+<p>Similar projects to Siesta:</p>
+
+<ul>
+<li><a href="https://github.com/emberjs/data">Ember Data</a> - Data persistence for EmberJS. Siesta aims to be less abstraction heavy and framework agnostic.</li>
 </ul>
 
 <h3>The Problem</h3>
@@ -139,7 +145,7 @@
     <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;email&#39;</span><span class="p">]</span>
 <span class="p">});</span>
 
-<span class="kd">var</span> <span class="nx">Thread</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
+<span class="kd">var</span> <span class="nx">Thread</span> <span class="o">=</span> <span class="nx">Forum</span><span class="p">.</span><span class="nx">mapping</span><span class="p">({</span>
     <span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Thread&#39;</span><span class="p">,</span>
     <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
     <span class="nx">relationships</span><span class="o">:</span> <span class="p">{</span>
@@ -152,7 +158,7 @@
 </code></pre></div>
 <p>We can then map the raw data into Siesta, which will use the mappings we defined early to decide which data should to which local object. </p>
 <div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">User</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">userData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">user</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">Car</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">threadData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">thread</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">Thread</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">threadData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">thread</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">user</span><span class="p">.</span><span class="nx">threads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="nx">thread</span><span class="p">;</span> <span class="c1">// true</span>
         <span class="nx">user</span> <span class="o">===</span> <span class="nx">thread</span><span class="p">.</span><span class="nx">op</span><span class="p">;</span> <span class="c1">// true</span>
     <span class="p">});</span>
