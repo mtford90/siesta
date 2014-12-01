@@ -301,6 +301,12 @@
 
 <h2>HTTP</h2>
 
+<p>One descriptors are defined, we can then send HTTP requests and receive HTTP responses through Siesta. Siesta will match against descriptors when determining how to serialise/deserialise objects.</p>
+
+<h3>Safe Methods</h3>
+
+<p>Safe methods refer to methods that do not generally change state on the server-side e.g. GET. Object</p>
+
 <p><code>Collection.prototype.&lt;SAFE_HTTP_METHOD&gt;(path, ajaxOptsOrCallback, callbackIfOpts)</code> sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;/users/mtford90/repos&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">siesta</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span> 
@@ -313,6 +319,10 @@
     <span class="p">});</span>
 <span class="p">});</span>
 </code></pre></div>
+<h3>Unsafe Methods</h3>
+
+<p>Unsafe methods refer to methods that can change state on the server-side e.g. POST/PUT/DELETE. Objects are serialised as specified in the matched descriptor.</p>
+
 <p><code>Collection.prototype.&lt;UNSAFE_HTTP_METHOD&gt;(path, object, ajaxOptsOrCallback, callbackIfOpts)</code> sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">PATCH</span><span class="p">(</span><span class="s1">&#39;/users/mtford90/repos&#39;</span><span class="p">,</span> <span class="nx">myRepo</span><span class="p">,</span> <span class="p">{</span><span class="nx">fields</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">repos</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">siesta</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">repos</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span> 
@@ -320,7 +330,9 @@
     <span class="p">});</span>
 <span class="p">});</span>
 </code></pre></div>
-<!-- TODO: Set the ajax library -->
+<h3>Custom Ajax</h3>
+
+<p>Siesta currently supports jQuery style ajax functions. This can be configured as follows:</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">siesta</span><span class="p">.</span><span class="nx">setAjax</span><span class="p">(</span><span class="nx">zepto</span><span class="p">.</span><span class="nx">ajax</span><span class="p">);</span>
 </code></pre></div>
 <p><a id="mappingData"></a></p>
