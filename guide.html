@@ -31,7 +31,7 @@
 <div class="navbar navbar-fixed-top hidden-print">
     <div class="container-fluid">
         <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
-        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.10</a></p>
+        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.11</a></p>
     </div>
 </div>
 <div class="row columns content">
@@ -85,10 +85,10 @@
 
 <p>Use of Siesta varies depending on your project setup. You can use a script tag:</p>
 <div class="highlight"><pre><code class="language-html" data-lang="html"><span class="c">&lt;!-- Entire siesta bundle--&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.10/siesta.bundle.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.11/siesta.bundle.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
 <span class="c">&lt;!-- Modular --&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.10/siesta.core.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.10/siesta.http.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.11/siesta.core.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.11/siesta.http.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
 </code></pre></div>
 <p>Alternatively if you&#39;re using a bundler based on CommonJS (browserify, webpack etc) you can <code>require</code> siesta and any extensions after running <code>npm install siesta-orm --save</code>.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">siesta</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;siesta&#39;</span><span class="p">);</span> <span class="c1">// No extensions</span>
@@ -202,14 +202,7 @@
 
 <p>The below descriptor describes the GitHub endpoint for obtaining a specific users repositories. <code>path</code> is a regular expression, <code>mapping</code>tells Siesta what kind of objects to expect from this endpoint and <code>method</code> is the HTTP method, list of http methods or a wildcard.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
-    <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
-<span class="p">});</span>
-</code></pre></div>
-<p>In this case it&#39;s kind of pointless, as <code>login</code> is already a field on the JSON returned from the GitHub API, but if we want to pull information from the path we can do the following: </p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(?P&lt;login&gt;)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/([a-b0-9]+)/repos/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span>
 <span class="p">});</span>
@@ -235,7 +228,7 @@
 
 <p>Transforms can be used for simple field conversions:</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/([a-b0-9]+)/repos/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
     <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
@@ -245,7 +238,7 @@
 </code></pre></div>
 <p>We can use dot notation to transform nested data:</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/[a-b0-9]+/repos/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
     <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
@@ -255,7 +248,7 @@
 </code></pre></div>
 <p>We can also use a function instead:</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/[a-b0-9]+/repos/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
     <span class="nx">transforms</span><span class="o">:</span> <span class="p">{</span>
@@ -267,7 +260,7 @@
 </code></pre></div>
 <p>Or for more complicated transformations you can define a top-level transformation function:</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/(.*)/repos/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/users/[a-b0-9]+/repos/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span>
     <span class="nx">transforms</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
@@ -282,7 +275,7 @@
 
 <p>If your descriptor contains unsafe methods then additional options can be passed. The <code>data</code> field will tell siesta where to nest outgoing (serialised) data.</p>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/(.*)/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/[a-b0-9]+/[a-b0-9]+/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
     <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span>
@@ -290,14 +283,14 @@
 </code></pre></div>
 <h3>Serialisation</h3>
 <div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/(.*)/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/[a-b0-9]+/[a-b0-9]+/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
     <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
     <span class="nx">serialiser</span><span class="o">:</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">serialisers</span><span class="p">.</span><span class="nx">id</span>
 <span class="p">});</span>
 </code></pre></div><div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">GitHub</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/(.*)/(.*)/&#39;</span><span class="p">,</span>
+    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;/repos/[a-b0-9]+/[a-b0-9]+/&#39;</span><span class="p">,</span>
     <span class="nx">mapping</span><span class="o">:</span> <span class="nx">Repo</span><span class="p">,</span>
     <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PATCH&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">],</span>
     <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span>
