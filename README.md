@@ -12,7 +12,7 @@ Siesta is an object mapping framework for Javascript. It makes it easier to mode
 * [Demo App](http://mtford90.github.io/siesta/demo)
 * IRC chat.freenode.net #siesta.js
 
-Siesta is inspired by:
+**Siesta** is inspired by:
 
 * [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
 * [RestKit](http://restkit.org/)
@@ -24,23 +24,22 @@ Similar projects:
 
 # Roadmap
 
-The below lists ongoing and suggested features. Ideas and contributions are most welcome. Until 1.0, the API should be considered unstable.
+The below lists ongoing and suggested features. Ideas and contributions are most welcome.
+
+## 0.1
+* Stability.
 
 ## 0.2
 * Paginated APIs
 * More powerful queries
 	* Contains
 	* OR/AND
-* Convert visualiser in the demo into an actual tool that can be used with any Siesta project.
 
 ## 0.3
 * Persistence
     * Indexeddb
     * WebSQL (Probably via Indexeddb shim, as w3 has discontinued websql however required for backwards compat with safari/safari iOS etc)
     * Possibly PouchDB (The sync-to-couchdb features are pretty awesome)
-
-## Later/Possible
-* Attribute verification
 
 # Contributing
 

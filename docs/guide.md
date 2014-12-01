@@ -476,10 +476,6 @@ Each notification has a `type` property which can be any of the following:
 * New
 	* `new`
 
-Other common properties:
-
-* `field`: 
-
 ### Caveats
 
 Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for `Object.observe` which is currently only available in Chrome at the time of writing. It also comes with certain caveats.
@@ -517,6 +513,8 @@ In browsers that implement `Object.observe`, `siesta.notify()` simply does nothi
 
 <a id="queries"></a>
 ### Local Queries
+
+Siesta features an API for searching all local objects in the graph.
 
 `Mapping.prototype.all(callback)` will return all models mapped by a particular mapping.
 
@@ -556,15 +554,13 @@ Repo.query({stars__gt: 50}, function (err, repos) {
 });
 ```
 
-Query for users with names containing 'abc':
+Here is the complete list of queries currently possible:
 
-```js
-User.query({login__contains: 'abc'}, function (err, users) {
-	users.forEach(function (u) {
-		console.log(u.name);
-	});
-});
-```
+* `<field>` or `<field>__e` -  equality
+* `<field>__lt` - less than
+* `<field>__lte` - less than or equal to
+* `<field>__gt` - greater than
+* `<field>__gte` - greater than or equal to
 
 <a id="logging"></a>
 ## Logging

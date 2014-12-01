@@ -25,28 +25,30 @@ Siesta aims to cover **M** in **M**VC and takes inspiration from:
 
 As ever, this problem is best explained through an example.
 
-Let's say we're interacting with a web service describing vehicles and their owners. We fire off a request to obtain Mike's user details:
+Let's say we're interacting with an API provided by a forum application. The API provides the ability to query for users and threads.
+
+We fire off a request to obtain details for the user `mike`:
 
 ```javascript
-// GET /users/Mike/
+// GET /users/mike/
 var userData = {
-    "username": "Mike",
-    "cars": [
-        {"model": "Bentley", "colour":"Black", id: 11},
-        {"model": "Aston Martin", "colour": "Gray", id:12}
-     ]
+    "id": 1,
+    "username": "mike",
+    "email": "mike@hotmail.com",
+    "threads": [{
+        "id": 2,
+        "title": "hello world!"
+     }]
 }
 ```
 
-We then query again for Mike's Bentley and receive the following:
+We then make another query for the thread that Mike started with id `2`.
 
 ```javascript
-// GET /cars/11/
-var carData = {
-    "model": "Bentley", 
-    "colour": "Red", 
-    "id": 11,
-    "owner": {"username": "Mike", "id": 10}
+// GET /threads/2/
+var threadData = {
+    "id": 2,
+    "title": "hello world!",
 }
 ```
 
