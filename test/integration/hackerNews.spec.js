@@ -14,7 +14,7 @@ var siesta = require('../../core/index')
     , assert = require('chai').assert
     , testUtil = require('../util');
 
-describe('hacker news integration test', function () {
+describe.only('hacker news integration test', function () {
     // When @HiroAgustin tried to pass name of mapping to descriptor
     // an error was thrown :(
     // Not testing anything here in particular, just ensuring that it gets to the end
@@ -120,7 +120,6 @@ describe('hacker news integration test', function () {
                         JSON.stringify(data)]);
                 HackerNews.GET('item/8582985.json', function (err, item) {
                     if (err) done(err);
-                    console.log('values', item.__values);
                     assert.ok(item.id, 'should have id');
                     assert.ok(item.__values.id, 'should have id');
                     done(err);
@@ -159,8 +158,6 @@ describe('hacker news integration test', function () {
                 [200, {"Content-Type": "application/json"},
                     JSON.stringify(data)]);
             HackerNews.GET('item/8582985.json', function (err, item) {
-                console.log('err', err);
-                console.log('item', item);
                 done();
             });
             server.respond();

@@ -4319,6 +4319,11 @@ code {
 .page-header sub-heading {
   padding: 0px, 0px, 20px;
 }
+code {
+  background-color: #cbd3e1 !important;
+  font-weight: bolder !important;
+  color: black;
+}
 pre {
   border: none;
   background-color: #82becd;
@@ -4330,8 +4335,10 @@ pre {
   padding-right: 30px;
 }
 pre code {
-  background: transparent;
+  background: transparent !important;
+  font-weight: normal !important;
   border: none;
+  color: inherit !important;
 }
 table {
   width: 100%;

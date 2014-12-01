@@ -21,8 +21,42 @@ var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
 
 var Logger = log.loggerWithName('HTTP');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
+/**
+ * Log a HTTP response
+ * @param opts
+ * @param xhr
+ * @param [data] - Raw data received in HTTP response.
+ */
+function logHttpResponse(opts, xhr, data) {
+    if (Logger.debug.isEnabled) {
+        var logger = Logger.debug;
+        var logMessage = opts.type + ' ' + xhr.status + ' ' + opts.url;
+        if (Logger.trace.isEnabled && data) {
+            logger = Logger.trace;
+            logMessage += ': ' + JSON.stringify(data, null, 4);
+        }
+        logger(logMessage);
+    }
+}
+
+/**
+ * Log a HTTP request
+ * @param opts
+ */
+function logHttpRequest(opts) {
+    if (Logger.debug.isEnabled) {
+        var logger = Logger.debug;
+        // TODO: Append query parameters to the URL.
+        var logMessage = opts.type + ' ' + opts.url;
+        if (Logger.trace.isEnabled) {
+            // TODO: If any data is being sent, log that.
+            logger = Logger.trace;
+        }
+        logger(logMessage);
+    }
+}
 /**
  * Send a HTTP request to the given method and path parsing the response.
  * @param {String} method
@@ -49,9 +83,8 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         opts.url = baseURL + path;
     }
     if (opts.parseResponse === undefined) opts.parseResponse = true;
-    opts.success = function(data, status, xhr) {
-        if (Logger.trace.isEnabled)
-            Logger.trace(opts.type + ' ' + xhr.status + ' ' + opts.url + ': ' + JSON.stringify(data, null, 4));
+    opts.success = function (data, status, xhr) {
+        logHttpResponse(opts, xhr, data);
         var resp = {
             data: data,
             status: status,
@@ -61,7 +94,6 @@ function _httpResponse(method, path, optsOrCallback, callback) {
             var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
             var matchedDescriptor;
             var extractedData;
-
             for (var i = 0; i < descriptors.length; i++) {
                 var descriptor = descriptors[i];
                 extractedData = descriptor.match(opts, data);
@@ -70,14 +102,13 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                     break;
                 }
             }
-
-
             if (matchedDescriptor) {
-                if (Logger.trace.isEnabled)
+                if (Logger.trace.isEnabled) {
                     Logger.trace('Mapping extracted data: ' + JSON.stringify(extractedData, null, 4));
+                }
                 if (typeof(extractedData) == 'object') {
                     var mapping = matchedDescriptor.mapping;
-                    mapping.map(extractedData, function(err, obj) {
+                    mapping.map(extractedData, function (err, obj) {
                         if (callback) {
 
                             callback(err, obj, resp);
@@ -103,7 +134,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         }
 
     };
-    opts.error = function(xhr, status, error) {
+    opts.error = function (xhr, status, error) {
         var resp = {
             xhr: xhr,
             status: status,
@@ -111,8 +142,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         };
         if (callback) callback(resp, null, resp);
     };
-    if (Logger.trace.isEnabled)
-        Logger.trace('Ajax request:', opts);
+    logHttpRequest(opts);
     siesta.ext.http.ajax(opts);
 }
 
@@ -180,7 +210,7 @@ function _httpRequest(method, path, object) {
                 _.partial(_httpResponse, method, path, opts, callback).apply(self, args);
             }
         });
-       
+
     } else if (callback) {
         if (Logger.trace.isEnabled)
             Logger.trace('Did not match descriptor');
@@ -211,7 +241,7 @@ function DELETE(collection, path, object) {
     var deletionMode = opts.deletionMode || 'restore';
     // By default we do not map the response from a DELETE request.
     if (opts.parseResponse === undefined) opts.parseResponse = false;
-    _httpResponse.call(collection, 'DELETE', path, opts, function(err, x, y, z) {
+    _httpResponse.call(collection, 'DELETE', path, opts, function (err, x, y, z) {
         if (err) {
             if (deletionMode == 'restore') {
                 object.restore();
@@ -342,10 +372,6 @@ function PATCH(collection) {
 }
 
 
-
-
-
-
 var ajax;
 
 
@@ -356,7 +382,7 @@ var http = {
     _resolveMethod: descriptor.resolveMethod,
     Serialiser: require('./serialiser'),
     DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry,
-    setAjax: function(_ajax) {
+    setAjax: function (_ajax) {
         ajax = _ajax;
     },
     _httpResponse: _httpResponse,
@@ -374,14 +400,14 @@ var http = {
 };
 
 Object.defineProperty(http, 'ajax', {
-    get: function() {
+    get: function () {
         var a = ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
         if (!a) {
             throw new InternalSiestaError('ajax has not been defined and could not find $.ajax or jQuery.ajax');
         }
         return a;
     },
-    set: function(v) {
+    set: function (v) {
         ajax = v;
     }
 });

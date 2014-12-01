@@ -67,7 +67,6 @@ describe('http!', function () {
 
     describe('path regex', function () {
         describe('check', function () {
-
             beforeEach(function (done) {
                 configureCollection(done);
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
