@@ -15,7 +15,7 @@ var _i = siesta._internal,
     _ = util._;
 
 var Logger = log.loggerWithName('Descriptor');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 var httpMethods = ['POST', 'PATCH', 'PUT', 'HEAD', 'GET', 'DELETE', 'OPTIONS', 'TRACE', 'CONNECT'];
 
