@@ -99,12 +99,20 @@
     fadeReposOutImmediately();
     addOverlayLayer(function(layer) {
         getSiesta(function(err, siestaRepo) {
-            repositories = [siestaRepo];
-            createRepoElements();
-            fadeReposIn(function() {
-                startIntro();
-                $(layer).find('#spinner').remove();
-            });
+            if (!err) {
+                console.log('howdy');
+                repositories = [siestaRepo];
+                console.log('Creating repo elements', repositories);
+                createRepoElements();
+                fadeReposIn(function() {
+                    startIntro();
+                    $(layer).find('#spinner').remove();
+                });
+            }
+            else {
+                console.error('Error getting repo:', err);
+            }
+
         });
     });
 </script>
