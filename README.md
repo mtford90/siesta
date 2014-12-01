@@ -1,9 +1,7 @@
-Siesta
+Siesta [![Build Status](https://travis-ci.org/mtford90/siesta.svg?branch=master)](https://travis-ci.org/mtford90/siesta)
 ======
 
-**BIG FAT WARNING:** This library is in **alpha** and is under development. Whilst efforts are being made to keep master/releases stable there are no guarantees.
-
-[![Build Status](https://travis-ci.org/mtford90/siesta.svg?branch=master)](https://travis-ci.org/mtford90/siesta)
+**BIG FAT WARNING:** This library is in **alpha** and is under development. Whilst efforts are being made to keep master/releases stable there are no guarantees on this.
 
 Siesta is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
 
