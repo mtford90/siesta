@@ -5,7 +5,7 @@ title: Fount
 
 <div>
   <p class="lead">
-    <strong>Siesta</strong> is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
+    <strong>Siesta</strong> is an object graph framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
 </p>
 <hr/>
 
@@ -13,13 +13,17 @@ The main idea behind Siesta is that models should have a **single source of trut
 
 A traditional ORM maps rows from a relational database to objects. Siesta maps objects to and from data transport formats (e.g. JSON) and replaces the SQL queries with HTTP requests.
 
-Siesta provides a declarative API through which we describe the web services that we'd like to interact with. When data is received from these web services, each object is mapped onto its corresponding local representation *including* any nested related objects. 
+As well as providing the ability to map arbitrary data onto the object graph, siesta features a declarative API through which we describe the web services that we'd like to interact with. When data is received from these web services, each object is mapped onto its corresponding local representation *including* any nested related objects.
 
 Siesta aims to cover **M** in **M**VC and takes inspiration from:
 
 * [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
 * [RestKit](http://restkit.org/)
 * [Django](https://www.djangoproject.com/)
+
+Similar projects to Siesta:
+
+* [Ember Data](https://github.com/emberjs/data) - Data persistence for EmberJS. Siesta aims to be less abstraction heavy and framework agnostic.
 
 ###The Problem
 
@@ -89,7 +93,7 @@ var User = Forum.mapping({
     attributes: ['username', 'email']
 });
                                    
-var Thread = collection.mapping({
+var Thread = Forum.mapping({
     name: 'Thread',
     attributes: ['title']
     relationships: {
@@ -105,7 +109,7 @@ We can then map the raw data into Siesta, which will use the mappings we defined
 
 ```javascript
 User.map(userData, function (user) {
-    Car.map(threadData, function (thread) {
+    Thread.map(threadData, function (thread) {
         user.threads[0] === thread; // true
         user === thread.op; // true
     });
