@@ -41,6 +41,9 @@ The below lists ongoing and suggested features. Ideas and contributions are most
     * Indexeddb
     * WebSQL (Probably via Indexeddb shim, as w3 has discontinued websql however required for backwards compat with safari/safari iOS etc)
     * Possibly PouchDB (The sync-to-couchdb features are pretty awesome)
+   
+## Later
+* NodeJS support.
 
 # Contributing
 
