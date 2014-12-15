@@ -62,6 +62,7 @@
     "load-grunt-tasks": "~0.5.0",
     "memdown": "~0.10.2",
     "mocha": "~1.20.1",
+    "mocha-phantomjs": "^3.5.2",
     "q": "^1.1.1",
     "sinon": "~1.10.3",
     "time-grunt": "~0.3.2",

@@ -32,6 +32,10 @@ module.exports = function (grunt) {
             }
         },
 
+        mocha_phantomjs: {
+            all: ['test/index.html']
+        },
+
         browserify: {
             options: {
                 browserifyOptions: {
@@ -110,10 +114,9 @@ module.exports = function (grunt) {
                     livereload: true
                 },
                 files: [
-                    '<%= app_files.js %>',
-                    '!<%= src_dir %>/http/**/*.js'
+                    '<%= app_files.js %>'
                 ],
-                tasks: ['browserify:test']
+                tasks: ['test']
             },
 
             testsrc: {
@@ -123,7 +126,7 @@ module.exports = function (grunt) {
                 files: [
                     '<%= app_files.jsunit %>'
                 ],
-                tasks: ['browserify:test']
+                tasks: ['test']
             },
 
             http: {
@@ -301,7 +304,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('watch', [
-        'build',
+        'test',
         'build-jekyll',
         'connect:site',
         'delta'
@@ -323,7 +326,8 @@ module.exports = function (grunt) {
     ]);
 
     grunt.registerTask('test', [
-        'build'
+        'build',
+        'mocha_phantomjs'
     ]);
 
     grunt.registerTask('compile', [
