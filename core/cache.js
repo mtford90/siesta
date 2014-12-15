@@ -144,7 +144,6 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                             obj: obj,
                             cachedObject: cachedObject
                         });
-                        util.printStackTrace();
                         throw new InternalSiestaError(message);
                     } else {
                         if (RemoteCacheLogger.debug.isEnabled)

@@ -821,9 +821,6 @@ describe('http!', function () {
             });
         });
 
-        it('xyz', function () {
-            dump('hello');
-        });
     });
 
     describe('no descriptor matches', function () {

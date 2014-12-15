@@ -489,7 +489,6 @@ _.extend(Mapping.prototype, {
             });
             return newModel;
         } else {
-            util.printStackTrace();
             throw new InternalSiestaError('Mapping must be fully installed before creating any models');
         }
 

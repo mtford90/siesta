@@ -41,6 +41,7 @@ module.exports = function (grunt) {
             },
             build: {
                 files: {
+
                     '<%= build_dir %>/siesta.core.js': ['core/index.js'],
                     '<%= build_dir %>/siesta.http.js': ['http/index.js']
                 }
@@ -105,6 +106,9 @@ module.exports = function (grunt) {
             },
 
             jssrc: {
+                options: {
+                    livereload: true
+                },
                 files: [
                     '<%= app_files.js %>',
                     '!<%= src_dir %>/http/**/*.js'
@@ -112,7 +116,20 @@ module.exports = function (grunt) {
                 tasks: ['browserify:test']
             },
 
+            testsrc: {
+                options: {
+                    livereload: true
+                },
+                files: [
+                    '<%= app_files.jsunit %>'
+                ],
+                tasks: ['browserify:test']
+            },
+
             http: {
+                options: {
+                    livereload: true
+                },
                 files: [
                     '<%= src_dir %>/http/**/*.js'
                 ],

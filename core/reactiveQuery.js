@@ -56,11 +56,18 @@ _.extend(ReactiveQuery.prototype, {
         return deferred ? deferred.promise : undefined;
     },
     _handleNotif: function (n) {
+        if (Logger.trace) Logger.trace('_handleNotif', n);
         if (n.type == changes.ChangeType.New) {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
+                if (Logger.trace) Logger.trace('New object matches', newObj);
                 this.results.push(newObj);
             }
+            else {
+                if (Logger.trace) Logger.trace('New object does not matche', newObj);
+            }
+        }
+        else if (n.type == changes.ChangeType.Set) {
         }
     },
     _constructNotificationName: function () {

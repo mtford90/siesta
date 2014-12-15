@@ -7,6 +7,7 @@ describe('reactive query', function () {
     var collection, mapping, rq;
 
     beforeEach(function (done) {
+        s.reset();
         collection = new Collection('myCollection');
         mapping = collection.mapping('Person', {
             id: 'id',
@@ -66,7 +67,7 @@ describe('reactive query', function () {
         }, done);
     });
 
-    describe.only('updates', function () {
+    describe('updates', function () {
         it('new matching query', function (done) {
             mapInitialData(function () {
                 rq = mapping.reactiveQuery({age__lt: 30});
@@ -91,30 +92,30 @@ describe('reactive query', function () {
                 });
             }, done);
         });
-        it('new, not matching query', function (done) {
-            mapInitialData(function () {
-                rq = mapping.reactiveQuery({age__lt: 30});
-                rq.init(function (err) {
-                    if (err) done(err);
-                    else {
-                        mapData({name: 'Peter', age: 33, id: 4}, function (peter) {
-                            try {
-                                console.log('results', rq.results);
-                                assert.equal(rq.results.length, 2, 'Should still be 2 results');
-                                assert.notInclude(rq.results, peter, 'The results should not include peter');
-                                _.each(rq.results, function (r) {
-                                    assert.ok(r.age < 30, 'All results should be younger than 30')
-                                });
-                                done();
-                            }
-                            catch (e) {
-                                done(e);
-                            }
-                        }, done);
-                    }
-                });
-            }, done);
-        });
+        //it('new, not matching query', function (done) {
+        //    mapInitialData(function () {
+        //        rq = mapping.reactiveQuery({age__lt: 30});
+        //        rq.init(function (err) {
+        //            if (err) done(err);
+        //            else {
+        //                mapData({name: 'Peter', age: 33, id: 4}, function (peter) {
+        //                    try {
+        //                        console.log('results', rq.results);
+        //                        assert.equal(rq.results.length, 2, 'Should still be 2 results');
+        //                        assert.notInclude(rq.results, peter, 'The results should not include peter');
+        //                        _.each(rq.results, function (r) {
+        //                            assert.ok(r.age < 30, 'All results should be younger than 30')
+        //                        });
+        //                        done();
+        //                    }
+        //                    catch (e) {
+        //                        done(e);
+        //                    }
+        //                }, done);
+        //            }
+        //        });
+        //    }, done);
+        //});
 
         //it('update', function () {
         //

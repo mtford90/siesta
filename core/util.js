@@ -3,18 +3,11 @@
  * @module util
  */
 
-function printStackTrace() {
-    var e = new Error('printStackTrace');
-    var stack = e.stack;
-    console.log(stack);
-}
 
 function capitaliseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-
-exports.printStackTrace = printStackTrace;
 exports.capitaliseFirstLetter = capitaliseFirstLetter;
 
 var root = {};

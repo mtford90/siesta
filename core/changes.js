@@ -32,6 +32,13 @@ var ChangeType = {
     Remove: 'Remove'
 };
 
+var ChangeOptFields = [
+    'collection', 'mapping', '_id', 'field', 'type', 'index',
+    'added', 'addedId', 'removed', 'removedId', 'new', 'newId', 'old',
+    'oldId', 'obj'
+];
+
+
 /**
  * Represents an individual change.
  * @param opts
@@ -42,21 +49,9 @@ function Change(opts) {
     if (!this._opts) {
         this._opts = {};
     }
-    defineSubProperty.call(this, 'collection', this._opts);
-    defineSubProperty.call(this, 'mapping', this._opts);
-    defineSubProperty.call(this, '_id', this._opts);
-    defineSubProperty.call(this, 'field', this._opts);
-    defineSubProperty.call(this, 'type', this._opts);
-    defineSubProperty.call(this, 'index', this._opts);
-    defineSubProperty.call(this, 'added', this._opts);
-    defineSubProperty.call(this, 'addedId', this._opts);
-    defineSubProperty.call(this, 'removed', this._opts);
-    defineSubProperty.call(this, 'removedId', this._opts);
-    defineSubProperty.call(this, 'new', this._opts);
-    defineSubProperty.call(this, 'newId', this._opts);
-    defineSubProperty.call(this, 'old', this._opts);
-    defineSubProperty.call(this, 'oldId', this._opts);
-    defineSubProperty.call(this, 'obj', this._opts);
+    _.each(ChangeOptFields, function (f) {
+        this[f] = this._opts[f];
+    }.bind(this));
 }
 
 Change.prototype._dump = function (json) {

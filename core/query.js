@@ -7,7 +7,7 @@ var log = require('./operation/log')
     , util = require('./util');
 
 var Logger = log.loggerWithName('Query');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  * @class  [Query description]
@@ -83,6 +83,7 @@ _.extend(Query.prototype, {
                     return false;
                 }
             } else if (op == 'lt') {
+                if (Logger.trace && !invalid) Logger.trace(val.toString() + ' >= ' + queryObj.toString())
                 if (invalid || val >= queryObj) {
                     return false;
                 }
