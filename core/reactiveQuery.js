@@ -27,8 +27,8 @@ function ReactiveQuery(query) {
     this._query = query;
     this.results = null;
     var initialisedGet = function () {return !!self.results};
-    Object.defineProperty(this, 'initialised', { get: initialisedGet });
-    Object.defineProperty(this, 'initialized', { get: initialisedGet }); // For my friends across the pond
+    Object.defineProperty(this, 'initialised', {get: initialisedGet});
+    Object.defineProperty(this, 'initialized', {get: initialisedGet}); // For my friends across the pond
     Object.defineProperty(this, 'mapping', {get: function () { return self._query.mapping }});
     Object.defineProperty(this, 'collection', {get: function () { return self.mapping.collection }});
 }
@@ -57,6 +57,7 @@ _.extend(ReactiveQuery.prototype, {
     },
     _handleNotif: function (n) {
         if (Logger.trace) Logger.trace('_handleNotif', n);
+        if (!this.results) throw Error('ReactiveQuery must be initialised before receiving notifications.');
         if (n.type == changes.ChangeType.New) {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
@@ -68,12 +69,30 @@ _.extend(ReactiveQuery.prototype, {
             }
         }
         else if (n.type == changes.ChangeType.Set) {
+            newObj = n.obj;
+            var index = this.results.indexOf(newObj),
+                alreadyContains = index > -1,
+                matches = this._query.objectMatchesQuery(newObj);
+            if (matches && !alreadyContains) {
+                this.results.push(newObj);
+            }
+            else if (!matches && alreadyContains) {
+                this.results.splice(index, 1);
+            }
+        }
+        else if (n.type == changes.ChangeType.Remove) {
+            newObj = n.obj;
+            index = this.results.indexOf(newObj);
+            if (index > -1) {
+                this.results.splice(index, 1);
+            }
         }
     },
     _constructNotificationName: function () {
         return this.collection + ':' + this.mapping.type;
     },
     terminate: function () {
+        if (Logger.trace) Logger.trace('terminate');
         notificationCentre.removeListener(this._constructNotificationName(), this._handleNotif);
         this.results = null;
     }
