@@ -296,6 +296,12 @@ GitHub.descriptor({
 <a id="http"></a>
 ## HTTP
 
+One descriptors are defined, we can then send HTTP requests and receive HTTP responses through Siesta. Siesta will match against descriptors when determining how to serialise/deserialise objects.
+
+### Safe Methods
+
+Safe methods refer to methods that do not generally change state on the server-side e.g. GET. Object
+
 `Collection.prototype.<SAFE_HTTP_METHOD>(path, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
 ```js
@@ -306,7 +312,6 @@ GitHub.GET('/users/mtford90/repos').then(function (repos) {
 });
 ```
 
-
 ```js
 GitHub.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
 	siesta.each(repos, function (r) { 
@@ -314,6 +319,10 @@ GitHub.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
 	});
 });
 ```
+
+### Unsafe Methods
+
+Unsafe methods refer to methods that can change state on the server-side e.g. POST/PUT/DELETE. Objects are serialised as specified in the matched descriptor.
 
 `Collection.prototype.<UNSAFE_HTTP_METHOD>(path, object, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
@@ -325,7 +334,9 @@ GitHub.PATCH('/users/mtford90/repos', myRepo, {fields: ['name']}).then(function 
 });
 ```
 
-<!-- TODO: Set the ajax library -->
+### Custom Ajax
+
+Siesta currently supports jQuery style ajax functions. This can be configured as follows:
 
 ```js
 siesta.setAjax(zepto.ajax);

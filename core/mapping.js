@@ -20,6 +20,7 @@ var log = require('./operation/log')
     , OneToManyProxy = require('./oneToManyProxy')
     , OneToOneProxy = require('./oneToOneProxy')
     , ManyToManyProxy = require('./manyToManyProxy')
+    , ReactiveQuery = require('./reactiveQuery')
     , _ = util._
     , RelationshipType = relationship.RelationshipType
     , guid = util.guid
@@ -209,6 +210,9 @@ _.extend(Mapping.prototype, {
         var _query = new Query(this, query);
         _query.execute(callback);
         return deferred ? deferred.promise : null;
+    },
+    reactiveQuery: function (query, callback) {
+        return new ReactiveQuery(new Query(this, query));
     },
     get: function (idOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;

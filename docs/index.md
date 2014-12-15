@@ -1,6 +1,6 @@
 ---
 layout: index
-title: Fount
+title: Siesta
 ---
 
 <div>
@@ -19,7 +19,6 @@ Siesta aims to cover **M** in **M**VC and takes inspiration from:
 
 * [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
 * [RestKit](http://restkit.org/)
-* [Django](https://www.djangoproject.com/)
 
 Similar projects to Siesta:
 

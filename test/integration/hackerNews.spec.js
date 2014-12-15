@@ -27,7 +27,7 @@ describe('hacker news integration test', function () {
     });
 
     before(function () {
-        server = testUtil.fakeServer();
+        server = testUtil.fakeServer()
     });
 
     it('problem with mapping', function () {

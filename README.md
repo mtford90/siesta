@@ -18,7 +18,6 @@ Siesta is an object mapping framework for Javascript. It makes it easier to mode
 
 * [CoreData](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html)
 * [RestKit](http://restkit.org/)
-* [Django](https://www.djangoproject.com/)
 
 Similar projects:
 

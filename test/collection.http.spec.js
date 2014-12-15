@@ -19,14 +19,9 @@ describe('http!', function () {
     });
 
     before(function () {
-        server = testUtil.fakeServer();
+        server = testUtil.fakeServer()
     });
 
-    //
-    //after(function () {
-    //    // Restore original server implementation.
-    //    server.restore();
-    //});
 
     function constructCollection() {
         collection = new Collection('myCollection');

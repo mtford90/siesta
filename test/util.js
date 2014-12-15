@@ -27,8 +27,9 @@ var server;
 
 // Avoid making multiple fake servers. Seems to cause issues...
 function fakeServer() {
-    if (!server)
+    if (!server) {
         server = sinon.fakeServer.create();
+    }
     return server;
 }
 
