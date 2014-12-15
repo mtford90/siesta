@@ -3,20 +3,16 @@
     <meta charset="utf-8">
     <title>Mocha Tests</title>
     <link rel="stylesheet" href="../node_modules/mocha/mocha.css"/>
-    <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/underscore/underscore.js"></script>
-    <script src="../node_modules/async/lib/async.js"></script>
     <script src="../node_modules/chai/chai.js"></script>
-    <script src="../node_modules/sinon/pkg/sinon.js"></script>
-    <script src="../node_modules/pouchdb/dist/pouchdb.js"></script>
-    <script src="../node_modules/pouchdb/dist/pouchdb.memory.js"></script>
-    <script src="../build/siesta.js"></script>
-    <script>mocha.setup('bdd')</script>
-    <!-- specs --><% specs.forEach( function ( file ) { %>
-    <script type="text/javascript" src="<%= file %>"></script>
-    <% }); %>
 
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/underscore/underscore.js"></script>
+    <script src="../node_modules/q/q.js"></script>
+    <script src="../node_modules/async/lib/async.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+
+    <script>mocha.setup('bdd')</script>
 
     <script>
         onload = function () {
@@ -54,5 +50,7 @@
 </head>
 <body>
 <div id="mocha"></div>
+<script src="../build/test-bundle.js"></script>
+
 </body>
 </html>

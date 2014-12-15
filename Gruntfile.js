@@ -113,6 +113,16 @@ module.exports = function (grunt) {
             }
         },
 
+        mochaconfig: {
+            unit: {
+                dir: '<%= build_dir %>',
+                src: [
+                    '<%= vendor_files.js %>',
+                    '<%= test_files.js %>'
+                ]
+            }
+        },
+
         delta: {
             gruntfile: {
                 files: 'Gruntfile.js'
@@ -312,6 +322,18 @@ module.exports = function (grunt) {
         'karma:continuous'
     ]);
 
+    grunt.registerTask('build', [
+        'clean',
+        'browserify:test',
+        'karmaconfig',
+        'karma:continuous'
+    ]);
+
+    grunt.registerTask('build-no-test', [
+        'browserify:build',
+        'concat'
+    ]);
+
     grunt.registerTask('test', [
         'build'
     ]);
@@ -354,13 +376,12 @@ module.exports = function (grunt) {
             process: function (contents, path) {
                 return grunt.template.process(contents, {
                     data: {
-                        specs: jsFiles
+                        scripts: jsFiles
                     }
                 });
             }
         });
     });
-
 
     grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
         var jsFiles = filterForJS(this.filesSrc);
@@ -372,6 +393,20 @@ module.exports = function (grunt) {
             });
         };
         grunt.file.copy('karma/karma-unit.tpl.js', grunt.config('build_dir') + '/karma-unit.js', {
+            process: process
+        });
+    });
+
+    grunt.registerMultiTask('mochaconfig', 'Process mocha template', function () {
+        var jsFiles = filterForJS(this.filesSrc);
+        var process = function (contents, path) {
+            return grunt.template.process(contents, {
+                data: {
+                    scripts: jsFiles
+                }
+            });
+        };
+        grunt.file.copy('test/index.tpl.html', grunt.config('build_dir') + '/index.html', {
             process: process
         });
     });
