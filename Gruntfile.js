@@ -21,7 +21,7 @@ module.exports = function (grunt) {
                 updateConfigs: [],
                 commit: true,
                 commitMessage: 'Release v%VERSION%',
-                commitFiles: ['dist', 'core', 'test', 'package.json', 'bower.json', 'karma', 'http'],
+                commitFiles: ['dist', 'core', 'test', 'package.json', 'bower.json', 'http'],
                 createTag: true,
                 tagName: '%VERSION%',
                 tagMessage: 'Version %VERSION%',
@@ -88,30 +88,6 @@ module.exports = function (grunt) {
             }
         },
 
-        /**
-         * The Karma configurations.
-         */
-        karma: {
-            unit: {
-                configFile: '<%= build_dir %>/karma-unit.js',
-                port: 9019,
-                background: true
-            },
-            continuous: {
-                configFile: '<%= build_dir %>/karma-unit.js',
-                singleRun: true
-            }
-        },
-
-        karmaconfig: {
-            unit: {
-                dir: '<%= build_dir %>',
-                src: [
-                    '<%= vendor_files.js %>',
-                    '<%= test_files.js %>'
-                ]
-            }
-        },
 
         mochaconfig: {
             unit: {
@@ -133,14 +109,14 @@ module.exports = function (grunt) {
                     '<%= app_files.js %>',
                     '!<%= src_dir %>/http/**/*.js'
                 ],
-                tasks: ['browserify:test', 'karma:unit:run']
+                tasks: ['browserify:test']
             },
 
             http: {
                 files: [
-                    '<%= src_dir %>/http/**/*.js',
+                    '<%= src_dir %>/http/**/*.js'
                 ],
-                tasks: ['browserify:build', 'karma:unit:run']
+                tasks: ['browserify:build']
             },
 
             index: {
@@ -154,7 +130,7 @@ module.exports = function (grunt) {
                 files: [
                     '<%= test_dir %>/**/*.js'
                 ],
-                tasks: ['browserify:test', 'karma:unit:run']
+                tasks: ['browserify:test']
             },
 
             less: {
@@ -285,7 +261,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dist', function () {
         sh.run('cp -r build/* dist/');
-        sh.run('rm -f dist/*.gz dist/test-bundle.js dist/karma-unit.js');
+        sh.run('rm -f dist/*.gz dist/test-bundle.js');
     });
 
     grunt.registerTask('npmPublish', function () {
@@ -311,22 +287,17 @@ module.exports = function (grunt) {
         'build',
         'build-jekyll',
         'connect:site',
-        'karma:unit',
         'delta'
     ]);
 
     grunt.registerTask('build', [
         'clean',
-        'browserify:test',
-        'karmaconfig',
-        'karma:continuous'
+        'browserify:test'
     ]);
 
     grunt.registerTask('build', [
         'clean',
-        'browserify:test',
-        'karmaconfig',
-        'karma:continuous'
+        'browserify:test'
     ]);
 
     grunt.registerTask('build-no-test', [
@@ -380,20 +351,6 @@ module.exports = function (grunt) {
                     }
                 });
             }
-        });
-    });
-
-    grunt.registerMultiTask('karmaconfig', 'Process karma config templates', function () {
-        var jsFiles = filterForJS(this.filesSrc);
-        var process = function (contents, path) {
-            return grunt.template.process(contents, {
-                data: {
-                    scripts: jsFiles
-                }
-            });
-        };
-        grunt.file.copy('karma/karma-unit.tpl.js', grunt.config('build_dir') + '/karma-unit.js', {
-            process: process
         });
     });
 
