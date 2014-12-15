@@ -9,11 +9,12 @@ var log = require('./operation/log')
     , Query = require('./query').Query
     , _ = require('underscore')
     , EventEmitter = require('events').EventEmitter
-    , q = require('q')
+    , notificationCentre = require('./notificationCentre').notificationCentre
+    , changes = require('./changes')
     , util = require('./util');
 
 var Logger = log.loggerWithName('ReactiveQuery');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  *
@@ -28,22 +29,46 @@ function ReactiveQuery(query) {
     var initialisedGet = function () {return !!self.results};
     Object.defineProperty(this, 'initialised', { get: initialisedGet });
     Object.defineProperty(this, 'initialized', { get: initialisedGet }); // For my friends across the pond
+    Object.defineProperty(this, 'mapping', {get: function () { return self._query.mapping }});
+    Object.defineProperty(this, 'collection', {get: function () { return self.mapping.collection }});
 }
 
 ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
 
 _.extend(ReactiveQuery.prototype, {
     init: function (cb) {
-        var deferred = q.defer();
-        this._query.execute().then(function (results) {
-            this.results = results;
-            if (cb) cb();
-            deferred.resolve();
-        }.bind(this), function (err) {
-            if (cb) cb(err);
-            deferred.reject(err);
-        });
-        return deferred.promise;
+        if (Logger.trace) Logger.trace('init');
+        var deferred = window.q ? window.q.defer() : null;
+        this._query.execute(function (err, results) {
+            if (!err) {
+                this.results = results;
+                var name = this._constructNotificationName();
+                notificationCentre.on(name, this._handleNotif.bind(this));
+                if (Logger.trace) Logger.trace('Listening to ' + name);
+                if (cb) cb();
+                if (deferred) deferred.resolve();
+            }
+            else {
+                if (cb) cb(err);
+                if (deferred) deferred.reject(err);
+            }
+        }.bind(this));
+        return deferred ? deferred.promise : undefined;
+    },
+    _handleNotif: function (n) {
+        if (n.type == changes.ChangeType.New) {
+            var newObj = n.new;
+            if (this._query.objectMatchesQuery(newObj)) {
+                this.results.push(newObj);
+            }
+        }
+    },
+    _constructNotificationName: function () {
+        return this.collection + ':' + this.mapping.type;
+    },
+    terminate: function () {
+        notificationCentre.removeListener(this._constructNotificationName(), this._handleNotif);
+        this.results = null;
     }
 });
 

@@ -28,7 +28,7 @@ function SiestaModel(mapping) {
     defineSubProperty.call(this, '_fields', this.mapping);
     Object.defineProperty(this, '_relationshipFields', {
         get: function () {
-            var proxies = _.map(Object.keys(self.__proxies), function (x) {return self.__proxies[x]});
+            var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
             return _.map(proxies, function (p) {
                 if (p.isForward) {
                     return p.forwardName;

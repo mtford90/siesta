@@ -522,8 +522,12 @@ exports.constructCallbackAndPromiseHandler = function (callback, promise) {
     return function (err) {
         if (callback) callback.apply(callback, arguments);
         if (promise) {
-            if (err) promise.reject(err);
-            else promise.resolve.apply(promise, Array.prototype.slice.call(arguments, 1));
+            if (err) {
+                promise.reject(err);
+            }
+            else {
+                promise.resolve.apply(promise, Array.prototype.slice.call(arguments, 1));
+            }
         }
     };
 };

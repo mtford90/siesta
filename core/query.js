@@ -77,24 +77,25 @@ _.extend(Query.prototype, {
             }
             var queryObj = this.query[origField];
             var val = obj[field];
+            var invalid = val === null || val === undefined;
             if (op == 'e') {
                 if (val != queryObj) {
                     return false;
                 }
             } else if (op == 'lt') {
-                if (val >= queryObj) {
+                if (invalid || val >= queryObj) {
                     return false;
                 }
             } else if (op == 'lte') {
-                if (val > queryObj) {
+                if (invalid || val > queryObj) {
                     return false;
                 }
             } else if (op == 'gt') {
-                if (val <= queryObj) {
+                if (invalid || val <= queryObj) {
                     return false;
                 }
             } else if (op == 'gte') {
-                if (val < queryObj) {
+                if (invalid || val < queryObj) {
                     return false;
                 }
             } else {
