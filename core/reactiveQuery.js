@@ -57,6 +57,10 @@ _.extend(ReactiveQuery.prototype, {
         }.bind(this));
         return deferred ? deferred.promise : undefined;
     },
+    orderBy: function (field) {
+        this._query = this._query.orderBy(field);
+        return this;
+    },
     _handleNotif: function (n) {
         if (Logger.trace) Logger.trace('_handleNotif', n);
         if (!this.results) throw Error('ReactiveQuery must be initialised before receiving notifications.');

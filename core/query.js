@@ -30,6 +30,25 @@ _.extend(Query.prototype, {
     _dump: function (asJson) {
         return asJson ? '{}' : {};
     },
+    _sortResults: function(res) {
+        if (res && this.ordering) {
+            var splt = this.ordering.split('-'),
+                ascending = true,
+                field = null;
+            if (splt.length > 1) {
+                field = splt[1];
+                ascending = false;
+            }
+            else {
+                field = splt[0];
+            }
+            res = _.sortBy(res, function (x) {
+                return x[field];
+            });
+            if (!ascending) res.reverse();
+        }
+        return res;
+    },
     _executeInMemory: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
@@ -57,22 +76,7 @@ _.extend(Query.prototype, {
                     if (matches) res.push(obj);
                 }
             }
-            if (res && this.ordering) {
-                var splt = this.ordering.split('-'),
-                    ascending = true,
-                    field = null;
-                if (splt.length > 1) {
-                    field = splt[1];
-                    ascending = false;
-                }
-                else {
-                    field = splt[0];
-                }
-                res = _.sortBy(res, function (x) {
-                    return x[field];
-                });
-                if (!ascending) res.reverse();
-            }
+            res = this._sortResults(res);
             callback(err, err ? null : res);
         } else if (callback) {
             callback(null, []);
