@@ -357,7 +357,9 @@ function remove(obj) {
         delete localCacheById[_id];
         if (obj.mapping.id) {
             var remoteId = obj[obj.mapping.id];
-            delete remoteCache[collectionName][mappingName][remoteId];
+            if (remoteId) {
+                delete remoteCache[collectionName][mappingName][remoteId];
+            }
         }
     } else {
         throw new InternalSiestaError('Object was not in cache.');

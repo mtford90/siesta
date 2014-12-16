@@ -18,7 +18,7 @@ describe('object!!', function() {
             id: 'id',
             attributes: ['colour', 'name'],
             collection: 'myCollection'
-        })
+        });
         collection.install(done);
     });
 
@@ -46,30 +46,61 @@ describe('object!!', function() {
 
         var car;
 
-        function remove() {
-            car = new SiestaModel(mapping);
-            car.colour = 'red';
-            car.name = 'Aston Martin';
-            car.id = '2';
-            car._id = 'xyz';
-            cache.insert(car);
-            assert.notOk(car.removed);
-            assert.ok(cache.contains(car));
-            car.remove();
-            assert.notOk(cache.contains(car));
-            assert.ok(car.removed);
-        }
 
-        it('deletion', function() {
-            remove();
+        describe('remote id', function () {
+            function remove() {
+                car = new SiestaModel(mapping);
+                car.colour = 'red';
+                car.name = 'Aston Martin';
+                car.id = '2';
+                car._id = 'xyz';
+                cache.insert(car);
+                assert.notOk(car.removed);
+                assert.ok(cache.contains(car));
+                car.remove();
+                assert.notOk(cache.contains(car));
+                assert.ok(car.removed);
+            }
+
+            it('deletion', function() {
+                remove();
+            });
+
+            it('restore', function() {
+                remove();
+                car.restore();
+                assert.notOk(car.removed);
+                assert.ok(cache.contains(car));
+            });
+
         });
 
-        it('restore', function() {
-            remove();
-            car.restore();
-            assert.notOk(car.removed);
-            assert.ok(cache.contains(car));
-        });
+        describe('no remote id', function () {
+            function remove() {
+                car = new SiestaModel(mapping);
+                car.colour = 'red';
+                car.name = 'Aston Martin';
+                car._id = 'xyz';
+                cache.insert(car);
+                assert.notOk(car.removed);
+                assert.ok(cache.contains(car));
+                car.remove();
+                assert.notOk(cache.contains(car));
+                assert.ok(car.removed);
+            }
+
+            it('deletion', function() {
+                remove();
+            });
+
+            it('restore', function() {
+                remove();
+                car.restore();
+                assert.notOk(car.removed);
+                assert.ok(cache.contains(car));
+            });
+        })
+
 
     });
 

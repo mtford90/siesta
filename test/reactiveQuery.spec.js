@@ -21,7 +21,7 @@ var initialData = [
     }
 ];
 
-describe.only('reactive query', function () {
+describe('reactive query', function () {
     var collection, mapping;
 
     beforeEach(function (done) {
@@ -280,7 +280,6 @@ describe.only('reactive query', function () {
                             if (err) done(err);
                             else {
                                 rq.on('change', function (results, change) {
-                                    console.log('yay');
                                     try {
                                         var removedId = change.removedId,
                                             removed = change.removed;
@@ -288,7 +287,7 @@ describe.only('reactive query', function () {
                                         assert.include(removedId, _id);
                                         assert.equal(change.type, s.ChangeType.Splice);
                                         assertResultsCorrect(rq, person);
-                                        rq.terminate();  
+                                        rq.terminate();
                                         s.notify(done);
                                     }
                                     catch (e) {
