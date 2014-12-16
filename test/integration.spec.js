@@ -168,7 +168,7 @@ describe('intercollection relationships', function() {
             it('should return mike when querying for him', function(done) {
                 myOfflineCollection.User.query({
                     username: 'gaz'
-                }, function(err, users) {
+                }).execute(function(err, users) {
                     if (err) done(err);
                     assert.equal(users.length, 1);
                     assert.equal(users[0].username, 'gaz');
@@ -180,7 +180,7 @@ describe('intercollection relationships', function() {
         describe('online', function() {
 
             it('should return 3 users when run a local all query against users', function(done) {
-                myOnlineCollection.User.all(function(err, users) {
+                myOnlineCollection.User.all().execute(function(err, users) {
                     if (err) done(err);
                     assert.equal(users.length, 3);
                     done();
@@ -188,7 +188,7 @@ describe('intercollection relationships', function() {
             });
 
             it('should return 3 photos when run a local all query against photos', function(done) {
-                myOnlineCollection.Photo.all(function(err, photos) {
+                myOnlineCollection.Photo.all().execute(function(err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 3);
                     done();
@@ -199,7 +199,7 @@ describe('intercollection relationships', function() {
                 this.timeout(10000);
                 myOnlineCollection.Photo.query({
                     height: 500
-                }, function(err, photos) {
+                }).execute(function(err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 2);
                     _.each(photos, function(p) {
@@ -214,7 +214,7 @@ describe('intercollection relationships', function() {
                 myOnlineCollection.Photo.query({
                     height: 500,
                     width: 750
-                }, function(err, photos) {
+                }).execute(function(err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 1);
                     assert.equal(photos[0].height, 500);

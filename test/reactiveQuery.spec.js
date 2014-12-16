@@ -34,10 +34,6 @@ describe('reactive query', function () {
         collection.install(done);
     });
 
-    afterEach(function () {
-    });
-
-
     it('initial results', function (done) {
         mapping.map(initialData).then(function () {
             var rq = mapping.reactiveQuery({age__lt: 30});

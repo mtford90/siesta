@@ -146,12 +146,6 @@ module.exports = function (grunt) {
                 tasks: ['index']
             },
 
-            jsunit: {
-                files: [
-                    '<%= test_dir %>/**/*.js'
-                ],
-                tasks: ['browserify:test']
-            },
 
             less: {
                 files: ['./docs/static/less/**/*.less'],

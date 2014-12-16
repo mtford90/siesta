@@ -204,12 +204,8 @@ _.extend(Mapping.prototype, {
             throw new InternalSiestaError('Reverse relationships for "' + this.type + '" have already been installed.');
         }
     },
-    query: function (query, callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        var _query = new Query(this, query);
-        _query.execute(callback);
-        return deferred ? deferred.promise : null;
+    query: function (query) {
+        return new Query(this, query);
     },
     reactiveQuery: function (query, callback) {
         return new ReactiveQuery(new Query(this, query));
@@ -226,7 +222,7 @@ _.extend(Mapping.prototype, {
             if (typeof idOrCallback == 'function') {
                 callback = idOrCallback;
             }
-            this.all(function (err, objs) {
+            this.all().execute(function (err, objs) {
                 if (err) finish(err);
                 if (objs.length > 1) {
                     throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
@@ -263,12 +259,8 @@ _.extend(Mapping.prototype, {
         }
         return deferred ? deferred.promise : null;
     },
-    all: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        var query = new Query(this, {});
-        query.execute(callback);
-        return deferred ? deferred.promise : null;
+    all: function () {
+        return new Query(this, {});
     },
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);

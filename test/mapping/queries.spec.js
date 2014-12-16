@@ -35,7 +35,7 @@ describe('mapping queries', function() {
         });
 
         it('all', function(done) {
-            mapping.all(function(err, cars) {
+            mapping.all().execute(function(err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 2);
                 _.each(cars, function(car) {
@@ -49,7 +49,7 @@ describe('mapping queries', function() {
             this.timeout(10000);
             mapping.query({
                 color: 'red'
-            }, function(err, cars) {
+            }).execute(function(err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 1);
                 _.each(cars, function(car) {

@@ -17,6 +17,7 @@ Logger.setLevel(log.Level.trace);
 function Query(mapping, opts) {
     this.mapping = mapping;
     this.query = opts;
+    this.ordering = null;
 }
 
 _.extend(Query.prototype, {
@@ -56,11 +57,31 @@ _.extend(Query.prototype, {
                     if (matches) res.push(obj);
                 }
             }
+            if (res && this.ordering) {
+                var splt = this.ordering.split('-'),
+                    ascending = true,
+                    field = null;
+                if (splt.length > 1) {
+                    field = splt[1];
+                    ascending = false;
+                }
+                else {
+                    field = splt[0];
+                }
+                res = _.sortBy(res, function (x) {
+                    return x[field];
+                });
+                if (!ascending) res.reverse();
+            }
             callback(err, err ? null : res);
         } else if (callback) {
             callback(null, []);
         }
         return deferred ? deferred.promise : null;
+    },
+    orderBy: function (order) {
+        this.ordering = order;
+        return this;
     },
     objectMatchesQuery: function (obj) {
         var fields = Object.keys(this.query);

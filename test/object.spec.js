@@ -43,9 +43,7 @@ describe('object!!', function() {
     });
 
     describe('removal', function() {
-
         var car;
-
 
         describe('remote id', function () {
             function remove() {
