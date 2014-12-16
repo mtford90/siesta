@@ -11,6 +11,7 @@ var log = require('./operation/log')
     , EventEmitter = require('events').EventEmitter
     , notificationCentre = require('./notificationCentre').notificationCentre
     , changes = require('./changes')
+    , InternalSiestaError = require('./error').InternalSiestaError
     , util = require('./util');
 
 var Logger = log.loggerWithName('ReactiveQuery');
@@ -119,6 +120,10 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
         }
+        else {
+            throw new InternalSiestaError('Unknown change type "' + n.type.toString() + '"')
+        }
+        this.results = this._query._sortResults(this.results);
     },
     _constructNotificationName: function () {
         return this.collection + ':' + this.mapping.type;

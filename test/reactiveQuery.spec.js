@@ -353,7 +353,30 @@ describe.only('reactive query', function () {
                 });
             }, done).catch(done).done();
         });
+
+        it('add new, matching', function (done) {
+            mapping.map(initialData).then(function () {
+                var rq = mapping.reactiveQuery({age__lt: 30}).orderBy('age');
+                assert.notOk(rq.initialised, 'Should not yet be initialised');
+                rq.init().then(function () {
+                    mapping.map({name: 'peter', age: 10}).then(function () {
+                        s.notify(function () {
+                            assert.equal(rq.results.length, 4, 'Should be 4 results');
+                            _.each(rq.results, function (r) {
+                                assert.ok(r.age < 30, 'All results should be younger than 30')
+                            });
+                            var lastAge = rq.results[0].age;
+                            for (var i = 1; i < rq.results.length; i++) {
+                                var age = rq.results[i].age;
+                                assert(age > lastAge, 'Should be ascending order ' + age.toString() + ' > ' + lastAge.toString());
+                            }
+                            rq.terminate();
+                            done();
+                        })
+                    });  
+                }).catch(done).done();
+            }, done).catch(done).done();
+        });
+
     });
-
-
 });

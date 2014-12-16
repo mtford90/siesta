@@ -299,14 +299,8 @@ module.exports = function (grunt) {
 
     grunt.registerTask('watch', [
         'test',
-        'build-jekyll',
         'connect:site',
         'delta'
-    ]);
-
-    grunt.registerTask('build', [
-        'clean',
-        'browserify:test'
     ]);
 
     grunt.registerTask('build', [
