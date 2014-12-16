@@ -43,7 +43,9 @@ _.extend(ReactiveQuery.prototype, {
             if (!err) {
                 this.results = results;
                 var name = this._constructNotificationName();
-                notificationCentre.on(name, this._handleNotif.bind(this));
+                var handler = this._handleNotif.bind(this);
+                this.handler = handler;
+                notificationCentre.on(name, handler);
                 if (Logger.trace) Logger.trace('Listening to ' + name);
                 if (cb) cb();
                 if (deferred) deferred.resolve();
@@ -62,7 +64,13 @@ _.extend(ReactiveQuery.prototype, {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
                 if (Logger.trace) Logger.trace('New object matches', newObj);
-                this.results.push(newObj);
+                var idx = this.results.push(newObj);
+                this.emit('change', {
+                    index: idx,
+                    added: [newObj],
+                    addedId: [newObj._id],
+                    type: changes.ChangeType.Splice
+                });
             }
             else {
                 if (Logger.trace) Logger.trace('New object does not matche', newObj);
@@ -74,17 +82,37 @@ _.extend(ReactiveQuery.prototype, {
                 alreadyContains = index > -1,
                 matches = this._query.objectMatchesQuery(newObj);
             if (matches && !alreadyContains) {
-                this.results.push(newObj);
+                idx = this.results.push(newObj);
+                this.emit('change', this.results, {
+                    index: idx,
+                    added: [newObj],
+                    addedId: [newObj._id],
+                    type: changes.ChangeType.Splice
+                });
             }
             else if (!matches && alreadyContains) {
-                this.results.splice(index, 1);
+                var removed = this.results.splice(index, 1);
+                this.emit('change', this.results, {
+                    index: index,
+                    obj: newObj,
+                    type: changes.ChangeType.Splice,
+                    removed: removed,
+                    removedId: [newObj._id]
+                });
             }
         }
         else if (n.type == changes.ChangeType.Remove) {
             newObj = n.obj;
             index = this.results.indexOf(newObj);
             if (index > -1) {
-                this.results.splice(index, 1);
+                removed = this.results.splice(index, 1);
+                this.emit('change', this.results, {
+                    index: index,
+                    obj: newObj,
+                    type: changes.ChangeType.Splice,
+                    removed: removed,
+                    removedId: [newObj._id]
+                });
             }
         }
     },
@@ -93,7 +121,7 @@ _.extend(ReactiveQuery.prototype, {
     },
     terminate: function () {
         if (Logger.trace) Logger.trace('terminate');
-        notificationCentre.removeListener(this._constructNotificationName(), this._handleNotif);
+        notificationCentre.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
     }
 });

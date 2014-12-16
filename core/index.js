@@ -117,6 +117,7 @@ siesta._internal = {
     store: require('./store')
 };
 
+siesta.ChangeType = coreChanges.ChangeType;
 siesta.Collection = collection.Collection;
 
 siesta.performanceMonitoringEnabled = false;
