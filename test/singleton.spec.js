@@ -1,14 +1,14 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('singleton mapping', function() {
+describe('singleton mapping', function () {
 
     var SiestaModel = require('../core/siestaModel').SiestaModel;
     var Collection = require('../core/collection').Collection;
     var cache = require('../core/cache');
     var store = require('../core/store');
 
-    var collection, carMapping;
+    var collection, Car;
 
     function CarObject() {
         SiestaModel.apply(this, arguments);
@@ -16,27 +16,30 @@ describe('singleton mapping', function() {
 
     CarObject.prototype = Object.create(SiestaModel.prototype);
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(true);
         collection = new Collection('Car');
-        carMapping = collection.mapping('Car', {
+        Car = collection.mapping('Car', {
             id: 'id',
-            attributes: ['colour', 'name'],
+            attributes: [
+                {name: 'colour', default: 'red'},
+                'name'
+            ],
             singleton: true
         });
         collection.install(done);
     });
 
-    it('should map onto the same singleton object, even if a different identifier', function(done) {
-        carMapping.map({
+    it('should map onto the same singleton object, even if a different identifier', function (done) {
+        Car.map({
             colour: 'red',
             id: 5
-        }, function(err, car) {
+        }, function (err, car) {
             if (err) done(err);
-            carMapping.map({
+            Car.map({
                 colour: 'blue',
                 id: 10
-            }, function(err, car2) {
+            }, function (err, car2) {
                 if (err) done(err);
                 assert.equal(car, car2);
                 assert.equal(car.colour, 'blue');
@@ -46,14 +49,14 @@ describe('singleton mapping', function() {
         });
     });
 
-    it('should map onto the same singleton object', function(done) {
-        carMapping.map({
+    it('should map onto the same singleton object', function (done) {
+        Car.map({
             colour: 'red'
-        }, function(err, car) {
+        }, function (err, car) {
             if (err) done(err);
-            carMapping.map({
+            Car.map({
                 colour: 'blue'
-            }, function(err, car2) {
+            }, function (err, car2) {
                 if (err) done(err);
                 assert.equal(car, car2);
                 assert.equal(car.colour, 'blue');
@@ -63,34 +66,105 @@ describe('singleton mapping', function() {
     });
 
 
-
-    it('cache should return singleton', function(done) {
-        carMapping.map({
+    it('cache should return singleton', function (done) {
+        Car.map({
             colour: 'red',
             id: 5
-        }, function(err, car) {
+        }, function (err, car) {
             if (err) done(err);
             var obj = cache.get({
-                mapping: carMapping
+                mapping: Car
             });
             assert.equal(obj, car);
             done();
         });
     });
 
-    it('get should simply return the car', function(done) {
-        this.timeout(5000);
-        carMapping.map({
+    it('get should simply return the car', function (done) {
+        Car.map({
             colour: 'red',
             id: 5
-        }, function(err, car) {
+        }, function (err, car) {
             if (err) done(err);
-            carMapping.get(function(err, _car) {
+            Car.get(function (err, _car) {
                 if (err) done(err);
                 assert.equal(car, _car);
                 done();
             });
         });
+    });
+
+    it('get should return an empty car, even if nothing has ever been mapped', function (done) {
+        Car.get().then(function (car) {
+            assert.ok(car);
+            done();
+        }).catch(done);
+    });
+
+    it('query should return an empty car, even if nothing has ever been mapped', function (done) {
+        Car.query({}).execute().then(function (cars) {
+            assert.equal(cars.length, 1);
+            done();
+        }).catch(done);
+    });
+
+    it('all should return an empty car, even if nothing has ever been mapped', function (done) {
+        Car.all().execute().then(function (cars) {
+            assert.equal(cars.length, 1);
+            done();
+        }).catch(done);
+    });
+
+    it('default attributes should work with singletons', function (done) {
+        Car.get().then(function (car) {
+            assert.ok(car);
+            assert.equal(car.colour, 'red');
+            done();
+        }).catch(done);
+    });
+
+    describe('nested singletons', function () {
+        var MoreComplicatedCollection, ParentConfig,
+            FirstChildConfig, SecondChildConfig;
+        beforeEach(function (done) {
+            MoreComplicatedCollection = new Collection('MyCollection');
+            ParentConfig = MoreComplicatedCollection.mapping('ParentConfig', {
+                relationships: {
+                    settings: {
+                        mapping: 'FirstChildConfig',
+                        reverse: 'parent'
+                    },
+                    otherSettings: {
+                        mapping: 'SecondChildConfig',
+                        reverse: 'parent'
+                    }
+                },
+                singleton: true
+            });
+            FirstChildConfig = MoreComplicatedCollection.mapping('FirstChildConfig', {
+                attributes: ['field1', 'field2'],
+                singleton: true
+            });
+            SecondChildConfig = MoreComplicatedCollection.mapping('SecondChildConfig', {
+                attributes: ['field3', 'field4'],
+                singleton: true
+            });
+            MoreComplicatedCollection.install(done);
+        });
+
+        it('relationships are automatically setup', function (done) {
+            ParentConfig.get().then(function (parent) {
+                FirstChildConfig.get().then(function(firstChild) {
+                    SecondChildConfig.get().then(function (secondChild) {
+                        assert.equal(parent.settings, firstChild);
+                        assert.equal(parent.otherSettings, secondChild);
+                        assert.equal(firstChild.parent, parent);
+                        assert.equal(secondChild.parent, parent);
+                        done();
+                    }).catch(done).done();
+                }).catch(done).done();
+            }).catch(done).done();
+        })
     });
 
 });

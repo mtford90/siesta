@@ -146,10 +146,16 @@ _.extend(Mapping.prototype, {
             self._relationships = [];
             if (self._opts.relationships) {
                 for (var name in self._opts.relationships) {
-                    if (Logger.debug.isEnabled)
-                        Logger.debug(self.type + ': configuring relationship ' + name);
                     if (self._opts.relationships.hasOwnProperty(name)) {
                         var relationship = self._opts.relationships[name];
+                        if (Logger.debug.isEnabled)
+                            Logger.debug(self.type + ': configuring relationship ' + name, relationship);
+                        if (self.singleton) {
+                            if (relationship.type != RelationshipType.OneToOne) {
+                                Logger.warn('Singleton mappings can only be used with OneToOne relationships');
+                            }
+                            relationship.type = RelationshipType.OneToOne;
+                        }
                         if (relationship.type == RelationshipType.OneToMany ||
                             relationship.type == RelationshipType.OneToOne ||
                             relationship.type == RelationshipType.ManyToMany) {
@@ -207,7 +213,7 @@ _.extend(Mapping.prototype, {
                     var reverseMapping = relationship.reverseMapping;
                     var reverseName = relationship.reverseName;
                     if (Logger.debug.isEnabled)
-                        Logger.debug(self.type + ': configuring  reverse relationship ' + name);
+                        Logger.debug(this.type + ': configuring  reverse relationship ' + reverseName);
                     reverseMapping.relationships[reverseName] = relationship;
                 }
             }
@@ -215,6 +221,33 @@ _.extend(Mapping.prototype, {
         } else {
             throw new InternalSiestaError('Reverse relationships for "' + this.type + '" have already been installed.');
         }
+    },
+    /**
+     * Any post installation steps that need to be performed.
+     */
+    finaliseInstallation: function (callback) {
+        if (this.singleton) {
+            // Ensure that the singleton objects exist, and that all singleton relationships
+            // are hooked up.
+            // TODO: Any parent singletons will be having empty data mapped twice when their own finalise is called... Pointless.
+            var data = {};
+            var relationships = this.relationships;
+            data = _.reduce( Object.keys(relationships), function (m, name) {
+                var r = relationships[name];
+                console.log('isReverse', r.isReverse);
+                console.log('reverseName', r.reverseName);
+                if (r.isReverse) {
+                    data[r.reverseName] = {};
+                }
+                return data;
+            }, data);
+            console.log('data', data);
+            this.map(data, function (err, obj) {
+                if (Logger.trace) Logger.trace('Finalised installation for singleton mapping "' + this.type + '"')
+                callback(err);
+            }.bind(this));
+        }
+        else callback();
     },
     query: function (query) {
         return new Query(this, query);
@@ -271,6 +304,9 @@ _.extend(Mapping.prototype, {
         }
         return deferred ? deferred.promise : null;
     },
+    _createSingleton: function () {
+        return this.map({});
+    },
     all: function () {
         return new Query(this, {});
     },
@@ -285,7 +321,7 @@ _.extend(Mapping.prototype, {
                 if (errors.length) Logger.error('Errors installing mapping ' + this.type + ': ' + errors);
                 else Logger.info('Installed mapping ' + this.type);
             }
-            if (callback) callback(errors.length ? errors : null);
+            callback(errors.length ? errors : null);
         } else {
             throw new InternalSiestaError('Mapping "' + this.type + '" has already been installed');
         }

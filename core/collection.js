@@ -90,15 +90,15 @@ _.extend(Collection.prototype, {
             if (Logger.info.isEnabled)
                 Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
             if (mappingsToInstall.length) {
-                var operations = _.map(mappingsToInstall, function (m) {
-                    return new Operation('Install Mapping', _.bind(m.install, m));
+                var tasks = _.map(mappingsToInstall, function (m) {
+                    return _.bind(m.install, m);
                 });
-                var op = new Operation('Install Mappings', operations);
-                op.completion = function () {
-                    if (op.failed) {
-                        Logger.error('Failed to install collection', op.error);
-                        self._finaliseInstallation(op.error, callback);
-                    } else {
+                util.parallel(tasks, function (err) {
+                    if (err) {
+                        Logger.error('Failed to install collection', err);
+                        self._finaliseInstallation(err, callback);
+                    }
+                    else {
                         self.installed = true;
                         var errors = [];
                         _.each(mappingsToInstall, function (m) {
@@ -115,16 +115,35 @@ _.extend(Collection.prototype, {
                                 if (err) errors.push(err);
                             });
                         }
-                        var err;
-                        if (errors.length == 1) {
-                            err = errors[0];
-                        } else if (errors.length) {
-                            err = errors;
+                        if (!errors.length) {
+                            var tasks = _.map(mappingsToInstall, function (m) {
+                                return function (cb) {
+                                    console.log('singleton installed');
+                                    m.finaliseInstallation(cb);
+                                }
+                            });
+                            util.parallel(tasks, function (_errors) {
+                                errors = errors.concat.apply(errors, _errors);
+                                var err;
+                                if (errors.length == 1) {
+                                    err = errors[0];
+                                } else if (errors.length) {
+                                    err = errors;
+                                }
+                                self._finaliseInstallation(err, callback);
+                            })
                         }
-                        self._finaliseInstallation(err, callback);
+                        else {
+                            if (errors.length == 1) {
+                                err = errors[0];
+                            } else if (errors.length) {
+                                err = errors;
+                            }
+                            self._finaliseInstallation(err, callback);
+                        }
                     }
-                };
-                op.start();
+                });
+
             } else {
                 self._finaliseInstallation(null, callback);
             }

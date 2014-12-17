@@ -272,35 +272,14 @@ _.extend(BulkMappingOperation.prototype, {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var self = this;
-        var cachedSingleton = cache.get({
-            mapping: this.mapping
-        });
-        if (!cachedSingleton) {
-            var query = new Query(this.mapping);
-            query.execute(function (err, objs) {
-                if (!err) {
-                    var obj;
-                    if (objs.length) {
-                        if (objs.length == 1) {
-                            obj = objs[0];
-                        } else {
-                            throw new InternalSiestaError();
-                        }
-                    } else {
-                        obj = self.mapping._new();
-                    }
-                    for (var i = 0; i < self.data.length; i++) {
-                        self.objects[i] = obj;
-                    }
+        this.mapping.get(function (err, singleton) {
+            if (!err) {
+                for (var i = 0; i < self.data.length; i++) {
+                    self.objects[i] = singleton;
                 }
-                callback(err);
-            });
-        } else {
-            for (var i = 0; i < self.data.length; i++) {
-                self.objects[i] = cachedSingleton;
             }
-            callback();
-        }
+            callback(err);
+        });
         return deferred ? deferred.promise : null;
     },
     _start: function (done) {
