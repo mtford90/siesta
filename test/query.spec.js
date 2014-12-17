@@ -166,22 +166,25 @@ describe('query...', function () {
                     name: 'Michael',
                     age: 21
                 }, function (err, person) {
+                    assert.ok(person, 'should return a person');
                     if (err) done(err);
                     carMapping.map({
                         colour: 'red',
                         name: 'Aston Martin',
                         owner: person
                     }, function (err, car) {
+                        console.log('car.person', car.owner._id);
+                        console.log('values', car.__values);
                         if (err) done(err);
                         else {
+                            assert.equal(car.owner, person);
                             var q = new Query(carMapping, {
                                 owner__e: person
                             });
-                            q.execute(function (err, objs) {
-                                if (err) done(err);
+                            q.execute().then(function (objs) {
                                 assert.ok(objs.length);
                                 done();
-                            });
+                            }).catch(done).done();
                         }
                     });
                 });
@@ -646,43 +649,43 @@ describe('query...', function () {
         });
 
         it('descending order', function (done) {
-             Person.map([
-                 {name: 'Mike', age: 24},
-                 {name: 'Bob', age: 40},
-                 {name: 'John', age: 12}
-             ]).then(function () {
-                 var query = Person.query({});
-                 console.log('query', query);
-                 query.orderBy('-age').execute().then(function (orderedPeople) {
-                     var lastAge = orderedPeople[0].age;
-                     for (var i=1;i<orderedPeople.length;i++) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 40},
+                {name: 'John', age: 12}
+            ]).then(function () {
+                var query = Person.query({});
+                console.log('query', query);
+                query.orderBy('-age').execute().then(function (orderedPeople) {
+                    var lastAge = orderedPeople[0].age;
+                    for (var i = 1; i < orderedPeople.length; i++) {
                         var person = orderedPeople[i];
-                         assert(person.age < lastAge, 'Should be descending');
-                         lastAge = person.age;
-                     }
-                     done();
-                 }).catch(done).done();
-             }).catch(done).done();
+                        assert(person.age < lastAge, 'Should be descending');
+                        lastAge = person.age;
+                    }
+                    done();
+                }).catch(done).done();
+            }).catch(done).done();
         });
 
         it('ascending order', function (done) {
-             Person.map([
-                 {name: 'Mike', age: 24},
-                 {name: 'Bob', age: 40},
-                 {name: 'John', age: 12}
-             ]).then(function () {
-                 var query = Person.query({});
-                 console.log('query', query);
-                 query.orderBy('age').execute().then(function (orderedPeople) {
-                     var lastAge = orderedPeople[0].age;
-                     for (var i=1;i<orderedPeople.length;i++) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 40},
+                {name: 'John', age: 12}
+            ]).then(function () {
+                var query = Person.query({});
+                console.log('query', query);
+                query.orderBy('age').execute().then(function (orderedPeople) {
+                    var lastAge = orderedPeople[0].age;
+                    for (var i = 1; i < orderedPeople.length; i++) {
                         var person = orderedPeople[i];
-                         assert(person.age > lastAge, 'Should be descending');
-                         lastAge = person.age;
-                     }
-                     done();
-                 }).catch(done).done();
-             }).catch(done).done();
+                        assert(person.age > lastAge, 'Should be descending');
+                        lastAge = person.age;
+                    }
+                    done();
+                }).catch(done).done();
+            }).catch(done).done();
         });
     })
 

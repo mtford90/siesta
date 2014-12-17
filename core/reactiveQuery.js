@@ -78,7 +78,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else {
-                if (Logger.trace) Logger.trace('New object does not matche', newObj);
+                if (Logger.trace) Logger.trace('New object does not match', newObj);
             }
         }
         else if (n.type == changes.ChangeType.Set) {
@@ -87,6 +87,7 @@ _.extend(ReactiveQuery.prototype, {
                 alreadyContains = index > -1,
                 matches = this._query.objectMatchesQuery(newObj);
             if (matches && !alreadyContains) {
+                if (Logger.trace) Logger.trace('Updated object now matches!', newObj);
                 idx = this.results.push(newObj);
                 this.emit('change', this.results, {
                     index: idx,
@@ -96,6 +97,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else if (!matches && alreadyContains) {
+                if (Logger.trace) Logger.trace('Updated object no longer matches!', newObj);
                 var removed = this.results.splice(index, 1);
                 this.emit('change', this.results, {
                     index: index,
@@ -105,11 +107,18 @@ _.extend(ReactiveQuery.prototype, {
                     removedId: [newObj._id]
                 });
             }
+            else if (!matches && !alreadyContains) {
+                if (Logger.trace) Logger.trace('Does not contain, but doesnt match so not inserting', newObj);
+            }
+            else if (matches && alreadyContains) {
+                if (Logger.trace) Logger.trace('Matches but already contains', newObj);
+            }
         }
         else if (n.type == changes.ChangeType.Remove) {
             newObj = n.obj;
             index = this.results.indexOf(newObj);
             if (index > -1) {
+                if (Logger.trace) Logger.trace('Removing object', newObj);
                 removed = this.results.splice(index, 1);
                 this.emit('change', this.results, {
                     index: index,
@@ -118,6 +127,9 @@ _.extend(ReactiveQuery.prototype, {
                     removed: removed,
                     removedId: [newObj._id]
                 });
+            }
+            else {
+                if (Logger.trace) Logger.trace('No changes neccessary.', newObj);
             }
         }
         else {

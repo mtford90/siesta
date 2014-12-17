@@ -28,7 +28,7 @@ var log = require('./operation/log')
     ;
 
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  *
@@ -44,11 +44,9 @@ function Mapping(opts) {
             if (self.id) {
                 fields.push(self.id);
             }
-            if (self._opts.attributes) {
-                _.each(self._opts.attributes, function (x) {
-                    fields.push(x)
-                });
-            }
+            _.each(self.attributes, function (x) {
+                fields.push(x.name)
+            });
             return fields;
         },
         enumerable: true,
@@ -75,8 +73,22 @@ function Mapping(opts) {
         enumerable: true
     });
 
+    var attributes = self._opts.attributes;
+
+
+    this.attributes = _.reduce(attributes, function (m, a) {
+        if (typeof a == 'string') {
+            m.push({
+                name: a
+            });
+        }
+        else {
+            m.push(a);
+        }
+        return m;
+    }, []);
+
     defineSubProperty.call(this, 'collection', self._opts);
-    defineSubProperty.call(this, 'attributes', self._opts);
     defineSubProperty.call(this, 'relationships', self._opts);
     defineSubProperty.call(this, 'indexes', self._opts);
     defineSubProperty.call(this, 'subclass', self._opts);
@@ -397,7 +409,16 @@ _.extend(Mapping.prototype, {
                 Logger.info('New object created _id="' + _id.toString() + '", type=' + this.type, data);
             newModel._id = _id;
             // Place attributes on the object.
-            newModel.__values = data || {};
+            var values = {};
+            newModel.__values = values;
+            var defaults = _.reduce(this.attributes, function (m, a) {
+                if (a.default) {
+                    m[a.name] = a.default;
+                }
+                return m;
+            }, {});
+            _.extend(values, defaults);
+            if (data) _.extend(values, data);
             var fields = this._fields;
             var idx = fields.indexOf(this.id);
             if (idx > -1) {

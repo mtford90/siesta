@@ -3,8 +3,7 @@ var s = require('../core/index'),
 
 var Collection = s.Collection;
 
-
-describe.only('reactive query', function () {
+describe('reactive query', function () {
     var collection, mapping;
 
     beforeEach(function (done) {
@@ -373,7 +372,7 @@ describe.only('reactive query', function () {
                             rq.terminate();
                             done();
                         })
-                    });  
+                    });
                 }).catch(done).done();
             }, done).catch(done).done();
         });

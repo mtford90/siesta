@@ -26,8 +26,9 @@ describe('mapping!', function () {
             id: 'id',
             attributes: ['field1', 'field2']
         });
-        assert.include(m.attributes, 'field1');
-        assert.include(m.attributes, 'field2');
+        var attributes = _.pluck(m.attributes, 'name');
+        assert.include(attributes, 'field1');
+        assert.include(attributes, 'field2');
     });
 
     it('type', function () {
@@ -47,7 +48,6 @@ describe('mapping!', function () {
         });
         assert.equal(m.id, 'id');
     });
-
 
 
 

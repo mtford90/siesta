@@ -15,7 +15,7 @@ var Store = require('./store')
     , ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {
@@ -358,6 +358,9 @@ _.extend(BulkMappingOperation.prototype, {
                     };
                 }
             }
+        }
+        if (Logger.trace) {
+            Logger.trace('Constructed subops for relationships', Object.keys(subOps));
         }
     },
     gatherErrorsFromSubOperations: function () {

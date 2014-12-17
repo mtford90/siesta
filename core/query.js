@@ -30,7 +30,7 @@ _.extend(Query.prototype, {
     _dump: function (asJson) {
         return asJson ? '{}' : {};
     },
-    _sortResults: function(res) {
+    _sortResults: function (res) {
         if (res && this.ordering) {
             var splt = this.ordering.split('-'),
                 ascending = true,
@@ -100,27 +100,43 @@ _.extend(Query.prototype, {
             } else {
                 field = origField;
             }
+            var isAttribute = this.mapping._fields.indexOf(field) > -1;
             var queryObj = this.query[origField];
-            var val = obj[field];
+            console.log('values', obj.__values);
+            var val = isAttribute ? obj.__values[field] : obj[field];
             var invalid = val === null || val === undefined;
+            if (Logger.trace) {
+                var stringVal;
+                if (val === null) stringVal = 'null';
+                else if (val === undefined) stringVal = 'undefined';
+                else stringVal = val.toString();
+            }
             if (op == 'e') {
+                if (Logger.trace)
+                    Logger.trace(stringVal + ' == ' + queryObj.toString());
                 if (val != queryObj) {
                     return false;
                 }
             } else if (op == 'lt') {
-                if (Logger.trace && !invalid) Logger.trace(val.toString() + ' >= ' + queryObj.toString())
+                if (Logger.trace) Logger.trace(stringVal + ' < ' + queryObj.toString())
                 if (invalid || val >= queryObj) {
                     return false;
                 }
             } else if (op == 'lte') {
+                if (Logger.trace)
+                    Logger.trace(stringVal + ' <= ' + queryObj.toString());
                 if (invalid || val > queryObj) {
                     return false;
                 }
             } else if (op == 'gt') {
+                if (Logger.trace)
+                    Logger.trace(stringVal + ' > ' + queryObj.toString());
                 if (invalid || val <= queryObj) {
                     return false;
                 }
             } else if (op == 'gte') {
+                if (Logger.trace)
+                    Logger.trace(stringVal + ' >= ' + queryObj.toString());
                 if (invalid || val < queryObj) {
                     return false;
                 }
