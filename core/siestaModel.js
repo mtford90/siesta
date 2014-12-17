@@ -140,6 +140,18 @@ _.extend(SiestaModel.prototype, {
     }
 });
 
+_.extend(SiestaModel.prototype, {
+    listen: function (fn) {
+        return notificationCentre.on(this._id , fn);
+    },
+    listenOnce: function (fn) {
+        return notificationCentre.once(this._id, fn);
+    },
+    removeListener: function (fn) {
+        return notificationCentre.removeListener(this._id, fn);
+    }
+});
+
 exports.SiestaModel = SiestaModel;
 exports.dumpSaveQueues = function () {
     var dumped = {};

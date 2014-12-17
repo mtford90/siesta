@@ -10,11 +10,12 @@ var Logger = log.loggerWithName('Serialiser');
 Logger.setLevel(log.Level.warn);
 var _ = utils._;
 
+
 /**
  * Serialises an object into it's remote identifier (as defined by the mapping)
  * @param  {SiestaModel} obj
  * @return {String}
- * 
+ *
  */
 function idSerialiser(obj) {
     var idField = obj.mapping.id;
@@ -32,9 +33,10 @@ function idSerialiser(obj) {
  * Serialises obj following relationships to specified depth.
  * @param  {Integer}   depth
  * @param  {SiestaModel}   obj
- * @param  {Function} done 
+ * @param  {Function} callback
  */
-function depthSerialiser(depth, obj, done) {
+function depthSerialiser(depth, obj, callback) {
+    callback = callback || function () {};
     if (Logger.trace.isEnabled)
         Logger.trace('depthSerialiser');
     var data = {};
@@ -45,15 +47,15 @@ function depthSerialiser(depth, obj, done) {
             data[f] = obj[f];
         }
     });
-    var waiting = [];
-    var errors = [];
-    var result = {};
-    var finished = [];
+    var waiting = []
+        , errors = []
+        , result = {}
+        , finished = [];
     _.each(obj._relationshipFields, function (f) {
         if (Logger.trace.isEnabled)
             Logger.trace('relationshipField', f);
         var proxy = obj.__proxies[f];
-        if (proxy.isForward) { // By default only forward relationship.
+        if (proxy.isForward) { // By default only forward relationships
             if (Logger.debug.isEnabled)
                 Logger.debug(f);
             waiting.push(f);
@@ -72,8 +74,8 @@ function depthSerialiser(depth, obj, done) {
                         finished.push(f);
                         data[f] = v[obj.__proxies[f].forwardMapping.id];
                         result[f] = {err: err, v: v};
-                        if ((waiting.length == finished.length) && done) {
-                            done(errors.length ? errors : null, data, result);
+                        if ((waiting.length == finished.length) && callback) {
+                            callback(errors.length ? errors : null, data, result);
                         }
                     }
                     else {
@@ -86,8 +88,8 @@ function depthSerialiser(depth, obj, done) {
                             }
                             finished.push(f);
                             result[f] = {err: err, v: v, resp: resp};
-                            if ((waiting.length == finished.length) && done) {
-                                done(errors.length ? errors : null, data, result);
+                            if ((waiting.length == finished.length) && callback) {
+                                callback(errors.length ? errors : null, data, result);
                             }
                         });
                     }
@@ -97,24 +99,24 @@ function depthSerialiser(depth, obj, done) {
                         Logger.debug('no value for ' + f);
                     finished.push(f);
                     result[f] = {err: err, v: v};
-                    if ((waiting.length == finished.length) && done) {
-                        done(errors.length ? errors : null, data, result);
+                    if ((waiting.length == finished.length) && callback) {
+                        callback(errors.length ? errors : null, data, result);
                     }
                 }
             });
         }
     });
     if (!waiting.length) {
-        if (done) done(null, data, {});
+        callback(null, data, {});
     }
 }
 
 
 exports.depthSerialiser = function (depth) {
-    return  _.partial(depthSerialiser, depth);
+    return _.partial(depthSerialiser, depth);
 };
 exports.depthSerializer = function (depth) {
-    return  _.partial(depthSerialiser, depth);
+    return _.partial(depthSerialiser, depth);
 };
 exports.idSerializer = idSerialiser;
 exports.idSerialiser = idSerialiser;
