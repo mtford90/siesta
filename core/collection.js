@@ -403,7 +403,10 @@ _.extend(Collection.prototype, {
         return deferred ? deferred.promise : null;
     },
     listen: function (fn) {
-        return notificationCentre.on(this.name, fn);
+        notificationCentre.on(this.name, fn);
+        return function () {
+            this.removeListener(fn);
+        }.bind(this);
     },
     listenOnce: function (fn) {
         return notificationCentre.once(this.name, fn);

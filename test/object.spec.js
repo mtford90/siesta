@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('object!!', function() {
+describe('object!!', function () {
 
     var SiestaModel = require('../core/siestaModel').SiestaModel;
     var Mapping = require('../core/mapping').Mapping;
@@ -10,7 +10,7 @@ describe('object!!', function() {
 
     var mapping, collection;
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(true);
         collection = new Collection('myCollection');
         mapping = collection.mapping({
@@ -22,27 +22,40 @@ describe('object!!', function() {
         collection.install(done);
     });
 
-    describe('fields', function() {
+    it.only('get attributes', function (done) {
+        mapping.map({id: 1, colour: 'red', name: 'Aston martin'})
+            .then(function (car) {
+                var attributes = car.getAttributes();
+                assert.equal(Object.keys(attributes).length, 3);
+                assert.equal(attributes.id, 1);
+                assert.equal(attributes.colour, 'red');
+                assert.equal(attributes.name, 'Aston martin');
+                done();
+            })
+            .catch(done).done();
+    });
+
+    describe('fields', function () {
 
 
-        it('type field', function() {
+        it('type field', function () {
             var r = new SiestaModel(mapping);
             assert.equal(r.type, 'Car');
         });
 
-        it('collection field', function() {
+        it('collection field', function () {
             var r = new SiestaModel(mapping);
             assert.equal(r.collection, 'myCollection');
         });
 
-        it('type field', function() {
+        it('type field', function () {
             var r = new SiestaModel(mapping);
             assert.notOk(r.isSaved);
         });
 
     });
 
-    describe('removal', function() {
+    describe('removal', function () {
         var car;
 
         describe('remote id', function () {
@@ -60,11 +73,11 @@ describe('object!!', function() {
                 assert.ok(car.removed);
             }
 
-            it('deletion', function() {
+            it('deletion', function () {
                 remove();
             });
 
-            it('restore', function() {
+            it('restore', function () {
                 remove();
                 car.restore();
                 assert.notOk(car.removed);
@@ -87,11 +100,11 @@ describe('object!!', function() {
                 assert.ok(car.removed);
             }
 
-            it('deletion', function() {
+            it('deletion', function () {
                 remove();
             });
 
-            it('restore', function() {
+            it('restore', function () {
                 remove();
                 car.restore();
                 assert.notOk(car.removed);

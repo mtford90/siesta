@@ -549,7 +549,10 @@ _.extend(Mapping.prototype, {
         return 'Mapping[' + this.type + ']';
     },
     listen: function (fn) {
-        return notificationCentre.on(this.collection + ':' + this.type, fn);
+        notificationCentre.on(this.collection + ':' + this.type, fn);
+        return function () {
+            this.removeListener(fn);
+        }.bind(this);
     },
     listenOnce: function (fn) {
         return notificationCentre.once(this.collection + ':' + this.type, fn);

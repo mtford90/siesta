@@ -5,6 +5,7 @@ var log = require('./operation/log')
     , error = require('./error')
     , InternalSiestaError = error.InternalSiestaError
     , coreChanges = require('./changes')
+    , notificationCentre = require('./notificationCentre').notificationCentre
     , cache = require('./cache');
 
 var Logger = log.loggerWithName('SiestaModel');
@@ -142,13 +143,22 @@ _.extend(SiestaModel.prototype, {
 
 _.extend(SiestaModel.prototype, {
     listen: function (fn) {
-        return notificationCentre.on(this._id , fn);
+        notificationCentre.on(this._id, fn);
+        return function () {
+            this.removeListener(fn);
+        }.bind(this);
     },
     listenOnce: function (fn) {
         return notificationCentre.once(this._id, fn);
     },
     removeListener: function (fn) {
         return notificationCentre.removeListener(this._id, fn);
+    }
+});
+
+_.extend(SiestaModel.prototype, {
+    getAttributes: function () {
+        return _.extend({}, this.__values);
     }
 });
 
