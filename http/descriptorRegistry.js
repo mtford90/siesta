@@ -42,7 +42,6 @@ function _descriptorsForCollection(descriptors, collection) {
     return descriptorsForCollection;
 }
 
-console.log('_', _);
 
 _.extend(DescriptorRegistry.prototype, {
     registerRequestDescriptor: function (requestDescriptor) {

@@ -521,7 +521,6 @@ describe('bulk mapping operation', function () {
                 });
                 User.get().then(function (user) {
                     obj = user;
-                    console.log('user', user);
                     done();
                 }).catch(done).done();
             });

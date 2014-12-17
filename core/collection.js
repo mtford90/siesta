@@ -121,7 +121,6 @@ _.extend(Collection.prototype, {
                         if (!errors.length) {
                             var tasks = _.map(mappingsToInstall, function (m) {
                                 return function (cb) {
-                                    console.log('singleton installed');
                                     m.finaliseInstallation(cb);
                                 }
                             });

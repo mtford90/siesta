@@ -34,19 +34,18 @@ describe('singleton mapping', function () {
         Car.map({
             colour: 'red',
             id: 5
-        }, function (err, car) {
-            if (err) done(err);
+        }).then(function (car) {
+            assert.ok(car, 'Map should return a car...');
             Car.map({
                 colour: 'blue',
                 id: 10
-            }, function (err, car2) {
-                if (err) done(err);
+            }).then(function (car2) {
                 assert.equal(car, car2);
                 assert.equal(car.colour, 'blue');
                 assert.equal(car.id, 10);
                 done();
-            });
-        });
+            }).catch(done).done();
+        }).catch(done).done()
     });
 
     it('should map onto the same singleton object', function (done) {

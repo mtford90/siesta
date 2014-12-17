@@ -234,17 +234,14 @@ _.extend(Mapping.prototype, {
             var relationships = this.relationships;
             data = _.reduce( Object.keys(relationships), function (m, name) {
                 var r = relationships[name];
-                console.log('isReverse', r.isReverse);
-                console.log('reverseName', r.reverseName);
                 if (r.isReverse) {
                     data[r.reverseName] = {};
                 }
                 return data;
             }, data);
-            console.log('data', data);
             this.map(data, function (err, obj) {
-                if (Logger.trace) Logger.trace('Finalised installation for singleton mapping "' + this.type + '"')
-                callback(err);
+                if (Logger.trace) Logger.trace('Finalised installation for singleton mapping "' + this.type + '"', obj);
+                callback(err, obj);
             }.bind(this));
         }
         else callback();
@@ -258,24 +255,19 @@ _.extend(Mapping.prototype, {
     get: function (idOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-
-        function finish(err, res) {
-            if (callback) callback(err, res);
-        }
-
         if (this.singleton) {
             if (typeof idOrCallback == 'function') {
                 callback = idOrCallback;
             }
             this.all().execute(function (err, objs) {
-                if (err) finish(err);
+                if (err) callback(err);
                 if (objs.length > 1) {
                     throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
                     'This is a serious error, please file a bug report.');
                 } else if (objs.length) {
-                    finish(null, objs[0]);
+                    callback(null, objs[0]);
                 } else {
-                    finish(null, objs[0]);
+                    callback(null, null);
                 }
             });
         } else {
@@ -284,7 +276,7 @@ _.extend(Mapping.prototype, {
             opts.mapping = this;
             var obj = cache.get(opts);
             if (obj) {
-                finish(null, obj);
+                callback(null, obj);
             } else {
                 delete opts.mapping;
                 var query = new Query(this, opts);
@@ -297,7 +289,7 @@ _.extend(Mapping.prototype, {
                             obj = rows[0];
                         }
                     }
-                    finish(err, obj);
+                    callback(err, obj);
                 });
             }
 

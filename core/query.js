@@ -102,7 +102,6 @@ _.extend(Query.prototype, {
             }
             var isAttribute = this.mapping._fields.indexOf(field) > -1;
             var queryObj = this.query[origField];
-            console.log('values', obj.__values);
             var val = isAttribute ? obj.__values[field] : obj[field];
             var invalid = val === null || val === undefined;
             if (Logger.trace) {

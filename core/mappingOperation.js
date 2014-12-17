@@ -273,6 +273,7 @@ _.extend(BulkMappingOperation.prototype, {
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var self = this;
         this.mapping.get(function (err, singleton) {
+            if (!singleton) singleton = self.mapping._new();
             if (!err) {
                 for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = singleton;

@@ -1027,7 +1027,7 @@ describe('notifications', function() {
         });
     });
 
-    describe.only('convenience', function () {
+    describe('convenience', function () {
         beforeEach(function(done) {
             collection = new Collection('myCollection');
             carMapping = collection.mapping('Car', {
