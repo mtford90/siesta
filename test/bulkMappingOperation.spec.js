@@ -504,7 +504,7 @@ describe('bulk mapping operation', function () {
             });
         });
 
-        describe.only('existing, cached', function () {
+        describe('existing, cached', function () {
             var obj;
 
             beforeEach(function (done) {

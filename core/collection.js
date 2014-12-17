@@ -3,8 +3,6 @@
  */
 
 var log = require('./operation/log');
-var Logger = log.loggerWithName('Collection');
-Logger.setLevel(log.Level.warn);
 
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var Operation = require('./operation/operation').Operation;
@@ -12,14 +10,19 @@ var InternalSiestaError = require('./error').InternalSiestaError;
 var Mapping = require('./mapping').Mapping;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
+var notificationCentre = require('./notificationCentre').notificationCentre;
 
 var util = require('./util');
 var _ = util._;
 
 var cache = require('./cache');
 
-var SAFE_METHODS = ['GET', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT'];
-var UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'];
+var SAFE_METHODS = ['GET', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT']
+    , UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'];
+
+var Logger = log.loggerWithName('Collection');
+Logger.setLevel(log.Level.warn);
+
 
 /**
  * A collection describes a set of models and optionally a REST API which we would
@@ -399,6 +402,15 @@ _.extend(Collection.prototype, {
             callback(err, n);
         });
         return deferred ? deferred.promise : null;
+    },
+    onChange: function (fn) {
+        return notificationCentre.on(this.name, fn);
+    },
+    onOneChange: function (fn) {
+        return notificationCentre.once(this.name, fn);
+    },
+    removeChangeHandler: function (fn) {
+        return notificationCentre.removeListener(this.name, fn);
     }
 });
 

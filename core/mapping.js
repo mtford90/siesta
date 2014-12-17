@@ -555,6 +555,15 @@ _.extend(Mapping.prototype, {
     },
     toString: function () {
         return 'Mapping[' + this.type + ']';
+    },
+    onChange: function (fn) {
+        return notificationCentre.on(this.collection + ':' + this.type, fn);
+    },
+    onOneChange: function (fn) {
+        return notificationCentre.once(this.collection + ':' + this.type, fn);
+    },
+    removeChangeHandler: function (fn) {
+        return notificationCentre.removeListener(this.collection + ':' + this.type, fn);
     }
 });
 
