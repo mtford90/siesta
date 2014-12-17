@@ -403,13 +403,13 @@ _.extend(Collection.prototype, {
         });
         return deferred ? deferred.promise : null;
     },
-    onChange: function (fn) {
+    listen: function (fn) {
         return notificationCentre.on(this.name, fn);
     },
-    onOneChange: function (fn) {
+    listenOnce: function (fn) {
         return notificationCentre.once(this.name, fn);
     },
-    removeChangeHandler: function (fn) {
+    removeListener: function (fn) {
         return notificationCentre.removeListener(this.name, fn);
     }
 });

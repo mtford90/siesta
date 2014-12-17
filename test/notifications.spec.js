@@ -1027,7 +1027,7 @@ describe('notifications', function() {
         });
     });
 
-    describe('convienience', function () {
+    describe.only('convenience', function () {
         beforeEach(function(done) {
             collection = new Collection('myCollection');
             carMapping = collection.mapping('Car', {
@@ -1040,10 +1040,10 @@ describe('notifications', function() {
             var listener;
             listener = function (n) {
                 assert.ok(n);
-                collection.removeChangeHandler(listener);
+                collection.removeListener(listener);
                 done();
             };
-            collection.onChange(listener);
+            collection.listen(listener);
             carMapping.map({colour: 'red', name: 'Aston Martin'});
         });
 
@@ -1051,10 +1051,10 @@ describe('notifications', function() {
             var listener;
             listener = function (n) {
                 assert.ok(n);
-                carMapping.removeChangeHandler(listener);
+                carMapping.removeListener(listener);
                 done();
             };
-            carMapping.onChange(listener);
+            carMapping.listen(listener);
             carMapping.map({colour: 'red', name: 'Aston Martin'});
         });
 

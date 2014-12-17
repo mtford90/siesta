@@ -556,13 +556,13 @@ _.extend(Mapping.prototype, {
     toString: function () {
         return 'Mapping[' + this.type + ']';
     },
-    onChange: function (fn) {
+    listen: function (fn) {
         return notificationCentre.on(this.collection + ':' + this.type, fn);
     },
-    onOneChange: function (fn) {
+    listenOnce: function (fn) {
         return notificationCentre.once(this.collection + ':' + this.type, fn);
     },
-    removeChangeHandler: function (fn) {
+    removeListener: function (fn) {
         return notificationCentre.removeListener(this.collection + ':' + this.type, fn);
     }
 });
