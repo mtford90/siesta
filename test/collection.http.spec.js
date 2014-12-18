@@ -625,7 +625,6 @@ describe('http!', function () {
                     assert.equal(car.name, 'Aston Martin');
                 });
 
-                it('')
             });
 
 

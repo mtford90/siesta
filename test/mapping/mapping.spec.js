@@ -49,6 +49,63 @@ describe('mapping!', function () {
         assert.equal(m.id, 'id');
     });
 
+    describe('methods', function () {
+        it('valid', function (done) {
+            var C = new s.Collection('C');
+            var M = C.mapping('M', {
+                methods: {
+                    f: function () {
+                        return this.attr
+                    }
+                },
+                attributes: ['attr']
+            });
+            C.install().then(function () {
+                M.map({attr: 'xyz'})
+                    .then(function (m) {
+                        assert.equal(m.attr, m.f());
+                        done();
+                    })
+                    .catch(done).done();
+            }).catch(done).done();
+        });
+    });
+
+    describe('statics', function () {
+        it('valid', function (done) {
+            var C = new s.Collection('C');
+            var M = C.mapping('M', {
+                statics: {
+                    f: function () {
+                        return this
+                    }
+                },
+                attributes: ['attr']
+            });
+            C.install().then(function () {
+                assert.equal(M.f(), M);
+                done();
+            }).catch(done).done();
+        });
+
+        it('clash', function (done) {
+            var C = new s.Collection('C');
+            var staticMethod = function () {
+                return 'a';
+            };
+            var M = C.mapping('M', {
+                statics: {
+                    query: staticMethod
+                },
+                attributes: ['attr']
+            });
+            C.install().then(function () {
+                assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
+                done();
+            }).catch(done).done();
+        });
+
+    })
 
 
 });

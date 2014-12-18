@@ -93,6 +93,20 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'indexes', self._opts);
     defineSubProperty.call(this, 'subclass', self._opts);
     defineSubProperty.call(this, 'singleton', self._opts);
+    defineSubProperty.call(this, 'statics', self._opts);
+    defineSubProperty.call(this, 'methods', self._opts);
+
+    if (!this.statics) this.statics = {};
+    if (!this.methods) this.methods = {};
+
+    _.each(Object.keys(this.statics), function (staticName) {
+        if (this[staticName]) {
+            Logger.error('Static method with name "' + staticName + '" already exists. Ignoring it.');
+        }
+        else {
+            this[staticName] = this.statics[staticName].bind(this);
+        }
+    }.bind(this));
 
     if (!this.relationships) {
         this.relationships = [];
@@ -247,7 +261,7 @@ _.extend(Mapping.prototype, {
         else callback();
     },
     query: function (query) {
-        return new Query(this, query);
+        return new Query(this, query || {});
     },
     reactiveQuery: function (query, callback) {
         return new ReactiveQuery(new Query(this, query));
@@ -478,6 +492,10 @@ _.extend(Mapping.prototype, {
                     configurable: true
                 });
             });
+
+            _.each(Object.keys(this.methods), function (methodName) {
+                 newModel[methodName] = this.methods[methodName].bind(newModel);
+            }.bind(this));
 
             Object.defineProperty(newModel, this.id, {
                 get: function () {

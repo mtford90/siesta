@@ -22,7 +22,7 @@ describe('object!!', function () {
         collection.install(done);
     });
 
-    it.only('get attributes', function (done) {
+    it('get attributes', function (done) {
         mapping.map({id: 1, colour: 'red', name: 'Aston martin'})
             .then(function (car) {
                 var attributes = car.getAttributes();

@@ -99,7 +99,7 @@ _.extend(Collection.prototype, {
                 util.parallel(tasks, function (err) {
                     if (err) {
                         Logger.error('Failed to install collection', err);
-                        self._finaliseInstallation(err, callback);
+                        self._finaliseInstallation(err, callback, deferred);
                     }
                     else {
                         self.installed = true;
@@ -132,7 +132,7 @@ _.extend(Collection.prototype, {
                                 } else if (errors.length) {
                                     err = errors;
                                 }
-                                self._finaliseInstallation(err, callback);
+                                self._finaliseInstallation(err, callback, deferred);
                             })
                         }
                         else {
@@ -141,17 +141,17 @@ _.extend(Collection.prototype, {
                             } else if (errors.length) {
                                 err = errors;
                             }
-                            self._finaliseInstallation(err, callback);
+                            self._finaliseInstallation(err, callback, deferred);
                         }
                     }
                 });
 
             } else {
-                self._finaliseInstallation(null, callback);
+                self._finaliseInstallation(null, callback, deferred);
             }
         } else {
             var err = new InternalSiestaError('Collection "' + this._name + '" has already been installed');
-            self._finaliseInstallation(err, callback);
+            self._finaliseInstallation(err, callback, deferred);
         }
         return deferred ? deferred.promise : null;
     },
@@ -160,14 +160,17 @@ _.extend(Collection.prototype, {
      * Mark this collection as installed, and place the collection on the global Siesta object.
      * @param  {Object}   err
      * @param  {Function} callback
+     * @param {Q.promise} deferred
      * @class Collection
      */
-    _finaliseInstallation: function (err, callback) {
+    _finaliseInstallation: function (err, callback, deferred) {
         if (!err) {
             this.installed = true;
             var index = require('./index');
             index[this._name] = this;
         }
+        if (err)deferred.reject(err);
+        else deferred.resolve();
         if (callback) callback(err);
     },
     /**
