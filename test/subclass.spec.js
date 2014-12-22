@@ -5,7 +5,7 @@ var SiestaModel = require('../core/siestaModel').SiestaModel
     , cache = require('../core/cache')
     , Collection = require('../core/collection').Collection;
 
-describe.only('Subclass', function () {
+describe('Subclass', function () {
 
     describe('hierarchy', function () {
         var collection, Car, SportsCar;
@@ -64,6 +64,200 @@ describe.only('Subclass', function () {
             assert.include(Car._attributeNames, 'colour');
             assert.include(Car._attributeNames, 'name');
         });
+    });
+
+    describe('relationships', function () {
+        var collection, Car, SportsCar, Person;
+
+        var mike;
+
+        describe('names', function () {
+            beforeEach(function (done) {
+                s.reset(true);
+                collection = new Collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: 'OneToMany',
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['maxSpeed']
+                });
+                Person = collection.model('Person', {
+                    attributes: ['age', 'name']
+                });
+
+                collection.install(done);
+            });
+            it('child attributes', function () {
+                assert.include(SportsCar._relationshipNames, 'owner');
+            });
+
+            it('parent attributes', function () {
+                assert.include(Car._relationshipNames, 'owner');
+            });
+
+        });
+
+        describe('relationship types', function () {
+
+            describe('OneToMany', function () {
+                beforeEach(function (done) {
+                    s.reset(true);
+                    collection = new Collection('myCollection');
+                    Car = collection.model('Car', {
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: 'OneToMany',
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                    SportsCar = Car.child('SportsCar', {
+                        attributes: ['maxSpeed']
+                    });
+                    Person = collection.model('Person', {
+                        attributes: ['age', 'name']
+                    });
+
+                    collection.install()
+                        .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                            mike = _mike;
+                            Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                                .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
+                                .then(function () {
+                                    done();
+                                })
+                                .catch(done)
+                                .done();
+                        })
+                    ).catch(done).done();
+
+                });
+
+                it('same relationship', function () {
+                    assert.ok(mike);
+                    assert.equal(mike.cars.length, 2);
+                    var car = _.filter(mike.cars, function (x) {return x.mapping == Car})[0]
+                        , sportsCar = _.filter(mike.cars, function (x) {return x.mapping == SportsCar})[0];
+                    assert.ok(car);
+                    assert.ok(sportsCar);
+                    assert.equal(car.owner, mike);
+                    assert.equal(sportsCar.owner, mike);
+                });
+            });
+
+            describe('OneToOne', function () {
+                beforeEach(function (done) {
+                    s.reset(true);
+                    collection = new Collection('myCollection');
+                    Car = collection.model('Car', {
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owner: {
+                                mapping: 'Person',
+                                type: 'OneToOne',
+                                reverse: 'car'
+                            }
+                        }
+                    });
+                    SportsCar = Car.child('SportsCar', {
+                        attributes: ['maxSpeed']
+                    });
+                    Person = collection.model('Person', {
+                        attributes: ['age', 'name']
+                    });
+
+                    collection.install()
+                        .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                            mike = _mike;
+                            Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                                .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
+                                .then(function () {
+                                    done();
+                                })
+                                .catch(done)
+                                .done();
+                        })
+                    ).catch(done).done();
+
+                });
+
+                it('same relationship', function (done) {
+                    assert.ok(mike);
+                    assert.ok(mike.car.isInstanceOf(SportsCar));
+                    assert.equal(mike.car.owner, mike);
+                    Car.all().execute().then(function (cars) {
+                        var car = _.filter(cars, function (x) {return x.mapping == Car})[0]
+                            , sportsCar = _.filter(cars, function (x) {return x.mapping == SportsCar})[0];
+                        assert.ok(car);
+                        assert.ok(sportsCar);
+                        assert.notOk(car.owner, 'The plain car should no longer have an owner');
+                        done();
+                    });
+                });
+            });
+
+            describe('ManyToMany', function () {
+                beforeEach(function (done) {
+                    s.reset(true);
+                    collection = new Collection('myCollection');
+                    Car = collection.model('Car', {
+                        attributes: ['colour', 'name'],
+                        relationships: {
+                            owners: {
+                                mapping: 'Person',
+                                type: 'ManyToMany',
+                                reverse: 'cars'
+                            }
+                        }
+                    });
+                    SportsCar = Car.child('SportsCar', {
+                        attributes: ['maxSpeed']
+                    });
+                    Person = collection.model('Person', {
+                        attributes: ['age', 'name']
+                    });
+
+                    collection.install()
+                        .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                            mike = _mike;
+                            Car.map({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
+                                .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owners: [{_id: mike._id}]}))
+                                .then(function () {
+                                    done();
+                                })
+                                .catch(done)
+                                .done();
+                        })
+                    ).catch(done).done();
+
+                });
+
+                it('same relationship', function () {
+                    assert.ok(mike);
+                    assert.equal(mike.cars.length, 2);
+                    var car = _.filter(mike.cars, function (x) {return x.mapping == Car})[0]
+                        , sportsCar = _.filter(mike.cars, function (x) {return x.mapping == SportsCar})[0];
+                    assert.ok(car);
+                    assert.ok(sportsCar);
+                    assert.include(car.owners, mike);
+                    assert.include(sportsCar.owners, mike);
+                });
+            });
+
+
+
+        });
+
+
     });
 
     describe('query', function () {
@@ -151,8 +345,6 @@ describe.only('Subclass', function () {
                 attributes: ['attr']
             });
 
-
-
             collection.install(done);
         });
 
@@ -189,6 +381,18 @@ describe.only('Subclass', function () {
             assert.notOk(SuperCar.isAncestorOf(Person));
         });
 
+        it('isInstanceOf', function (done) {
+            SuperCar.map({colour: 'red', name: 'lamborghini', attr: 1})
+                .then(function (car) {
+                    assert.ok(car.isInstanceOf(SuperCar));
+                    assert.ok(car.isInstanceOf(SportsCar));
+                    assert.ok(car.isInstanceOf(Car));
+                    assert.notOk(car.isInstanceOf(Person));
+                    done();
+                })
+                .catch(done)
+                .done();
+        });
 
 
     })

@@ -98,7 +98,7 @@ function RelationshipProxy(opts) {
         this.isReverse = !this._opts.isForward;
     }
     else if (this._opts.isReverse === undefined && this._opts.isForward === undefined) {
-        throw InternalSiestaError('Must specify either isReverse or isForward when configuring relationship proxy.');
+        throw new InternalSiestaError('Must specify either isReverse or isForward when configuring relationship proxy.');
     }
 }
 

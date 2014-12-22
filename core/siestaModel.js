@@ -105,9 +105,13 @@ _.extend(SiestaModel.prototype, {
     }
 });
 
+// Inspection
 _.extend(SiestaModel.prototype, {
     getAttributes: function () {
         return _.extend({}, this.__values);
+    },
+    isInstanceOf: function (model) {
+        return this.mapping == model || this.mapping.isDescendantOf(model);
     }
 });
 

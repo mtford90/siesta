@@ -16,7 +16,7 @@ var log = require('./operation/log')
     , store = require('./store')
     , extend = require('extend')
     , coreChanges = require('./changes')
-    , notificationCentre = require('./notificationCentre')
+    , notificationCentre = require('./notificationCentre').notificationCentre
     , wrapArray = require('./notificationCentre').wrapArray
     , OneToManyProxy = require('./oneToManyProxy')
     , OneToOneProxy = require('./oneToOneProxy')
@@ -41,18 +41,20 @@ function Mapping(opts) {
 
     Object.defineProperty(this, '_attributeNames', {
         get: function () {
-            var fields = [];
+            var names = [];
             if (self.id) {
-                fields.push(self.id);
+                names.push(self.id);
             }
             _.each(self.attributes, function (x) {
-                fields.push(x.name)
+                names.push(x.name)
             });
-            return fields;
+            return names;
         },
         enumerable: true,
         configurable: true
     });
+
+
 
     /**
      * @name type
@@ -95,6 +97,13 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'singleton', self._opts);
     defineSubProperty.call(this, 'statics', self._opts);
     defineSubProperty.call(this, 'methods', self._opts);
+
+    Object.defineProperty(this, '_relationshipNames', {
+        get: function () {
+            return Object.keys(self.relationships);
+        },
+        enumerable: true
+    });
 
     if (!this.statics) this.statics = {};
     if (!this.methods) this.methods = {};
@@ -582,8 +591,9 @@ _.extend(Mapping.prototype, {
         }
         opts.attributes
             = Array.prototype.concat.call(opts.attributes || [], this._opts.attributes);
+        opts.relationships = _.extend(opts.relationships || {}, this._opts.relationships);
         var collection = CollectionRegistry[this.collection];
-        var mapping = collection.model(opts);
+        var mapping = collection.model(opts.name, opts);
         mapping.parent = this;
         this.children.push(mapping);
         return  mapping;
