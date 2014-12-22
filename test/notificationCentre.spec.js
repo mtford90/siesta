@@ -11,7 +11,7 @@ describe('Notification Centre', function () {
 
     describe('emissions', function () {
         it('simple emissions work', function (done) {
-            notificationCentre.on('blah', function () {
+            notificationCentre.once('blah', function () {
                 done();
             });
             notificationCentre.emit('blah');
@@ -19,7 +19,7 @@ describe('Notification Centre', function () {
 
         it('emissions with payloads work', function (done) {
             var p = {};
-            notificationCentre.on('blah', function (payload) {
+            notificationCentre.once('blah', function (payload) {
                 assert.equal(payload, p);
                 done();
             });
