@@ -181,6 +181,8 @@ describe.only('Subclass', function () {
             assert.notOk(Person.isDescendantOf(Car));
         });
 
+
+
     })
 
 

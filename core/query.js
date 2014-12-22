@@ -61,24 +61,13 @@ _.extend(Query.prototype, {
         return res;
     },
     /**
-     * Return all descendants in the hierarchy of the given model.
-     * @param model
-     */
-    gatherDescendants: function (model) {
-        return _.reduce(model.children, function (memo, descendant) {
-            return Array.prototype.concat.call(memo, this.gatherDescendants(descendant));
-        }.bind(this), model.children);
-    },
-    /**
      * Return all model instances in the cache.
      * @private
      */
     _getCacheByLocalId: function () {
-        var mapping = this.mapping;
-        var descendants = this.gatherDescendants(mapping);
-        return _.reduce(descendants, function (memo, childMapping) {
+        return _.reduce(this.mapping.descendants, function (memo, childMapping) {
             return _.extend(memo, cacheForMapping(childMapping));
-        }, _.extend({}, cacheForMapping(mapping)));
+        }, _.extend({}, cacheForMapping(this.mapping)));
     },
     _executeInMemory: function (callback) {
         var deferred = window.q ? window.q.defer() : null;

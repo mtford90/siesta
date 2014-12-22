@@ -131,6 +131,15 @@ function Mapping(opts) {
 
     this.children = [];
 
+    Object.defineProperty(this, 'descendants', {
+        get: function () {
+            return _.reduce(self.children, function (memo, descendant) {
+                return Array.prototype.concat.call(memo, descendant.descendants);
+            }.bind(self), _.extend([], self.children));
+        },
+        enumerable: true
+    });
+
 }
 
 _.extend(Mapping.prototype, {
