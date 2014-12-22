@@ -45,8 +45,11 @@ function _load(collectionName) {
 /**
  * Save all changes down to PouchDB.
  */
-function save() {
+function save(callback) {
+    var deferred = window.q ? window.q.defer() : null;
+    callback = callback || function () {};
 
+    return deferred ? deferred.promise: null;
 }
 
 siesta.on('Siesta', function (n) {
@@ -56,7 +59,7 @@ siesta.on('Siesta', function (n) {
     if (!changedObject) {
         throw new _i.error.InternalSiestaError('No obj field in notification received by storage extension');
     }
-    if (ident in unsavedObjectsHash) {
+    if (!(ident in unsavedObjectsHash)) {
         unsavedObjectsHash[ident] = changedObject;
         unsavedObjects.push(changedObject);
     }
@@ -65,7 +68,11 @@ siesta.on('Siesta', function (n) {
 var storage = {
     _load: _load,
     save: save,
-    _serialise: _serialise
+    _serialise: _serialise,
+    _reset: function () {
+        unsavedObjects = [];
+        unsavedObjectsHash = {};
+    }
 };
 
 Object.defineProperty(storage, '_unsavedObjects', {

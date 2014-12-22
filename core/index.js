@@ -41,6 +41,7 @@ siesta.reset = function () {
     cache.reset();
     CollectionRegistry.reset();
     siesta.ext.http.DescriptorRegistry.reset();
+    siesta.ext.storage._reset();
     //noinspection JSAccessibilityCheck
 };
 
@@ -286,6 +287,15 @@ siesta.parallel = util.parallel;
 siesta.extend = util._.extend;
 siesta.isArray = util.isArray;
 
+siesta.save = function () {
+    if (siesta.ext.storageEnabled) {
+        var save = siesta.ext.storage.save;
+        return save.apply(save, arguments);
+    }
+    else {
+        throw new Error('Cannot save without storage module enabled.');
+    }
+};
 
 if (typeof window != 'undefined') {
     window.siesta = siesta;

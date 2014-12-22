@@ -96,4 +96,30 @@ describe('storage', function () {
 
     });
 
+    describe.only('save', function () {
+        var collection, Car;
+
+        beforeEach(function (done) {
+            s.reset(true);
+            collection = new Collection('myCollection');
+            Car = collection.model('Car', {
+                attributes: ['colour', 'name']
+            });
+            collection.install()
+                .then(Car.map({colour: 'black', name: 'bentley', id: 2}))
+                .then(done)
+                .catch(done)
+                .done();
+        });
+
+        it('save', function (done) {
+            assert.equal(1, s.ext.storage._unsavedObjects.length, 'Should be one car to save.');
+            var car = s.ext.storage._unsavedObjects[0];
+            siesta.save().then(function () {
+                assert.equal(0, s.ext.storage._unsavedObjects.length, 'Should be no more cars');
+                done();
+            }).catch(done).done();
+        })
+    })
+
 });
