@@ -1,5 +1,5 @@
 /**
- * Base functionality for relationships
+ * Base functionality for relationships.
  * @module relationships
  */
 
