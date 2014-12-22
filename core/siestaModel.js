@@ -24,13 +24,9 @@ function SiestaModel(mapping) {
         enumerable: true,
         configurable: true
     });
-
-
     defineSubProperty.call(this, 'type', this.mapping);
     defineSubProperty.call(this, 'collection', this.mapping);
     defineSubProperty.call(this, '_attributeNames', this.mapping);
-
-
     Object.defineProperty(this, '_relationshipNames', {
         get: function () {
             var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
@@ -45,20 +41,6 @@ function SiestaModel(mapping) {
         enumerable: true,
         configurable: true
     });
-
-
-    this.isFault = false;
-
-    Object.defineProperty(this, 'isSaved', {
-        get: function () {
-            return !!self._rev;
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    this._rev = null;
-
     this.removed = false;
 }
 
