@@ -29,6 +29,7 @@ var server;
 function fakeServer() {
     if (!server) {
         server = sinon.fakeServer.create();
+        server.autoRespond = true;
     }
     return server;
 }

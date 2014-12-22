@@ -64,6 +64,7 @@
     "mocha": "~1.20.1",
     "mocha-notifier-reporter": "^0.1.0",
     "mocha-phantomjs": "^3.5.2",
+    "mocha-sinon": "^1.1.4",
     "q": "^1.1.1",
     "sinon": "~1.10.3",
     "source-map-support": "^0.2.8",

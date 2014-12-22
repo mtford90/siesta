@@ -11,8 +11,7 @@ var data = {
 };
 
 var siesta = require('../../core/index')
-    , assert = require('chai').assert
-    , testUtil = require('../util');
+    , assert = require('chai').assert;
 
 describe('hacker news integration test', function () {
     // When @HiroAgustin tried to pass name of mapping to descriptor
@@ -24,11 +23,19 @@ describe('hacker news integration test', function () {
 
     beforeEach(function () {
         siesta.reset(true);
+        console.log('sinon', sinon);
+        this.sinon = sinon.sandbox.create();
+        this.server = sinon.fakeServer.create();
+        this.server.autoRespond = true;
+        server = this.server;
     });
 
-    before(function () {
-        server = testUtil.fakeServer()
+    afterEach(function () {
+        this.sinon.restore();
+        this.server.restore();
+        server = null;
     });
+
 
     it('problem with mapping', function () {
         var HackerNews = new siesta.Collection('HackerNews');
@@ -87,7 +94,7 @@ describe('hacker news integration test', function () {
                     }
                     done(err);
                 });
-                server.respond();
+                ;
             }
         });
     });
@@ -124,7 +131,7 @@ describe('hacker news integration test', function () {
                     assert.ok(item.__values.id, 'should have id');
                     done(err);
                 });
-                server.respond();
+                ;
             }
         });
     });
@@ -160,7 +167,7 @@ describe('hacker news integration test', function () {
             HackerNews.GET('item/8582985.json', function (err, item) {
                 done();
             });
-            server.respond();
+            ;
         });
     });
 

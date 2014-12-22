@@ -1,6 +1,5 @@
 var s = require('../core/index'),
-    assert = require('chai').assert,
-    testUtil = require('./util');
+    assert = require('chai').assert;
 
 /*globals describe, it, beforeEach, before, after */
 describe('http!', function () {
@@ -15,11 +14,18 @@ describe('http!', function () {
     var server;
 
     beforeEach(function () {
-        s.reset(true);
+        siesta.reset(true);
+        console.log('sinon', sinon);
+        this.sinon = sinon.sandbox.create();
+        this.server = sinon.fakeServer.create();
+        this.server.autoRespond = true;
+        server = this.server;
     });
 
-    before(function () {
-        server = testUtil.fakeServer()
+    afterEach(function () {
+        this.sinon.restore();
+        this.server.restore();
+        server = null;
     });
 
 
@@ -99,7 +105,7 @@ describe('http!', function () {
                         resp = _resp;
                         done();
                     });
-                    server.respond();
+                    ;
                 });
 
             });
@@ -137,7 +143,7 @@ describe('http!', function () {
                         resp = _resp;
                         done();
                     });
-                    server.respond();
+                    ;
                 });
 
 
@@ -186,7 +192,7 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        server.respond();
+                        ;
                     });
 
                     it('no error', function () {
@@ -247,7 +253,7 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        server.respond();
+                        ;
                     });
 
                     it('returns 2 car objects', function () {
@@ -301,7 +307,7 @@ describe('http!', function () {
                                 resp = _resp;
                                 done();
                             });
-                            server.respond();
+                            ;
                         });
                     });
 
@@ -355,7 +361,7 @@ describe('http!', function () {
                                 done();
                             });
                             assert.ok(_objectToDelete.removed);
-                            server.respond();
+                            ;
                         });
                     });
                 });
@@ -389,7 +395,7 @@ describe('http!', function () {
                                 done();
                             });
                             assert.notOk(_objectToDelete.removed);
-                            server.respond();
+                            ;
                         });
                     });
                 });
@@ -423,7 +429,7 @@ describe('http!', function () {
                                 done();
                             });
                             assert.ok(_objectToDelete.removed);
-                            server.respond();
+                            ;
                         });
                     });
                 });
@@ -476,7 +482,7 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        server.respond();
+                        ;
                     });
                 });
 
@@ -542,7 +548,7 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        server.respond();
+                        ;
                     });
                 });
 
@@ -610,7 +616,7 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        server.respond();
+                        ;
                     });
                 });
 
@@ -660,7 +666,7 @@ describe('http!', function () {
                         resp = _resp;
                         done();
                     });
-                    server.respond();
+                    ;
                 });
                 it('no err', function () {
                     assert.notOk(err);
@@ -718,7 +724,7 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        server.respond();
+                        ;
                     });
                 });
                 it('no err', function () {
@@ -880,7 +886,7 @@ describe('http!', function () {
                         assert.notOk(obj);
                         done();
                     });
-                    server.respond();
+                    ;
                 }
 
             });
