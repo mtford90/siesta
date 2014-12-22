@@ -12,7 +12,7 @@ describe('recursive relationships', function() {
         s.reset(true);
         collection = new Collection('MyCollection');
         collection.baseURL = 'https://api.github.com';
-        Repo = collection.mapping('Repo', {
+        Repo = collection.model('Repo', {
             id: 'id',
             attributes: ['name'],
             relationships: {

@@ -24,7 +24,7 @@ describe('intercollection relationships', function() {
         myOfflineCollection = new Collection('MyOfflineCollection');
         myOnlineCollection = new Collection('MyOnlineCollection');
 
-        myOfflineCollection.mapping('Folder', {
+        myOfflineCollection.model('Folder', {
             attributes: ['name'],
             relationships: {
                 createdBy: {
@@ -35,7 +35,7 @@ describe('intercollection relationships', function() {
             }
         });
 
-        myOfflineCollection.mapping('DownloadedPhoto', {
+        myOfflineCollection.model('DownloadedPhoto', {
             attributes: ['creationDate'],
             relationships: {
                 createdBy: {
@@ -56,14 +56,14 @@ describe('intercollection relationships', function() {
             }
         });
 
-        myOfflineCollection.mapping('User', {
+        myOfflineCollection.model('User', {
             attributes: ['username'],
             indexes: ['username']
         });
 
 
 
-        myOnlineCollection.mapping('Photo', {
+        myOnlineCollection.model('Photo', {
             id: 'photoId',
             attributes: ['height', 'width', 'url'],
             relationships: {
@@ -75,7 +75,7 @@ describe('intercollection relationships', function() {
             }
         });
 
-        myOnlineCollection.mapping('User', {
+        myOnlineCollection.model('User', {
             id: 'userId',
             attributes: ['username', 'name']
         });

@@ -87,12 +87,12 @@ Siesta solves this issue through the use of object mapping. A **mapping** descri
 ```javascript
 var Forum = new Collection('Forum');
 
-var User = Forum.mapping({
+var User = Forum.model({
     name: 'User',
     attributes: ['username', 'email']
 });
                                    
-var Thread = Forum.mapping({
+var Thread = Forum.model({
     name: 'Thread',
     attributes: ['title']
     relationships: {

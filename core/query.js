@@ -7,7 +7,7 @@ var log = require('./operation/log')
     , util = require('./util');
 
 var Logger = log.loggerWithName('Query');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 /**
  * @class  [Query description]

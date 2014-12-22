@@ -10,7 +10,7 @@ describe('statistics', function() {
     beforeEach(function(done) {
         siesta.reset(true);
         coll = new Collection('myCollection');
-        Car = coll.mapping('Car', {
+        Car = coll.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -21,7 +21,7 @@ describe('statistics', function() {
                 }
             }
         });
-        Person = coll.mapping('Person', {
+        Person = coll.model('Person', {
             id: 'id',
             attributes: ['age', 'name']
         });

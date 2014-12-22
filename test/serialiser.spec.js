@@ -16,10 +16,10 @@ describe('serialisers', function() {
     describe('id serialiser', function() {
         beforeEach(function(done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 attributes: ['name', 'age']
             });
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -68,7 +68,7 @@ describe('serialisers', function() {
         beforeEach(function(done) {
             collection = new Collection('myCollection');
 
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 attributes: ['name', 'age'],
                 id: 'id',
                 relationships: {
@@ -79,7 +79,7 @@ describe('serialisers', function() {
                     }
                 }
             });
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -90,7 +90,7 @@ describe('serialisers', function() {
                     }
                 }
             });
-            vitalSignsMapping = collection.mapping('VitalSigns', {
+            vitalSignsMapping = collection.model('VitalSigns', {
                 id: 'id',
                 attributes: ['heartRate', 'bloodPressure']
             });

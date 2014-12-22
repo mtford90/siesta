@@ -34,7 +34,7 @@ describe('perform mapping', function () {
         describe('default values', function () {
             it('simple', function (done) {
                 var MyCollection = new Collection('MyCollection'),
-                    Mapping = MyCollection.mapping('Mapping', {
+                    Mapping = MyCollection.model('Mapping', {
                         id: 'id',
                         attributes: [
                             {
@@ -65,7 +65,7 @@ describe('perform mapping', function () {
     describe('empty', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -83,7 +83,7 @@ describe('perform mapping', function () {
     describe('no id', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -111,7 +111,7 @@ describe('perform mapping', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -197,11 +197,11 @@ describe('perform mapping', function () {
         describe('foreign key', function () {
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
-                personMapping = collection.mapping('Person', {
+                personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -852,11 +852,11 @@ describe('perform mapping', function () {
             var personMapping;
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
-                personMapping = collection.mapping('Person', {
+                personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1348,7 +1348,7 @@ describe('perform mapping', function () {
     describe('caveats', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -1374,11 +1374,11 @@ describe('perform mapping', function () {
             var personMapping;
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
-                personMapping = collection.mapping('Person', {
+                personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1424,11 +1424,11 @@ describe('perform mapping', function () {
             var personMapping;
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
-                personMapping = collection.mapping('Person', {
+                personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1476,7 +1476,7 @@ describe('perform mapping', function () {
             describe('no relationships', function () {
                 beforeEach(function (done) {
                     collection = new Collection('myCollection');
-                    carMapping = collection.mapping('Car', {
+                    carMapping = collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
@@ -1512,11 +1512,11 @@ describe('perform mapping', function () {
 
                 beforeEach(function (done) {
                     collection = new Collection('myCollection');
-                    personMapping = collection.mapping('Person', {
+                    personMapping = collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = collection.mapping('Car', {
+                    carMapping = collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -1593,11 +1593,11 @@ describe('perform mapping', function () {
 
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
-                personMapping = collection.mapping('Person', {
+                personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {

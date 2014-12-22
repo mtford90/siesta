@@ -12,7 +12,7 @@ describe('cache...', function() {
     beforeEach(function(done) {
         siesta.reset(true); 
         var coll = new Collection('myCollection');
-        mapping = coll.mapping('Car', {
+        mapping = coll.model('Car', {
             id: 'id',
             attributes: ['colour', 'name']
         });
@@ -78,11 +78,11 @@ describe('cache...', function() {
 
         beforeEach(function(done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {

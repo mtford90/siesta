@@ -60,11 +60,11 @@ describe('collection setup', function() {
 
         describe('configure with mappings', function() {
             it('name before object', function(done) {
-                var mapping1 = collection.mapping('mapping1', {
+                var mapping1 = collection.model('mapping1', {
                     id: 'id',
                     attributes: ['attr1', 'attr2']
                 });
-                var mapping2 = collection.mapping('mapping2', {
+                var mapping2 = collection.model('mapping2', {
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']
                 });
@@ -77,12 +77,12 @@ describe('collection setup', function() {
             });
 
             it('name within object', function(done) {
-                var mapping1 = collection.mapping({
+                var mapping1 = collection.model({
                     name: 'mapping1',
                     id: 'id',
                     attributes: ['attr1', 'attr2']
                 });
-                var mapping2 = collection.mapping({
+                var mapping2 = collection.model({
                     name: 'mapping2',
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']
@@ -97,7 +97,7 @@ describe('collection setup', function() {
 
             it('no name specified within object', function() {
                 assert.throws(function() {
-                    collection.mapping({
+                    collection.model({
                         id: 'id',
                         attributes: ['attr1', 'attr2']
                     });
@@ -105,7 +105,7 @@ describe('collection setup', function() {
             });
 
             it('vararg', function(done) {
-                var mappings = collection.mapping({
+                var mappings = collection.model({
                     name: 'mapping1',
                     id: 'id',
                     attributes: ['attr1', 'attr2']
@@ -123,7 +123,7 @@ describe('collection setup', function() {
             });
 
             it('array', function(done) {
-                var mappings = collection.mapping([{
+                var mappings = collection.model([{
                     name: 'mapping1',
                     id: 'id',
                     attributes: ['attr1', 'attr2']
@@ -144,11 +144,11 @@ describe('collection setup', function() {
         describe('configure with descriptors', function() {
             var mapping1, mapping2;
             beforeEach(function() {
-                mapping1 = collection.mapping('mapping1', {
+                mapping1 = collection.model('mapping1', {
                     id: 'id',
                     attributes: ['attr1', 'attr2']
                 });
-                mapping2 = collection.mapping({
+                mapping2 = collection.model({
                     name: 'mapping2',
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']

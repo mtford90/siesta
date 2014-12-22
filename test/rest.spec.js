@@ -32,7 +32,7 @@ describe('rest', function () {
 
             beforeEach(function (done) {
                 collection = new Collection('myCollection');
-                collection.mapping('Person', {
+                collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });

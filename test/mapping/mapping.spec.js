@@ -52,7 +52,7 @@ describe('mapping!', function () {
     describe('methods', function () {
         it('valid', function (done) {
             var C = new s.Collection('C');
-            var M = C.mapping('M', {
+            var M = C.model('M', {
                 methods: {
                     f: function () {
                         return this.attr
@@ -74,7 +74,7 @@ describe('mapping!', function () {
     describe('statics', function () {
         it('valid', function (done) {
             var C = new s.Collection('C');
-            var M = C.mapping('M', {
+            var M = C.model('M', {
                 statics: {
                     f: function () {
                         return this
@@ -93,7 +93,7 @@ describe('mapping!', function () {
             var staticMethod = function () {
                 return 'a';
             };
-            var M = C.mapping('M', {
+            var M = C.model('M', {
                 statics: {
                     query: staticMethod
                 },

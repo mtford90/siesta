@@ -14,7 +14,7 @@ describe('query...', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            mapping = collection.mapping('Person', {
+            mapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -92,11 +92,11 @@ describe('query...', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -197,7 +197,7 @@ describe('query...', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -330,7 +330,7 @@ describe('query...', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -419,7 +419,7 @@ describe('query...', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -508,7 +508,7 @@ describe('query...', function () {
 
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -595,11 +595,11 @@ describe('query...', function () {
     describe('errors', function () {
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -641,7 +641,7 @@ describe('query...', function () {
         var collection, Person;
         beforeEach(function (done) {
             collection = new Collection('myCollection');
-            Person = collection.mapping('Person', {
+            Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });

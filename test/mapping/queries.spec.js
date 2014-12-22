@@ -16,7 +16,7 @@ describe('mapping queries', function() {
         var collection, mapping;
         beforeEach(function(done) {
             collection = new Collection('myCollection');
-            mapping = collection.mapping('Car', {
+            mapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['color', 'name']
             });
@@ -79,7 +79,7 @@ describe('mapping queries', function() {
 
         beforeEach(function(done) {
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -90,7 +90,7 @@ describe('mapping queries', function() {
                     }
                 }
             });
-            personMapping = collection.mapping('Person', {
+            personMapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });

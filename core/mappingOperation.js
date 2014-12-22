@@ -15,7 +15,7 @@ var Store = require('./store')
     , ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {

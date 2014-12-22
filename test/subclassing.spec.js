@@ -35,7 +35,7 @@ describe('subclassing', function () {
     }
 
     it('should instantiate with subclass if present', function (done) {
-        carMapping = collection.mapping('Car', {
+        carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             subclass: CarObject
@@ -49,7 +49,7 @@ describe('subclassing', function () {
     });
 
     it('should instantiate with SiestaModel if not present', function (done) {
-        carMapping = collection.mapping('Car', {
+        carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name']
         });
@@ -66,7 +66,7 @@ describe('subclassing', function () {
 
         CarObject.prototype = Object.create(SiestaModel.prototype);
         assert.throws(function () {
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 subclass: CarObject
@@ -80,7 +80,7 @@ describe('subclassing', function () {
         }
 
         assert.throws(function () {
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 subclass: CarObject
@@ -95,7 +95,7 @@ describe('subclassing', function () {
 
         CarObject.prototype = SiestaModel.prototype;
         assert.throws(function () {
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 subclass: CarObject

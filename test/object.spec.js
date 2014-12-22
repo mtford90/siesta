@@ -13,7 +13,7 @@ describe('object!!', function () {
     beforeEach(function (done) {
         s.reset(true);
         collection = new Collection('myCollection');
-        mapping = collection.mapping({
+        mapping = collection.model({
             name: 'Car',
             id: 'id',
             attributes: ['colour', 'name'],

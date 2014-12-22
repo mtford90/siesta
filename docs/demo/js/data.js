@@ -9,7 +9,7 @@ function configureCollection() {
 }
 
 function configureMappings() {
-    Repo = collection.mapping('Repo', {
+    Repo = collection.model('Repo', {
         id: 'id',
         attributes: ['name', 'full_name', 'description', 'html_url', 'subscribers_count', 'stargazers_count', 'forks'],
         relationships: {
@@ -25,7 +25,7 @@ function configureMappings() {
             }
         }
     });
-    User = collection.mapping('User', {
+    User = collection.model('User', {
         id: 'id',
         attributes: ['login', 'avatar_url', 'html_url'],
         relationships: {

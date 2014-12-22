@@ -67,12 +67,12 @@ myColl.install().then(myOtherColl.install()).then(function () { /* ... */ } );
 
 ## Configure mappings
 
-`Collection.prototype.mapping(opts)` is used for registering object mappings in a particular collection.
+`Collection.prototype.model(opts)` is used for registering object mappings in a particular collection.
 
 Mappings can really simple and just map attributes e.g. in the case of GitHub users:
 
 ```js
-var User = GitHub.mapping({
+var User = GitHub.model({
 	name: 'User',
     attributes: ['login', 'avatar_url', 'html_url']
 });
@@ -81,7 +81,7 @@ var User = GitHub.mapping({
 Or we can setup complex relationships between our mappings:
 
 ```js
-var Repo = GitHub.mapping({
+var Repo = GitHub.model({
 	name: 'Repo',
 	id: 'id', 
 	attributes: ['name', 'description', 'url', 'num_watchers', 'num_forks', 'num_stars'],
@@ -131,7 +131,7 @@ We can also define singleton mappings, where only ever one model will be instant
 
 ```js
 // Maps loosely to https://api.github.com
-var RateLimit = GitHub.mapping({
+var RateLimit = GitHub.model({
 	name: 'RateLimit',
 	attributes: ['limit', 'remaining', 'reset'],
 	singleton: true

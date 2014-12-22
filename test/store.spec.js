@@ -12,7 +12,7 @@ describe('store......', function() {
     beforeEach(function(done) {
         s.reset(true);
         collection = new Collection('myCollection');
-        carMapping = collection.mapping('Car', {
+        carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name']
         });

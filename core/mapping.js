@@ -28,7 +28,7 @@ var log = require('./operation/log')
     ;
 
 var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 /**
  *

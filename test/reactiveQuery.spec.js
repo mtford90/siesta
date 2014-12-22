@@ -9,7 +9,7 @@ describe('reactive query', function () {
     beforeEach(function (done) {
         s.reset();
         collection = new Collection('myCollection');
-        mapping = collection.mapping('Person', {
+        mapping = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });

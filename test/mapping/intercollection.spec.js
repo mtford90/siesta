@@ -16,7 +16,7 @@ describe('intercoll relationships', function () {
 
     function configureAPI(type, done) {
         collection = new Collection('myCollection');
-        carMapping = collection.mapping('Car', {
+        carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -27,7 +27,7 @@ describe('intercoll relationships', function () {
                 }
             }
         });
-        personMapping = collection.mapping('Person', {
+        personMapping = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });
@@ -51,7 +51,7 @@ describe('intercoll relationships', function () {
             beforeEach(function (done) {
                 anotherCollection = new Collection('anotherCollection');
 
-                anotherCollection.mapping('AnotherMapping', {
+                anotherCollection.model('AnotherMapping', {
                     attributes: ['field'],
                     relationships: {
                         person: {

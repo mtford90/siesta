@@ -19,7 +19,7 @@ describe('singleton mapping', function () {
     beforeEach(function (done) {
         s.reset(true);
         collection = new Collection('Car');
-        Car = collection.mapping('Car', {
+        Car = collection.model('Car', {
             id: 'id',
             attributes: [
                 {name: 'colour', default: 'red'},
@@ -127,7 +127,7 @@ describe('singleton mapping', function () {
             FirstChildConfig, SecondChildConfig;
         beforeEach(function (done) {
             MoreComplicatedCollection = new Collection('MyCollection');
-            ParentConfig = MoreComplicatedCollection.mapping('ParentConfig', {
+            ParentConfig = MoreComplicatedCollection.model('ParentConfig', {
                 relationships: {
                     settings: {
                         mapping: 'FirstChildConfig',
@@ -140,11 +140,11 @@ describe('singleton mapping', function () {
                 },
                 singleton: true
             });
-            FirstChildConfig = MoreComplicatedCollection.mapping('FirstChildConfig', {
+            FirstChildConfig = MoreComplicatedCollection.model('FirstChildConfig', {
                 attributes: ['field1', 'field2'],
                 singleton: true
             });
-            SecondChildConfig = MoreComplicatedCollection.mapping('SecondChildConfig', {
+            SecondChildConfig = MoreComplicatedCollection.model('SecondChildConfig', {
                 attributes: ['field3', 'field4'],
                 singleton: true
             });

@@ -69,7 +69,7 @@ describe('bulk mapping operation', function () {
 
             collection = new Collection('MyCollection');
             collection.baseURL = 'https://api.github.com';
-            Repo = collection.mapping('Repo', {
+            Repo = collection.model('Repo', {
                 id: 'id',
                 attributes: ['name', 'full_name', 'description'],
                 relationships: {
@@ -80,7 +80,7 @@ describe('bulk mapping operation', function () {
                     }
                 }
             });
-            User = collection.mapping('User', {
+            User = collection.model('User', {
                 id: 'id',
                 attributes: ['login']
             });
@@ -445,7 +445,7 @@ describe('bulk mapping operation', function () {
             s.reset(true);
             collection = new Collection('MyCollection');
             collection.baseURL = 'https://api.github.com';
-            Repo = collection.mapping('Repo', {
+            Repo = collection.model('Repo', {
                 id: 'id',
                 attributes: ['name', 'full_name', 'description'],
                 relationships: {
@@ -456,7 +456,7 @@ describe('bulk mapping operation', function () {
                     }
                 }
             });
-            User = collection.mapping('User', {
+            User = collection.model('User', {
                 id: 'id',
                 attributes: ['login'],
                 singleton: true
@@ -563,7 +563,7 @@ describe('bug', function () {
     beforeEach(function (done) {
         siesta.reset(true);
         coll = new Collection('myCollection');
-        Car = coll.mapping('Car', {
+        Car = coll.model('Car', {
             id: 'id',
             attributes: ['colour', 'name']
 

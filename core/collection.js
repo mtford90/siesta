@@ -181,7 +181,7 @@ _.extend(Collection.prototype, {
      * @return {Mapping}
      * @class Collection
      */
-    _mapping: function (name, opts) {
+    _model: function (name, opts) {
         if (name) {
             this._rawMappings[name] = opts;
             opts = extend(true, {}, opts);
@@ -198,29 +198,29 @@ _.extend(Collection.prototype, {
 
 
     /**
-     * Registers a mapping with this collection.
+     * Registers a model with this collection.
      * @param {String|Object} optsOrName An options object or the name of the mapping. Must pass options as second param if specify name.
      * @param {Object} opts Options if name already specified.
      * @return {Mapping}
      * @class Collection
      */
-    mapping: function () {
+    model: function () {
         var self = this;
         if (arguments.length) {
             if (arguments.length == 1) {
                 if (util.isArray(arguments[0])) {
                     return _.map(arguments[0], function (m) {
-                        return self._mapping(m.name, m);
+                        return self._model(m.name, m);
                     });
                 } else {
-                    return this._mapping(arguments[0].name, arguments[0]);
+                    return this._model(arguments[0].name, arguments[0]);
                 }
             } else {
                 if (typeof arguments[0] == 'string') {
-                    return this._mapping(arguments[0], arguments[1]);
+                    return this._model(arguments[0], arguments[1]);
                 } else {
                     return _.map(arguments, function (m) {
-                        return self._mapping(m.name, m);
+                        return self._model(m.name, m);
                     });
                 }
             }

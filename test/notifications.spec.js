@@ -32,7 +32,7 @@ describe('notifications', function() {
 
             beforeEach(function(done) {
                 collection = new Collection('myCollection');
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
@@ -124,7 +124,7 @@ describe('notifications', function() {
         describe('array notifications', function() {
             beforeEach(function(done) {
                 collection = new Collection('myCollection');
-                carMapping = collection.mapping('Car', {
+                carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colours', 'name']
                 });
@@ -405,7 +405,7 @@ describe('notifications', function() {
                 beforeEach(function(done) {
                     collection = new Collection('myCollection');
 
-                    carMapping = collection.mapping('Car', {
+                    carMapping = collection.model('Car', {
                         id: 'id',
                         attributes: ['colours', 'name'],
                         relationships: {
@@ -417,7 +417,7 @@ describe('notifications', function() {
                         }
                     });
 
-                    personMapping = collection.mapping('Person', {
+                    personMapping = collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
@@ -615,7 +615,7 @@ describe('notifications', function() {
                 beforeEach(function(done) {
                     collection = new Collection('myCollection');
 
-                    carMapping = collection.mapping('Car', {
+                    carMapping = collection.model('Car', {
                         id: 'id',
                         attributes: ['colours', 'name'],
                         relationships: {
@@ -627,7 +627,7 @@ describe('notifications', function() {
                         }
                     });
 
-                    personMapping = collection.mapping('Person', {
+                    personMapping = collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
@@ -796,7 +796,7 @@ describe('notifications', function() {
             genericNotif = null;
             collectionNotif = null;
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -875,7 +875,7 @@ describe('notifications', function() {
             genericNotif = null;
             collectionNotif = null;
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -954,7 +954,7 @@ describe('notifications', function() {
             genericNotif = null;
             collectionNotif = null;
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -1030,7 +1030,7 @@ describe('notifications', function() {
     describe('convenience', function () {
         beforeEach(function(done) {
             collection = new Collection('myCollection');
-            carMapping = collection.mapping('Car', {
+            carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });

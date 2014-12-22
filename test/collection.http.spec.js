@@ -31,11 +31,11 @@ describe('http!', function () {
 
     function constructCollection() {
         collection = new Collection('myCollection');
-        personMapping = collection.mapping('Person', {
+        personMapping = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });
-        carMapping = collection.mapping('Car', {
+        carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -46,7 +46,7 @@ describe('http!', function () {
                 }
             }
         });
-        vitalSignsMapping = collection.mapping('VitalSigns', {
+        vitalSignsMapping = collection.model('VitalSigns', {
             id: 'id',
             attributes: ['heartRate', 'bloodPressure'],
             relationships: {
@@ -832,11 +832,11 @@ describe('http!', function () {
     //describe('no descriptor matches', function () {
     //    it('GET', function (done) {
     //        collection = new Collection('myCollection');
-    //        personMapping = collection.mapping('Person', {
+    //        personMapping = collection.model('Person', {
     //            id: 'id',
     //            attributes: ['name', 'age']
     //        });
-    //        carMapping = collection.mapping('Car', {
+    //        carMapping = collection.model('Car', {
     //            id: 'id',
     //            attributes: ['colour', 'name'],
     //            relationships: {
@@ -847,7 +847,7 @@ describe('http!', function () {
     //                }
     //            }
     //        });
-    //        vitalSignsMapping = collection.mapping('VitalSigns', {
+    //        vitalSignsMapping = collection.model('VitalSigns', {
     //            id: 'id',
     //            attributes: ['heartRate', 'bloodPressure'],
     //            relationships: {

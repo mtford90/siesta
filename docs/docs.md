@@ -43,7 +43,7 @@ The mapping is the Siesta equivalent to models in traditional database ORMs. It 
 A simple mapping will only declare attributes:
 
 ```javascript
-collection.mapping('Person', {
+collection.model('Person', {
     attributes: ['name', 'age']
 });
 ```
@@ -51,7 +51,7 @@ collection.mapping('Person', {
 A more complex mapping will define relationships with others:
 
 ```javascript
-collection.mapping('Car', {
+collection.model('Car', {
     // The field that uniquely identifies a Car object.
     id: 'id',
     // Attributes represent simple data types such as strings and integers.
