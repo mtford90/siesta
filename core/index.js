@@ -283,6 +283,7 @@ siesta.property = util._.pluck;
 siesta.sortBy = util._.sortBy;
 siesta.series = util.series;
 siesta.parallel = util.parallel;
+siesta.extend = util._.extend;
 
 
 if (typeof window != 'undefined') {

@@ -224,12 +224,12 @@ function getMultipleRemote(remoteIdentifiers, mapping, callback) {
             }
         }
     }
-
-    if (siesta.ext.storageEnabled && results.notCached.length) {
-        siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
-    } else {
+//
+//    if (siesta.ext.storageEnabled && results.notCached.length) {
+//        siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
+//    } else {
         finish();
-    }
+//    }
     return deferred ? deferred.promise : null;
 }
 

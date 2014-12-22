@@ -23,13 +23,17 @@ function _collate() {
  * @param {SiestaModel} model
  */
 function _serialise(model) {
-
+    var serialised = siesta.extend({}, model.__values);
+    serialised['collection'] = model.collection;
+    serialised['model'] = model.type;
+    serialised['_id'] = model._id;
+    return serialised;
 }
 
 /**
  * Load all data from PouchDB.
  */
-function load() {
+function _load(collectionName) {
 
 }
 
@@ -46,7 +50,7 @@ siesta.on('Siesta', function (n) {
 });
 
 var storage = {
-    load: load,
+    _load: _load,
     save: save,
     _collate: _collate,
     _serialise: _serialise
@@ -64,7 +68,7 @@ if (typeof siesta != 'undefined') {
     if (!siesta.ext) {
         siesta.ext = {};
     }
-    siesta.ext.storage = http;
+    siesta.ext.storage = storage;
 }
 
 if (typeof module != 'undefined') {
