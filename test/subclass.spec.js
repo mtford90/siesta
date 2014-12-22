@@ -129,5 +129,42 @@ describe.only('Subclass', function () {
 
     });
 
+    describe('inspection', function () {
+
+        var collection, Car, SportsCar, Person;
+
+        beforeEach(function (done) {
+            s.reset(true);
+            collection = new Collection('myCollection');
+
+            Car = collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            SportsCar = Car.child('SportsCar', {
+                attributes: ['maxSpeed']
+            });
+            Person = collection.model('Person', {
+                attributes: ['name']
+            });
+
+            collection.install(done);
+        });
+
+        it('isChildOf', function () {
+            assert.ok(SportsCar.isChildOf(Car));
+            assert.notOk(SportsCar.isChildOf(Person));
+            assert.notOk(Car.isChildOf(SportsCar));
+        });
+
+        it('isParentOf', function () {
+            assert.ok(Car.isParentOf(SportsCar));
+            assert.notOk(Car.isParentOf(Person));
+            assert.notOk(SportsCar.isParentOf(Car));
+            assert.notOk(SportsCar.isParentOf(Person));
+        });
+
+    })
+
 
 });

@@ -563,6 +563,7 @@ _.extend(Mapping.prototype, {
     }
 });
 
+// Subclassing
 _.extend(Mapping.prototype, {
     child: function (nameOrOpts, opts) {
         if (typeof nameOrOpts == 'string') {
@@ -577,6 +578,12 @@ _.extend(Mapping.prototype, {
         mapping.parent = this;
         this.children.push(mapping);
         return  mapping;
+    },
+    isChildOf: function (parent) {
+        return this.parent == parent;
+    },
+    isParentOf: function (child) {
+        return this.children.indexOf(child) > -1;
     }
 });
 
