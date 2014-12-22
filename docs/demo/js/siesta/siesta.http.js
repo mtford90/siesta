@@ -1090,7 +1090,7 @@ function depthSerialiser(depth, obj, done) {
     if (Logger.trace.isEnabled)
         Logger.trace('depthSerialiser');
     var data = {};
-    _.each(obj._fields, function (f) {
+    _.each(obj._attributeNames, function (f) {
         if (Logger.trace.isEnabled)
             Logger.trace('field', f);
         if (obj[f]) {
@@ -1101,7 +1101,7 @@ function depthSerialiser(depth, obj, done) {
     var errors = [];
     var result = {};
     var finished = [];
-    _.each(obj._relationshipFields, function (f) {
+    _.each(obj._relationshipNames, function (f) {
         if (Logger.trace.isEnabled)
             Logger.trace('relationshipField', f);
         var proxy = obj.__proxies[f];

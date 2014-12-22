@@ -1477,7 +1477,7 @@ function Mapping(opts) {
     var self = this;
     this._opts = opts;
 
-    Object.defineProperty(this, '_fields', {
+    Object.defineProperty(this, '_attributeNames', {
         get: function () {
             var fields = [];
             if (self.id) {
@@ -1842,7 +1842,7 @@ _.extend(Mapping.prototype, {
             newModel._id = _id;
             // Place attributes on the object.
             newModel.__values = data || {};
-            var fields = this._fields;
+            var fields = this._attributeNames;
             var idx = fields.indexOf(this.id);
             if (idx > -1) {
                 fields.splice(idx, 1);
@@ -2048,7 +2048,7 @@ _.extend(BulkMappingOperation.prototype, {
             // No point mapping object onto itself. This happens if a SiestaModel is passed as a relationship.
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
-                    var fields = this.mapping._fields;
+                    var fields = this.mapping._attributeNames;
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
                             object[f] = datum[f];
@@ -2125,7 +2125,7 @@ _.extend(BulkMappingOperation.prototype, {
                     } else {
                         // Create a new object if and only if the data has any fields that will actually
                         var datumFields = Object.keys(datum);
-                        var objectFields = _.reduce(Object.keys(self.mapping.relationships).concat(self.mapping._fields), function (m, x) {
+                        var objectFields = _.reduce(Object.keys(self.mapping.relationships).concat(self.mapping._attributeNames), function (m, x) {
                             m[x] = {};
                             return m;
                         }, {});
@@ -2381,7 +2381,7 @@ function wrapArray(array, field, siestaModel) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
         array.observer.open(function (splices) {
-            var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
+            var fieldIsAttribute = siestaModel._attributeNames.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
                     coreChanges.registerChange({
@@ -3940,8 +3940,8 @@ function SiestaModel(mapping) {
     });
     defineSubProperty.call(this, 'type', this.mapping);
     defineSubProperty.call(this, 'collection', this.mapping);
-    defineSubProperty.call(this, '_fields', this.mapping);
-    Object.defineProperty(this, '_relationshipFields', {
+    defineSubProperty.call(this, '_attributeNames', this.mapping);
+    Object.defineProperty(this, '_relationshipNames', {
         get: function () {
             var proxies = _.map(Object.keys(self.__proxies), function (x) {return self.__proxies[x]});
             return _.map(proxies, function (p) {
@@ -3985,13 +3985,13 @@ _.extend(SiestaModel.prototype, {
         cleanObj.mapping = this.mapping.type;
         cleanObj.collection = this.collection;
         cleanObj._id = this._id;
-        cleanObj = _.reduce(this._fields, function (memo, f) {
+        cleanObj = _.reduce(this._attributeNames, function (memo, f) {
             if (self[f]) {
                 memo[f] = self[f];
             }
             return memo;
         }, cleanObj);
-        cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
+        cleanObj = _.reduce(this._relationshipNames, function (memo, f) {
             var proxy = self.__proxies[f];
             if (proxy) {
                 if (proxy.hasOwnProperty('_id')) {

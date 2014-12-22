@@ -24,10 +24,14 @@ function SiestaModel(mapping) {
         enumerable: true,
         configurable: true
     });
+
+
     defineSubProperty.call(this, 'type', this.mapping);
     defineSubProperty.call(this, 'collection', this.mapping);
-    defineSubProperty.call(this, '_fields', this.mapping);
-    Object.defineProperty(this, '_relationshipFields', {
+    defineSubProperty.call(this, '_attributeNames', this.mapping);
+
+
+    Object.defineProperty(this, '_relationshipNames', {
         get: function () {
             var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
             return _.map(proxies, function (p) {
@@ -58,45 +62,8 @@ function SiestaModel(mapping) {
     this.removed = false;
 }
 
-/**
- * Human readable dump of this object
- * @returns {*}
- * @private
- */
 
 _.extend(SiestaModel.prototype, {
-    _dump: function (asJson) {
-        var self = this;
-        var cleanObj = {};
-        cleanObj.mapping = this.mapping.type;
-        cleanObj.collection = this.collection;
-        cleanObj._id = this._id;
-        cleanObj = _.reduce(this._fields, function (memo, f) {
-            if (self[f]) {
-                memo[f] = self[f];
-            }
-            return memo;
-        }, cleanObj);
-        cleanObj = _.reduce(this._relationshipFields, function (memo, f) {
-            var proxy = self.__proxies[f];
-            if (proxy) {
-                if (proxy.hasOwnProperty('_id')) {
-                    if (util.isArray(proxy._id)) {
-                        if (self[f].length) {
-                            memo[f] = proxy._id;
-                        }
-                    } else if (proxy._id) {
-                        memo[f] = proxy._id;
-                    }
-                } else {
-                    memo[f] = self[f];
-                }
-            }
-            return memo;
-        }, cleanObj);
-
-        return asJson ? JSON.stringify(cleanObj, null, 4) : cleanObj;
-    },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);

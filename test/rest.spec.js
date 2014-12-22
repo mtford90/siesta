@@ -47,8 +47,8 @@ describe('rest', function () {
                     assert.equal(mappingObj.type, 'Person');
                     assert.equal(mappingObj.id, 'id');
                     assert.equal(mappingObj.collection, 'myCollection');
-                    assert.include(mappingObj._fields, 'name');
-                    assert.include(mappingObj._fields, 'age');
+                    assert.include(mappingObj._attributeNames, 'name');
+                    assert.include(mappingObj._attributeNames, 'age');
                     assert.ok(mappingObj);
                 }
 

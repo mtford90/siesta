@@ -8,16 +8,16 @@ describe('mapping!', function () {
         s.reset(true);
     });
 
-    it('_fields', function () {
+    it('_attributeNames', function () {
         var m = new Mapping({
             type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
         });
-        assert.include(m._fields, 'id');
-        assert.include(m._fields, 'field1');
-        assert.include(m._fields, 'field2');
-        assert.notInclude(m._fields, 'type');
+        assert.include(m._attributeNames, 'id');
+        assert.include(m._attributeNames, 'field1');
+        assert.include(m._attributeNames, 'field2');
+        assert.notInclude(m._attributeNames, 'type');
     });
 
     it('attributes', function () {

@@ -97,7 +97,7 @@ _.extend(BulkMappingOperation.prototype, {
             // No point mapping object onto itself. This happens if a SiestaModel is passed as a relationship.
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
-                    var fields = this.mapping._fields;
+                    var fields = this.mapping._attributeNames;
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
                             object[f] = datum[f];
@@ -174,7 +174,7 @@ _.extend(BulkMappingOperation.prototype, {
                     } else {
                         // Create a new object if and only if the data has any fields that will actually
                         var datumFields = Object.keys(datum);
-                        var objectFields = _.reduce(Object.keys(self.mapping.relationships).concat(self.mapping._fields), function (m, x) {
+                        var objectFields = _.reduce(Object.keys(self.mapping.relationships).concat(self.mapping._attributeNames), function (m, x) {
                             m[x] = {};
                             return m;
                         }, {});

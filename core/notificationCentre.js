@@ -18,7 +18,7 @@ function wrapArray(array, field, siestaModel) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
         array.observer.open(function (splices) {
-            var fieldIsAttribute = siestaModel._fields.indexOf(field) > -1;
+            var fieldIsAttribute = siestaModel._attributeNames.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
                     coreChanges.registerChange({

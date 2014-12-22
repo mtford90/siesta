@@ -100,7 +100,7 @@ _.extend(Query.prototype, {
             } else {
                 field = origField;
             }
-            var isAttribute = this.mapping._fields.indexOf(field) > -1;
+            var isAttribute = this.mapping._attributeNames.indexOf(field) > -1;
             var queryObj = this.query[origField];
             var val = isAttribute ? obj.__values[field] : obj[field];
             var invalid = val === null || val === undefined;

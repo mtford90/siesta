@@ -29,7 +29,7 @@ describe('mapping new object', function () {
 
         it('valid', function () {
             var car = carMapping._new();
-            _.each(carMapping._fields, function (f) {
+            _.each(carMapping._attributeNames, function (f) {
                 assert(car[f] !== undefined);
             });
         });

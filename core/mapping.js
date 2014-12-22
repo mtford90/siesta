@@ -38,7 +38,7 @@ function Mapping(opts) {
     var self = this;
     this._opts = opts;
 
-    Object.defineProperty(this, '_fields', {
+    Object.defineProperty(this, '_attributeNames', {
         get: function () {
             var fields = [];
             if (self.id) {
@@ -461,7 +461,7 @@ _.extend(Mapping.prototype, {
             }, {});
             _.extend(values, defaults);
             if (data) _.extend(values, data);
-            var fields = this._fields;
+            var fields = this._attributeNames;
             var idx = fields.indexOf(this.id);
             if (idx > -1) {
                 fields.splice(idx, 1);
