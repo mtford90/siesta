@@ -584,6 +584,14 @@ _.extend(Mapping.prototype, {
     },
     isParentOf: function (child) {
         return this.children.indexOf(child) > -1;
+    },
+    isDescendantOf: function (ancestor) {
+        var parent = this.parent;
+        while (parent) {
+            if (parent == ancestor) return true;
+            parent = parent.parent;
+        }
+        return false;
     }
 });
 

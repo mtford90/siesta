@@ -131,7 +131,7 @@ describe.only('Subclass', function () {
 
     describe('inspection', function () {
 
-        var collection, Car, SportsCar, Person;
+        var collection, Car, SportsCar, Person, SuperCar;
 
         beforeEach(function (done) {
             s.reset(true);
@@ -147,21 +147,38 @@ describe.only('Subclass', function () {
             Person = collection.model('Person', {
                 attributes: ['name']
             });
+            SuperCar = SportsCar.child('SuperCar', {
+                attributes: ['attr']
+            });
+
+
 
             collection.install(done);
         });
 
         it('isChildOf', function () {
             assert.ok(SportsCar.isChildOf(Car));
+            assert.ok(SuperCar.isChildOf(SportsCar));
             assert.notOk(SportsCar.isChildOf(Person));
             assert.notOk(Car.isChildOf(SportsCar));
+            assert.notOk(SuperCar.isChildOf(Car));
         });
 
         it('isParentOf', function () {
             assert.ok(Car.isParentOf(SportsCar));
+            assert.ok(SportsCar.isParentOf(SuperCar));
+            assert.notOk(Car.isParentOf(SuperCar));
             assert.notOk(Car.isParentOf(Person));
             assert.notOk(SportsCar.isParentOf(Car));
             assert.notOk(SportsCar.isParentOf(Person));
+        });
+
+        it('isDescendantOf', function () {
+            assert.ok(SportsCar.isDescendantOf(Car));
+            assert.ok(SuperCar.isDescendantOf(SportsCar));
+            assert.ok(SuperCar.isDescendantOf(Car));
+            assert.notOk(Car.isDescendantOf(SuperCar));
+            assert.notOk(Person.isDescendantOf(Car));
         });
 
     })
