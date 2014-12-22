@@ -20,6 +20,34 @@ function Query(mapping, opts) {
     this.ordering = null;
 }
 
+_.extend(Query, {
+    comparators: {
+        e: function (opts) {
+            return opts.object[opts.field] == opts.value;
+        },
+        lt: function (opts) {
+            if (!opts.invalid) return opts.object[opts.field] < opts.value;
+            return false;
+        },
+        gt: function (opts) {
+            if (!opts.invalid) return opts.object[opts.field] > opts.value;
+            return false;
+        },
+        lte: function (opts) {
+            if (!opts.invalid) return opts.object[opts.field] <= opts.value;
+            return false;
+        },
+        gte: function (opts) {
+            if (!opts.invalid) return opts.object[opts.field] >= opts.value;
+            return false;
+        }
+    },
+    registerComparator: function (symbol, fn) {
+        if (!this.comparators[symbol])
+        this.comparators[symbol] = fn;
+    }
+});
+
 function cacheForMapping(mapping) {
     var cacheByType = cache._localCacheByType;
     var mappingName = mapping.type;
@@ -31,6 +59,10 @@ function cacheForMapping(mapping) {
     }
     return cacheByLocalId;
 }
+
+
+
+
 _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
@@ -109,9 +141,8 @@ _.extend(Query.prototype, {
             } else {
                 field = origField;
             }
-            var isAttribute = this.mapping._attributeNames.indexOf(field) > -1;
             var queryObj = this.query[origField];
-            var val = isAttribute ? obj.__values[field] : obj[field];
+            var val = obj[field];
             var invalid = val === null || val === undefined;
             if (Logger.trace) {
                 var stringVal;
@@ -119,38 +150,12 @@ _.extend(Query.prototype, {
                 else if (val === undefined) stringVal = 'undefined';
                 else stringVal = val.toString();
             }
-            if (op == 'e') {
-                if (Logger.trace)
-                    Logger.trace(stringVal + ' == ' + queryObj.toString());
-                if (val != queryObj) {
-                    return false;
-                }
-            } else if (op == 'lt') {
-                if (Logger.trace) Logger.trace(stringVal + ' < ' + queryObj.toString())
-                if (invalid || val >= queryObj) {
-                    return false;
-                }
-            } else if (op == 'lte') {
-                if (Logger.trace)
-                    Logger.trace(stringVal + ' <= ' + queryObj.toString());
-                if (invalid || val > queryObj) {
-                    return false;
-                }
-            } else if (op == 'gt') {
-                if (Logger.trace)
-                    Logger.trace(stringVal + ' > ' + queryObj.toString());
-                if (invalid || val <= queryObj) {
-                    return false;
-                }
-            } else if (op == 'gte') {
-                if (Logger.trace)
-                    Logger.trace(stringVal + ' >= ' + queryObj.toString());
-                if (invalid || val < queryObj) {
-                    return false;
-                }
-            } else {
-                return 'Query operator "' + op + '"' + ' does not exist';
+            var comparator = Query.comparators[op],
+                opts = {object: obj, field: field, value: queryObj, invalid: invalid};
+            if (!comparator) {
+                return 'No comparator registered for query operation "' + op + '"';
             }
+            if (!comparator(opts)) return false;
         }
         return true;
     }
