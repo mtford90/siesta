@@ -5,7 +5,7 @@ var s = require('../core/index'),
 var Query = require('../core/query').Query
     , Collection = require('../core/collection').Collection;
 
-describe.only('storage', function () {
+describe('storage', function () {
 
     beforeEach(function () {
         s.reset(true);
@@ -28,6 +28,7 @@ describe.only('storage', function () {
             it('storage', function (done) {
                 Car.map({colour: 'black', name: 'bentley', id: 2})
                     .then(function (car) {
+                        car._rev = '123'; //Fake pouchdb revision.
                         var serialised = s.ext.storage._serialise(car);
                         assert.equal(serialised.colour, 'black');
                         assert.equal(serialised.name, 'bentley');
@@ -35,12 +36,64 @@ describe.only('storage', function () {
                         assert.equal(serialised._id, car._id);
                         assert.equal(serialised.collection, 'myCollection');
                         assert.equal(serialised.model, 'Car');
+                        assert.equal(serialised._rev, car._rev);
                         done();
                     })
                     .catch(done)
                     .done();
             });
         });
+
+        describe('relationships', function () {
+            var collection, Car, Person;
+
+            beforeEach(function (done) {
+                s.reset(true);
+                collection = new Collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: 'OneToMany',
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                Person = collection.model('Person', {
+                    attributes: ['age', 'name']
+
+                });
+                collection.install(done);
+            });
+
+            it('onetomany', function (done) {
+                Person.map({name: 'Michael', age: 24}).then(function (person) {
+                    Car.map({colour: 'black', name: 'bentley', id: 2, owner: {_id: person._id}})
+                        .then(function (car) {
+                            var serialisedCar = s.ext.storage._serialise(car);
+                            assert.equal(serialisedCar.colour, 'black');
+                            assert.equal(serialisedCar.name, 'bentley');
+                            assert.equal(serialisedCar.id, 2);
+                            assert.equal(serialisedCar._id, car._id);
+                            assert.equal(serialisedCar.collection, 'myCollection');
+                            assert.equal(serialisedCar.owner, person._id);
+                            assert.equal(serialisedCar.model, 'Car');
+                            var serialisedPerson = s.ext.storage._serialise(person);
+                            assert.equal(serialisedPerson.name, 'Michael');
+                            assert.equal(serialisedPerson.age, 24);
+                            assert.include(serialisedPerson.cars, car._id);
+                            assert.equal(serialisedPerson.collection, 'myCollection');
+                            assert.equal(serialisedPerson.model, 'Person');
+                            done();
+                        })
+                        .catch(done)
+                        .done();
+                }).catch(done).done();
+
+            });
+        });
+
     });
 
 });

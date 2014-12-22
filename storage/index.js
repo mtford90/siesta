@@ -6,17 +6,10 @@ if (typeof PouchDB == 'undefined') {
     throw new Error('Could not find PouchDB. Have you included the script?');
 }
 
-var unsavedChanges = [],
+var unsavedObjects = [],
+    unsavedObjectsHash = {},
+    _i = siesta._internal,
     pouch = new PouchDB('siesta');
-
-/**
- * Collate the unsaved changes of same models into objects representing all changes that must be
- * applied to PouchDB.
- * @private
- */
-function _collate() {
-
-}
 
 /**
  * Serialise a model down to PouchDB.
@@ -27,6 +20,18 @@ function _serialise(model) {
     serialised['collection'] = model.collection;
     serialised['model'] = model.type;
     serialised['_id'] = model._id;
+    var rev = model._rev;
+    if (rev) serialised['_rev'] = rev;
+    serialised = _.reduce(model._relationshipNames, function (memo, n) {
+        var val = model[n];
+        if (siesta.isArray(val)) {
+            memo[n] = _.pluck(val, '_id');
+        }
+        else if (val) {
+            memo[n] = val._id;
+        }
+        return memo;
+    }, serialised);
     return serialised;
 }
 
@@ -46,18 +51,25 @@ function save() {
 
 siesta.on('Siesta', function (n) {
     console.log('storage module received change');
-    unsavedChanges.push(n);
+    var changedObject = n.obj,
+        ident = changedObject._id;
+    if (!changedObject) {
+        throw new _i.error.InternalSiestaError('No obj field in notification received by storage extension');
+    }
+    if (ident in unsavedObjectsHash) {
+        unsavedObjectsHash[ident] = changedObject;
+        unsavedObjects.push(changedObject);
+    }
 });
 
 var storage = {
     _load: _load,
     save: save,
-    _collate: _collate,
     _serialise: _serialise
 };
 
-Object.defineProperty(storage, '_unsavedChanges', {
-    get: function () {return unsavedChanges}
+Object.defineProperty(storage, '_unsavedObjects', {
+    get: function () {return unsavedObjects}
 });
 
 Object.defineProperty(storage, '_pouch', {

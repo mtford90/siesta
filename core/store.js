@@ -185,11 +185,11 @@ function getMultipleLocal(localIdentifiers, callback) {
         }
     }
 
-    if (siesta.ext.storageEnabled && results.notCached.length) {
-        siesta.ext.storage.store.getMultipleLocalFromCouch(results, finish);
-    } else {
-        finish();
-    }
+//    if (siesta.ext.storageEnabled && results.notCached.length) {
+//        siesta.ext.storage.store.getMultipleLocalFromCouch(results, finish);
+//    } else {
+    finish();
+//    }
     return deferred ? deferred.promise : null;
 }
 
@@ -224,11 +224,12 @@ function getMultipleRemote(remoteIdentifiers, mapping, callback) {
             }
         }
     }
+
 //
 //    if (siesta.ext.storageEnabled && results.notCached.length) {
 //        siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
 //    } else {
-        finish();
+    finish();
 //    }
     return deferred ? deferred.promise : null;
 }
