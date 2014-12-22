@@ -142,6 +142,21 @@ Object.defineProperty(siesta.ext, 'httpEnabled', {
 });
 
 /**
+ * True if siesta.storage.js is installed correctly (or siesta.bundle.js is being used instead).
+ */
+Object.defineProperty(siesta.ext, 'storageEnabled', {
+    get: function () {
+        if (siesta.ext._storageEnabled !== undefined) {
+            return siesta.ext._storageEnabled;
+        }
+        return !!siesta.ext.storage;
+    },
+    set: function (v) {
+        siesta.ext._storageEnabled = v;
+    }
+});
+
+/**
  * Creates and registers a new Collection.
  * @param  {[type]} name
  * @param  {[type]} opts
