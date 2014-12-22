@@ -601,6 +601,9 @@ _.extend(Mapping.prototype, {
             parent = parent.parent;
         }
         return false;
+    },
+    isAncestorOf: function(descendant) {
+        return this.descendants.indexOf(descendant) > -1;
     }
 });
 

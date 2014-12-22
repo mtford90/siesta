@@ -181,6 +181,14 @@ describe.only('Subclass', function () {
             assert.notOk(Person.isDescendantOf(Car));
         });
 
+        it('isAncestorOf', function () {
+            assert.ok(Car.isAncestorOf(SportsCar));
+            assert.ok(Car.isAncestorOf(SuperCar));
+            assert.ok(SportsCar.isAncestorOf(SuperCar));
+            assert.notOk(SuperCar.isAncestorOf(SportsCar));
+            assert.notOk(SuperCar.isAncestorOf(Person));
+        });
+
 
 
     })
