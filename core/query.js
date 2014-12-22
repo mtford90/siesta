@@ -20,6 +20,17 @@ function Query(mapping, opts) {
     this.ordering = null;
 }
 
+function cacheForMapping(mapping) {
+    var cacheByType = cache._localCacheByType;
+    var mappingName = mapping.type;
+    var collectionName = mapping.collection;
+    var cacheByMapping = cacheByType[collectionName];
+    var cacheByLocalId;
+    if (cacheByMapping) {
+        cacheByLocalId = cacheByMapping[mappingName] || {};
+    }
+    return cacheByLocalId;
+}
 _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
@@ -49,38 +60,47 @@ _.extend(Query.prototype, {
         }
         return res;
     },
+    /**
+     * Return all descendants in the hierarchy of the given model.
+     * @param model
+     */
+    gatherDescendants: function (model) {
+        return _.reduce(model.children, function (memo, descendant) {
+            return Array.prototype.concat.call(memo, this.gatherDescendants(descendant));
+        }.bind(this), model.children);
+    },
+    /**
+     * Return all model instances in the cache.
+     * @private
+     */
+    _getCacheByLocalId: function () {
+        var mapping = this.mapping;
+        var descendants = this.gatherDescendants(mapping);
+        return _.reduce(descendants, function (memo, childMapping) {
+            return _.extend(memo, cacheForMapping(childMapping));
+        }, _.extend({}, cacheForMapping(mapping)));
+    },
     _executeInMemory: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        var cacheByType = cache._localCacheByType;
-        var mappingName = this.mapping.type;
-        var collectionName = this.mapping.collection;
-        var cacheByMapping = cacheByType[collectionName];
-        var cacheByLocalId;
-        if (cacheByMapping) {
-            cacheByLocalId = cacheByMapping[mappingName];
-        }
-        if (cacheByLocalId) {
-            var keys = Object.keys(cacheByLocalId);
-            var self = this;
-            var res = [];
-            var err;
-            for (var i = 0; i < keys.length; i++) {
-                var k = keys[i];
-                var obj = cacheByLocalId[k];
-                var matches = self.objectMatchesQuery(obj);
-                if (typeof(matches) == 'string') {
-                    err = matches;
-                    break;
-                } else {
-                    if (matches) res.push(obj);
-                }
+        var cacheByLocalId = this._getCacheByLocalId();
+        var keys = Object.keys(cacheByLocalId);
+        var self = this;
+        var res = [];
+        var err;
+        for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            var obj = cacheByLocalId[k];
+            var matches = self.objectMatchesQuery(obj);
+            if (typeof(matches) == 'string') {
+                err = matches;
+                break;
+            } else {
+                if (matches) res.push(obj);
             }
-            res = this._sortResults(res);
-            callback(err, err ? null : res);
-        } else if (callback) {
-            callback(null, []);
         }
+        res = this._sortResults(res);
+        callback(err, err ? null : res);
         return deferred ? deferred.promise : null;
     },
     orderBy: function (order) {

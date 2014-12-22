@@ -487,6 +487,7 @@ _.extend = function (obj) {
     return obj;
 };
 
+
 // END underscore.js //
 
 exports._ = _;
@@ -570,6 +571,8 @@ var guid = (function () {
             s4() + '-' + s4() + s4() + s4();
     };
 })();
+
+
 
 _.extend(module.exports, {
     assert: assert,

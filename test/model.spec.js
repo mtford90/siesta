@@ -1,13 +1,11 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('object!!', function () {
+var SiestaModel = require('../core/siestaModel').SiestaModel
+    , cache = require('../core/cache')
+    , Collection = require('../core/collection').Collection;
 
-    var SiestaModel = require('../core/siestaModel').SiestaModel;
-    var Mapping = require('../core/mapping').Mapping;
-    var cache = require('../core/cache');
-    var Collection = require('../core/collection').Collection;
-
+describe('Models', function () {
     var mapping, collection;
 
     beforeEach(function (done) {
@@ -114,5 +112,7 @@ describe('object!!', function () {
 
 
     });
+
+
 
 });

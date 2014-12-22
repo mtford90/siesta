@@ -16,6 +16,7 @@ var log = require('./operation/log')
     , store = require('./store')
     , extend = require('extend')
     , coreChanges = require('./changes')
+    , notificationCentre = require('./notificationCentre')
     , wrapArray = require('./notificationCentre').wrapArray
     , OneToManyProxy = require('./oneToManyProxy')
     , OneToOneProxy = require('./oneToOneProxy')
@@ -91,7 +92,6 @@ function Mapping(opts) {
     defineSubProperty.call(this, 'collection', self._opts);
     defineSubProperty.call(this, 'relationships', self._opts);
     defineSubProperty.call(this, 'indexes', self._opts);
-    defineSubProperty.call(this, 'subclass', self._opts);
     defineSubProperty.call(this, 'singleton', self._opts);
     defineSubProperty.call(this, 'statics', self._opts);
     defineSubProperty.call(this, 'methods', self._opts);
@@ -116,7 +116,6 @@ function Mapping(opts) {
         this.indexes = [];
     }
 
-    this._validateSubclass();
 
     this._installed = false;
     this._relationshipsInstalled = false;
@@ -130,26 +129,11 @@ function Mapping(opts) {
         configurable: true
     });
 
+    this.children = [];
+
 }
 
 _.extend(Mapping.prototype, {
-    /**
-     * Ensure that any subclasses passed to the mapping are valid and working correctly.
-     * @private
-     */
-    _validateSubclass: function () {
-        if (this.subclass && this.subclass !== SiestaModel) {
-            var obj = new this.subclass(this);
-            if (!obj.mapping) {
-                throw new InternalSiestaError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
-                'Did you call super?');
-            }
-            if (this.subclass.prototype == SiestaModel.prototype) {
-                throw new InternalSiestaError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
-                'You should use Object.create on SiestaModel prototype.');
-            }
-        }
-    },
     /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
@@ -246,7 +230,7 @@ _.extend(Mapping.prototype, {
             // TODO: Any parent singletons will be having empty data mapped twice when their own finalise is called... Pointless.
             var data = {};
             var relationships = this.relationships;
-            data = _.reduce( Object.keys(relationships), function (m, name) {
+            data = _.reduce(Object.keys(relationships), function (m, name) {
                 var r = relationships[name];
                 if (r.isReverse) {
                     data[r.reverseName] = {};
@@ -277,7 +261,7 @@ _.extend(Mapping.prototype, {
                 if (err) callback(err);
                 if (objs.length > 1) {
                     throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
-                    'This is a serious error, please file a bug report.');
+                        'This is a serious error, please file a bug report.');
                 } else if (objs.length) {
                     callback(null, objs[0]);
                 } else {
@@ -441,12 +425,7 @@ _.extend(Mapping.prototype, {
             } else {
                 _id = guid();
             }
-            var newModel;
-            if (this.subclass) {
-                newModel = new this.subclass(this);
-            } else {
-                newModel = new SiestaModel(this);
-            }
+            var newModel = new SiestaModel(this);
             if (Logger.info.isEnabled)
                 Logger.info('New object created _id="' + _id.toString() + '", type=' + this.type, data);
             newModel._id = _id;
@@ -494,7 +473,7 @@ _.extend(Mapping.prototype, {
             });
 
             _.each(Object.keys(this.methods), function (methodName) {
-                 newModel[methodName] = this.methods[methodName].bind(newModel);
+                newModel[methodName] = this.methods[methodName].bind(newModel);
             }.bind(this));
 
             Object.defineProperty(newModel, this.id, {
@@ -565,7 +544,11 @@ _.extend(Mapping.prototype, {
     },
     toString: function () {
         return 'Mapping[' + this.type + ']';
-    },
+    }
+
+});
+
+_.extend(Mapping.prototype, {
     listen: function (fn) {
         notificationCentre.on(this.collection + ':' + this.type, fn);
         return function () {
@@ -577,6 +560,23 @@ _.extend(Mapping.prototype, {
     },
     removeListener: function (fn) {
         return notificationCentre.removeListener(this.collection + ':' + this.type, fn);
+    }
+});
+
+_.extend(Mapping.prototype, {
+    child: function (nameOrOpts, opts) {
+        if (typeof nameOrOpts == 'string') {
+            opts.name = nameOrOpts;
+        } else {
+            opts = name;
+        }
+        opts.attributes
+            = Array.prototype.concat.call(opts.attributes || [], this._opts.attributes);
+        var collection = CollectionRegistry[this.collection];
+        var mapping = collection.model(opts);
+        mapping.parent = this;
+        this.children.push(mapping);
+        return  mapping;
     }
 });
 
