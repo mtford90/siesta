@@ -1,0 +1,38 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css"/>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/underscore/underscore.js"></script>
+    <script src="../node_modules/q/q.js"></script>
+    <script src="../node_modules/async/lib/async.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+
+
+    <script>mocha.setup('bdd')</script>
+
+    <script>
+
+        onload = function () {
+            mocha.globals(['jQuery']);
+            var runner;
+            if (typeof mochaPhantomJS !== 'undefined') {
+                runner = mochaPhantomJS.run();
+            }
+            else {
+                runner = mocha.run();
+            }
+        };
+    </script>
+</head>
+<body>
+<div id="mocha"></div>
+<script src="../build/test-bundle.js"></script>
+<script src="../build/siesta.http.js"></script>
+<!--<script src="http://localhost:35729/livereload.js"></script>-->
+</body>
+</html>
