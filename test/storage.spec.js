@@ -5,7 +5,7 @@ var s = require('../core/index'),
 var Query = require('../core/query').Query
     , Collection = require('../core/collection').Collection;
 
-describe('storage', function () {
+describe.only('storage', function () {
 
     beforeEach(function () {
         s.reset(true);
@@ -96,7 +96,7 @@ describe('storage', function () {
 
     });
 
-    describe.only('save', function () {
+    describe('save', function () {
         var collection, Car;
 
         beforeEach(function (done) {
@@ -112,14 +112,47 @@ describe('storage', function () {
                 .done();
         });
 
-        it('save', function (done) {
+        it('new object', function (done) {
             assert.equal(1, s.ext.storage._unsavedObjects.length, 'Should be one car to save.');
             var car = s.ext.storage._unsavedObjects[0];
             siesta.save().then(function () {
                 assert.equal(0, s.ext.storage._unsavedObjects.length, 'Should be no more cars');
-                done();
+                s.ext.storage._pouch.get(car._id).then(function (carDoc) {
+                    assert.ok(carDoc);
+                    assert.equal(carDoc._id, car._id, 'Should have same _id');
+                    assert.equal(carDoc._rev, car._rev, 'Should have same revision');
+                    assert.equal(carDoc.collection, 'myCollection');
+                    assert.equal(carDoc.model, 'Car');
+                    assert.equal(carDoc.colour, 'black');
+                    assert.equal(carDoc.name, 'bentley');
+                    assert.equal(carDoc.id, 2);
+                    done();
+                }).catch(done);
+            }).catch(done).done();
+        });
+
+        it('update object', function (done) {
+            assert.equal(1, s.ext.storage._unsavedObjects.length, 'Should be one car to save.');
+            var car = s.ext.storage._unsavedObjects[0];
+            siesta.save().then(function () {
+                assert.equal(0, s.ext.storage._unsavedObjects.length, 'Should be no more cars');
+                car.colour = 'blue';
+                siesta.save().then(function () {
+                    s.ext.storage._pouch.get(car._id).then(function (carDoc) {
+                        assert.ok(carDoc);
+                        assert.equal(carDoc._id, car._id, 'Should have same _id');
+                        assert.equal(carDoc._rev, car._rev, 'Should have same revision');
+                        assert.equal(carDoc.collection, 'myCollection');
+                        assert.equal(carDoc.model, 'Car');
+                        assert.equal(carDoc.colour, 'blue');
+                        assert.equal(carDoc.name, 'bentley');
+                        assert.equal(carDoc.id, 2);
+                        done();
+                    }).catch(done);
+                }).catch(done).done();
             }).catch(done).done();
         })
+
     })
 
 });

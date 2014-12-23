@@ -9,7 +9,11 @@ if (typeof PouchDB == 'undefined') {
 var unsavedObjects = [],
     unsavedObjectsHash = {},
     _i = siesta._internal,
+    log = _i.log,
     pouch = new PouchDB('siesta');
+
+var Logger = log.loggerWithName('Storage');
+Logger.setLevel(log.Level.trace);
 
 /**
  * Serialise a model down to PouchDB.
@@ -48,7 +52,26 @@ function _load(collectionName) {
 function save(callback) {
     var deferred = window.q ? window.q.defer() : null;
     callback = callback || function () {};
-
+    var objects = unsavedObjects;
+    unsavedObjects = [];
+    unsavedObjectsHash = {};
+    pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
+        for (var i=0;i<resp.length;i++) {
+            var response = resp[i];
+            var obj = objects[i];
+            if (response.ok) {
+                obj._rev = response.rev;
+            }
+            else {
+                Logger.error('Error saving object with _id="' + obj._id + '"', response);
+            }
+        }
+        callback();
+        deferred.resolve();
+    }, function (err) {
+        callback(err);
+        deferred.reject(err);
+    });
     return deferred ? deferred.promise: null;
 }
 
