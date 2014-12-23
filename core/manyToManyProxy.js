@@ -11,7 +11,7 @@ var proxy = require('./proxy')
     , coreChanges = require('./changes')
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
-    , SiestaModel = require('./modelInstance').SiestaModel
+    , SiestaModel = require('./modelInstance').ModelInstance
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
     ;

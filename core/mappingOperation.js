@@ -3,7 +3,7 @@
  */
 
 var Store = require('./store')
-    , SiestaModel = require('./modelInstance').SiestaModel
+    , SiestaModel = require('./modelInstance').ModelInstance
     , log = require('./operation/log')
     , Operation = require('./operation/operation').Operation
     , InternalSiestaError = require('./error').InternalSiestaError
@@ -109,7 +109,7 @@ _.extend(BulkMappingOperation.prototype, {
         for (var i = 0; i < this.data.length; i++) {
             var datum = this.data[i];
             var object = this.objects[i];
-            // No point mapping object onto itself. This happens if a SiestaModel is passed as a relationship.
+            // No point mapping object onto itself. This happens if a ModelInstance is passed as a relationship.
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
                     var fields = this.mapping._attributeNames;

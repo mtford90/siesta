@@ -337,7 +337,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a POST request
      * @param {String} path The path to the resource to which we want to send a POST request
-     * @param {SiestaModel} model The model that we would like to POST
+     * @param {ModelInstance} model The model that we would like to POST
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -349,7 +349,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a PUT request
      * @param {String} path The path to the resource to which we want to send a PUT request
-     * @param {SiestaModel} model The model that we would like to PUT
+     * @param {ModelInstance} model The model that we would like to PUT
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -361,7 +361,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a PATCH request
      * @param {String} path The path to the resource to which we want to send a PATCH request
-     * @param {SiestaModel} model The model that we would like to PATCH
+     * @param {ModelInstance} model The model that we would like to PATCH
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -373,7 +373,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a DELETE request. Also removes the object.
      * @param {String} path The path to the resource to which we want to DELETE
-     * @param {SiestaModel} model The model that we would like to PATCH
+     * @param {ModelInstance} model The model that we would like to PATCH
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}

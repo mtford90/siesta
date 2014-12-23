@@ -226,7 +226,7 @@ Send a POST request
 **Params**
 
 - path `String` - The path to the resource to which we want to send a POST request  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -239,7 +239,7 @@ Send a PUT request
 **Params**
 
 - path `String` - The path to the resource to which we want to send a PUT request  
-- model `SiestaModel` - The model that we would like to PUT  
+- model `ModelInstance` - The model that we would like to PUT
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -252,7 +252,7 @@ Send a PATCH request
 **Params**
 
 - path `String` - The path to the resource to which we want to send a PATCH request  
-- model `SiestaModel` - The model that we would like to PATCH  
+- model `ModelInstance` - The model that we would like to PATCH
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -265,7 +265,7 @@ Send a DELETE request. Also removes the object.
 **Params**
 
 - path `String` - The path to the resource to which we want to DELETE  
-- model `SiestaModel` - The model that we would like to PATCH  
+- model `ModelInstance` - The model that we would like to PATCH
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -524,7 +524,7 @@ Send a HTTP request to the given method and path
 
 - method `String`  
 - path `String` - The path to the resource we want to GET  
-- object `SiestaModel` - The model we're pushing to the server  
+- object `ModelInstance` - The model we're pushing to the server
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -537,7 +537,7 @@ Send a DELETE request. Also removes the object.
 
 - collection `Collection`  
 - path `String` - The path to the resource to which we want to DELETE  
-- object `SiestaModel` - The model that we would like to PATCH  
+- object `ModelInstance` - The model that we would like to PATCH
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
@@ -613,7 +613,7 @@ Send an POST request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -627,7 +627,7 @@ Send an PUT request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -641,7 +641,7 @@ Send an PATCH request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -884,7 +884,7 @@ Send a HTTP request to the given method and path
 
 - method `String`  
 - path `String` - The path to the resource we want to GET  
-- object `SiestaModel` - The model we're pushing to the server  
+- object `ModelInstance` - The model we're pushing to the server
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -897,7 +897,7 @@ Send a DELETE request. Also removes the object.
 
 - collection `Collection`  
 - path `String` - The path to the resource to which we want to DELETE  
-- object `SiestaModel` - The model that we would like to PATCH  
+- object `ModelInstance` - The model that we would like to PATCH
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
@@ -973,7 +973,7 @@ Send an POST request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -987,7 +987,7 @@ Send an PUT request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -1001,7 +1001,7 @@ Send an PATCH request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -1196,7 +1196,7 @@ Send a HTTP request to the given method and path
 
 - method `String`  
 - path `String` - The path to the resource we want to GET  
-- object `SiestaModel` - The model we're pushing to the server  
+- object `ModelInstance` - The model we're pushing to the server
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -1209,7 +1209,7 @@ Send a DELETE request. Also removes the object.
 
 - collection `Collection`  
 - path `String` - The path to the resource to which we want to DELETE  
-- object `SiestaModel` - The model that we would like to PATCH  
+- object `ModelInstance` - The model that we would like to PATCH
 
 **Scope**: inner function of [http](#module_http)  
 **Returns**: `Promise`  
@@ -1285,7 +1285,7 @@ Send an POST request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -1299,7 +1299,7 @@ Send an PUT request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -1313,7 +1313,7 @@ Send an PATCH request
 
 - collection `Collection`  
 - path `String` - The path to the resource we want to GET  
-- model `SiestaModel` - The model that we would like to POST  
+- model `ModelInstance` - The model that we would like to POST
 - optsOrCallback `Object` | `function` - Either an options object or a callback if can use defaults  
 - callback `function` - Callback if opts specified.  
 
@@ -1483,7 +1483,7 @@ Return the object in the cache given a local id (_id)
 - localId `String`  
 
 **Scope**: inner function of [cache](#module_cache)  
-**Returns**: `SiestaModel`  
+**Returns**: `ModelInstance`
 <a name="module_cache..getSingleton"></a>
 ##cache~getSingleton(mapping)
 Return the singleton object given a singleton mapping.
@@ -1493,7 +1493,7 @@ Return the singleton object given a singleton mapping.
 - mapping `Mapping`  
 
 **Scope**: inner function of [cache](#module_cache)  
-**Returns**: `SiestaModel`  
+**Returns**: `ModelInstance`
 <a name="module_cache..getViaRemoteId"></a>
 ##cache~getViaRemoteId(remoteId, opts)
 Given a remote identifier and an options object that describes mapping/collection,
@@ -1505,14 +1505,14 @@ return the model if cached.
 - opts `Object`  
 
 **Scope**: inner function of [cache](#module_cache)  
-**Returns**: `SiestaModel`  
+**Returns**: `ModelInstance`
 <a name="module_cache..remoteInsert"></a>
 ##cache~remoteInsert(obj, remoteId, previousRemoteId)
 Insert an objet into the cache using a remote identifier defined by the mapping.
 
 **Params**
 
-- obj `SiestaModel`  
+- obj `ModelInstance`
 - remoteId `String`  
 - previousRemoteId `String` - If remote id has been changed, this is the old remote identifier  
 
@@ -1556,7 +1556,7 @@ Query the cache
 - opts `Object` - Object describing the query  
 
 **Scope**: inner function of [cache](#module_cache)  
-**Returns**: `SiestaModel`  
+**Returns**: `ModelInstance`
 **Example**
 
 ```js
@@ -1570,7 +1570,7 @@ Insert an object into the cache.
 
 **Params**
 
-- obj `SiestaModel`  
+- obj `ModelInstance`
 
 **Scope**: inner function of [cache](#module_cache)  
 **Type**: `InternalSiestaError`  
@@ -1580,7 +1580,7 @@ Returns true if object is in the cache
 
 **Params**
 
-- obj `SiestaModel`  
+- obj `ModelInstance`
 
 **Scope**: inner function of [cache](#module_cache)  
 **Returns**: `boolean`  
@@ -1590,7 +1590,7 @@ Removes the object from the cache (if it's actually in the cache) otherwises thr
 
 **Params**
 
-- obj `SiestaModel`  
+- obj `ModelInstance`
 
 **Scope**: inner function of [cache](#module_cache)  
 **Type**: `InternalSiestaError`  

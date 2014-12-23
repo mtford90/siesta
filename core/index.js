@@ -231,8 +231,8 @@ siesta.LogLevel = log.Level;
  * siesta.setLogLevel('Mapping', siesta.LogLevel.trace);
  * // The logger used during mapping operations, i.e. mapping data onto the object graph.
  * siesta.setLogLevel('MappingOperation', siesta.LogLevel.trace);
- * // The logger used by the SiestaModel class, which makes up the individual nodes of the object graph.
- * siesta.setLogLevel('SiestaModel', siesta.LogLevel.trace);
+ * // The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.
+ * siesta.setLogLevel('ModelInstance', siesta.LogLevel.trace);
  * // The logger used by the performance monitoring extension (siesta.perf.js)
  * siesta.setLogLevel('Performance', siesta.LogLevel.trace);
  * // The logger used during local queries against the object graph.

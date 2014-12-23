@@ -9,7 +9,7 @@ var log = require('./operation/log')
     , Query = require('./query').Query
     , Operation = require('./operation/operation').Operation
     , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
-    , SiestaModel = require('./modelInstance').SiestaModel
+    , SiestaModel = require('./modelInstance').ModelInstance
     , util = require('./util')
     , defineSubProperty = util.defineSubProperty
     , cache = require('./cache')
@@ -445,8 +445,8 @@ _.extend(Mapping.prototype, {
         return deferred ? deferred.promise : null;
     },
     /**
-     * Convert raw data into a SiestaModel
-     * @returns {SiestaModel}
+     * Convert raw data into a ModelInstance
+     * @returns {ModelInstance}
      * @private
      */
     _new: function (data, shouldRegisterChange) {

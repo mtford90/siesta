@@ -8,12 +8,12 @@ var log = require('./operation/log')
     , notificationCentre = require('./notificationCentre').notificationCentre
     , cache = require('./cache');
 
-var Logger = log.loggerWithName('SiestaModel');
+var Logger = log.loggerWithName('ModelInstance');
 Logger.setLevel(log.Level.warn);
 
-function SiestaModel(mapping) {
+function ModelInstance(mapping) {
     if (!this) {
-        return new SiestaModel(mapping);
+        return new ModelInstance(mapping);
     }
     var self = this;
     this.mapping = mapping;
@@ -45,7 +45,7 @@ function SiestaModel(mapping) {
 }
 
 
-_.extend(SiestaModel.prototype, {
+_.extend(ModelInstance.prototype, {
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
@@ -90,7 +90,7 @@ _.extend(SiestaModel.prototype, {
     }
 });
 
-_.extend(SiestaModel.prototype, {
+_.extend(ModelInstance.prototype, {
     listen: function (fn) {
         notificationCentre.on(this._id, fn);
         return function () {
@@ -106,7 +106,7 @@ _.extend(SiestaModel.prototype, {
 });
 
 // Inspection
-_.extend(SiestaModel.prototype, {
+_.extend(ModelInstance.prototype, {
     getAttributes: function () {
         return _.extend({}, this.__values);
     },
@@ -115,7 +115,7 @@ _.extend(SiestaModel.prototype, {
     }
 });
 
-exports.SiestaModel = SiestaModel;
+exports.ModelInstance = ModelInstance;
 exports.dumpSaveQueues = function () {
     var dumped = {};
     for (var id in queues) {

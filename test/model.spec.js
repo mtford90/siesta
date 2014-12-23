@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-var SiestaModel = require('../core/modelInstance').SiestaModel
+var SiestaModel = require('../core/modelInstance').ModelInstance
     , cache = require('../core/cache')
     , Collection = require('../core/collection').Collection;
 

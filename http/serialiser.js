@@ -13,7 +13,7 @@ var _ = utils._;
 
 /**
  * Serialises an object into it's remote identifier (as defined by the mapping)
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @return {String}
  *
  */
@@ -32,7 +32,7 @@ function idSerialiser(obj) {
 /**
  * Serialises obj following relationships to specified depth.
  * @param  {Integer}   depth
- * @param  {SiestaModel}   obj
+ * @param  {ModelInstance}   obj
  * @param  {Function} callback
  */
 function depthSerialiser(depth, obj, callback) {

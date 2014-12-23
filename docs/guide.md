@@ -590,7 +590,7 @@ The various loggers are listed below:
 * `Collection`: The logger used by the Collection class, which is used to describe a set of mappings.
 * `Mapping`: The logger used by the Mapping class.
 * `MappingOperation`: The logger used during mapping operations, i.e. mapping data onto the object graph.
-* `SiestaModel`: The logger used by the SiestaModel class, which makes up the individual nodes of the object graph.
+* `ModelInstance`: The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.
 * `Performance`: The logger used by the performance monitoring extension (siesta.perf.js)
 * `Query`: The logger used during local queries against the object graph.
 * `Store`: 

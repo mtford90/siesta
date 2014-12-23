@@ -32,7 +32,7 @@ reset();
 /**
  * Return the object in the cache given a local id (_id)
  * @param  {String} localId
- * @return {SiestaModel}
+ * @return {ModelInstance}
  */
 function getViaLocalId(localId) {
     var obj = localCacheById[localId];
@@ -49,7 +49,7 @@ function getViaLocalId(localId) {
 /**
  * Return the singleton object given a singleton mapping.
  * @param  {Mapping} mapping
- * @return {SiestaModel}
+ * @return {ModelInstance}
  */
 function getSingleton(mapping) {
     var mappingName = mapping.type;
@@ -81,7 +81,7 @@ function getSingleton(mapping) {
  * return the model if cached.
  * @param  {String} remoteId
  * @param  {Object} opts
- * @return {SiestaModel}
+ * @return {ModelInstance}
  */
 function getViaRemoteId(remoteId, opts) {
     var type = opts.mapping.type;
@@ -108,7 +108,7 @@ function getViaRemoteId(remoteId, opts) {
 
 /**
  * Insert an objet into the cache using a remote identifier defined by the mapping.
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @param  {String} remoteId
  * @param  {String} previousRemoteId If remote id has been changed, this is the old remote identifier
  */
@@ -241,7 +241,7 @@ function _localCache() {
 /**
  * Query the cache
  * @param  {Object} opts Object describing the query
- * @return {SiestaModel}
+ * @return {ModelInstance}
  * @example
  * ```js
  * cache.get({_id: '5'}); // Query by local id
@@ -284,7 +284,7 @@ function get(opts) {
 
 /**
  * Insert an object into the cache.
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @throws {InternalSiestaError} An object with _id/remoteId already exists. Not thrown if same obhect.
  */
 function insert(obj) {
@@ -323,7 +323,7 @@ function insert(obj) {
 
 /**
  * Returns true if object is in the cache
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @return {boolean}
  */
 function contains(obj) {
@@ -342,7 +342,7 @@ function contains(obj) {
 
 /**
  * Removes the object from the cache (if it's actually in the cache) otherwises throws an error.
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @throws {InternalSiestaError} If object already in the cache.
  */
 function remove(obj) {

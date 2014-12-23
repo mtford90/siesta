@@ -7,7 +7,7 @@ describe('cache...', function() {
     });
     var mapping;
 
-    var SiestaModel = require('../core/modelInstance').SiestaModel;
+    var SiestaModel = require('../core/modelInstance').ModelInstance;
     var Collection = require('../core/collection').Collection;
     var RelationshipType = require('../core/relationship').RelationshipType;
     var cache = require('../core/cache');

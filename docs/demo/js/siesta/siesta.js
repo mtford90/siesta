@@ -33,7 +33,7 @@ reset();
 /**
  * Return the object in the cache given a local id (_id)
  * @param  {String} localId
- * @return {SiestaModel}
+ * @return {ModelInstance}
  */
 function getViaLocalId(localId) {
     var obj = localCacheById[localId];
@@ -50,7 +50,7 @@ function getViaLocalId(localId) {
 /**
  * Return the singleton object given a singleton mapping.
  * @param  {Mapping} mapping
- * @return {SiestaModel}
+ * @return {ModelInstance}
  */
 function getSingleton(mapping) {
     var mappingName = mapping.type;
@@ -82,7 +82,7 @@ function getSingleton(mapping) {
  * return the model if cached.
  * @param  {String} remoteId
  * @param  {Object} opts
- * @return {SiestaModel}
+ * @return {ModelInstance}
  */
 function getViaRemoteId(remoteId, opts) {
     var type = opts.mapping.type;
@@ -109,7 +109,7 @@ function getViaRemoteId(remoteId, opts) {
 
 /**
  * Insert an objet into the cache using a remote identifier defined by the mapping.
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @param  {String} remoteId
  * @param  {String} previousRemoteId If remote id has been changed, this is the old remote identifier
  */
@@ -243,7 +243,7 @@ function _localCache() {
 /**
  * Query the cache
  * @param  {Object} opts Object describing the query
- * @return {SiestaModel}
+ * @return {ModelInstance}
  * @example
  * ```js
  * cache.get({_id: '5'}); // Query by local id
@@ -286,7 +286,7 @@ function get(opts) {
 
 /**
  * Insert an object into the cache.
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @throws {InternalSiestaError} An object with _id/remoteId already exists. Not thrown if same obhect.
  */
 function insert(obj) {
@@ -325,7 +325,7 @@ function insert(obj) {
 
 /**
  * Returns true if object is in the cache
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @return {boolean}
  */
 function contains(obj) {
@@ -344,7 +344,7 @@ function contains(obj) {
 
 /**
  * Removes the object from the cache (if it's actually in the cache) otherwises throws an error.
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @throws {InternalSiestaError} If object already in the cache.
  */
 function remove(obj) {
@@ -383,7 +383,7 @@ exports.contains = contains;
 exports.remove = remove;
 },{"./error":5,"./operation/log":13,"./util":21}],2:[function(require,module,exports){
 /**
- * The changes module deals with changes to SiestaModel instances. In the in-memory case this
+ * The changes module deals with changes to ModelInstance instances. In the in-memory case this
  * just means that notifications are sent on any change. If the storage module is being used,
  * the changes module is extended to deal with merging changes into whatever persistant storage
  * method is being used.
@@ -843,7 +843,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a POST request
      * @param {String} path The path to the resource to which we want to send a POST request
-     * @param {SiestaModel} model The model that we would like to POST
+     * @param {ModelInstance} model The model that we would like to POST
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -855,7 +855,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a PUT request
      * @param {String} path The path to the resource to which we want to send a PUT request
-     * @param {SiestaModel} model The model that we would like to PUT
+     * @param {ModelInstance} model The model that we would like to PUT
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -867,7 +867,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a PATCH request
      * @param {String} path The path to the resource to which we want to send a PATCH request
-     * @param {SiestaModel} model The model that we would like to PATCH
+     * @param {ModelInstance} model The model that we would like to PATCH
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -879,7 +879,7 @@ _.extend(Collection.prototype, {
     /**
      * Send a DELETE request. Also removes the object.
      * @param {String} path The path to the resource to which we want to DELETE
-     * @param {SiestaModel} model The model that we would like to PATCH
+     * @param {ModelInstance} model The model that we would like to PATCH
      * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
      * @param {Function} callback Callback if opts specified.
      * @returns {Promise}
@@ -1214,8 +1214,8 @@ siesta.LogLevel = log.Level;
  * siesta.setLogLevel('Mapping', siesta.LogLevel.trace);
  * // The logger used during mapping operations, i.e. mapping data onto the object graph.
  * siesta.setLogLevel('MappingOperation', siesta.LogLevel.trace);
- * // The logger used by the SiestaModel class, which makes up the individual nodes of the object graph.
- * siesta.setLogLevel('SiestaModel', siesta.LogLevel.trace);
+ * // The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.
+ * siesta.setLogLevel('ModelInstance', siesta.LogLevel.trace);
  * // The logger used by the performance monitoring extension (siesta.perf.js)
  * siesta.setLogLevel('Performance', siesta.LogLevel.trace);
  * // The logger used during local queries against the object graph.
@@ -1293,7 +1293,7 @@ var proxy = require('./proxy')
     , coreChanges = require('./changes')
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
-    , SiestaModel = require('./siestaModel').SiestaModel
+    , SiestaModel = require('./siestaModel').ModelInstance
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
     ;
@@ -1449,7 +1449,7 @@ var log = require('./operation/log')
     , Query = require('./query').Query
     , Operation = require('./operation/operation').Operation
     , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
-    , SiestaModel = require('./siestaModel').SiestaModel
+    , SiestaModel = require('./siestaModel').ModelInstance
     , util = require('./util')
     , defineSubProperty = util.defineSubProperty
     , cache = require('./cache')
@@ -1559,7 +1559,7 @@ _.extend(Mapping.prototype, {
             }
             if (this.subclass.prototype == SiestaModel.prototype) {
                 throw new InternalSiestaError('Subclass for mapping "' + this.type + '" has not been configured correctly. ' +
-                'You should use Object.create on SiestaModel prototype.');
+                'You should use Object.create on ModelInstance prototype.');
             }
         }
     },
@@ -1818,7 +1818,7 @@ _.extend(Mapping.prototype, {
         return deferred ? deferred.promise : null;
     },
     /**
-     * Convert raw data into a SiestaModel
+     * Convert raw data into a ModelInstance
      * @returns {SiestaModel}
      * @private
      */
@@ -1954,7 +1954,7 @@ exports.Mapping = Mapping;
  */
 
 var Store = require('./store')
-    , SiestaModel = require('./siestaModel').SiestaModel
+    , SiestaModel = require('./siestaModel').ModelInstance
     , log = require('./operation/log')
     , Operation = require('./operation/operation').Operation
     , InternalSiestaError = require('./error').InternalSiestaError
@@ -2045,7 +2045,7 @@ _.extend(BulkMappingOperation.prototype, {
         for (var i = 0; i < this.data.length; i++) {
             var datum = this.data[i];
             var object = this.objects[i];
-            // No point mapping object onto itself. This happens if a SiestaModel is passed as a relationship.
+            // No point mapping object onto itself. This happens if a ModelInstance is passed as a relationship.
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
                     var fields = this.mapping._attributeNames;
@@ -2416,7 +2416,7 @@ var proxy = require('./proxy')
     , _ = util._
     , InternalSiestaError = require('./error').InternalSiestaError
     , coreChanges = require('./changes')
-    , SiestaModel = require('./siestaModel').SiestaModel
+    , SiestaModel = require('./siestaModel').ModelInstance
     , notificationCentre = require('./notificationCentre')
     , wrapArrayForAttributes = notificationCentre.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
@@ -2629,7 +2629,7 @@ var proxy = require('./proxy')
     , Store = require('./store')
     , util = require('./util')
     , InternalSiestaError = require('./error').InternalSiestaError
-    , SiestaModel = require('./siestaModel').SiestaModel;
+    , SiestaModel = require('./siestaModel').ModelInstance;
 
 /**
  * [OneToOneProxy description]
@@ -4055,7 +4055,7 @@ _.extend(SiestaModel.prototype, {
     }
 });
 
-exports.SiestaModel = SiestaModel;
+exports.ModelInstance = SiestaModel;
 exports.dumpSaveQueues = function () {
     var dumped = {};
     for (var id in queues) {
@@ -7645,7 +7645,7 @@ function _serialiseObject(opts, obj, cb) {
  * Send a HTTP request to the given method and path
  * @param {String} method
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} object The model we're pushing to the server
+ * @param {ModelInstance} object The model we're pushing to the server
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  */
@@ -7705,7 +7705,7 @@ function _httpRequest(method, path, object) {
  * Send a DELETE request. Also removes the object.
  * @param {Collection} collection
  * @param {String} path The path to the resource to which we want to DELETE
- * @param {SiestaModel} object The model that we would like to PATCH
+ * @param {ModelInstance} object The model that we would like to PATCH
  * @returns {Promise}
  */
 function DELETE(collection, path, object) {
@@ -7812,7 +7812,7 @@ function HEAD(collection) {
  * Send an POST request
  * @param {Collection} collection
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} model The model that we would like to POST
+ * @param {ModelInstance} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
@@ -7827,7 +7827,7 @@ function POST(collection) {
  * Send an PUT request
  * @param {Collection} collection
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} model The model that we would like to POST
+ * @param {ModelInstance} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
@@ -7842,7 +7842,7 @@ function PUT(collection) {
  * Send an PATCH request
  * @param {Collection} collection
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} model The model that we would like to POST
+ * @param {ModelInstance} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
@@ -8083,7 +8083,7 @@ var _ = utils._;
 
 /**
  * Serialises an object into it's remote identifier (as defined by the mapping)
- * @param  {SiestaModel} obj
+ * @param  {ModelInstance} obj
  * @return {String}
  * 
  */
@@ -8102,7 +8102,7 @@ function idSerialiser(obj) {
 /**
  * Serialises obj following relationships to specified depth.
  * @param  {Integer}   depth
- * @param  {SiestaModel}   obj
+ * @param  {ModelInstance}   obj
  * @param  {Function} done 
  */
 function depthSerialiser(depth, obj, done) {

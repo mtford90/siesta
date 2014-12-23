@@ -19,7 +19,7 @@ Logger.setLevel(log.Level.trace);
 
 /**
  * Serialise a model down to PouchDB.
- * @param {SiestaModel} model
+ * @param {ModelInstance} model
  */
 function _serialise(model) {
     var serialised = siesta.extend({}, model.__values);

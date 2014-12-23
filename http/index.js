@@ -166,7 +166,7 @@ function _serialiseObject(opts, obj, cb) {
  * Send a HTTP request to the given method and path
  * @param {String} method
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} object The model we're pushing to the server
+ * @param {ModelInstance} object The model we're pushing to the server
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  */
@@ -226,7 +226,7 @@ function _httpRequest(method, path, object) {
  * Send a DELETE request. Also removes the object.
  * @param {Collection} collection
  * @param {String} path The path to the resource to which we want to DELETE
- * @param {SiestaModel} object The model that we would like to PATCH
+ * @param {ModelInstance} object The model that we would like to PATCH
  * @returns {Promise}
  */
 function DELETE(collection, path, object) {
@@ -333,7 +333,7 @@ function HEAD(collection) {
  * Send an POST request
  * @param {Collection} collection
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} model The model that we would like to POST
+ * @param {ModelInstance} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
@@ -348,7 +348,7 @@ function POST(collection) {
  * Send an PUT request
  * @param {Collection} collection
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} model The model that we would like to POST
+ * @param {ModelInstance} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
@@ -363,7 +363,7 @@ function PUT(collection) {
  * Send an PATCH request
  * @param {Collection} collection
  * @param {String} path The path to the resource we want to GET
- * @param {SiestaModel} model The model that we would like to POST
+ * @param {ModelInstance} model The model that we would like to POST
  * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
  * @param {Function} callback Callback if opts specified.
  * @package HTTP
