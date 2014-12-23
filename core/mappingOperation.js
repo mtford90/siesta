@@ -65,7 +65,7 @@ function BulkMappingOperation(opts) {
 
     /**
      * @name mapping
-     * @type {Mapping}
+     * @type {Model}
      */
     defineSubProperty.call(this, 'mapping', this._opts);
 
@@ -97,7 +97,7 @@ function BulkMappingOperation(opts) {
     this.errors = [];
 
 
-    this.name = 'Mapping Operation';
+    this.name = 'Model Operation';
     this.work = _.bind(this._start, this);
     this.subOps = {};
 }

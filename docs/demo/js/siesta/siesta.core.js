@@ -49,7 +49,7 @@ function getViaLocalId(localId) {
 
 /**
  * Return the singleton object given a singleton mapping.
- * @param  {Mapping} mapping
+ * @param  {Model} mapping
  * @return {ModelInstance}
  */
 function getSingleton(mapping) {
@@ -154,13 +154,13 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
 
                 }
             } else {
-                throw new InternalSiestaError('Mapping has no type', {
+                throw new InternalSiestaError('Model has no type', {
                     mapping: obj.mapping,
                     obj: obj
                 });
             }
         } else {
-            throw new InternalSiestaError('Mapping has no collection', {
+            throw new InternalSiestaError('Model has no collection', {
                 mapping: obj.mapping,
                 obj: obj
             });
@@ -539,7 +539,7 @@ Logger.setLevel(log.Level.warn);
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var Operation = require('./operation/operation').Operation;
 var InternalSiestaError = require('./error').InternalSiestaError;
-var Mapping = require('./mapping').Mapping;
+var Mapping = require('./mapping').Model;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
 
@@ -621,7 +621,7 @@ _.extend(Collection.prototype, {
                 Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
             if (mappingsToInstall.length) {
                 var operations = _.map(mappingsToInstall, function (m) {
-                    return new Operation('Install Mapping', _.bind(m.install, m));
+                    return new Operation('Install Model', _.bind(m.install, m));
                 });
                 var op = new Operation('Install Mappings', operations);
                 op.completion = function () {
@@ -680,7 +680,7 @@ _.extend(Collection.prototype, {
         if (callback) callback(err);
     },
     /**
-     * Given the name of a mapping and an options object describing the mapping, creating a Mapping
+     * Given the name of a mapping and an options object describing the mapping, creating a Model
      * object, install it and return it.
      * @param  {String} name
      * @param  {Object} opts
@@ -1012,7 +1012,7 @@ var collection = require('./collection'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     Collection = collection.Collection,
     cache = require('./cache'),
-    Mapping = require('./mapping').Mapping,
+    Mapping = require('./mapping').Model,
     notificationCentre = require('./notificationCentre').notificationCentre,
     Operation = require('./operation/operation').Operation,
     OperationQueue = require('./operation/queue').OperationQueue,
@@ -1210,8 +1210,8 @@ siesta.LogLevel = log.Level;
  * siesta.setLogLevel('changes', siesta.LogLevel.trace);
  * // The logger used by the Collection class, which is used to describe a set of mappings.
  * siesta.setLogLevel('Collection', siesta.LogLevel.trace);
- * // The logger used by the Mapping class.
- * siesta.setLogLevel('Mapping', siesta.LogLevel.trace);
+ * // The logger used by the Model class.
+ * siesta.setLogLevel('Model', siesta.LogLevel.trace);
  * // The logger used during mapping operations, i.e. mapping data onto the object graph.
  * siesta.setLogLevel('MappingOperation', siesta.LogLevel.trace);
  * // The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.
@@ -1583,7 +1583,7 @@ _.extend(Mapping.prototype, {
                             var mappingName = relationship.mapping;
                             if (Logger.debug.isEnabled)
                                 Logger.debug('reverseMappingName', mappingName);
-                            if (!self.collection) throw new InternalSiestaError('Mapping must have collection');
+                            if (!self.collection) throw new InternalSiestaError('Model must have collection');
                             var collection = CollectionRegistry[self.collection];
                             if (!collection) {
                                 throw new InternalSiestaError('Collection ' + self.collection + ' not registered');
@@ -1610,7 +1610,7 @@ _.extend(Mapping.prototype, {
                                 relationship.reverseName = relationship.reverse;
                                 relationship.isReverse = false;
                             } else {
-                                return 'Mapping with name "' + mappingName.toString() + '" does not exist';
+                                return 'Model with name "' + mappingName.toString() + '" does not exist';
                             }
                         } else {
                             return 'Relationship type ' + relationship.type + ' does not exist';
@@ -1719,7 +1719,7 @@ _.extend(Mapping.prototype, {
             }
             if (callback) callback(errors.length ? errors : null);
         } else {
-            throw new InternalSiestaError('Mapping "' + this.type + '" has already been installed');
+            throw new InternalSiestaError('Model "' + this.type + '" has already been installed');
         }
         return deferred ? deferred.promise : null;
     },
@@ -1760,7 +1760,7 @@ _.extend(Mapping.prototype, {
                 }, override ? [override] : undefined);
             }
         } else {
-            throw new InternalSiestaError('Mapping must be fully installed before creating any models');
+            throw new InternalSiestaError('Model must be fully installed before creating any models');
         }
         return deferred ? deferred.promise : null;
     },
@@ -1926,7 +1926,7 @@ _.extend(Mapping.prototype, {
             return newModel;
         } else {
             util.printStackTrace();
-            throw new InternalSiestaError('Mapping must be fully installed before creating any models');
+            throw new InternalSiestaError('Model must be fully installed before creating any models');
         }
 
     },
@@ -1942,11 +1942,11 @@ _.extend(Mapping.prototype, {
         return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
     },
     toString: function () {
-        return 'Mapping[' + this.type + ']';
+        return 'Model[' + this.type + ']';
     }
 });
 
-exports.Mapping = Mapping;
+exports.Model = Mapping;
 
 },{"./cache":1,"./changes":2,"./collectionRegistry":4,"./error":5,"./manyToManyProxy":7,"./mappingOperation":9,"./notificationCentre":10,"./oneToManyProxy":11,"./oneToOneProxy":12,"./operation/log":13,"./operation/operation":14,"./query":17,"./relationship":18,"./siestaModel":19,"./store":20,"./util":21,"extend":23}],9:[function(require,module,exports){
 /**
@@ -2009,7 +2009,7 @@ function BulkMappingOperation(opts) {
 
     /**
      * @name mapping
-     * @type {Mapping}
+     * @type {Model}
      */
     defineSubProperty.call(this, 'mapping', this._opts);
 
@@ -2033,7 +2033,7 @@ function BulkMappingOperation(opts) {
      */
     this.errors = [];
 
-    this.name = 'Mapping Operation';
+    this.name = 'Model Operation';
     this.work = _.bind(this._start, this);
     this.subOps = {};
 }
@@ -3486,7 +3486,7 @@ _.extend(RelationshipProxy.prototype, {
 
 function verifyMapping(obj, mapping) {
     if (obj.mapping != mapping) {
-        var err = 'Mapping does not match. Expected ' + mapping.type + ' but got ' + obj.mapping.type;
+        var err = 'Model does not match. Expected ' + mapping.type + ' but got ' + obj.mapping.type;
         throw new InternalSiestaError(err);
     }
 }
@@ -3801,7 +3801,7 @@ Logger.setLevel(log.Level.warn);
 
 /**
  * @class  [Query description]
- * @param {Mapping} mapping
+ * @param {Model} mapping
  * @param {Object} opts
  */
 function Query(mapping, opts) {

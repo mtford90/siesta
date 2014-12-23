@@ -11,7 +11,7 @@ sidebar: nav2.html
 * [Mappings](#mappings)
 * [Descriptors](#descriptors)
 * [HTTP](#http)
-* [Mapping data without HTTP requests](#mappingData)
+* [Model data without HTTP requests](#mappingData)
 * [Listen to change notifications](#changeNotifications)
 * [Query for local data](#queries)
 * [Logging](#logging)
@@ -165,7 +165,7 @@ siesta.series([
 <a id="descriptors"></a>
 ## Descriptors
 
-`Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Mapping.prototype.map` which is also available for mapping arbritrary data onto the graph outside of HTTP.
+`Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Model.prototype.map` which is also available for mapping arbritrary data onto the graph outside of HTTP.
 
 The below descriptor describes the GitHub endpoint for obtaining a specific users repositories. `path` is a regular expression, `mapping`tells Siesta what kind of objects to expect from this endpoint and `method` is the HTTP method, list of http methods or a wildcard.
 
@@ -343,11 +343,11 @@ siesta.setAjax(zepto.ajax);
 ```
 
 <a id="mappingData"></a>
-## Mapping data without HTTP requests
+## Model data without HTTP requests
 
 You do not have to send HTTP requests to map data into Siesta. If your application loads data from websockets or through other protocols/sources then there needs to be a way to map arbitrary data onto the object graph.
 
-`Mapping.prototype.map(data, callback)` will map data using a particular mapping e.g:
+`Model.prototype.map(data, callback)` will map data using a particular mapping e.g:
 
 ```js
 var data = {
@@ -446,13 +446,13 @@ siesta.on('Siesta', function (n) {});
 siesta.on('GitHub', function (n) {});
 ```
 
-* `<Collection>:<Mapping>` - All notifications for objects generated through a particular mapping in a particular collection.
+* `<Collection>:<Model>` - All notifications for objects generated through a particular mapping in a particular collection.
 
 ```js
 siesta.on('GitHub:User', function (n) {});
 ```
 
-* `<Collection>:<Mapping>:<Mapping.id>` - All notifications for an object from a particular mapping with remote identifier Mapping.id (which defaults to 'id')
+* `<Collection>:<Model>:<Model.id>` - All notifications for an object from a particular mapping with remote identifier Model.id (which defaults to 'id')
 
 ```js
 siesta.on('GitHub:Repo:' + myRepo.id, function (n) {});
@@ -517,7 +517,7 @@ In browsers that implement `Object.observe`, `siesta.notify()` simply does nothi
 
 Siesta features an API for searching all local objects in the graph.
 
-`Mapping.prototype.all(callback)` will return all models mapped by a particular mapping.
+`Model.prototype.all(callback)` will return all models mapped by a particular mapping.
 
 ```js
 User.all(function (err, users) {
@@ -527,7 +527,7 @@ User.all(function (err, users) {
 });
 ```
 
-`Mapping.prototype.query(opts, callback)` will return all models that match the query described by `opts`. Many types of queries can be executed, loosely inspired by Django's ORM query conventions:
+`Model.prototype.query(opts, callback)` will return all models that match the query described by `opts`. Many types of queries can be executed, loosely inspired by Django's ORM query conventions:
 
 Query for a user with a particular local identifier.
 
@@ -588,7 +588,7 @@ The various loggers are listed below:
 * `RemoteCache`:  Objects are cached by local id (_id) or their remote id. This logger is used by the remote object cache.
 * `changes`: The logger used by change notifications.
 * `Collection`: The logger used by the Collection class, which is used to describe a set of mappings.
-* `Mapping`: The logger used by the Mapping class.
+* `Model`: The logger used by the Model class.
 * `MappingOperation`: The logger used during mapping operations, i.e. mapping data onto the object graph.
 * `ModelInstance`: The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.
 * `Performance`: The logger used by the performance monitoring extension (siesta.perf.js)

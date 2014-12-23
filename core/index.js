@@ -7,7 +7,7 @@ var collection = require('./collection'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     Collection = collection.Collection,
     cache = require('./cache'),
-    Mapping = require('./model').Mapping,
+    Mapping = require('./model').Model,
     notificationCentre = require('./notificationCentre').notificationCentre,
     Operation = require('./operation/operation').Operation,
     OperationQueue = require('./operation/queue').OperationQueue,
@@ -227,8 +227,8 @@ siesta.LogLevel = log.Level;
  * siesta.setLogLevel('changes', siesta.LogLevel.trace);
  * // The logger used by the Collection class, which is used to describe a set of mappings.
  * siesta.setLogLevel('Collection', siesta.LogLevel.trace);
- * // The logger used by the Mapping class.
- * siesta.setLogLevel('Mapping', siesta.LogLevel.trace);
+ * // The logger used by the Model class.
+ * siesta.setLogLevel('Model', siesta.LogLevel.trace);
  * // The logger used during mapping operations, i.e. mapping data onto the object graph.
  * siesta.setLogLevel('MappingOperation', siesta.LogLevel.trace);
  * // The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.

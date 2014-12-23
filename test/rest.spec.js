@@ -41,7 +41,7 @@ describe('rest', function () {
                 collection.install(done);
             });
 
-            describe('raw mapping to Mapping object', function () {
+            describe('raw mapping to Model object', function () {
                 function assertMapping(collection) {
                     var rawMapping = collection._rawMappings.Person;
                     assert.ok(rawMapping);

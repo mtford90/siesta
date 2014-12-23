@@ -7,7 +7,7 @@ var log = require('./operation/log');
 var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
 var Operation = require('./operation/operation').Operation;
 var InternalSiestaError = require('./error').InternalSiestaError;
-var Mapping = require('./model').Mapping;
+var Model = require('./model').Model;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
 var notificationCentre = require('./notificationCentre').notificationCentre;
@@ -174,11 +174,11 @@ _.extend(Collection.prototype, {
         if (callback) callback(err);
     },
     /**
-     * Given the name of a mapping and an options object describing the mapping, creating a Mapping
+     * Given the name of a mapping and an options object describing the mapping, creating a Model
      * object, install it and return it.
      * @param  {String} name
      * @param  {Object} opts
-     * @return {Mapping}
+     * @return {Model}
      * @class Collection
      */
     _model: function (name, opts) {
@@ -187,7 +187,7 @@ _.extend(Collection.prototype, {
             opts = extend(true, {}, opts);
             opts.type = name;
             opts.collection = this._name;
-            var mappingObject = new Mapping(opts);
+            var mappingObject = new Model(opts);
             this._mappings[name] = mappingObject;
             this[name] = mappingObject;
             return mappingObject;
@@ -201,7 +201,7 @@ _.extend(Collection.prototype, {
      * Registers a model with this collection.
      * @param {String|Object} optsOrName An options object or the name of the mapping. Must pass options as second param if specify name.
      * @param {Object} opts Options if name already specified.
-     * @return {Mapping}
+     * @return {Model}
      * @class Collection
      */
     model: function () {

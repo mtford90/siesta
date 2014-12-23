@@ -388,7 +388,7 @@ Set to true if installation has succeeded. You cannot use the collectio
 
 <a name="new_module_collection..Collection"></a>
 ###new collection~Collection(name, opts)
-Given the name of a mapping and an options object describing the mapping, creating a Mapping
+Given the name of a mapping and an options object describing the mapping, creating a Model
 object, install it and return it.
 
 **Params**
@@ -397,7 +397,7 @@ object, install it and return it.
 - opts `Object`  
 
 **Scope**: inner class of [collection](#module_collection)  
-**Returns**: `Mapping`  
+**Returns**: `Model`
 <a name="module_collection..Collection#baseURL"></a>
 ###collection.baseURL
 The URL of the API e.g. http://api.github.com
@@ -427,7 +427,7 @@ Registers a mapping with this collection.
 - opts `Object` - Options if name already specified.  
 
 **Scope**: inner class of [collection](#module_collection)  
-**Returns**: `Mapping`  
+**Returns**: `Model`
 <a name="module_collection..Collection#baseURL"></a>
 ###collection.baseURL
 The URL of the API e.g. http://api.github.com
@@ -1490,7 +1490,7 @@ Return the singleton object given a singleton mapping.
 
 **Params**
 
-- mapping `Mapping`  
+- mapping `Model`
 
 **Scope**: inner function of [cache](#module_cache)  
 **Returns**: `ModelInstance`

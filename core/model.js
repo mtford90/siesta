@@ -28,14 +28,14 @@ var log = require('./operation/log')
     , ChangeType = coreChanges.ChangeType
     ;
 
-var Logger = log.loggerWithName('Mapping');
+var Logger = log.loggerWithName('Model');
 Logger.setLevel(log.Level.warn);
 
 /**
  *
  * @param {Object} opts
  */
-function Mapping(opts) {
+function Model(opts) {
     var self = this;
     this._opts = opts;
 
@@ -151,7 +151,7 @@ function Mapping(opts) {
 
 }
 
-_.extend(Mapping.prototype, {
+_.extend(Model.prototype, {
     /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
@@ -178,7 +178,7 @@ _.extend(Mapping.prototype, {
                             var mappingName = relationship.mapping;
                             if (Logger.debug.isEnabled)
                                 Logger.debug('reverseMappingName', mappingName);
-                            if (!self.collection) throw new InternalSiestaError('Mapping must have collection');
+                            if (!self.collection) throw new InternalSiestaError('Model must have collection');
                             var collection = CollectionRegistry[self.collection];
                             if (!collection) {
                                 throw new InternalSiestaError('Collection ' + self.collection + ' not registered');
@@ -205,7 +205,7 @@ _.extend(Mapping.prototype, {
                                 relationship.reverseName = relationship.reverse;
                                 relationship.isReverse = false;
                             } else {
-                                return 'Mapping with name "' + mappingName.toString() + '" does not exist';
+                                return 'Model with name "' + mappingName.toString() + '" does not exist';
                             }
                         } else {
                             return 'Relationship type ' + relationship.type + ' does not exist';
@@ -331,7 +331,7 @@ _.extend(Mapping.prototype, {
             }
             callback(errors.length ? errors : null);
         } else {
-            throw new InternalSiestaError('Mapping "' + this.type + '" has already been installed');
+            throw new InternalSiestaError('Model "' + this.type + '" has already been installed');
         }
         return deferred ? deferred.promise : null;
     },
@@ -385,7 +385,7 @@ _.extend(Mapping.prototype, {
                 });
             }
         } else {
-            throw new InternalSiestaError('Mapping must be fully installed before creating any models');
+            throw new InternalSiestaError('Model must be fully installed before creating any models');
         }
         return deferred ? deferred.promise : null;
     },
@@ -563,7 +563,7 @@ _.extend(Mapping.prototype, {
             }
             return newModel;
         } else {
-            throw new InternalSiestaError('Mapping must be fully installed before creating any models');
+            throw new InternalSiestaError('Model must be fully installed before creating any models');
         }
 
     },
@@ -579,12 +579,12 @@ _.extend(Mapping.prototype, {
         return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
     },
     toString: function () {
-        return 'Mapping[' + this.type + ']';
+        return 'Model[' + this.type + ']';
     }
 
 });
 
-_.extend(Mapping.prototype, {
+_.extend(Model.prototype, {
     listen: function (fn) {
         notificationCentre.on(this.collection + ':' + this.type, fn);
         return function () {
@@ -600,7 +600,7 @@ _.extend(Mapping.prototype, {
 });
 
 // Subclassing
-_.extend(Mapping.prototype, {
+_.extend(Model.prototype, {
     child: function (nameOrOpts, opts) {
         if (typeof nameOrOpts == 'string') {
             opts.name = nameOrOpts;
@@ -635,4 +635,4 @@ _.extend(Mapping.prototype, {
     }
 });
 
-exports.Mapping = Mapping;
+exports.Model = Model;

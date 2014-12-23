@@ -89,7 +89,7 @@ function Descriptor(opts) {
                     if (actualMapping) {
                         this._opts.mapping = actualMapping;
                     } else {
-                        throw new Error('Mapping ' + this._opts.mapping + ' does not exist', {
+                        throw new Error('Model ' + this._opts.mapping + ' does not exist', {
                             opts: opts,
                             descriptor: this
                         });

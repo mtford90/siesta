@@ -150,7 +150,7 @@ _.extend(RelationshipProxy.prototype, {
 
 function verifyMapping(obj, mapping) {
     if (obj.mapping != mapping) {
-        var err = 'Mapping does not match. Expected ' + mapping.type + ' but got ' + obj.mapping.type;
+        var err = 'Model does not match. Expected ' + mapping.type + ' but got ' + obj.mapping.type;
         throw new InternalSiestaError(err);
     }
 }

@@ -11,7 +11,7 @@ Logger.setLevel(log.Level.warn);
 
 /**
  * @class  [Query description]
- * @param {Mapping} mapping
+ * @param {Model} mapping
  * @param {Object} opts
  */
 function Query(mapping, opts) {

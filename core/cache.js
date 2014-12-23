@@ -48,7 +48,7 @@ function getViaLocalId(localId) {
 
 /**
  * Return the singleton object given a singleton mapping.
- * @param  {Mapping} mapping
+ * @param  {Model} mapping
  * @return {ModelInstance}
  */
 function getSingleton(mapping) {
@@ -152,13 +152,13 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
 
                 }
             } else {
-                throw new InternalSiestaError('Mapping has no type', {
+                throw new InternalSiestaError('Model has no type', {
                     mapping: obj.mapping,
                     obj: obj
                 });
             }
         } else {
-            throw new InternalSiestaError('Mapping has no collection', {
+            throw new InternalSiestaError('Model has no collection', {
                 mapping: obj.mapping,
                 obj: obj
             });
