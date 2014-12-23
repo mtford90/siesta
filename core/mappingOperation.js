@@ -227,9 +227,7 @@ _.extend(BulkMappingOperation.prototype, {
                                     var _id = localIdentifiers[i];
                                     var lookup = localLookups[i];
                                     if (!obj) {
-                                        self.errors[lookup.index] = new SiestaError({
-                                            _id: 'No object with _id="' + _id.toString() + '"'
-                                        });
+                                        self.objects[lookup.index] = self.mapping._new({_id: _id}, !self.disableNotifications);
                                     } else {
                                         self.objects[lookup.index] = obj;
                                     }

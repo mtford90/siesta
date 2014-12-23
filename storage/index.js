@@ -47,7 +47,6 @@ function _deserialise(data, cb) {
         collection = CollectionRegistry[collectionName],
         model = collection[modelName];
     // Add blank object with correct _id to the cache so that can map data onto it.
-    _i.cache.insert(model._new({_id: data._id}, false));
     var rev = data._rev;
     delete data._rev;
     delete data.collection;

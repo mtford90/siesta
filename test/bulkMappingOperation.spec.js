@@ -146,28 +146,10 @@ describe('bulk mapping operation', function () {
                     assert.ok(op.error[2].repositories);
                 });
 
-                it('invalid _id', function () {
-                    assert.ok(op.error[3]);
-                    assert.ok(op.error[3].repositories);
-                });
+
 
             });
 
-            it('non-existent _id', function (done) {
-                var data = [{
-                    _id: 'nonexistant'
-                }];
-
-                var op = new BulkMappingOperation({
-                    mapping: User,
-                    data: data
-                });
-                op.onCompletion(function () {
-                    assert.ok(op.error);
-                    done();
-                });
-                op.start();
-            });
 
             it('array to scalar', function (done) {
                 var data = [{
