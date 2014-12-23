@@ -111,12 +111,12 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                 }
                 if (typeof(extractedData) == 'object') {
                     var mapping = matchedDescriptor.mapping;
-                    mapping.map(extractedData, function (err, obj) {
+                    mapping.map(extractedData, {override: opts.obj}, function (err, obj) {
                         if (callback) {
 
                             callback(err, obj, resp);
                         }
-                    }, opts.obj);
+                    });
                 } else { // Matched, but no data.
                     callback(null, true, resp);
                 }

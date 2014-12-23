@@ -314,7 +314,7 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, function (err, objs, res) {
+                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) {
                                     done(err);
                                 } else {
@@ -389,7 +389,7 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, function (err, objs, res) {
+                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) done(err);
                                 cars = objs;
                                 personMapping.map({
@@ -488,7 +488,7 @@ describe('perform mapping', function () {
                             name: 'Ford',
                             id: "remoteId3"
                         }];
-                        carMapping._mapBulk(raw, function (err, objs, res) {
+                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) done(err);
                             cars = objs;
                             personMapping.map({
@@ -578,7 +578,7 @@ describe('perform mapping', function () {
                             name: 'Ford',
                             id: "remoteId3"
                         }];
-                        carMapping._mapBulk(raw, function (err, objs, res) {
+                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
 
                                 done(err);
@@ -711,7 +711,7 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, function (err, objs, res) {
+                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) {
 
                                     done(err);
@@ -801,7 +801,7 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, function (err, objs, res) {
+                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) done(err);
                                 cars = objs;
                                 personMapping.map({
@@ -1501,7 +1501,7 @@ describe('perform mapping', function () {
                         name: 'Ford',
                         id: "remoteId3dfgdfgdfgdfg"
                     }];
-                    carMapping._mapBulk(raw, function (err, objs) {
+                    carMapping._mapBulk(raw, {}, function (err, objs) {
                         if (err) done(err);
                         assert.equal(objs.length, raw.length);
                         assert.equal(objs[0].colour, 'red');
@@ -1552,7 +1552,7 @@ describe('perform mapping', function () {
                         id: "remoteId3",
                         owner: ownerId
                     }];
-                    carMapping._mapBulk(raw, function (err, objs) {
+                    carMapping._mapBulk(raw, {}, function (err, objs) {
                         if (err) done(err);
                         assert.equal(objs.length, raw.length);
                         assert.equal(objs[0].owner, objs[1].owner);
@@ -1640,7 +1640,7 @@ describe('perform mapping', function () {
                             id: "remoteId3",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw, function (err, objs, res) {
+                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1685,7 +1685,7 @@ describe('perform mapping', function () {
                             id: "remoteId3",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw1, function (err, objs, res) {
+                        carMapping._mapBulk(raw1, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1712,7 +1712,7 @@ describe('perform mapping', function () {
                             id: "remoteId6",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw2, function (err, objs, res) {
+                        carMapping._mapBulk(raw2, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1739,7 +1739,7 @@ describe('perform mapping', function () {
                             id: "remoteId9",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw3, function (err, objs, res) {
+                        carMapping._mapBulk(raw3, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1793,7 +1793,7 @@ describe('perform mapping', function () {
                                 id: 'personRemoteId'
                             }
                         }];
-                        carMapping._mapBulk(raw, function (err, objs, res) {
+                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1844,7 +1844,7 @@ describe('perform mapping', function () {
                                 id: 'personRemoteId'
                             }
                         }];
-                        carMapping._mapBulk(raw, function (err, objs, res) {
+                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }

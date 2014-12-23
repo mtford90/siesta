@@ -349,17 +349,30 @@ _.extend(Mapping.prototype, {
      * Map data into Siesta.
      *
      * @param data Raw data received remotely or otherwise
-     * @param callback Called once pouch persistence returns.
-     * @param override Force mapping to this object
+     * @param {function|object} optsOrCallback
+     * @param {boolean} optsOrCallback.override
+     * @param {function} callback Called once pouch persistence returns.
      */
-    map: function (data, callback, override) {
+    map: function (data, optsOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        var opts;
+        if (typeof optsOrCallback == 'function') {
+            callback = optsOrCallback;
+            opts = {};
+        }
+        else if (optsOrCallback) {
+            opts = optsOrCallback;
+        }
+        else {
+            opts = {};
+        }
         if (this.installed) {
             if (util.isArray(data)) {
-                this._mapBulk(data, callback, override);
+                this._mapBulk(data, opts, callback);
             } else {
-                this._mapBulk([data], function (err, objects) {
+                if (opts.override) opts.override = [opts.override];
+                this._mapBulk([data], opts, function (err, objects) {
                     if (callback) {
                         var obj;
                         if (objects) {
@@ -369,22 +382,23 @@ _.extend(Mapping.prototype, {
                         }
                         callback(err ? err[0] : null, obj);
                     }
-                }, override ? [override] : undefined);
+                });
             }
         } else {
             throw new InternalSiestaError('Mapping must be fully installed before creating any models');
         }
         return deferred ? deferred.promise : null;
     },
-    _mapBulk: function (data, callback, override) {
+    _mapBulk: function (data, opts, callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        var opts = {
+        var override = opts.override;
+        var mappingOpts = {
             mapping: this,
             data: data
         };
-        if (override) opts.objects = override;
-        var op = new BulkMappingOperation(opts);
+        if (override) mappingOpts.objects = override;
+        var op = new BulkMappingOperation(mappingOpts);
         op.onCompletion(function () {
             var err = op.error;
             if (err) {

@@ -121,7 +121,6 @@ function save(callback) {
 }
 
 var listener = function (n) {
-    if (Logger.trace) Logger.trace('Received notif!');
     var changedObject = n.obj,
         ident = changedObject._id;
     if (!changedObject) {
