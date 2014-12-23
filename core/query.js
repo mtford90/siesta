@@ -11,11 +11,11 @@ Logger.setLevel(log.Level.warn);
 
 /**
  * @class  [Query description]
- * @param {Model} mapping
+ * @param {Model} model
  * @param {Object} opts
  */
-function Query(mapping, opts) {
-    this.mapping = mapping;
+function Query(model, opts) {
+    this.model = model;
     this.query = opts;
     this.ordering = null;
 }
@@ -49,14 +49,14 @@ _.extend(Query, {
     }
 });
 
-function cacheForMapping(mapping) {
+function cacheForModel(model) {
     var cacheByType = cache._localCacheByType;
-    var mappingName = mapping.type;
-    var collectionName = mapping.collection;
-    var cacheByMapping = cacheByType[collectionName];
+    var modelName = model.type;
+    var collectionName = model.collection;
+    var cacheByModel = cacheByType[collectionName];
     var cacheByLocalId;
-    if (cacheByMapping) {
-        cacheByLocalId = cacheByMapping[mappingName] || {};
+    if (cacheByModel) {
+        cacheByLocalId = cacheByModel[modelName] || {};
     }
     return cacheByLocalId;
 }
@@ -95,9 +95,9 @@ _.extend(Query.prototype, {
      * @private
      */
     _getCacheByLocalId: function () {
-        return _.reduce(this.mapping.descendants, function (memo, childMapping) {
-            return _.extend(memo, cacheForMapping(childMapping));
-        }, _.extend({}, cacheForMapping(this.mapping)));
+        return _.reduce(this.model.descendants, function (memo, childModel) {
+            return _.extend(memo, cacheForModel(childModel));
+        }, _.extend({}, cacheForModel(this.model)));
     },
     _executeInMemory: function (callback) {
         var deferred = window.q ? window.q.defer() : null;

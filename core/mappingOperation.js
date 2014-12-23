@@ -67,7 +67,7 @@ function BulkMappingOperation(opts) {
      * @name mapping
      * @type {Model}
      */
-    defineSubProperty.call(this, 'mapping', this._opts);
+    defineSubProperty.call(this, 'model', this._opts);
 
     /**
      * @name data
@@ -112,7 +112,7 @@ _.extend(BulkMappingOperation.prototype, {
             // No point mapping object onto itself. This happens if a ModelInstance is passed as a relationship.
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
-                    var fields = this.mapping._attributeNames;
+                    var fields = this.model._attributeNames;
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
                             // If notifications are disabled we update __values object directly. This avoids triggering
@@ -179,7 +179,7 @@ _.extend(BulkMappingOperation.prototype, {
                             index: i,
                             datum: {}
                         };
-                        lookup.datum[self.mapping.id] = datum;
+                        lookup.datum[self.model.id] = datum;
                         remoteLookups.push(lookup);
                     } else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
                         this.objects[i] = datum;
@@ -188,7 +188,7 @@ _.extend(BulkMappingOperation.prototype, {
                             index: i,
                             datum: datum
                         });
-                    } else if (datum[self.mapping.id]) {
+                    } else if (datum[self.model.id]) {
                         remoteLookups.push({
                             index: i,
                             datum: datum
@@ -196,7 +196,7 @@ _.extend(BulkMappingOperation.prototype, {
                     } else {
                         // Create a new object if and only if the data has any fields that will actually
                         var datumFields = Object.keys(datum);
-                        var objectFields = _.reduce(Object.keys(self.mapping.relationships).concat(self.mapping._attributeNames), function (m, x) {
+                        var objectFields = _.reduce(Object.keys(self.model.relationships).concat(self.model._attributeNames), function (m, x) {
                             m[x] = {};
                             return m;
                         }, {});
@@ -208,7 +208,7 @@ _.extend(BulkMappingOperation.prototype, {
                             }
                         }
                         if (shouldCreateNewObject) {
-                            this.objects[i] = self.mapping._new();
+                            this.objects[i] = self.model._new();
                         }
                     }
                 } else {
@@ -227,7 +227,7 @@ _.extend(BulkMappingOperation.prototype, {
                                     var _id = localIdentifiers[i];
                                     var lookup = localLookups[i];
                                     if (!obj) {
-                                        self.objects[lookup.index] = self.mapping._new({_id: _id}, !self.disableNotifications);
+                                        self.objects[lookup.index] = self.model._new({_id: _id}, !self.disableNotifications);
                                     } else {
                                         self.objects[lookup.index] = obj;
                                     }
@@ -240,11 +240,11 @@ _.extend(BulkMappingOperation.prototype, {
                     }
                 },
                 function (callback) {
-                    var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.mapping.id);
+                    var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
                     if (remoteIdentifiers.length) {
                         if (Logger.trace.isEnabled)
                             Logger.trace('Looking up remoteIdentifiers: ' + JSON.stringify(remoteIdentifiers, null, 4));
-                        Store.getMultipleRemote(remoteIdentifiers, self.mapping, function (err, objects) {
+                        Store.getMultipleRemote(remoteIdentifiers, self.model, function (err, objects) {
                             if (!err) {
                                 if (Logger.trace.isEnabled) {
                                     var results = {};
@@ -261,19 +261,19 @@ _.extend(BulkMappingOperation.prototype, {
                                     } else {
                                         var data = {};
                                         var remoteId = remoteIdentifiers[i];
-                                        data[self.mapping.id] = remoteId;
+                                        data[self.model.id] = remoteId;
                                         var cacheQuery = {
-                                            mapping: self.mapping
+                                            model: self.model
                                         };
-                                        cacheQuery[self.mapping.id] = remoteId;
+                                        cacheQuery[self.model.id] = remoteId;
                                         var cached = cache.get(cacheQuery);
                                         if (cached) {
                                             self.objects[lookup.index] = cached;
                                         } else {
-                                            self.objects[lookup.index] = self.mapping._new();
+                                            self.objects[lookup.index] = self.model._new();
                                             // It's important that we map the remote identifier here to ensure that it ends
                                             // up in the cache.
-                                            self.objects[lookup.index][self.mapping.id] = remoteId;
+                                            self.objects[lookup.index][self.model.id] = remoteId;
                                         }
                                     }
                                 }
@@ -292,8 +292,8 @@ _.extend(BulkMappingOperation.prototype, {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var self = this;
-        this.mapping.get(function (err, singleton) {
-            if (!singleton) singleton = self.mapping._new();
+        this.model.get(function (err, singleton) {
+            if (!singleton) singleton = self.model._new();
             if (!err) {
                 for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = singleton;
@@ -307,7 +307,7 @@ _.extend(BulkMappingOperation.prototype, {
         if (this.data.length) {
             var self = this;
             var tasks = [];
-            var lookupFunc = this.mapping.singleton ? this._lookupSingleton : this._lookup;
+            var lookupFunc = this.model.singleton ? this._lookupSingleton : this._lookup;
             tasks.push(_.bind(lookupFunc, this));
             tasks.push(_.bind(this._executeSubOperations, this));
             util.parallel(tasks, function () {
@@ -337,18 +337,18 @@ _.extend(BulkMappingOperation.prototype, {
     },
     _constructSubOperations: function () {
         var subOps = this.subOps;
-        var relationships = this.mapping.relationships;
+        var relationships = this.model.relationships;
         for (var name in relationships) {
             if (relationships.hasOwnProperty(name)) {
                 var relationship = relationships[name];
-                var reverseMapping = relationship.forwardName == name ? relationship.reverseMapping : relationship.forwardMapping;
+                var reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel;
                 var __ret = this.getRelatedData(name);
                 var indexes = __ret.indexes;
                 var relatedData = __ret.relatedData;
                 if (relatedData.length) {
                     var flatRelatedData = flattenArray(relatedData);
                     var op = new BulkMappingOperation({
-                        mapping: reverseMapping,
+                        model: reverseModel,
                         data: flatRelatedData
                     });
                     op.__relationshipName = name;

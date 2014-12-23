@@ -47,16 +47,16 @@ function getViaLocalId(localId) {
 }
 
 /**
- * Return the singleton object given a singleton mapping.
- * @param  {Model} mapping
+ * Return the singleton object given a singleton model.
+ * @param  {Model} model
  * @return {ModelInstance}
  */
-function getSingleton(mapping) {
-    var mappingName = mapping.type;
-    var collectionName = mapping.collection;
+function getSingleton(model) {
+    var modelName = model.type;
+    var collectionName = model.collection;
     var collectionCache = localCache[collectionName];
     if (collectionCache) {
-        var typeCache = collectionCache[mappingName];
+        var typeCache = collectionCache[modelName];
         if (typeCache) {
             var objs = [];
             for (var prop in typeCache) {
@@ -65,8 +65,8 @@ function getSingleton(mapping) {
                 }
             }
             if (objs.length > 1) {
-                throw new InternalSiestaError('A singleton mapping has more than 1 object in the cache! This is a serious error. ' +
-                'Either a mapping has been modified after objects have already been created, or something has gone' +
+                throw new InternalSiestaError('A singleton model has more than 1 object in the cache! This is a serious error. ' +
+                'Either a model has been modified after objects have already been created, or something has gone' +
                 'very wrong. Please file a bug report if the latter.');
             } else if (objs.length) {
                 return objs[0];
@@ -84,8 +84,8 @@ function getSingleton(mapping) {
  * @return {ModelInstance}
  */
 function getViaRemoteId(remoteId, opts) {
-    var type = opts.mapping.type;
-    var collection = opts.mapping.collection;
+    var type = opts.model.type;
+    var collection = opts.model.collection;
     var collectionCache = remoteCache[collection];
     if (collectionCache) {
         var typeCache = remoteCache[collection][type];
@@ -114,12 +114,12 @@ function getViaRemoteId(remoteId, opts) {
  */
 function remoteInsert(obj, remoteId, previousRemoteId) {
     if (obj) {
-        var collection = obj.mapping.collection;
+        var collection = obj.model.collection;
         if (collection) {
             if (!remoteCache[collection]) {
                 remoteCache[collection] = {};
             }
-            var type = obj.mapping.type;
+            var type = obj.model.type;
             if (type) {
                 if (!remoteCache[collection][type]) {
                     remoteCache[collection][type] = {};
@@ -138,7 +138,7 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                     // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
                     // should ever exist.
                     if (obj != cachedObject) {
-                        var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.mapping.id + '="' + remoteId + '"] already exists in the cache.' +
+                        var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.model.id + '="' + remoteId + '"] already exists in the cache.' +
                             ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
                         RemoteCacheLogger.error(message, {
                             obj: obj,
@@ -153,13 +153,13 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                 }
             } else {
                 throw new InternalSiestaError('Model has no type', {
-                    mapping: obj.mapping,
+                    model: obj.model,
                     obj: obj
                 });
             }
         } else {
             throw new InternalSiestaError('Model has no collection', {
-                mapping: obj.mapping,
+                model: obj.model,
                 obj: obj
             });
         }
@@ -182,15 +182,15 @@ function remoteDump(asJson) {
             var dumpedCollCache = {};
             dumpedRestCache[coll] = dumpedCollCache;
             var collCache = remoteCache[coll];
-            for (var mapping in collCache) {
-                if (collCache.hasOwnProperty(mapping)) {
-                    var dumpedMappingCache = {};
-                    dumpedCollCache[mapping] = dumpedMappingCache;
-                    var mappingCache = collCache[mapping];
-                    for (var remoteId in mappingCache) {
-                        if (mappingCache.hasOwnProperty(remoteId)) {
-                            if (mappingCache[remoteId]) {
-                                dumpedMappingCache[remoteId] = mappingCache[remoteId]._dump();
+            for (var model in collCache) {
+                if (collCache.hasOwnProperty(model)) {
+                    var dumpedModelCache = {};
+                    dumpedCollCache[model] = dumpedModelCache;
+                    var modelCache = collCache[model];
+                    for (var remoteId in modelCache) {
+                        if (modelCache.hasOwnProperty(remoteId)) {
+                            if (modelCache[remoteId]) {
+                                dumpedModelCache[remoteId] = modelCache[remoteId]._dump();
                             }
                         }
                     }
@@ -257,8 +257,8 @@ function get(opts) {
         if (obj) {
             return obj;
         } else {
-            if (opts.mapping) {
-                idField = opts.mapping.id;
+            if (opts.model) {
+                idField = opts.model.id;
                 remoteId = opts[idField];
                 if (LocalCacheLogger.debug.isEnabled) LocalCacheLogger.debug(idField + '=' + remoteId);
                 return getViaRemoteId(remoteId, opts);
@@ -266,13 +266,13 @@ function get(opts) {
                 return null;
             }
         }
-    } else if (opts.mapping) {
-        idField = opts.mapping.id;
+    } else if (opts.model) {
+        idField = opts.model.id;
         remoteId = opts[idField];
         if (remoteId) {
             return getViaRemoteId(remoteId, opts);
-        } else if (opts.mapping.singleton) {
-            return getSingleton(opts.mapping);
+        } else if (opts.model.singleton) {
+            return getSingleton(opts.model);
         }
     } else {
         LocalCacheLogger.warn('Invalid opts to cache', {
@@ -290,8 +290,8 @@ function get(opts) {
 function insert(obj) {
     var localId = obj._id;
     if (localId) {
-        var collectionName = obj.mapping.collection;
-        var mappingName = obj.mapping.type;
+        var collectionName = obj.model.collection;
+        var modelName = obj.model.type;
         if (!localCacheById[localId]) {
             if (LocalCacheLogger.debug.isEnabled)
                 LocalCacheLogger.debug('Local cache insert: ' + obj._dump(true));
@@ -299,8 +299,8 @@ function insert(obj) {
             if (LocalCacheLogger.trace.isEnabled)
                 LocalCacheLogger.trace('Local cache now looks like: ' + localDump(true));
             if (!localCache[collectionName]) localCache[collectionName] = {};
-            if (!localCache[collectionName][mappingName]) localCache[collectionName][mappingName] = {};
-            localCache[collectionName][mappingName][localId] = obj;
+            if (!localCache[collectionName][modelName]) localCache[collectionName][modelName] = {};
+            localCache[collectionName][modelName][localId] = obj;
         } else {
             // Something has gone badly wrong here. Two objects should never exist with the same _id
             if (localCacheById[localId] != obj) {
@@ -330,11 +330,11 @@ function contains(obj) {
     var q = {
         _id: obj._id
     };
-    var mapping = obj.mapping;
-    if (mapping.id) {
-        if (obj[mapping.id]) {
-            q.mapping = mapping;
-            q[mapping.id] = obj[mapping.id];
+    var model = obj.model;
+    if (model.id) {
+        if (obj[model.id]) {
+            q.model = model;
+            q[model.id] = obj[model.id];
         }
     }
     return !!get(q);
@@ -347,18 +347,18 @@ function contains(obj) {
  */
 function remove(obj) {
     if (contains(obj)) {
-        var collectionName = obj.mapping.collection;
-        var mappingName = obj.mapping.type;
+        var collectionName = obj.model.collection;
+        var modelName = obj.model.type;
         var _id = obj._id;
-        if (!mappingName) throw InternalSiestaError('No mapping name');
+        if (!modelName) throw InternalSiestaError('No mapping name');
         if (!collectionName) throw InternalSiestaError('No collection name');
         if (!_id) throw InternalSiestaError('No _id');
-        delete localCache[collectionName][mappingName][_id];
+        delete localCache[collectionName][modelName][_id];
         delete localCacheById[_id];
-        if (obj.mapping.id) {
-            var remoteId = obj[obj.mapping.id];
+        if (obj.model.id) {
+            var remoteId = obj[obj.model.id];
             if (remoteId) {
-                delete remoteCache[collectionName][mappingName][remoteId];
+                delete remoteCache[collectionName][modelName][remoteId];
             }
         }
     } else {

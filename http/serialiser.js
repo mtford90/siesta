@@ -18,7 +18,7 @@ var _ = utils._;
  *
  */
 function idSerialiser(obj) {
-    var idField = obj.mapping.id;
+    var idField = obj.model.id;
     if (idField) {
         return obj[idField] ? obj[idField] : null;
     }
@@ -72,7 +72,7 @@ function depthSerialiser(depth, obj, callback) {
                 else if (v) {
                     if (!depth) {
                         finished.push(f);
-                        data[f] = v[obj.__proxies[f].forwardMapping.id];
+                        data[f] = v[obj.__proxies[f].forwardModel.id];
                         result[f] = {err: err, v: v};
                         if ((waiting.length == finished.length) && callback) {
                             callback(errors.length ? errors : null, data, result);

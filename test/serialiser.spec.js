@@ -26,7 +26,7 @@ describe('serialisers', function() {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
                         type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }
@@ -75,7 +75,7 @@ describe('serialisers', function() {
                 id: 'id',
                 relationships: {
                     vitalSigns: {
-                        mapping: 'VitalSigns',
+                        model: 'VitalSigns',
                         type: RelationshipType.OneToOne,
                         reverse: 'person'
                     }
@@ -86,7 +86,7 @@ describe('serialisers', function() {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
                         type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }

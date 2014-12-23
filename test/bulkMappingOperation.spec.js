@@ -76,7 +76,7 @@ describe('bulk mapping operation', function () {
                     attributes: ['name', 'full_name', 'description'],
                     relationships: {
                         owner: {
-                            mapping: 'User',
+                            model: 'User',
                             type: RelationshipType.OneToMany,
                             reverse: 'repositories'
                         }
@@ -122,7 +122,7 @@ describe('bulk mapping operation', function () {
                         ]
                     }];
                     op = new BulkMappingOperation({
-                        mapping: User,
+                        model: User,
                         data: data
                     });
                     op.onCompletion(function () {
@@ -157,7 +157,7 @@ describe('bulk mapping operation', function () {
                 }];
 
                 var op = new BulkMappingOperation({
-                    mapping: Repo,
+                    model: Repo,
                     data: data
                 });
                 op.onCompletion(function () {
@@ -174,7 +174,7 @@ describe('bulk mapping operation', function () {
                     repositories: 5
                 }];
                 var op = new BulkMappingOperation({
-                    mapping: User,
+                    model: User,
                     data: data
                 });
                 op.onCompletion(function () {
@@ -215,7 +215,7 @@ describe('bulk mapping operation', function () {
                             owner: owner
                         }];
                         var op = new BulkMappingOperation({
-                            mapping: Repo,
+                            model: Repo,
                             data: data
                         });
                         op._constructSubOperations();
@@ -224,7 +224,7 @@ describe('bulk mapping operation', function () {
                         assert.equal(ownerIndexes.length, 2);
                         assert.include(ownerIndexes, 1);
                         assert.include(ownerIndexes, 2);
-                        assert.equal(ownerSubOperation.mapping, User);
+                        assert.equal(ownerSubOperation.model, User);
                         assert.equal(ownerSubOperation.data[0], 5);
                         assert.equal(ownerSubOperation.data[1], owner);
                     });
@@ -253,7 +253,7 @@ describe('bulk mapping operation', function () {
                             owner: owner
                         }];
                         var op = new BulkMappingOperation({
-                            mapping: Repo,
+                            model: Repo,
                             data: data
                         });
                         op.onCompletion(function () {
@@ -299,7 +299,7 @@ describe('bulk mapping operation', function () {
                             }]
                         }];
                         var op = new BulkMappingOperation({
-                            mapping: User,
+                            model: User,
                             data: data
                         });
                         op.onCompletion(function () {
@@ -342,7 +342,7 @@ describe('bulk mapping operation', function () {
                             }]
                         }];
                         var op = new BulkMappingOperation({
-                            mapping: User,
+                            model: User,
                             data: data
                         });
                         op.onCompletion(function () {
@@ -387,7 +387,7 @@ describe('bulk mapping operation', function () {
                             id: '1234'
                         }];
                         op = new BulkMappingOperation({
-                            mapping: User,
+                            model: User,
                             data: data
                         });
                     });
@@ -435,7 +435,7 @@ describe('bulk mapping operation', function () {
                     attributes: ['name', 'full_name', 'description'],
                     relationships: {
                         owner: {
-                            mapping: 'User',
+                            model: 'User',
                             type: RelationshipType.OneToMany,
                             reverse: 'repositories'
                         }
@@ -460,7 +460,7 @@ describe('bulk mapping operation', function () {
                     id: '1234'
                 }];
                 op = new BulkMappingOperation({
-                    mapping: User,
+                    model: User,
                     data: data
                 });
             });
@@ -502,7 +502,7 @@ describe('bulk mapping operation', function () {
                     id: '1234'
                 }];
                 op = new BulkMappingOperation({
-                    mapping: User,
+                    model: User,
                     data: data
                 });
                 User.get().then(function (user) {

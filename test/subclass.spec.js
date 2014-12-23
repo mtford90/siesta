@@ -87,7 +87,7 @@ describe('Subclass', function () {
                         attributes: ['colour', 'name'],
                         relationships: {
                             owner: {
-                                mapping: 'Person',
+                                model: 'Person',
                                 type: 'OneToMany',
                                 reverse: 'cars'
                             }
@@ -123,7 +123,7 @@ describe('Subclass', function () {
                             attributes: ['colour', 'name'],
                             relationships: {
                                 owner: {
-                                    mapping: 'Person',
+                                    model: 'Person',
                                     type: 'OneToMany',
                                     reverse: 'cars'
                                 }
@@ -156,8 +156,8 @@ describe('Subclass', function () {
                 it('same relationship', function () {
                     assert.ok(mike);
                     assert.equal(mike.cars.length, 2);
-                    var car = _.filter(mike.cars, function (x) {return x.mapping == Car})[0]
-                        , sportsCar = _.filter(mike.cars, function (x) {return x.mapping == SportsCar})[0];
+                    var car = _.filter(mike.cars, function (x) {return x.model == Car})[0]
+                        , sportsCar = _.filter(mike.cars, function (x) {return x.model == SportsCar})[0];
                     assert.ok(car);
                     assert.ok(sportsCar);
                     assert.equal(car.owner, mike);
@@ -173,7 +173,7 @@ describe('Subclass', function () {
                             attributes: ['colour', 'name'],
                             relationships: {
                                 owner: {
-                                    mapping: 'Person',
+                                    model: 'Person',
                                     type: 'OneToOne',
                                     reverse: 'car'
                                 }
@@ -208,8 +208,8 @@ describe('Subclass', function () {
                     assert.ok(mike.car.isInstanceOf(SportsCar));
                     assert.equal(mike.car.owner, mike);
                     Car.all().execute().then(function (cars) {
-                        var car = _.filter(cars, function (x) {return x.mapping == Car})[0]
-                            , sportsCar = _.filter(cars, function (x) {return x.mapping == SportsCar})[0];
+                        var car = _.filter(cars, function (x) {return x.model == Car})[0]
+                            , sportsCar = _.filter(cars, function (x) {return x.model == SportsCar})[0];
                         assert.ok(car);
                         assert.ok(sportsCar);
                         assert.notOk(car.owner, 'The plain car should no longer have an owner');
@@ -226,7 +226,7 @@ describe('Subclass', function () {
                             attributes: ['colour', 'name'],
                             relationships: {
                                 owners: {
-                                    mapping: 'Person',
+                                    model: 'Person',
                                     type: 'ManyToMany',
                                     reverse: 'cars'
                                 }
@@ -258,8 +258,8 @@ describe('Subclass', function () {
                 it('same relationship', function () {
                     assert.ok(mike);
                     assert.equal(mike.cars.length, 2);
-                    var car = _.filter(mike.cars, function (x) {return x.mapping == Car})[0]
-                        , sportsCar = _.filter(mike.cars, function (x) {return x.mapping == SportsCar})[0];
+                    var car = _.filter(mike.cars, function (x) {return x.model == Car})[0]
+                        , sportsCar = _.filter(mike.cars, function (x) {return x.model == SportsCar})[0];
                     assert.ok(car);
                     assert.ok(sportsCar);
                     assert.include(car.owners, mike);

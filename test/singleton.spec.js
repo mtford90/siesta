@@ -75,7 +75,7 @@ describe('singleton mapping', function () {
         }, function (err, car) {
             if (err) done(err);
             var obj = cache.get({
-                mapping: Car
+                model: Car
             });
             assert.equal(obj, car);
             done();
@@ -133,11 +133,11 @@ describe('singleton mapping', function () {
             ParentConfig = MoreComplicatedCollection.model('ParentConfig', {
                 relationships: {
                     settings: {
-                        mapping: 'FirstChildConfig',
+                        model: 'FirstChildConfig',
                         reverse: 'parent'
                     },
                     otherSettings: {
-                        mapping: 'SecondChildConfig',
+                        model: 'SecondChildConfig',
                         reverse: 'parent'
                     }
                 },

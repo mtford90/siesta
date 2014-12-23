@@ -99,7 +99,7 @@ describe('notifications', function() {
             });
 
             it('notif contains mapping', function() {
-                assert.equal(notif.mapping, 'Car');
+                assert.equal(notif.model, 'Car');
             });
 
             it('changeDict contains attribute name', function() {
@@ -182,7 +182,7 @@ describe('notifications', function() {
                 });
 
                 it('notif contains mapping', function() {
-                    assert.equal(notif.mapping, 'Car');
+                    assert.equal(notif.model, 'Car');
                 });
 
                 it('notif contains object', function() {
@@ -222,7 +222,7 @@ describe('notifications', function() {
                 });
 
                 it('notif contains mapping', function() {
-                    assert.equal(notif.mapping, 'Car');
+                    assert.equal(notif.model, 'Car');
                 });
 
                 it('notif contains _id', function() {
@@ -262,7 +262,7 @@ describe('notifications', function() {
                 });
 
                 it('notif contains mapping', function() {
-                    assert.equal(notif.mapping, 'Car');
+                    assert.equal(notif.model, 'Car');
                 });
 
                 it('notif contains id', function() {
@@ -306,7 +306,7 @@ describe('notifications', function() {
                 });
 
                 it('notif contains mapping', function() {
-                    assert.equal(notif.mapping, 'Car');
+                    assert.equal(notif.model, 'Car');
                 });
 
                 it('notif contains object', function() {
@@ -356,7 +356,7 @@ describe('notifications', function() {
 
                 it('notif contains mapping', function() {
                     _.each(notifs, function(notif) {
-                        assert.equal(notif.mapping, 'Car');
+                        assert.equal(notif.model, 'Car');
                     });
                 });
 
@@ -412,7 +412,7 @@ describe('notifications', function() {
                         attributes: ['colours', 'name'],
                         relationships: {
                             owner: {
-                                mapping: 'Person',
+                                model: 'Person',
                                 type: RelationshipType.OneToMany,
                                 reverse: 'cars'
                             }
@@ -437,32 +437,32 @@ describe('notifications', function() {
                         person = personMapping._new();
                         person.cars = [car];
                         s.on('myCollection:Person', function(n) {
-                            if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                            if (n.type == ChangeType.Splice && n.model == 'Person') {
                                 personNotif = n;
                             }
                         });
                         s.on('myCollection', function(n) {
-                            if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                            if (n.type == ChangeType.Splice && n.model == 'Person') {
                                 personCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function(n) {
-                            if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                            if (n.type == ChangeType.Splice && n.model == 'Person') {
                                 personGenericNotif = n;
                             }
                         });
                         s.on('myCollection:Car', function(n) {
-                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                            if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carNotif = n;
                             }
                         });
                         s.on('myCollection', function(n) {
-                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                            if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function(n) {
-                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                            if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carGenericNotif = n;
                             }
                         });
@@ -536,17 +536,17 @@ describe('notifications', function() {
                             }
                         });
                         s.on('myCollection:Car', function(n) {
-                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                            if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carNotif = n;
                             }
                         });
                         s.on('myCollection', function(n) {
-                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                            if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function(n) {
-                            if (n.type == ChangeType.Set && n.mapping == 'Car') {
+                            if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carGenericNotif = n;
                             }
                         });
@@ -622,7 +622,7 @@ describe('notifications', function() {
                         attributes: ['colours', 'name'],
                         relationships: {
                             owners: {
-                                mapping: 'Person',
+                                model: 'Person',
                                 type: RelationshipType.ManyToMany,
                                 reverse: 'cars'
                             }
@@ -648,32 +648,32 @@ describe('notifications', function() {
                             person = personMapping._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     personNotif = n;
                                 }
                             });
                             s.on('myCollection', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     personCollectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     personGenericNotif = n;
                                 }
                             });
                             s.on('myCollection:Car', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carNotif = n;
                                 }
                             });
                             s.on('myCollection', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carCollectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carGenericNotif = n;
                                 }
                             });
@@ -736,32 +736,32 @@ describe('notifications', function() {
                             person = personMapping._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     notif = n;
                                 }
                             });
                             s.on('myCollection', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     collectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Person') {
+                                if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     genericNotif = n;
                                 }
                             });
                             s.on('myCollection:Car', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carNotif = n;
                                 }
                             });
                             s.on('myCollection', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carCollectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function(n) {
-                                if (n.type == ChangeType.Splice && n.mapping == 'Car') {
+                                if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carGenericNotif = n;
                                 }
                             });

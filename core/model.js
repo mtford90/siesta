@@ -175,37 +175,37 @@ _.extend(Model.prototype, {
                         if (relationship.type == RelationshipType.OneToMany ||
                             relationship.type == RelationshipType.OneToOne ||
                             relationship.type == RelationshipType.ManyToMany) {
-                            var mappingName = relationship.mapping;
+                            var modelName = relationship.model;
                             if (Logger.debug.isEnabled)
-                                Logger.debug('reverseMappingName', mappingName);
+                                Logger.debug('reverseModelName', modelName);
                             if (!self.collection) throw new InternalSiestaError('Model must have collection');
                             var collection = CollectionRegistry[self.collection];
                             if (!collection) {
                                 throw new InternalSiestaError('Collection ' + self.collection + ' not registered');
                             }
-                            var reverseMapping = collection[mappingName];
-                            if (!reverseMapping) {
-                                var arr = mappingName.split('.');
+                            var reverseModel = collection[modelName];
+                            if (!reverseModel) {
+                                var arr = modelName.split('.');
                                 if (arr.length == 2) {
                                     var collectionName = arr[0];
-                                    mappingName = arr[1];
+                                    modelName = arr[1];
                                     var otherCollection = CollectionRegistry[collectionName];
                                     if (!otherCollection) {
                                         return 'Collection with name "' + collectionName + '" does not exist.';
                                     }
-                                    reverseMapping = otherCollection[mappingName];
+                                    reverseModel = otherCollection[modelName];
                                 }
                             }
                             if (Logger.debug.isEnabled)
-                                Logger.debug('reverseMapping', reverseMapping);
-                            if (reverseMapping) {
-                                relationship.reverseMapping = reverseMapping;
-                                relationship.forwardMapping = this;
+                                Logger.debug('reverseModel', reverseModel);
+                            if (reverseModel) {
+                                relationship.reverseModel = reverseModel;
+                                relationship.forwardModel = this;
                                 relationship.forwardName = name;
                                 relationship.reverseName = relationship.reverse;
                                 relationship.isReverse = false;
                             } else {
-                                return 'Model with name "' + mappingName.toString() + '" does not exist';
+                                return 'Model with name "' + modelName.toString() + '" does not exist';
                             }
                         } else {
                             return 'Relationship type ' + relationship.type + ' does not exist';
@@ -226,11 +226,11 @@ _.extend(Model.prototype, {
                     var relationship = this.relationships[forwardName];
                     relationship = extend(true, {}, relationship);
                     relationship.isReverse = true;
-                    var reverseMapping = relationship.reverseMapping;
+                    var reverseModel = relationship.reverseModel;
                     var reverseName = relationship.reverseName;
                     if (Logger.debug.isEnabled)
                         Logger.debug(this.type + ': configuring  reverse relationship ' + reverseName);
-                    reverseMapping.relationships[reverseName] = relationship;
+                    reverseModel.relationships[reverseName] = relationship;
                 }
             }
             this._reverseRelationshipsInstalled = true;
@@ -289,12 +289,12 @@ _.extend(Model.prototype, {
         } else {
             var opts = {};
             opts[this.id] = idOrCallback;
-            opts.mapping = this;
+            opts.model = this;
             var obj = cache.get(opts);
             if (obj) {
                 callback(null, obj);
             } else {
-                delete opts.mapping;
+                delete opts.model;
                 var query = new Query(this, opts);
                 query.execute(function (err, rows) {
                     var obj = null;
@@ -394,7 +394,7 @@ _.extend(Model.prototype, {
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
         var override = opts.override;
         var mappingOpts = {
-            mapping: this,
+            model: this,
             data: data,
             disableNotifications: opts.disableNotifications
         };
@@ -414,8 +414,8 @@ _.extend(Model.prototype, {
     },
     _countCache: function () {
         var collCache = cache._localCacheByType[this.collection] || {};
-        var mappingCache = collCache[this.type] || {};
-        return _.reduce(Object.keys(mappingCache), function (m, _id) {
+        var modelCache = collCache[this.type] || {};
+        return _.reduce(Object.keys(modelCache), function (m, _id) {
             m[_id] = {};
             return m;
         }, {});
@@ -489,7 +489,7 @@ _.extend(Model.prototype, {
                         newModel.__values[field] = v;
                         coreChanges.registerChange({
                             collection: self.collection,
-                            mapping: self.type,
+                            model: self.type,
                             _id: newModel._id,
                             new: v,
                             old: old,
@@ -519,7 +519,7 @@ _.extend(Model.prototype, {
                     newModel.__values[self.id] = v;
                     coreChanges.registerChange({
                         collection: self.collection,
-                        mapping: self.type,
+                        model: self.type,
                         _id: newModel._id,
                         new: v,
                         old: old,
@@ -553,7 +553,7 @@ _.extend(Model.prototype, {
             if (shouldRegisterChange) {
                 coreChanges.registerChange({
                     collection: this.collection,
-                    mapping: this.type,
+                    model: this.type,
                     _id: newModel._id,
                     newId: newModel._id,
                     new: newModel,
@@ -611,10 +611,10 @@ _.extend(Model.prototype, {
             = Array.prototype.concat.call(opts.attributes || [], this._opts.attributes);
         opts.relationships = _.extend(opts.relationships || {}, this._opts.relationships);
         var collection = CollectionRegistry[this.collection];
-        var mapping = collection.model(opts.name, opts);
-        mapping.parent = this;
-        this.children.push(mapping);
-        return  mapping;
+        var model = collection.model(opts.name, opts);
+        model.parent = this;
+        this.children.push(model);
+        return  model;
     },
     isChildOf: function (parent) {
         return this.parent == parent;

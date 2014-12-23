@@ -71,7 +71,7 @@ _.extend(RequestDescriptor.prototype, {
     _dump: function (asJson) {
         var obj = {};
         obj.methods = this.method;
-        obj.mapping = this.mapping.type;
+        obj.model = this.model.type;
         obj.path = this._rawOpts.path;
         var serialiser;
         if (typeof(this._rawOpts.serialiser) == 'function') {

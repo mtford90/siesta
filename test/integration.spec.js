@@ -31,7 +31,7 @@ describe('intercollection relationships', function() {
                 attributes: ['name'],
                 relationships: {
                     createdBy: {
-                        mapping: 'User',
+                        model: 'User',
                         type: RelationshipType.OneToMany,
                         reverse: 'folders'
                     }
@@ -42,17 +42,17 @@ describe('intercollection relationships', function() {
                 attributes: ['creationDate'],
                 relationships: {
                     createdBy: {
-                        mapping: 'User',
+                        model: 'User',
                         type: RelationshipType.OneToMany,
                         reverse: 'files'
                     },
                     folder: {
-                        mapping: 'Folder',
+                        model: 'Folder',
                         type: RelationshipType.OneToMany,
                         reverse: 'files'
                     },
                     photo: {
-                        mapping: 'MyOnlineCollection.Photo',
+                        model: 'MyOnlineCollection.Photo',
                         type: RelationshipType.OneToOne,
                         reverse: 'file'
                     }
@@ -69,7 +69,7 @@ describe('intercollection relationships', function() {
                 attributes: ['height', 'width', 'url'],
                 relationships: {
                     createdBy: {
-                        mapping: 'User',
+                        model: 'User',
                         type: RelationshipType.OneToMany,
                         reverse: 'photos'
                     }

@@ -162,7 +162,7 @@ describe('collection setup', function() {
                 it('single', function(done) {
                     var descriptors = collection.descriptor({
                         method: 'POST',
-                        mapping: mapping1,
+                        model: mapping1,
                         path: '/path/[0-9]+'
                     });
                     assert.equal(descriptors.length, 1);
@@ -170,7 +170,7 @@ describe('collection setup', function() {
                     assert.instanceOf(requestDescriptor1, siesta.ext.http.RequestDescriptor);
                     descriptors = collection.descriptor({
                         method: 'POST',
-                        mapping: mapping2,
+                        model: mapping2,
                         path: '/path/[0-9]'
                     });
                     var requestDescriptor2 = descriptors[0];
@@ -179,8 +179,8 @@ describe('collection setup', function() {
                         if (err) {
                             done(err);
                         }
-                        assert.equal(requestDescriptor1.mapping, mapping1);
-                        assert.equal(requestDescriptor2.mapping, mapping2);
+                        assert.equal(requestDescriptor1.model, mapping1);
+                        assert.equal(requestDescriptor2.model, mapping2);
                         done();
                     })
                 });
@@ -191,7 +191,7 @@ describe('collection setup', function() {
                 it('single', function(done) {
                     var descriptors = collection.descriptor({
                         method: 'GET',
-                        mapping: mapping1,
+                        model: mapping1,
                         path: '/path/[0-9]+'
                     });
                     assert.equal(descriptors.length, 1);
@@ -199,7 +199,7 @@ describe('collection setup', function() {
                     assert.instanceOf(responseDescriptor1, siesta.ext.http.ResponseDescriptor);
                     var descriptors = collection.descriptor({
                         method: 'GET',
-                        mapping: mapping2,
+                        model: mapping2,
                         path: '/path/[0-9]+'
                     });
                     assert.equal(descriptors.length, 1);
@@ -209,8 +209,8 @@ describe('collection setup', function() {
                         if (err) {
                             done(err);
                         }
-                        assert.equal(responseDescriptor1.mapping, mapping1);
-                        assert.equal(responseDescriptor2.mapping, mapping2);
+                        assert.equal(responseDescriptor1.model, mapping1);
+                        assert.equal(responseDescriptor2.model, mapping2);
                         done();
                     })
                 });
@@ -223,7 +223,7 @@ describe('collection setup', function() {
                 beforeEach(function(done) {
                     descriptors = collection.descriptor({
                         method: ['GET', 'POST'],
-                        mapping: mapping1,
+                        model: mapping1,
                         path: '/path/[0-9]'
                     }); 
                     collection.install(done)

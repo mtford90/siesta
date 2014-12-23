@@ -75,8 +75,8 @@ function Descriptor(opts) {
     this._opts.method = resolveMethod(this._opts.method);
 
     // Mappings can be passed as the actual mapping object or as a string (with API specified too)
-    if (this._opts.mapping) {
-        if (typeof(this._opts.mapping) == 'string') {
+    if (this._opts.model) {
+        if (typeof(this._opts.model) == 'string') {
             if (this._opts.collection) {
                 var collection;
                 if (typeof(this._opts.collection) == 'string') {
@@ -85,11 +85,11 @@ function Descriptor(opts) {
                     collection = this._opts.collection;
                 }
                 if (collection) {
-                    var actualMapping = collection[this._opts.mapping];
-                    if (actualMapping) {
-                        this._opts.mapping = actualMapping;
+                    var actualModel = collection[this._opts.model];
+                    if (actualModel) {
+                        this._opts.model = actualModel;
                     } else {
-                        throw new Error('Model ' + this._opts.mapping + ' does not exist', {
+                        throw new Error('Model ' + this._opts.model + ' does not exist', {
                             opts: opts,
                             descriptor: this
                         });
@@ -101,14 +101,14 @@ function Descriptor(opts) {
                     });
                 }
             } else {
-                throw new Error('Passed mapping as string, but did not specify the collection it belongs to', {
+                throw new Error('Passed model as string, but did not specify the collection it belongs to', {
                     opts: opts,
                     descriptor: this
                 });
             }
         }
     } else {
-        throw new Error('Descriptors must be initialised with a mapping', {
+        throw new Error('Descriptors must be initialised with a model', {
             opts: opts,
             descriptor: this
         });
@@ -149,7 +149,7 @@ function Descriptor(opts) {
      */
     defineSubProperty.call(this, 'path', this._opts);
     defineSubProperty.call(this, 'method', this._opts);
-    defineSubProperty.call(this, 'mapping', this._opts);
+    defineSubProperty.call(this, 'model', this._opts);
     defineSubProperty.call(this, 'data', this._opts);
     defineSubProperty.call(this, 'transforms', this._opts);
 }

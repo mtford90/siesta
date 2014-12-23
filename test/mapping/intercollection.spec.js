@@ -25,7 +25,7 @@ describe('intercoll relationships', function () {
             attributes: ['colour', 'name'],
             relationships: {
                 owner: {
-                    mapping: 'Person',
+                    model: 'Person',
                     type: type,
                     reverse: 'cars'
                 }
@@ -59,7 +59,7 @@ describe('intercoll relationships', function () {
                     attributes: ['field'],
                     relationships: {
                         person: {
-                            mapping: 'myCollection.Person',
+                            model: 'myCollection.Person',
                             type: RelationshipType.OneToMany,
                             reverse: 'other'
                         }

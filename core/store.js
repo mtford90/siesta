@@ -70,13 +70,13 @@ function get(opts, callback) {
                 }
             }
         }
-    } else if (opts.mapping) {
-        if (util.isArray(opts[opts.mapping.id])) {
+    } else if (opts.model) {
+        if (util.isArray(opts[opts.model.id])) {
             // Proxy onto getMultiple instead.
-            getMultiple(_.map(opts[opts.mapping.id], function (id) {
+            getMultiple(_.map(opts[opts.model.id], function (id) {
                 var o = {};
-                o[opts.mapping.id] = id;
-                o.mapping = opts.mapping;
+                o[opts.model.id] = id;
+                o.model = opts.model;
                 return o
             }), callback);
         } else {
@@ -89,14 +89,14 @@ function get(opts, callback) {
                     });
                 if (callback) callback(null, siestaModel);
             } else {
-                var mapping = opts.mapping;
-                if (mapping.singleton) {
-                    mapping.get(callback);
+                var model = opts.model;
+                if (model.singleton) {
+                    model.get(callback);
                 } else {
-                    var idField = mapping.id;
+                    var idField = model.id;
                     var id = opts[idField];
                     if (id) {
-                        mapping.get(id, function (err, obj) {
+                        model.get(id, function (err, obj) {
                             if (!err) {
                                 if (obj) {
                                     callback(null, obj);
@@ -193,14 +193,14 @@ function getMultipleLocal(localIdentifiers, callback) {
     return deferred ? deferred.promise : null;
 }
 
-function getMultipleRemote(remoteIdentifiers, mapping, callback) {
+function getMultipleRemote(remoteIdentifiers, model, callback) {
     var deferred = window.q ? window.q.defer() : null;
     callback = util.constructCallbackAndPromiseHandler(callback, deferred);
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {
-            mapping: mapping
+            model: model
         };
-        cacheQuery[mapping.id] = id;
+        cacheQuery[model.id] = id;
         var obj = cache.get(cacheQuery);
         if (obj) {
             memo.cached[id] = obj;

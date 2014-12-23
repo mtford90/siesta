@@ -55,18 +55,18 @@ describe('mapping new object', function () {
                     car.id = 'newRemoteId';
                 });
                 it('should update cache', function () {
-                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                    assert.equal(car, cache.get({id: car.id, model: car.model}));
                 });
                 it('should remove previous', function () {
-                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                    assert.equal(car, cache.get({id: car.id, model: car.model}));
                     car.id = 'brandNewRemoteId';
-                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
-                    assert.notOk(cache.get({id: 'newRemoteId', mapping: car.mapping}))
+                    assert.equal(car, cache.get({id: car.id, model: car.model}));
+                    assert.notOk(cache.get({id: 'newRemoteId', model: car.model}))
                 });
                 it('should remove all if set remoteid to null', function () {
-                    assert.equal(car, cache.get({id: car.id, mapping: car.mapping}));
+                    assert.equal(car, cache.get({id: car.id, model: car.model}));
                     car.id = null;
-                    assert.notOk(cache.get({id: 'newRemoteId', mapping: car.mapping}))
+                    assert.notOk(cache.get({id: 'newRemoteId', model: car.model}))
                 })
             });
         });
@@ -84,7 +84,7 @@ describe('mapping new object', function () {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
                         type: type,
                         reverse: reverseName
                     }

@@ -25,20 +25,20 @@ describe('cache...', function() {
 
     describe('insertion', function() {
         it('by pouch id', function() {
-            var r = new SiestaModel(mapping);
-            r._id = 'dsfsd';
-            cache.insert(r);
-            assert.equal(r, cache._localCache()[r._id]);
-            assert.equal(r, cache._localCacheByType[r.mapping.collection][r.type][r._id], r);
+            var model = new SiestaModel(mapping);
+            model._id = 'dsfsd';
+            cache.insert(model);
+            assert.equal(model, cache._localCache()[model._id]);
+            assert.equal(model, cache._localCacheByType[model.model.collection][model.type][model._id], model);
         });
 
         it('by default id', function() {
-            var r = new SiestaModel(mapping);
-            r.id = 'dsfsd';
-            cache.insert(r);
+            var model = new SiestaModel(mapping);
+            model.id = 'dsfsd';
+            cache.insert(model);
 
             var remoteCache = cache._remoteCache();
-            assert.equal(r, remoteCache[r.collection][r.type][r.id]);
+            assert.equal(model, remoteCache[model.collection][model.type][model.id]);
         });
 
         it('by custom id', function() {
@@ -59,7 +59,7 @@ describe('cache...', function() {
             r.id = 'dsfsd';
             cache.insert(r);
             var returned = cache.get({
-                mapping: mapping,
+                model: mapping,
                 id: 'dsfsd'
             });
             assert.equal(returned, r);
@@ -70,7 +70,7 @@ describe('cache...', function() {
             model._id = 'xyz';
             cache.insert(model);
             var returned = cache.get({
-                mapping: mapping,
+                model: mapping,
                 id: 'dsfsd'
             });
             assert.equal(returned, model);
@@ -91,7 +91,7 @@ describe('cache...', function() {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
                         type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }
@@ -100,7 +100,7 @@ describe('cache...', function() {
             collection.baseURL = 'http://mywebsite.co.uk/';
             var desc = new siesta.ext.http.ResponseDescriptor({
                 method: 'GET',
-                mapping: carMapping,
+                model: carMapping,
                 path: '/cars/[0-9]+'
             });
             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(desc);

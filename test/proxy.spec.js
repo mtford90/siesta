@@ -43,8 +43,8 @@ describe('new object proxy', function() {
 
             beforeEach(function() {
                 proxy = new RelationshipProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: true
@@ -63,8 +63,8 @@ describe('new object proxy', function() {
             describe('forward installation', function() {
                 beforeEach(function() {
                     proxy = new RelationshipProxy({
-                        reverseMapping: personMapping,
-                        forwardMapping: carMapping,
+                        reverseModel: personMapping,
+                        forwardModel: carMapping,
                         reverseName: 'cars',
                         forwardName: 'owner',
                         isForward: true
@@ -129,8 +129,8 @@ describe('new object proxy', function() {
             describe('reverse installation', function() {
                 beforeEach(function() {
                     proxy = new RelationshipProxy({
-                        reverseMapping: personMapping,
-                        forwardMapping: carMapping,
+                        reverseModel: personMapping,
+                        forwardModel: carMapping,
                         reverseName: 'cars',
                         forwardName: 'owner',
                         isForward: false
@@ -196,8 +196,8 @@ describe('new object proxy', function() {
 
             beforeEach(function() {
                 proxy = new RelationshipProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: true
@@ -235,15 +235,15 @@ describe('new object proxy', function() {
         describe('get', function() {
             beforeEach(function() {
                 carProxy = new OneToOneProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: true
                 });
                 personProxy = new OneToOneProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: false
@@ -285,15 +285,15 @@ describe('new object proxy', function() {
             var car, person;
             beforeEach(function() {
                 carProxy = new OneToOneProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: true
                 });
                 personProxy = new OneToOneProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: false
@@ -353,8 +353,8 @@ describe('new object proxy', function() {
                     anotherPerson = new SiestaModel(personMapping);
                     anotherPerson._id = 'anotherPerson';
                     anotherPersonProxy = new OneToOneProxy({
-                        reverseMapping: personMapping,
-                        forwardMapping: carMapping,
+                        reverseModel: personMapping,
+                        forwardModel: carMapping,
                         reverseName: 'cars',
                         forwardName: 'owner',
                         isForward: false
@@ -471,15 +471,15 @@ describe('new object proxy', function() {
         describe('get', function() {
             beforeEach(function() {
                 carProxy = new OneToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: true
                 });
                 personProxy = new OneToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: false
@@ -556,15 +556,15 @@ describe('new object proxy', function() {
             var car, person;
             beforeEach(function() {
                 carProxy = new OneToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: true
                 });
                 personProxy = new OneToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owner',
                     isForward: false
@@ -600,8 +600,8 @@ describe('new object proxy', function() {
                         var anotherCar = new SiestaModel(carMapping);
                         anotherCar._id = 'anotherCar';
                         var anotherCarProxy = new OneToManyProxy({
-                            reverseMapping: personMapping,
-                            forwardMapping: carMapping,
+                            reverseModel: personMapping,
+                            forwardModel: carMapping,
                             reverseName: 'cars',
                             forwardName: 'owner',
                             isForward: true
@@ -641,8 +641,8 @@ describe('new object proxy', function() {
                     anotherPerson = new SiestaModel(personMapping);
                     anotherPerson._id = 'anotherPerson';
                     anotherPersonProxy = new OneToManyProxy({
-                        reverseMapping: personMapping,
-                        forwardMapping: carMapping,
+                        reverseModel: personMapping,
+                        forwardModel: carMapping,
                         reverseName: 'cars',
                         forwardName: 'owner',
                         isForward: false
@@ -759,15 +759,15 @@ describe('new object proxy', function() {
         describe('get', function() {
             beforeEach(function() {
                 carProxy = new ManyToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owners',
                     isForward: true
                 });
                 personProxy = new ManyToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owners',
                     isReverse: true
@@ -842,15 +842,15 @@ describe('new object proxy', function() {
             var car, person;
             beforeEach(function() {
                 carProxy = new ManyToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owners', 
                     isForward: true
                 });
                 personProxy = new ManyToManyProxy({
-                    reverseMapping: personMapping,
-                    forwardMapping: carMapping,
+                    reverseModel: personMapping,
+                    forwardModel: carMapping,
                     reverseName: 'cars',
                     forwardName: 'owners',
                     isForward: false
@@ -910,8 +910,8 @@ describe('new object proxy', function() {
                     anotherPerson = new SiestaModel(personMapping);
                     anotherPerson._id = 'anotherPerson';
                     anotherPersonProxy = new ManyToManyProxy({
-                        reverseMapping: personMapping,
-                        forwardMapping: carMapping,
+                        reverseModel: personMapping,
+                        forwardModel: carMapping,
                         reverseName: 'cars',
                         forwardName: 'owners',
                         isForward: false

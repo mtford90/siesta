@@ -21,7 +21,7 @@ describe('recursive relationships', function() {
                 attributes: ['name'],
                 relationships: {
                     forkedFrom: {
-                        mapping: 'Repo',
+                        model: 'Repo',
                         type: 'OneToMany',
                         reverse: 'forks'
                     }

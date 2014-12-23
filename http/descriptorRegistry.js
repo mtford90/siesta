@@ -20,9 +20,9 @@ function DescriptorRegistry() {
 }
 
 function _registerDescriptor(descriptors, descriptor) {
-    var mapping = descriptor.mapping;
-    var collection = mapping.collection;
-    assert(mapping);
+    var model = descriptor.model;
+    var collection = model.collection;
+    assert(model);
     assert(collection);
     assert(typeof(collection) == 'string');
     if (!descriptors[collection]) {

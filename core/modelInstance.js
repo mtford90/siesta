@@ -11,22 +11,19 @@ var log = require('./operation/log')
 var Logger = log.loggerWithName('ModelInstance');
 Logger.setLevel(log.Level.warn);
 
-function ModelInstance(mapping) {
-    if (!this) {
-        return new ModelInstance(mapping);
-    }
+function ModelInstance(model) {
     var self = this;
-    this.mapping = mapping;
+    this.model = model;
     Object.defineProperty(this, 'idField', {
         get: function () {
-            return self.mapping.id || 'id';
+            return self.model.id || 'id';
         },
         enumerable: true,
         configurable: true
     });
-    defineSubProperty.call(this, 'type', this.mapping);
-    defineSubProperty.call(this, 'collection', this.mapping);
-    defineSubProperty.call(this, '_attributeNames', this.mapping);
+    defineSubProperty.call(this, 'type', this.model);
+    defineSubProperty.call(this, 'collection', this.model);
+    defineSubProperty.call(this, '_attributeNames', this.model);
     Object.defineProperty(this, '_relationshipNames', {
         get: function () {
             var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
@@ -59,7 +56,7 @@ _.extend(ModelInstance.prototype, {
         this.removed = true;
         coreChanges.registerChange({
             collection: this.collection,
-            mapping: this.mapping.type,
+            model: this.model.type,
             _id: this._id,
             oldId: this._id,
             old: this,
@@ -78,7 +75,7 @@ _.extend(ModelInstance.prototype, {
         }
         coreChanges.registerChange({
             collection: this.collection,
-            mapping: this.mapping.type,
+            model: this.model.type,
             _id: this._id,
             newId: this._id,
             new: this,
@@ -111,7 +108,7 @@ _.extend(ModelInstance.prototype, {
         return _.extend({}, this.__values);
     },
     isInstanceOf: function (model) {
-        return this.mapping == model || this.mapping.isDescendantOf(model);
+        return this.model == model || this.model.isDescendantOf(model);
     }
 });
 

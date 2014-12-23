@@ -90,7 +90,7 @@ describe('mapping queries', function() {
                     owner: {
                         type: RelationshipType.OneToMany,
                         reverse: 'cars',
-                        mapping: 'Person'
+                        model: 'Person'
                     }
                 }
             });

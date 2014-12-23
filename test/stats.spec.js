@@ -17,7 +17,7 @@ describe('statistics', function() {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
                         type: 'OneToMany',
                         reverse: 'cars'
                     }

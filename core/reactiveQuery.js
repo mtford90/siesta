@@ -30,8 +30,8 @@ function ReactiveQuery(query) {
     var initialisedGet = function () {return !!self.results};
     Object.defineProperty(this, 'initialised', {get: initialisedGet});
     Object.defineProperty(this, 'initialized', {get: initialisedGet}); // For my friends across the pond
-    Object.defineProperty(this, 'mapping', {get: function () { return self._query.mapping }});
-    Object.defineProperty(this, 'collection', {get: function () { return self.mapping.collection }});
+    Object.defineProperty(this, 'model', {get: function () { return self._query.model }});
+    Object.defineProperty(this, 'collection', {get: function () { return self.model.collection }});
 }
 
 ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
@@ -138,7 +138,7 @@ _.extend(ReactiveQuery.prototype, {
         this.results = this._query._sortResults(this.results);
     },
     _constructNotificationName: function () {
-        return this.collection + ':' + this.mapping.type;
+        return this.collection + ':' + this.model.type;
     },
     terminate: function () {
         if (Logger.trace) Logger.trace('terminate');

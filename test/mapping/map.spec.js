@@ -210,7 +210,7 @@ describe('perform mapping', function () {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
-                            mapping: 'Person',
+                            model: 'Person',
                             type: RelationshipType.OneToMany,
                             reverse: 'cars'
                         }
@@ -865,7 +865,7 @@ describe('perform mapping', function () {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
-                            mapping: 'Person',
+                            model: 'Person',
                             type: RelationshipType.OneToOne,
                             reverse: 'car'
                         }
@@ -1387,7 +1387,7 @@ describe('perform mapping', function () {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
-                            mapping: 'Person',
+                            model: 'Person',
                             type: RelationshipType.OneToOne,
                             reverse: 'car'
                         }
@@ -1437,7 +1437,7 @@ describe('perform mapping', function () {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
-                            mapping: 'Person',
+                            model: 'Person',
                             type: RelationshipType.OneToMany,
                             reverse: 'cars'
                         }
@@ -1525,7 +1525,7 @@ describe('perform mapping', function () {
                         attributes: ['colour', 'name'],
                         relationships: {
                             owner: {
-                                mapping: 'Person',
+                                model: 'Person',
                                 type: RelationshipType.OneToMany,
                                 reverse: 'cars'
                             }
@@ -1606,7 +1606,7 @@ describe('perform mapping', function () {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
-                            mapping: 'Person',
+                            model: 'Person',
                             type: RelationshipType.OneToMany,
                             reverse: 'cars'
                         }

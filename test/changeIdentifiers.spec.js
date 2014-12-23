@@ -31,10 +31,10 @@ describe('change identifiers', function () {
     });
 
     it('xyz', function (done) {
-        assert.equal(cache.get({id: 'xyz', mapping: carMapping}), car);
+        assert.equal(cache.get({id: 'xyz', model: carMapping}), car);
         car.id = 'abc';
-        assert.notOk(cache.get({id: 'xyz', mapping: carMapping}), car);
-        assert.equal(cache.get({id: 'abc', mapping: carMapping}), car);
+        assert.notOk(cache.get({id: 'xyz', model: carMapping}), car);
+        assert.equal(cache.get({id: 'abc', model: carMapping}), car);
         done();
     });
 

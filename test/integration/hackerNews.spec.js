@@ -53,7 +53,7 @@
 //        HackerNews.descriptor({
 //            path: 'item/*',
 //            method: 'GET',
-//            mapping: 'Item',
+//            model: 'Item',
 //            data: 'data'
 //        });
 //    });
@@ -74,7 +74,7 @@
 //        HackerNews.descriptor({
 //            path: 'item/*',
 //            method: 'GET',
-//            mapping: 'Item'
+//            model: 'Item'
 //        });
 //        HackerNews.install(function (err) {
 //            if (err) {
@@ -114,7 +114,7 @@
 //        HackerNews.descriptor({
 //            path: 'item/*',
 //            method: 'GET',
-//            mapping: 'Item'
+//            model: 'Item'
 //        });
 //
 //        HackerNews.install(function (err) {
@@ -149,7 +149,7 @@
 //            ],
 //            relationships: {
 //                parent: {
-//                    mapping: 'Item'
+//                    model: 'Item'
 //                    , type: 'OneToMany'
 //                    , reverse: 'kids'
 //                }
@@ -158,7 +158,7 @@
 //        HackerNews.descriptor({
 //            path: 'item/*'
 //            , method: 'GET'
-//            , mapping: 'Item'
+//            , model: 'Item'
 //        });
 //        HackerNews.install(function () {
 //            server.respondWith("GET", "https://hacker-news.firebaseio.com/v0/item/8582985.json",

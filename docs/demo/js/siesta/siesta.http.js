@@ -1122,7 +1122,7 @@ function depthSerialiser(depth, obj, done) {
                 else if (v) {
                     if (!depth) {
                         finished.push(f);
-                        data[f] = v[obj.__proxies[f].forwardMapping.id];
+                        data[f] = v[obj.__proxies[f].forwardModel.id];
                         result[f] = {err: err, v: v};
                         if ((waiting.length == finished.length) && done) {
                             done(errors.length ? errors : null, data, result);

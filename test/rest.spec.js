@@ -43,7 +43,7 @@ describe('rest', function () {
 
             describe('raw mapping to Model object', function () {
                 function assertMapping(collection) {
-                    var rawMapping = collection._rawMappings.Person;
+                    var rawMapping = collection._rawModels.Person;
                     assert.ok(rawMapping);
                     var mappingObj = collection.Person;
                     assert.equal(mappingObj.type, 'Person');

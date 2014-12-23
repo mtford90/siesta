@@ -79,8 +79,8 @@ function RelationshipProxy(opts) {
         enumerable: true,
         configurable: true
     });
-    defineSubProperty.call(this, 'reverseMapping', this._opts);
-    defineSubProperty.call(this, 'forwardMapping', this._opts);
+    defineSubProperty.call(this, 'reverseModel', this._opts);
+    defineSubProperty.call(this, 'forwardModel', this._opts);
     defineSubProperty.call(this, 'forwardName', this._opts);
     defineSubProperty.call(this, 'reverseName', this._opts);
     defineSubProperty.call(this, 'isReverse', this._opts);
@@ -148,18 +148,12 @@ _.extend(RelationshipProxy.prototype, {
 });
 
 
-function verifyMapping(obj, mapping) {
-    if (obj.mapping != mapping) {
-        var err = 'Model does not match. Expected ' + mapping.type + ' but got ' + obj.mapping.type;
-        throw new InternalSiestaError(err);
-    }
-}
 
 // TODO: Share code between getReverseProxyForObject and getForwardProxyForObject
 
 function getReverseProxyForObject(obj) {
     var reverseName = getReverseName.call(this);
-    var reverseMapping = this.reverseMapping;
+    var reverseModel = this.reverseModel;
     // This should never happen. Should g   et caught in the mapping operation?
     if (util.isArray(obj)) {
         return _.map(obj, function (o) {
@@ -168,7 +162,7 @@ function getReverseProxyForObject(obj) {
     } else {
         var proxy = obj.__proxies[reverseName];
         if (!proxy) {
-            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseMapping.type;
+            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseModel.type;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -177,7 +171,7 @@ function getReverseProxyForObject(obj) {
 
 function getForwardProxyForObject(obj) {
     var forwardName = getForwardName.call(this);
-    var forwardMapping = this.forwardMapping;
+    var forwardModel = this.forwardModel;
     if (util.isArray(obj)) {
         return _.map(obj, function (o) {
             return o.__proxies[forwardName];
@@ -185,7 +179,7 @@ function getForwardProxyForObject(obj) {
     } else {
         var proxy = obj.__proxies[forwardName];
         if (!proxy) {
-            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardMapping.type;
+            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardModel.type;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -200,12 +194,12 @@ function getForwardName() {
     return this.isForward ? this.forwardName : this.reverseName;
 }
 
-function getReverseMapping() {
-    return this.isForward ? this.reverseMapping : this.forwardMapping;
+function getReverseModel() {
+    return this.isForward ? this.reverseModel : this.forwardModel;
 }
 
-function getForwardMapping() {
-    return this.isForward ? this.forwardMapping : this.reverseMapping;
+function getForwardModel() {
+    return this.isForward ? this.forwardModel : this.reverseModel;
 }
 
 function checkInstalled() {
@@ -253,13 +247,13 @@ function splice(idx, numRemove) {
 function objAsString(obj) {
     function _objAsString(obj) {
         if (obj) {
-            var mapping = obj.mapping;
-            var mappingName = mapping.type;
+            var model = obj.model;
+            var modelName = model.type;
             var ident = obj._id;
             if (typeof ident == 'string') {
                 ident = '"' + ident + '"';
             }
-            return mappingName + '[_id=' + ident + ']';
+            return modelName + '[_id=' + ident + ']';
         } else if (obj === undefined) {
             return 'undefined';
         } else if (obj === null) {
@@ -291,13 +285,13 @@ function clearReverseRelated() {
     } else {
         if (self._id) {
             var reverseName = getReverseName.call(this);
-            var reverseMapping = getReverseMapping.call(this);
+            var reverseModel = getReverseModel.call(this);
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
                 _.each(identifiers, function (_id) {
                     coreChanges.registerChange({
-                        collection: reverseMapping.collection,
-                        mapping: reverseMapping.type,
+                        collection: reverseModel.collection,
+                        model: reverseModel.type,
                         _id: _id,
                         field: reverseName,
                         removedId: [self.object._id],
@@ -309,8 +303,8 @@ function clearReverseRelated() {
             } else {
                 _.each(identifiers, function (_id) {
                     coreChanges.registerChange({
-                        collection: reverseMapping.collection,
-                        mapping: reverseMapping.type,
+                        collection: reverseModel.collection,
+                        model: reverseModel.type,
                         _id: _id,
                         field: reverseName,
                         new: null,
@@ -360,7 +354,7 @@ function setReverse(obj) {
 function registerSetChange(obj) {
     var proxyObject = this.object;
     if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
-    var mapping = proxyObject.mapping.type;
+    var model = proxyObject.model.type;
     var coll = proxyObject.collection;
     var newId;
     if (util.isArray(obj)) {
@@ -379,7 +373,7 @@ function registerSetChange(obj) {
     }
     coreChanges.registerChange({
         collection: coll,
-        mapping: mapping,
+        model: model,
         _id: proxyObject._id,
         field: getForwardName.call(this),
         newId: newId,
@@ -393,11 +387,11 @@ function registerSetChange(obj) {
 
 function registerSpliceChange(idx, numRemove) {
     var add = Array.prototype.slice.call(arguments, 2);
-    var mapping = this.object.mapping.type;
+    var model = this.object.model.type;
     var coll = this.object.collection;
     coreChanges.registerChange({
         collection: coll,
-        mapping: mapping,
+        model: model,
         _id: this.object._id,
         field: getForwardName.call(this),
         index: idx,
@@ -419,10 +413,10 @@ function wrapArray(arr) {
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
-                var mapping = getForwardMapping.call(self);
+                var model = getForwardModel.call(self);
                 coreChanges.registerChange({
-                    collection: mapping.collection,
-                    mapping: mapping.type,
+                    collection: model.collection,
+                    model: model.type,
                     _id: self.object._id,
                     field: getForwardName.call(self),
                     removed: splice.removed,
@@ -444,8 +438,8 @@ exports.getReverseProxyForObject = getReverseProxyForObject;
 exports.getForwardProxyForObject = getForwardProxyForObject;
 exports.getReverseName = getReverseName;
 exports.getForwardName = getForwardName;
-exports.getReverseMapping = getReverseMapping;
-exports.getForwardMapping = getForwardMapping;
+exports.getReverseModel = getReverseModel;
+exports.getForwardModel = getForwardModel;
 exports.checkInstalled = checkInstalled;
 exports.set = set;
 exports.registerSetChange = registerSetChange;

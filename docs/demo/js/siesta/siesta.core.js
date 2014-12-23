@@ -573,8 +573,8 @@ function Collection(name) {
     if (!name) throw new Error('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
-    this._rawMappings = {};
-    this._mappings = {};
+    this._rawModels = {};
+    this._models = {};
     /**
      * The URL of the API e.g. http://api.github.com
      * @type {string}
@@ -611,9 +611,9 @@ _.extend(Collection.prototype, {
         var self = this;
         if (!this.installed) {
             var mappingsToInstall = [];
-            for (var name in this._mappings) {
-                if (this._mappings.hasOwnProperty(name)) {
-                    var mapping = this._mappings[name];
+            for (var name in this._models) {
+                if (this._models.hasOwnProperty(name)) {
+                    var mapping = this._models[name];
                     mappingsToInstall.push(mapping);
                 }
             }
@@ -689,12 +689,12 @@ _.extend(Collection.prototype, {
      */
     _model: function (name, opts) {
         if (name) {
-            this._rawMappings[name] = opts;
+            this._rawModels[name] = opts;
             opts = extend(true, {}, opts);
             opts.type = name;
             opts.collection = this._name;
             var mappingObject = new Mapping(opts);
-            this._mappings[name] = mappingObject;
+            this._models[name] = mappingObject;
             this[name] = mappingObject;
             return mappingObject;
         } else {
@@ -897,7 +897,7 @@ _.extend(Collection.prototype, {
     count: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        var tasks = _.map(this._mappings, function (m) {
+        var tasks = _.map(this._models, function (m) {
             return _.bind(m.count, m);
         });
         util.parallel(tasks, function (err, ns) {
@@ -1362,7 +1362,7 @@ _.extend(ManyToManyProxy.prototype, {
                     var removed = splice.removed;
                     self.clearReverse(removed);
                     self.setReverse(added);
-                    var mapping = proxy.getForwardMapping.call(self);
+                    var mapping = proxy.getForwardModel.call(self);
                     coreChanges.registerChange({
                         collection: mapping.collection,
                         mapping: mapping.type,
@@ -1582,14 +1582,14 @@ _.extend(Mapping.prototype, {
                             relationship.type == RelationshipType.ManyToMany) {
                             var mappingName = relationship.mapping;
                             if (Logger.debug.isEnabled)
-                                Logger.debug('reverseMappingName', mappingName);
+                                Logger.debug('reverseModelName', mappingName);
                             if (!self.collection) throw new InternalSiestaError('Model must have collection');
                             var collection = CollectionRegistry[self.collection];
                             if (!collection) {
                                 throw new InternalSiestaError('Collection ' + self.collection + ' not registered');
                             }
-                            var reverseMapping = collection[mappingName];
-                            if (!reverseMapping) {
+                            var reverseModel = collection[mappingName];
+                            if (!reverseModel) {
                                 var arr = mappingName.split('.');
                                 if (arr.length == 2) {
                                     var collectionName = arr[0];
@@ -1598,14 +1598,14 @@ _.extend(Mapping.prototype, {
                                     if (!otherCollection) {
                                         return 'Collection with name "' + collectionName + '" does not exist.';
                                     }
-                                    reverseMapping = otherCollection[mappingName];
+                                    reverseModel = otherCollection[mappingName];
                                 }
                             }
                             if (Logger.debug.isEnabled)
-                                Logger.debug('reverseMapping', reverseMapping);
-                            if (reverseMapping) {
-                                relationship.reverseMapping = reverseMapping;
-                                relationship.forwardMapping = this;
+                                Logger.debug('reverseModel', reverseModel);
+                            if (reverseModel) {
+                                relationship.reverseModel = reverseModel;
+                                relationship.forwardModel = this;
                                 relationship.forwardName = name;
                                 relationship.reverseName = relationship.reverse;
                                 relationship.isReverse = false;
@@ -1631,11 +1631,11 @@ _.extend(Mapping.prototype, {
                     var relationship = this.relationships[forwardName];
                     relationship = extend(true, {}, relationship);
                     relationship.isReverse = true;
-                    var reverseMapping = relationship.reverseMapping;
+                    var reverseModel = relationship.reverseModel;
                     var reverseName = relationship.reverseName;
                     if (Logger.debug.isEnabled)
                         Logger.debug(self.type + ': configuring  reverse relationship ' + name);
-                    reverseMapping.relationships[reverseName] = relationship;
+                    reverseModel.relationships[reverseName] = relationship;
                 }
             }
             this._reverseRelationshipsInstalled = true;
@@ -2292,14 +2292,14 @@ _.extend(BulkMappingOperation.prototype, {
         for (var name in relationships) {
             if (relationships.hasOwnProperty(name)) {
                 var relationship = relationships[name];
-                var reverseMapping = relationship.forwardName == name ? relationship.reverseMapping : relationship.forwardMapping;
+                var reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel;
                 var __ret = this.getRelatedData(name);
                 var indexes = __ret.indexes;
                 var relatedData = __ret.relatedData;
                 if (relatedData.length) {
                     var flatRelatedData = flattenArray(relatedData);
                     var op = new BulkMappingOperation({
-                        mapping: reverseMapping,
+                        mapping: reverseModel,
                         data: flatRelatedData
                     });
                     op.__relationshipName = name;
@@ -2510,7 +2510,7 @@ _.extend(OneToManyProxy.prototype, {
                     var removed = splice.removed;
                     self.clearReverse(removed);
                     self.setReverse(added);
-                    var mapping = proxy.getForwardMapping.call(self);
+                    var mapping = proxy.getForwardModel.call(self);
                     coreChanges.registerChange({
                         collection: mapping.collection,
                         mapping: mapping.type,
@@ -3415,8 +3415,8 @@ function RelationshipProxy(opts) {
         enumerable: true,
         configurable: true
     });
-    defineSubProperty.call(this, 'reverseMapping', this._opts);
-    defineSubProperty.call(this, 'forwardMapping', this._opts);
+    defineSubProperty.call(this, 'reverseModel', this._opts);
+    defineSubProperty.call(this, 'forwardModel', this._opts);
     defineSubProperty.call(this, 'forwardName', this._opts);
     defineSubProperty.call(this, 'reverseName', this._opts);
     defineSubProperty.call(this, 'isReverse', this._opts);
@@ -3495,7 +3495,7 @@ function verifyMapping(obj, mapping) {
 
 function getReverseProxyForObject(obj) {
     var reverseName = getReverseName.call(this);
-    var reverseMapping = this.reverseMapping;
+    var reverseModel = this.reverseModel;
     // This should never happen. Should g   et caught in the mapping operation?
     if (util.isArray(obj)) {
         return _.map(obj, function (o) {
@@ -3504,7 +3504,7 @@ function getReverseProxyForObject(obj) {
     } else {
         var proxy = obj.__proxies[reverseName];
         if (!proxy) {
-            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseMapping.type;
+            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseModel.type;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -3513,7 +3513,7 @@ function getReverseProxyForObject(obj) {
 
 function getForwardProxyForObject(obj) {
     var forwardName = getForwardName.call(this);
-    var forwardMapping = this.forwardMapping;
+    var forwardModel = this.forwardModel;
     if (util.isArray(obj)) {
         return _.map(obj, function (o) {
             return o.__proxies[forwardName];
@@ -3521,7 +3521,7 @@ function getForwardProxyForObject(obj) {
     } else {
         var proxy = obj.__proxies[forwardName];
         if (!proxy) {
-            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardMapping.type;
+            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardModel.type;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -3536,12 +3536,12 @@ function getForwardName() {
     return this.isForward ? this.forwardName : this.reverseName;
 }
 
-function getReverseMapping() {
-    return this.isForward ? this.reverseMapping : this.forwardMapping;
+function getreverseModel() {
+    return this.isForward ? this.reverseModel : this.forwardModel;
 }
 
-function getForwardMapping() {
-    return this.isForward ? this.forwardMapping : this.reverseMapping;
+function getforwardModel() {
+    return this.isForward ? this.forwardModel : this.reverseModel;
 }
 
 function checkInstalled() {
@@ -3622,13 +3622,13 @@ function clearReverseRelated() {
     } else {
         if (self._id) {
             var reverseName = getReverseName.call(this);
-            var reverseMapping = getReverseMapping.call(this);
+            var reverseModel = getreverseModel.call(this);
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
                 _.each(identifiers, function (_id) {
                     coreChanges.registerChange({
-                        collection: reverseMapping.collection,
-                        mapping: reverseMapping.type,
+                        collection: reverseModel.collection,
+                        mapping: reverseModel.type,
                         _id: _id,
                         field: reverseName,
                         removedId: [self.object._id],
@@ -3640,8 +3640,8 @@ function clearReverseRelated() {
             } else {
                 _.each(identifiers, function (_id) {
                     coreChanges.registerChange({
-                        collection: reverseMapping.collection,
-                        mapping: reverseMapping.type,
+                        collection: reverseModel.collection,
+                        mapping: reverseModel.type,
                         _id: _id,
                         field: reverseName,
                         new: null,
@@ -3750,7 +3750,7 @@ function wrapArray(arr) {
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
-                var mapping = getForwardMapping.call(self);
+                var mapping = getforwardModel.call(self);
                 coreChanges.registerChange({
                     collection: mapping.collection,
                     mapping: mapping.type,
@@ -3775,8 +3775,8 @@ exports.getReverseProxyForObject = getReverseProxyForObject;
 exports.getForwardProxyForObject = getForwardProxyForObject;
 exports.getReverseName = getReverseName;
 exports.getForwardName = getForwardName;
-exports.getReverseMapping = getReverseMapping;
-exports.getForwardMapping = getForwardMapping;
+exports.getReverseModel = getreverseModel;
+exports.getForwardModel = getforwardModel;
 exports.checkInstalled = checkInstalled;
 exports.set = set;
 exports.registerSetChange = registerSetChange;

@@ -80,10 +80,10 @@ _.extend(ManyToManyProxy.prototype, {
                     var removed = splice.removed;
                     self.clearReverse(removed);
                     self.setReverse(added);
-                    var mapping = proxy.getForwardMapping.call(self);
+                    var model = proxy.getForwardModel.call(self);
                     coreChanges.registerChange({
-                        collection: mapping.collection,
-                        mapping: mapping.type,
+                        collection: model.collection,
+                        model: model.type,
                         _id: self.object._id,
                         field: proxy.getForwardName.call(self),
                         removed: removed,

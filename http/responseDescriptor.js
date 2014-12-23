@@ -38,7 +38,7 @@ _.extend(ResponseDescriptor.prototype, {
     _dump: function (asJson) {
         var obj = {};
         obj.methods = this.method;
-        obj.mapping = this.mapping.type;
+        obj.model = this.model.type;
         obj.path = this._rawOpts.path;
         var transforms = {};
         for (var f in this.transforms) {

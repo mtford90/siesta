@@ -46,8 +46,8 @@ function Collection(name) {
     if (!name) throw new Error('Collection must have a name');
     this._name = name;
     this._docId = 'Collection_' + this._name;
-    this._rawMappings = {};
-    this._mappings = {};
+    this._rawModels = {};
+    this._models = {};
     /**
      * The URL of the API e.g. http://api.github.com
      * @type {string}
@@ -83,17 +83,17 @@ _.extend(Collection.prototype, {
         var deferred = window.q ? window.q.defer() : null;
         var self = this;
         if (!this.installed) {
-            var mappingsToInstall = [];
-            for (var name in this._mappings) {
-                if (this._mappings.hasOwnProperty(name)) {
-                    var mapping = this._mappings[name];
-                    mappingsToInstall.push(mapping);
+            var modelsToInstall = [];
+            for (var name in this._models) {
+                if (this._models.hasOwnProperty(name)) {
+                    var model = this._models[name];
+                    modelsToInstall.push(model);
                 }
             }
             if (Logger.info.isEnabled)
-                Logger.info('There are ' + mappingsToInstall.length.toString() + ' mappings to install');
-            if (mappingsToInstall.length) {
-                var tasks = _.map(mappingsToInstall, function (m) {
+                Logger.info('There are ' + modelsToInstall.length.toString() + ' mappings to install');
+            if (modelsToInstall.length) {
+                var tasks = _.map(modelsToInstall, function (m) {
                     return _.bind(m.install, m);
                 });
                 util.parallel(tasks, function (err) {
@@ -104,14 +104,14 @@ _.extend(Collection.prototype, {
                     else {
                         self.installed = true;
                         var errors = [];
-                        _.each(mappingsToInstall, function (m) {
+                        _.each(modelsToInstall, function (m) {
                             if (Logger.info.isEnabled)
                                 Logger.info('Installing relationships for mapping with name "' + m.type + '"');
                             var err = m.installRelationships();
                             if (err) errors.push(err);
                         });
                         if (!errors.length) {
-                            _.each(mappingsToInstall, function (m) {
+                            _.each(modelsToInstall, function (m) {
                                 if (Logger.info.isEnabled)
                                     Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
                                 var err = m.installReverseRelationships();
@@ -119,7 +119,7 @@ _.extend(Collection.prototype, {
                             });
                         }
                         if (!errors.length) {
-                            var tasks = _.map(mappingsToInstall, function (m) {
+                            var tasks = _.map(modelsToInstall, function (m) {
                                 return function (cb) {
                                     m.finaliseInstallation(cb);
                                 }
@@ -183,14 +183,14 @@ _.extend(Collection.prototype, {
      */
     _model: function (name, opts) {
         if (name) {
-            this._rawMappings[name] = opts;
+            this._rawModels[name] = opts;
             opts = extend(true, {}, opts);
             opts.type = name;
             opts.collection = this._name;
-            var mappingObject = new Model(opts);
-            this._mappings[name] = mappingObject;
-            this[name] = mappingObject;
-            return mappingObject;
+            var model = new Model(opts);
+            this._models[name] = model;
+            this[name] = model;
+            return model;
         } else {
             throw new Error('No name specified when creating mapping');
         }
@@ -391,7 +391,7 @@ _.extend(Collection.prototype, {
     count: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.constructCallbackAndPromiseHandler(callback, deferred);
-        var tasks = _.map(this._mappings, function (m) {
+        var tasks = _.map(this._models, function (m) {
             return _.bind(m.count, m);
         });
         util.parallel(tasks, function (err, ns) {

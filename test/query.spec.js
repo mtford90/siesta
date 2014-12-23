@@ -108,7 +108,7 @@ describe('query...', function () {
                     relationships: {
                         owner: {
                             type: 'OneToMany',
-                            mapping: 'Person',
+                            model: 'Person',
                             reverse: 'cars'
                         }
                     }
@@ -662,7 +662,7 @@ describe('query...', function () {
                     relationships: {
                         owner: {
                             type: 'OneToMany',
-                            mapping: 'Person',
+                            model: 'Person',
                             reverse: 'cars'
                         }
                     }
@@ -897,7 +897,7 @@ describe('query...', function () {
                 attributes: ['name', 'colour'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
                         type: 'OneToMany',
                         reverse: 'cars'
                     }

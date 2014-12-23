@@ -24,7 +24,7 @@ describe('mapping relationships', function() {
             attributes: ['colour', 'name'],
             relationships: {
                 owner: {
-                    mapping: 'Person',
+                    model: 'Person',
                     type: type,
                     reverse: 'cars'
                 }
@@ -50,14 +50,14 @@ describe('mapping relationships', function() {
             });
 
             it('configures reverse mapping', function() {
-                assert.equal(carMapping.relationships.owner.reverseMapping, personMapping);
+                assert.equal(carMapping.relationships.owner.reverseModel, personMapping);
             });
 
             it('configures reverse name', function() {
                 assert.equal(carMapping.relationships.owner.reverseName, 'cars');
 
                 it('configures forward mapping', function() {
-                    assert.equal(carMapping.relationships.owner.forwardMapping, carMapping);
+                    assert.equal(carMapping.relationships.owner.forwardModel, carMapping);
                 });
 
             });
@@ -89,7 +89,7 @@ describe('mapping relationships', function() {
 
             });
             it('configures reverse mapping', function() {
-                assert.equal(carMapping.relationships.owner.reverseMapping, personMapping);
+                assert.equal(carMapping.relationships.owner.reverseModel, personMapping);
             });
 
             it('configures reverse name', function() {
@@ -100,7 +100,7 @@ describe('mapping relationships', function() {
             });
 
             it('configures forward mapping', function() {
-                assert.equal(carMapping.relationships.owner.forwardMapping, carMapping);
+                assert.equal(carMapping.relationships.owner.forwardModel, carMapping);
             });
             it('configures forward name', function() {
                 assert.equal(carMapping.relationships.owner.forwardName, 'owner');
@@ -134,7 +134,7 @@ describe('mapping relationships', function() {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'asd',
+                        model: 'asd',
                         type: RelationshipType.OneToMany,
                         reverse: 'cars'
                     }
@@ -153,7 +153,7 @@ describe('mapping relationships', function() {
                 attributes: ['colour', 'name'],
                 relationships: {
                     owner: {
-                        mapping: 'Person',
+                        model: 'Person',
 
                         type: 'invalidtype',
                         reverse: 'cars'

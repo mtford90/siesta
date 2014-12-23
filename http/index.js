@@ -110,7 +110,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                     Logger.trace('Model extracted data: ' + JSON.stringify(extractedData, null, 4));
                 }
                 if (typeof(extractedData) == 'object') {
-                    var mapping = matchedDescriptor.mapping;
+                    var mapping = matchedDescriptor.model;
                     mapping.map(extractedData, {override: opts.obj}, function (err, obj) {
                         if (callback) {
 
