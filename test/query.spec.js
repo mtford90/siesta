@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe.only('query...', function () {
+describe('query...', function () {
     var Query = require('../core/query').Query
         , Collection = require('../core/collection').Collection;
     before(function () {
@@ -888,5 +888,69 @@ describe.only('query...', function () {
         });
     });
 
+    describe('nested', function () {
+        var collection, Car, Person;
+        beforeEach(function (done) {
+            collection = new Collection('myCollection');
+            Car = collection.model('Car', {
+                id: 'id',
+                attributes: ['name', 'colour'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: 'OneToMany',
+                        reverse: 'cars'
+                    }
+                }
+            });
+            Person = collection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+
+        it('nested equals', function (done) {
+            Car.map([
+                {name: 'Aston Martin', colour: 'black', owner: {id: 1, name: 'Mike', age: 23}},
+                {name: 'Aston Martin', colour: 'blue', owner: {id: 1}},
+                {name: 'Bentley', colour: 'green', owner: {id: 2, name: 'Bob', age: 22}}
+            ])
+                .then(function () {
+                    Car.query({'owner.age': 23})
+                        .execute()
+                        .then(function (cars) {
+                            assert.equal(cars.length, 2);
+                            done();
+                        })
+                        .catch(done)
+                        .done();
+                })
+                .catch(done)
+                .done();
+        });
+
+        it('nested op', function (done) {
+            Car.map([
+                {name: 'Aston Martin', colour: 'black', owner: {id: 1, name: 'Mike', age: 23}},
+                {name: 'Aston Martin', colour: 'blue', owner: {id: 2, name: 'John', age: 24}},
+                {name: 'Bentley', colour: 'green', owner: {id: 3, name: 'Bob', age: 25}}
+            ])
+                .then(function () {
+                    Car.query({'owner.age__lte': 24})
+                        .execute()
+                        .then(function (cars) {
+                            assert.equal(cars.length, 2);
+                            done();
+                        })
+                        .catch(done)
+                        .done();
+                })
+                .catch(done)
+                .done();
+        });
+
+
+    })
 
 });

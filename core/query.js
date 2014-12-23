@@ -23,6 +23,7 @@ function Query(mapping, opts) {
 _.extend(Query, {
     comparators: {
         e: function (opts) {
+            console.log('e', opts.field);
             return opts.object[opts.field] == opts.value;
         },
         lt: function (opts) {
@@ -148,15 +149,20 @@ _.extend(Query.prototype, {
         return true;
     },
     splitMatches: function (obj, unprocessedField, value) {
-        var splt = unprocessedField.split('__');
         var op = 'e';
-        var field;
+        var fields = unprocessedField.split('.');
+        var splt = fields[fields.length - 1].split('__');
         if (splt.length == 2) {
-            field = splt[0];
+            var field = splt[0];
             op = splt[1];
-        } else {
-            field = unprocessedField;
         }
+        else {
+            field = splt[0];
+        }
+        fields[fields.length - 1] = field;
+        _.each(fields.slice(0, fields.length - 1), function (f) {
+            obj = obj[f];
+        });
         var val = obj[field];
         var invalid = val === null || val === undefined;
         var comparator = Query.comparators[op],
