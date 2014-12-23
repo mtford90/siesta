@@ -3838,7 +3838,7 @@ _.extend(Query.prototype, {
             for (var i = 0; i < keys.length; i++) {
                 var k = keys[i];
                 var obj = cacheByLocalId[k];
-                var matches = self.objectMatchesQuery(obj);
+                var matches = self.objectMatchesBaseQuery(obj);
                 if (typeof(matches) == 'string') {
                     err = matches;
                     break;
@@ -3852,7 +3852,7 @@ _.extend(Query.prototype, {
         }
         return deferred ? deferred.promise : null;
     },
-    objectMatchesQuery: function (obj) {
+    objectMatchesBaseQuery: function (obj) {
         var fields = Object.keys(this.query);
         for (var i = 0; i < fields.length; i++) {
             var origField = fields[i];

@@ -44,7 +44,7 @@ _.extend(Query, {
     },
     registerComparator: function (symbol, fn) {
         if (!this.comparators[symbol])
-        this.comparators[symbol] = fn;
+            this.comparators[symbol] = fn;
     }
 });
 
@@ -59,9 +59,6 @@ function cacheForMapping(mapping) {
     }
     return cacheByLocalId;
 }
-
-
-
 
 _.extend(Query.prototype, {
     execute: function (callback) {
@@ -128,36 +125,70 @@ _.extend(Query.prototype, {
         this.ordering = order;
         return this;
     },
-    objectMatchesQuery: function (obj) {
-        var fields = Object.keys(this.query);
-        for (var i = 0; i < fields.length; i++) {
-            var origField = fields[i];
-            var splt = origField.split('__');
+    objectMatchesOrQuery: function (obj, orQuery) {
+        for (var idx in orQuery) {
+            if (orQuery.hasOwnProperty(idx)) {
+                var query = orQuery[idx];
+                if (this.objectMatchesBaseQuery(obj, query)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+    objectMatchesAndQuery: function (obj, andQuery) {
+        for (var idx in andQuery) {
+            if (andQuery.hasOwnProperty(idx)) {
+                var query = andQuery[idx];
+                if (!this.objectMatchesBaseQuery(obj, query)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    },
+    objectMatches: function (obj, unprocessedField, value, query) {
+        if (unprocessedField == '$or') {
+            if (!this.objectMatchesOrQuery(obj, query['$or'])) return false;
+        }
+        else if (unprocessedField == '$and') {
+            if (!this.objectMatchesAndQuery(obj, query['$and'])) return false;
+        }
+        else {
+            var splt = unprocessedField.split('__');
             var op = 'e';
             var field;
             if (splt.length == 2) {
                 field = splt[0];
                 op = splt[1];
             } else {
-                field = origField;
+                field = unprocessedField;
             }
-            var queryObj = this.query[origField];
             var val = obj[field];
             var invalid = val === null || val === undefined;
-            if (Logger.trace) {
-                var stringVal;
-                if (val === null) stringVal = 'null';
-                else if (val === undefined) stringVal = 'undefined';
-                else stringVal = val.toString();
-            }
             var comparator = Query.comparators[op],
-                opts = {object: obj, field: field, value: queryObj, invalid: invalid};
+                opts = {object: obj, field: field, value: value, invalid: invalid};
             if (!comparator) {
                 return 'No comparator registered for query operation "' + op + '"';
             }
             if (!comparator(opts)) return false;
         }
         return true;
+    },
+    objectMatchesBaseQuery: function (obj, query) {
+        var fields = Object.keys(query);
+        console.log('fields', fields);
+        for (var i = 0; i < fields.length; i++) {
+            var unprocessedField = fields[i],
+                value = query[unprocessedField];
+            var rt = this.objectMatches(obj, unprocessedField, value, query);
+            if (typeof rt != 'boolean') return rt;
+            if (!rt) return false;
+        }
+        return true;
+    },
+    objectMatchesQuery: function (obj) {
+        return this.objectMatchesBaseQuery(obj, this.query);
     }
 });
 

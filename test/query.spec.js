@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe.only('query...', function () {
+describe('query...', function () {
     var Query = require('../core/query').Query
         , Collection = require('../core/collection').Collection;
     before(function () {
@@ -767,11 +767,116 @@ describe.only('query...', function () {
                 {name: 'Bob', age: 22},
                 {name: 'Peter', age: 29}
             ])
-                .then(function (people) {
+                .then(function () {
                     Person.query({
                         $or: [
                             {age: 24},
                             {age: 22}
+                        ]
+                    }).execute().then(function (res) {
+                        assert.equal(res.length, 2);
+                        _.each(res, function (r) {
+                            assert.ok(r.age == 24 || r.age == 22);
+                        });
+                        done();
+                    }).catch(done).done();
+                })
+                .catch(done)
+                .done();
+        });
+        it('still simple', function (done) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 22},
+                {name: 'Peter', age: 24}
+            ])
+                .then(function () {
+                    Person.query({
+                        $or: [
+                            {age: 24, name: 'Mike'},
+                            {age: 22}
+                        ]
+                    }).execute().then(function (res) {
+                        assert.equal(res.length, 2);
+                        _.each(res, function (r) {
+                            assert.ok(r.age == 24 || r.age == 22);
+                        });
+                        done();
+                    }).catch(done).done();
+                })
+                .catch(done)
+                .done();
+        });
+
+        it('nested', function (done) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 22},
+                {name: 'Peter', age: 24},
+                {name: 'Roger', age: 24}
+            ])
+                .then(function () {
+                    Person.query({
+                        $or: [
+                            {$or: [{name: 'Mike'}, {name: 'Peter'}], age: 24},
+                            {age: 22}
+                        ]
+                    }).execute().then(function (res) {
+                        assert.equal(res.length, 3);
+                        done();
+                    }).catch(done).done();
+                })
+                .catch(done)
+                .done();
+        });
+    });
+
+    describe('$and', function () {
+        var collection, Person;
+        beforeEach(function (done) {
+            collection = new Collection('myCollection');
+            Person = collection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
+        });
+        it('simple', function (done) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 24},
+                {name: 'Peter', age: 24}
+            ])
+                .then(function () {
+                    Person.query({
+                        $and: [
+                            {age: 24},
+                            {name: 'Mike'}
+                        ]
+                    }).execute().then(function (res) {
+                        assert.equal(res.length, 1);
+                        var r = res[0];
+                        assert.equal(r.age, 24);
+                        assert.equal(r.name, 'Mike');
+                        done();
+                    }).catch(done).done();
+                })
+                .catch(done)
+                .done();
+        });
+
+        it('mixture', function (done) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 22},
+                {name: 'Peter', age: 24},
+                {name: 'Roger', age: 24}
+            ])
+                .then(function () {
+                    Person.query({
+                        $and: [
+                            {$or: [{name: 'Mike'}, {name: 'Peter'}]},
+                            {age: 24}
                         ]
                     }).execute().then(function (res) {
                         assert.equal(res.length, 2);
@@ -782,5 +887,6 @@ describe.only('query...', function () {
                 .done();
         });
     });
+
 
 });
