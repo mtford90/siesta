@@ -174,7 +174,7 @@ describe('storage', function () {
                     {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
                 ]).then(function () {
                     s.ext.storage._load().then(function () {
-                        assert.notOk(s.ext.storage._unsavedObjects.length, 'Should not be anything to save, i.e. no notifications sent');
+                        assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                         Car.all().execute().then(function (cars) {
                             assert.equal(cars.length, 2, 'Should have loaded the two cars');
                             var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],

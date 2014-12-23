@@ -395,7 +395,8 @@ _.extend(Mapping.prototype, {
         var override = opts.override;
         var mappingOpts = {
             mapping: this,
-            data: data
+            data: data,
+            disableNotifications: opts.disableNotifications
         };
         if (override) mappingOpts.objects = override;
         var op = new BulkMappingOperation(mappingOpts);

@@ -52,7 +52,7 @@ function _deserialise(data, cb) {
     delete data._rev;
     delete data.collection;
     delete data.model;
-    model.map(data, function (err, instance) {
+    model.map(data, {disableNotifications: true}, function (err, instance) {
         if (!err) {
             instance._rev = rev;
         }

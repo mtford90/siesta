@@ -81,6 +81,13 @@ function BulkMappingOperation(opts) {
      */
     defineSubProperty.call(this, 'objects', this._opts);
 
+    /**
+     * @name disableNotifications
+     * @type {bool}
+     */
+    defineSubProperty.call(this, 'disableNotifications', this._opts);
+
+
     if (!this.objects) this.objects = [];
 
     /**
@@ -108,9 +115,16 @@ _.extend(BulkMappingOperation.prototype, {
                     var fields = this.mapping._attributeNames;
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
-                            object[f] = datum[f];
+                            // If notifications are disabled we update __values object directly. This avoids triggering
+                            // notifications which are built into the set function of the property.
+                            if (this.disableNotifications) {
+                                object.__values[f] = datum[f];
+                            }
+                            else {
+                                object[f] = datum[f];
+                            }
                         }
-                    });
+                    }.bind(this));
                 }
             }
         }
