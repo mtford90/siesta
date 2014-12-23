@@ -104,6 +104,7 @@ _.extend(OneToManyProxy.prototype, {
                     self.clearReverse(removed);
                     self.setReverse(added);
                     var model = proxy.getForwardModel.call(self);
+                    console.log('shit');
                     coreChanges.registerChange({
                         collection: model.collection,
                         model: model.type,
@@ -190,6 +191,7 @@ _.extend(OneToManyProxy.prototype, {
             }
             else {
                 proxy.clearReverseRelated.call(this, opts);
+
                 proxy.set.call(self, obj, opts);
                 if (self.isReverse) {
                     this.wrapArray(self.related);

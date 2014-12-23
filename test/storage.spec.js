@@ -6,7 +6,7 @@ var Query = require('../core/query').Query,
     Collection = require('../core/collection').Collection;
 
 
-describe('storage', function () {
+describe.only('storage', function () {
 
     before(function () {
         s.ext.storageEnabled = true;
@@ -197,7 +197,7 @@ describe('storage', function () {
         describe('relationships', function () {
             var collection, Car, Person;
 
-            it.only('onetomany', function (done) {
+            it('onetomany', function (done) {
                 collection = new Collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],
@@ -214,7 +214,6 @@ describe('storage', function () {
                 });
                 collection.install()
                     .then(function () {
-
                         s.ext.storage._pouch.bulkDocs([
                             {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin', owner: 'xyz', _id: 'abc'},
                             {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley', owner: 'xyz', id: 'def'},

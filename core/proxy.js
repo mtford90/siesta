@@ -218,6 +218,7 @@ function checkInstalled() {
 function set(obj, opts) {
     opts = opts || {};
     if (!opts.disableNotifications) {
+        console.log('uhoh');
         registerSetChange.call(this, obj);
     }
     if (obj) {
@@ -297,7 +298,7 @@ function clearReverseRelated(opts) {
                         spliceFactory(opts).call(p, idx, 1);
                     });
                 } else {
-                    set.call(p, null);
+                    set.call(p, null, opts);
                 }
             });
         }
