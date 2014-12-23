@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('query...', function () {
+describe.only('query...', function () {
     var Query = require('../core/query').Query
         , Collection = require('../core/collection').Collection;
     before(function () {

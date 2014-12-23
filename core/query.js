@@ -147,6 +147,25 @@ _.extend(Query.prototype, {
         }
         return true;
     },
+    splitMatches: function (obj, unprocessedField, value) {
+        var splt = unprocessedField.split('__');
+        var op = 'e';
+        var field;
+        if (splt.length == 2) {
+            field = splt[0];
+            op = splt[1];
+        } else {
+            field = unprocessedField;
+        }
+        var val = obj[field];
+        var invalid = val === null || val === undefined;
+        var comparator = Query.comparators[op],
+            opts = {object: obj, field: field, value: value, invalid: invalid};
+        if (!comparator) {
+            return 'No comparator registered for query operation "' + op + '"';
+        }
+        return comparator(opts);
+    },
     objectMatches: function (obj, unprocessedField, value, query) {
         if (unprocessedField == '$or') {
             if (!this.objectMatchesOrQuery(obj, query['$or'])) return false;
@@ -155,29 +174,14 @@ _.extend(Query.prototype, {
             if (!this.objectMatchesAndQuery(obj, query['$and'])) return false;
         }
         else {
-            var splt = unprocessedField.split('__');
-            var op = 'e';
-            var field;
-            if (splt.length == 2) {
-                field = splt[0];
-                op = splt[1];
-            } else {
-                field = unprocessedField;
-            }
-            var val = obj[field];
-            var invalid = val === null || val === undefined;
-            var comparator = Query.comparators[op],
-                opts = {object: obj, field: field, value: value, invalid: invalid};
-            if (!comparator) {
-                return 'No comparator registered for query operation "' + op + '"';
-            }
-            if (!comparator(opts)) return false;
+            var matches = this.splitMatches(obj, unprocessedField, value);
+            if (typeof matches != 'boolean') return matches;
+            if (!matches) return false;
         }
         return true;
     },
     objectMatchesBaseQuery: function (obj, query) {
         var fields = Object.keys(query);
-        console.log('fields', fields);
         for (var i = 0; i < fields.length; i++) {
             var unprocessedField = fields[i],
                 value = query[unprocessedField];
