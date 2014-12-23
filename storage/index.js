@@ -41,17 +41,26 @@ function _serialise(model) {
     return serialised;
 }
 
-function _deserialise(data) {
+function _deserialise(data, cb) {
     var collectionName = data.collection,
         modelName = data.model,
         collection = CollectionRegistry[collectionName],
         model = collection[modelName];
+    // Add blank object with correct _id to the cache so that can map data onto it.
+    _i.cache.insert(model._new({_id: data._id}, false));
     var rev = data._rev;
     delete data._rev;
-    var instance = model._new(data, false);
-    instance._rev = rev;
-    _i.cache.insert(instance);
-    return instance;
+    delete data.collection;
+    delete data.model;
+    model.map(data, function (err, instance) {
+        if (!err) {
+            instance._rev = rev;
+        }
+        else {
+            Logger.error('err', err);
+        }
+        cb(err, instance);
+    });
 }
 
 /**
@@ -65,9 +74,16 @@ function _load(callback) {
     }.toString();
     pouch.query({map: mapFunc}).then(function (resp) {
         console.log('resp', resp);
-        var instances = siesta.map(siesta.pluck(resp.rows, 'value'), _deserialise);
-        callback(instances);
-        if (deferred) deferred.resolve(instances);
+        var tasks = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
+            return function (done) {
+                _deserialise(datum, done)
+            }
+        });
+        siesta.parallel(tasks, function (err, instances) {
+            callback(err, instances);
+            if (err) deferred.reject(err);
+            else deferred.resolve(instances);
+        });
     }).catch(function (err) {
         callback(err);
         if (deferred) deferred.reject(err);
@@ -85,7 +101,7 @@ function save(callback) {
     unsavedObjects = [];
     unsavedObjectsHash = {};
     pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
-        for (var i=0;i<resp.length;i++) {
+        for (var i = 0; i < resp.length; i++) {
             var response = resp[i];
             var obj = objects[i];
             if (response.ok) {
@@ -101,7 +117,7 @@ function save(callback) {
         callback(err);
         if (deferred) deferred.reject(err);
     });
-    return deferred ? deferred.promise: null;
+    return deferred ? deferred.promise : null;
 }
 
 siesta.on('Siesta', function (n) {

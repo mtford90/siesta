@@ -28,6 +28,13 @@ function flattenArray(arr) {
     }, []);
 }
 
+function SiestaError(opts) {
+    this.opts = opts;
+}
+SiestaError.prototype.toString = function () {
+    return JSON.stringify(this.opts, null, 4);
+};
+
 function unflattenArray(arr, modelArr) {
     var n = 0;
     var unflattened = [];
@@ -81,6 +88,7 @@ function BulkMappingOperation(opts) {
      * @type {Array}
      */
     this.errors = [];
+
 
     this.name = 'Mapping Operation';
     this.work = _.bind(this._start, this);
@@ -205,9 +213,9 @@ _.extend(BulkMappingOperation.prototype, {
                                     var _id = localIdentifiers[i];
                                     var lookup = localLookups[i];
                                     if (!obj) {
-                                        self.errors[lookup.index] = {
+                                        self.errors[lookup.index] = new SiestaError({
                                             _id: 'No object with _id="' + _id.toString() + '"'
-                                        };
+                                        });
                                     } else {
                                         self.objects[lookup.index] = obj;
                                     }
