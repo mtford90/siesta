@@ -37,11 +37,12 @@ var siesta = function (ext) {
 /**
  * Wipe everything!
  */
-siesta.reset = function () {
+siesta.reset = function (cb) {
     cache.reset();
     CollectionRegistry.reset();
     siesta.ext.http.DescriptorRegistry.reset();
-    siesta.ext.storage._reset();
+    siesta.ext.storage._reset(cb);
+
     //noinspection JSAccessibilityCheck
 };
 

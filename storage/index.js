@@ -6,11 +6,13 @@ if (typeof PouchDB == 'undefined') {
     throw new Error('Could not find PouchDB. Have you included the script?');
 }
 
+var DB_NAME = 'siesta';
 var unsavedObjects = [],
     unsavedObjectsHash = {},
     _i = siesta._internal,
+    CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
-    pouch = new PouchDB('siesta');
+    pouch = new PouchDB(DB_NAME);
 
 var Logger = log.loggerWithName('Storage');
 Logger.setLevel(log.Level.trace);
@@ -39,11 +41,38 @@ function _serialise(model) {
     return serialised;
 }
 
+function _deserialise(data) {
+    var collectionName = data.collection,
+        modelName = data.model,
+        collection = CollectionRegistry[collectionName],
+        model = collection[modelName];
+    var rev = data._rev;
+    delete data._rev;
+    var instance = model._new(data, false);
+    instance._rev = rev;
+    _i.cache.insert(instance);
+    return instance;
+}
+
 /**
  * Load all data from PouchDB.
  */
-function _load(collectionName) {
-
+function _load(callback) {
+    var deferred = window.q ? window.q.defer() : null;
+    callback = callback || function () {};
+    var mapFunc = function (doc) {
+        emit(doc._id, doc);
+    }.toString();
+    pouch.query({map: mapFunc}).then(function (resp) {
+        console.log('resp', resp);
+        var instances = siesta.map(siesta.pluck(resp.rows, 'value'), _deserialise);
+        callback(instances);
+        if (deferred) deferred.resolve(instances);
+    }).catch(function (err) {
+        callback(err);
+        if (deferred) deferred.reject(err);
+    });
+    return deferred ? deferred.promise : null;
 }
 
 /**
@@ -67,10 +96,10 @@ function save(callback) {
             }
         }
         callback();
-        deferred.resolve();
+        if (deferred) deferred.resolve();
     }, function (err) {
         callback(err);
-        deferred.reject(err);
+        if (deferred) deferred.reject(err);
     });
     return deferred ? deferred.promise: null;
 }
@@ -92,9 +121,15 @@ var storage = {
     _load: _load,
     save: save,
     _serialise: _serialise,
-    _reset: function () {
+    _reset: function (cb) {
         unsavedObjects = [];
         unsavedObjectsHash = {};
+        pouch.destroy(function (err) {
+            if (!err) {
+                pouch = new PouchDB(DB_NAME);
+            }
+            cb(err);
+        })
     }
 };
 

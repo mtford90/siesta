@@ -2,13 +2,14 @@ var s = require('../core/index'),
     assert = require('chai').assert;
 
 
-var Query = require('../core/query').Query
-    , Collection = require('../core/collection').Collection;
+var Query = require('../core/query').Query,
+    Collection = require('../core/collection').Collection;
+
 
 describe.only('storage', function () {
 
-    beforeEach(function () {
-        s.reset(true);
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     describe('serialisation', function () {
@@ -17,7 +18,6 @@ describe.only('storage', function () {
             var collection, Car;
 
             beforeEach(function (done) {
-                s.reset(true);
                 collection = new Collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
@@ -48,7 +48,6 @@ describe.only('storage', function () {
             var collection, Car, Person;
 
             beforeEach(function (done) {
-                s.reset(true);
                 collection = new Collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],
@@ -100,7 +99,6 @@ describe.only('storage', function () {
         var collection, Car;
 
         beforeEach(function (done) {
-            s.reset(true);
             collection = new Collection('myCollection');
             Car = collection.model('Car', {
                 attributes: ['colour', 'name']
@@ -153,6 +151,46 @@ describe.only('storage', function () {
             }).catch(done).done();
         })
 
-    })
+    });
+
+    describe('load', function () {
+        describe('attributes only', function () {
+            var collection, Car;
+
+            beforeEach(function (done) {
+                collection = new Collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name']
+                });
+                collection.install(done);
+            });
+            it('abc', function (done) {
+                s.ext.storage._pouch.bulkDocs([
+                    {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
+                    {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
+                ]).then(function () {
+                    s.ext.storage._load().then(function () {
+                        assert.notOk(s.ext.storage._unsavedObjects.length, 'Should not be anything to save, i.e. no notifications sent');
+                        Car.all().execute().then(function (cars) {
+                            assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                            var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
+                                blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                            assert.equal(redCar.colour, 'red');
+                            assert.equal(redCar.name, 'Aston Martin');
+                            assert.ok(redCar._rev);
+                            assert.ok(redCar._id);
+                            assert.equal(blackCar.colour, 'black');
+                            assert.equal(blackCar.name, 'Bentley');
+                            assert.ok(blackCar._rev);
+                            assert.ok(blackCar._id);
+                            done();
+                        }).catch(done).done();
+                    }).catch(done).done();
+                }).catch(done);
+            })
+        });
+
+
+    });
 
 });

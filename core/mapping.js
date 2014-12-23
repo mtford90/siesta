@@ -434,7 +434,8 @@ _.extend(Mapping.prototype, {
      * @returns {SiestaModel}
      * @private
      */
-    _new: function (data) {
+    _new: function (data, shouldRegisterChange) {
+        shouldRegisterChange = shouldRegisterChange === undefined ? true : shouldRegisterChange;
         if (this.installed) {
             var self = this;
             var _id;
@@ -534,15 +535,17 @@ _.extend(Mapping.prototype, {
                 proxy.isFault = false;
             }
             cache.insert(newModel);
-            coreChanges.registerChange({
-                collection: this.collection,
-                mapping: this.type,
-                _id: newModel._id,
-                newId: newModel._id,
-                new: newModel,
-                type: ChangeType.New,
-                obj: newModel
-            });
+            if (shouldRegisterChange) {
+                coreChanges.registerChange({
+                    collection: this.collection,
+                    mapping: this.type,
+                    _id: newModel._id,
+                    newId: newModel._id,
+                    new: newModel,
+                    type: ChangeType.New,
+                    obj: newModel
+                });
+            }
             return newModel;
         } else {
             throw new InternalSiestaError('Mapping must be fully installed before creating any models');
