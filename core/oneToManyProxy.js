@@ -189,16 +189,16 @@ _.extend(OneToManyProxy.prototype, {
                 return errorMessage;
             }
             else {
-                proxy.clearReverseRelated.call(this);
+                proxy.clearReverseRelated.call(this, opts);
                 proxy.set.call(self, obj, opts);
                 if (self.isReverse) {
                     this.wrapArray(self.related);
                 }
-                proxy.setReverse.call(self, obj);
+                proxy.setReverse.call(self, obj, opts);
             }
         }
         else {
-            proxy.clearReverseRelated.call(this);
+            proxy.clearReverseRelated.call(this, opts);
             proxy.set.call(self, obj, opts);
         }
     },

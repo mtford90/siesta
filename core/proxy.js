@@ -234,15 +234,33 @@ function set(obj, opts) {
     }
 }
 
-function splice(idx, numRemove) {
-    registerSpliceChange.apply(this, arguments);
-    var add = Array.prototype.slice.call(arguments, 2);
-    var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
-    if (this.related) {
-        _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+function spliceFactory(opts) {
+    opts = opts || {};
+    return function (idx, numRemove) {
+        opts = opts || {};
+        if (!opts.disableNotifications) {
+            registerSpliceChange.apply(this, arguments);
+        }
+        var add = Array.prototype.slice.call(arguments, 2);
+        var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
+        if (this.related) {
+            _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+        }
+        return returnValue;
     }
-    return returnValue;
 }
+
+var splice = spliceFactory({});
+
+//function splice(idx, numRemove) {
+//    registerSpliceChange.apply(this, arguments);
+//    var add = Array.prototype.slice.call(arguments, 2);
+//    var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
+//    if (this.related) {
+//        _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+//    }
+//    return returnValue;
+//}
 
 function objAsString(obj) {
     function _objAsString(obj) {
@@ -265,7 +283,8 @@ function objAsString(obj) {
     return _objAsString(obj);
 }
 
-function clearReverseRelated() {
+function clearReverseRelated(opts) {
+    opts = opts || {};
     var self = this;
     if (!self.isFault) {
         if (this.related) {
@@ -275,7 +294,7 @@ function clearReverseRelated() {
                 if (util.isArray(p._id)) {
                     var idx = p._id.indexOf(self.object._id);
                     makeChangesToRelatedWithoutObservations.call(p, function () {
-                        splice.call(p, idx, 1);
+                        spliceFactory(opts).call(p, idx, 1);
                     });
                 } else {
                     set.call(p, null);
@@ -288,33 +307,37 @@ function clearReverseRelated() {
             var reverseModel = getReverseModel.call(this);
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
-                _.each(identifiers, function (_id) {
-                    coreChanges.registerChange({
-                        collection: reverseModel.collection,
-                        model: reverseModel.type,
-                        _id: _id,
-                        field: reverseName,
-                        removedId: [self.object._id],
-                        removed: [self.object],
-                        type: ChangeType.Delete,
-                        obj: self.object
+                if (!opts.disableNotifications) {
+                    _.each(identifiers, function (_id) {
+                        coreChanges.registerChange({
+                            collection: reverseModel.collection,
+                            model: reverseModel.type,
+                            _id: _id,
+                            field: reverseName,
+                            removedId: [self.object._id],
+                            removed: [self.object],
+                            type: ChangeType.Delete,
+                            obj: self.object
+                        });
                     });
-                });
+                }
             } else {
-                _.each(identifiers, function (_id) {
-                    coreChanges.registerChange({
-                        collection: reverseModel.collection,
-                        model: reverseModel.type,
-                        _id: _id,
-                        field: reverseName,
-                        new: null,
-                        newId: null,
-                        oldId: self.object._id,
-                        old: self.object,
-                        type: ChangeType.Set,
-                        obj: self.object
+                if (!opts.disableNotifications) {
+                    _.each(identifiers, function (_id) {
+                        coreChanges.registerChange({
+                            collection: reverseModel.collection,
+                            model: reverseModel.type,
+                            _id: _id,
+                            field: reverseName,
+                            new: null,
+                            newId: null,
+                            oldId: self.object._id,
+                            old: self.object,
+                            type: ChangeType.Set,
+                            obj: self.object
+                        });
                     });
-                });
+                }
             }
 
         } else {
@@ -335,18 +358,18 @@ function makeChangesToRelatedWithoutObservations(f) {
     }
 }
 
-function setReverse(obj) {
+function setReverse(obj, opts) {
     var self = this;
     var reverseProxy = getReverseProxyForObject.call(this, obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
     _.each(reverseProxies, function (p) {
         if (util.isArray(p._id)) {
             makeChangesToRelatedWithoutObservations.call(p, function () {
-                splice.call(p, p._id.length, 0, self.object);
+                spliceFactory(opts).call(p, p._id.length, 0, self.object);
             });
         } else {
-            clearReverseRelated.call(p);
-            set.call(p, self.object);
+            clearReverseRelated.call(p, opts);
+            set.call(p, self.object, opts);
         }
     });
 }
@@ -432,21 +455,25 @@ function wrapArray(arr) {
     }
 }
 
-exports.RelationshipProxy = RelationshipProxy;
-exports.Fault = Fault;
-exports.getReverseProxyForObject = getReverseProxyForObject;
-exports.getForwardProxyForObject = getForwardProxyForObject;
-exports.getReverseName = getReverseName;
-exports.getForwardName = getForwardName;
-exports.getReverseModel = getReverseModel;
-exports.getForwardModel = getForwardModel;
-exports.checkInstalled = checkInstalled;
-exports.set = set;
-exports.registerSetChange = registerSetChange;
-exports.splice = splice;
-exports.clearReverseRelated = clearReverseRelated;
-exports.setReverse = setReverse;
-exports.objAsString = objAsString;
-exports.wrapArray = wrapArray;
-exports.registerSpliceChange = registerSpliceChange;
-exports.makeChangesToRelatedWithoutObservations = makeChangesToRelatedWithoutObservations;
+module.exports = {
+    RelationshipProxy: RelationshipProxy,
+    Fault: Fault,
+    getReverseProxyForObject: getReverseProxyForObject,
+    getForwardProxyForObject: getForwardProxyForObject,
+    getReverseName: getReverseName,
+    getForwardName: getForwardName,
+    getReverseModel: getReverseModel,
+    getForwardModel: getForwardModel,
+    checkInstalled: checkInstalled,
+    set: set,
+    registerSetChange: registerSetChange,
+    splice:splice,
+    spliceFactory: spliceFactory,
+    clearReverseRelated:  clearReverseRelated,
+    setReverse:  setReverse,
+    objAsString:  objAsString,
+    wrapArray:  wrapArray,
+    registerSpliceChange:  registerSpliceChange,
+    makeChangesToRelatedWithoutObservations:  makeChangesToRelatedWithoutObservations
+};
+

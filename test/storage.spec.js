@@ -197,7 +197,7 @@ describe('storage', function () {
         describe('relationships', function () {
             var collection, Car, Person;
 
-            it('onetomany', function (done) {
+            it.only('onetomany', function (done) {
                 collection = new Collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],

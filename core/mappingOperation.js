@@ -349,7 +349,8 @@ _.extend(BulkMappingOperation.prototype, {
                     var flatRelatedData = flattenArray(relatedData);
                     var op = new BulkMappingOperation({
                         model: reverseModel,
-                        data: flatRelatedData
+                        data: flatRelatedData,
+                        disableNotifications: this.disableNotifications
                     });
                     op.__relationshipName = name;
                     subOps[name] = {
