@@ -106,7 +106,7 @@ siesta._internal = {
     mapping: require('./model'),
     error: require('./error'),
     ChangeType: coreChanges.ChangeType,
-    siestaModel: require('./siestaModel'),
+    siestaModel: require('./modelInstance'),
     extend: require('extend'),
     notificationCentre: require('./notificationCentre'),
     cache: require('./cache'),

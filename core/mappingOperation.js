@@ -3,7 +3,7 @@
  */
 
 var Store = require('./store')
-    , SiestaModel = require('./siestaModel').SiestaModel
+    , SiestaModel = require('./modelInstance').SiestaModel
     , log = require('./operation/log')
     , Operation = require('./operation/operation').Operation
     , InternalSiestaError = require('./error').InternalSiestaError

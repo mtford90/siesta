@@ -4,7 +4,7 @@ var s = require('../../core/index')
 describe('intercoll relationships', function () {
 
 
-    var SiestaModel = require('../../core/siestaModel').SiestaModel;
+    var SiestaModel = require('../../core/modelInstance').SiestaModel;
     var Collection = require('../../core/collection').Collection;
     var RelationshipType = require('../../core/relationship').RelationshipType;
 

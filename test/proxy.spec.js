@@ -11,7 +11,7 @@ describe('new object proxy', function() {
     var OneToOneProxy = require('../core/oneToOneProxy');
     var OneToManyProxy = require('../core/oneToManyProxy');
     var ManyToManyProxy = require('../core/manyToManyProxy');
-    var SiestaModel = require('../core/siestaModel').SiestaModel;
+    var SiestaModel = require('../core/modelInstance').SiestaModel;
     var Fault = require('../core/proxy').Fault;
     var InternalSiestaError = require('../core/error').InternalSiestaError;
     var Collection = require('../core/collection').Collection;

@@ -7,7 +7,7 @@ describe('perform mapping', function () {
     var Collection = require('../../core/collection').Collection;
     var RelationshipType = require('../../core/relationship').RelationshipType;
 
-    var SiestaModel = require('../../core/siestaModel').SiestaModel;
+    var SiestaModel = require('../../core/modelInstance').SiestaModel;
     var cache = require('../../core/cache');
     var Operation = require('../../core/operation/operation').Operation;
 
