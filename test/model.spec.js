@@ -8,16 +8,21 @@ var SiestaModel = require('../core/siestaModel').SiestaModel
 describe('Models', function () {
     var mapping, collection;
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     beforeEach(function (done) {
-        s.reset();
-        collection = new Collection('myCollection');
-        mapping = collection.model({
-            name: 'Car',
-            id: 'id',
-            attributes: ['colour', 'name'],
-            collection: 'myCollection'
+        s.reset(function () {
+            collection = new Collection('myCollection');
+            mapping = collection.model({
+                name: 'Car',
+                id: 'id',
+                attributes: ['colour', 'name'],
+                collection: 'myCollection'
+            });
+            collection.install(done);
         });
-        collection.install(done);
     });
 
     it('get attributes', function (done) {

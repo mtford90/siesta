@@ -8,6 +8,10 @@ var Query = require('../core/query').Query,
 
 describe('storage', function () {
 
+    before(function () {
+        s.ext.storageEnabled = true;
+    });
+
     beforeEach(function (done) {
         s.reset(done);
     });

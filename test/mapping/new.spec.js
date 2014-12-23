@@ -11,8 +11,12 @@ describe('mapping new object', function () {
     var OneToManyProxy = require('../../core/oneToManyProxy');
     var cache = require('../../core/cache');
 
-    beforeEach(function () {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     describe('fields', function () {

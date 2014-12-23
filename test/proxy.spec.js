@@ -3,6 +3,10 @@ var s = require('../core/index'),
 
 describe('new object proxy', function() {
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     var RelationshipProxy = require('../core/proxy').RelationshipProxy;
     var OneToOneProxy = require('../core/oneToOneProxy');
     var OneToManyProxy = require('../core/oneToManyProxy');
@@ -19,17 +23,18 @@ describe('new object proxy', function() {
     var collection;
 
     beforeEach(function(done) {
-        s.reset();
-        collection = new Collection('myCollection');
-        carMapping = collection.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name']
+        s.reset(function () {
+            collection = new Collection('myCollection');
+            carMapping = collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            personMapping = collection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
         });
-        personMapping = collection.model('Person', {
-            id: 'id',
-            attributes: ['name', 'age']
-        });
-        collection.install(done);
     });
 
     describe('generic', function() {

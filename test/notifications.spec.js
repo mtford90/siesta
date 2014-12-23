@@ -3,16 +3,19 @@ var s = require('../core/index'),
 
 describe('notifications', function() {
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     var Collection = require('../core/collection').Collection,
         ChangeType = require('../core/changes').ChangeType,
         util = require('../core/util')
     notificationCentre = require('../core/notificationCentre').notificationCentre;
 
-    beforeEach(function() {
-        s.reset();
+    beforeEach(function(done) {
+        s.reset(done);
     });
 
-    var car;
     var collection, carMapping;
     var car;
 
@@ -392,8 +395,7 @@ describe('notifications', function() {
 
 
         beforeEach(function(done) {
-            s.reset();
-            done();
+            s.reset(done);
         });
 
         describe('array', function() {

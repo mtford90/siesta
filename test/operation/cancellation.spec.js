@@ -12,6 +12,8 @@ var Operation = require('../../core/operation/operation').Operation;
 describe('Cancellation', function() {
     var op;
 
+
+
     beforeEach(function() {
         op = new Operation('op');
     });

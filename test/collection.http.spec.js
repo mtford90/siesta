@@ -13,13 +13,16 @@ describe('http!', function () {
 
     var server;
 
-    beforeEach(function () {
-        siesta.reset(true);
-        console.log('sinon', sinon);
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
+    beforeEach(function (done) {
         this.sinon = sinon.sandbox.create();
         this.server = sinon.fakeServer.create();
         this.server.autoRespond = true;
         server = this.server;
+        siesta.reset(done);
     });
 
     afterEach(function () {

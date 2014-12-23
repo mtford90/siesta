@@ -7,8 +7,12 @@ describe('collection setup', function() {
     var Collection = require('../core/collection').Collection;
     var InternalSiestaError = require('../core/error').InternalSiestaError;
 
-    beforeEach(function() {
-        s.reset();
+    beforeEach(function(done) {
+        s.reset(done);
+    });
+
+    before(function () {
+        s.ext.storageEnabled = false;
     });
 
     describe('install', function() {

@@ -7,22 +7,29 @@ var SiestaModel = require('../core/siestaModel').SiestaModel
 
 describe('Subclass', function () {
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     describe('hierarchy', function () {
         var collection, Car, SportsCar;
 
+
+
         beforeEach(function (done) {
-            s.reset();
-            collection = new Collection('myCollection');
+            s.reset(function (){
+                collection = new Collection('myCollection');
 
-            Car = collection.model('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            SportsCar = Car.child('SportsCar', {
-                attributes: ['maxSpeed']
-            });
+                Car = collection.model('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['maxSpeed']
+                });
 
-            collection.install(done);
+                collection.install(done);
+            });
         });
 
         it('children', function () {
@@ -39,18 +46,19 @@ describe('Subclass', function () {
         var collection, Car, SportsCar;
 
         beforeEach(function (done) {
-            s.reset();
-            collection = new Collection('myCollection');
+            s.reset(function () {
+                collection = new Collection('myCollection');
 
-            Car = collection.model('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            SportsCar = Car.child('SportsCar', {
-                attributes: ['maxSpeed']
-            });
+                Car = collection.model('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['maxSpeed']
+                });
 
-            collection.install(done);
+                collection.install(done);
+            });
         });
 
         it('child attributes', function () {
@@ -73,42 +81,7 @@ describe('Subclass', function () {
 
         describe('names', function () {
             beforeEach(function (done) {
-                s.reset();
-                collection = new Collection('myCollection');
-                Car = collection.model('Car', {
-                    attributes: ['colour', 'name'],
-                    relationships: {
-                        owner: {
-                            mapping: 'Person',
-                            type: 'OneToMany',
-                            reverse: 'cars'
-                        }
-                    }
-                });
-                SportsCar = Car.child('SportsCar', {
-                    attributes: ['maxSpeed']
-                });
-                Person = collection.model('Person', {
-                    attributes: ['age', 'name']
-                });
-
-                collection.install(done);
-            });
-            it('child attributes', function () {
-                assert.include(SportsCar._relationshipNames, 'owner');
-            });
-
-            it('parent attributes', function () {
-                assert.include(Car._relationshipNames, 'owner');
-            });
-
-        });
-
-        describe('relationship types', function () {
-
-            describe('OneToMany', function () {
-                beforeEach(function (done) {
-                    s.reset();
+                s.reset(function () {
                     collection = new Collection('myCollection');
                     Car = collection.model('Car', {
                         attributes: ['colour', 'name'],
@@ -127,18 +100,56 @@ describe('Subclass', function () {
                         attributes: ['age', 'name']
                     });
 
-                    collection.install()
-                        .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
-                            mike = _mike;
-                            Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
-                                .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
-                                .then(function () {
-                                    done();
-                                })
-                                .catch(done)
-                                .done();
-                        })
-                    ).catch(done).done();
+                    collection.install(done);
+                });
+            });
+            it('child attributes', function () {
+                assert.include(SportsCar._relationshipNames, 'owner');
+            });
+
+            it('parent attributes', function () {
+                assert.include(Car._relationshipNames, 'owner');
+            });
+
+        });
+
+        describe('relationship types', function () {
+
+            describe('OneToMany', function () {
+                beforeEach(function (done) {
+                    s.reset(function () {
+                        collection = new Collection('myCollection');
+                        Car = collection.model('Car', {
+                            attributes: ['colour', 'name'],
+                            relationships: {
+                                owner: {
+                                    mapping: 'Person',
+                                    type: 'OneToMany',
+                                    reverse: 'cars'
+                                }
+                            }
+                        });
+                        SportsCar = Car.child('SportsCar', {
+                            attributes: ['maxSpeed']
+                        });
+                        Person = collection.model('Person', {
+                            attributes: ['age', 'name']
+                        });
+
+                        collection.install()
+                            .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                                mike = _mike;
+                                Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                                    .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
+                                    .then(function () {
+                                        done();
+                                    })
+                                    .catch(done)
+                                    .done();
+                            })
+                        ).catch(done).done();
+                    });
+
 
                 });
 
@@ -156,37 +167,39 @@ describe('Subclass', function () {
 
             describe('OneToOne', function () {
                 beforeEach(function (done) {
-                    s.reset();
-                    collection = new Collection('myCollection');
-                    Car = collection.model('Car', {
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                mapping: 'Person',
-                                type: 'OneToOne',
-                                reverse: 'car'
+                    s.reset(function () {
+                        collection = new Collection('myCollection');
+                        Car = collection.model('Car', {
+                            attributes: ['colour', 'name'],
+                            relationships: {
+                                owner: {
+                                    mapping: 'Person',
+                                    type: 'OneToOne',
+                                    reverse: 'car'
+                                }
                             }
-                        }
-                    });
-                    SportsCar = Car.child('SportsCar', {
-                        attributes: ['maxSpeed']
-                    });
-                    Person = collection.model('Person', {
-                        attributes: ['age', 'name']
+                        });
+                        SportsCar = Car.child('SportsCar', {
+                            attributes: ['maxSpeed']
+                        });
+                        Person = collection.model('Person', {
+                            attributes: ['age', 'name']
+                        });
+
+                        collection.install()
+                            .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                                mike = _mike;
+                                Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                                    .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
+                                    .then(function () {
+                                        done();
+                                    })
+                                    .catch(done)
+                                    .done();
+                            })
+                        ).catch(done).done();
                     });
 
-                    collection.install()
-                        .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
-                            mike = _mike;
-                            Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
-                                .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
-                                .then(function () {
-                                    done();
-                                })
-                                .catch(done)
-                                .done();
-                        })
-                    ).catch(done).done();
 
                 });
 
@@ -207,37 +220,38 @@ describe('Subclass', function () {
 
             describe('ManyToMany', function () {
                 beforeEach(function (done) {
-                    s.reset();
-                    collection = new Collection('myCollection');
-                    Car = collection.model('Car', {
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owners: {
-                                mapping: 'Person',
-                                type: 'ManyToMany',
-                                reverse: 'cars'
+                    s.reset(function () {
+                        collection = new Collection('myCollection');
+                        Car = collection.model('Car', {
+                            attributes: ['colour', 'name'],
+                            relationships: {
+                                owners: {
+                                    mapping: 'Person',
+                                    type: 'ManyToMany',
+                                    reverse: 'cars'
+                                }
                             }
-                        }
-                    });
-                    SportsCar = Car.child('SportsCar', {
-                        attributes: ['maxSpeed']
-                    });
-                    Person = collection.model('Person', {
-                        attributes: ['age', 'name']
-                    });
+                        });
+                        SportsCar = Car.child('SportsCar', {
+                            attributes: ['maxSpeed']
+                        });
+                        Person = collection.model('Person', {
+                            attributes: ['age', 'name']
+                        });
 
-                    collection.install()
-                        .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
-                            mike = _mike;
-                            Car.map({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
-                                .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owners: [{_id: mike._id}]}))
-                                .then(function () {
-                                    done();
-                                })
-                                .catch(done)
-                                .done();
-                        })
-                    ).catch(done).done();
+                        collection.install()
+                            .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                                mike = _mike;
+                                Car.map({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
+                                    .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owners: [{_id: mike._id}]}))
+                                    .then(function () {
+                                        done();
+                                    })
+                                    .catch(done)
+                                    .done();
+                            })
+                        ).catch(done).done();
+                    });
 
                 });
 
@@ -264,27 +278,29 @@ describe('Subclass', function () {
         var collection, Car, SportsCar, SuperCar;
 
         beforeEach(function (done) {
-            s.reset();
-            collection = new Collection('myCollection');
+            s.reset(function () {
+                collection = new Collection('myCollection');
 
-            Car = collection.model('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            SportsCar = Car.child('SportsCar', {
-                attributes: ['maxSpeed']
-            });
-            SuperCar = SportsCar.child('SuperCar', {
-                attributes: ['attr']
+                Car = collection.model('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['maxSpeed']
+                });
+                SuperCar = SportsCar.child('SuperCar', {
+                    attributes: ['attr']
+                });
+
+                collection.install()
+                    .then(Car.map({colour: 'red', name: 'Aston Martin'}))
+                    .then(SportsCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini'}))
+                    .then(SuperCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini', attr: 5}))
+                    .then(function () {done()})
+                    .catch(done)
+                    .done();
             });
 
-            collection.install()
-                .then(Car.map({colour: 'red', name: 'Aston Martin'}))
-                .then(SportsCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini'}))
-                .then(SuperCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini', attr: 5}))
-                .then(function () {done()})
-                .catch(done)
-                .done();
         });
 
         it('parent query', function (done) {
@@ -328,24 +344,25 @@ describe('Subclass', function () {
         var collection, Car, SportsCar, Person, SuperCar;
 
         beforeEach(function (done) {
-            s.reset();
-            collection = new Collection('myCollection');
+            s.reset(function () {
+                collection = new Collection('myCollection');
 
-            Car = collection.model('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
-            });
-            SportsCar = Car.child('SportsCar', {
-                attributes: ['maxSpeed']
-            });
-            Person = collection.model('Person', {
-                attributes: ['name']
-            });
-            SuperCar = SportsCar.child('SuperCar', {
-                attributes: ['attr']
-            });
+                Car = collection.model('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['maxSpeed']
+                });
+                Person = collection.model('Person', {
+                    attributes: ['name']
+                });
+                SuperCar = SportsCar.child('SuperCar', {
+                    attributes: ['attr']
+                });
 
-            collection.install(done);
+                collection.install(done);
+            });
         });
 
         it('isChildOf', function () {

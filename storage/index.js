@@ -143,7 +143,7 @@ var storage = {
             if (!err) {
                 pouch = new PouchDB(DB_NAME);
             }
-            if (typeof(cb) == 'function') cb(err);
+            cb(err);
         })
     }
 };

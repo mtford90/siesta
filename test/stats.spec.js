@@ -6,26 +6,29 @@ describe('statistics', function() {
 
     var Collection = require('../core/collection').Collection;
     var cache = require('../core/cache');
-
+    before(function () {
+        siesta.ext.storageEnabled = false;
+    });
     beforeEach(function(done) {
-        siesta.reset(true);
-        coll = new Collection('myCollection');
-        Car = coll.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name'],
-            relationships: {
-                owner: {
-                    mapping: 'Person',
-                    type: 'OneToMany',
-                    reverse: 'cars'
+        siesta.reset(function () {
+            coll = new Collection('myCollection');
+            Car = coll.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: 'OneToMany',
+                        reverse: 'cars'
+                    }
                 }
-            }
+            });
+            Person = coll.model('Person', {
+                id: 'id',
+                attributes: ['age', 'name']
+            });
+            coll.install(done);
         });
-        Person = coll.model('Person', {
-            id: 'id',
-            attributes: ['age', 'name']
-        });
-        coll.install(done);
     });
 
     before(function() {

@@ -4,8 +4,12 @@ var s = require('../../core/index')
 describe('mapping validation', function () {
     var Mapping =  require('../../core/mapping').Mapping;
 
-    beforeEach(function () {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     describe('validation', function () {

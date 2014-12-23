@@ -6,6 +6,9 @@ var s = require('../core/index'),
  */
 
 describe('observer', function() {
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
 
     var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 

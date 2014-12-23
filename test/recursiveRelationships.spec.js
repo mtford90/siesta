@@ -8,22 +8,27 @@ describe('recursive relationships', function() {
     var collection;
     var Repo;
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     beforeEach(function(done) {
-        s.reset();
-        collection = new Collection('MyCollection');
-        collection.baseURL = 'https://api.github.com';
-        Repo = collection.model('Repo', {
-            id: 'id',
-            attributes: ['name'],
-            relationships: {
-                forkedFrom: {
-                    mapping: 'Repo',
-                    type: 'OneToMany',
-                    reverse: 'forks'
+        s.reset(function () {
+            collection = new Collection('MyCollection');
+            collection.baseURL = 'https://api.github.com';
+            Repo = collection.model('Repo', {
+                id: 'id',
+                attributes: ['name'],
+                relationships: {
+                    forkedFrom: {
+                        mapping: 'Repo',
+                        type: 'OneToMany',
+                        reverse: 'forks'
+                    }
                 }
-            }
+            });
+            collection.install(done);
         });
-        collection.install(done);
     });
 
     it('map', function (done) {

@@ -9,20 +9,24 @@ describe('change identifiers', function () {
 
     var car;
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
     beforeEach(function (done) {
-        s.reset();
-        collection = new Collection('myCollection');
-        carMapping = collection.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name']
-        });
-        collection.install(function (err) {
-            if (err) done(err);
-            carMapping.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
+        s.reset(function () {
+            collection = new Collection('myCollection');
+            carMapping = collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(function (err) {
                 if (err) done(err);
-                car = _car;
-                done();
-            })
+                carMapping.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
+                    if (err) done(err);
+                    car = _car;
+                    done();
+                })
+            });
         });
     });
 

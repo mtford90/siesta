@@ -8,9 +8,11 @@ describe('serialisers', function() {
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 
-
-    beforeEach(function() {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+    beforeEach(function(done) {
+        s.reset(done);
     });
 
     describe('id serialiser', function() {

@@ -9,25 +9,30 @@ describe('request descriptor', function () {
 
     var collection, carMapping, personMapping;
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     beforeEach(function (done) {
-        s.reset();
-        collection = new Collection('myCollection');
-        carMapping = collection.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name'],
-            relationships: {
-                owner: {
-                    mapping: 'Person',
-                    type: RelationshipType.OneToMany,
-                    reverse: 'cars'
+        s.reset(function () {
+            collection = new Collection('myCollection');
+            carMapping = collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name'],
+                relationships: {
+                    owner: {
+                        mapping: 'Person',
+                        type: RelationshipType.OneToMany,
+                        reverse: 'cars'
+                    }
                 }
-            }
+            });
+            personMapping = collection.model('Person', {
+                id: 'id',
+                attributes: ['name']
+            });
+            collection.install(done);
         });
-        personMapping = collection.model('Person', {
-            id: 'id',
-            attributes: ['name']
-        });
-        collection.install(done);
     });
 
     describe('matching', function () {

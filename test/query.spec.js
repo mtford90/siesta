@@ -4,9 +4,11 @@ var s = require('../core/index'),
 describe('query...', function () {
     var Query = require('../core/query').Query
         , Collection = require('../core/collection').Collection;
-
-    beforeEach(function () {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     describe('basic', function () {

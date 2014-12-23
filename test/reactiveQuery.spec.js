@@ -5,15 +5,18 @@ var Collection = s.Collection;
 
 describe('reactive query', function () {
     var collection, mapping;
-
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
     beforeEach(function (done) {
-        s.reset();
-        collection = new Collection('myCollection');
-        mapping = collection.model('Person', {
-            id: 'id',
-            attributes: ['name', 'age']
+        s.reset(function () {
+            collection = new Collection('myCollection');
+            mapping = collection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
+            });
+            collection.install(done);
         });
-        collection.install(done);
     });
 
     describe('unordered', function () {

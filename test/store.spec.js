@@ -9,14 +9,19 @@ describe('store......', function() {
 
     var carMapping, collection;
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     beforeEach(function(done) {
-        s.reset();
-        collection = new Collection('myCollection');
-        carMapping = collection.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name']
+        s.reset(function () {
+            collection = new Collection('myCollection');
+            carMapping = collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            collection.install(done);
         });
-        collection.install(done);
     });
 
     describe('get', function() {

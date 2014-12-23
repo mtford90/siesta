@@ -63,28 +63,31 @@ describe('array flattening', function () {
 });
 
 describe('bulk mapping operation', function () {
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
     describe('general', function () {
         beforeEach(function (done) {
-            s.reset();
-
-            collection = new Collection('MyCollection');
-            collection.baseURL = 'https://api.github.com';
-            Repo = collection.model('Repo', {
-                id: 'id',
-                attributes: ['name', 'full_name', 'description'],
-                relationships: {
-                    owner: {
-                        mapping: 'User',
-                        type: RelationshipType.OneToMany,
-                        reverse: 'repositories'
+            s.reset(function () {
+                collection = new Collection('MyCollection');
+                collection.baseURL = 'https://api.github.com';
+                Repo = collection.model('Repo', {
+                    id: 'id',
+                    attributes: ['name', 'full_name', 'description'],
+                    relationships: {
+                        owner: {
+                            mapping: 'User',
+                            type: RelationshipType.OneToMany,
+                            reverse: 'repositories'
+                        }
                     }
-                }
+                });
+                User = collection.model('User', {
+                    id: 'id',
+                    attributes: ['login']
+                });
+                collection.install(done);
             });
-            User = collection.model('User', {
-                id: 'id',
-                attributes: ['login']
-            });
-            collection.install(done);
         });
 
         describe('errors', function () {
@@ -442,26 +445,27 @@ describe('bulk mapping operation', function () {
         var op;
 
         beforeEach(function (done) {
-            s.reset();
-            collection = new Collection('MyCollection');
-            collection.baseURL = 'https://api.github.com';
-            Repo = collection.model('Repo', {
-                id: 'id',
-                attributes: ['name', 'full_name', 'description'],
-                relationships: {
-                    owner: {
-                        mapping: 'User',
-                        type: RelationshipType.OneToMany,
-                        reverse: 'repositories'
+            s.reset(function () {
+                collection = new Collection('MyCollection');
+                collection.baseURL = 'https://api.github.com';
+                Repo = collection.model('Repo', {
+                    id: 'id',
+                    attributes: ['name', 'full_name', 'description'],
+                    relationships: {
+                        owner: {
+                            mapping: 'User',
+                            type: RelationshipType.OneToMany,
+                            reverse: 'repositories'
+                        }
                     }
-                }
+                });
+                User = collection.model('User', {
+                    id: 'id',
+                    attributes: ['login'],
+                    singleton: true
+                });
+                collection.install(done);
             });
-            User = collection.model('User', {
-                id: 'id',
-                attributes: ['login'],
-                singleton: true
-            });
-            collection.install(done);
         });
 
         describe('new', function () {
@@ -560,15 +564,21 @@ describe('bug', function () {
 
     var coll, Car;
 
-    beforeEach(function (done) {
-        siesta.reset(true);
-        coll = new Collection('myCollection');
-        Car = coll.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name']
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
 
+    beforeEach(function (done) {
+        siesta.reset(function () {
+            coll = new Collection('myCollection');
+            Car = coll.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+
+            });
+            coll.install(done);
         });
-        coll.install(done);
+
     });
 
     it('multiple objects', function (done) {

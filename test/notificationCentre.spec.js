@@ -5,8 +5,11 @@ var assert = require('chai').assert;
 var notificationCentre = require('../core/notificationCentre').notificationCentre;
 
 describe('Notification Centre', function () {
-    beforeEach(function () {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     describe('emissions', function () {

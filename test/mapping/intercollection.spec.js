@@ -8,8 +8,12 @@ describe('intercoll relationships', function () {
     var Collection = require('../../core/collection').Collection;
     var RelationshipType = require('../../core/relationship').RelationshipType;
 
-    beforeEach(function () {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     var collection, carMapping, personMapping;

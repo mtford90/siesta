@@ -6,6 +6,9 @@ var util = require('../core/util');
 var q = require('q');
 
 describe('constructCallbackAndPromiseHandler', function () {
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
     describe('no error or result', function () {
         function doSomethingWithNoErrorOrResult (callback) {
             setTimeout(callback);

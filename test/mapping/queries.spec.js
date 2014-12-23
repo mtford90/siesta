@@ -8,8 +8,12 @@ describe('mapping queries', function() {
     var RelationshipType = require('../../core/relationship').RelationshipType;
     var cache = require('../../core/cache');
 
-    beforeEach(function() {
-        s.reset();
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
+    beforeEach(function(done) {
+        s.reset(done);
     });
 
     describe('queries', function() {

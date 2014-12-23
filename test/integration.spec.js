@@ -18,84 +18,86 @@ describe('intercollection relationships', function() {
     var myOfflineCollection;
     var myOnlineCollection;
 
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
     beforeEach(function(done) {
-        s.reset();
+        s.reset(function () {
+            myOfflineCollection = new Collection('MyOfflineCollection');
+            myOnlineCollection = new Collection('MyOnlineCollection');
 
-        myOfflineCollection = new Collection('MyOfflineCollection');
-        myOnlineCollection = new Collection('MyOnlineCollection');
-
-        myOfflineCollection.model('Folder', {
-            attributes: ['name'],
-            relationships: {
-                createdBy: {
-                    mapping: 'User',
-                    type: RelationshipType.OneToMany,
-                    reverse: 'folders'
+            myOfflineCollection.model('Folder', {
+                attributes: ['name'],
+                relationships: {
+                    createdBy: {
+                        mapping: 'User',
+                        type: RelationshipType.OneToMany,
+                        reverse: 'folders'
+                    }
                 }
-            }
-        });
+            });
 
-        myOfflineCollection.model('DownloadedPhoto', {
-            attributes: ['creationDate'],
-            relationships: {
-                createdBy: {
-                    mapping: 'User',
-                    type: RelationshipType.OneToMany,
-                    reverse: 'files'
-                },
-                folder: {
-                    mapping: 'Folder',
-                    type: RelationshipType.OneToMany,
-                    reverse: 'files'
-                },
-                photo: {
-                    mapping: 'MyOnlineCollection.Photo',
-                    type: RelationshipType.OneToOne,
-                    reverse: 'file'
+            myOfflineCollection.model('DownloadedPhoto', {
+                attributes: ['creationDate'],
+                relationships: {
+                    createdBy: {
+                        mapping: 'User',
+                        type: RelationshipType.OneToMany,
+                        reverse: 'files'
+                    },
+                    folder: {
+                        mapping: 'Folder',
+                        type: RelationshipType.OneToMany,
+                        reverse: 'files'
+                    },
+                    photo: {
+                        mapping: 'MyOnlineCollection.Photo',
+                        type: RelationshipType.OneToOne,
+                        reverse: 'file'
+                    }
                 }
-            }
-        });
+            });
 
-        myOfflineCollection.model('User', {
-            attributes: ['username'],
-            indexes: ['username']
-        });
+            myOfflineCollection.model('User', {
+                attributes: ['username'],
+                indexes: ['username']
+            });
 
-
-
-        myOnlineCollection.model('Photo', {
-            id: 'photoId',
-            attributes: ['height', 'width', 'url'],
-            relationships: {
-                createdBy: {
-                    mapping: 'User',
-                    type: RelationshipType.OneToMany,
-                    reverse: 'photos'
+            myOnlineCollection.model('Photo', {
+                id: 'photoId',
+                attributes: ['height', 'width', 'url'],
+                relationships: {
+                    createdBy: {
+                        mapping: 'User',
+                        type: RelationshipType.OneToMany,
+                        reverse: 'photos'
+                    }
                 }
-            }
-        });
+            });
 
-        myOnlineCollection.model('User', {
-            id: 'userId',
-            attributes: ['username', 'name']
-        });
+            myOnlineCollection.model('User', {
+                id: 'userId',
+                attributes: ['username', 'name']
+            });
 
-        var finishedCreatingMyOnlineCollection = false;
-        var finishedCreatingMyOfflineCollection = false;
+            var finishedCreatingMyOnlineCollection = false;
+            var finishedCreatingMyOfflineCollection = false;
 
-        myOfflineCollection.install(function(err) {
-            if (err) done(err);
-            finishedCreatingMyOfflineCollection = true;
-            if (finishedCreatingMyOnlineCollection) {
-                done();
-            }
-        });
+            myOfflineCollection.install(function(err) {
+                if (err) done(err);
+                finishedCreatingMyOfflineCollection = true;
+                if (finishedCreatingMyOnlineCollection) {
+                    done();
+                }
+            });
 
-        myOnlineCollection.install(function(err) {
-            if (err) done(err);
-            if (finishedCreatingMyOfflineCollection) {
-                done();
-            }
+            myOnlineCollection.install(function(err) {
+                if (err) done(err);
+                if (finishedCreatingMyOfflineCollection) {
+                    done();
+                }
+            });
         });
     });
 

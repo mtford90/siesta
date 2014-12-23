@@ -2,6 +2,9 @@ var siesta = require('../core/index');
 var assert = require('chai').assert;
 
 describe('cache...', function() {
+    before(function () {
+        siesta.ext.storageEnabled = false;
+    });
     var mapping;
 
     var SiestaModel = require('../core/siestaModel').SiestaModel;
@@ -10,13 +13,14 @@ describe('cache...', function() {
     var cache = require('../core/cache');
 
     beforeEach(function(done) {
-        siesta.reset(true); 
-        var coll = new Collection('myCollection');
-        mapping = coll.model('Car', {
-            id: 'id',
-            attributes: ['colour', 'name']
+        siesta.reset(function () {
+            var coll = new Collection('myCollection');
+            mapping = coll.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
+            });
+            coll.install(done);
         });
-        coll.install(done);  
     });
 
     describe('insertion', function() {

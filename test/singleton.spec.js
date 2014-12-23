@@ -15,19 +15,22 @@ describe('singleton mapping', function () {
     }
 
     CarObject.prototype = Object.create(SiestaModel.prototype);
-
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
     beforeEach(function (done) {
-        s.reset();
-        collection = new Collection('Car');
-        Car = collection.model('Car', {
-            id: 'id',
-            attributes: [
-                {name: 'colour', default: 'red'},
-                'name'
-            ],
-            singleton: true
+        s.reset(function () {
+            collection = new Collection('Car');
+            Car = collection.model('Car', {
+                id: 'id',
+                attributes: [
+                    {name: 'colour', default: 'red'},
+                    'name'
+                ],
+                singleton: true
+            });
+            collection.install(done);
         });
-        collection.install(done);
     });
 
     it('should map onto the same singleton object, even if a different identifier', function (done) {

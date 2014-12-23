@@ -7,10 +7,12 @@ describe('mapping relationships', function() {
     var Collection = require('../core/collection').Collection;
     var InternalSiestaError = require('../core/error').InternalSiestaError;
     var RelationshipType = require('../core/relationship').RelationshipType;
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
 
-
-    beforeEach(function() {
-        s.reset();
+    beforeEach(function(done) {
+        s.reset(done);
     });
 
     var collection, carMapping, personMapping;

@@ -41,8 +41,12 @@ siesta.reset = function (cb) {
     cache.reset();
     CollectionRegistry.reset();
     siesta.ext.http.DescriptorRegistry.reset();
-    siesta.ext.storage._reset(cb);
-
+    if (siesta.ext.storageEnabled) {
+        siesta.ext.storage._reset(cb);
+    }
+    else {
+        cb();
+    }
     //noinspection JSAccessibilityCheck
 };
 

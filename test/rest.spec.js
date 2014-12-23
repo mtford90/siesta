@@ -6,10 +6,12 @@ describe('rest', function () {
     var Collection = require('../core/collection').Collection;
     var CollectionRegistry = require('../core/collectionRegistry').CollectionRegistry;
     var collection;
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
 
-
-    beforeEach(function () {
-        s.reset();
+    beforeEach(function (done) {
+        s.reset(done);
     });
 
     describe('Create Basic Rest API', function () {

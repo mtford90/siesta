@@ -13,11 +13,15 @@ describe('perform mapping', function () {
 
     var collection, carMapping, personMapping;
 
-    beforeEach(function () {
+    before(function () {
+        s.ext.storageEnabled = false;
+    });
+
+    beforeEach(function (done) {
         collection = null;
         carMapping = null;
         personMapping = null;
-        s.reset();
+        s.reset(done);
     });
 
     afterEach(function () {
