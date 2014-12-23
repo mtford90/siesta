@@ -120,7 +120,8 @@ function save(callback) {
     return deferred ? deferred.promise : null;
 }
 
-siesta.on('Siesta', function (n) {
+var listener = function (n) {
+    if (Logger.trace) Logger.trace('Received notif!');
     var changedObject = n.obj,
         ident = changedObject._id;
     if (!changedObject) {
@@ -130,19 +131,23 @@ siesta.on('Siesta', function (n) {
         unsavedObjectsHash[ident] = changedObject;
         unsavedObjects.push(changedObject);
     }
-});
+};
+siesta.on('Siesta', listener);
 
 var storage = {
     _load: _load,
     save: save,
     _serialise: _serialise,
     _reset: function (cb) {
+        siesta.removeListener('Siesta', listener);
         unsavedObjects = [];
         unsavedObjectsHash = {};
         pouch.destroy(function (err) {
             if (!err) {
                 pouch = new PouchDB(DB_NAME);
             }
+            siesta.on('Siesta', listener);
+            Logger.warn('Reset complete');
             cb(err);
         })
     }
