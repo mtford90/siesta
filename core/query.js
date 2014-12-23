@@ -4,7 +4,8 @@
 
 var log = require('./operation/log')
     , cache = require('./cache')
-    , util = require('./util');
+    , util = require('./util')
+    , _ = util._;
 
 var Logger = log.loggerWithName('Query');
 Logger.setLevel(log.Level.warn);
@@ -71,22 +72,41 @@ _.extend(Query.prototype, {
     _dump: function (asJson) {
         return asJson ? '{}' : {};
     },
+    sortFunc: function (fields) {
+        var sortFunc = function (ascending, field) {
+            return function (v1, v2) {
+                if (ascending) {
+                    return v1[field] - v2[field];
+                }
+                else {
+                    return v2[field] - v1[field];
+                }
+            }
+        };
+        var s = util;
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            s = s.thenBy(sortFunc(field.ascending, field.field));
+        }
+        return s;
+    },
     _sortResults: function (res) {
         if (res && this.ordering) {
-            var splt = this.ordering.split('-'),
-                ascending = true,
-                field = null;
-            if (splt.length > 1) {
-                field = splt[1];
-                ascending = false;
-            }
-            else {
-                field = splt[0];
-            }
-            res = _.sortBy(res, function (x) {
-                return x[field];
-            });
-            if (!ascending) res.reverse();
+            var fields = _.map(this.ordering, function (ordering) {
+                var splt = this.ordering[0].split('-'),
+                    ascending = true,
+                    field = null;
+                if (splt.length > 1) {
+                    field = splt[1];
+                    ascending = false;
+                }
+                else {
+                    field = splt[0];
+                }
+                return {field: field, ascending: ascending};
+            }.bind(this));
+            var s = this.sortFunc(fields);
+            res.sort(s);
         }
         return res;
     },
@@ -122,8 +142,17 @@ _.extend(Query.prototype, {
         callback(err, err ? null : res);
         return deferred ? deferred.promise : null;
     },
-    orderBy: function (order) {
-        this.ordering = order;
+    orderBy: function () {
+        this.ordering = [];
+        for (var i = 0; i < arguments.length; i++) {
+            var ordering = arguments[i];
+            if (util.isArray(ordering)) {
+                this.ordering = this.ordering.concat(ordering);
+            }
+            else {
+                this.ordering.push(ordering);
+            }
+        }
         return this;
     },
     objectMatchesOrQuery: function (obj, orQuery) {

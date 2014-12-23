@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('query...', function () {
+describe.only('query...', function () {
     var Query = require('../core/query').Query
         , Collection = require('../core/collection').Collection;
     before(function () {
@@ -749,6 +749,26 @@ describe('query...', function () {
                 }).catch(done).done();
             }).catch(done).done();
         });
+
+        it('multiple order, array', function (done) {
+            Person.map([
+                {name: 'Mike', age: 24},
+                {name: 'Bob', age: 24},
+                {name: 'John', age: 12}
+            ]).then(function () {
+                var query = Person.query({});
+                console.log('query', query);
+                query.orderBy(['age', 'name']).execute().then(function (orderedPeople) {
+                    var lastAge = orderedPeople[0].age;
+                    for (var i = 1; i < orderedPeople.length; i++) {
+                        var person = orderedPeople[i];
+                        assert(person.age >= lastAge, 'Should be descending');
+                        lastAge = person.age;
+                    }
+                    done();
+                }).catch(done).done();
+            }).catch(done).done();
+        })
     });
 
     describe('$or', function () {
