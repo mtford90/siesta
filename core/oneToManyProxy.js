@@ -180,7 +180,7 @@ _.extend(OneToManyProxy.prototype, {
             }
         }
     },
-    set: function (obj) {
+    set: function (obj, opts) {
         proxy.checkInstalled.call(this);
         var self = this;
         if (obj) {
@@ -190,7 +190,7 @@ _.extend(OneToManyProxy.prototype, {
             }
             else {
                 proxy.clearReverseRelated.call(this);
-                proxy.set.call(self, obj);
+                proxy.set.call(self, obj, opts);
                 if (self.isReverse) {
                     this.wrapArray(self.related);
                 }
@@ -199,7 +199,7 @@ _.extend(OneToManyProxy.prototype, {
         }
         else {
             proxy.clearReverseRelated.call(this);
-            proxy.set.call(self, obj);
+            proxy.set.call(self, obj, opts);
         }
     },
     install: function (obj) {

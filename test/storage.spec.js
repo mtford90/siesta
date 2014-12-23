@@ -194,6 +194,57 @@ describe('storage', function () {
             })
         });
 
+        describe('relationships', function () {
+            var collection, Car, Person;
+
+            it('onetomany', function (done) {
+                collection = new Collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            mapping: 'Person',
+                            type: 'OneToMany',
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                Person = collection.model('Person', {
+                    attributes: ['name', 'age']
+                });
+                collection.install()
+                    .then(function () {
+
+                        s.ext.storage._pouch.bulkDocs([
+                            {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin', owner: 'xyz', _id: 'abc'},
+                            {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley', owner: 'xyz', id: 'def'},
+                            {collection: 'myCollection', model: 'Person', name: 'Michael', age: 24, _id: 'xyz', cars: ['abc', 'def']}
+                        ]).then(function () {
+                            s.ext.storage._load().then(function () {
+                                assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+                                Car.all().execute().then(function (cars) {
+                                    assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                                    var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
+                                        blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                                    assert.equal(redCar.colour, 'red');
+                                    assert.equal(redCar.name, 'Aston Martin');
+                                    assert.ok(redCar._rev);
+                                    assert.ok(redCar._id);
+                                    assert.equal(blackCar.colour, 'black');
+                                    assert.equal(blackCar.name, 'Bentley');
+                                    assert.ok(blackCar._rev);
+                                    assert.ok(blackCar._id);
+                                    done();
+                                }).catch(done).done();
+                            }).catch(done).done();
+                        }).catch(done);
+
+                    })
+                    .catch(done)
+                    .done();
+            })
+        })
+
 
     });
 

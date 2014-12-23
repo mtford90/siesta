@@ -51,6 +51,16 @@ function _deserialise(data, cb) {
     delete data._rev;
     delete data.collection;
     delete data.model;
+    var relationshipNames = model._relationshipNames;
+    _.each(relationshipNames, function (r) {
+        var _id = data[r];
+        if (siesta.isArray(_id)) {
+            data[r] = _.map(_id, function (x) { return {_id: x}});
+        }
+        else {
+            data[r] = {_id: _id};
+        }
+    });
     model.map(data, {disableNotifications: true}, function (err, instance) {
         if (!err) {
             instance._rev = rev;

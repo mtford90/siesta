@@ -148,7 +148,7 @@ _.extend(BulkMappingOperation.prototype, {
                     var related = unflattenedObjects[i]; // Can be array or scalar.
                     var object = self.objects[idx];
                     if (object) {
-                        err = object.__proxies[f].set(related);
+                        err = object.__proxies[f].set(related, {disableNotifications: self.disableNotifications});
                         if (err) {
                             if (!self.errors[idx]) self.errors[idx] = {};
                             self.errors[idx][f] = err;

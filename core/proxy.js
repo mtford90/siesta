@@ -217,10 +217,15 @@ function checkInstalled() {
 /**
  * Configure _id and related with the new related object.
  * @param obj
+ * @param {object} [opts]
+ * @param {boolean} [opts.disableNotifications]
  * @returns {String|undefined} - Error message or undefined
  */
-function set(obj) {
-    registerSetChange.call(this, obj);
+function set(obj, opts) {
+    opts = opts || {};
+    if (!opts.disableNotifications) {
+        registerSetChange.call(this, obj);
+    }
     if (obj) {
         if (util.isArray(obj)) {
             this._id = _.pluck(obj, '_id');
