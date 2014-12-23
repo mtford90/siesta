@@ -9,7 +9,7 @@ describe('intercoll relationships', function () {
     var RelationshipType = require('../../core/relationship').RelationshipType;
 
     beforeEach(function () {
-        s.reset(true);
+        s.reset();
     });
 
     var collection, carMapping, personMapping;

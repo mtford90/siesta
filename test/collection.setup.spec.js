@@ -8,7 +8,7 @@ describe('collection setup', function() {
     var InternalSiestaError = require('../core/error').InternalSiestaError;
 
     beforeEach(function() {
-        s.reset(true);
+        s.reset();
     });
 
     describe('install', function() {

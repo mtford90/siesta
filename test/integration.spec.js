@@ -19,7 +19,7 @@ describe('intercollection relationships', function() {
     var myOnlineCollection;
 
     beforeEach(function(done) {
-        s.reset(true);
+        s.reset();
 
         myOfflineCollection = new Collection('MyOfflineCollection');
         myOnlineCollection = new Collection('MyOnlineCollection');

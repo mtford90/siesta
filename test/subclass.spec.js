@@ -11,7 +11,7 @@ describe('Subclass', function () {
         var collection, Car, SportsCar;
 
         beforeEach(function (done) {
-            s.reset(true);
+            s.reset();
             collection = new Collection('myCollection');
 
             Car = collection.model('Car', {
@@ -39,7 +39,7 @@ describe('Subclass', function () {
         var collection, Car, SportsCar;
 
         beforeEach(function (done) {
-            s.reset(true);
+            s.reset();
             collection = new Collection('myCollection');
 
             Car = collection.model('Car', {
@@ -73,7 +73,7 @@ describe('Subclass', function () {
 
         describe('names', function () {
             beforeEach(function (done) {
-                s.reset(true);
+                s.reset();
                 collection = new Collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],
@@ -108,7 +108,7 @@ describe('Subclass', function () {
 
             describe('OneToMany', function () {
                 beforeEach(function (done) {
-                    s.reset(true);
+                    s.reset();
                     collection = new Collection('myCollection');
                     Car = collection.model('Car', {
                         attributes: ['colour', 'name'],
@@ -156,7 +156,7 @@ describe('Subclass', function () {
 
             describe('OneToOne', function () {
                 beforeEach(function (done) {
-                    s.reset(true);
+                    s.reset();
                     collection = new Collection('myCollection');
                     Car = collection.model('Car', {
                         attributes: ['colour', 'name'],
@@ -207,7 +207,7 @@ describe('Subclass', function () {
 
             describe('ManyToMany', function () {
                 beforeEach(function (done) {
-                    s.reset(true);
+                    s.reset();
                     collection = new Collection('myCollection');
                     Car = collection.model('Car', {
                         attributes: ['colour', 'name'],
@@ -264,7 +264,7 @@ describe('Subclass', function () {
         var collection, Car, SportsCar, SuperCar;
 
         beforeEach(function (done) {
-            s.reset(true);
+            s.reset();
             collection = new Collection('myCollection');
 
             Car = collection.model('Car', {
@@ -328,7 +328,7 @@ describe('Subclass', function () {
         var collection, Car, SportsCar, Person, SuperCar;
 
         beforeEach(function (done) {
-            s.reset(true);
+            s.reset();
             collection = new Collection('myCollection');
 
             Car = collection.model('Car', {

@@ -6,7 +6,7 @@ describe('query...', function () {
         , Collection = require('../core/collection').Collection;
 
     beforeEach(function () {
-        s.reset(true);
+        s.reset();
     });
 
     describe('basic', function () {

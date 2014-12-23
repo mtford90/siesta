@@ -9,7 +9,7 @@ describe('Models', function () {
     var mapping, collection;
 
     beforeEach(function (done) {
-        s.reset(true);
+        s.reset();
         collection = new Collection('myCollection');
         mapping = collection.model({
             name: 'Car',

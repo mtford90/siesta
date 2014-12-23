@@ -9,7 +9,7 @@ describe('recursive relationships', function() {
     var Repo;
 
     beforeEach(function(done) {
-        s.reset(true);
+        s.reset();
         collection = new Collection('MyCollection');
         collection.baseURL = 'https://api.github.com';
         Repo = collection.model('Repo', {

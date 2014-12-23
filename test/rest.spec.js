@@ -9,7 +9,7 @@ describe('rest', function () {
 
 
     beforeEach(function () {
-        s.reset(true);
+        s.reset();
     });
 
     describe('Create Basic Rest API', function () {

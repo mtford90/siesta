@@ -17,7 +17,7 @@ describe('perform mapping', function () {
         collection = null;
         carMapping = null;
         personMapping = null;
-        s.reset(true);
+        s.reset();
     });
 
     afterEach(function () {

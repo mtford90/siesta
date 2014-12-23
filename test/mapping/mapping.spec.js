@@ -5,7 +5,7 @@ describe('mapping!', function () {
     var Mapping = require('../../core/mapping').Mapping;
 
     beforeEach(function () {
-        s.reset(true);
+        s.reset();
     });
 
     it('_attributeNames', function () {

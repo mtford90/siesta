@@ -17,7 +17,7 @@ describe('singleton mapping', function () {
     CarObject.prototype = Object.create(SiestaModel.prototype);
 
     beforeEach(function (done) {
-        s.reset(true);
+        s.reset();
         collection = new Collection('Car');
         Car = collection.model('Car', {
             id: 'id',

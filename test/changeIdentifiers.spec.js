@@ -10,7 +10,7 @@ describe('change identifiers', function () {
     var car;
 
     beforeEach(function (done) {
-        s.reset(true);
+        s.reset();
         collection = new Collection('myCollection');
         carMapping = collection.model('Car', {
             id: 'id',

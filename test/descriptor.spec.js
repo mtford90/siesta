@@ -10,7 +10,7 @@ describe('request descriptor', function () {
     var collection, carMapping, personMapping;
 
     beforeEach(function (done) {
-        s.reset(true);
+        s.reset();
         collection = new Collection('myCollection');
         carMapping = collection.model('Car', {
             id: 'id',

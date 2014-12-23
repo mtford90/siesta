@@ -9,7 +9,7 @@ describe('mapping queries', function() {
     var cache = require('../../core/cache');
 
     beforeEach(function() {
-        s.reset(true);
+        s.reset();
     });
 
     describe('queries', function() {

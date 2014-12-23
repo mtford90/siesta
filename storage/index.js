@@ -121,7 +121,6 @@ function save(callback) {
 }
 
 siesta.on('Siesta', function (n) {
-    console.log('storage module received change');
     var changedObject = n.obj,
         ident = changedObject._id;
     if (!changedObject) {
@@ -144,7 +143,7 @@ var storage = {
             if (!err) {
                 pouch = new PouchDB(DB_NAME);
             }
-            cb(err);
+            if (typeof(cb) == 'function') cb(err);
         })
     }
 };

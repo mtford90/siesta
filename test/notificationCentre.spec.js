@@ -6,7 +6,7 @@ var notificationCentre = require('../core/notificationCentre').notificationCentr
 
 describe('Notification Centre', function () {
     beforeEach(function () {
-        s.reset(true);
+        s.reset();
     });
 
     describe('emissions', function () {

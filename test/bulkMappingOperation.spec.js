@@ -65,7 +65,7 @@ describe('array flattening', function () {
 describe('bulk mapping operation', function () {
     describe('general', function () {
         beforeEach(function (done) {
-            s.reset(true);
+            s.reset();
 
             collection = new Collection('MyCollection');
             collection.baseURL = 'https://api.github.com';
@@ -442,7 +442,7 @@ describe('bulk mapping operation', function () {
         var op;
 
         beforeEach(function (done) {
-            s.reset(true);
+            s.reset();
             collection = new Collection('MyCollection');
             collection.baseURL = 'https://api.github.com';
             Repo = collection.model('Repo', {

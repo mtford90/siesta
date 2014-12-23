@@ -10,7 +10,7 @@ describe('serialisers', function() {
 
 
     beforeEach(function() {
-        s.reset(true);
+        s.reset();
     });
 
     describe('id serialiser', function() {

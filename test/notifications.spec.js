@@ -9,7 +9,7 @@ describe('notifications', function() {
     notificationCentre = require('../core/notificationCentre').notificationCentre;
 
     beforeEach(function() {
-        s.reset(true);
+        s.reset();
     });
 
     var car;
@@ -392,7 +392,7 @@ describe('notifications', function() {
 
 
         beforeEach(function(done) {
-            s.reset(true);
+            s.reset();
             done();
         });
 

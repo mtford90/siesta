@@ -10,7 +10,7 @@ describe('mapping relationships', function() {
 
 
     beforeEach(function() {
-        s.reset(true);
+        s.reset();
     });
 
     var collection, carMapping, personMapping;

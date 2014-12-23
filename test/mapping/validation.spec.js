@@ -5,7 +5,7 @@ describe('mapping validation', function () {
     var Mapping =  require('../../core/mapping').Mapping;
 
     beforeEach(function () {
-        s.reset(true);
+        s.reset();
     });
 
     describe('validation', function () {

@@ -6,7 +6,7 @@ var Query = require('../core/query').Query,
     Collection = require('../core/collection').Collection;
 
 
-describe.only('storage', function () {
+describe('storage', function () {
 
     beforeEach(function (done) {
         s.reset(done);
