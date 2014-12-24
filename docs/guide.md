@@ -348,38 +348,105 @@ Siesta features a paginator for managing responses from paginated endpoints.
 
 `Model.paginator(paginatorSettings, ajaxSettings)` creates a paginator object for managing and mapping responses from paginated endpoints. `ajaxSettings` follows the same format as the HTTP methods (i.e. whatever ajax function you specify via `siesta.setAjax` or jQuery by default.
 
+### Configuration
+
 The defaults are as follows:
 
 ```js
-var paginatorSettings = {
-	pageParam: 'page',
-	useQueryParams: true,
-	pageSizeParam: 'pageSize'
-};
-var ajaxSettings = {
-	type: 'GET'
-};
-var paginator = GitHub.paginator(paginatorSettings, ajaxSettings);
+var paginator = Model.paginator({
+	path: null,
+	paginator: {
+		request: {
+    		page: 'page',
+        	queryParams: true, // Place params in URL as query params. If false will be placed in body instead e.g. POST body
+        	pageSize: 'pageSize'
+    	},
+    	response: {
+    		numPages: 'numPages',
+    		data: 'data',
+    		count: 'count'
+    	}
+	},
+	ajax: {
+		type: 'GET',
+        dataType: 'json'
+	}
+});
 ```
 
-`paginator.getPage(page, optionsOrCallback, callback)` returns objects on a specific page.
+If our models are nested we can do the following:
 
 ```js
-paginator.getPage(4)
+paginator = Model.paginator({
+	response: {
+		data: 'path.to.data'
+	}
+})
+```
+
+We could also define a function instead:
+
+```js
+paginator = Model.paginator({
+	response: {
+		data: function (response, jqXHR) {
+    		return responseData.path.to.data;
+    	}
+	}
+});
+```
+
+Same with numPages and count:
+
+```js
+paginator = Model.paginator({
+	response: {
+		numPages: function (response, jqXHR) {
+    		return jqXHR.getResponseHeader('X-Num-Pages');
+    	},
+    	count: function (response, jqXHR) {
+    		return response.data.total_count;
+    	}
+	}
+});
+```
+
+The below demonstrates the flexibility of the paginator against the GitHub API which makes use of the `Link` response header and described [here](https://developer.github.com/guides/traversing-with-pagination/)
+
+```js
+paginator = GitHub.paginator({
+	ajax: {
+		path: 'search/code?q=addClass+user:mozilla'
+	},
+	paginator: {
+		request: {
+			pageSize: 'per_page'
+		},
+		response: {
+			count: 'total_count',
+			numPages: function (response, jqXHR) {
+				var links = parseLinkHeader(jqXHR.getResponseHeader('Link')),
+					lastURI = links['last'],
+					queryParams = parseQueryParams(lastURI);
+				return queryParams['page'];
+        	},
+        	data: 'items'
+		}
+
+	}
+})
+```
+
+###  Usage
+
+`paginator.page(page, optionsOrCallback, callback)` returns objects on a specific page.
+
+```js
+paginator.page(4)
 	.then(function (objects) {
 		// objects is the list of objects returned from the endpoint
 	});
 ```
-
-```js
-paginator.getPage(2, {cached: true})
-	.then(function (objects) {
-		// objects is the last page of objects received from the endpoint, cached by the paginator.
-	});
-```
-
-
-
 
 <a id="mappingData"></a>
 ## Model data without HTTP requests

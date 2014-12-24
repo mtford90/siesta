@@ -162,8 +162,8 @@ Object.defineProperty(siesta.ext, 'storageEnabled', {
 
 /**
  * Creates and registers a new Collection.
- * @param  {[String]} name
- * @param  {[Object]} [opts]
+ * @param  {String} name
+ * @param  {Object} [opts]
  * @return {Collection}
  */
 siesta.collection = function (name, opts) {
