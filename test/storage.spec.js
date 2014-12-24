@@ -233,6 +233,8 @@ describe('storage', function () {
                                     assert.equal(blackCar.name, 'Bentley');
                                     assert.ok(blackCar._rev);
                                     assert.ok(blackCar._id);
+                                    assert.equal(redCar.owner._id, 'xyz');
+                                    assert.equal(blackCar.owner._id, 'xyz');
                                     done();
                                 }).catch(done).done();
                             }).catch(done).done();
@@ -241,7 +243,108 @@ describe('storage', function () {
                     })
                     .catch(done)
                     .done();
-            })
+            });
+
+            it('manytomany', function (done) {
+                collection = new Collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owners: {
+                            model: 'Person',
+                            type: 'ManyToMany',
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                Person = collection.model('Person', {
+                    attributes: ['name', 'age']
+                });
+                collection.install()
+                    .then(function () {
+                        s.ext.storage._pouch.bulkDocs([
+                            {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin', owners: ['xyz'], _id: 'abc'},
+                            {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley', owners: ['xyz'], _id: 'def'},
+                            {collection: 'myCollection', model: 'Person', name: 'Michael', age: 24, _id: 'xyz', cars: ['abc', 'def']},
+                            {collection: 'myCollection', model: 'Person', name: 'Bob', age: 24, _id: 'xyz', cars: ['abc']}
+                        ]).then(function () {
+                            s.ext.storage._load().then(function () {
+                                assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+                                Car.all().execute().then(function (cars) {
+                                    assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                                    var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
+                                        blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                                    assert.equal(redCar.colour, 'red');
+                                    assert.equal(redCar.name, 'Aston Martin');
+                                    assert.ok(redCar._rev);
+                                    assert.ok(redCar._id);
+                                    assert.equal(blackCar.colour, 'black');
+                                    assert.equal(blackCar.name, 'Bentley');
+                                    assert.ok(blackCar._rev);
+                                    assert.ok(blackCar._id);
+                                    assert.include(_.pluck(redCar.owners, '_id'), 'xyz');
+                                    assert.include(_.pluck(blackCar.owners, '_id'), 'xyz');
+                                    done();
+                                }).catch(done).done();
+                            }).catch(done).done();
+                        }).catch(done);
+
+                    })
+                    .catch(done)
+                    .done();
+            });
+
+            it('onetoone', function (done) {
+                collection = new Collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            model: 'Person',
+                            type: 'OneToOne',
+                            reverse: 'car'
+                        }
+                    }
+                });
+                Person = collection.model('Person', {
+                    attributes: ['name', 'age']
+                });
+                collection.install()
+                    .then(function () {
+                        s.ext.storage._pouch.bulkDocs([
+                            {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin', owner: 'xyz', _id: 'abc'},
+                            {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley', owner: 'xyz', _id: 'def'},
+                            {collection: 'myCollection', model: 'Person', name: 'Michael', age: 24, _id: 'xyz', car: 'def'}
+                        ]).then(function () {
+                            s.ext.storage._load().then(function () {
+                                assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+                                Car.all().execute().then(function (cars) {
+                                    assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                                    var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
+                                        blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                                    assert.equal(redCar.colour, 'red');
+                                    assert.equal(redCar.name, 'Aston Martin');
+                                    assert.ok(redCar._rev);
+                                    assert.ok(redCar._id);
+                                    assert.equal(blackCar.colour, 'black');
+                                    assert.equal(blackCar.name, 'Bentley');
+                                    assert.ok(blackCar._rev);
+                                    assert.ok(blackCar._id);
+                                    assert.notOk(redCar.owner);
+                                    assert.equal(blackCar.owner._id, 'xyz');
+                                    done();
+                                }).catch(done).done();
+                            }).catch(done).done();
+                        }).catch(done);
+                    })
+                    .catch(done)
+                    .done();
+            });
+
+
+
+
+
         })
 
 

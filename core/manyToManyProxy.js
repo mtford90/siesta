@@ -125,7 +125,7 @@ _.extend(ManyToManyProxy.prototype, {
         }
         return null;
     },
-    set: function (obj) {
+    set: function (obj, opts) {
         proxy.checkInstalled.call(this);
         var self = this;
         if (obj) {
@@ -134,15 +134,15 @@ _.extend(ManyToManyProxy.prototype, {
                 return errorMessage;
             }
             else {
-                proxy.clearReverseRelated.call(this);
-                proxy.set.call(self, obj);
+                proxy.clearReverseRelated.call(this, opts);
+                proxy.set.call(self, obj, opts);
                 this.wrapArray(obj);
-                proxy.setReverse.call(self, obj);
+                proxy.setReverse.call(self, obj, opts);
             }
         }
         else {
-            proxy.clearReverseRelated.call(this);
-            proxy.set.call(self, obj);
+            proxy.clearReverseRelated.call(this, opts);
+            proxy.set.call(self, obj), opts;
         }
     },
     install: function (obj) {
