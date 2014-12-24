@@ -331,7 +331,13 @@ siesta.install = function (callback) {
             callback(err);
         }
         else {
-            callback();
+            if (siesta.ext.storageEnabled) {
+                // Load models from PouchDB.
+                siesta.ext.storage._load(callback);
+            }
+            else {
+                callback();
+            }
         }
     });
     return deferred ? deferred.promise : null;

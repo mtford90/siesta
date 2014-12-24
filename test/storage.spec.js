@@ -26,7 +26,7 @@ describe('storage', function () {
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
-                s.install(done);
+                collection.install(done);
             });
 
             it('storage', function (done) {
@@ -67,7 +67,7 @@ describe('storage', function () {
                     attributes: ['age', 'name']
 
                 });
-                s.install(done);
+                collection.install(done);
             });
 
             it('onetomany', function (done) {
@@ -107,7 +107,7 @@ describe('storage', function () {
             Car = collection.model('Car', {
                 attributes: ['colour', 'name']
             });
-            s.install()
+            collection.install()
                 .then(Car.map({colour: 'black', name: 'bentley', id: 2}))
                 .then(done)
                 .catch(done)
@@ -158,6 +158,7 @@ describe('storage', function () {
     });
 
     describe('load', function () {
+
         describe('attributes only', function () {
             var collection, Car;
 
@@ -166,7 +167,7 @@ describe('storage', function () {
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
-                s.install(done);
+                collection.install(done);
             });
             it('abc', function (done) {
                 s.ext.storage._pouch.bulkDocs([
@@ -195,6 +196,8 @@ describe('storage', function () {
         });
 
         describe('relationships', function () {
+
+
             var collection, Car, Person;
 
             describe('one-to-many', function () {
@@ -213,7 +216,7 @@ describe('storage', function () {
                     Person = collection.model('Person', {
                         attributes: ['name', 'age']
                     });
-                    s.install()
+                    collection.install()
                         .then(function () {
                             s.ext.storage._pouch.bulkDocs([
                                 {
@@ -305,7 +308,7 @@ describe('storage', function () {
                 Person = collection.model('Person', {
                     attributes: ['name', 'age']
                 });
-                s.install()
+                collection.install()
                     .then(function () {
                         s.ext.storage._pouch.bulkDocs([
                             {
@@ -382,7 +385,7 @@ describe('storage', function () {
                 Person = collection.model('Person', {
                     attributes: ['name', 'age']
                 });
-                s.install()
+                collection.install()
                     .then(function () {
                         s.ext.storage._pouch.bulkDocs([
                             {
@@ -436,6 +439,83 @@ describe('storage', function () {
             });
 
         });
+
+        describe('load on install', function () {
+            var collection, Car, Person;
+
+            beforeEach(function (done) {
+
+                collection = s.collection('myCollection');
+                Car = collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            model: 'Person',
+                            type: 'OneToMany',
+                            reverse: 'cars'
+                        }
+                    }
+                });
+                Person = collection.model('Person', {
+                    attributes: ['name', 'age']
+                });
+
+                s.ext.storage._pouch.bulkDocs([
+                    {
+                        collection: 'myCollection',
+                        model: 'Car',
+                        colour: 'red',
+                        name: 'Aston Martin',
+                        owner: 'xyz',
+                        _id: 'abc'
+                    },
+                    {
+                        collection: 'myCollection',
+                        model: 'Car',
+                        colour: 'black',
+                        name: 'Bentley',
+                        owner: 'xyz',
+                        _id: 'def'
+                    },
+                    {
+                        collection: 'myCollection',
+                        model: 'Person',
+                        name: 'Michael',
+                        age: 24,
+                        _id: 'xyz',
+                        cars: ['abc', 'def']
+                    }
+                ])
+                    .then(function () {
+                        s.install()
+                            .then(function () {
+                                done();
+                            })
+                            .catch(done)
+                            .done();
+                    })
+                    .catch(done);
+
+
+            });
+
+            it('cars', function (done) {
+                Car.all().execute().then(function (cars) {
+                    assert.equal(cars.length, 2);
+                    done();
+                }).catch(done).done();
+            });
+
+            it('people', function (done) {
+                Person.all().execute().then(function (people) {
+                    assert.equal(people.length, 1);
+                    done();
+                }).catch(done).done();
+            });
+
+        });
+
+
 
     });
 
@@ -514,6 +594,6 @@ describe('storage', function () {
         });
 
 
-    })
+    });
 
 });
