@@ -6,7 +6,7 @@ var Query = require('../core/query').Query,
     Collection = require('../core/collection').Collection;
 
 
-describe.only('storage', function () {
+describe('storage', function () {
 
     before(function () {
         s.ext.storageEnabled = true;
@@ -216,7 +216,7 @@ describe.only('storage', function () {
                     .then(function () {
                         s.ext.storage._pouch.bulkDocs([
                             {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin', owner: 'xyz', _id: 'abc'},
-                            {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley', owner: 'xyz', id: 'def'},
+                            {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley', owner: 'xyz', _id: 'def'},
                             {collection: 'myCollection', model: 'Person', name: 'Michael', age: 24, _id: 'xyz', cars: ['abc', 'def']}
                         ]).then(function () {
                             s.ext.storage._load().then(function () {

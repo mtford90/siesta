@@ -104,7 +104,6 @@ _.extend(OneToManyProxy.prototype, {
                     self.clearReverse(removed);
                     self.setReverse(added);
                     var model = proxy.getForwardModel.call(self);
-                    console.log('shit');
                     coreChanges.registerChange({
                         collection: model.collection,
                         model: model.type,

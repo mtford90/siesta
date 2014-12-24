@@ -218,7 +218,6 @@ function checkInstalled() {
 function set(obj, opts) {
     opts = opts || {};
     if (!opts.disableNotifications) {
-        console.log('uhoh');
         registerSetChange.call(this, obj);
     }
     if (obj) {

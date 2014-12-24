@@ -130,7 +130,6 @@ function save(callback) {
 }
 
 var listener = function (n) {
-    console.log('notif' + n.type);
     var changedObject = n.obj,
         ident = changedObject._id;
     if (!changedObject) {

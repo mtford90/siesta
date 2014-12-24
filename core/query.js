@@ -24,7 +24,6 @@ function Query(model, opts) {
 _.extend(Query, {
     comparators: {
         e: function (opts) {
-            console.log('e', opts.field);
             return opts.object[opts.field] == opts.value;
         },
         lt: function (opts) {
