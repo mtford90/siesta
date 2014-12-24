@@ -38,6 +38,16 @@ function ModelInstance(model) {
         enumerable: true,
         configurable: true
     });
+
+    Object.defineProperty(this, 'dirty', {
+        get: function () {
+            if (siesta.ext.storageEnabled) {
+                return self._id in siesta.ext.storage._unsavedObjectsHash;
+            }
+            else return undefined;
+        },
+        enumerable: true
+    });
     this.removed = false;
 }
 

@@ -55,7 +55,6 @@ function Model(opts) {
     });
 
 
-
     /**
      * @name type
      * @type {String}
@@ -148,6 +147,19 @@ function Model(opts) {
         },
         enumerable: true
     });
+
+    Object.defineProperty(this, 'dirty', {
+        get: function () {
+            if (siesta.ext.storageEnabled) {
+                var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
+                    hash = (unsavedObjectsByCollection[this.collection] || {})[this.type] || {};
+                return !!Object.keys(hash).length;
+            }
+            else return undefined;
+        },
+        enumerable: true
+    });
+
 
 }
 
@@ -279,7 +291,7 @@ _.extend(Model.prototype, {
                 if (err) callback(err);
                 if (objs.length > 1) {
                     throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
-                        'This is a serious error, please file a bug report.');
+                    'This is a serious error, please file a bug report.');
                 } else if (objs.length) {
                     callback(null, objs[0]);
                 } else {
@@ -349,9 +361,9 @@ _.extend(Model.prototype, {
      * Map data into Siesta.
      *
      * @param data Raw data received remotely or otherwise
-     * @param {function|object} optsOrCallback
+     * @param {function|object} [optsOrCallback]
      * @param {boolean} optsOrCallback.override
-     * @param {function} callback Called once pouch persistence returns.
+     * @param {function} [callback] Called once pouch persistence returns.
      */
     map: function (data, optsOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;
@@ -614,7 +626,7 @@ _.extend(Model.prototype, {
         var model = collection.model(opts.name, opts);
         model.parent = this;
         this.children.push(model);
-        return  model;
+        return model;
     },
     isChildOf: function (parent) {
         return this.parent == parent;
@@ -630,7 +642,7 @@ _.extend(Model.prototype, {
         }
         return false;
     },
-    isAncestorOf: function(descendant) {
+    isAncestorOf: function (descendant) {
         return this.descendants.indexOf(descendant) > -1;
     }
 });

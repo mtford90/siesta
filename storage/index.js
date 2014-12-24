@@ -9,6 +9,7 @@ if (typeof PouchDB == 'undefined') {
 var DB_NAME = 'siesta';
 var unsavedObjects = [],
     unsavedObjectsHash = {},
+    unsavedObjectsByCollection = {},
     _i = siesta._internal,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
@@ -109,6 +110,7 @@ function save(callback) {
     var objects = unsavedObjects;
     unsavedObjects = [];
     unsavedObjectsHash = {};
+    unsavedObjectsByCollection = {};
     pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
         for (var i = 0; i < resp.length; i++) {
             var response = resp[i];
@@ -138,6 +140,15 @@ var listener = function (n) {
     if (!(ident in unsavedObjectsHash)) {
         unsavedObjectsHash[ident] = changedObject;
         unsavedObjects.push(changedObject);
+        var collectionName = changedObject.collection;
+        if (!unsavedObjectsByCollection[collectionName]) {
+            unsavedObjectsByCollection[collectionName] = {};
+        }
+        var modelName = changedObject.model.type;
+        if (!unsavedObjectsByCollection[collectionName][modelName]) {
+            unsavedObjectsByCollection[collectionName][modelName] = {};
+        }
+        unsavedObjectsByCollection[collectionName][modelName][ident] = changedObject;
     }
 };
 siesta.on('Siesta', listener);
@@ -164,6 +175,16 @@ var storage = {
 Object.defineProperty(storage, '_unsavedObjects', {
     get: function () {return unsavedObjects}
 });
+
+Object.defineProperty(storage, '_unsavedObjectsHash', {
+    get: function () {return unsavedObjectsHash}
+});
+
+Object.defineProperty(storage, '_unsavedObjectsByCollection', {
+    get: function () {return unsavedObjectsByCollection}
+});
+
+
 
 Object.defineProperty(storage, '_pouch', {
     get: function () {return pouch}

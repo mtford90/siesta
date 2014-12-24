@@ -270,6 +270,18 @@ Object.defineProperty(siesta.serialisers, 'depth', {
     }
 });
 
+
+Object.defineProperty(siesta, 'dirty', {
+    get: function () {
+        if (siesta.ext.storageEnabled) {
+            var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
+            return !!Object.keys(unsavedObjectsByCollection).length;
+        }
+        else return undefined;
+    },
+    enumerable: true
+});
+
 // * `siesta.map` is equivalent to [_.map](http://underscorejs.org/#map)
 // * `siesta.each` is equivalent to [_.each](http://underscorejs.org/#each)
 // * `siesta.partial` is equivalent to [_.partial](http://underscorejs.org/#partial)

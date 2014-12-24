@@ -70,6 +70,18 @@ function Collection(name) {
             return self._name;
         }
     });
+
+    Object.defineProperty(this, 'dirty', {
+        get: function () {
+            if (siesta.ext.storageEnabled) {
+                var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
+                    hash = unsavedObjectsByCollection[this.name] || {};
+                return !!Object.keys(hash).length;
+            }
+            else return undefined;
+        },
+        enumerable: true
+    });
 }
 
 

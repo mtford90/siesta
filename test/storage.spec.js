@@ -377,7 +377,7 @@ describe('storage', function () {
                             type: 'OneToOne',
                             reverse: 'car'
                         }
-                    }  
+                    }
                 });
                 Person = collection.model('Person', {
                     attributes: ['name', 'age']
@@ -438,4 +438,82 @@ describe('storage', function () {
         });
 
     });
+
+    describe('inspection', function () {
+        var MyCollection, Car, Person, car, person, MyOtherModel, MyOtherCollection;
+        beforeEach(function (done) {
+            MyCollection = new Collection('MyCollection');
+            MyOtherCollection = new Collection('MyOtherCollection');
+            Car = MyCollection.model('Car', {
+                attributes: ['colour', 'name']
+            });
+            Person = MyCollection.model('Person', {
+                attributes: ['age', 'name']
+            });
+            MyOtherModel = MyOtherCollection.model('MyOtherModel', {
+                attributes: ['attr']
+            });
+            MyCollection.install()
+                .then(Car.map({colour: 'black', name: 'bentley', id: 2})
+                    .then(function (_car) {
+                        car = _car;
+                        Person.map({name: 'Michael', age: 24})
+                            .then(function (_person) {
+                                person = _person;
+                                done();
+                            });
+                    }).catch(done).done())
+                .then(MyOtherCollection.install())
+                .catch(done)
+                .done();
+        });
+
+        it('global dirtyness', function (done) {
+            assert.ok(siesta.dirty);
+            siesta.save().then(function () {
+                assert.notOk(siesta.dirty);
+                done();
+            }).catch(done).done();
+        });
+
+        it('collection dirtyness', function (done) {
+            assert.ok(MyCollection.dirty);
+            siesta.save().then(function () {
+                assert.notOk(MyCollection.dirty);
+                MyOtherModel.map({attr: 'xyz'})
+                    .then(function () {
+                        assert.notOk(MyCollection.dirty);
+                        assert.ok(MyOtherCollection.dirty);
+                        done();
+                    })
+                    .catch(done)
+                    .done();
+            }).catch(done).done();
+        });
+
+        it('model dirtyness', function (done) {
+            assert.ok(Car.dirty);
+            siesta.save().then(function () {
+                assert.notOk(Car.dirty);
+                person.name = 'bob';
+                assert.ok(Person.dirty);
+                assert.notOk(Car.dirty);
+                done();
+            }).catch(done).done();
+        });
+
+        it('model instance dirtyness', function (done) {
+            assert.ok(car.dirty);
+            siesta.save().then(function () {
+                assert.notOk(car.dirty);
+                person.name = 'bob';
+                assert.ok(person.dirty);
+                assert.notOk(car.dirty);
+                done();
+            }).catch(done).done();
+        });
+
+
+    })
+
 });
