@@ -76,7 +76,7 @@ function Collection(name) {
 _.extend(Collection.prototype, {
     /**
      * Ensure mappings are installed.
-     * @param callback
+     * @param [callback]
      * @class Collection
      */
     install: function (callback) {
