@@ -399,7 +399,8 @@ var http = {
     POST: POST,
     PUT: PUT,
     PATCH: PATCH,
-    _serialiseObject: _serialiseObject
+    _serialiseObject: _serialiseObject,
+    Paginator: require('./paginator')
 };
 
 Object.defineProperty(http, 'ajax', {

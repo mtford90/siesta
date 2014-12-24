@@ -342,6 +342,45 @@ Siesta currently supports jQuery style ajax functions. This can be configured as
 siesta.setAjax(zepto.ajax);
 ```
 
+## Paginator
+
+Siesta features a paginator for managing responses from paginated endpoints.
+
+`Model.paginator(paginatorSettings, ajaxSettings)` creates a paginator object for managing and mapping responses from paginated endpoints. `ajaxSettings` follows the same format as the HTTP methods (i.e. whatever ajax function you specify via `siesta.setAjax` or jQuery by default.
+
+The defaults are as follows:
+
+```js
+var paginatorSettings = {
+	pageParam: 'page',
+	useQueryParams: true,
+	pageSizeParam: 'pageSize'
+};
+var ajaxSettings = {
+	type: 'GET'
+};
+var paginator = GitHub.paginator(paginatorSettings, ajaxSettings);
+```
+
+`paginator.getPage(page, optionsOrCallback, callback)` returns objects on a specific page.
+
+```js
+paginator.getPage(4)
+	.then(function (objects) {
+		// objects is the list of objects returned from the endpoint
+	});
+```
+
+```js
+paginator.getPage(2, {cached: true})
+	.then(function (objects) {
+		// objects is the last page of objects received from the endpoint, cached by the paginator.
+	});
+```
+
+
+
+
 <a id="mappingData"></a>
 ## Model data without HTTP requests
 
