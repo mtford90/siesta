@@ -18,7 +18,7 @@ describe('collection setup', function() {
     describe('install', function() {
         var collection;
         beforeEach(function() {
-            collection = new Collection('MyCollection');
+            collection = s.collection('MyCollection');
         });
 
         it('not installed', function() {

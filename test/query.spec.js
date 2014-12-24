@@ -15,7 +15,7 @@ describe('query...', function () {
         var collection, mapping;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             mapping = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -97,7 +97,7 @@ describe('query...', function () {
             var collection, personMapping, carMapping;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -208,7 +208,7 @@ describe('query...', function () {
             var collection, personMapping, carMapping;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -356,7 +356,7 @@ describe('query...', function () {
             var collection, personMapping, carMapping;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -455,7 +455,7 @@ describe('query...', function () {
             var collection, personMapping, carMapping;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -554,7 +554,7 @@ describe('query...', function () {
             var collection, personMapping, carMapping;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -651,7 +651,7 @@ describe('query...', function () {
 
         describe('errors', function () {
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 personMapping = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -702,7 +702,7 @@ describe('query...', function () {
     describe('order', function () {
         var collection, Person;
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -774,7 +774,7 @@ describe('query...', function () {
     describe('$or', function () {
         var collection, Person;
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -854,7 +854,7 @@ describe('query...', function () {
     describe('$and', function () {
         var collection, Person;
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -911,7 +911,7 @@ describe('query...', function () {
     describe('nested', function () {
         var collection, Car, Person;
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['name', 'colour'],

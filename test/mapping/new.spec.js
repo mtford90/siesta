@@ -23,7 +23,7 @@ describe('mapping new object', function () {
         var collection, carMapping;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -78,7 +78,7 @@ describe('mapping new object', function () {
         var collection, carMapping, personMapping;
 
         function configureAPI(type, reverseName, done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],

@@ -19,7 +19,7 @@ describe('intercoll relationships', function () {
     var collection, carMapping, personMapping;
 
     function configureAPI(type, done) {
-        collection = new Collection('myCollection');
+        collection = s.collection('myCollection');
         carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
@@ -53,7 +53,7 @@ describe('intercoll relationships', function () {
 
         describe('foreign key', function () {
             beforeEach(function (done) {
-                anotherCollection = new Collection('anotherCollection');
+                anotherCollection = s.collection('anotherCollection');
 
                 anotherCollection.model('AnotherMapping', {
                     attributes: ['field'],

@@ -15,7 +15,7 @@ describe('request descriptor', function () {
 
     beforeEach(function (done) {
         s.reset(function () {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carModel = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],

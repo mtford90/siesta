@@ -14,7 +14,7 @@ describe('Models', function () {
 
     beforeEach(function (done) {
         s.reset(function () {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             mapping = collection.model({
                 name: 'Car',
                 id: 'id',

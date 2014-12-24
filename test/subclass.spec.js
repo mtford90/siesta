@@ -18,7 +18,7 @@ describe('Subclass', function () {
 
         beforeEach(function (done) {
             s.reset(function (){
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
 
                 Car = collection.model('Car', {
                     id: 'id',
@@ -47,7 +47,7 @@ describe('Subclass', function () {
 
         beforeEach(function (done) {
             s.reset(function () {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
 
                 Car = collection.model('Car', {
                     id: 'id',
@@ -82,7 +82,7 @@ describe('Subclass', function () {
         describe('names', function () {
             beforeEach(function (done) {
                 s.reset(function () {
-                    collection = new Collection('myCollection');
+                    collection = s.collection('myCollection');
                     Car = collection.model('Car', {
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -118,7 +118,7 @@ describe('Subclass', function () {
             describe('OneToMany', function () {
                 beforeEach(function (done) {
                     s.reset(function () {
-                        collection = new Collection('myCollection');
+                        collection = s.collection('myCollection');
                         Car = collection.model('Car', {
                             attributes: ['colour', 'name'],
                             relationships: {
@@ -168,7 +168,7 @@ describe('Subclass', function () {
             describe('OneToOne', function () {
                 beforeEach(function (done) {
                     s.reset(function () {
-                        collection = new Collection('myCollection');
+                        collection = s.collection('myCollection');
                         Car = collection.model('Car', {
                             attributes: ['colour', 'name'],
                             relationships: {
@@ -221,7 +221,7 @@ describe('Subclass', function () {
             describe('ManyToMany', function () {
                 beforeEach(function (done) {
                     s.reset(function () {
-                        collection = new Collection('myCollection');
+                        collection = s.collection('myCollection');
                         Car = collection.model('Car', {
                             attributes: ['colour', 'name'],
                             relationships: {
@@ -279,7 +279,7 @@ describe('Subclass', function () {
 
         beforeEach(function (done) {
             s.reset(function () {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
 
                 Car = collection.model('Car', {
                     id: 'id',
@@ -345,7 +345,7 @@ describe('Subclass', function () {
 
         beforeEach(function (done) {
             s.reset(function () {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
 
                 Car = collection.model('Car', {
                     id: 'id',

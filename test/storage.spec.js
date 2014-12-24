@@ -22,7 +22,7 @@ describe('storage', function () {
             var collection, Car;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
@@ -52,7 +52,7 @@ describe('storage', function () {
             var collection, Car, Person;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -103,7 +103,7 @@ describe('storage', function () {
         var collection, Car;
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             Car = collection.model('Car', {
                 attributes: ['colour', 'name']
             });
@@ -162,7 +162,7 @@ describe('storage', function () {
             var collection, Car;
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
@@ -199,7 +199,7 @@ describe('storage', function () {
 
             describe('one-to-many', function () {
                 beforeEach(function (done) {
-                    collection = new Collection('myCollection');
+                    collection = s.collection('myCollection');
                     Car = collection.model('Car', {
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -291,7 +291,7 @@ describe('storage', function () {
 
 
             it('manytomany', function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -368,7 +368,7 @@ describe('storage', function () {
             });
 
             it('onetoone', function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -442,8 +442,8 @@ describe('storage', function () {
     describe('inspection', function () {
         var MyCollection, Car, Person, car, person, MyOtherModel, MyOtherCollection;
         beforeEach(function (done) {
-            MyCollection = new Collection('MyCollection');
-            MyOtherCollection = new Collection('MyOtherCollection');
+            MyCollection = s.collection('MyCollection');
+            MyOtherCollection = s.collection('MyOtherCollection');
             Car = MyCollection.model('Car', {
                 attributes: ['colour', 'name']
             });

@@ -34,7 +34,7 @@ describe('notifications', function() {
         describe('set value', function() {
 
             beforeEach(function(done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
@@ -126,7 +126,7 @@ describe('notifications', function() {
 
         describe('array notifications', function() {
             beforeEach(function(done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colours', 'name']
@@ -405,7 +405,7 @@ describe('notifications', function() {
 
             describe('foreign key', function() {
                 beforeEach(function(done) {
-                    collection = new Collection('myCollection');
+                    collection = s.collection('myCollection');
 
                     carMapping = collection.model('Car', {
                         id: 'id',
@@ -615,7 +615,7 @@ describe('notifications', function() {
 
             describe('many to many', function() {
                 beforeEach(function(done) {
-                    collection = new Collection('myCollection');
+                    collection = s.collection('myCollection');
 
                     carMapping = collection.model('Car', {
                         id: 'id',
@@ -797,7 +797,7 @@ describe('notifications', function() {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -876,7 +876,7 @@ describe('notifications', function() {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -955,7 +955,7 @@ describe('notifications', function() {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -1031,7 +1031,7 @@ describe('notifications', function() {
 
     describe('convenience', function () {
         beforeEach(function(done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']

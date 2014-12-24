@@ -33,7 +33,7 @@ describe('http!', function () {
 
 
     function constructCollection() {
-        collection = new Collection('myCollection');
+        collection = s.collection('myCollection');
         personMapping = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -834,7 +834,7 @@ describe('http!', function () {
     // TODO: Why does sinon fuck up?
     //describe('no descriptor matches', function () {
     //    it('GET', function (done) {
-    //        collection = new Collection('myCollection');
+    //        collection = s.collection('myCollection');
     //        personMapping = collection.model('Person', {
     //            id: 'id',
     //            attributes: ['name', 'age']

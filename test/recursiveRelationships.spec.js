@@ -14,7 +14,7 @@ describe('recursive relationships', function() {
 
     beforeEach(function(done) {
         s.reset(function () {
-            collection = new Collection('MyCollection');
+            collection = s.collection('MyCollection');
             collection.baseURL = 'https://api.github.com';
             Repo = collection.model('Repo', {
                 id: 'id',

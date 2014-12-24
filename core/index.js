@@ -93,7 +93,6 @@ siesta.once = _.bind(notificationCentre.once, notificationCentre);
  */
 siesta.removeAllListeners = _.bind(notificationCentre.removeAllListeners, notificationCentre);
 
-siesta.Collection = Collection;
 siesta.RelationshipType = RelationshipType;
 
 // Used by modules.
@@ -124,7 +123,6 @@ siesta._internal = {
 };
 
 siesta.ChangeType = coreChanges.ChangeType;
-siesta.Collection = collection.Collection;
 
 siesta.performanceMonitoringEnabled = false;
 siesta.httpEnabled = false;
@@ -164,8 +162,8 @@ Object.defineProperty(siesta.ext, 'storageEnabled', {
 
 /**
  * Creates and registers a new Collection.
- * @param  {[type]} name
- * @param  {[type]} opts
+ * @param  {[String]} name
+ * @param  {[Object]} [opts]
  * @return {Collection}
  */
 siesta.collection = function (name, opts) {

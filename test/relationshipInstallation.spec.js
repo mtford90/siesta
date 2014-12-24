@@ -18,7 +18,7 @@ describe('mapping relationships', function() {
     var collection, carMapping, personMapping;
 
     function configureAPI(type, done) {
-        collection = new Collection('myCollection');
+        collection = s.collection('myCollection');
         carMapping = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
@@ -128,7 +128,7 @@ describe('mapping relationships', function() {
 
     describe('invalid', function() {
         it('No such mapping', function(done) {
-            var collection = new Collection('myCollection');
+            var collection = s.collection('myCollection');
             collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
@@ -147,7 +147,7 @@ describe('mapping relationships', function() {
         });
 
         it('No such relationship type', function(done) {
-            var collection = new Collection('myCollection');
+            var collection = s.collection('myCollection');
             collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],

@@ -20,7 +20,7 @@ describe('singleton mapping', function () {
     });
     beforeEach(function (done) {
         s.reset(function () {
-            collection = new Collection('Car');
+            collection = s.collection('Car');
             Car = collection.model('Car', {
                 id: 'id',
                 attributes: [
@@ -129,7 +129,7 @@ describe('singleton mapping', function () {
         var MoreComplicatedCollection, ParentConfig,
             FirstChildConfig, SecondChildConfig;
         beforeEach(function (done) {
-            MoreComplicatedCollection = new Collection('MyCollection');
+            MoreComplicatedCollection = s.collection('MyCollection');
             ParentConfig = MoreComplicatedCollection.model('ParentConfig', {
                 relationships: {
                     settings: {

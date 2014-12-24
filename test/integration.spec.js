@@ -24,8 +24,8 @@ describe('intercollection relationships', function() {
 
     beforeEach(function(done) {
         s.reset(function () {
-            myOfflineCollection = new Collection('MyOfflineCollection');
-            myOnlineCollection = new Collection('MyOnlineCollection');
+            myOfflineCollection = s.collection('MyOfflineCollection');
+            myOnlineCollection = s.collection('MyOnlineCollection');
 
             myOfflineCollection.model('Folder', {
                 attributes: ['name'],

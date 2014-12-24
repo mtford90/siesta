@@ -69,7 +69,7 @@ describe('bulk mapping operation', function () {
     describe('general', function () {
         beforeEach(function (done) {
             s.reset(function () {
-                collection = new Collection('MyCollection');
+                collection = s.collection('MyCollection');
                 collection.baseURL = 'https://api.github.com';
                 Repo = collection.model('Repo', {
                     id: 'id',
@@ -428,7 +428,7 @@ describe('bulk mapping operation', function () {
 
         beforeEach(function (done) {
             s.reset(function () {
-                collection = new Collection('MyCollection');
+                collection = s.collection('MyCollection');
                 collection.baseURL = 'https://api.github.com';
                 Repo = collection.model('Repo', {
                     id: 'id',
@@ -552,7 +552,7 @@ describe('bug', function () {
 
     beforeEach(function (done) {
         siesta.reset(function () {
-            coll = new Collection('myCollection');
+            coll = s.collection('myCollection');
             Car = coll.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']

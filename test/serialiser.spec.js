@@ -17,7 +17,7 @@ describe('serialisers', function() {
 
     describe('id serialiser', function() {
         beforeEach(function(done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             personMapping = collection.model('Person', {
                 attributes: ['name', 'age']
             });
@@ -68,7 +68,7 @@ describe('serialisers', function() {
 
     describe('depth serialiser', function() {
         beforeEach(function(done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
 
             personMapping = collection.model('Person', {
                 attributes: ['name', 'age'],

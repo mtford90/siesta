@@ -19,7 +19,7 @@ describe('mapping queries', function() {
     describe('queries', function() {
         var collection, mapping;
         beforeEach(function(done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             mapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['color', 'name']
@@ -82,7 +82,7 @@ describe('mapping queries', function() {
         var collection;
 
         beforeEach(function(done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],

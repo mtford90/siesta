@@ -24,7 +24,7 @@ describe('new object proxy', function() {
 
     beforeEach(function(done) {
         s.reset(function () {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']

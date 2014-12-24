@@ -17,7 +17,7 @@ describe('rest', function () {
     describe('Create Basic Rest API', function () {
 
         beforeEach(function (done) {
-            collection = new Collection('myCollection');
+            collection = s.collection('myCollection');
             collection.install(done);
         });
 
@@ -33,7 +33,7 @@ describe('rest', function () {
         describe('basic', function () {
 
             beforeEach(function (done) {
-                collection = new Collection('myCollection');
+                collection = s.collection('myCollection');
                 collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']

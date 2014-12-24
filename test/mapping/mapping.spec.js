@@ -2,7 +2,7 @@ var s = require('../../core/index')
     , assert = require('chai').assert;
 
 describe('mapping!', function () {
-    var Mapping = require('../../core/model').Model;
+    var Model = require('../../core/model').Model;
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -13,7 +13,7 @@ describe('mapping!', function () {
     });
 
     it('_attributeNames', function () {
-        var m = new Mapping({
+        var m = new Model({
             type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
@@ -25,7 +25,7 @@ describe('mapping!', function () {
     });
 
     it('attributes', function () {
-        var m = new Mapping({
+        var m = new Model({
             type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
@@ -36,7 +36,7 @@ describe('mapping!', function () {
     });
 
     it('type', function () {
-        var m = new Mapping({
+        var m = new Model({
             type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
@@ -45,7 +45,7 @@ describe('mapping!', function () {
     });
 
     it('id', function () {
-        var m = new Mapping({
+        var m = new Model({
             type: 'type',
             id: 'id',
             attributes: ['field1', 'field2']
@@ -55,7 +55,7 @@ describe('mapping!', function () {
 
     describe('methods', function () {
         it('valid', function (done) {
-            var C = new s.Collection('C');
+            var C = s.collection('C');
             var M = C.model('M', {
                 methods: {
                     f: function () {
@@ -77,7 +77,7 @@ describe('mapping!', function () {
 
     describe('statics', function () {
         it('valid', function (done) {
-            var C = new s.Collection('C');
+            var C = s.collection('C');
             var M = C.model('M', {
                 statics: {
                     f: function () {
@@ -93,7 +93,7 @@ describe('mapping!', function () {
         });
 
         it('clash', function (done) {
-            var C = new s.Collection('C');
+            var C = s.collection('C');
             var staticMethod = function () {
                 return 'a';
             };
