@@ -18,7 +18,7 @@ describe('rest', function () {
 
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            collection.install(done);
+            s.install(done);
         });
 
         it('global access', function () {
@@ -38,7 +38,7 @@ describe('rest', function () {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             describe('raw mapping to Model object', function () {

@@ -27,7 +27,7 @@ describe('statistics', function() {
                 id: 'id',
                 attributes: ['age', 'name']
             });
-            coll.install(done);
+            s.install(done);
         });
     });
 

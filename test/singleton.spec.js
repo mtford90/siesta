@@ -29,7 +29,7 @@ describe('singleton mapping', function () {
                 ],
                 singleton: true
             });
-            collection.install(done);
+            s.install(done);
         });
     });
 

@@ -114,7 +114,7 @@ function init(cb) {
     configureCollection();
     configureMappings();
     configureDescriptors();
-    collection.install(function(err) {
+    s.install(function(err) {
         console.log('User', User);
         cb(err);
     });

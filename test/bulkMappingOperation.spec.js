@@ -86,7 +86,7 @@ describe('bulk mapping operation', function () {
                     id: 'id',
                     attributes: ['login']
                 });
-                collection.install(done);
+                s.install(done);
             });
         });
 
@@ -446,7 +446,7 @@ describe('bulk mapping operation', function () {
                     attributes: ['login'],
                     singleton: true
                 });
-                collection.install(done);
+                s.install(done);
             });
         });
 
@@ -558,7 +558,7 @@ describe('bug', function () {
                 attributes: ['colour', 'name']
 
             });
-            coll.install(done);
+            s.install(done);
         });
 
     });

@@ -32,7 +32,7 @@ describe('serialisers', function() {
                     }
                 }
             });
-            collection.install(done);
+            s.install(done);
         });
         it('should return the id if has one', function(done) {
             carMapping.map({
@@ -96,7 +96,7 @@ describe('serialisers', function() {
                 id: 'id',
                 attributes: ['heartRate', 'bloodPressure']
             });
-            collection.install(done);
+            s.install(done);
 
         });
 

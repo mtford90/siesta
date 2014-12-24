@@ -65,7 +65,7 @@ describe('http!', function () {
 
     function configureCollection(callback) {
         constructCollection();
-        collection.install(callback);
+        s.install(callback);
     }
 
 
@@ -867,7 +867,7 @@ describe('http!', function () {
     //            model: carMapping,
     //            path: '/cars/?$'
     //        });
-    //        collection.install(function (err) {
+    //        s.install(function (err) {
     //            if (err) {
     //                done(err);
     //            }

@@ -20,7 +20,7 @@ describe('store......', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(done);
+            s.install(done);
         });
     });
 

@@ -24,7 +24,7 @@ describe('mapping queries', function() {
                 id: 'id',
                 attributes: ['color', 'name']
             });
-            collection.install(function(err) {
+            s.install(function(err) {
                 if (err) done(err);
                 mapping.map([{
                     id: 4,
@@ -98,7 +98,7 @@ describe('mapping queries', function() {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
 
         it('cached', function(done) {

@@ -110,7 +110,7 @@ collection.descriptor({
 Before we can use our collection we need to install it. This will configure the descriptors and mappings, hooking up any relationships and will return an error if anything is incorrect with the declarations.
 
 ```javascript
-collection.install(function (err) {
+s.install(function (err) {
     if (err) { 
         // Handle error.
     }

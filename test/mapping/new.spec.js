@@ -28,7 +28,7 @@ describe('mapping new object', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(done);
+            s.install(done);
         });
 
         it('valid', function () {
@@ -94,7 +94,7 @@ describe('mapping new object', function () {
                 id: 'id',
                 attributes: ['age', 'name']
             });
-            collection.install(done);
+            s.install(done);
         }
 
         beforeEach(function (done) {

@@ -39,7 +39,7 @@ describe('notifications', function() {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
-                collection.install(function(err) {
+                s.install(function(err) {
                     if (err) done(err);
                     carMapping.map({
                         colour: 'red',
@@ -131,7 +131,7 @@ describe('notifications', function() {
                     id: 'id',
                     attributes: ['colours', 'name']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('sends notifications for all levels', function(done) {
@@ -424,7 +424,7 @@ describe('notifications', function() {
                         attributes: ['name', 'age']
                     });
 
-                    collection.install(done);
+                    s.install(done);
                 });
 
                 describe('push', function() {
@@ -634,7 +634,7 @@ describe('notifications', function() {
                         attributes: ['name', 'age']
                     });
 
-                    collection.install(done);
+                    s.install(done);
                 });
 
                 describe('no faults', function() {
@@ -802,7 +802,7 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(function(err) {
+            s.install(function(err) {
                 if (err) done(err);
                 s.on('myCollection:Car', function(n) {
                     if (n.type == ChangeType.New) {
@@ -881,7 +881,7 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(function(err) {
+            s.install(function(err) {
                 if (err) done(err);
                 carMapping.map({
                     colour: 'red',
@@ -960,7 +960,7 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(function(err) {
+            s.install(function(err) {
                 if (err) done(err);
                 carMapping.map({
                     colour: 'red',
@@ -1036,7 +1036,7 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(done);
+            s.install(done);
         });
         it('collection', function (done) {
             var listener;

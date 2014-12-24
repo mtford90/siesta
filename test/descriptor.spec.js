@@ -31,7 +31,7 @@ describe('request descriptor', function () {
                 id: 'id',
                 attributes: ['name']
             });
-            collection.install(done);
+            s.install(done);
         });
     });
 

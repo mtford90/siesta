@@ -20,7 +20,7 @@ describe('query...', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
         it('object exists', function (done) {
             mapping.map({
@@ -113,7 +113,7 @@ describe('query...', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             describe('attributes', function () {
@@ -213,7 +213,7 @@ describe('query...', function () {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('null shouldnt match', function (done) {
@@ -361,7 +361,7 @@ describe('query...', function () {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('matches all', function (done) {
@@ -460,7 +460,7 @@ describe('query...', function () {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('matches all', function (done) {
@@ -559,7 +559,7 @@ describe('query...', function () {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('matches all', function (done) {
@@ -667,7 +667,7 @@ describe('query...', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('invalid op', function (done) {
@@ -707,7 +707,7 @@ describe('query...', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
 
         it('descending order', function (done) {
@@ -779,7 +779,7 @@ describe('query...', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
         it('simple', function (done) {
             Person.map([
@@ -859,7 +859,7 @@ describe('query...', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
         it('simple', function (done) {
             Person.map([
@@ -927,7 +927,7 @@ describe('query...', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
 
         it('nested equals', function (done) {

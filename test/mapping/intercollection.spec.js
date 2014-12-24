@@ -35,7 +35,7 @@ describe('intercoll relationships', function () {
             id: 'id',
             attributes: ['name', 'age']
         });
-        collection.install(done);
+        s.install(done);
     }
 
     describe('Inter-collection', function () {

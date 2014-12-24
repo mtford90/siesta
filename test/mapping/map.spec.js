@@ -73,7 +73,7 @@ describe('perform mapping', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(done);
+            s.install(done);
 
         });
         it('empty', function () {
@@ -91,7 +91,7 @@ describe('perform mapping', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(done);
+            s.install(done);
 
         });
         it('xyz', function (done) {
@@ -119,7 +119,7 @@ describe('perform mapping', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(function (err) {
+            s.install(function (err) {
                 if (err) done(err);
                 carMapping.map({
                     colour: 'red',
@@ -216,7 +216,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
             });
 
 
@@ -871,7 +871,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
 
 
             });
@@ -1356,7 +1356,7 @@ describe('perform mapping', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(done);
+            s.install(done);
         });
 
         it('mapping an attribute that doesnt exist', function (done) {
@@ -1393,7 +1393,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('assign array to scalar relationship', function (done) {
@@ -1443,7 +1443,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('assign array to scalar relationship', function (done) {
@@ -1484,7 +1484,7 @@ describe('perform mapping', function () {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
-                    collection.install(done);
+                    s.install(done);
                 });
 
                 it('all valid', function (done) {
@@ -1531,7 +1531,7 @@ describe('perform mapping', function () {
                             }
                         }
                     });
-                    collection.install(done);
+                    s.install(done);
                 });
 
                 it('same owner using _mapBulk', function (done) {
@@ -1612,7 +1612,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                collection.install(done);
+                s.install(done);
             });
 
 

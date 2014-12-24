@@ -19,7 +19,7 @@ describe('change identifiers', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            collection.install(function (err) {
+            s.install(function (err) {
                 if (err) done(err);
                 carMapping.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
                     if (err) done(err);

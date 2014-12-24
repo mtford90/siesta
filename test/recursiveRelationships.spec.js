@@ -27,7 +27,7 @@ describe('recursive relationships', function() {
                     }
                 }
             });
-            collection.install(done);
+            s.install(done);
         });
     });
 

@@ -15,7 +15,7 @@ describe('reactive query', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            collection.install(done);
+            s.install(done);
         });
     });
 

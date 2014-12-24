@@ -312,6 +312,31 @@ siesta.save = function () {
     }
 };
 
+/**
+ * Install all collections.
+ * @param {Function} [callback]
+ * @returns {q.Promise}
+ */
+siesta.install = function (callback) {
+    var deferred = window.q ? window.q.defer() : null;
+    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    var collectionNames = CollectionRegistry.collectionNames,
+        tasks = _.map(collectionNames, function (n) {
+            return function (done) {
+                CollectionRegistry[n].install(done);
+            }
+        });
+    siesta.parallel(tasks, function (err) {
+        if (err) {
+            callback(err);
+        }
+        else {
+            callback();
+        }
+    });
+    return deferred ? deferred.promise : null;
+};
+
 if (typeof window != 'undefined') {
     window.siesta = siesta;
 }

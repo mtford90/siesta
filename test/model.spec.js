@@ -21,7 +21,7 @@ describe('Models', function () {
                 attributes: ['colour', 'name'],
                 collection: 'myCollection'
             });
-            collection.install(done);
+            s.install(done);
         });
     });
 

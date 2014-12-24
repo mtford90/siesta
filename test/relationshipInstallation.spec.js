@@ -34,7 +34,7 @@ describe('mapping relationships', function() {
             id: 'id',
             attributes: ['name', 'age']
         });
-        collection.install(done);
+        s.install(done);
     }
 
     describe('valid', function() {
@@ -140,7 +140,7 @@ describe('mapping relationships', function() {
                     }
                 }
             });
-            collection.install(function(err) {
+            s.install(function(err) {
                 assert.ok(err);
                 done();
             });
@@ -165,7 +165,7 @@ describe('mapping relationships', function() {
                 attributes: ['name', 'age']
             });
 
-            collection.install(function(err) {
+            s.install(function(err) {
                 assert.ok(err);
                 done();
             });

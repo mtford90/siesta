@@ -28,7 +28,7 @@ describe('Subclass', function () {
                     attributes: ['maxSpeed']
                 });
 
-                collection.install(done);
+                s.install(done);
             });
         });
 
@@ -57,7 +57,7 @@ describe('Subclass', function () {
                     attributes: ['maxSpeed']
                 });
 
-                collection.install(done);
+                s.install(done);
             });
         });
 
@@ -100,7 +100,7 @@ describe('Subclass', function () {
                         attributes: ['age', 'name']
                     });
 
-                    collection.install(done);
+                    s.install(done);
                 });
             });
             it('child attributes', function () {
@@ -136,7 +136,7 @@ describe('Subclass', function () {
                             attributes: ['age', 'name']
                         });
 
-                        collection.install()
+                        s.install()
                             .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
                                 mike = _mike;
                                 Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
@@ -186,7 +186,7 @@ describe('Subclass', function () {
                             attributes: ['age', 'name']
                         });
 
-                        collection.install()
+                        s.install()
                             .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
                                 mike = _mike;
                                 Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
@@ -239,7 +239,7 @@ describe('Subclass', function () {
                             attributes: ['age', 'name']
                         });
 
-                        collection.install()
+                        s.install()
                             .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
                                 mike = _mike;
                                 Car.map({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
@@ -292,7 +292,7 @@ describe('Subclass', function () {
                     attributes: ['attr']
                 });
 
-                collection.install()
+                s.install()
                     .then(Car.map({colour: 'red', name: 'Aston Martin'}))
                     .then(SportsCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini'}))
                     .then(SuperCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini', attr: 5}))
@@ -361,7 +361,7 @@ describe('Subclass', function () {
                     attributes: ['attr']
                 });
 
-                collection.install(done);
+                s.install(done);
             });
         });
 
