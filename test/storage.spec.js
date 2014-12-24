@@ -377,7 +377,7 @@ describe('storage', function () {
                             type: 'OneToOne',
                             reverse: 'car'
                         }
-                    }
+                    }  
                 });
                 Person = collection.model('Person', {
                     attributes: ['name', 'age']
