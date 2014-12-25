@@ -4,20 +4,11 @@ var s = require('../core/index'),
 var Collection = s.Collection;
 
 describe('reactive query', function () {
-    var collection, mapping;
+    var MyCollection, Person;
     before(function () {
         s.ext.storageEnabled = false;
     });
-    beforeEach(function (done) {
-        s.reset(function () {
-            collection = s.collection('myCollection');
-            mapping = collection.model('Person', {
-                id: 'id',
-                attributes: ['name', 'age']
-            });
-            s.install(done);
-        });
-    });
+
 
     describe('unordered', function () {
         var initialData = [
@@ -37,9 +28,19 @@ describe('reactive query', function () {
                 id: 2
             }
         ];
+        beforeEach(function (done) {
+            s.reset(function () {
+                MyCollection = s.collection('MyCollection');
+                Person = MyCollection.model('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                s.install(done);
+            });
+        });
         it('initial results', function (done) {
-            mapping.map(initialData).then(function () {
-                var rq = mapping.reactiveQuery({age__lt: 30});
+            Person.map(initialData).then(function () {
+                var rq = Person.reactiveQuery({age__lt: 30});
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init(function (err, results) {
                     if (err) done(err);
@@ -70,12 +71,12 @@ describe('reactive query', function () {
 
                 it('results are as expected', function (done) {
                     console.log('start new matching query');
-                    mapping.map(initialData).then(function () {
-                        var rq = mapping.reactiveQuery({age__lt: 30});
+                    Person.map(initialData).then(function () {
+                        var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
                             if (err) done(err);
                             else {
-                                mapping.map({name: 'Peter', age: 21, id: 4}).then(function (peter) {
+                                Person.map({name: 'Peter', age: 21, id: 4}).then(function (peter) {
                                     try {
                                         assertExpectedResults(rq.results, peter);
                                         rq.terminate();
@@ -92,8 +93,8 @@ describe('reactive query', function () {
 
                 it('emission', function (done) {
                     console.log('start new matching query');
-                    mapping.map(initialData).then(function () {
-                        var rq = mapping.reactiveQuery({age__lt: 30});
+                    Person.map(initialData).then(function () {
+                        var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
                             if (err) done(err);
                             else {
@@ -109,7 +110,7 @@ describe('reactive query', function () {
                                     rq.terminate();
                                     s.notify(done);
                                 });
-                                mapping.map({name: 'Peter', age: 21, id: 4}).then(function () {
+                                Person.map({name: 'Peter', age: 21, id: 4}).then(function () {
                                 }).catch(done).done();
 
                             }
@@ -129,12 +130,12 @@ describe('reactive query', function () {
                 }
 
                 it('results match', function (done) {
-                    mapping.map(initialData).then(function () {
-                        var rq = mapping.reactiveQuery({age__lt: 30});
+                    Person.map(initialData).then(function () {
+                        var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
                             if (err) done(err);
                             else {
-                                mapping.map({name: 'Peter', age: 33, id: 4}).then(function (peter) {
+                                Person.map({name: 'Peter', age: 33, id: 4}).then(function (peter) {
                                     try {
                                         matchResults(rq, peter);
                                         rq.terminate();
@@ -159,11 +160,11 @@ describe('reactive query', function () {
                 }
 
                 it('results match', function (done) {
-                    mapping.map(initialData).then(function (res) {
+                    Person.map(initialData).then(function (res) {
                         var person = res[0];
                         console.log('person', person);
                         person.age = 40;
-                        var rq = mapping.reactiveQuery({age__lt: 30});
+                        var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
                             if (err) done(err);
                             else {
@@ -183,10 +184,10 @@ describe('reactive query', function () {
                 });
 
                 it('emission', function (done) {
-                    mapping.map(initialData).then(function (res) {
+                    Person.map(initialData).then(function (res) {
                         var person = res[0];
                         var _id = person._id;
-                        var rq = mapping.reactiveQuery({age__lt: 30});
+                        var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
                             if (err) done(err);
                             else {
@@ -215,11 +216,11 @@ describe('reactive query', function () {
             });
 
             it('update, still matching', function (done) {
-                mapping.map(initialData).then(function (res) {
+                Person.map(initialData).then(function (res) {
                     var person = res[0];
                     console.log('person', person);
                     person.age = 29;
-                    var rq = mapping.reactiveQuery({age__lt: 30});
+                    var rq = Person.reactiveQuery({age__lt: 30});
                     rq.init(function (err) {
                         if (err) done(err);
                         else {
@@ -245,9 +246,9 @@ describe('reactive query', function () {
                 }
 
                 it('results correct', function (done) {
-                    mapping.map(initialData).then(function (res) {
+                    Person.map(initialData).then(function (res) {
                         var person = res[0];
-                        var rq = mapping.reactiveQuery({age__lt: 30});
+                        var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
                             person.remove(function () {
                                 if (err) done(err);
@@ -270,11 +271,11 @@ describe('reactive query', function () {
                 });
 
                 it('emission', function (done) {
-                    mapping.map(initialData)
+                    Person.map(initialData)
                         .then(function (res) {
                             var person = res[0];
                             var _id = person._id;
-                            var rq = mapping.reactiveQuery({age__lt: 30});
+                            var rq = Person.reactiveQuery({age__lt: 30});
                             rq.init(function (err) {
                                 if (err) done(err);
                                 else {
@@ -331,9 +332,20 @@ describe('reactive query', function () {
             }
         ];
 
+        beforeEach(function (done) {
+            s.reset(function () {
+                MyCollection = s.collection('MyCollection');
+                Person = MyCollection.model('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                s.install(done);
+            });
+        });
+
         it('initial results', function (done) {
-            mapping.map(initialData).then(function () {
-                var rq = mapping.reactiveQuery({age__lt: 30}).orderBy('age');
+            Person.map(initialData).then(function () {
+                var rq = Person.reactiveQuery({age__lt: 30}).orderBy('age');
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init(function (err, results) {
                     if (err) done(err);
@@ -357,11 +369,11 @@ describe('reactive query', function () {
         });
 
         it('add new, matching', function (done) {
-            mapping.map(initialData).then(function () {
-                var rq = mapping.reactiveQuery({age__lt: 30}).orderBy('age');
+            Person.map(initialData).then(function () {
+                var rq = Person.reactiveQuery({age__lt: 30}).orderBy('age');
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init().then(function () {
-                    mapping.map({name: 'peter', age: 10}).then(function () {
+                    Person.map({name: 'peter', age: 10}).then(function () {
                         s.notify(function () {
                             assert.equal(rq.results.length, 4, 'Should be 4 results');
                             _.each(rq.results, function (r) {
@@ -381,4 +393,59 @@ describe('reactive query', function () {
         });
 
     });
+
+    describe('load', function () {
+        var initialData = [
+            {
+                name: 'Bob',
+                age: 19,
+                id: 1,
+                collection: 'MyCollection',
+                model: 'Person'
+            },
+            {
+                name: 'John',
+                age: 40,
+                id: 3,
+                collection: 'MyCollection',
+                model: 'Person'
+            },
+            {
+                name: 'Mike',
+                age: 24,
+                id: 2,
+                collection: 'MyCollection',
+                model: 'Person'
+            },
+            {
+                name: 'James',
+                age: 12,
+                id: 4,
+                collection: 'MyCollection',
+                model: 'Person'
+            }
+        ];
+        before(function () {
+            s.ext.storageEnabled = true;
+        });
+        beforeEach(function (done) {
+            s.reset(function () {
+                MyCollection = s.collection('MyCollection');
+                Person = MyCollection.model('Person', {
+                    id: 'id',
+                    attributes: ['name', 'age']
+                });
+                done();
+            });
+        });
+        it('before install', function (done) {
+            s.ext.storage._pouch.bulkDocs(initialData)
+                .then(function () {
+                    var rq = Person.reactiveQuery({age__lt: 30}).orderBy('age');
+                    s.install(done);
+                })
+                .catch(done);
+        })
+    });
+
 });

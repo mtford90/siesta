@@ -150,6 +150,8 @@ _.extend(ModelInstance.prototype, {
         //    }
         //    return dumped;
         //}.bind(this), dumped);
+        dumped._rev = this._rev;
+        dumped._id = this._id;
         return dumped;
     }
 });
