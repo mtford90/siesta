@@ -15,7 +15,7 @@ var log = require('./operation/log')
     , util = require('./util');
 
 var Logger = log.loggerWithName('ReactiveQuery');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  *

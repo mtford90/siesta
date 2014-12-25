@@ -818,7 +818,6 @@ describe('http!', function () {
                     siesta.ext.http._serialiseObject.call(requestDescriptor, {fields: ['colour']}, car, function (err, data) {
                         if (err) done(err);
                         else {
-                            console.log('data', data);
                             var keys = Object.keys(data);
                             assert.equal(keys.length, 1);
                             assert.equal(keys[0], 'colour');

@@ -83,7 +83,6 @@ function _load(callback) {
         emit(doc._id, doc);
     }.toString();
     pouch.query({map: mapFunc}).then(function (resp) {
-        console.log('resp', resp);
         var tasks = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
             return function (done) {
                 _deserialise(datum, done)

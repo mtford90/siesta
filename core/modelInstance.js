@@ -122,6 +122,38 @@ _.extend(ModelInstance.prototype, {
     }
 });
 
+_.extend(ModelInstance.prototype, {
+    _dumpString: function (reverseRelationships) {
+        return JSON.stringify(this._dump(reverseRelationships, null, 4));
+    },
+    _dump: function (reverseRelationships) {
+        reverseRelationships = reverseRelationships === undefined ? true : reverseRelationships;
+        var dumped = _.extend({}, this.__values);
+        //_.reduce(this.model.relationships, function (dumped, relationship) {
+        //    var relationshipName;
+        //    if (relationship.isReverse && reverseRelationships) {
+        //        relationshipName = relationship.reverseName;
+        //    }
+        //    else if (!relationship.isReverse) {
+        //        relationshipName = relationship.forwardName;
+        //    }
+        //    if (relationshipName) {
+        //        var relationshipValue = this[relationshipName];
+        //        if (util.isArray(relationshipValue)) {
+        //            dumped[relationshipName] = _.map(relationshipValue, function (r) {
+        //                return r._dump(false);
+        //            });
+        //        }
+        //        else {
+        //            dumped[relationshipName] = relationshipValue._dump(false);
+        //         }
+        //    }
+        //    return dumped;
+        //}.bind(this), dumped);
+        return dumped;
+    }
+});
+
 exports.ModelInstance = ModelInstance;
 exports.dumpSaveQueues = function () {
     var dumped = {};

@@ -185,8 +185,6 @@ describe('query...', function () {
                             name: 'Aston Martin',
                             owner: person
                         }, function (err, car) {
-                            console.log('car.person', car.owner._id);
-                            console.log('values', car.__values);
                             if (err) done(err);
                             else {
                                 assert.equal(car.owner, person);
@@ -717,7 +715,6 @@ describe('query...', function () {
                 {name: 'John', age: 12}
             ]).then(function () {
                 var query = Person.query({});
-                console.log('query', query);
                 query.orderBy('-age').execute().then(function (orderedPeople) {
                     var lastAge = orderedPeople[0].age;
                     for (var i = 1; i < orderedPeople.length; i++) {
@@ -737,7 +734,6 @@ describe('query...', function () {
                 {name: 'John', age: 12}
             ]).then(function () {
                 var query = Person.query({});
-                console.log('query', query);
                 query.orderBy('age').execute().then(function (orderedPeople) {
                     var lastAge = orderedPeople[0].age;
                     for (var i = 1; i < orderedPeople.length; i++) {
@@ -757,7 +753,6 @@ describe('query...', function () {
                 {name: 'John', age: 12}
             ]).then(function () {
                 var query = Person.query({});
-                console.log('query', query);
                 query.orderBy(['age', 'name']).execute().then(function (orderedPeople) {
                     var lastAge = orderedPeople[0].age;
                     for (var i = 1; i < orderedPeople.length; i++) {
