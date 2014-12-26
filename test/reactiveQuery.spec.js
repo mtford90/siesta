@@ -192,50 +192,45 @@ describe('reactive query', function () {
                             if (err) done(err);
                             else {
                                 rq.on('change', function (results, change) {
-                                    try {
-                                        assertResultsOk(rq.results, person);
-                                        var removedId = change.removedId,
-                                            removed = change.removed;
-                                        assert.include(removed, person);
-                                        assert.include(removedId, _id);
-                                        assert.equal(change.type, s.ChangeType.Splice);
-                                        rq.terminate();
-                                        s.notify(done);
-                                    }
-                                    catch (e) {
-                                        done(e);
-                                    }
+                                    assertResultsOk(rq.results, person);
+                                    var removedId = change.removedId,
+                                        removed = change.removed;
+                                    assert.include(removed, person);
+                                    assert.include(removedId, _id);
+                                    assert.equal(change.type, s.ChangeType.Splice);
+                                    assert.equal(change.obj, rq);
+                                    rq.terminate();
+                                    s.notify(done);
                                 });
                                 person.age = 40;
                                 s.notify();
                             }
-                        });
+                        }).catch(done).done();
                     }).catch(done).done();
                 });
 
             });
 
-            it('update, still matching', function (done) {
+            it('update, still matching, should emit the notification', function (done) {
                 Person.map(initialData).then(function (res) {
                     var person = res[0];
                     console.log('person', person);
-                    person.age = 29;
                     var rq = Person.reactiveQuery({age__lt: 30});
                     rq.init(function (err) {
                         if (err) done(err);
                         else {
-                            s.notify(function () {
-                                try {
-                                    assert.equal(rq.results.length, 2, 'Should still be 2 results');
-                                    rq.terminate();
-                                    done();
-                                }
-                                catch (e) {
-                                    done(e);
-                                }
-                            });
+                            rq.once('change', function (n) {
+                                assert.equal(rq.results.length, 2, 'Should still be 2 results');
+                                assert.equal(n.obj, person);
+                                assert.equal(n.field, 'age');
+                                assert.equal(n.new, 29);
+                                rq.terminate();
+                                done();
+                            })
+                            person.age = 29;
+                            s.notify();
                         }
-                    });
+                    }).catch(done).done();
                 }).catch(done).done();
             });
 
@@ -286,6 +281,7 @@ describe('reactive query', function () {
                                             assert.include(removed, person);
                                             assert.include(removedId, _id);
                                             assert.equal(change.type, s.ChangeType.Splice);
+                                            assert.equal(change.obj, rq);
                                             assertResultsCorrect(rq, person);
                                             rq.terminate();
                                             s.notify(done);
@@ -428,6 +424,9 @@ describe('reactive query', function () {
         before(function () {
             s.ext.storageEnabled = true;
         });
+        after(function () {
+            s.ext.storageEnabled = false;
+        })
         beforeEach(function (done) {
             s.reset(function () {
                 MyCollection = s.collection('MyCollection');

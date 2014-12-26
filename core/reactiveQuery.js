@@ -74,7 +74,8 @@ _.extend(ReactiveQuery.prototype, {
                     index: idx,
                     added: [newObj],
                     addedId: [newObj._id],
-                    type: changes.ChangeType.Splice
+                    type: changes.ChangeType.Splice,
+                    obj: this
                 });
             }
             else {
@@ -93,7 +94,8 @@ _.extend(ReactiveQuery.prototype, {
                     index: idx,
                     added: [newObj],
                     addedId: [newObj._id],
-                    type: changes.ChangeType.Splice
+                    type: changes.ChangeType.Splice,
+                    obj: this
                 });
             }
             else if (!matches && alreadyContains) {
@@ -101,7 +103,8 @@ _.extend(ReactiveQuery.prototype, {
                 var removed = this.results.splice(index, 1);
                 this.emit('change', this.results, {
                     index: index,
-                    obj: newObj,
+                    obj: this,
+                    new: newObj,
                     type: changes.ChangeType.Splice,
                     removed: removed,
                     removedId: [newObj._id]
@@ -112,6 +115,8 @@ _.extend(ReactiveQuery.prototype, {
             }
             else if (matches && alreadyContains) {
                 if (Logger.trace) Logger.trace('Matches but already contains', newObj);
+                // Send the notification over. 
+                this.emit('change', n);
             }
         }
         else if (n.type == changes.ChangeType.Remove) {
@@ -122,7 +127,7 @@ _.extend(ReactiveQuery.prototype, {
                 removed = this.results.splice(index, 1);
                 this.emit('change', this.results, {
                     index: index,
-                    obj: newObj,
+                    obj: this,
                     type: changes.ChangeType.Splice,
                     removed: removed,
                     removedId: [newObj._id]
