@@ -83,13 +83,13 @@ function _load(callback) {
         emit(doc._id, doc);
     }.toString();
     pouch.query({map: mapFunc}).then(function (resp) {
-        console.log('resp', resp);
         var tasks = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
             return function (done) {
                 _deserialise(datum, done)
             }
         });
         siesta.parallel(tasks, function (err, instances) {
+            if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
             callback(err, instances);
             if (err) deferred.reject(err);
             else deferred.resolve(instances);
@@ -101,6 +101,48 @@ function _load(callback) {
     return deferred ? deferred.promise : null;
 }
 
+function saveConflicts(objects, callback, deferred) {
+    pouch.allDocs({keys: _.pluck(objects, '_id')})
+        .then(function (resp) {
+            for (var i=0;i<resp.rows.length; i++) {
+                objects[i]._rev = resp.rows[i].value.rev;
+            }
+            saveToPouch(objects, callback, deferred);
+        })
+        .catch(function (err) {
+            callback(err);
+            deferred.reject(err);
+        })
+}
+
+function saveToPouch(objects, callback, deferred) {
+    var conflicts = [];
+    pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
+        for (var i = 0; i < resp.length; i++) {
+            var response = resp[i];
+            var obj = objects[i];
+            if (response.ok) {
+                obj._rev = response.rev;
+            }
+            else if (response.status == 409) {
+                conflicts.push(obj);
+            }
+            else {
+                Logger.error('Error saving object with _id="' + obj._id + '"', response);
+            }
+        }
+        if (conflicts.length) {
+            saveConflicts(conflicts, callback, deferred);
+        }
+        else {
+            callback();
+            if (deferred) deferred.resolve();
+        }
+    }, function (err) {
+        callback(err);
+        if (deferred) deferred.reject(err);
+    });
+}
 /**
  * Save all changes down to PouchDB.
  */
@@ -111,23 +153,12 @@ function save(callback) {
     unsavedObjects = [];
     unsavedObjectsHash = {};
     unsavedObjectsByCollection = {};
-    pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
-        for (var i = 0; i < resp.length; i++) {
-            var response = resp[i];
-            var obj = objects[i];
-            if (response.ok) {
-                obj._rev = response.rev;
-            }
-            else {
-                Logger.error('Error saving object with _id="' + obj._id + '"', response);
-            }
-        }
-        callback();
-        if (deferred) deferred.resolve();
-    }, function (err) {
-        callback(err);
-        if (deferred) deferred.reject(err);
-    });
+    if (Logger.trace) {
+        Logger.trace('Saving objects', _.map(objects, function (x) {
+            return x._dump()
+        }))
+    }
+    saveToPouch(objects, callback, deferred);
     return deferred ? deferred.promise : null;
 }
 

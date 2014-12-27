@@ -494,7 +494,8 @@ _.extend(Model.prototype, {
             _.each(fields, function (field) {
                 Object.defineProperty(newModel, field, {
                     get: function () {
-                        return newModel.__values[field] || null;
+                        var value = newModel.__values[field];
+                        return value === undefined ? null : value;
                     },
                     set: function (v) {
                         var old = newModel.__values[field];

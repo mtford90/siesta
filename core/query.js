@@ -8,7 +8,7 @@ var log = require('./operation/log')
     , _ = util._;
 
 var Logger = log.loggerWithName('Query');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  * @class  [Query description]
@@ -24,7 +24,15 @@ function Query(model, opts) {
 _.extend(Query, {
     comparators: {
         e: function (opts) {
-            return opts.object[opts.field] == opts.value;
+            var objectValue = opts.object[opts.field];
+            if (Logger.trace) {
+                var stringValue;
+                if (objectValue === null) stringValue = 'null';
+                else if (objectValue === undefined) stringValue = 'undefined';
+                else stringValue = objectValue.toString();
+                Logger.trace(opts.field + ': ' + stringValue + ' == ' + opts.value.toString());
+            }
+            return objectValue == opts.value;
         },
         lt: function (opts) {
             if (!opts.invalid) return opts.object[opts.field] < opts.value;

@@ -242,7 +242,6 @@ describe('collection setup', function() {
 
                 it('registration', function () {
                     var registry = siesta.ext.http.DescriptorRegistry;
-                    console.log('registry', registry);
                     var requestDescriptors = registry.requestDescriptors.MyCollection;
                     var responseDescriptors = registry.responseDescriptors.MyCollection;
                     assert.equal(requestDescriptors.length, 1);
