@@ -215,7 +215,25 @@ Object.defineProperty(storage, '_unsavedObjectsByCollection', {
     get: function () {return unsavedObjectsByCollection}
 });
 
-
+// Enable/disable autosaving.
+var autosaveListener;
+Object.defineProperty(siesta, 'autosave', {
+    get: function () {
+        return !!autosaveListener;
+    },
+    set: function () {
+        if (!autosaveListener) {
+            autosaveListener = function () {
+                siesta.save();
+            };
+            siesta.on('Siesta', autosaveListener);
+        }
+        else {
+            siesta.removeListener('Siesta', autosaveListener);
+            autosaveListener = null;
+        }
+    }
+});
 
 Object.defineProperty(storage, '_pouch', {
     get: function () {return pouch}

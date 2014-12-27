@@ -312,6 +312,8 @@ siesta.save = function () {
     }
 };
 
+
+
 /**
  * Install all collections.
  * @param {Function} [callback]

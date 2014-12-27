@@ -3,7 +3,7 @@ var s = require('../core/index'),
 
 var Collection = s.Collection;
 
-describe.only('auto save', function() {
+describe('auto save', function() {
     var MyCollection, Person;
     before(function() {
         s.ext.storageEnabled = true;
