@@ -162,6 +162,9 @@ _.extend(Query.prototype, {
         }
         return this;
     },
+    clearOrdering: function () {
+        this.ordering = null;
+    },
     objectMatchesOrQuery: function (obj, orQuery) {
         for (var idx in orQuery) {
             if (orQuery.hasOwnProperty(idx)) {

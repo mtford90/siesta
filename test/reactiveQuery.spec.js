@@ -9,6 +9,10 @@ describe('reactive query', function () {
         s.ext.storageEnabled = false;
     });
 
+    beforeEach(function (done) {
+        s.reset(done);
+    });
+
 
     describe('unordered', function () {
         var initialData = [
@@ -29,14 +33,12 @@ describe('reactive query', function () {
             }
         ];
         beforeEach(function (done) {
-            s.reset(function () {
-                MyCollection = s.collection('MyCollection');
-                Person = MyCollection.model('Person', {
-                    id: 'id',
-                    attributes: ['name', 'age']
-                });
-                s.install(done);
+            MyCollection = s.collection('MyCollection');
+            Person = MyCollection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age']
             });
+            s.install(done);
         });
         it('initial results', function (done) {
             Person.map(initialData).then(function () {
@@ -341,7 +343,8 @@ describe('reactive query', function () {
 
         it('initial results', function (done) {
             Person.map(initialData).then(function () {
-                var rq = Person.reactiveQuery({age__lt: 30}).orderBy('age');
+                var rq = Person.reactiveQuery({age__lt: 30});
+                rq.orderBy('age');
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init(function (err, results) {
                     if (err) done(err);
@@ -366,7 +369,8 @@ describe('reactive query', function () {
 
         it('add new, matching', function (done) {
             Person.map(initialData).then(function () {
-                var rq = Person.reactiveQuery({age__lt: 30}).orderBy('age');
+                var rq = Person.reactiveQuery({age__lt: 30});
+                rq.orderBy('age');
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init().then(function () {
                     Person.map({name: 'peter', age: 10}).then(function () {
@@ -426,7 +430,7 @@ describe('reactive query', function () {
         });
         after(function () {
             s.ext.storageEnabled = false;
-        })
+        });
         beforeEach(function (done) {
             s.reset(function () {
                 MyCollection = s.collection('MyCollection');
@@ -440,7 +444,8 @@ describe('reactive query', function () {
         it('before install', function (done) {
             s.ext.storage._pouch.bulkDocs(initialData)
                 .then(function () {
-                    var rq = Person.reactiveQuery({age__lt: 30}).orderBy('age');
+                    var rq = Person.reactiveQuery({age__lt: 30});
+                    rq.orderBy('age');
                     s.install(done);
                 })
                 .catch(done);

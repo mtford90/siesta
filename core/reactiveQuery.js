@@ -43,10 +43,16 @@ _.extend(ReactiveQuery.prototype, {
         this._query.execute(function (err, results) {
             if (!err) {
                 this.results = results;
+                console.log('ordering', this._query.ordering);
+                console.log('results', _.pluck(results, 'age'));
                 var name = this._constructNotificationName();
-                var handler = this._handleNotif.bind(this);
-                this.handler = handler;
-                notificationCentre.on(name, handler);
+                if (!this.handler) {
+                    var handler = function (n) {
+                        this._handleNotif(n);
+                    }.bind(this);
+                    this.handler = handler;
+                    notificationCentre.on(name, handler);
+                }
                 if (Logger.trace) Logger.trace('Listening to ' + name);
                 if (cb) cb();
                 if (deferred) deferred.resolve();
@@ -58,9 +64,27 @@ _.extend(ReactiveQuery.prototype, {
         }.bind(this));
         return deferred ? deferred.promise : undefined;
     },
-    orderBy: function (field) {
+    orderBy: function (field, cb) {
         this._query = this._query.orderBy(field);
-        return this;
+        if (this.initialised) {
+            return this.init(cb);
+        }
+        else {
+            var deferred = util.defer(cb);
+            deferred.resolve();
+            return deferred.promise;
+        }
+    },
+    clearOrdering: function (cb) {
+        this._query.clearOrdering();
+        if (this.initialised) {
+            return this.init(cb);
+        }
+        else {
+            var deferred = util.defer(cb);
+            deferred.resolve();
+            return deferred.promise;
+        }
     },
     _handleNotif: function (n) {
         if (Logger.trace) Logger.trace('_handleNotif', n);
@@ -149,6 +173,7 @@ _.extend(ReactiveQuery.prototype, {
         if (Logger.trace) Logger.trace('terminate');
         notificationCentre.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
+        this.handler = null;
     }
 });
 

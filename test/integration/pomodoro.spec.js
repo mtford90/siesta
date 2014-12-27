@@ -33,7 +33,8 @@ describe('pomodoro', function () {
     });
 
     it('sad', function (done) {
-        var incompleteTasks = Task.reactiveQuery({completed: false}).orderBy('index');
+        var incompleteTasks = Task.reactiveQuery({completed: false});
+        incompleteTasks.orderBy('index');
         incompleteTasks.init().then(function () {
             incompleteTasks.once('change', function () {
                 done();
