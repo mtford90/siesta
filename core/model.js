@@ -22,6 +22,7 @@ var log = require('./operation/log')
     , OneToOneProxy = require('./oneToOneProxy')
     , ManyToManyProxy = require('./manyToManyProxy')
     , ReactiveQuery = require('./reactiveQuery')
+    , PositionalReactiveQuery = require('./positionedReactiveQuery')
     , _ = util._
     , RelationshipType = relationship.RelationshipType
     , guid = util.guid
@@ -277,12 +278,15 @@ _.extend(Model.prototype, {
     query: function (query) {
         return new Query(this, query || {});
     },
-    reactiveQuery: function (query, callback) {
-        return new ReactiveQuery(new Query(this, query));
+    reactiveQuery: function (query) {
+        return new ReactiveQuery(new Query(this, query || {}));
+    },
+    positionalReactiveQuery: function (query) {
+        return new PositionalReactiveQuery(new Query(this, query || {}));
     },
     get: function (idOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         if (this.singleton) {
             if (typeof idOrCallback == 'function') {
                 callback = idOrCallback;
@@ -333,7 +337,7 @@ _.extend(Model.prototype, {
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         if (!this._installed) {
             var errors = this._validate();
             this._installed = true;
@@ -367,7 +371,7 @@ _.extend(Model.prototype, {
      */
     map: function (data, optsOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var opts;
         if (typeof optsOrCallback == 'function') {
             callback = optsOrCallback;
@@ -403,7 +407,7 @@ _.extend(Model.prototype, {
     },
     _mapBulk: function (data, opts, callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var override = opts.override;
         var mappingOpts = {
             model: this,
@@ -434,7 +438,7 @@ _.extend(Model.prototype, {
     },
     count: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var hash = this._countCache();
         if (siesta.ext.storageEnabled) {
             var pouch = siesta.ext.storage.Pouch.getPouch();
@@ -645,6 +649,9 @@ _.extend(Model.prototype, {
     },
     isAncestorOf: function (descendant) {
         return this.descendants.indexOf(descendant) > -1;
+    },
+    hasAttributeNamed: function (attributeName) {
+        return this._attributeNames.indexOf(attributeName) > -1;
     }
 });
 

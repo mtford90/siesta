@@ -321,7 +321,7 @@ siesta.save = function () {
  */
 siesta.install = function (callback) {
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     var collectionNames = CollectionRegistry.collectionNames,
         tasks = _.map(collectionNames, function (n) {
             return function (done) {

@@ -5,7 +5,7 @@ var s = require('../core/index')
 var util = require('../core/util');
 var q = require('q');
 
-describe('constructCallbackAndPromiseHandler', function () {
+describe('cb', function () {
     before(function () {
         s.ext.storageEnabled = false;
     });
@@ -16,21 +16,21 @@ describe('constructCallbackAndPromiseHandler', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorOrResult (util.constructCallbackAndPromiseHandler(null, deferred));
+            doSomethingWithNoErrorOrResult (util.cb(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorOrResult (util.constructCallbackAndPromiseHandler(done));
+            doSomethingWithNoErrorOrResult (util.cb(done));
         });
 
         it('promise & callback returns', function (done) {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithNoErrorOrResult(util.constructCallbackAndPromiseHandler(function () {
+            doSomethingWithNoErrorOrResult(util.cb(function () {
                 callbackReturned = true;
                 if (callbackReturned && promiseReturned) done();
             }, deferred));
@@ -50,14 +50,14 @@ describe('constructCallbackAndPromiseHandler', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithAnError (util.constructCallbackAndPromiseHandler(null, deferred));
+            doSomethingWithAnError (util.cb(null, deferred));
             deferred.promise.fail(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithAnError (util.constructCallbackAndPromiseHandler(function (err) {
+            doSomethingWithAnError (util.cb(function (err) {
                 assert.ok(err);
                 done();
             }));
@@ -67,7 +67,7 @@ describe('constructCallbackAndPromiseHandler', function () {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithAnError(util.constructCallbackAndPromiseHandler(function (err) {
+            doSomethingWithAnError(util.cb(function (err) {
                 assert.ok(err);
                 callbackReturned = true;
                 if (callbackReturned && promiseReturned) done();
@@ -88,14 +88,14 @@ describe('constructCallbackAndPromiseHandler', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorAndASingleResult(util.constructCallbackAndPromiseHandler(null, deferred));
+            doSomethingWithNoErrorAndASingleResult(util.cb(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorAndASingleResult (util.constructCallbackAndPromiseHandler(function (err, res) {
+            doSomethingWithNoErrorAndASingleResult (util.cb(function (err, res) {
                 assert.notOk(err);
                 assert.equal(res, 'result');
                 done();
@@ -106,7 +106,7 @@ describe('constructCallbackAndPromiseHandler', function () {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithNoErrorAndASingleResult(util.constructCallbackAndPromiseHandler(function () {
+            doSomethingWithNoErrorAndASingleResult(util.cb(function () {
                 callbackReturned = true;
                 if (callbackReturned && promiseReturned) done();
             }, deferred));
@@ -128,14 +128,14 @@ describe('constructCallbackAndPromiseHandler', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorAndMultipleResults(util.constructCallbackAndPromiseHandler(null, deferred));
+            doSomethingWithNoErrorAndMultipleResults(util.cb(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorAndMultipleResults (util.constructCallbackAndPromiseHandler(function (err, res1, res2, res3) {
+            doSomethingWithNoErrorAndMultipleResults (util.cb(function (err, res1, res2, res3) {
                 assert.notOk(err);
                 assert.equal(res1, 'result1');
                 assert.equal(res2, 'result2');
@@ -148,7 +148,7 @@ describe('constructCallbackAndPromiseHandler', function () {
             var deferred = q.defer();
             var callbackReturned = false;
             var promiseReturned = false;
-            doSomethingWithNoErrorAndMultipleResults(util.constructCallbackAndPromiseHandler(function (err, res1, res2, res3) {
+            doSomethingWithNoErrorAndMultipleResults(util.cb(function (err, res1, res2, res3) {
                 try {
                     assert.equal(res1, 'result1');
                     assert.equal(res2, 'result2');

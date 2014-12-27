@@ -509,18 +509,18 @@ exports.next = next;
 /**
  * Returns a handler that acts upon a callback or a promise depending on the result of a different callback.
  * @param callback
- * @param [promise]
+ * @param [deferred]
  * @returns {Function}
  */
-exports.constructCallbackAndPromiseHandler = function (callback, promise) {
+exports.cb = function (callback, deferred) {
     return function (err) {
         if (callback) callback.apply(callback, arguments);
-        if (promise) {
+        if (deferred) {
             if (err) {
-                promise.reject(err);
+                deferred.reject(err);
             }
             else {
-                promise.resolve.apply(promise, Array.prototype.slice.call(arguments, 1));
+                deferred.resolve.apply(deferred, Array.prototype.slice.call(arguments, 1));
             }
         }
     };
@@ -573,21 +573,23 @@ var guid = (function () {
 })();
 
 
-var thenBy = (function() {
+var thenBy = (function () {
     /* mixin for the `thenBy` property */
     function extend(f) {
         f.thenBy = tb;
         return f;
     }
+
     /* adds a secondary compare function to the target function (`this` context)
      which is applied in case the first one returns 0 (equal)
      returns a new compare function, which has a `thenBy` method as well */
     function tb(y) {
         var x = this;
-        return extend(function(a, b) {
-            return x(a,b) || y(a,b);
+        return extend(function (a, b) {
+            return x(a, b) || y(a, b);
         });
     }
+
     return extend;
 })();
 
@@ -599,3 +601,35 @@ _.extend(module.exports, {
 });
 
 
+/**
+ * Simplifies dealing with both callbacks & promises.
+ */
+module.exports.defer = function (cb) {
+    var deferred,
+        cb = cb || function () {};
+    if (window.q) {
+        deferred = window.q.defer();
+        var reject = deferred.reject,
+            resolve = deferred.resolve;
+        deferred.reject = function (err) {
+            cb(err);
+            reject.call(this, reject);
+        };
+        deferred.resolve = function (res) {
+            cb(null, res);
+            resolve.call(this, res);
+        };
+    }
+    else {
+        deferred = {
+            promise: undefined,
+            reject: function (err) {
+                cb(err);
+            },
+            resolve: function (res) {
+                cb(null, res)
+            }
+        }
+    }
+    return deferred;
+};

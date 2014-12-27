@@ -402,7 +402,7 @@ _.extend(Collection.prototype, {
      */
     count: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var tasks = _.map(this._models, function (m) {
             return _.bind(m.count, m);
         });

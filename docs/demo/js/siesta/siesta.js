@@ -896,7 +896,7 @@ _.extend(Collection.prototype, {
      */
     count: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var tasks = _.map(this._models, function (m) {
             return _.bind(m.count, m);
         });
@@ -1383,7 +1383,7 @@ _.extend(ManyToManyProxy.prototype, {
     },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         if (this.isFault) {
             Store.get({_id: this._id}, function (err, stored) {
@@ -1645,14 +1645,14 @@ _.extend(Mapping.prototype, {
     },
     query: function (query, callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var _query = new Query(this, query);
         _query.execute(callback);
         return deferred ? deferred.promise : null;
     },
     get: function (idOrCallback, callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
 
         function finish(err, res) {
             if (callback) callback(err, res);
@@ -1701,7 +1701,7 @@ _.extend(Mapping.prototype, {
     },
     all: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var query = new Query(this, {});
         query.execute(callback);
         return deferred ? deferred.promise : null;
@@ -1709,7 +1709,7 @@ _.extend(Mapping.prototype, {
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         if (!this._installed) {
             var errors = this._validate();
             this._installed = true;
@@ -1742,7 +1742,7 @@ _.extend(Mapping.prototype, {
      */
     map: function (data, callback, override) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         if (this.installed) {
             if (util.isArray(data)) {
                 this._mapBulk(data, callback, override);
@@ -1766,7 +1766,7 @@ _.extend(Mapping.prototype, {
     },
     _mapBulk: function (data, callback, override) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var opts = {
             mapping: this,
             data: data
@@ -1795,7 +1795,7 @@ _.extend(Mapping.prototype, {
     },
     count: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var hash = this._countCache();
         if (siesta.ext.storageEnabled) {
             var pouch = siesta.ext.storage.Pouch.getPouch();
@@ -2093,7 +2093,7 @@ _.extend(BulkMappingOperation.prototype, {
      */
     _lookup: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         var remoteLookups = [];
         var localLookups = [];
@@ -2221,7 +2221,7 @@ _.extend(BulkMappingOperation.prototype, {
     },
     _lookupSingleton: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         var cachedSingleton = cache.get({
             mapping: this.mapping
@@ -2531,7 +2531,7 @@ _.extend(OneToManyProxy.prototype, {
     },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         if (this.isFault) {
             if (this._id.length) {
@@ -2680,7 +2680,7 @@ _.extend(OneToOneProxy.prototype, {
     },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         if (this._id) {
             Store.get({_id: this._id}, function (err, stored) {
@@ -3812,7 +3812,7 @@ function Query(mapping, opts) {
 _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         this._executeInMemory(callback);
         return deferred ? deferred.promise : null;
     },
@@ -3821,7 +3821,7 @@ _.extend(Query.prototype, {
     },
     _executeInMemory: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var cacheByType = cache._localCacheByType;
         var mappingName = this.mapping.type;
         var collectionName = this.mapping.collection;
@@ -4013,13 +4013,13 @@ _.extend(SiestaModel.prototype, {
     },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         callback(null, this);
         return deferred ? deferred.promise : null;
     },
     remove: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         cache.remove(this);
         this.removed = true;
         coreChanges.registerChange({
@@ -4036,7 +4036,7 @@ _.extend(SiestaModel.prototype, {
     },
     restore: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         if (this.removed) {
             cache.insert(this);
             this.removed = false;
@@ -4103,7 +4103,7 @@ Logger.setLevel(log.Level.warn);
  */
 function get(opts, callback) {
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     if (Logger.debug.isEnabled)
         Logger.debug('get', opts);
     var siestaModel;
@@ -4199,7 +4199,7 @@ function get(opts, callback) {
 
 function getMultiple(optsArray, callback) {
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     var docs = [];
     var errors = [];
     _.each(optsArray, function (opts) {
@@ -4229,7 +4229,7 @@ function getMultiple(optsArray, callback) {
  */
 function getMultipleLocal(localIdentifiers, callback) {
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({
             _id: _id
@@ -4267,7 +4267,7 @@ function getMultipleLocal(localIdentifiers, callback) {
 
 function getMultipleRemote(remoteIdentifiers, mapping, callback) {
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {
             mapping: mapping
@@ -4830,7 +4830,7 @@ exports.next = next;
  * @param [promise]
  * @returns {Function}
  */
-exports.constructCallbackAndPromiseHandler = function (callback, promise) {
+exports.cb = function (callback, promise) {
     return function (err) {
         if (callback) callback.apply(callback, arguments);
         if (promise) {
@@ -7558,7 +7558,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         callback = args[1];
     }
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     opts.type = method;
     if (!opts.url) { // Allow overrides.
         var baseURL = this.baseURL;
@@ -7661,7 +7661,7 @@ function _httpRequest(method, path, object) {
         callback = args[1];
     }
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     args = Array.prototype.slice.call(args, 2);
     var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
     var matchedDescriptor;
@@ -7719,7 +7719,7 @@ function DELETE(collection, path, object) {
         opts = args[0];
         callback = args[1];
     }
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     var deletionMode = opts.deletionMode || 'restore';
     // By default we do not map the response from a DELETE request.
     if (opts.parseResponse === undefined) opts.parseResponse = false;
@@ -7951,7 +7951,7 @@ RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 _.extend(RequestDescriptor.prototype, {
     _serialise: function (obj, callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         if (Logger.trace.isEnabled)
             Logger.trace('_serialise');

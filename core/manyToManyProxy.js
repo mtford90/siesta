@@ -101,7 +101,7 @@ _.extend(ManyToManyProxy.prototype, {
     },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         if (this.isFault) {
             Store.get({_id: this._id}, function (err, stored) {

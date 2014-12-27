@@ -124,7 +124,7 @@ _.extend(OneToManyProxy.prototype, {
     },
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         if (this.isFault) {
             if (this._id.length) {

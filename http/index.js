@@ -79,7 +79,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         callback = args[1];
     }
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     opts.type = method;
     if (!opts.url) { // Allow overrides.
         var baseURL = this.baseURL;
@@ -182,7 +182,7 @@ function _httpRequest(method, path, object) {
         callback = args[1];
     }
     var deferred = window.q ? window.q.defer() : null;
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     args = Array.prototype.slice.call(args, 2);
     var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
     var matchedDescriptor;
@@ -240,7 +240,7 @@ function DELETE(collection, path, object) {
         opts = args[0];
         callback = args[1];
     }
-    callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+    callback = util.cb(callback, deferred);
     var deletionMode = opts.deletionMode || 'restore';
     // By default we do not map the response from a DELETE request.
     if (opts.parseResponse === undefined) opts.parseResponse = false;

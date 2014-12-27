@@ -72,7 +72,7 @@ function cacheForModel(model) {
 _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         this._executeInMemory(callback);
         return deferred ? deferred.promise : null;
     },
@@ -128,7 +128,7 @@ _.extend(Query.prototype, {
     },
     _executeInMemory: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var cacheByLocalId = this._getCacheByLocalId();
         var keys = Object.keys(cacheByLocalId);
         var self = this;

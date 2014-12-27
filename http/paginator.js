@@ -93,7 +93,7 @@ _.extend(Paginator.prototype, {
         }
         var page = opts.page,
             pageSize = opts.pageSize;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var ajax = siesta.ext.http.ajax,
             ajaxOpts = _.extend({}, this.ajaxOpts);
         var collectionName = this.paginatorOpts.model.collection,

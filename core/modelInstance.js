@@ -55,13 +55,13 @@ function ModelInstance(model) {
 _.extend(ModelInstance.prototype, {
     get: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         callback(null, this);
         return deferred ? deferred.promise : null;
     },
     remove: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         cache.remove(this);
         this.removed = true;
         coreChanges.registerChange({
@@ -78,7 +78,7 @@ _.extend(ModelInstance.prototype, {
     },
     restore: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         if (this.removed) {
             cache.insert(this);
             this.removed = false;

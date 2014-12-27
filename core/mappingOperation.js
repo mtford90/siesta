@@ -164,7 +164,7 @@ _.extend(BulkMappingOperation.prototype, {
      */
     _lookup: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         var remoteLookups = [];
         var localLookups = [];
@@ -290,7 +290,7 @@ _.extend(BulkMappingOperation.prototype, {
     },
     _lookupSingleton: function (callback) {
         var deferred = window.q ? window.q.defer() : null;
-        callback = util.constructCallbackAndPromiseHandler(callback, deferred);
+        callback = util.cb(callback, deferred);
         var self = this;
         this.model.get(function (err, singleton) {
             if (!singleton) singleton = self.model._new();
