@@ -31,6 +31,6 @@ _.extend(PositionalReactiveQuery.prototype, {
         }.bind(this));
         return deferred.promise;
     }
-}); 
+});
 
 module.exports = PositionalReactiveQuery;

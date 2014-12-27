@@ -602,23 +602,30 @@ _.extend(module.exports, {
 
 
 /**
- * Simplifies dealing with both callbacks & promises.
+ * Simplifies dealing with both callbacks & promises as well has handling lack of q library.
  */
 module.exports.defer = function (cb) {
-    var deferred,
-        cb = cb || function () {};
+    var deferred;
+    cb = cb || function () {};
     if (window.q) {
         deferred = window.q.defer();
         var reject = deferred.reject,
             resolve = deferred.resolve;
-        deferred.reject = function (err) {
-            cb(err);
-            reject.call(this, reject);
-        };
-        deferred.resolve = function (res) {
-            cb(null, res);
-            resolve.call(this, res);
-        };
+        _.extend(deferred, {
+            reject: function (err) {
+                cb(err);
+                reject.call(this, err);
+            },
+            resolve: function (res) {
+                cb(null, res);
+                resolve.call(this, res);
+            },
+            finish: function (err ,res) {
+                cb(err, res);
+                if (err) reject.call(this, err);
+                else resolve.call(this, res);
+            }
+        });
     }
     else {
         deferred = {
@@ -628,6 +635,9 @@ module.exports.defer = function (cb) {
             },
             resolve: function (res) {
                 cb(null, res)
+            },
+            finish: function (err, res) {
+                cb(err, res);
             }
         }
     }

@@ -401,8 +401,7 @@ _.extend(Collection.prototype, {
      * @returns {Promise}
      */
     count: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
         var tasks = _.map(this._models, function (m) {
             return _.bind(m.count, m);
         });
@@ -413,9 +412,9 @@ _.extend(Collection.prototype, {
                     return m + r
                 }, 0);
             }
-            callback(err, n);
+            deferred.finish(err, n);
         });
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     listen: function (fn) {
         notificationCentre.on(this.name, fn);
