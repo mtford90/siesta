@@ -100,7 +100,7 @@ _.extend(Query.prototype, {
     _sortResults: function (res) {
         if (res && this.ordering) {
             var fields = _.map(this.ordering, function (ordering) {
-                var splt = this.ordering[0].split('-'),
+                var splt = ordering.split('-'),
                     ascending = true,
                     field = null;
                 if (splt.length > 1) {

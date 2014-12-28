@@ -228,7 +228,7 @@ describe('reactive query', function () {
                                 assert.equal(n.new, 29);
                                 rq.terminate();
                                 done();
-                            })
+                            });
                             person.age = 29;
                             s.notify();
                         }

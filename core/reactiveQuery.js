@@ -43,10 +43,8 @@ _.extend(ReactiveQuery.prototype, {
         this._query.execute(function (err, results) {
             if (!err) {
                 this.results = results;
-                console.log('ordering', this._query.ordering);
-                console.log('results', _.pluck(results, 'age'));
-                var name = this._constructNotificationName();
                 if (!this.handler) {
+                    var name = this._constructNotificationName();
                     var handler = function (n) {
                         this._handleNotif(n);
                     }.bind(this);
@@ -65,15 +63,21 @@ _.extend(ReactiveQuery.prototype, {
         return deferred ? deferred.promise : undefined;
     },
     orderBy: function (field, cb) {
+        var deferred = util.defer(cb);
         this._query = this._query.orderBy(field);
         if (this.initialised) {
-            return this.init(cb);
+            this._query.execute(function (err, results) {
+                console.log('results', _.pluck(results, 'age'));
+                if (!err) {
+                    this.results = results;
+                }
+                deferred.finish(err);
+            }.bind(this));
         }
         else {
-            var deferred = util.defer(cb);
             deferred.resolve();
-            return deferred.promise;
         }
+        return deferred.promise;
     },
     clearOrdering: function (cb) {
         this._query.clearOrdering();

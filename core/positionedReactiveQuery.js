@@ -17,11 +17,60 @@ function PositionalReactiveQuery(query) {
 PositionalReactiveQuery.prototype = Object.create(ReactiveQuery.prototype);
 
 _.extend(PositionalReactiveQuery.prototype, {
-    _configureIndexes: function () {
+    _refreshIndexes: function () {
         for (var i = 0; i < this.results.length; i++) {
             var modelInstance = this.results[i];
             modelInstance[this.indexField] = i;
         }
+    },
+    _mergeIndexes: function () {
+        var results = this.results,
+            newResults = [],
+            outOfBounds = [],
+            unindexed = [];
+        console.log('results', results.length);
+
+        for (var i = 0; i < results.length; i++) {
+            var res = results[i],
+                storedIndex = res[this.indexField];
+            if (storedIndex == undefined) { // null or undefined
+                unindexed.push(res);
+            }
+            else if (storedIndex > results.length) {
+                outOfBounds.push(res);
+            }
+            else {
+                newResults[storedIndex] = res;
+            }
+        }
+        console.log('unindexed', unindexed.length);
+        console.log('outOfBounds', outOfBounds.length);
+        console.log('newResults', newResults.length);
+        outOfBounds = _.sortBy(outOfBounds, function (x) {
+            return x[this.indexField];
+        }.bind(this));
+        // Shift the index of all models with indexes out of bounds into the correct range.
+        for (i=0; i<outOfBounds.length; i++) {
+            res = outOfBounds[i];
+            var resultsIndex = this.results.length - outOfBounds.length + i;
+            res[this.indexField] = resultsIndex;
+            newResults[resultsIndex] = res;
+        }
+        unindexed = this._query._sortResults(unindexed);
+        var n = 0;
+        while (unindexed.length) {
+            res = unindexed.shift();
+            while (newResults[n]) {
+                n++;
+            }
+            newResults[n] = res;
+            res[this.indexField] = n;
+        }
+
+        this.results = newResults;
+        console.log('newResults', _.pluck(newResults, 'age'));
+
+
     },
     init: function (cb) {
         var deferred = util.defer(cb);
@@ -31,7 +80,7 @@ _.extend(PositionalReactiveQuery.prototype, {
                     err = 'Model "' + this.model.type + '" does not have an attribute named "' + this.indexField + '"';
                 }
                 else {
-                    this._configureIndexes();
+                    this._mergeIndexes();
                     this._query.clearOrdering();
                 }
             }
@@ -47,6 +96,7 @@ _.extend(PositionalReactiveQuery.prototype, {
                 // positional reactive queries.
                 if (this.initialised) {
                     this._query.clearOrdering();
+                    this._refreshIndexes();
                 }
             }
             deferred.finish(err);
@@ -65,6 +115,29 @@ _.extend(PositionalReactiveQuery.prototype, {
         if (n.field != this.indexField) {
             ReactiveQuery.prototype._handleNotif.call(this, n);
         }
+    },
+    validateIndex: function (idx) {
+        var maxIndex = this.results.length - 1,
+            minIndex = 0;
+        if (!(idx >= minIndex && idx <= maxIndex)) {
+            throw new Error('Index ' + idx.toString() + ' is out of bounds');
+        }
+    },
+    swapObjectsAtIndexes: function (from, to) {
+        //noinspection UnnecessaryLocalVariableJS
+        this.validateIndex(from);
+        this.validateIndex(to);
+        var fromModel = this.results[from],
+            toModel = this.results[to];
+        this.results[to] = fromModel;
+        this.results[from] = toModel;
+        fromModel[this.indexField] = to;
+        toModel[this.indexField] = from;
+    },
+    swapObjects: function (obj1, obj2) {
+        var fromIdx = this.results.indexOf(obj1),
+            toIdx = this.results.indexOf(obj2);
+        this.swapObjectsAtIndexes(fromIdx, toIdx);
     }
 });
 

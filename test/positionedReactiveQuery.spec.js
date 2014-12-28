@@ -160,5 +160,302 @@ describe('positioned reactive query', function () {
                 .catch(done).done();
         });
     });
-});
+
+    describe('reordering', function () {
+        beforeEach(function (done) {
+            MyCollection = s.collection('MyCollection');
+            Person = MyCollection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age', 'customIndexField']
+            });
+            s.install()
+                .then(Person.map([
+                    {name: 'Michael', age: 24},
+                    {name: 'Bob', age: 30},
+                    {name: 'John', age: 26}
+                ]))
+                .then(done)
+                .catch(done)
+                .done();
+        });
+
+        it('swapObjectsAtIndexes', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                var mike = prq.results[0],
+                    bob = prq.results[1],
+                    john = prq.results[2];
+                prq.swapObjectsAtIndexes(0, 1);
+                assert.equal(prq.results[0], bob);
+                assert.equal(prq.results[1], mike);
+                assert.equal(prq.results[2], john);
+                for (var i = 0; i < prq.results.length; i++) {
+                    assert.equal(prq.results[i][prq.indexField], i);
+                }
+                prq.terminate();
+                done();
+            }).catch(done);
+        });
+
+        it('swapObjectsAtIndexes, non-existant to index should throw error', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                assert.throws(function () {
+                    prq.swapObjectsAtIndexes(0, 4);
+                }, Error);
+                done();
+            }).catch(done);
+        });
+
+        it('swapObjectsAtIndexes, non-existant from index should throw error', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                assert.throws(function () {
+                    prq.swapObjectsAtIndexes(4, 0);
+                }, Error);
+                done();
+            }).catch(done);
+        });
+
+        it('swapObjects', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                var mike = prq.results[0],
+                    bob = prq.results[1],
+                    john = prq.results[2];
+                prq.swapObjects(mike, bob);
+                assert.equal(prq.results[0], bob);
+                assert.equal(prq.results[1], mike);
+                assert.equal(prq.results[2], john);
+                for (var i = 0; i < prq.results.length; i++) {
+                    assert.equal(prq.results[i][prq.indexField], i);
+                }
+                prq.terminate();
+                done();
+            }).catch(done);
+        });
+
+        it('swapObjects, non-existant to index should throw error', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                var mike = prq.results[0];
+                assert.throws(function () {
+                    prq.swapObjectsAtIndexes(mike, {});
+                }, Error);
+                done();
+            }).catch(done);
+        });
+
+        it('swapObjects, non-existant from index should throw error', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                var mike = prq.results[0];
+                assert.throws(function () {
+                    prq.swapObjectsAtIndexes({}, mike);
+                }, Error);
+                done();
+            }).catch(done);
+        });
+
+    });
+
+    describe('indices exist', function () {
+        beforeEach(function (done) {
+            MyCollection = s.collection('MyCollection');
+            Person = MyCollection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age', 'customIndexField']
+            });
+            s.install(done);
+        });
+        describe('full range of indexes exists', function () {
+            beforeEach(function (done) {
+                Person.map([
+                    {name: 'Michael', age: 24, customIndexField: 0},
+                    {name: 'Bob', age: 30, customIndexField: 1},
+                    {name: 'John', age: 26, customIndexField: 2}
+                ]).then(function () {
+                    done();
+                })
+                    .catch(done)
+                    .done();
+            });
+
+            it('if order before init, should retain order from old indexes', function (done) {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.orderBy('age');
+                prq.init()
+                    .then(function () {
+                        var people = prq.results;
+                        console.log('people', _.pluck(people, 'age'));
+                        assert.equal(people[0].name, 'Michael');
+                        assert.equal(people[1].name, 'Bob');
+                        assert.equal(people[2].name, 'John');
+                        for (var i=0; i<people.length; i++) {
+                            assert.equal(people[i].customIndexField, i);
+                        }
+                        prq.terminate();
+                        done();
+                    })
+                    .catch(done).done();
+            });
+
+            it('if order after init, should have new order', function (done) {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.init()
+                    .then(function () {
+                        prq.orderBy('age')
+                            .then(function () {
+                                var people = prq.results;
+                                assert(people[0].age < people[1].age);
+                                assert(people[1].age < people[2].age);
+                                for (var i=0; i<people.length; i++) {
+                                    assert.equal(people[i].customIndexField, i);
+                                }
+                                prq.terminate();
+                                done();
+                            })
+                            .catch(done)
+                            .done();
+                    })
+                    .catch(done).done();
+            });
+        });
+        it('some indexes exists, nicely ordered', function (done) {
+            Person.map([
+                {name: 'Michael', age: 24, customIndexField: 0},
+                {name: 'Bob', age: 30},
+                {name: 'John', age: 26, customIndexField: 1}
+            ]).then(function () {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.orderBy('age');
+                prq.init()
+                    .then(function () {
+                        var people = prq.results;
+                        console.log('people', _.pluck(people, 'age'));
+                        assert.equal(people[0].name, 'Michael');
+                        assert.equal(people[1].name, 'John');
+                        assert.equal(people[2].name, 'Bob');
+                        for (var i=0; i<people.length; i++) {
+                            assert.equal(people[i].customIndexField, i);
+                        }
+                        prq.terminate();
+                        done();
+                    })
+                    .catch(done).done();
+            })
+                .catch(done)
+                .done();
+        });
+
+        it('some indexes exists, sparse', function (done) {
+            Person.map([
+                {name: 'Michael', age: 24, customIndexField: 0},
+                {name: 'Bob', age: 30},
+                {name: 'John', age: 26, customIndexField: 2}
+            ]).then(function () {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.orderBy('age');
+                prq.init()
+                    .then(function () {
+                        var people = prq.results;
+                        console.log('people', _.pluck(people, 'age'));
+                        assert.equal(people[0].name, 'Michael');
+                        assert.equal(people[1].name, 'Bob');
+                        assert.equal(people[2].name, 'John');
+                        for (var i=0; i<people.length; i++) {
+                            assert.equal(people[i].customIndexField, i);
+                        }
+                        prq.terminate();
+                        done();
+                    })
+                    .catch(done).done();
+            })
+                .catch(done)
+                .done();
+        });
+
+        it('some indexes exists, very sparse', function (done) {
+            Person.map([
+                {name: 'Michael', age: 24, customIndexField: 2},
+                {name: 'Bob', age: 30},
+                {name: 'Peter', age: 21},
+                {name: 'John', age: 26}
+            ]).then(function () {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.orderBy('age');
+                prq.init()
+                    .then(function () {
+                        var people = prq.results;
+                        console.log('people', _.pluck(people, 'age'));
+                        assert.equal(people[0].name, 'Peter');
+                        assert.equal(people[1].name, 'John');
+                        assert.equal(people[2].name, 'Michael');
+                        assert.equal(people[3].name, 'Bob');
+                        for (var i=0; i<people.length; i++) {
+                            assert.equal(people[i].customIndexField, i);
+                        }
+                        prq.terminate();
+                        done();
+                    })
+                    .catch(done).done();
+            })
+                .catch(done)
+                .done();
+        });
+
+        it('out of range index should rejig the indexes', function (done) {
+            Person.map([
+                {name: 'Michael', age: 24, customIndexField: 6},
+                {name: 'Jane', age: 41, customIndexField: 10},
+                {name: 'Bob', age: 30},
+                {name: 'Peter', age: 21},
+                {name: 'John', age: 26}
+            ]).then(function () {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.orderBy('age');
+                prq.init()
+                    .then(function () {
+                        var people = prq.results;
+                        console.log('people', _.pluck(people, 'age'));
+                        assert.equal(people[0].name, 'Peter');
+                        assert.equal(people[1].name, 'John');
+                        assert.equal(people[2].name, 'Bob');
+                        assert.equal(people[3].name, 'Michael');
+                        assert.equal(people[4].name, 'Jane');
+                        for (var i=0; i<people.length; i++) {
+                            assert.equal(people[i].customIndexField, i);
+                        }
+                        prq.terminate();
+                        done();
+                    })
+                    .catch(done).done();
+            })
+                .catch(done)
+                .done();
+        });
+
+    });
+
+
+})
+;
 
