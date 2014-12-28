@@ -18,9 +18,11 @@ PositionalReactiveQuery.prototype = Object.create(ReactiveQuery.prototype);
 
 _.extend(PositionalReactiveQuery.prototype, {
     _refreshIndexes: function () {
-        for (var i = 0; i < this.results.length; i++) {
-            var modelInstance = this.results[i];
-            modelInstance[this.indexField] = i;
+        var results = this.results,
+            indexField = this.indexField;
+        for (var i = 0; i < results.length; i++) {
+            var modelInstance = results[i];
+            modelInstance[indexField] = i;
         }
     },
     _mergeIndexes: function () {
@@ -29,7 +31,6 @@ _.extend(PositionalReactiveQuery.prototype, {
             outOfBounds = [],
             unindexed = [];
         console.log('results', results.length);
-
         for (var i = 0; i < results.length; i++) {
             var res = results[i],
                 storedIndex = res[this.indexField];
@@ -50,7 +51,7 @@ _.extend(PositionalReactiveQuery.prototype, {
             return x[this.indexField];
         }.bind(this));
         // Shift the index of all models with indexes out of bounds into the correct range.
-        for (i=0; i<outOfBounds.length; i++) {
+        for (i = 0; i < outOfBounds.length; i++) {
             res = outOfBounds[i];
             var resultsIndex = this.results.length - outOfBounds.length + i;
             res[this.indexField] = resultsIndex;
@@ -114,6 +115,7 @@ _.extend(PositionalReactiveQuery.prototype, {
         // the index ourselves.
         if (n.field != this.indexField) {
             ReactiveQuery.prototype._handleNotif.call(this, n);
+            this._refreshIndexes();
         }
     },
     validateIndex: function (idx) {

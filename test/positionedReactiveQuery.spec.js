@@ -207,6 +207,7 @@ describe('positioned reactive query', function () {
                 assert.throws(function () {
                     prq.swapObjectsAtIndexes(0, 4);
                 }, Error);
+                prq.terminate();
                 done();
             }).catch(done);
         });
@@ -219,6 +220,7 @@ describe('positioned reactive query', function () {
                 assert.throws(function () {
                     prq.swapObjectsAtIndexes(4, 0);
                 }, Error);
+                prq.terminate();
                 done();
             }).catch(done);
         });
@@ -252,6 +254,7 @@ describe('positioned reactive query', function () {
                 assert.throws(function () {
                     prq.swapObjectsAtIndexes(mike, {});
                 }, Error);
+                prq.terminate();
                 done();
             }).catch(done);
         });
@@ -265,6 +268,7 @@ describe('positioned reactive query', function () {
                 assert.throws(function () {
                     prq.swapObjectsAtIndexes({}, mike);
                 }, Error);
+                prq.terminate();
                 done();
             }).catch(done);
         });
@@ -304,7 +308,7 @@ describe('positioned reactive query', function () {
                         assert.equal(people[0].name, 'Michael');
                         assert.equal(people[1].name, 'Bob');
                         assert.equal(people[2].name, 'John');
-                        for (var i=0; i<people.length; i++) {
+                        for (var i = 0; i < people.length; i++) {
                             assert.equal(people[i].customIndexField, i);
                         }
                         prq.terminate();
@@ -323,7 +327,7 @@ describe('positioned reactive query', function () {
                                 var people = prq.results;
                                 assert(people[0].age < people[1].age);
                                 assert(people[1].age < people[2].age);
-                                for (var i=0; i<people.length; i++) {
+                                for (var i = 0; i < people.length; i++) {
                                     assert.equal(people[i].customIndexField, i);
                                 }
                                 prq.terminate();
@@ -351,7 +355,7 @@ describe('positioned reactive query', function () {
                         assert.equal(people[0].name, 'Michael');
                         assert.equal(people[1].name, 'John');
                         assert.equal(people[2].name, 'Bob');
-                        for (var i=0; i<people.length; i++) {
+                        for (var i = 0; i < people.length; i++) {
                             assert.equal(people[i].customIndexField, i);
                         }
                         prq.terminate();
@@ -379,7 +383,7 @@ describe('positioned reactive query', function () {
                         assert.equal(people[0].name, 'Michael');
                         assert.equal(people[1].name, 'Bob');
                         assert.equal(people[2].name, 'John');
-                        for (var i=0; i<people.length; i++) {
+                        for (var i = 0; i < people.length; i++) {
                             assert.equal(people[i].customIndexField, i);
                         }
                         prq.terminate();
@@ -409,7 +413,7 @@ describe('positioned reactive query', function () {
                         assert.equal(people[1].name, 'John');
                         assert.equal(people[2].name, 'Michael');
                         assert.equal(people[3].name, 'Bob');
-                        for (var i=0; i<people.length; i++) {
+                        for (var i = 0; i < people.length; i++) {
                             assert.equal(people[i].customIndexField, i);
                         }
                         prq.terminate();
@@ -441,7 +445,7 @@ describe('positioned reactive query', function () {
                         assert.equal(people[2].name, 'Bob');
                         assert.equal(people[3].name, 'Michael');
                         assert.equal(people[4].name, 'Jane');
-                        for (var i=0; i<people.length; i++) {
+                        for (var i = 0; i < people.length; i++) {
                             assert.equal(people[i].customIndexField, i);
                         }
                         prq.terminate();
@@ -455,6 +459,89 @@ describe('positioned reactive query', function () {
 
     });
 
+    describe('insertion policy', function () {
+        beforeEach(function (done) {
+            MyCollection = s.collection('MyCollection');
+            Person = MyCollection.model('Person', {
+                id: 'id',
+                attributes: ['name', 'age', 'customIndexField']
+            });
+            s.install()
+                .then(Person.map([
+                    {name: 'Michael', age: 24},
+                    {name: 'Bob', age: 30},
+                    {name: 'John', age: 26}
+                ]))
+                .then(done)
+                .catch(done)
+                .done();
+        });
+        it('by default, insert at back', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.indexField = 'customIndexField';
+            prq.orderBy('age');
+            prq.init()
+                .then(function () {
+                    Person.map({name: 'Jane', age: 40})
+                        .then(function (jane) {
+                            var people = prq.results;
+                            assert.equal(people.length, 4);
+                            assert.equal(people[people.length-1], jane);
+                            for (var i = 0; i < people.length; i++) {
+                                assert.equal(people[i].customIndexField, i);
+                            }
+                            prq.terminate();
+                            done();
+                        })
+                        .catch(done);
+                })
+                .catch(done);
+        });
+        it('if Back, insert at back', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.indexField = 'customIndexField';
+            prq.insertionPolicy = s.InsertionPolicy.Back;
+            prq.orderBy('age');
+            prq.init()
+                .then(function () {
+                    Person.map({name: 'Jane', age: 40})
+                        .then(function (jane) {
+                            var people = prq.results;
+                            assert.equal(people.length, 4);
+                            assert.equal(people[people.length-1], jane);
+                            for (var i = 0; i < people.length; i++) {
+                                assert.equal(people[i].customIndexField, i);
+                            }
+                            prq.terminate();
+                            done();
+                        })
+                        .catch(done);
+                })
+                .catch(done);
+        });
+        it('if Front, insert at front', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.indexField = 'customIndexField';
+            prq.insertionPolicy = s.InsertionPolicy.Front;
+            prq.orderBy('age');
+            prq.init()
+                .then(function () {
+                    Person.map({name: 'Jane', age: 40})
+                        .then(function (jane) {
+                            var people = prq.results;
+                            assert.equal(people.length, 4);
+                            assert.equal(people[0], jane);
+                            for (var i = 0; i < people.length; i++) {
+                                assert.equal(people[i].customIndexField, i);
+                            }
+                            prq.terminate();
+                            done();
+                        })
+                        .catch(done);
+                })
+                .catch(done);
+        });
+    });
 
 })
 ;

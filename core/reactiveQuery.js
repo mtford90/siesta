@@ -32,9 +32,17 @@ function ReactiveQuery(query) {
     Object.defineProperty(this, 'initialized', {get: initialisedGet}); // For my friends across the pond
     Object.defineProperty(this, 'model', {get: function () { return self._query.model }});
     Object.defineProperty(this, 'collection', {get: function () { return self.model.collection }});
+    this.insertionPolicy = ReactiveQuery.InsertionPolicy.Back;
 }
 
 ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
+
+_.extend(ReactiveQuery, {
+    InsertionPolicy: {
+        Front: 'Front',
+        Back: 'Back'
+    }
+});
 
 _.extend(ReactiveQuery.prototype, {
     init: function (cb) {
@@ -97,7 +105,12 @@ _.extend(ReactiveQuery.prototype, {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
                 if (Logger.trace) Logger.trace('New object matches', newObj);
-                var idx = this.results.push(newObj);
+                if (this.insertionPolicy == ReactiveQuery.InsertionPolicy.Back) {
+                    var idx = this.results.push(newObj);
+                }
+                else {
+                    idx = this.results.unshift(newObj);
+                }
                 this.emit('change', {
                     index: idx,
                     added: [newObj],
@@ -174,7 +187,7 @@ _.extend(ReactiveQuery.prototype, {
         return this.collection + ':' + this.model.type;
     },
     terminate: function () {
-        if (Logger.trace) Logger.trace('terminate');
+        console.log('terminate');
         notificationCentre.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
         this.handler = null;

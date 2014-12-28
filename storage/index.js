@@ -239,6 +239,7 @@ Object.defineProperty(storage, '_pouch', {
     get: function () {return pouch}
 });
 
+
 if (typeof siesta != 'undefined') {
     if (!siesta.ext) {
         siesta.ext = {};

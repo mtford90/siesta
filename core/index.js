@@ -12,6 +12,8 @@ var collection = require('./collection'),
     Operation = require('./operation/operation').Operation,
     OperationQueue = require('./operation/queue').OperationQueue,
     RelationshipType = require('./relationship').RelationshipType,
+    PositionedReactiveQuery = require('./positionedReactiveQuery'),
+    ReactiveQuery = require('./reactiveQuery'),
     log = require('./operation/log'),
     _ = util._;
 
@@ -268,6 +270,7 @@ Object.defineProperty(siesta.serialisers, 'depth', {
     }
 });
 
+siesta.InsertionPolicy = ReactiveQuery.InsertionPolicy;
 
 Object.defineProperty(siesta, 'dirty', {
     get: function () {
