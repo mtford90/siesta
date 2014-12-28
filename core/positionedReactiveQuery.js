@@ -130,6 +130,9 @@ _.extend(PositionalReactiveQuery.prototype, {
             ReactiveQuery.prototype._handleNotif.call(this, n);
             this._refreshIndexes();
         }
+        else {
+            this.emit('change', this.results);
+        }
     },
     validateIndex: function (idx) {
         var maxIndex = this.results.length - 1,
@@ -159,6 +162,20 @@ _.extend(PositionalReactiveQuery.prototype, {
         var fromIdx = this.results.indexOf(obj1),
             toIdx = this.results.indexOf(obj2);
         this.swapObjectsAtIndexes(fromIdx, toIdx);
+    },
+    move: function (from, to) {
+        this.validateIndex(from);
+        this.validateIndex(to);
+        (function (oldIndex, newIndex) {
+            if (newIndex >= this.length) {
+                var k = newIndex - this.length;
+                while ((k--) + 1) {
+                    this.push(undefined);
+                }
+            }
+            this.splice(newIndex, 0, this.splice(oldIndex, 1)[0]);
+        }).call(this.results, from, to);
+        this._refreshIndexes();
     }
 });
 

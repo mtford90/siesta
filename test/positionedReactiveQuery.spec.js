@@ -273,6 +273,31 @@ describe('positioned reactive query', function () {
             }).catch(done);
         });
 
+        it('move', function (done) {
+            var prq = Person.positionalReactiveQuery();
+            prq.orderBy('age');
+            prq.indexField = 'customIndexField';
+            prq.init().then(function () {
+                var mike = prq.results[0],
+                    bob = prq.results[1],
+                    john = prq.results[2];
+                prq.move(2, 0);
+                assert.equal(prq.results[0], john);
+                assert.equal(prq.results[1], mike);
+                assert.equal(prq.results[2], bob);
+                for (var i = 0; i < prq.results.length; i++) {
+                    assert.equal(prq.results[i][prq.indexField], i);
+                }
+                prq.terminate();
+                done();
+            }).catch(function (err) {
+                prq.terminate();
+                done(err);
+            });
+        });
+
+
+
     });
 
     describe('indices exist', function () {
