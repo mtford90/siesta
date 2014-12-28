@@ -7,7 +7,12 @@
 var ReactiveQuery = require('./reactiveQuery'),
     log = require('./operation/log'),
     util = require('./util'),
+    InternalSiestaError = require('./error').InternalSiestaError,
     _ = util._;
+
+
+var Logger = log.loggerWithName('PositionedReactiveQuery');
+Logger.setLevel(log.Level.trace);
 
 function PositionalReactiveQuery(query) {
     ReactiveQuery.call(this, query);
@@ -20,6 +25,7 @@ _.extend(PositionalReactiveQuery.prototype, {
     _refreshIndexes: function () {
         var results = this.results,
             indexField = this.indexField;
+        if (!results) throw new InternalSiestaError('PositionalReactiveQuery must be initialised');
         for (var i = 0; i < results.length; i++) {
             var modelInstance = results[i];
             modelInstance[indexField] = i;
@@ -34,6 +40,7 @@ _.extend(PositionalReactiveQuery.prototype, {
         for (var i = 0; i < results.length; i++) {
             var res = results[i],
                 storedIndex = res[this.indexField];
+            console.log('storedIndex', storedIndex);
             if (storedIndex == undefined) { // null or undefined
                 unindexed.push(res);
             }
@@ -41,7 +48,13 @@ _.extend(PositionalReactiveQuery.prototype, {
                 outOfBounds.push(res);
             }
             else {
-                newResults[storedIndex] = res;
+                // Handle duplicate indexes
+                if (!newResults[storedIndex]) {
+                    newResults[storedIndex] = res;
+                }
+                else {
+                    unindexed.push(res);
+                }
             }
         }
         console.log('unindexed', unindexed.length);
@@ -131,6 +144,12 @@ _.extend(PositionalReactiveQuery.prototype, {
         this.validateIndex(to);
         var fromModel = this.results[from],
             toModel = this.results[to];
+        if (!fromModel) {
+            throw new Error('No model at index "' + from.toString() + '"');
+        }
+        if (!toModel) {
+            throw new Error('No model at index "' + to.toString() + '"');
+        }
         this.results[to] = fromModel;
         this.results[from] = toModel;
         fromModel[this.indexField] = to;

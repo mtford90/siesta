@@ -456,6 +456,40 @@ describe('positioned reactive query', function () {
                 .catch(done)
                 .done();
         });
+        it('duplicate indexes', function (done) {
+            Person.map([
+                {name: 'Michael', age: 24, customIndexField: 1},
+                {name: 'Jane', age: 41, customIndexField: 1},
+                {name: 'Bob', age: 30},
+                {name: 'Peter', age: 21},
+                {name: 'John', age: 26}
+            ]).then(function () {
+                var prq = Person.positionalReactiveQuery();
+                prq.indexField = 'customIndexField';
+                prq.orderBy('age');
+                prq.init()
+                    .then(function () {
+                        var people = prq.results;
+                        console.log('people', _.pluck(people, 'age'));
+                        assert.equal(people[0].name, 'Peter');
+                        assert.equal(people[1].name, 'Michael');
+                        assert.equal(people[2].name, 'John');
+                        assert.equal(people[3].name, 'Bob');
+                        assert.equal(people[4].name, 'Jane');
+                        for (var i = 0; i < people.length; i++) {
+                            assert.equal(people[i].customIndexField, i);
+                        }
+                        prq.terminate();
+                        done();
+                    })
+                    .catch(function (err) {
+                        prq.terminate();
+                        done(err);
+                    }).done();
+            })
+                .catch(done)
+                .done();
+        });
 
     });
 
