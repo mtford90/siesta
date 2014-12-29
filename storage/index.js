@@ -231,8 +231,7 @@ if (typeof siesta != 'undefined') {
         siesta.ext = {};
     }
     siesta.ext.storage = storage;
-    siesta.autosaveDuration = 250;
-    var interval, saving;
+    var interval, saving, autosaveDuration = 1000;
     Object.defineProperty(siesta, 'autosave', {
         get: function () {
             return !!interval;
@@ -263,6 +262,19 @@ if (typeof siesta != 'undefined') {
             }
         }
     });
+    Object.defineProperty(siesta, 'autosaveDuration', {
+        get: function () {
+            return autosaveDuration;
+        },
+        set: function (_autosaveDuration) {
+            autosaveDuration = _autosaveDuration;
+            if (interval) {
+                // Reset interval
+                siesta.autosave = false;
+                siesta.autosave = true;
+            }
+        }
+    })
 }
 else {
     throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');

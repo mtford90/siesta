@@ -516,7 +516,6 @@ describe('storage', function () {
         });
 
 
-
     });
 
     describe('inspection', function () {
@@ -595,5 +594,53 @@ describe('storage', function () {
 
 
     });
+
+    describe('singleton', function () {
+        var Pomodoro, ColourConfig;
+
+        beforeEach(function () {
+            Pomodoro = siesta.collection('Pomodoro');
+            ColourConfig = Pomodoro.model('ColourConfig', {
+                attributes: ['primary', 'shortBreak', 'longBreak'],
+                singleton: true
+            });
+        });
+
+        it('repeated saves', function (done) {
+            s.ext.storage._pouch.put({
+                collection: 'Pomodoro',
+                model: 'ColourConfig',
+                primary: 'red',
+                shortBreak: 'blue',
+                longBreak: 'green',
+                _id: 'xyz'
+            }).then(function () {
+                s.install(function () {
+                    ColourConfig.get()
+                        .then(function (colourConfig) {
+                            assert.equal(colourConfig.primary, 'red');
+                            assert.equal(colourConfig.shortBreak, 'blue');
+                            assert.equal(colourConfig.longBreak, 'green');
+                            s.save()
+                                .then(function () {
+                                    s.ext.storage._pouch.query(function (doc) {
+                                        if (doc.model == 'ColourConfig') {
+                                            emit(doc._id, doc);
+                                        }
+                                    }, {include_docs: true})
+                                        .then(function (resp) {
+                                            var rows = resp.rows;
+                                            console.log('rows', rows);
+                                            assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
+                                            done();
+                                        }).catch(done);
+                                }).catch(done);
+                        }).catch(done)
+                }).catch(done);
+            }).catch(done);
+        });
+
+    });
+
 
 });

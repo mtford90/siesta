@@ -259,18 +259,30 @@ _.extend(Model.prototype, {
             // Ensure that the singleton objects exist, and that all singleton relationships
             // are hooked up.
             // TODO: Any parent singletons will be having empty data mapped twice when their own finalise is called... Pointless.
-            var data = {};
-            var relationships = this.relationships;
-            data = _.reduce(Object.keys(relationships), function (m, name) {
-                var r = relationships[name];
-                if (r.isReverse) {
-                    data[r.reverseName] = {};
+            this.get(function (err, obj) {
+                if (err) {
+                    callback(err);
                 }
-                return data;
-            }, data);
-            this.map(data, function (err, obj) {
-                if (Logger.trace) Logger.trace('Finalised installation for singleton mapping "' + this.type + '"', obj);
-                callback(err, obj);
+                else {
+                    if (!obj) {
+                        var data = {};
+                        var relationships = this.relationships;
+                        data = _.reduce(Object.keys(relationships), function (m, name) {
+                            var r = relationships[name];
+                            if (r.isReverse) {
+                                data[r.reverseName] = {};
+                            }
+                            return data;
+                        }, data);
+                        this.map(data, function (err, obj) {
+                            if (Logger.trace) Logger.trace('Finalised installation for singleton mapping "' + this.type + '"', obj);
+                            callback(err, obj);
+                        }.bind(this));
+                    }
+                    else {
+                        callback(null, obj);
+                    }
+                }
             }.bind(this));
         }
         else callback();
@@ -327,9 +339,6 @@ _.extend(Model.prototype, {
 
         }
         return deferred ? deferred.promise : null;
-    },
-    _createSingleton: function () {
-        return this.map({});
     },
     all: function () {
         return new Query(this, {});
