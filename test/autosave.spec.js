@@ -9,6 +9,10 @@ describe('auto save', function() {
         s.ext.storageEnabled = true;
     });
 
+    afterEach(function () {
+        s.autosave = false;
+    });
+
     beforeEach(function(done) {
         s.reset(function() {
             MyCollection = s.collection('MyCollection');
@@ -22,21 +26,21 @@ describe('auto save', function() {
 
     it('autosaves on changes if enabled', function (done) {
         s.autosave = true;
+        s.once('saved', function () {
+            s.ext.storage._pouch.allDocs()
+                .then(function (resp) {
+                    assert.ok(resp.rows.length, 'Should be a row');
+                    var person = resp.rows[0];
+                    done();
+                })
+                .catch(done);
+        });
         Person.map({name: 'Mike', age: 24})
-            .then(function () {
-                s.ext.storage._pouch.allDocs()
-                    .then(function (resp) {
-                        assert.ok(resp.rows.length, 'Should be a row');
-                        var person = resp.rows[0];
-                        done();
-                    })
-                    .catch(done);
-            })
             .catch(done)
             .done();
     });
 
-    it('does not autosave on changes if disabled', function (done) {
+    it('does not interval on changes if disabled', function (done) {
         s.autosave = false;
         Person.map({name: 'Mike', age: 24})
             .then(function () {

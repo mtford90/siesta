@@ -13,6 +13,7 @@ var unsavedObjects = [],
     _i = siesta._internal,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
+    notificationCentre = _i.notificationCentre.notificationCentre,
     pouch = new PouchDB(DB_NAME);
 
 var Logger = log.loggerWithName('Storage');
@@ -216,24 +217,9 @@ Object.defineProperty(storage, '_unsavedObjectsByCollection', {
 });
 
 // Enable/disable autosaving.
-var autosaveListener;
-Object.defineProperty(siesta, 'autosave', {
-    get: function () {
-        return !!autosaveListener;
-    },
-    set: function () {
-        if (!autosaveListener) {
-            autosaveListener = function () {
-                siesta.save();
-            };
-            siesta.on('Siesta', autosaveListener);
-        }
-        else {
-            siesta.removeListener('Siesta', autosaveListener);
-            autosaveListener = null;
-        }
-    }
-});
+console.log('wtf');
+
+
 
 Object.defineProperty(storage, '_pouch', {
     get: function () {return pouch}
@@ -245,6 +231,41 @@ if (typeof siesta != 'undefined') {
         siesta.ext = {};
     }
     siesta.ext.storage = storage;
+    siesta.autosaveDuration = 250;
+    var interval, saving;
+    Object.defineProperty(siesta, 'autosave', {
+        get: function () {
+            return !!interval;
+        },
+        set: function (autosave) {
+            console.log('yo');
+            if (autosave) {
+                if (!interval) {
+                    interval = setInterval(function () {
+                        // Cheeky way of avoiding multiple saves happening...
+                        if (!saving) {
+                            saving = true;
+                            siesta.save(function (err) {
+                                if (!err) {
+                                    notificationCentre.emit('saved');
+                                }
+                                saving = false;
+                            });
+                        }
+                    }, siesta.autosaveDuration);
+                }
+            }
+            else {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
+            }
+        }
+    });
+}
+else {
+    throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
 }
 
 if (typeof module != 'undefined') {

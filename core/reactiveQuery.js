@@ -98,6 +98,15 @@ _.extend(ReactiveQuery.prototype, {
             return deferred.promise;
         }
     },
+    insert: function (newObj) {
+        if (this.insertionPolicy == ReactiveQuery.InsertionPolicy.Back) {
+            var idx = this.results.push(newObj);
+        }
+        else {
+            idx = this.results.unshift(newObj);
+        }
+        return idx;
+    },
     _handleNotif: function (n) {
         if (Logger.trace) Logger.trace('_handleNotif', n);
         if (!this.results) throw Error('ReactiveQuery must be initialised before receiving notifications.');
@@ -105,12 +114,7 @@ _.extend(ReactiveQuery.prototype, {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
                 if (Logger.trace) Logger.trace('New object matches', newObj);
-                if (this.insertionPolicy == ReactiveQuery.InsertionPolicy.Back) {
-                    var idx = this.results.push(newObj);
-                }
-                else {
-                    idx = this.results.unshift(newObj);
-                }
+                var idx = this.insert(newObj);
                 this.emit('change', {
                     index: idx,
                     added: [newObj],
@@ -130,7 +134,7 @@ _.extend(ReactiveQuery.prototype, {
                 matches = this._query.objectMatchesQuery(newObj);
             if (matches && !alreadyContains) {
                 if (Logger.trace) Logger.trace('Updated object now matches!', newObj);
-                idx = this.results.push(newObj);
+                idx = this.insert(newObj);
                 this.emit('change', this.results, {
                     index: idx,
                     added: [newObj],
