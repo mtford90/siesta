@@ -84,33 +84,32 @@ Object.defineProperty(siesta, 'dirty', {
     enumerable: true
 });
 
-Object.defineProperty(siesta.ext, 'httpEnabled', {
-    // TODO: move to http?
-    get: function () {
-        console.log('http?', siesta.ext);
-        if (siesta.ext._httpEnabled !== undefined) {
-            return siesta.ext._httpEnabled;
-        }
-        return !!siesta.ext.http;
+Object.defineProperties(siesta.ext, {
+    httpEnabled: {
+        get: function () {
+            console.log('http?', siesta.ext);
+            if (siesta.ext._httpEnabled !== undefined) {
+                return siesta.ext._httpEnabled;
+            }
+            return !!siesta.ext.http;
+        },
+        set: function (v) {
+            siesta.ext._httpEnabled = v;
+        },
+        enumerable: true
     },
-    set: function (v) {
-        siesta.ext._httpEnabled = v;
-    },
-    enumerable: true
-});
-
-Object.defineProperty(siesta.ext, 'storageEnabled', {
-    // TODO: move to storage?
-    get: function () {
-        if (siesta.ext._storageEnabled !== undefined) {
-            return siesta.ext._storageEnabled;
-        }
-        return !!siesta.ext.storage;
-    },
-    set: function (v) {
-        siesta.ext._storageEnabled = v;
-    },
-    enumerable: true
+    storageEnabled: {
+        get: function () {
+            if (siesta.ext._storageEnabled !== undefined) {
+                return siesta.ext._storageEnabled;
+            }
+            return !!siesta.ext.storage;
+        },
+        set: function (v) {
+            siesta.ext._storageEnabled = v;
+        },
+        enumerable: true
+    }
 });
 
 

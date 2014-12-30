@@ -66,7 +66,7 @@ function Model(opts) {
     });
 
 
-    util.defineProperties(this, {
+    Object.defineProperties(this, {
         _relationshipNames: {
             get: function () {
                 return Object.keys(self.relationships);

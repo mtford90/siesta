@@ -133,16 +133,6 @@ _.extend(module.exports, {
             configurable: true
         });
     },
-    /**
-     * I got sick of writing Object.defineProperty. This function allows to do so in bulk.
-     * @param obj
-     * @param opts
-     */
-    defineProperties: function (obj, opts) {
-        _.each(Object.keys(opts), function (k) {
-            Object.defineProperty(obj, k, opts[k]);
-        });
-    },
     capitaliseFirstLetter: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
