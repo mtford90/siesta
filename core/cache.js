@@ -8,15 +8,16 @@ var log = require('./operation/log')
     , util = require('./util');
 
 
-var LocalCacheLogger = log.loggerWithName('LocalCache')
-    , RemoteCacheLogger = log.loggerWithName('RemoteCache');
+var LocalCacheLogger = log.loggerWithName('LocalCache'),
+    RemoteCacheLogger = log.loggerWithName('RemoteCache');
+
 RemoteCacheLogger.setLevel(log.Level.warn);
-LocalCacheLogger.setLevel(log.Level.local);
+LocalCacheLogger.setLevel(log.Level.trace);
 
 
-var localCacheById,
-    localCache,
-    remoteCache;
+var localCacheById = {},
+    localCache = {},
+    remoteCache = {};
 
 /**
  * Clear out the cache.
@@ -27,7 +28,6 @@ function reset() {
     localCache = {};
 }
 
-reset();
 
 /**
  * Return the object in the cache given a local id (_id)
@@ -65,9 +65,10 @@ function getSingleton(model) {
                 }
             }
             if (objs.length > 1) {
-                throw new InternalSiestaError('A singleton model has more than 1 object in the cache! This is a serious error. ' +
-                'Either a model has been modified after objects have already been created, or something has gone' +
-                'very wrong. Please file a bug report if the latter.');
+                var errStr = 'A singleton model has more than 1 object in the cache! This is a serious error. ' +
+                    'Either a model has been modified after objects have already been created, or something has gone' +
+                    'very wrong. Please file a bug report if the latter.';
+                throw new InternalSiestaError(errStr);
             } else if (objs.length) {
                 return objs[0];
             }
@@ -92,16 +93,16 @@ function getViaRemoteId(remoteId, opts) {
         if (typeCache) {
             var obj = typeCache[remoteId];
             if (obj) {
-                if (RemoteCacheLogger.debug.isEnabled)
+                if (RemoteCacheLogger.debug)
                     RemoteCacheLogger.debug('Remote cache hit: ' + obj._dump(true));
             } else {
-                if (RemoteCacheLogger.debug.isEnabled)
+                if (RemoteCacheLogger.debug)
                     RemoteCacheLogger.debug('Remote cache miss: ' + remoteId);
             }
             return obj;
         }
     }
-    if (RemoteCacheLogger.debug.isEnabled)
+    if (RemoteCacheLogger.debug)
         RemoteCacheLogger.debug('Remote cache miss: ' + remoteId);
     return null;
 }

@@ -387,44 +387,32 @@ _.extend(Model.prototype, {
      * @param {function} [callback] Called once pouch persistence returns.
      */
     map: function (data, optsOrCallback, callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
         var opts;
-        if (typeof optsOrCallback == 'function') {
-            callback = optsOrCallback;
-            opts = {};
-        }
-        else if (optsOrCallback) {
-            opts = optsOrCallback;
-        }
-        else {
-            opts = {};
-        }
+        if (typeof optsOrCallback == 'function') callback = optsOrCallback;
+        else if (optsOrCallback) opts = optsOrCallback;
+        opts = opts || {};
+        var deferred = util.defer(callback);
         if (this.installed) {
             if (util.isArray(data)) {
-                this._mapBulk(data, opts, callback);
+                this._mapBulk(data, opts, deferred.finish);
             } else {
                 if (opts.override) opts.override = [opts.override];
                 this._mapBulk([data], opts, function (err, objects) {
-                    if (callback) {
-                        var obj;
-                        if (objects) {
-                            if (objects.length) {
-                                obj = objects[0];
-                            }
+                    var obj;
+                    if (objects) {
+                        if (objects.length) {
+                            obj = objects[0];
                         }
-                        callback(err ? err[0] : null, obj);
                     }
+                    deferred.finish(err ? err[0] : null, obj);
                 });
             }
         } else {
             throw new InternalSiestaError('Model must be fully installed before creating any models');
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     _mapBulk: function (data, opts, callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
         var override = opts.override;
         var mappingOpts = {
             model: this,
@@ -443,7 +431,6 @@ _.extend(Model.prototype, {
             }
         });
         op.start();
-        return deferred ? deferred.promise : null;
     },
     _countCache: function () {
         var collCache = cache._localCacheByType[this.collection] || {};

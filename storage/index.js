@@ -10,6 +10,7 @@ var _i = siesta._internal,
     cache = _i.cache,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
+    util = _i.util,
     notificationCentre = _i.notificationCentre.notificationCentre;
 
 var DB_NAME = 'siesta',
@@ -110,8 +111,7 @@ function _loadModel(opts, callback) {
  * Load all data from PouchDB.
  */
 function _load(callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = callback || function () {};
+    var deferred = util.defer(callback);
     var collectionNames = CollectionRegistry.collectionNames;
     var tasks = [];
     _.each(collectionNames, function (collectionName) {
@@ -128,11 +128,9 @@ function _load(callback) {
         var instances = [];
         siesta.each(results, function (r) {instances.concat(r)});
         if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
-        callback(err, instances);
-        if (err) deferred.reject(err);
-        else deferred.resolve(instances);
+        deferred.finish(err);
     });
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 function saveConflicts(objects, callback, deferred) {
