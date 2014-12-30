@@ -14,23 +14,23 @@ Logger.setLevel(log.Level.warn);
 function ModelInstance(model) {
     var self = this;
     this.model = model;
-    Object.defineProperty(this, 'idField', {
-        get: function () {
-            return self.model.id || 'id';
+
+    Object.defineProperties(this, {
+        idField: {
+            get: function () {
+                return self.model.id || 'id';
+            },
+            enumerable: true
         },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(this, 'modelName', {
-        get: function () {
-            return this.model.name
-        }.bind(this)
+        modelName: {
+            get: function () {
+                return self.model.name
+            }
+        }
     });
 
-    defineSubProperty.call(this, 'type', this.model);
-    defineSubProperty.call(this, 'collection', this.model);
-    defineSubProperty.call(this, 'collectionName', this.model);
-    defineSubProperty.call(this, '_attributeNames', this.model);
+    util.subProperties(this, this.model, 'collection', 'collectionName', '_attributeNames');
+
     Object.defineProperty(this, '_relationshipNames', {
         get: function () {
             var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});

@@ -16,7 +16,10 @@ function cb(callback, deferred) {
     };
 }
 
-_.extend(module.exports, {
+var isArray = Array.isArray || function (obj) {
+    return _.toString.call(obj) === '[object Array]';
+
+};_.extend(module.exports, {
     /**
      * Performs dirty check/Object.observe callbacks depending on the browser.
      *
@@ -133,6 +136,36 @@ _.extend(module.exports, {
             configurable: true
         });
     },
+    defineSubPropertyNoSet: function (property, subObj, innerProperty) {
+        return Object.defineProperty(this, property, {
+            get: function () {
+                if (innerProperty) {
+                    return subObj[innerProperty];
+                }
+                else {
+                    return subObj[property];
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
+    },
+    subProperties: function (obj, subObj, properties) {
+        if (!isArray(properties)) {
+            properties = Array.prototype.slice.call(arguments, 2);
+        }
+        for (var i=0;i<properties.length;i++) {
+            (function (property) {
+                Object.defineProperty(obj, property, {
+                    get: function () {
+                        return subObj[property];
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+            })(properties[i]);
+        }
+    },
     capitaliseFirstLetter: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
@@ -157,7 +190,5 @@ _.extend(module.exports, {
     isString: function (o) {
         return typeof o == 'string' || o instanceof String
     },
-    isArray: Array.isArray || function (obj) {
-        return _.toString.call(obj) === '[object Array]';
-    }
+    isArray: isArray
 });
