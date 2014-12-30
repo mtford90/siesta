@@ -606,6 +606,19 @@ describe('storage', function () {
             });
         });
 
+        function extracted(cb) {
+            s.ext.storage._pouch.query(function (doc) {
+                if (doc.model == 'ColourConfig') {
+                    emit(doc._id, doc);
+                }
+            }, {include_docs: true})
+                .then(function (resp) {
+                    var rows = resp.rows;
+                    console.log('rows', rows);
+                    cb(null, rows);
+                }).catch(cb);
+        }
+
         it('repeated saves', function (done) {
             s.ext.storage._pouch.put({
                 collection: 'Pomodoro',
@@ -618,23 +631,26 @@ describe('storage', function () {
                 s.install(function () {
                     ColourConfig.get()
                         .then(function (colourConfig) {
-                            assert.equal(colourConfig.primary, 'red');
-                            assert.equal(colourConfig.shortBreak, 'blue');
-                            assert.equal(colourConfig.longBreak, 'green');
-                            s.save()
-                                .then(function () {
-                                    s.ext.storage._pouch.query(function (doc) {
-                                        if (doc.model == 'ColourConfig') {
-                                            emit(doc._id, doc);
-                                        }
-                                    }, {include_docs: true})
-                                        .then(function (resp) {
-                                            var rows = resp.rows;
-                                            console.log('rows', rows);
-                                            assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
-                                            done();
+                            extracted(function (err, rows) {
+                                if (!err) {
+                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
+                                    assert.equal(colourConfig.primary, 'red');
+                                    assert.equal(colourConfig.shortBreak, 'blue');
+                                    assert.equal(colourConfig.longBreak, 'green');
+                                    s.save()
+                                        .then(function () {
+                                            extracted(function (err, rows) {
+                                                if (!err) {
+                                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
+                                                    done();
+                                                }
+                                                else done(err);
+                                            });
                                         }).catch(done);
-                                }).catch(done);
+                                }
+                                else done(err);
+                            });
+
                         }).catch(done)
                 }).catch(done);
             }).catch(done);

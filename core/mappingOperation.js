@@ -301,7 +301,17 @@ _.extend(BulkMappingOperation.prototype, {
         callback = util.cb(callback, deferred);
         var self = this;
         this.model.get(function (err, singleton) {
-            if (!singleton) singleton = self.model._new();
+            // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
+            // always be the same. This is just a precaution.
+            var _ids = _.pluck(self.data, '_id'),
+                _id;
+            for (i = 0; i < _ids.length; i++) {
+                if (_ids[i]) {
+                    _id = {_id: _ids[i]};
+                    break;
+                }
+            }
+            if (!singleton) singleton = self.model._new(_id);
             if (!err) {
                 for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = singleton;

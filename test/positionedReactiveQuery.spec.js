@@ -69,7 +69,9 @@ describe('positioned reactive query', function () {
                     {name: 'Bob', age: 30},
                     {name: 'John', age: 26}
                 ]))
-                .then(done)
+                .then(function () {
+                    done()
+                })
                 .catch(done)
                 .done();
         });
@@ -174,7 +176,9 @@ describe('positioned reactive query', function () {
                     {name: 'Bob', age: 30},
                     {name: 'John', age: 26}
                 ]))
-                .then(done)
+                .then(function () {
+                    done()
+                })
                 .catch(done)
                 .done();
         });
@@ -295,7 +299,6 @@ describe('positioned reactive query', function () {
                 done(err);
             });
         });
-
 
 
     });
@@ -531,7 +534,9 @@ describe('positioned reactive query', function () {
                     {name: 'Bob', age: 30},
                     {name: 'John', age: 26}
                 ]))
-                .then(done)
+                .then(function () {
+                    done()
+                })
                 .catch(done)
                 .done();
         });
@@ -545,7 +550,7 @@ describe('positioned reactive query', function () {
                         .then(function (jane) {
                             var people = prq.results;
                             assert.equal(people.length, 4);
-                            assert.equal(people[people.length-1], jane);
+                            assert.equal(people[people.length - 1], jane);
                             for (var i = 0; i < people.length; i++) {
                                 assert.equal(people[i].customIndexField, i);
                             }
@@ -567,7 +572,7 @@ describe('positioned reactive query', function () {
                         .then(function (jane) {
                             var people = prq.results;
                             assert.equal(people.length, 4);
-                            assert.equal(people[people.length-1], jane);
+                            assert.equal(people[people.length - 1], jane);
                             for (var i = 0; i < people.length; i++) {
                                 assert.equal(people[i].customIndexField, i);
                             }

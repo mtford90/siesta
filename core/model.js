@@ -30,7 +30,7 @@ var log = require('./operation/log')
     ;
 
 var Logger = log.loggerWithName('Model');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  *
@@ -251,14 +251,8 @@ _.extend(Model.prototype, {
             throw new InternalSiestaError('Reverse relationships for "' + this.type + '" have already been installed.');
         }
     },
-    /**
-     * Any post installation steps that need to be performed.
-     */
-    finaliseInstallation: function (callback) {
+    ensureSingletons: function (callback) {
         if (this.singleton) {
-            // Ensure that the singleton objects exist, and that all singleton relationships
-            // are hooked up.
-            // TODO: Any parent singletons will be having empty data mapped twice when their own finalise is called... Pointless.
             this.get(function (err, obj) {
                 if (err) {
                     callback(err);
@@ -275,15 +269,29 @@ _.extend(Model.prototype, {
                             return data;
                         }, data);
                         this.map(data, function (err, obj) {
-                            if (Logger.trace) Logger.trace('Finalised installation for singleton mapping "' + this.type + '"', obj);
+                            if (Logger.trace) Logger.trace('Ensured singleton mapping "' + this.type + '"', obj);
                             callback(err, obj);
                         }.bind(this));
                     }
                     else {
+                        if (Logger.trace) Logger.trace('Singleton already exists for mapping "' + this.type + '"', obj);
                         callback(null, obj);
                     }
                 }
             }.bind(this));
+        }
+        else {
+            callback();
+        }
+    }, /**
+     * Any post installation steps that need to be performed.
+     */
+    finaliseInstallation: function (callback) {
+        if (this.singleton) {
+            // Ensure that the singleton objects exist, and that all singleton relationships
+            // are hooked up.
+            // TODO: Any parent singletons will be having empty data mapped twice when their own finalise is called... Pointless.
+            this.ensureSingletons(callback);
         }
         else callback();
     },

@@ -130,31 +130,12 @@ _.extend(Collection.prototype, {
                                 if (err) errors.push(err);
                             });
                         }
-                        if (!errors.length) {
-                            var tasks = _.map(modelsToInstall, function (m) {
-                                return function (cb) {
-                                    m.finaliseInstallation(cb);
-                                }
-                            });
-                            util.parallel(tasks, function (_errors) {
-                                errors = errors.concat.apply(errors, _errors);
-                                var err;
-                                if (errors.length == 1) {
-                                    err = errors[0];
-                                } else if (errors.length) {
-                                    err = errors;
-                                }
-                                self._finaliseInstallation(err, callback, deferred);
-                            })
+                        if (errors.length == 1) {
+                            err = errors[0];
+                        } else if (errors.length) {
+                            err = errors;
                         }
-                        else {
-                            if (errors.length == 1) {
-                                err = errors[0];
-                            } else if (errors.length) {
-                                err = errors;
-                            }
-                            self._finaliseInstallation(err, callback, deferred);
-                        }
+                        self._finaliseInstallation(err, callback, deferred);
                     }
                 });
 

@@ -317,7 +317,6 @@ siesta.save = function () {
 };
 
 
-
 /**
  * Install all collections.
  * @param {Function} [callback]
@@ -337,15 +336,42 @@ siesta.install = function (callback) {
             callback(err);
         }
         else {
+            var ensureSingletons = function (err) {
+                if (!err) {
+                    var ensureSingletonTasks = [];
+                    for (var i = 0; i < collectionNames.length; i++) {
+                        var collection = CollectionRegistry[collectionNames[i]],
+                            modelNames = Object.keys(collection._models);
+                        for (var j = 0; j < modelNames.length; j++) {
+                            var modelName = modelNames[j],
+                                model = collection[modelName];
+                            var fn = function (done) {
+                                console.log('wtf', this.type);
+                                this.ensureSingletons(done);
+                            }.bind(model);
+                            ensureSingletonTasks.push(fn);
+                        }
+                    }
+                    console.log('ensureSingletonTasks', ensureSingletonTasks);
+                    siesta.parallel(ensureSingletonTasks, function (err, res) {
+                        console.log('wtf');
+                        callback(err, res);
+                    });
+                }
+                else {
+                    callback(err);
+                }
+            };
             if (siesta.ext.storageEnabled) {
                 // Load models from PouchDB.
-                siesta.ext.storage._load(callback);
+                siesta.ext.storage._load(ensureSingletons);
             }
             else {
-                callback();
+                ensureSingletons();
             }
         }
     });
+
     return deferred ? deferred.promise : null;
 };
 

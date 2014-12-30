@@ -11,6 +11,7 @@ var unsavedObjects = [],
     unsavedObjectsHash = {},
     unsavedObjectsByCollection = {},
     _i = siesta._internal,
+    cache = _i.cache,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
     notificationCentre = _i.notificationCentre.notificationCentre,
@@ -141,28 +142,6 @@ function _load(callback) {
         else deferred.resolve(instances);
     });
     return deferred ? deferred.promise : null;
-    //var deferred = window.q ? window.q.defer() : null;
-    //callback = callback || function () {};
-    //var mapFunc = function (doc) {
-    //    emit(doc._id, doc);
-    //}.toString();
-    //pouch.query({map: mapFunc}).then(function (resp) {
-    //    var tasks = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
-    //        return function (done) {
-    //            _deserialise(datum, done)
-    //        }
-    //    });
-    //    siesta.parallel(tasks, function (err, instances) {
-    //        if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
-    //        callback(err, instances);
-    //        if (err) deferred.reject(err);
-    //        else deferred.resolve(instances);
-    //    });
-    //}).catch(function (err) {
-    //    callback(err);
-    //    if (deferred) deferred.reject(err);
-    //});
-    //return deferred ? deferred.promise : null;
 }
 
 function saveConflicts(objects, callback, deferred) {

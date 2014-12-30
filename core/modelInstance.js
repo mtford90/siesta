@@ -59,20 +59,23 @@ _.extend(ModelInstance.prototype, {
         callback(null, this);
         return deferred ? deferred.promise : null;
     },
-    remove: function (callback) {
+    remove: function (callback, notification) {
+        notification = notification == null ? true : notification;
         var deferred = window.q ? window.q.defer() : null;
         callback = util.cb(callback, deferred);
         cache.remove(this);
         this.removed = true;
-        coreChanges.registerChange({
-            collection: this.collection,
-            model: this.model.type,
-            _id: this._id,
-            oldId: this._id,
-            old: this,
-            type: coreChanges.ChangeType.Remove,
-            obj: this
-        });
+        if (notification) {
+            coreChanges.registerChange({
+                collection: this.collection,
+                model: this.model.type,
+                _id: this._id,
+                oldId: this._id,
+                old: this,
+                type: coreChanges.ChangeType.Remove,
+                obj: this
+            });
+        }
         callback(null, this);
         return deferred ? deferred.promise : null;
     },

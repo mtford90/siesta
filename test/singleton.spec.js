@@ -129,29 +129,31 @@ describe('singleton mapping', function () {
         var MoreComplicatedCollection, ParentConfig,
             FirstChildConfig, SecondChildConfig;
         beforeEach(function (done) {
-            MoreComplicatedCollection = s.collection('MyCollection');
-            ParentConfig = MoreComplicatedCollection.model('ParentConfig', {
-                relationships: {
-                    settings: {
-                        model: 'FirstChildConfig',
-                        reverse: 'parent'
+            s.reset(function () {
+                MoreComplicatedCollection = s.collection('MyCollection');
+                ParentConfig = MoreComplicatedCollection.model('ParentConfig', {
+                    relationships: {
+                        settings: {
+                            model: 'FirstChildConfig',
+                            reverse: 'parent'
+                        },
+                        otherSettings: {
+                            model: 'SecondChildConfig',
+                            reverse: 'parent'
+                        }
                     },
-                    otherSettings: {
-                        model: 'SecondChildConfig',
-                        reverse: 'parent'
-                    }
-                },
-                singleton: true
+                    singleton: true
+                });
+                FirstChildConfig = MoreComplicatedCollection.model('FirstChildConfig', {
+                    attributes: ['field1', 'field2'],
+                    singleton: true
+                });
+                SecondChildConfig = MoreComplicatedCollection.model('SecondChildConfig', {
+                    attributes: ['field3', 'field4'],
+                    singleton: true
+                });
+                s.install(done);
             });
-            FirstChildConfig = MoreComplicatedCollection.model('FirstChildConfig', {
-                attributes: ['field1', 'field2'],
-                singleton: true
-            });
-            SecondChildConfig = MoreComplicatedCollection.model('SecondChildConfig', {
-                attributes: ['field3', 'field4'],
-                singleton: true
-            });
-            MoreComplicatedCollection.install(done);
         });
 
         it('relationships are automatically setup', function (done) {
