@@ -29,7 +29,7 @@ var log = require('./operation/log')
     ;
 
 var Logger = log.loggerWithName('Model');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 /**
  *

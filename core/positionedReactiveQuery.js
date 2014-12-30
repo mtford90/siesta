@@ -12,7 +12,7 @@ var ReactiveQuery = require('./reactiveQuery'),
 
 
 var Logger = log.loggerWithName('PositionedReactiveQuery');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 function PositionalReactiveQuery(query) {
     ReactiveQuery.call(this, query);
@@ -36,11 +36,9 @@ _.extend(PositionalReactiveQuery.prototype, {
             newResults = [],
             outOfBounds = [],
             unindexed = [];
-        console.log('results', results.length);
         for (var i = 0; i < results.length; i++) {
             var res = results[i],
                 storedIndex = res[this.indexField];
-            console.log('storedIndex', storedIndex);
             if (storedIndex == undefined) { // null or undefined
                 unindexed.push(res);
             }
@@ -57,9 +55,6 @@ _.extend(PositionalReactiveQuery.prototype, {
                 }
             }
         }
-        console.log('unindexed', unindexed.length);
-        console.log('outOfBounds', outOfBounds.length);
-        console.log('newResults', newResults.length);
         outOfBounds = _.sortBy(outOfBounds, function (x) {
             return x[this.indexField];
         }.bind(this));
@@ -82,7 +77,6 @@ _.extend(PositionalReactiveQuery.prototype, {
         }
 
         this.results = newResults;
-        console.log('newResults', _.pluck(newResults, 'age'));
 
 
     },

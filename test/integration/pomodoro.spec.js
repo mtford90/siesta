@@ -176,7 +176,6 @@ describe('pomodoro', function () {
                                         },{include_docs: true})
                                             .then(function (resp) {
                                                 var rows = resp.rows;
-                                                console.log('rows', rows);
                                                 assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
                                                 done();
                                             })

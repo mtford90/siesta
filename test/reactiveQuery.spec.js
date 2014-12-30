@@ -72,7 +72,6 @@ describe('reactive query', function () {
                 }
 
                 it('results are as expected', function (done) {
-                    console.log('start new matching query');
                     Person.map(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
@@ -94,7 +93,6 @@ describe('reactive query', function () {
                 });
 
                 it('emission', function (done) {
-                    console.log('start new matching query');
                     Person.map(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {

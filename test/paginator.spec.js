@@ -1,7 +1,7 @@
 //var s = require('../core/index');
 //var assert = require('chai').assert;
 //
-//describe.only('paginator', function () {
+//describe('paginator', function () {
 //    var Car, MyCollection;
 //    var server;
 //

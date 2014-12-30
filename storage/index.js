@@ -21,7 +21,7 @@ var unsavedObjects = [],
     unsavedObjectsByCollection = {};
 
 var Logger = log.loggerWithName('Storage');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 /**
  * Serialise a model down to PouchDB.
@@ -90,7 +90,6 @@ function _loadModel(opts, callback) {
             var data = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
                 return _prepareDatum(datum, Model);
             });
-            console.log('data', data);
             Model.map(data, {disableNotifications: true}, function (err, instances) {
                 if (!err) {
                     if (Logger.trace)
@@ -262,7 +261,6 @@ Object.defineProperty(siesta, 'autosave', {
         return !!interval;
     },
     set: function (autosave) {
-        console.log('yo');
         if (autosave) {
             if (!interval) {
                 interval = setInterval(function () {

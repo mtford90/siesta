@@ -83,7 +83,6 @@ describe('positioned reactive query', function () {
                     Person.all().orderBy('age')
                         .execute()
                         .then(function (people) {
-                            console.log('people', _.pluck(people, 'age'));
                             for (var i = 0; i < people.length; i++) {
                                 assert.equal(people[i].index, i);
                             }
@@ -103,7 +102,6 @@ describe('positioned reactive query', function () {
                             Person.all().orderBy('age')
                                 .execute()
                                 .then(function (people) {
-                                    console.log('people', _.pluck(people, 'age'));
                                     for (var i = 0; i < people.length; i++) {
                                         assert.equal(people[i].index, i);
                                     }
@@ -332,7 +330,6 @@ describe('positioned reactive query', function () {
                 prq.init()
                     .then(function () {
                         var people = prq.results;
-                        console.log('people', _.pluck(people, 'age'));
                         assert.equal(people[0].name, 'Michael');
                         assert.equal(people[1].name, 'Bob');
                         assert.equal(people[2].name, 'John');
@@ -379,7 +376,6 @@ describe('positioned reactive query', function () {
                 prq.init()
                     .then(function () {
                         var people = prq.results;
-                        console.log('people', _.pluck(people, 'age'));
                         assert.equal(people[0].name, 'Michael');
                         assert.equal(people[1].name, 'John');
                         assert.equal(people[2].name, 'Bob');
@@ -407,7 +403,6 @@ describe('positioned reactive query', function () {
                 prq.init()
                     .then(function () {
                         var people = prq.results;
-                        console.log('people', _.pluck(people, 'age'));
                         assert.equal(people[0].name, 'Michael');
                         assert.equal(people[1].name, 'Bob');
                         assert.equal(people[2].name, 'John');
@@ -436,7 +431,6 @@ describe('positioned reactive query', function () {
                 prq.init()
                     .then(function () {
                         var people = prq.results;
-                        console.log('people', _.pluck(people, 'age'));
                         assert.equal(people[0].name, 'Peter');
                         assert.equal(people[1].name, 'John');
                         assert.equal(people[2].name, 'Michael');
@@ -467,7 +461,6 @@ describe('positioned reactive query', function () {
                 prq.init()
                     .then(function () {
                         var people = prq.results;
-                        console.log('people', _.pluck(people, 'age'));
                         assert.equal(people[0].name, 'Peter');
                         assert.equal(people[1].name, 'John');
                         assert.equal(people[2].name, 'Bob');
@@ -498,7 +491,6 @@ describe('positioned reactive query', function () {
                 prq.init()
                     .then(function () {
                         var people = prq.results;
-                        console.log('people', _.pluck(people, 'age'));
                         assert.equal(people[0].name, 'Peter');
                         assert.equal(people[1].name, 'Michael');
                         assert.equal(people[2].name, 'John');

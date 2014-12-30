@@ -351,9 +351,7 @@ siesta.install = function (callback) {
                             ensureSingletonTasks.push(fn);
                         }
                     }
-                    console.log('ensureSingletonTasks', ensureSingletonTasks);
                     siesta.parallel(ensureSingletonTasks, function (err, res) {
-                        console.log('wtf');
                         callback(err, res);
                     });
                 }

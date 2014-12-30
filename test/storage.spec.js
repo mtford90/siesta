@@ -614,7 +614,6 @@ describe('storage', function () {
             }, {include_docs: true})
                 .then(function (resp) {
                     var rows = resp.rows;
-                    console.log('rows', rows);
                     cb(null, rows);
                 }).catch(cb);
         }

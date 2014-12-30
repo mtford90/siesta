@@ -12,7 +12,7 @@ var LocalCacheLogger = log.loggerWithName('LocalCache'),
     RemoteCacheLogger = log.loggerWithName('RemoteCache');
 
 RemoteCacheLogger.setLevel(log.Level.warn);
-LocalCacheLogger.setLevel(log.Level.trace);
+LocalCacheLogger.setLevel(log.Level.warn);
 
 
 var localCacheById = {},

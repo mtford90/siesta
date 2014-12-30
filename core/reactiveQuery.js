@@ -15,7 +15,7 @@ var log = require('./operation/log')
     , util = require('./util');
 
 var Logger = log.loggerWithName('ReactiveQuery');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 /**
  *
@@ -75,7 +75,6 @@ _.extend(ReactiveQuery.prototype, {
         this._query = this._query.orderBy(field);
         if (this.initialised) {
             this._query.execute(function (err, results) {
-                console.log('results', _.pluck(results, 'age'));
                 if (!err) {
                     this.results = results;
                 }
@@ -191,7 +190,6 @@ _.extend(ReactiveQuery.prototype, {
         return this.model.collectionName + ':' + this.model.name;
     },
     terminate: function () {
-        console.log('terminate');
         notificationCentre.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
         this.handler = null;

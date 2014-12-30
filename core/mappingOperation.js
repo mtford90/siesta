@@ -15,7 +15,7 @@ var Store = require('./store')
     , ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.trace);
+Logger.setLevel(log.Level.warn);
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {
@@ -113,7 +113,6 @@ _.extend(BulkMappingOperation.prototype, {
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
                     var fields = this.model._attributeNames;
-                    console.log('fields', fields);
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
                             // If notifications are disabled we update __values object directly. This avoids triggering
