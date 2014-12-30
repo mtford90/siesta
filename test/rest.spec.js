@@ -48,7 +48,7 @@ describe('rest', function () {
                     var Model = collection.Person;
                     assert.equal(Model.name, 'Person');
                     assert.equal(Model.id, 'id');
-                    assert.equal(Model.collection, 'myCollection');
+                    assert.equal(Model.collectionName, 'myCollection');
                     assert.include(Model._attributeNames, 'name');
                     assert.include(Model._attributeNames, 'age');
                     assert.ok(Model);

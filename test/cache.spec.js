@@ -29,7 +29,7 @@ describe('cache...', function() {
             car._id = 'dsfsd';
             cache.insert(car);
             assert.equal(car, cache._localCache()[car._id]);
-            assert.equal(car, cache._localCacheByType[car.model.collection][car.modelName][car._id], car);
+            assert.equal(car, cache._localCacheByType[car.model.collectionName][car.modelName][car._id], car);
         });
 
         it('by default id', function() {
@@ -38,7 +38,7 @@ describe('cache...', function() {
             cache.insert(car);
 
             var remoteCache = cache._remoteCache();
-            assert.equal(car, remoteCache[car.collection][car.modelName][car.id]);
+            assert.equal(car, remoteCache[car.collectionName][car.modelName][car.id]);
         });
 
         it('by custom id', function() {
@@ -48,7 +48,7 @@ describe('cache...', function() {
             car.customId = 'dsfsd';
             cache.insert(car);
             var remoteCache = cache._remoteCache();
-            assert.equal(car, remoteCache[car.collection][car.modelName][car.customId]);
+            assert.equal(car, remoteCache[car.collectionName][car.modelName][car.customId]);
         });
 
     });

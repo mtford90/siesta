@@ -82,7 +82,7 @@ _.extend(ManyToManyProxy.prototype, {
                     self.setReverse(added);
                     var model = proxy.getForwardModel.call(self);
                     coreChanges.registerChange({
-                        collection: model.collection,
+                        collection: model.collectionName,
                         model: model.name,
                         _id: self.object._id,
                         field: proxy.getForwardName.call(self),

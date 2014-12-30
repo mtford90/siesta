@@ -1,6 +1,5 @@
 var _i = siesta._internal,
     util = _i.util,
-    assert = util.assert,
     _ = util._,
     log = _i.log;
 
@@ -21,14 +20,11 @@ function DescriptorRegistry() {
 
 function _registerDescriptor(descriptors, descriptor) {
     var model = descriptor.model;
-    var collection = model.collection;
-    assert(model);
-    assert(collection);
-    assert(typeof(collection) == 'string');
-    if (!descriptors[collection]) {
-        descriptors[collection] = [];
+    var collectionName = model.collectionName;
+    if (!descriptors[collectionName]) {
+        descriptors[collectionName] = [];
     }
-    descriptors[collection].push(descriptor);
+    descriptors[collectionName].push(descriptor);
 }
 
 function _descriptorsForCollection(descriptors, collection) {

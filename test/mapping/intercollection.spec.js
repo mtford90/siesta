@@ -3,10 +3,8 @@ var s = require('../../core/index')
 
 describe('intercoll relationships', function () {
 
-
-    var SiestaModel = require('../../core/modelInstance').ModelInstance;
-    var Collection = require('../../core/collection').Collection;
-    var RelationshipType = require('../../core/relationship').RelationshipType;
+    var SiestaModel = require('../../core/modelInstance').ModelInstance,
+        RelationshipType = require('../../core/relationship').RelationshipType;
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -68,7 +66,10 @@ describe('intercoll relationships', function () {
 
                 anotherCollection.install(function (err) {
                     if (err) done(err);
-                    anotherCollection['AnotherMapping'].map({field: 5, person: {name: 'Michael', age: 23, id: 'xyz'}}, function (err, _obj) {
+                    anotherCollection['AnotherMapping'].map({
+                        field: 5,
+                        person: {name: 'Michael', age: 23, id: 'xyz'}
+                    }, function (err, _obj) {
                         if (err) done(err);
                         obj = _obj;
                         done();
@@ -80,7 +81,8 @@ describe('intercoll relationships', function () {
             it('installs forward', function () {
                 var person = obj.person;
                 assert.instanceOf(person, SiestaModel);
-                assert.equal(person.collection, 'myCollection');
+                assert.equal(person.collectionName, 'myCollection');
+                assert.equal(person.collection, collection);
                 assert.equal(person.name, 'Michael');
                 assert.equal(person.age, 23);
             });

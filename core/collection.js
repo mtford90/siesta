@@ -169,7 +169,7 @@ _.extend(Collection.prototype, {
             this._rawModels[name] = opts;
             opts = extend(true, {}, opts);
             opts.name = name;
-            opts.collection = this.name;
+            opts.collection = this;
             var model = new Model(opts);
             this._models[name] = model;
             this[name] = model;

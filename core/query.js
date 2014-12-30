@@ -60,7 +60,7 @@ _.extend(Query, {
 function cacheForModel(model) {
     var cacheByType = cache._localCacheByType;
     var modelName = model.name;
-    var collectionName = model.collection;
+    var collectionName = model.collectionName;
     var cacheByModel = cacheByType[collectionName];
     var cacheByLocalId;
     if (cacheByModel) {

@@ -31,7 +31,7 @@ function ReactiveQuery(query) {
     Object.defineProperty(this, 'initialised', {get: initialisedGet});
     Object.defineProperty(this, 'initialized', {get: initialisedGet}); // For my friends across the pond
     Object.defineProperty(this, 'model', {get: function () { return self._query.model }});
-    Object.defineProperty(this, 'collection', {get: function () { return self.model.collection }});
+    Object.defineProperty(this, 'collection', {get: function () { return self.model.collectionName }});
     this.insertionPolicy = ReactiveQuery.InsertionPolicy.Back;
 }
 
@@ -113,7 +113,7 @@ _.extend(ReactiveQuery.prototype, {
         if (n.type == changes.ChangeType.New) {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
-                if (Logger.trace) Logger.trace('New object matches', newObj);
+                if (Logger.trace) Logger.trace('New object matches', newObj._dumpString());
                 var idx = this.insert(newObj);
                 this.emit('change', {
                     index: idx,
@@ -124,7 +124,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else {
-                if (Logger.trace) Logger.trace('New object does not match', newObj);
+                if (Logger.trace) Logger.trace('New object does not match', newObj._dumpString());
             }
         }
         else if (n.type == changes.ChangeType.Set) {
@@ -133,7 +133,7 @@ _.extend(ReactiveQuery.prototype, {
                 alreadyContains = index > -1,
                 matches = this._query.objectMatchesQuery(newObj);
             if (matches && !alreadyContains) {
-                if (Logger.trace) Logger.trace('Updated object now matches!', newObj);
+                if (Logger.trace) Logger.trace('Updated object now matches!', newObj._dumpString());
                 idx = this.insert(newObj);
                 this.emit('change', this.results, {
                     index: idx,
@@ -144,7 +144,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else if (!matches && alreadyContains) {
-                if (Logger.trace) Logger.trace('Updated object no longer matches!', newObj);
+                if (Logger.trace) Logger.trace('Updated object no longer matches!', newObj._dumpString());
                 var removed = this.results.splice(index, 1);
                 this.emit('change', this.results, {
                     index: index,
@@ -156,10 +156,10 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else if (!matches && !alreadyContains) {
-                if (Logger.trace) Logger.trace('Does not contain, but doesnt match so not inserting', newObj);
+                if (Logger.trace) Logger.trace('Does not contain, but doesnt match so not inserting', newObj._dumpString());
             }
             else if (matches && alreadyContains) {
-                if (Logger.trace) Logger.trace('Matches but already contains', newObj);
+                if (Logger.trace) Logger.trace('Matches but already contains', newObj._dumpString());
                 // Send the notification over. 
                 this.emit('change', n);
             }
@@ -168,7 +168,7 @@ _.extend(ReactiveQuery.prototype, {
             newObj = n.obj;
             index = this.results.indexOf(newObj);
             if (index > -1) {
-                if (Logger.trace) Logger.trace('Removing object', newObj);
+                if (Logger.trace) Logger.trace('Removing object', newObj._dumpString());
                 removed = this.results.splice(index, 1);
                 this.emit('change', this.results, {
                     index: index,
@@ -179,7 +179,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else {
-                if (Logger.trace) Logger.trace('No changes neccessary.', newObj);
+                if (Logger.trace) Logger.trace('No changes neccessary.', newObj._dumpString());
             }
         }
         else {
@@ -188,7 +188,7 @@ _.extend(ReactiveQuery.prototype, {
         this.results = this._query._sortResults(this.results);
     },
     _constructNotificationName: function () {
-        return this.collection + ':' + this.model.name;
+        return this.model.collectionName + ':' + this.model.name;
     },
     terminate: function () {
         console.log('terminate');

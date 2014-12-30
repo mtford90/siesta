@@ -310,7 +310,7 @@ function clearReverseRelated(opts) {
                 if (!opts.disableNotifications) {
                     _.each(identifiers, function (_id) {
                         coreChanges.registerChange({
-                            collection: reverseModel.collection,
+                            collection: reverseModel.collectionName,
                             model: reverseModel.name,
                             _id: _id,
                             field: reverseName,
@@ -325,7 +325,7 @@ function clearReverseRelated(opts) {
                 if (!opts.disableNotifications) {
                     _.each(identifiers, function (_id) {
                         coreChanges.registerChange({
-                            collection: reverseModel.collection,
+                            collection: reverseModel.collectionName,
                             model: reverseModel.name,
                             _id: _id,
                             field: reverseName,
@@ -378,7 +378,7 @@ function registerSetChange(obj) {
     var proxyObject = this.object;
     if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
     var model = proxyObject.model.name;
-    var coll = proxyObject.collection;
+    var collectionName = proxyObject.collectionName;
     var newId;
     if (util.isArray(obj)) {
         newId = _.pluck(obj, '_id');
@@ -395,7 +395,7 @@ function registerSetChange(obj) {
         old = null;
     }
     coreChanges.registerChange({
-        collection: coll,
+        collection: collectionName,
         model: model,
         _id: proxyObject._id,
         field: getForwardName.call(this),
@@ -411,7 +411,7 @@ function registerSetChange(obj) {
 function registerSpliceChange(idx, numRemove) {
     var add = Array.prototype.slice.call(arguments, 2);
     var model = this.object.model.name;
-    var coll = this.object.collection;
+    var coll = this.object.collectionName;
     coreChanges.registerChange({
         collection: coll,
         model: model,
@@ -438,7 +438,7 @@ function wrapArray(arr) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                 var model = getForwardModel.call(self);
                 coreChanges.registerChange({
-                    collection: model.collection,
+                    collection: model.collectionName,
                     model: model.name,
                     _id: self.object._id,
                     field: getForwardName.call(self),

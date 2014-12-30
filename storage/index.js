@@ -25,17 +25,17 @@ Logger.setLevel(log.Level.trace);
 
 /**
  * Serialise a model down to PouchDB.
- * @param {ModelInstance} model
+ * @param {ModelInstance} modelInstance
  */
-function _serialise(model) {
-    var serialised = siesta.extend({}, model.__values);
-    serialised['collection'] = model.collection;
-    serialised['model'] = model.modelName;
-    serialised['_id'] = model._id;
-    var rev = model._rev;
+function _serialise(modelInstance) {
+    var serialised = siesta.extend({}, modelInstance.__values);
+    serialised['collection'] = modelInstance.collectionName;
+    serialised['model'] = modelInstance.modelName;
+    serialised['_id'] = modelInstance._id;
+    var rev = modelInstance._rev;
     if (rev) serialised['_rev'] = rev;
-    serialised = _.reduce(model._relationshipNames, function (memo, n) {
-        var val = model[n];
+    serialised = _.reduce(modelInstance._relationshipNames, function (memo, n) {
+        var val = modelInstance[n];
         if (siesta.isArray(val)) {
             memo[n] = _.pluck(val, '_id');
         }
@@ -203,7 +203,7 @@ var listener = function (n) {
     if (!(ident in unsavedObjectsHash)) {
         unsavedObjectsHash[ident] = changedObject;
         unsavedObjects.push(changedObject);
-        var collectionName = changedObject.collection;
+        var collectionName = changedObject.collectionName;
         if (!unsavedObjectsByCollection[collectionName]) {
             unsavedObjectsByCollection[collectionName] = {};
         }

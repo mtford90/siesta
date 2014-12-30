@@ -29,6 +29,7 @@ function ModelInstance(model) {
 
     defineSubProperty.call(this, 'type', this.model);
     defineSubProperty.call(this, 'collection', this.model);
+    defineSubProperty.call(this, 'collectionName', this.model);
     defineSubProperty.call(this, '_attributeNames', this.model);
     Object.defineProperty(this, '_relationshipNames', {
         get: function () {
@@ -73,7 +74,7 @@ _.extend(ModelInstance.prototype, {
         this.removed = true;
         if (notification) {
             coreChanges.registerChange({
-                collection: this.collection,
+                collection: this.collectionName,
                 model: this.model.name,
                 _id: this._id,
                 oldId: this._id,
@@ -93,7 +94,7 @@ _.extend(ModelInstance.prototype, {
             this.removed = false;
         }
         coreChanges.registerChange({
-            collection: this.collection,
+            collection: this.collectionName,
             model: this.model.name,
             _id: this._id,
             newId: this._id,

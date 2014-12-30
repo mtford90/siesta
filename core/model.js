@@ -14,7 +14,7 @@ var log = require('./operation/log')
     , cache = require('./cache')
     , store = require('./store')
     , extend = require('extend')
-    , coreChanges = require('./changes')
+    , changes = require('./changes')
     , notificationCentre = require('./notificationCentre').notificationCentre
     , wrapArray = require('./notificationCentre').wrapArray
     , OneToManyProxy = require('./oneToManyProxy')
@@ -25,7 +25,7 @@ var log = require('./operation/log')
     , _ = util._
     , RelationshipType = relationship.RelationshipType
     , guid = util.guid
-    , ChangeType = coreChanges.ChangeType
+    , ChangeType = changes.ChangeType
     ;
 
 var Logger = log.loggerWithName('Model');
@@ -42,7 +42,12 @@ function Model(opts) {
     util.extendFromOpts(this, opts, {
         methods: {},
         attributes: [],
-        collection: null,
+        collection: function (c) {
+            if (util.isString(c)) {
+                c = CollectionRegistry[c];
+            }
+            return c;
+        },
         id: 'id',
         relationships: [],
         name: null,
@@ -101,10 +106,16 @@ function Model(opts) {
             get: function () {
                 if (siesta.ext.storageEnabled) {
                     var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                        hash = (unsavedObjectsByCollection[this.collection] || {})[this.name] || {};
+                        hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
                     return !!Object.keys(hash).length;
                 }
                 else return undefined;
+            },
+            enumerable: true
+        },
+        collectionName: {
+            get: function () {
+                return this.collection.name;
             },
             enumerable: true
         }
@@ -174,9 +185,9 @@ _.extend(Model.prototype, {
                             if (Logger.debug.isEnabled)
                                 Logger.debug('reverseModelName', modelName);
                             if (!self.collection) throw new InternalSiestaError('Model must have collection');
-                            var collection = CollectionRegistry[self.collection];
+                            var collection = self.collection;
                             if (!collection) {
-                                throw new InternalSiestaError('Collection ' + self.collection + ' not registered');
+                                throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
                             }
                             var reverseModel = collection[modelName];
                             if (!reverseModel) {
@@ -338,27 +349,12 @@ _.extend(Model.prototype, {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.cb(callback, deferred);
         if (!this._installed) {
-            var errors = this._validate();
             this._installed = true;
-            if (Logger.info.isEnabled) {
-                if (errors.length) Logger.error('Errors installing mapping ' + this.name + ': ' + errors);
-                else Logger.info('Installed mapping ' + this.name);
-            }
-            callback(errors.length ? errors : null);
+            callback();
         } else {
             throw new InternalSiestaError('Model "' + this.name + '" has already been installed');
         }
         return deferred ? deferred.promise : null;
-    },
-    _validate: function () {
-        var errors = [];
-        if (!this.name) {
-            errors.push('Must specify a type');
-        }
-        if (!this.collection) {
-            errors.push('A mapping must belong to an collection');
-        }
-        return errors;
     },
     /**
      * Map data into Siesta.
@@ -414,7 +410,7 @@ _.extend(Model.prototype, {
         op.start();
     },
     _countCache: function () {
-        var collCache = cache._localCacheByType[this.collection] || {};
+        var collCache = cache._localCacheByType[this.collectionName] || {};
         var modelCache = collCache[this.name] || {};
         return _.reduce(Object.keys(modelCache), function (m, _id) {
             m[_id] = {};
@@ -425,24 +421,7 @@ _.extend(Model.prototype, {
         var deferred = window.q ? window.q.defer() : null;
         callback = util.cb(callback, deferred);
         var hash = this._countCache();
-        if (siesta.ext.storageEnabled) {
-            var pouch = siesta.ext.storage.Pouch.getPouch();
-            var indexName = (new siesta.ext.storage.Index(this.collection, this.name))._getName() + '_';
-            pouch.query(indexName, {
-                include_docs: false
-            }, function (err, resp) {
-                var n;
-                if (!err) {
-                    _.each(_.pluck(resp.rows, 'id'), function (id) {
-                        hash[id] = {};
-                    });
-                    n = Object.keys(hash).length;
-                }
-                callback(err, n);
-            });
-        } else {
-            callback(null, Object.keys(hash).length)
-        }
+        callback(null, Object.keys(hash).length)
         return deferred ? deferred.promise : null;
     },
     /**
@@ -489,8 +468,8 @@ _.extend(Model.prototype, {
                     set: function (v) {
                         var old = newModel.__values[field];
                         newModel.__values[field] = v;
-                        coreChanges.registerChange({
-                            collection: self.collection,
+                        changes.registerChange({
+                            collection: self.collectionName,
                             model: self.name,
                             _id: newModel._id,
                             new: v,
@@ -519,8 +498,8 @@ _.extend(Model.prototype, {
                 set: function (v) {
                     var old = newModel[self.id];
                     newModel.__values[self.id] = v;
-                    coreChanges.registerChange({
-                        collection: self.collection,
+                    changes.registerChange({
+                        collection: self.collectionName,
                         model: self.name,
                         _id: newModel._id,
                         new: v,
@@ -553,8 +532,8 @@ _.extend(Model.prototype, {
             }
             cache.insert(newModel);
             if (shouldRegisterChange) {
-                coreChanges.registerChange({
-                    collection: this.collection,
+                changes.registerChange({
+                    collection: this.collectionName,
                     model: this.name,
                     _id: newModel._id,
                     newId: newModel._id,
@@ -574,7 +553,7 @@ _.extend(Model.prototype, {
         dumped.name = this.name;
         dumped.attributes = this.attributes;
         dumped.id = this.id;
-        dumped.collection = this.collection;
+        dumped.collection = this.collectionName;
         dumped.relationships = _.map(this.relationships, function (r) {
             return r.isForward ? r.forwardName : r.reverseName;
         });
@@ -588,16 +567,16 @@ _.extend(Model.prototype, {
 
 _.extend(Model.prototype, {
     listen: function (fn) {
-        notificationCentre.on(this.collection + ':' + this.name, fn);
+        notificationCentre.on(this.collectionName + ':' + this.name, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notificationCentre.once(this.collection + ':' + this.name, fn);
+        return notificationCentre.once(this.collectionName + ':' + this.name, fn);
     },
     removeListener: function (fn) {
-        return notificationCentre.removeListener(this.collection + ':' + this.name, fn);
+        return notificationCentre.removeListener(this.collectionName + ':' + this.name, fn);
     }
 });
 
@@ -612,7 +591,7 @@ _.extend(Model.prototype, {
         opts.attributes
             = Array.prototype.concat.call(opts.attributes || [], this._opts.attributes);
         opts.relationships = _.extend(opts.relationships || {}, this._opts.relationships);
-        var collection = CollectionRegistry[this.collection];
+        var collection = this.collection;
         var model = collection.model(opts.name, opts);
         model.parent = this;
         this.children.push(model);

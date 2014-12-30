@@ -14,23 +14,23 @@ var log = require('./operation/log');
 * @param field name of the field
 * @param restObject the object to which this array is a property
 */
-function wrapArray(array, field, siestaModel) {
+function wrapArray(array, field, modelInstance) {
     if (!array.observer) {
         array.observer = new ArrayObserver(array);
         array.observer.open(function (splices) {
-            var fieldIsAttribute = siestaModel._attributeNames.indexOf(field) > -1;
+            var fieldIsAttribute = modelInstance._attributeNames.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
                     coreChanges.registerChange({
-                        collection: siestaModel.collection,
-                        model: siestaModel.model.name,
-                        _id: siestaModel._id,
+                        collection: modelInstance.collectionName,
+                        model: modelInstance.model.name,
+                        _id: modelInstance._id,
                         index: splice.index,
                         removed: splice.removed,
                         added: splice.addedCount ? array.slice(splice.index, splice.index+splice.addedCount) : [],
                         type: coreChanges.ChangeType.Splice,
                         field: field,
-                        obj: siestaModel
+                        obj: modelInstance
                     });
                 });
             }

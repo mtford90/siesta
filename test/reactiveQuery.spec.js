@@ -164,7 +164,6 @@ describe('reactive query', function () {
                 it('results match', function (done) {
                     Person.map(initialData).then(function (res) {
                         var person = res[0];
-                        console.log('person', person);
                         person.age = 40;
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
@@ -216,7 +215,6 @@ describe('reactive query', function () {
             it('update, still matching, should emit the notification', function (done) {
                 Person.map(initialData).then(function (res) {
                     var person = res[0];
-                    console.log('person', person);
                     var rq = Person.reactiveQuery({age__lt: 30});
                     rq.init(function (err) {
                         if (err) done(err);

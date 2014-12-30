@@ -321,7 +321,7 @@ describe('request descriptor', function () {
                 model: carModel
             });
             siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(r);
-            assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptors[carModel.collection], r);
+            assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptors[carModel.collectionName], r);
         });
         describe('request descriptors for collection', function () {
             var descriptor;
@@ -333,7 +333,7 @@ describe('request descriptor', function () {
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(descriptor);
             });
             it('request descriptors should be accessible by collection name', function () {
-                assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(carModel.collection), descriptor);
+                assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(carModel.collectionName), descriptor);
             });
             it('request descriptors should be accessible by collection', function () {
                 assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(collection), descriptor);

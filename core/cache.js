@@ -53,7 +53,7 @@ function getViaLocalId(localId) {
  */
 function getSingleton(model) {
     var modelName = model.name;
-    var collectionName = model.collection;
+    var collectionName = model.collectionName;
     var collectionCache = localCache[collectionName];
     if (collectionCache) {
         var typeCache = collectionCache[modelName];
@@ -86,10 +86,10 @@ function getSingleton(model) {
  */
 function getViaRemoteId(remoteId, opts) {
     var type = opts.model.name;
-    var collection = opts.model.collection;
-    var collectionCache = remoteCache[collection];
+    var collectionName = opts.model.collectionName;
+    var collectionCache = remoteCache[collectionName];
     if (collectionCache) {
-        var typeCache = remoteCache[collection][type];
+        var typeCache = remoteCache[collectionName][type];
         if (typeCache) {
             var obj = typeCache[remoteId];
             if (obj) {
@@ -115,22 +115,22 @@ function getViaRemoteId(remoteId, opts) {
  */
 function remoteInsert(obj, remoteId, previousRemoteId) {
     if (obj) {
-        var collection = obj.model.collection;
-        if (collection) {
-            if (!remoteCache[collection]) {
-                remoteCache[collection] = {};
+        var collectionName = obj.model.collectionName;
+        if (collectionName) {
+            if (!remoteCache[collectionName]) {
+                remoteCache[collectionName] = {};
             }
             var type = obj.model.name;
             if (type) {
-                if (!remoteCache[collection][type]) {
-                    remoteCache[collection][type] = {};
+                if (!remoteCache[collectionName][type]) {
+                    remoteCache[collectionName][type] = {};
                 }
                 if (previousRemoteId) {
-                    remoteCache[collection][type][previousRemoteId] = null;
+                    remoteCache[collectionName][type][previousRemoteId] = null;
                 }
-                var cachedObject = remoteCache[collection][type][remoteId];
+                var cachedObject = remoteCache[collectionName][type][remoteId];
                 if (!cachedObject) {
-                    remoteCache[collection][type][remoteId] = obj;
+                    remoteCache[collectionName][type][remoteId] = obj;
                     if (RemoteCacheLogger.debug.isEnabled)
                         RemoteCacheLogger.debug('Remote cache insert: ' + obj._dump(true));
                     if (RemoteCacheLogger.trace.isEnabled)
@@ -139,7 +139,7 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
                     // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
                     // should ever exist.
                     if (obj != cachedObject) {
-                        var message = 'Object ' + collection.toString() + ':' + type.toString() + '[' + obj.model.id + '="' + remoteId + '"] already exists in the cache.' +
+                        var message = 'Object ' + collectionName.toString() + ':' + type.toString() + '[' + obj.model.id + '="' + remoteId + '"] already exists in the cache.' +
                             ' This is a serious error, please file a bug report if you are experiencing this out in the wild';
                         RemoteCacheLogger.error(message, {
                             obj: obj,
@@ -291,7 +291,7 @@ function get(opts) {
 function insert(obj) {
     var localId = obj._id;
     if (localId) {
-        var collectionName = obj.model.collection;
+        var collectionName = obj.model.collectionName;
         var modelName = obj.model.name;
         if (LocalCacheLogger.debug.isEnabled)
             LocalCacheLogger.debug('Local cache insert: ' + obj._dumpString());
@@ -348,7 +348,7 @@ function contains(obj) {
  */
 function remove(obj) {
     if (contains(obj)) {
-        var collectionName = obj.model.collection;
+        var collectionName = obj.model.collectionName;
         var modelName = obj.model.name;
         var _id = obj._id;
         if (!modelName) throw InternalSiestaError('No mapping name');

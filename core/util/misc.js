@@ -163,5 +163,8 @@ _.extend(module.exports, {
         });
         _.extend(defaults, opts);
         _.extend(obj, defaults);
+    },
+    isString: function (o) {
+        return typeof o == 'string' || o instanceof String
     }
 });

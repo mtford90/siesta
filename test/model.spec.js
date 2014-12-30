@@ -47,8 +47,9 @@ describe('Models', function () {
         });
 
         it('collection field', function () {
-            var r = new ModelInstance(mapping);
-            assert.equal(r.collection, 'myCollection');
+            var modelInstance = new ModelInstance(mapping);
+            assert.equal(modelInstance.collectionName, 'myCollection');
+            assert.equal(modelInstance.collection, collection);
         });
 
     });
