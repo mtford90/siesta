@@ -15,7 +15,7 @@ var Store = require('./store')
     , ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 function flattenArray(arr) {
     return _.reduce(arr, function (memo, e) {
@@ -113,6 +113,7 @@ _.extend(BulkMappingOperation.prototype, {
             if (datum != object) {
                 if (object) { // If object is falsy, then there was an error looking up that object/creating it.
                     var fields = this.model._attributeNames;
+                    console.log('fields', fields);
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
                             // If notifications are disabled we update __values object directly. This avoids triggering
@@ -125,6 +126,9 @@ _.extend(BulkMappingOperation.prototype, {
                             }
                         }
                     }.bind(this));
+                    // PouchDB revision (if using storage module).
+                    // TODO: Can this be pulled out of core?
+                    if (datum._rev) object._rev = datum._rev;
                 }
             }
         }
@@ -227,7 +231,11 @@ _.extend(BulkMappingOperation.prototype, {
                                     var _id = localIdentifiers[i];
                                     var lookup = localLookups[i];
                                     if (!obj) {
-                                        self.objects[lookup.index] = self.model._new({_id: _id}, !self.disableNotifications);
+                                        // If there are multiple mapping operations going on, there may be
+                                        obj = cache.get({_id: _id});
+                                        if (!obj)
+                                            obj = self.model._new({_id: _id}, !self.disableNotifications);
+                                        self.objects[lookup.index] = obj;
                                     } else {
                                         self.objects[lookup.index] = obj;
                                     }

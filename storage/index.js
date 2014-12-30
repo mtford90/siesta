@@ -43,35 +43,75 @@ function _serialise(model) {
     return serialised;
 }
 
-function _deserialise(data, cb) {
-    var collectionName = data.collection,
-        modelName = data.model,
-        collection = CollectionRegistry[collectionName],
-        model = collection[modelName];
+function _prepareDatum(datum, model) {
     // Add blank object with correct _id to the cache so that can map data onto it.
-    var rev = data._rev;
-    delete data._rev;
-    delete data.collection;
-    delete data.model;
+    delete datum.collection;
+    delete datum.model;
     var relationshipNames = model._relationshipNames;
     _.each(relationshipNames, function (r) {
-        var _id = data[r];
+        var _id = datum[r];
         if (siesta.isArray(_id)) {
-            data[r] = _.map(_id, function (x) { return {_id: x}});
+            datum[r] = _.map(_id, function (x) { return {_id: x}});
         }
         else {
-            data[r] = {_id: _id};
+            datum[r] = {_id: _id};
         }
     });
-    model.map(data, {disableNotifications: true}, function (err, instance) {
-        if (!err) {
-            instance._rev = rev;
-        }
-        else {
-            Logger.error('err', err);
-        }
+    return datum;
+}
+function _deserialise(datum, cb) {
+    var collectionName = datum.collection,
+        modelName = datum.model,
+        collection = CollectionRegistry[collectionName],
+        model = collection[modelName];
+    datum = _prepareDatum(datum, model);
+    model.map(datum, {disableNotifications: true}, function (err, instance) {
+        if (err) Logger.error('err', err);
         cb(err, instance);
     });
+}
+
+/**
+ *
+ * @param opts
+ * @param opts.collectionName
+ * @param opts.modelName
+ * @param callback
+ * @private
+ */
+function _loadModel(opts, callback) {
+    var collectionName = opts.collectionName,
+        modelName = opts.modelName;
+    if (Logger.trace) {
+        var fullyQualifiedName = collectionName + '.' + modelName;
+        Logger.trace('Loading instances for ' + fullyQualifiedName);
+    }
+    var Model = CollectionRegistry[collectionName][modelName];
+    var mapFunc = function (doc) {
+        if (doc.model == '$1' && doc.collection == '$2') {
+            emit(doc._id, doc);
+        }
+    }.toString().replace('$1', modelName).replace('$2', collectionName);
+    pouch.query({map: mapFunc})
+        .then(function (resp) {
+            var data = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
+                return _prepareDatum(datum, Model);
+            });
+            console.log('data', data);
+            Model.map(data, {disableNotifications: true}, function (err, instances) {
+                if (!err) {
+                    if (Logger.trace)
+                        Logger.trace('Loaded ' + instances.length.toString() + ' instances for ' + fullyQualifiedName);
+                }
+                else {
+                    Logger.error('Error loading models', err);
+                }
+                callback(err, instances);
+            });
+        })
+        .catch(function (err) {
+            callback(err);
+        });
 }
 
 /**
@@ -80,32 +120,55 @@ function _deserialise(data, cb) {
 function _load(callback) {
     var deferred = window.q ? window.q.defer() : null;
     callback = callback || function () {};
-    var mapFunc = function (doc) {
-        emit(doc._id, doc);
-    }.toString();
-    pouch.query({map: mapFunc}).then(function (resp) {
-        var tasks = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
-            return function (done) {
-                _deserialise(datum, done)
-            }
+    var collectionNames = CollectionRegistry.collectionNames;
+    var tasks = [];
+    _.each(collectionNames, function (collectionName) {
+        var collection = CollectionRegistry[collectionName],
+            modelNames = Object.keys(collection._models);
+        _.each(modelNames, function (modelName) {
+            tasks.push(siesta.partial(_loadModel, {
+                collectionName: collectionName,
+                modelName: modelName
+            }));
         });
-        siesta.parallel(tasks, function (err, instances) {
-            if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
-            callback(err, instances);
-            if (err) deferred.reject(err);
-            else deferred.resolve(instances);
-        });
-    }).catch(function (err) {
-        callback(err);
-        if (deferred) deferred.reject(err);
+    });
+    siesta.parallel(tasks, function (err, results) {
+        var instances = [];
+        siesta.each(results, function (r) {instances.concat(r)});
+        if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
+        callback(err, instances);
+        if (err) deferred.reject(err);
+        else deferred.resolve(instances);
     });
     return deferred ? deferred.promise : null;
+    //var deferred = window.q ? window.q.defer() : null;
+    //callback = callback || function () {};
+    //var mapFunc = function (doc) {
+    //    emit(doc._id, doc);
+    //}.toString();
+    //pouch.query({map: mapFunc}).then(function (resp) {
+    //    var tasks = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
+    //        return function (done) {
+    //            _deserialise(datum, done)
+    //        }
+    //    });
+    //    siesta.parallel(tasks, function (err, instances) {
+    //        if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
+    //        callback(err, instances);
+    //        if (err) deferred.reject(err);
+    //        else deferred.resolve(instances);
+    //    });
+    //}).catch(function (err) {
+    //    callback(err);
+    //    if (deferred) deferred.reject(err);
+    //});
+    //return deferred ? deferred.promise : null;
 }
 
 function saveConflicts(objects, callback, deferred) {
     pouch.allDocs({keys: _.pluck(objects, '_id')})
         .then(function (resp) {
-            for (var i=0;i<resp.rows.length; i++) {
+            for (var i = 0; i < resp.rows.length; i++) {
                 objects[i]._rev = resp.rows[i].value.rev;
             }
             saveToPouch(objects, callback, deferred);
@@ -218,7 +281,6 @@ Object.defineProperty(storage, '_unsavedObjectsByCollection', {
 
 // Enable/disable autosaving.
 console.log('wtf');
-
 
 
 Object.defineProperty(storage, '_pouch', {

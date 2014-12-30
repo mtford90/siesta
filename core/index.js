@@ -304,6 +304,7 @@ siesta.series = util.series;
 siesta.parallel = util.parallel;
 siesta.extend = util._.extend;
 siesta.isArray = util.isArray;
+siesta.reduce = util.reduce;
 
 siesta.save = function () {
     if (siesta.ext.storageEnabled) {

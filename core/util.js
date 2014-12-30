@@ -177,7 +177,7 @@ var _parallel = function (eachfn, tasks, callback) {
 
 function series(tasks, callback) {
     callback = callback || function () {};
-    if (_isArray(tasks)) {
+    if (isArray(tasks)) {
         mapSeries(tasks, function (fn, callback) {
             if (fn) {
                 fn(function (err) {
@@ -191,7 +191,7 @@ function series(tasks, callback) {
         }, callback);
     } else {
         var results = {};
-        eachSeries(_keys(tasks), function (k, callback) {
+        eachSeries(_.keys(tasks), function (k, callback) {
             tasks[k](function (err) {
                 var args = Array.prototype.slice.call(arguments, 1);
                 if (args.length <= 1) {

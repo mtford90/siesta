@@ -11,7 +11,7 @@ var log = require('./operation/log')
 var LocalCacheLogger = log.loggerWithName('LocalCache')
     , RemoteCacheLogger = log.loggerWithName('RemoteCache');
 RemoteCacheLogger.setLevel(log.Level.warn);
-LocalCacheLogger.setLevel(log.Level.warn);
+LocalCacheLogger.setLevel(log.Level.local);
 
 
 var localCacheById,
@@ -292,9 +292,9 @@ function insert(obj) {
     if (localId) {
         var collectionName = obj.model.collection;
         var modelName = obj.model.type;
+        if (LocalCacheLogger.debug.isEnabled)
+            LocalCacheLogger.debug('Local cache insert: ' + obj._dumpString());
         if (!localCacheById[localId]) {
-            if (LocalCacheLogger.debug.isEnabled)
-                LocalCacheLogger.debug('Local cache insert: ' + obj._dump(true));
             localCacheById[localId] = obj;
             if (LocalCacheLogger.trace.isEnabled)
                 LocalCacheLogger.trace('Local cache now looks like: ' + localDump(true));
