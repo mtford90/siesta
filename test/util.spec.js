@@ -2,7 +2,7 @@ var s = require('../core/index')
     , assert = require('chai').assert;
 
 
-var util = require('../core/util');
+var util = require('../core/util/util');
 var q = require('q');
 
 describe('cb', function () {

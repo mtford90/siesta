@@ -3,7 +3,7 @@
 var s = require('../../core/index'),
     chai = require('chai'),
     assert = chai.assert,
-    _ = require('../../core/util')._;
+    _ = require('../../core/util/util')._;
 
 var Operation = require('../../core/operation/operation').Operation;
 

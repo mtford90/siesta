@@ -6,7 +6,7 @@
  * @module changes
  */
 
-var defineSubProperty = require('./util').defineSubProperty
+var defineSubProperty = require('./util/util').defineSubProperty
     , notificationCentre = require('./notificationCentre').notificationCentre
     , InternalSiestaError = require('./error').InternalSiestaError
     , log = require('./operation/log')

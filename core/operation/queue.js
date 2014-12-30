@@ -1,7 +1,7 @@
 
 var log = require('./log');
 var Logger = log.loggerWithName('OperationQueue');
-var _ = require('../util')._;
+var _ = require('../util/util')._;
 
 
 function OperationQueue() {

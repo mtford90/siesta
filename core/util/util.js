@@ -219,7 +219,7 @@ exports.isArray = isArray;
 
 
 
-var observe = require('../vendor/observe-js/src/observe').Platform;
+var observe = require('../../vendor/observe-js/src/observe').Platform;
 
 function next(callback) {
     observe.performMicrotaskCheckpoint();
@@ -254,7 +254,7 @@ exports.cb = function (callback, deferred) {
     };
 };
 
-var InternalSiestaError = require('./error').InternalSiestaError;
+var InternalSiestaError = require('./../error').InternalSiestaError;
 
 function assert(condition, message, context) {
     if (!condition) {

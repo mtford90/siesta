@@ -1,7 +1,7 @@
 // Utilities for use during testing.
 
 var assert = require('chai').assert;
-var util = require('../core/util');
+var util = require('../core/util/util');
 
 /**
  * Deep equality check against two arrays.

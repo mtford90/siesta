@@ -12,7 +12,7 @@ var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
 var notificationCentre = require('./notificationCentre').notificationCentre;
 
-var util = require('./util');
+var util = require('./util/util');
 var _ = util._;
 
 var cache = require('./cache');

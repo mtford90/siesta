@@ -1,4 +1,4 @@
-var _ = require('../util')._;
+var _ = require('../util/util')._;
 
 function Logger (name) {
     if (!this) return new Logger(name);

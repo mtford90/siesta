@@ -1,6 +1,6 @@
 var log = require('./log');
 var Logger = log.loggerWithName('Operation');
-var _ = require('../util')._;
+var _ = require('../util/util')._;
 
 function Operation() {
     if (!this) {

@@ -5,7 +5,7 @@
 var proxy = require('./proxy')
     , RelationshipProxy = proxy.RelationshipProxy
     , Store = require('./store')
-    , util = require('./util')
+    , util = require('./util/util')
     , InternalSiestaError = require('./error').InternalSiestaError
     , SiestaModel = require('./modelInstance').ModelInstance;
 

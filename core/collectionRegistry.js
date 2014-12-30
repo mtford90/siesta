@@ -1,7 +1,7 @@
 /**
  * @module collection
  */
-var _ = require('./util')._;
+var _ = require('./util/util')._;
 
 function CollectionRegistry() {
     if (!this) return new CollectionRegistry();

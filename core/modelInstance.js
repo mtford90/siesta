@@ -1,5 +1,5 @@
 var log = require('./operation/log')
-    , util = require('./util')
+    , util = require('./util/util')
     , defineSubProperty = util.defineSubProperty
     , _ = util._
     , error = require('./error')

@@ -6,7 +6,7 @@
 var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
     Operation = require('./operation/operation').Operation,
-    util = require('./util'),
+    util = require('./util/util'),
     defineSubProperty = util.defineSubProperty,
     _ = util._,
     Query = require('./query').Query,

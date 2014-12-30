@@ -12,7 +12,7 @@ var log = require('./operation/log')
     , notificationCentre = require('./notificationCentre').notificationCentre
     , changes = require('./changes')
     , InternalSiestaError = require('./error').InternalSiestaError
-    , util = require('./util');
+    , util = require('./util/util');
 
 var Logger = log.loggerWithName('ReactiveQuery');
 Logger.setLevel(log.Level.trace);
