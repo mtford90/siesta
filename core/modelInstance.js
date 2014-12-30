@@ -15,21 +15,19 @@ function ModelInstance(model) {
     var self = this;
     this.model = model;
 
-    Object.defineProperties(this, {
-        idField: {
-            get: function () {
-                return self.model.id || 'id';
-            },
-            enumerable: true
+    util.subProperties(this, this.model, [
+        'collection',
+        'collectionName',
+        '_attributeNames',
+        {
+            name: 'idField',
+            property: 'id'
         },
-        modelName: {
-            get: function () {
-                return self.model.name
-            }
+        {
+            name: 'modelName',
+            property: 'name'
         }
-    });
-
-    util.subProperties(this, this.model, 'collection', 'collectionName', '_attributeNames');
+    ]);
 
     Object.defineProperty(this, '_relationshipNames', {
         get: function () {

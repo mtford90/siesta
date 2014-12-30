@@ -17,9 +17,13 @@ function cb(callback, deferred) {
 }
 
 var isArray = Array.isArray || function (obj) {
-    return _.toString.call(obj) === '[object Array]';
+        return _.toString.call(obj) === '[object Array]';
 
-};_.extend(module.exports, {
+    };
+var isString = function (o) {
+    return typeof o == 'string' || o instanceof String
+};
+_.extend(module.exports, {
     /**
      * Performs dirty check/Object.observe callbacks depending on the browser.
      *
@@ -154,15 +158,29 @@ var isArray = Array.isArray || function (obj) {
         if (!isArray(properties)) {
             properties = Array.prototype.slice.call(arguments, 2);
         }
-        for (var i=0;i<properties.length;i++) {
+        for (var i = 0; i < properties.length; i++) {
             (function (property) {
-                Object.defineProperty(obj, property, {
+                var opts = {
+                    set: false,
+                    name: property,
+                    property: property
+                };
+                if (!isString(property)) {
+                    _.extend(opts, property);
+                }
+                var desc = {
                     get: function () {
-                        return subObj[property];
+                        return subObj[opts.property];
                     },
                     enumerable: true,
                     configurable: true
-                });
+                };
+                if (opts.set) {
+                    desc.set = function (v) {
+                        subObj[opts.property] = v;
+                    };
+                }
+                Object.defineProperty(obj, opts.name, desc);
             })(properties[i]);
         }
     },
@@ -187,8 +205,6 @@ var isArray = Array.isArray || function (obj) {
         _.extend(defaults, opts);
         _.extend(obj, defaults);
     },
-    isString: function (o) {
-        return typeof o == 'string' || o instanceof String
-    },
+    isString: isString,
     isArray: isArray
 });
