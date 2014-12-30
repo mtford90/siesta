@@ -10,7 +10,7 @@ function CollectionRegistry() {
 
 _.extend(CollectionRegistry.prototype, {
     register: function (collection) {
-        var name = collection._name;
+        var name = collection.name;
         this[name] = collection;
         this.collectionNames.push(name);
     },

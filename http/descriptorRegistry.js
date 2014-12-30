@@ -37,7 +37,7 @@ function _descriptorsForCollection(descriptors, collection) {
         descriptorsForCollection = descriptors[collection] || [];
     }
     else {
-        descriptorsForCollection = (descriptors[collection._name] || []);
+        descriptorsForCollection = (descriptors[collection.name] || []);
     }
     return descriptorsForCollection;
 }

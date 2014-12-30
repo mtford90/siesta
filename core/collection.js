@@ -44,8 +44,8 @@ Logger.setLevel(log.Level.warn);
 function Collection(name) {
     var self = this;
     if (!name) throw new Error('Collection must have a name');
-    this._name = name;
-    this._docId = 'Collection_' + this._name;
+    this.name = name;
+    this._docId = 'Collection_' + this.name;
     this._rawModels = {};
     this._models = {};
     /**
@@ -61,21 +61,12 @@ function Collection(name) {
     this.installed = false;
     CollectionRegistry.register(this);
 
-    /**
-     *
-     * @type {string}
-     */
-    Object.defineProperty(this, 'name', {
-        get: function () {
-            return self._name;
-        }
-    });
 
     Object.defineProperty(this, 'dirty', {
         get: function () {
             if (siesta.ext.storageEnabled) {
                 var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                    hash = unsavedObjectsByCollection[this.name] || {};
+                    hash = unsavedObjectsByCollection[self.name] || {};
                 return !!Object.keys(hash).length;
             }
             else return undefined;
@@ -143,7 +134,7 @@ _.extend(Collection.prototype, {
                 self._finaliseInstallation(null, callback, deferred);
             }
         } else {
-            var err = new InternalSiestaError('Collection "' + this._name + '" has already been installed');
+            var err = new InternalSiestaError('Collection "' + this.name + '" has already been installed');
             self._finaliseInstallation(err, callback, deferred);
         }
         return deferred ? deferred.promise : null;
@@ -160,7 +151,7 @@ _.extend(Collection.prototype, {
         if (!err) {
             this.installed = true;
             var index = require('./index');
-            index[this._name] = this;
+            index[this.name] = this;
         }
         if (err)deferred.reject(err);
         else deferred.resolve();
@@ -179,7 +170,7 @@ _.extend(Collection.prototype, {
             this._rawModels[name] = opts;
             opts = extend(true, {}, opts);
             opts.type = name;
-            opts.collection = this._name;
+            opts.collection = this.name;
             var model = new Model(opts);
             this._models[name] = model;
             this[name] = model;
@@ -266,7 +257,7 @@ _.extend(Collection.prototype, {
         var obj = {};
         obj.installed = this.installed;
         obj.docId = this._docId;
-        obj.name = this._name;
+        obj.name = this.name;
         obj.baseURL = this.baseURL;
         return asJson ? JSON.stringify(obj, null, 4) : obj;
     },

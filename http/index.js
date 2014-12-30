@@ -71,7 +71,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
     var self = this;
     var args = Array.prototype.slice.call(arguments, 2);
     var opts = {};
-    var name = this._name;
+    var name = this.name;
     if (typeof(args[0]) == 'function') {
         callback = args[0];
     } else if (typeof(args[0]) == 'object') {
