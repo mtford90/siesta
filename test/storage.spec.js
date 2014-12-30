@@ -173,7 +173,7 @@ describe('storage', function () {
                 s.ext.storage._pouch.bulkDocs([
                     {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
                     {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
-                ]).then(function () {
+                ]).then(function () {  
                     console.log('bulk..');
                     s.ext.storage._load().then(function () {
                         console.log('loaded..');
