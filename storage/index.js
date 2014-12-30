@@ -249,10 +249,6 @@ Object.defineProperty(storage, '_unsavedObjectsByCollection', {
     get: function () {return unsavedObjectsByCollection}
 });
 
-// Enable/disable autosaving.
-console.log('wtf');
-
-
 Object.defineProperty(storage, '_pouch', {
     get: function () {return pouch}
 });
