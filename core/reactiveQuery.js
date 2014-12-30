@@ -188,7 +188,7 @@ _.extend(ReactiveQuery.prototype, {
         this.results = this._query._sortResults(this.results);
     },
     _constructNotificationName: function () {
-        return this.collection + ':' + this.model.type;
+        return this.collection + ':' + this.model.name;
     },
     terminate: function () {
         console.log('terminate');

@@ -184,14 +184,14 @@ describe('request descriptor', function () {
                 model: 'Car',
                 collection: 'myCollection'
             });
-            assert.equal('Car', r.model.type);
+            assert.equal('Car', r.model.name);
         });
         it('as string, but collection as object', function () {
             var r = new siesta.ext.http.Descriptor({
                 model: 'Car',
                 collection: collection
             });
-            assert.equal('Car', r.model.type);
+            assert.equal('Car', r.model.name);
         });
         it('should throw an exception if passed as string without collection', function () {
             assert.throws(_.partial(siesta.ext.http.Descriptor, {

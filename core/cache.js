@@ -52,7 +52,7 @@ function getViaLocalId(localId) {
  * @return {ModelInstance}
  */
 function getSingleton(model) {
-    var modelName = model.type;
+    var modelName = model.name;
     var collectionName = model.collection;
     var collectionCache = localCache[collectionName];
     if (collectionCache) {
@@ -85,7 +85,7 @@ function getSingleton(model) {
  * @return {ModelInstance}
  */
 function getViaRemoteId(remoteId, opts) {
-    var type = opts.model.type;
+    var type = opts.model.name;
     var collection = opts.model.collection;
     var collectionCache = remoteCache[collection];
     if (collectionCache) {
@@ -120,7 +120,7 @@ function remoteInsert(obj, remoteId, previousRemoteId) {
             if (!remoteCache[collection]) {
                 remoteCache[collection] = {};
             }
-            var type = obj.model.type;
+            var type = obj.model.name;
             if (type) {
                 if (!remoteCache[collection][type]) {
                     remoteCache[collection][type] = {};
@@ -292,7 +292,7 @@ function insert(obj) {
     var localId = obj._id;
     if (localId) {
         var collectionName = obj.model.collection;
-        var modelName = obj.model.type;
+        var modelName = obj.model.name;
         if (LocalCacheLogger.debug.isEnabled)
             LocalCacheLogger.debug('Local cache insert: ' + obj._dumpString());
         if (!localCacheById[localId]) {
@@ -349,7 +349,7 @@ function contains(obj) {
 function remove(obj) {
     if (contains(obj)) {
         var collectionName = obj.model.collection;
-        var modelName = obj.model.type;
+        var modelName = obj.model.name;
         var _id = obj._id;
         if (!modelName) throw InternalSiestaError('No mapping name');
         if (!collectionName) throw InternalSiestaError('No collection name');

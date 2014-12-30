@@ -23,7 +23,7 @@ function wrapArray(array, field, siestaModel) {
                 splices.forEach(function (splice) {
                     coreChanges.registerChange({
                         collection: siestaModel.collection,
-                        model: siestaModel.model.type,
+                        model: siestaModel.model.name,
                         _id: siestaModel._id,
                         index: splice.index,
                         removed: splice.removed,

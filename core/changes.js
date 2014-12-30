@@ -57,7 +57,7 @@ function Change(opts) {
 Change.prototype._dump = function (json) {
     var dumped = {};
     dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();
-    dumped.model = (typeof this.model) == 'string' ? this.model : this.model.type;
+    dumped.model = (typeof this.model) == 'string' ? this.model : this.model.name;
     dumped._id = this._id;
     dumped.field = this.field;
     dumped.type = this.type;

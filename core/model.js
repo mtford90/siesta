@@ -41,7 +41,6 @@ function Model(opts) {
 
     util.extendFromOpts(this, opts, {
         methods: {},
-        type: null,
         attributes: [],
         collection: null,
         id: 'id',
@@ -102,7 +101,7 @@ function Model(opts) {
             get: function () {
                 if (siesta.ext.storageEnabled) {
                     var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                        hash = (unsavedObjectsByCollection[this.collection] || {})[this.type] || {};
+                        hash = (unsavedObjectsByCollection[this.collection] || {})[this.name] || {};
                     return !!Object.keys(hash).length;
                 }
                 else return undefined;
@@ -161,7 +160,7 @@ _.extend(Model.prototype, {
                     if (self._opts.relationships.hasOwnProperty(name)) {
                         var relationship = self._opts.relationships[name];
                         if (Logger.debug.isEnabled)
-                            Logger.debug(self.type + ': configuring relationship ' + name, relationship);
+                            Logger.debug(self.name + ': configuring relationship ' + name, relationship);
                         if (self.singleton) {
                             if (relationship.type != RelationshipType.OneToOne) {
                                 Logger.warn('Singleton mappings can only be used with OneToOne relationships');
@@ -211,7 +210,7 @@ _.extend(Model.prototype, {
             }
             this._relationshipsInstalled = true;
         } else {
-            throw new InternalSiestaError('Relationships for "' + this.type + '" have already been installed');
+            throw new InternalSiestaError('Relationships for "' + this.name + '" have already been installed');
         }
         return null;
     },
@@ -225,13 +224,13 @@ _.extend(Model.prototype, {
                     var reverseModel = relationship.reverseModel;
                     var reverseName = relationship.reverseName;
                     if (Logger.debug.isEnabled)
-                        Logger.debug(this.type + ': configuring  reverse relationship ' + reverseName);
+                        Logger.debug(this.name + ': configuring  reverse relationship ' + reverseName);
                     reverseModel.relationships[reverseName] = relationship;
                 }
             }
             this._reverseRelationshipsInstalled = true;
         } else {
-            throw new InternalSiestaError('Reverse relationships for "' + this.type + '" have already been installed.');
+            throw new InternalSiestaError('Reverse relationships for "' + this.name + '" have already been installed.');
         }
     },
     ensureSingletons: function (callback) {
@@ -252,12 +251,12 @@ _.extend(Model.prototype, {
                             return data;
                         }, data);
                         this.map(data, function (err, obj) {
-                            if (Logger.trace) Logger.trace('Ensured singleton mapping "' + this.type + '"', obj);
+                            if (Logger.trace) Logger.trace('Ensured singleton mapping "' + this.name + '"', obj);
                             callback(err, obj);
                         }.bind(this));
                     }
                     else {
-                        if (Logger.trace) Logger.trace('Singleton already exists for mapping "' + this.type + '"', obj);
+                        if (Logger.trace) Logger.trace('Singleton already exists for mapping "' + this.name + '"', obj);
                         callback(null, obj);
                     }
                 }
@@ -335,25 +334,25 @@ _.extend(Model.prototype, {
         return new Query(this, {});
     },
     install: function (callback) {
-        if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.type);
+        if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.name);
         var deferred = window.q ? window.q.defer() : null;
         callback = util.cb(callback, deferred);
         if (!this._installed) {
             var errors = this._validate();
             this._installed = true;
             if (Logger.info.isEnabled) {
-                if (errors.length) Logger.error('Errors installing mapping ' + this.type + ': ' + errors);
-                else Logger.info('Installed mapping ' + this.type);
+                if (errors.length) Logger.error('Errors installing mapping ' + this.name + ': ' + errors);
+                else Logger.info('Installed mapping ' + this.name);
             }
             callback(errors.length ? errors : null);
         } else {
-            throw new InternalSiestaError('Model "' + this.type + '" has already been installed');
+            throw new InternalSiestaError('Model "' + this.name + '" has already been installed');
         }
         return deferred ? deferred.promise : null;
     },
     _validate: function () {
         var errors = [];
-        if (!this.type) {
+        if (!this.name) {
             errors.push('Must specify a type');
         }
         if (!this.collection) {
@@ -416,7 +415,7 @@ _.extend(Model.prototype, {
     },
     _countCache: function () {
         var collCache = cache._localCacheByType[this.collection] || {};
-        var modelCache = collCache[this.type] || {};
+        var modelCache = collCache[this.name] || {};
         return _.reduce(Object.keys(modelCache), function (m, _id) {
             m[_id] = {};
             return m;
@@ -428,7 +427,7 @@ _.extend(Model.prototype, {
         var hash = this._countCache();
         if (siesta.ext.storageEnabled) {
             var pouch = siesta.ext.storage.Pouch.getPouch();
-            var indexName = (new siesta.ext.storage.Index(this.collection, this.type))._getName() + '_';
+            var indexName = (new siesta.ext.storage.Index(this.collection, this.name))._getName() + '_';
             pouch.query(indexName, {
                 include_docs: false
             }, function (err, resp) {
@@ -463,7 +462,7 @@ _.extend(Model.prototype, {
             }
             var newModel = new SiestaModel(this);
             if (Logger.info.isEnabled)
-                Logger.info('New object created _id="' + _id.toString() + '", type=' + this.type, data);
+                Logger.info('New object created _id="' + _id.toString() + '", type=' + this.name, data);
             newModel._id = _id;
             // Place attributes on the object.
             var values = {};
@@ -492,7 +491,7 @@ _.extend(Model.prototype, {
                         newModel.__values[field] = v;
                         coreChanges.registerChange({
                             collection: self.collection,
-                            model: self.type,
+                            model: self.name,
                             _id: newModel._id,
                             new: v,
                             old: old,
@@ -522,7 +521,7 @@ _.extend(Model.prototype, {
                     newModel.__values[self.id] = v;
                     coreChanges.registerChange({
                         collection: self.collection,
-                        model: self.type,
+                        model: self.name,
                         _id: newModel._id,
                         new: v,
                         old: old,
@@ -556,7 +555,7 @@ _.extend(Model.prototype, {
             if (shouldRegisterChange) {
                 coreChanges.registerChange({
                     collection: this.collection,
-                    model: this.type,
+                    model: this.name,
                     _id: newModel._id,
                     newId: newModel._id,
                     new: newModel,
@@ -572,7 +571,7 @@ _.extend(Model.prototype, {
     },
     _dump: function (asJSON) {
         var dumped = {};
-        dumped.name = this.type;
+        dumped.name = this.name;
         dumped.attributes = this.attributes;
         dumped.id = this.id;
         dumped.collection = this.collection;
@@ -582,23 +581,23 @@ _.extend(Model.prototype, {
         return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
     },
     toString: function () {
-        return 'Model[' + this.type + ']';
+        return 'Model[' + this.name + ']';
     }
 
 });
 
 _.extend(Model.prototype, {
     listen: function (fn) {
-        notificationCentre.on(this.collection + ':' + this.type, fn);
+        notificationCentre.on(this.collection + ':' + this.name, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notificationCentre.once(this.collection + ':' + this.type, fn);
+        return notificationCentre.once(this.collection + ':' + this.name, fn);
     },
     removeListener: function (fn) {
-        return notificationCentre.removeListener(this.collection + ':' + this.type, fn);
+        return notificationCentre.removeListener(this.collection + ':' + this.name, fn);
     }
 });
 

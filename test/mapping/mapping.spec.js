@@ -14,7 +14,7 @@ describe('mapping!', function () {
 
     it('_attributeNames', function () {
         var m = new Model({
-            type: 'type',
+            name: 'name',
             id: 'id',
             attributes: ['field1', 'field2']
         });
@@ -26,7 +26,7 @@ describe('mapping!', function () {
 
     it('attributes', function () {
         var m = new Model({
-            type: 'type',
+            name: 'name',
             id: 'id',
             attributes: ['field1', 'field2']
         });
@@ -35,18 +35,18 @@ describe('mapping!', function () {
         assert.include(attributes, 'field2');
     });
 
-    it('type', function () {
+    it('name', function () {
         var m = new Model({
-            type: 'type',
+            name: 'name',
             id: 'id',
             attributes: ['field1', 'field2']
         });
-        assert.equal(m.type, 'type');
+        assert.equal(m.name, 'name');
     });
 
     it('id', function () {
         var m = new Model({
-            type: 'type',
+            name: 'name',
             id: 'id',
             attributes: ['field1', 'field2']
         });

@@ -13,7 +13,7 @@ describe('mapping validation', function () {
     });
 
     describe('validation', function () {
-        it('no type', function () {
+        it('no name', function () {
             var m = new Mapping({
                 id: 'id',
                 attributes: ['field1', 'field2'],
@@ -26,7 +26,7 @@ describe('mapping validation', function () {
             var m = new Mapping({
                 id: 'id',
                 attributes: ['field1', 'field2'],
-                type: 'Car'
+                name: 'Car'
             });
             var errors = m._validate();
             assert.equal(1, errors.length);

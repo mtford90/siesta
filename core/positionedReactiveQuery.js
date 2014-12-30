@@ -91,7 +91,7 @@ _.extend(PositionalReactiveQuery.prototype, {
         ReactiveQuery.prototype.init.call(this, function (err) {
             if (!err) {
                 if (!this.model.hasAttributeNamed(this.indexField)) {
-                    err = 'Model "' + this.model.type + '" does not have an attribute named "' + this.indexField + '"';
+                    err = 'Model "' + this.model.name + '" does not have an attribute named "' + this.indexField + '"';
                 }
                 else {
                     this._mergeIndexes();

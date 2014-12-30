@@ -21,6 +21,12 @@ function ModelInstance(model) {
         enumerable: true,
         configurable: true
     });
+    Object.defineProperty(this, 'modelName', {
+        get: function () {
+            return this.model.name
+        }.bind(this)
+    });
+
     defineSubProperty.call(this, 'type', this.model);
     defineSubProperty.call(this, 'collection', this.model);
     defineSubProperty.call(this, '_attributeNames', this.model);
@@ -68,7 +74,7 @@ _.extend(ModelInstance.prototype, {
         if (notification) {
             coreChanges.registerChange({
                 collection: this.collection,
-                model: this.model.type,
+                model: this.model.name,
                 _id: this._id,
                 oldId: this._id,
                 old: this,
@@ -88,7 +94,7 @@ _.extend(ModelInstance.prototype, {
         }
         coreChanges.registerChange({
             collection: this.collection,
-            model: this.model.type,
+            model: this.model.name,
             _id: this._id,
             newId: this._id,
             new: this,

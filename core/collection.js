@@ -45,7 +45,6 @@ function Collection(name) {
     var self = this;
     if (!name) throw new Error('Collection must have a name');
     this.name = name;
-    this._docId = 'Collection_' + this.name;
     this._rawModels = {};
     this._models = {};
     /**
@@ -109,14 +108,14 @@ _.extend(Collection.prototype, {
                         var errors = [];
                         _.each(modelsToInstall, function (m) {
                             if (Logger.info.isEnabled)
-                                Logger.info('Installing relationships for mapping with name "' + m.type + '"');
+                                Logger.info('Installing relationships for mapping with name "' + m.name + '"');
                             var err = m.installRelationships();
                             if (err) errors.push(err);
                         });
                         if (!errors.length) {
                             _.each(modelsToInstall, function (m) {
                                 if (Logger.info.isEnabled)
-                                    Logger.info('Installing reverse relationships for mapping with name "' + m.type + '"');
+                                    Logger.info('Installing reverse relationships for mapping with name "' + m.name + '"');
                                 var err = m.installReverseRelationships();
                                 if (err) errors.push(err);
                             });
@@ -169,7 +168,7 @@ _.extend(Collection.prototype, {
         if (name) {
             this._rawModels[name] = opts;
             opts = extend(true, {}, opts);
-            opts.type = name;
+            opts.name = name;
             opts.collection = this.name;
             var model = new Model(opts);
             this._models[name] = model;

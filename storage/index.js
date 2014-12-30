@@ -30,7 +30,7 @@ Logger.setLevel(log.Level.trace);
 function _serialise(model) {
     var serialised = siesta.extend({}, model.__values);
     serialised['collection'] = model.collection;
-    serialised['model'] = model.type;
+    serialised['model'] = model.modelName;
     serialised['_id'] = model._id;
     var rev = model._rev;
     if (rev) serialised['_rev'] = rev;
@@ -207,7 +207,7 @@ var listener = function (n) {
         if (!unsavedObjectsByCollection[collectionName]) {
             unsavedObjectsByCollection[collectionName] = {};
         }
-        var modelName = changedObject.model.type;
+        var modelName = changedObject.model.name;
         if (!unsavedObjectsByCollection[collectionName][modelName]) {
             unsavedObjectsByCollection[collectionName][modelName] = {};
         }

@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-var SiestaModel = require('../core/modelInstance').ModelInstance
+var ModelInstance = require('../core/modelInstance').ModelInstance
     , cache = require('../core/cache')
     , Collection = require('../core/collection').Collection;
 
@@ -41,19 +41,14 @@ describe('Models', function () {
     describe('fields', function () {
 
 
-        it('type field', function () {
-            var r = new SiestaModel(mapping);
-            assert.equal(r.type, 'Car');
+        it('modelName field', function () {
+            var r = new ModelInstance(mapping);
+            assert.equal(r.modelName, 'Car');
         });
 
         it('collection field', function () {
-            var r = new SiestaModel(mapping);
+            var r = new ModelInstance(mapping);
             assert.equal(r.collection, 'myCollection');
-        });
-
-        it('type field', function () {
-            var r = new SiestaModel(mapping);
-            assert.notOk(r.isSaved);
         });
 
     });
@@ -63,7 +58,7 @@ describe('Models', function () {
 
         describe('remote id', function () {
             function remove() {
-                car = new SiestaModel(mapping);
+                car = new ModelInstance(mapping);
                 car.colour = 'red';
                 car.name = 'Aston Martin';
                 car.id = '2';
@@ -91,7 +86,7 @@ describe('Models', function () {
 
         describe('no remote id', function () {
             function remove() {
-                car = new SiestaModel(mapping);
+                car = new ModelInstance(mapping);
                 car.colour = 'red';
                 car.name = 'Aston Martin';
                 car._id = 'xyz';

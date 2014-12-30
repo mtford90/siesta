@@ -7,7 +7,7 @@ describe('cache...', function() {
     });
     var mapping;
 
-    var sModel = require('../core/modelInstance').ModelInstance;
+    var ModelInstance = require('../core/modelInstance').ModelInstance;
     var RelationshipType = require('../core/relationship').RelationshipType;
     var cache = require('../core/cache');
 
@@ -25,30 +25,30 @@ describe('cache...', function() {
             });
         });
         it('by pouch id', function() {
-            var model = new sModel(mapping);
-            model._id = 'dsfsd';
-            cache.insert(model);
-            assert.equal(model, cache._localCache()[model._id]);
-            assert.equal(model, cache._localCacheByType[model.model.collection][model.type][model._id], model);
+            var car = new ModelInstance(mapping);
+            car._id = 'dsfsd';
+            cache.insert(car);
+            assert.equal(car, cache._localCache()[car._id]);
+            assert.equal(car, cache._localCacheByType[car.model.collection][car.modelName][car._id], car);
         });
 
         it('by default id', function() {
-            var model = new sModel(mapping);
-            model.id = 'dsfsd';
-            cache.insert(model);
+            var car = new ModelInstance(mapping);
+            car.id = 'dsfsd';
+            cache.insert(car);
 
             var remoteCache = cache._remoteCache();
-            assert.equal(model, remoteCache[model.collection][model.type][model.id]);
+            assert.equal(car, remoteCache[car.collection][car.modelName][car.id]);
         });
 
         it('by custom id', function() {
             var m = mapping;
             m.id = 'customId';
-            var r = new sModel(m);
-            r.customId = 'dsfsd';
-            cache.insert(r);
+            var car = new ModelInstance(m);
+            car.customId = 'dsfsd';
+            cache.insert(car);
             var remoteCache = cache._remoteCache();
-            assert.equal(r, remoteCache[r.collection][r.type][r.customId]);
+            assert.equal(car, remoteCache[car.collection][car.modelName][car.customId]);
         });
 
     });
@@ -65,7 +65,7 @@ describe('cache...', function() {
             });
         });
         it('by pouch id', function() {
-            var r = new sModel(mapping);
+            var r = new ModelInstance(mapping);
             r.id = 'dsfsd';
             cache.insert(r);
             var returned = cache.get({
@@ -75,7 +75,7 @@ describe('cache...', function() {
             assert.equal(returned, r);
         });
         it('by rest id', function() {
-            var model = new sModel(mapping);
+            var model = new ModelInstance(mapping);
             model.id = 'dsfsd';
             model._id = 'xyz';
             cache.insert(model);
@@ -139,7 +139,7 @@ describe('cache...', function() {
                     id: 'xyz'
                 });
                 cache.insert(person);
-                var duplicateObject = new sModel();
+                var duplicateObject = new ModelInstance();
                 duplicateObject._id = person._id;
                 assert.throws(function() {
                     cache.insert(duplicateObject);

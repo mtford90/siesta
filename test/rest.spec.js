@@ -45,13 +45,13 @@ describe('rest', function () {
                 function assertMapping(collection) {
                     var rawMapping = collection._rawModels.Person;
                     assert.ok(rawMapping);
-                    var mappingObj = collection.Person;
-                    assert.equal(mappingObj.type, 'Person');
-                    assert.equal(mappingObj.id, 'id');
-                    assert.equal(mappingObj.collection, 'myCollection');
-                    assert.include(mappingObj._attributeNames, 'name');
-                    assert.include(mappingObj._attributeNames, 'age');
-                    assert.ok(mappingObj);
+                    var Model = collection.Person;
+                    assert.equal(Model.name, 'Person');
+                    assert.equal(Model.id, 'id');
+                    assert.equal(Model.collection, 'myCollection');
+                    assert.include(Model._attributeNames, 'name');
+                    assert.include(Model._attributeNames, 'age');
+                    assert.ok(Model);
                 }
 
                 it('mappings', function () {

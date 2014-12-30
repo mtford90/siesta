@@ -346,7 +346,6 @@ siesta.install = function (callback) {
                             var modelName = modelNames[j],
                                 model = collection[modelName];
                             var fn = function (done) {
-                                console.log('wtf', this.type);
                                 this.ensureSingletons(done);
                             }.bind(model);
                             ensureSingletonTasks.push(fn);

@@ -162,7 +162,7 @@ function getReverseProxyForObject(obj) {
     } else {
         var proxy = obj.__proxies[reverseName];
         if (!proxy) {
-            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseModel.type;
+            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseModel.name;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -179,7 +179,7 @@ function getForwardProxyForObject(obj) {
     } else {
         var proxy = obj.__proxies[forwardName];
         if (!proxy) {
-            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardModel.type;
+            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardModel.name;
             throw new InternalSiestaError(err);
         }
         return proxy;
@@ -266,7 +266,7 @@ function objAsString(obj) {
     function _objAsString(obj) {
         if (obj) {
             var model = obj.model;
-            var modelName = model.type;
+            var modelName = model.name;
             var ident = obj._id;
             if (typeof ident == 'string') {
                 ident = '"' + ident + '"';
@@ -311,7 +311,7 @@ function clearReverseRelated(opts) {
                     _.each(identifiers, function (_id) {
                         coreChanges.registerChange({
                             collection: reverseModel.collection,
-                            model: reverseModel.type,
+                            model: reverseModel.name,
                             _id: _id,
                             field: reverseName,
                             removedId: [self.object._id],
@@ -326,7 +326,7 @@ function clearReverseRelated(opts) {
                     _.each(identifiers, function (_id) {
                         coreChanges.registerChange({
                             collection: reverseModel.collection,
-                            model: reverseModel.type,
+                            model: reverseModel.name,
                             _id: _id,
                             field: reverseName,
                             new: null,
@@ -377,7 +377,7 @@ function setReverse(obj, opts) {
 function registerSetChange(obj) {
     var proxyObject = this.object;
     if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
-    var model = proxyObject.model.type;
+    var model = proxyObject.model.name;
     var coll = proxyObject.collection;
     var newId;
     if (util.isArray(obj)) {
@@ -410,7 +410,7 @@ function registerSetChange(obj) {
 
 function registerSpliceChange(idx, numRemove) {
     var add = Array.prototype.slice.call(arguments, 2);
-    var model = this.object.model.type;
+    var model = this.object.model.name;
     var coll = this.object.collection;
     coreChanges.registerChange({
         collection: coll,
@@ -439,7 +439,7 @@ function wrapArray(arr) {
                 var model = getForwardModel.call(self);
                 coreChanges.registerChange({
                     collection: model.collection,
-                    model: model.type,
+                    model: model.name,
                     _id: self.object._id,
                     field: getForwardName.call(self),
                     removed: splice.removed,

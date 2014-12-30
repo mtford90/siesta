@@ -327,9 +327,7 @@ describe('bulk mapping operation', function () {
                         var repo = Repo._new({
                             id: '5',
                             name: 'Old Name',
-                            full_name: 'Old Full Name',
-                            collection: 'MyCollection',
-                            type: 'Repo'
+                            full_name: 'Old Full Name'
                         });
                         cache.insert(repo);
                         var data = [{
