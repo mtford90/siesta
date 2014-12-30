@@ -4,7 +4,7 @@
 
 var log = require('./operation/log')
     , cache = require('./cache')
-    , util = require('./util/util')
+    , util = require('./util')
     , _ = util._;
 
 var Logger = log.loggerWithName('Query');

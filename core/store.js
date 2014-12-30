@@ -7,7 +7,7 @@
 
 var InternalSiestaError = require('./error').InternalSiestaError
     , log = require('./operation/log')
-    , util = require('./util/util')
+    , util = require('./util')
     , _ = util._
     , cache = require('./cache');
 

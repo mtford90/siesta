@@ -3,7 +3,7 @@
  */
 
 var collection = require('./collection'),
-    util = require('./util/util'),
+    util = require('./util'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     Collection = collection.Collection,
     cache = require('./cache'),

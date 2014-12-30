@@ -4,7 +4,7 @@ var s = require('../core/index'),
 
 var mappingOperation = require('../core/mappingOperation')
     , BulkMappingOperation = mappingOperation.BulkMappingOperation
-    , util = require('../core/util/util')
+    , util = require('../core/util')
     , _ = util._
     , RelationshipType = require('../core/relationship').RelationshipType
     , Collection = require('../core/collection').Collection

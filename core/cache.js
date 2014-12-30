@@ -5,7 +5,7 @@
  */
 var log = require('./operation/log')
     , InternalSiestaError = require('./error').InternalSiestaError
-    , util = require('./util/util');
+    , util = require('./util');
 
 
 var LocalCacheLogger = log.loggerWithName('LocalCache')
