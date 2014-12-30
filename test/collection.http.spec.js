@@ -4,10 +4,9 @@ var s = require('../core/index'),
 /*globals describe, it, beforeEach, before, after */
 describe('http!', function () {
 
-    var Collection = require('../core/collection').Collection;
-    var RelationshipType = require('../core/relationship').RelationshipType;
-    var SiestaModel = require('../core/modelInstance').ModelInstance;
-    var InternalSiestaError = require('../core/error').InternalSiestaError;
+    var RelationshipType = require('../core/relationship').RelationshipType,
+        SiestaModel = require('../core/modelInstance').ModelInstance,
+        InternalSiestaError = require('../core/error').InternalSiestaError;
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 

@@ -180,17 +180,19 @@ describe('serialisers', function() {
 
     describe('availibility on siesta', function() {
         it('id, anglophone', function () {
+            console.log('eh');
+            console.log('s.serialisers', s.serialisers);
             assert.equal(s.serialisers.id, siesta.ext.http.Serialiser.idSerialiser);
         });
 
-        it('root, anglophone', function () {
+        it('depth, anglophone', function () {
             assert.equal(s.serialisers.depth, siesta.ext.http.Serialiser.depthSerializer);
         });
         it('id, american', function () {
             assert.equal(s.serializers.id, siesta.ext.http.Serialiser.idSerialiser);
         });
 
-        it('root, american', function () {
+        it('depth, american', function () {
             assert.equal(s.serializers.depth, siesta.ext.http.Serialiser.depthSerializer);
         });
     });

@@ -98,7 +98,7 @@ _.extend(Collection.prototype, {
                 var tasks = _.map(modelsToInstall, function (m) {
                     return _.bind(m.install, m);
                 });
-                util.parallel(tasks, function (err) {
+                util.async.parallel(tasks, function (err) {
                     if (err) {
                         Logger.error('Failed to install collection', err);
                         self._finaliseInstallation(err, callback, deferred);
@@ -376,7 +376,7 @@ _.extend(Collection.prototype, {
         var tasks = _.map(this._models, function (m) {
             return _.bind(m.count, m);
         });
-        util.parallel(tasks, function (err, ns) {
+        util.async.parallel(tasks, function (err, ns) {
             var n;
             if (!err) {
                 n = _.reduce(ns, function (m, r) {

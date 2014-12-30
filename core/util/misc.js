@@ -166,5 +166,8 @@ _.extend(module.exports, {
     },
     isString: function (o) {
         return typeof o == 'string' || o instanceof String
+    },
+    isArray: Array.isArray || function (obj) {
+        return _.toString.call(obj) === '[object Array]';
     }
 });

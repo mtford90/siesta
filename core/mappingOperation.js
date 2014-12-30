@@ -219,7 +219,7 @@ _.extend(BulkMappingOperation.prototype, {
                 }
             }
         }
-        util.parallel([
+        util.async.parallel([
                 function (callback) {
                     var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
                     if (localIdentifiers.length) {
@@ -327,7 +327,7 @@ _.extend(BulkMappingOperation.prototype, {
             var lookupFunc = this.model.singleton ? this._lookupSingleton : this._lookup;
             tasks.push(_.bind(lookupFunc, this));
             tasks.push(_.bind(this._executeSubOperations, this));
-            util.parallel(tasks, function () {
+            util.async.parallel(tasks, function () {
                 self._map();
                 done(self.errors.length ? self.errors : null, self.objects);
             });

@@ -3,12 +3,12 @@
  * @module util
  */
 
-
 var _ = require('./underscore'),
     async = require('./async'),
     misc = require('./misc');
 
-
-module.exports._ = _;
+_.extend(module.exports, {
+    _: _,
+    async: async
+});
 _.extend(module.exports, misc);
-_.extend(module.exports, async);

@@ -21,14 +21,14 @@ var unsavedObjects = [],
     unsavedObjectsByCollection = {};
 
 var Logger = log.loggerWithName('Storage');
-Logger.setLevel(log.Level.warn);
+Logger.setLevel(log.Level.trace);
 
 /**
  * Serialise a model down to PouchDB.
  * @param {ModelInstance} modelInstance
  */
 function _serialise(modelInstance) {
-    var serialised = siesta.extend({}, modelInstance.__values);
+    var serialised = siesta._.extend({}, modelInstance.__values);
     serialised['collection'] = modelInstance.collectionName;
     serialised['model'] = modelInstance.modelName;
     serialised['_id'] = modelInstance._id;
@@ -82,14 +82,18 @@ function _loadModel(opts, callback) {
     var Model = CollectionRegistry[collectionName][modelName];
     var mapFunc = function (doc) {
         if (doc.model == '$1' && doc.collection == '$2') {
+            //noinspection JSUnresolvedFunction
             emit(doc._id, doc);
         }
     }.toString().replace('$1', modelName).replace('$2', collectionName);
+    if (Logger.trace.isEnabled) Logger.trace('Querying pouch');
     pouch.query({map: mapFunc})
         .then(function (resp) {
-            var data = siesta.map(siesta.pluck(resp.rows, 'value'), function (datum) {
+            if (Logger.trace.isEnabled) Logger.trace('Queried pouch succesffully');
+            var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
                 return _prepareDatum(datum, Model);
             });
+            if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
             Model.map(data, {disableNotifications: true}, function (err, instances) {
                 if (!err) {
                     if (Logger.trace)
@@ -102,6 +106,7 @@ function _loadModel(opts, callback) {
             });
         })
         .catch(function (err) {
+            console.log('err', err);
             callback(err);
         });
 }
@@ -117,16 +122,20 @@ function _load(callback) {
         var collection = CollectionRegistry[collectionName],
             modelNames = Object.keys(collection._models);
         _.each(modelNames, function (modelName) {
-            tasks.push(siesta.partial(_loadModel, {
-                collectionName: collectionName,
-                modelName: modelName
-            }));
+            tasks.push(function (cb) {
+                 _loadModel({
+                     collectionName: collectionName,
+                     modelName: modelName
+                 }, cb);
+            });
         });
     });
-    siesta.parallel(tasks, function (err, results) {
-        var instances = [];
-        siesta.each(results, function (r) {instances.concat(r)});
-        if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
+    siesta.async.parallel(tasks, function (err, results) {
+        if (!err) {
+            var instances = [];
+            siesta._.each(results, function (r) {instances.concat(r)});
+            if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
+        }
         deferred.finish(err);
     });
     return deferred.promise;
@@ -141,7 +150,6 @@ function saveConflicts(objects, callback, deferred) {
             saveToPouch(objects, callback, deferred);
         })
         .catch(function (err) {
-            callback(err);
             deferred.reject(err);
         })
 }

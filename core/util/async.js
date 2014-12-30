@@ -1,6 +1,4 @@
-var isArray = Array.isArray || function (obj) {
-        return _toString.call(obj) === '[object Array]';
-    };
+var misc = require('./misc');
 
 function doParallel(fn) {
     return function () {
@@ -120,7 +118,7 @@ function each(arr, iterator, callback) {
 
 var _parallel = function (eachfn, tasks, callback) {
     callback = callback || function () {};
-    if (isArray(tasks)) {
+    if (misc.isArray(tasks)) {
         eachfn.map(tasks, function (fn, callback) {
             if (fn) {
                 fn(function (err) {
@@ -151,7 +149,7 @@ var _parallel = function (eachfn, tasks, callback) {
 
 function series(tasks, callback) {
     callback = callback || function () {};
-    if (isArray(tasks)) {
+    if (misc.isArray(tasks)) {
         mapSeries(tasks, function (fn, callback) {
             if (fn) {
                 fn(function (err) {
@@ -198,6 +196,5 @@ function parallel(tasks, callback) {
 
 module.exports = {
     series: series,
-    parallel: parallel,
-    isArray: isArray
+    parallel: parallel
 };
