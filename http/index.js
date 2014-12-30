@@ -416,13 +416,9 @@ Object.defineProperty(http, 'ajax', {
     }
 });
 
-if (typeof siesta != 'undefined') {
-    if (!siesta.ext) {
-        siesta.ext = {};
-    }
-    siesta.ext.http = http;
+if (!siesta.ext) {
+    siesta.ext = {};
 }
+siesta.ext.http = http;
 
-if (typeof module != 'undefined') {
-    module.exports = http;
-}
+if (typeof module != 'undefined') module.exports = http;

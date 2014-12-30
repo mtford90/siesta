@@ -6,16 +6,18 @@ if (typeof PouchDB == 'undefined') {
     throw new Error('Could not find PouchDB. Have you included the script?');
 }
 
-var DB_NAME = 'siesta';
-var unsavedObjects = [],
-    unsavedObjectsHash = {},
-    unsavedObjectsByCollection = {},
-    _i = siesta._internal,
+var _i = siesta._internal,
     cache = _i.cache,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
-    notificationCentre = _i.notificationCentre.notificationCentre,
+    notificationCentre = _i.notificationCentre.notificationCentre;
+
+var DB_NAME = 'siesta',
     pouch = new PouchDB(DB_NAME);
+
+var unsavedObjects = [],
+    unsavedObjectsHash = {},
+    unsavedObjectsByCollection = {};
 
 var Logger = log.loggerWithName('Storage');
 Logger.setLevel(log.Level.trace);
@@ -59,17 +61,6 @@ function _prepareDatum(datum, model) {
         }
     });
     return datum;
-}
-function _deserialise(datum, cb) {
-    var collectionName = datum.collection,
-        modelName = datum.model,
-        collection = CollectionRegistry[collectionName],
-        model = collection[modelName];
-    datum = _prepareDatum(datum, model);
-    model.map(datum, {disableNotifications: true}, function (err, instance) {
-        if (err) Logger.error('err', err);
-        cb(err, instance);
-    });
 }
 
 /**
@@ -267,60 +258,53 @@ Object.defineProperty(storage, '_pouch', {
 });
 
 
-if (typeof siesta != 'undefined') {
-    if (!siesta.ext) {
-        siesta.ext = {};
-    }
-    siesta.ext.storage = storage;
-    var interval, saving, autosaveDuration = 1000;
-    Object.defineProperty(siesta, 'autosave', {
-        get: function () {
-            return !!interval;
-        },
-        set: function (autosave) {
-            console.log('yo');
-            if (autosave) {
-                if (!interval) {
-                    interval = setInterval(function () {
-                        // Cheeky way of avoiding multiple saves happening...
-                        if (!saving) {
-                            saving = true;
-                            siesta.save(function (err) {
-                                if (!err) {
-                                    notificationCentre.emit('saved');
-                                }
-                                saving = false;
-                            });
-                        }
-                    }, siesta.autosaveDuration);
-                }
-            }
-            else {
-                if (interval) {
-                    clearInterval(interval);
-                    interval = null;
-                }
+if (!siesta.ext) {
+    siesta.ext = {};
+}
+siesta.ext.storage = storage;
+var interval, saving, autosaveDuration = 1000;
+Object.defineProperty(siesta, 'autosave', {
+    get: function () {
+        return !!interval;
+    },
+    set: function (autosave) {
+        console.log('yo');
+        if (autosave) {
+            if (!interval) {
+                interval = setInterval(function () {
+                    // Cheeky way of avoiding multiple saves happening...
+                    if (!saving) {
+                        saving = true;
+                        siesta.save(function (err) {
+                            if (!err) {
+                                notificationCentre.emit('saved');
+                            }
+                            saving = false;
+                        });
+                    }
+                }, siesta.autosaveDuration);
             }
         }
-    });
-    Object.defineProperty(siesta, 'autosaveDuration', {
-        get: function () {
-            return autosaveDuration;
-        },
-        set: function (_autosaveDuration) {
-            autosaveDuration = _autosaveDuration;
+        else {
             if (interval) {
-                // Reset interval
-                siesta.autosave = false;
-                siesta.autosave = true;
+                clearInterval(interval);
+                interval = null;
             }
         }
-    })
-}
-else {
-    throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
-}
+    }
+});
+Object.defineProperty(siesta, 'autosaveDuration', {
+    get: function () {
+        return autosaveDuration;
+    },
+    set: function (_autosaveDuration) {
+        autosaveDuration = _autosaveDuration;
+        if (interval) {
+            // Reset interval
+            siesta.autosave = false;
+            siesta.autosave = true;
+        }
+    }
+});
 
-if (typeof module != 'undefined') {
-    module.exports = storage;
-}
+module.exports = storage;

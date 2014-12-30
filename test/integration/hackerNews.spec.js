@@ -12,8 +12,7 @@
 //
 //var siesta = require('../../core/index')
 //    , assert = require('chai').assert;
-// TODO: Why does sinon fuck up?
-//describe('hacker news integration test', function () {
+//describe.only('hacker news integration test', function () {
 //    // When @HiroAgustin tried to pass name of mapping to descriptor
 //    // an error was thrown :(
 //    // Not testing anything here in particular, just ensuring that it gets to the end
