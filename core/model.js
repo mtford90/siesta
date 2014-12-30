@@ -392,11 +392,16 @@ _.extend(Model.prototype, {
         else if (optsOrCallback) opts = optsOrCallback;
         opts = opts || {};
         var deferred = util.defer(callback);
+        var overrides = opts.override;
+        if (overrides) {
+            if (util.isArray(overrides)) opts.objects = overrides;
+            else opts.objects = [overrides];
+        }
         if (this.installed) {
             if (util.isArray(data)) {
                 this._mapBulk(data, opts, deferred.finish);
             } else {
-                if (opts.override) opts.override = [opts.override];
+
                 this._mapBulk([data], opts, function (err, objects) {
                     var obj;
                     if (objects) {
@@ -413,14 +418,8 @@ _.extend(Model.prototype, {
         return deferred.promise;
     },
     _mapBulk: function (data, opts, callback) {
-        var override = opts.override;
-        var mappingOpts = {
-            model: this,
-            data: data,
-            disableNotifications: opts.disableNotifications
-        };
-        if (override) mappingOpts.objects = override;
-        var op = new BulkMappingOperation(mappingOpts);
+        _.extend(opts, {model: this, data: data});
+        var op = new BulkMappingOperation(opts);
         op.onCompletion(function () {
             var err = op.error;
             if (err) {
