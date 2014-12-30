@@ -1,6 +1,5 @@
 var log = require('./operation/log')
     , util = require('./util')
-    , defineSubProperty = util.defineSubProperty
     , _ = util._
     , error = require('./error')
     , InternalSiestaError = error.InternalSiestaError
@@ -29,30 +28,32 @@ function ModelInstance(model) {
         }
     ]);
 
-    Object.defineProperty(this, '_relationshipNames', {
-        get: function () {
-            var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
-            return _.map(proxies, function (p) {
-                if (p.isForward) {
-                    return p.forwardName;
-                } else {
-                    return p.reverseName;
-                }
-            });
+    Object.defineProperties(this, {
+        _relationshipNames: {
+            get: function () {
+                var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
+                return _.map(proxies, function (p) {
+                    if (p.isForward) {
+                        return p.forwardName;
+                    } else {
+                        return p.reverseName;
+                    }
+                });
+            },
+            enumerable: true,
+            configurable: true
         },
-        enumerable: true,
-        configurable: true
+        dirty: {
+            get: function () {
+                if (siesta.ext.storageEnabled) {
+                    return self._id in siesta.ext.storage._unsavedObjectsHash;
+                }
+                else return undefined;
+            },
+            enumerable: true
+        }
     });
 
-    Object.defineProperty(this, 'dirty', {
-        get: function () {
-            if (siesta.ext.storageEnabled) {
-                return self._id in siesta.ext.storage._unsavedObjectsHash;
-            }
-            else return undefined;
-        },
-        enumerable: true
-    });
     this.removed = false;
 }
 
