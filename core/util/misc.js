@@ -133,7 +133,35 @@ _.extend(module.exports, {
             configurable: true
         });
     },
+    /**
+     * I got sick of writing Object.defineProperty. This function allows to do so in bulk.
+     * @param obj
+     * @param opts
+     */
+    defineProperties: function (obj, opts) {
+        _.each(Object.keys(opts), function (k) {
+            Object.defineProperty(obj, k, opts[k]);
+        });
+    },
     capitaliseFirstLetter: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    extendFromOpts: function (obj, opts, defaults) {
+        var defaultKeys = Object.keys(defaults),
+            optsKeys = Object.keys(opts);
+        var unknownKeys = optsKeys.filter(function (n) {
+            return defaultKeys.indexOf(n) == -1
+        });
+        if (unknownKeys.length) throw Error('Unknown options: ' + unknownKeys.toString());
+        // Apply any functions specified in the defaults.
+        _.each(Object.keys(defaults), function (k) {
+            var d = defaults[k];
+            if (typeof d == 'function') {
+                defaults[k] = d(opts[k]);
+                delete opts[k];
+            }
+        });
+        _.extend(defaults, opts);
+        _.extend(obj, defaults);
     }
 });

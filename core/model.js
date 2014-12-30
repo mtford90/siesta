@@ -11,7 +11,6 @@ var log = require('./operation/log')
     , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
     , SiestaModel = require('./modelInstance').ModelInstance
     , util = require('./util')
-    , defineSubProperty = util.defineSubProperty
     , cache = require('./cache')
     , store = require('./store')
     , extend = require('extend')
@@ -40,131 +39,115 @@ function Model(opts) {
     var self = this;
     this._opts = opts;
 
-    Object.defineProperty(this, '_attributeNames', {
-        get: function () {
-            var names = [];
-            if (self.id) {
-                names.push(self.id);
-            }
-            _.each(self.attributes, function (x) {
-                names.push(x.name)
-            });
-            return names;
-        },
-        enumerable: true,
-        configurable: true
+    util.extendFromOpts(this, opts, {
+        methods: {},
+        type: null,
+        attributes: [],
+        collection: null,
+        id: 'id',
+        relationships: [],
+        name: null,
+        indexes: [],
+        singleton: false,
+        statics: this.installStatics.bind(this)
+    });
+
+    this.attributes = Model._processAttributes(this.attributes);
+
+    _.extend(this, {
+        _installed: false,
+        _relationshipsInstalled: false,
+        _reverseRelationshipsInstalled: false,
+        children: []
     });
 
 
-    /**
-     * @name type
-     * @type {String}
-     */
-    defineSubProperty.call(this, 'type', self._opts);
-
-    /**
-     * @name id
-     * @type {String}
-     */
-    Object.defineProperty(this, 'id', {
-        get: function () {
-            return self._opts['id'] || 'id';
+    util.defineProperties(this, {
+        _relationshipNames: {
+            get: function () {
+                return Object.keys(self.relationships);
+            },
+            enumerable: true
         },
-        set: function (v) {
-            self._opts['id'] = v;
+        _attributeNames: {
+            get: function () {
+                var names = [];
+                if (self.id) {
+                    names.push(self.id);
+                }
+                _.each(self.attributes, function (x) {
+                    names.push(x.name)
+                });
+                return names;
+            },
+            enumerable: true,
+            configurable: true
         },
-        enumerable: true
-    });
-
-    var attributes = self._opts.attributes;
-
-
-    this.attributes = _.reduce(attributes, function (m, a) {
-        if (typeof a == 'string') {
-            m.push({
-                name: a
-            });
+        installed: {
+            get: function () {
+                return self._installed && self._relationshipsInstalled && self._reverseRelationshipsInstalled;
+            },
+            enumerable: true,
+            configurable: true
+        },
+        descendants: {
+            get: function () {
+                return _.reduce(self.children, function (memo, descendant) {
+                    return Array.prototype.concat.call(memo, descendant.descendants);
+                }.bind(self), _.extend([], self.children));
+            },
+            enumerable: true
+        },
+        dirty: {
+            get: function () {
+                if (siesta.ext.storageEnabled) {
+                    var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
+                        hash = (unsavedObjectsByCollection[this.collection] || {})[this.type] || {};
+                    return !!Object.keys(hash).length;
+                }
+                else return undefined;
+            },
+            enumerable: true
         }
-        else {
-            m.push(a);
-        }
-        return m;
-    }, []);
-
-    defineSubProperty.call(this, 'collection', self._opts);
-    defineSubProperty.call(this, 'relationships', self._opts);
-    defineSubProperty.call(this, 'indexes', self._opts);
-    defineSubProperty.call(this, 'singleton', self._opts);
-    defineSubProperty.call(this, 'statics', self._opts);
-    defineSubProperty.call(this, 'methods', self._opts);
-
-    Object.defineProperty(this, '_relationshipNames', {
-        get: function () {
-            return Object.keys(self.relationships);
-        },
-        enumerable: true
     });
-
-    if (!this.statics) this.statics = {};
-    if (!this.methods) this.methods = {};
-
-    _.each(Object.keys(this.statics), function (staticName) {
-        if (this[staticName]) {
-            Logger.error('Static method with name "' + staticName + '" already exists. Ignoring it.');
-        }
-        else {
-            this[staticName] = this.statics[staticName].bind(this);
-        }
-    }.bind(this));
-
-    if (!this.relationships) {
-        this.relationships = [];
-    }
-
-    if (!this.indexes) {
-        this.indexes = [];
-    }
-
-
-    this._installed = false;
-    this._relationshipsInstalled = false;
-    this._reverseRelationshipsInstalled = false;
-
-    Object.defineProperty(this, 'installed', {
-        get: function () {
-            return self._installed && self._relationshipsInstalled && self._reverseRelationshipsInstalled;
-        },
-        enumerable: true,
-        configurable: true
-    });
-
-    this.children = [];
-
-    Object.defineProperty(this, 'descendants', {
-        get: function () {
-            return _.reduce(self.children, function (memo, descendant) {
-                return Array.prototype.concat.call(memo, descendant.descendants);
-            }.bind(self), _.extend([], self.children));
-        },
-        enumerable: true
-    });
-
-    Object.defineProperty(this, 'dirty', {
-        get: function () {
-            if (siesta.ext.storageEnabled) {
-                var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                    hash = (unsavedObjectsByCollection[this.collection] || {})[this.type] || {};
-                return !!Object.keys(hash).length;
-            }
-            else return undefined;
-        },
-        enumerable: true
-    });
-
 
 }
 
+_.extend(Model, {
+    /**
+     * Normalise attributes passed via the options dictionary.
+     * @param attributes
+     * @returns {Array}
+     * @private
+     */
+    _processAttributes: function (attributes) {
+        return _.reduce(attributes, function (m, a) {
+            if (typeof a == 'string') {
+                m.push({
+                    name: a
+                });
+            }
+            else {
+                m.push(a);
+            }
+            return m;
+        }, [])
+    }
+});
+
 _.extend(Model.prototype, {
+    installStatics: function (statics) {
+        if (statics) {
+            _.each(Object.keys(statics), function (staticName) {
+                if (this[staticName]) {
+                    Logger.error('Static method with name "' + staticName + '" already exists. Ignoring it.');
+                }
+                else {
+                    this[staticName] = statics[staticName].bind(this);
+                }
+            }.bind(this));
+        }
+    },
     /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
