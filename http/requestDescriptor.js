@@ -5,10 +5,10 @@
 var Descriptor = require('./descriptor').Descriptor
     , Serialiser = require('./serialiser');
 
-var _i = siesta._internal
-    , util = _i.util
+var _internal = siesta._internal
+    , util = _internal.util
     , _ = util._
-    , log = _i.log
+    , log = _internal.log
     , defineSubProperty = util.defineSubProperty
 ;
 

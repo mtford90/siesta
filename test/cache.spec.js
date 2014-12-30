@@ -7,7 +7,7 @@ describe('cache...', function() {
     });
     var mapping;
 
-    var ModelInstance = require('../core/modelInstance').ModelInstance;
+    var ModelInstance = require('../core/modelInstance');
     var RelationshipType = require('../core/relationship').RelationshipType;
     var cache = require('../core/cache');
 

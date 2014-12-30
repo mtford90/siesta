@@ -1,7 +1,7 @@
-var _i = siesta._internal,
-    log = _i.log,
-    InternalSiestaError = _i.error.InternalSiestaError,
-    util = _i.util,
+var _internal = siesta._internal,
+    log = _internal.log,
+    InternalSiestaError = _internal.error.InternalSiestaError,
+    util = _internal.util,
     _ = util._;
 
 var querystring = require('querystring');

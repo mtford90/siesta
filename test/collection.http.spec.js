@@ -5,7 +5,7 @@ var s = require('../core/index'),
 describe('http!', function () {
 
     var RelationshipType = require('../core/relationship').RelationshipType,
-        SiestaModel = require('../core/modelInstance').ModelInstance,
+        SiestaModel = require('../core/modelInstance'),
         InternalSiestaError = require('../core/error').InternalSiestaError;
 
     var collection, carMapping, personMapping, vitalSignsMapping;

@@ -8,14 +8,14 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
     throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
 }
 
-var _i = siesta._internal,
+var _internal = siesta._internal,
     Collection = siesta.Collection,
-    log = _i.log,
-    util = _i.util,
-    error = _i.error,
+    log = _internal.log,
+    util = _internal.util,
+    error = _internal.error,
     _ = util._,
     descriptor = require('./descriptor'),
-    InternalSiestaError = _i.error.InternalSiestaError;
+    InternalSiestaError = _internal.error.InternalSiestaError;
 
 var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 

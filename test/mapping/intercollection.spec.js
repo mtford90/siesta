@@ -3,7 +3,7 @@ var s = require('../../core/index')
 
 describe('intercoll relationships', function () {
 
-    var SiestaModel = require('../../core/modelInstance').ModelInstance,
+    var SiestaModel = require('../../core/modelInstance'),
         RelationshipType = require('../../core/relationship').RelationshipType;
 
     before(function () {

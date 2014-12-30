@@ -9,7 +9,7 @@ var log = require('./operation/log')
     , Query = require('./query').Query
     , Operation = require('./operation/operation').Operation
     , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
-    , SiestaModel = require('./modelInstance').ModelInstance
+    , ModelInstance = require('./modelInstance')
     , util = require('./util')
     , cache = require('./cache')
     , store = require('./store')
@@ -439,7 +439,7 @@ _.extend(Model.prototype, {
             } else {
                 _id = guid();
             }
-            var newModel = new SiestaModel(this);
+            var newModel = new ModelInstance(this);
             if (Logger.info.isEnabled)
                 Logger.info('New object created _id="' + _id.toString() + '", type=' + this.name, data);
             newModel._id = _id;

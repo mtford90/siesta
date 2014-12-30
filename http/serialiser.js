@@ -2,10 +2,10 @@
  * @module http
  */
 
-var _i = siesta._internal;
+var _internal = siesta._internal;
 
-var log = _i.log
-    , utils = _i.util;
+var log = _internal.log
+    , utils = _internal.util;
 var Logger = log.loggerWithName('Serialiser');
 Logger.setLevel(log.Level.warn);
 var _ = utils._;

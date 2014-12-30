@@ -4,14 +4,14 @@
  * @module http
  */
 
-var _i = siesta._internal,
-    log = _i.log,
-    InternalSiestaError = _i.error.InternalSiestaError,
-    util = _i.util,
+var _internal = siesta._internal,
+    log = _internal.log,
+    InternalSiestaError = _internal.error.InternalSiestaError,
+    util = _internal.util,
     assert = util.assert,
     defineSubProperty = util.defineSubProperty,
-    CollectionRegistry = _i.CollectionRegistry,
-    extend = _i.extend,
+    CollectionRegistry = _internal.CollectionRegistry,
+    extend = _internal.extend,
     _ = util._;
 
 var Logger = log.loggerWithName('Descriptor');
