@@ -224,16 +224,13 @@ function getMultipleRemote(remoteIdentifiers, model, callback) {
         }
     }
 
-//
-//    if (siesta.ext.storageEnabled && results.notCached.length) {
-//        siesta.ext.storage.store.getMultipleRemoteFrompouch(mapping, remoteIdentifiers, results, finish);
-//    } else {
     finish();
-//    }
     return deferred ? deferred.promise : null;
 }
 
-exports.get = get;
-exports.getMultiple = getMultiple;
-exports.getMultipleLocal = getMultipleLocal;
-exports.getMultipleRemote = getMultipleRemote;
+module.exports = {
+    get: get,
+    getMultiple: getMultiple,
+    getMultipleLocal: getMultipleLocal,
+    getMultipleRemote: getMultipleRemote
+};

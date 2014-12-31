@@ -381,6 +381,7 @@ _.extend(Model.prototype, {
             if (util.isArray(overrides)) opts.objects = overrides;
             else opts.objects = [overrides];
         }
+        delete opts.override;
         if (this.installed) {
             if (util.isArray(data)) {
                 this._mapBulk(data, opts, deferred.finish);

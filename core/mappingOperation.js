@@ -34,32 +34,40 @@ function MappingOperation(opts) {
 
     this._opts = opts;
 
-    /**
-     * @name mapping
-     * @type {Model}
-     */
-    defineSubProperty.call(this, 'model', this._opts);
+    util.extendFromOpts(this, opts, {
+        model: null,
+        data: null,
+        objects: [],
+        disableNotifications: false
+    });
 
-    /**
-     * @name data
-     * @type {Array}
-     */
-    defineSubProperty.call(this, 'data', this._opts);
+    //
+    ///**
+    // * @name mapping
+    // * @type {Model}
+    // */
+    //defineSubProperty.call(this, 'model', this._opts);
+    //
+    ///**
+    // * @name data
+    // * @type {Array}
+    // */
+    //defineSubProperty.call(this, 'data', this._opts);
+    //
+    ///**
+    // * @name objects
+    // * @type {Array}
+    // */
+    //defineSubProperty.call(this, 'objects', this._opts);
+    //
+    ///**
+    // * @name disableNotifications
+    // * @type {bool}
+    // */
+    //defineSubProperty.call(this, 'disableNotifications', this._opts);
 
-    /**
-     * @name objects
-     * @type {Array}
-     */
-    defineSubProperty.call(this, 'objects', this._opts);
 
-    /**
-     * @name disableNotifications
-     * @type {bool}
-     */
-    defineSubProperty.call(this, 'disableNotifications', this._opts);
-
-
-    if (!this.objects) this.objects = [];
+    //if (!this.objects) this.objects = [];
 
     /**
      * Array of errors where indexes map onto same index as the datum that caused an error.
@@ -106,7 +114,7 @@ _.extend(MappingOperation.prototype, {
     _map: function () {
         var self = this;
         var err;
-        var numHits = this.mapAttributes(this);
+        this.mapAttributes();
         var relationshipFields = _.keys(self.subOps);
         _.each(relationshipFields, function (f) {
             var op = self.subOps[f].op;

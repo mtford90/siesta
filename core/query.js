@@ -15,9 +15,11 @@ var Logger = log.loggerWithName('Query');
  * @param {Object} opts
  */
 function Query(model, opts) {
-    this.model = model;
-    this.query = opts;
-    this.ordering = null;
+    _.extend(this, {
+        model: model,
+        query: opts,
+        ordering: null
+    });
 }
 
 _.extend(Query, {
