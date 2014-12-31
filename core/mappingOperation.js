@@ -30,7 +30,7 @@ SiestaError.prototype.toString = function () {
  * Defines an encapsulated mapping operation where opts takes a mappin
  * @param {Object} opts
  */
-function BulkMappingOperation(opts) {
+function MappingOperation(opts) {
     Operation.call(this);
 
     this._opts = opts;
@@ -74,9 +74,9 @@ function BulkMappingOperation(opts) {
     this.subOps = {};
 }
 
-BulkMappingOperation.prototype = Object.create(Operation.prototype);
+MappingOperation.prototype = Object.create(Operation.prototype);
 
-_.extend(BulkMappingOperation.prototype, {
+_.extend(MappingOperation.prototype, {
     mapAttributes: function () {
         for (var i = 0; i < this.data.length; i++) {
             var datum = this.data[i];
@@ -336,7 +336,7 @@ _.extend(BulkMappingOperation.prototype, {
                 var relatedData = __ret.relatedData;
                 if (relatedData.length) {
                     var flatRelatedData = util.flattenArray(relatedData);
-                    var op = new BulkMappingOperation({
+                    var op = new MappingOperation({
                         model: reverseModel,
                         data: flatRelatedData,
                         disableNotifications: this.disableNotifications
@@ -398,9 +398,6 @@ _.extend(BulkMappingOperation.prototype, {
     }
 });
 
-module.exports = {
-    BulkMappingOperation: BulkMappingOperation,
-};
+module.exports = MappingOperation;
 
 
-exports.BulkMappingOperation = BulkMappingOperation;

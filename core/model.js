@@ -8,7 +8,7 @@ var log = require('./operation/log')
     , relationship = require('./relationship')
     , Query = require('./query')
     , Operation = require('./operation/operation').Operation
-    , BulkMappingOperation = require('./mappingOperation').BulkMappingOperation
+    , MappingOperation = require('./mappingOperation')
     , ModelInstance = require('./modelInstance')
     , util = require('./util')
     , cache = require('./cache')
@@ -396,7 +396,7 @@ _.extend(Model.prototype, {
     },
     _mapBulk: function (data, opts, callback) {
         _.extend(opts, {model: this, data: data});
-        var op = new BulkMappingOperation(opts);
+        var op = new MappingOperation(opts);
         op.onCompletion(function () {
             var err = op.error;
             if (err) {

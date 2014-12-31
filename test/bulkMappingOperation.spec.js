@@ -2,8 +2,7 @@ var chai = require('chai');
 var s = require('../core/index'),
     assert = chai.assert;
 
-var mappingOperation = require('../core/mappingOperation')
-    , BulkMappingOperation = mappingOperation.BulkMappingOperation
+var MappingOperation = require('../core/mappingOperation')
     , util = require('../core/util')
     , _ = util._
     , RelationshipType = require('../core/relationship').RelationshipType
@@ -121,7 +120,7 @@ describe('bulk mapping operation', function () {
                             }
                         ]
                     }];
-                    op = new BulkMappingOperation({
+                    op = new MappingOperation({
                         model: User,
                         data: data
                     });
@@ -156,7 +155,7 @@ describe('bulk mapping operation', function () {
                     owner: [5, 6]
                 }];
 
-                var op = new BulkMappingOperation({
+                var op = new MappingOperation({
                     model: Repo,
                     data: data
                 });
@@ -173,7 +172,7 @@ describe('bulk mapping operation', function () {
                     id: '123124',
                     repositories: 5
                 }];
-                var op = new BulkMappingOperation({
+                var op = new MappingOperation({
                     model: User,
                     data: data
                 });
@@ -214,7 +213,7 @@ describe('bulk mapping operation', function () {
                             description: 'Blahasdasd',
                             owner: owner
                         }];
-                        var op = new BulkMappingOperation({
+                        var op = new MappingOperation({
                             model: Repo,
                             data: data
                         });
@@ -252,7 +251,7 @@ describe('bulk mapping operation', function () {
                             id: 'remoteId3',
                             owner: owner
                         }];
-                        var op = new BulkMappingOperation({
+                        var op = new MappingOperation({
                             model: Repo,
                             data: data
                         });
@@ -298,7 +297,7 @@ describe('bulk mapping operation', function () {
                                 full_name: 'A Big Repo'
                             }]
                         }];
-                        var op = new BulkMappingOperation({
+                        var op = new MappingOperation({
                             model: User,
                             data: data
                         });
@@ -339,7 +338,7 @@ describe('bulk mapping operation', function () {
                                 full_name: 'A Big Repo'
                             }]
                         }];
-                        var op = new BulkMappingOperation({
+                        var op = new MappingOperation({
                             model: User,
                             data: data
                         });
@@ -384,7 +383,7 @@ describe('bulk mapping operation', function () {
                             login: 'bob',
                             id: '1234'
                         }];
-                        op = new BulkMappingOperation({
+                        op = new MappingOperation({
                             model: User,
                             data: data
                         });
@@ -457,7 +456,7 @@ describe('bulk mapping operation', function () {
                     login: 'bob',
                     id: '1234'
                 }];
-                op = new BulkMappingOperation({
+                op = new MappingOperation({
                     model: User,
                     data: data
                 });
@@ -499,7 +498,7 @@ describe('bulk mapping operation', function () {
                     login: 'bob',
                     id: '1234'
                 }];
-                op = new BulkMappingOperation({
+                op = new MappingOperation({
                     model: User,
                     data: data
                 });
