@@ -16,16 +16,6 @@ var Store = require('./store')
 
 var Logger = log.loggerWithName('MappingOperation');
 
-function flattenArray(arr) {
-    return _.reduce(arr, function (memo, e) {
-        if (util.isArray(e)) {
-            memo = memo.concat(e);
-        } else {
-            memo.push(e);
-        }
-        return memo;
-    }, []);
-}
 
 function SiestaError(opts) {
     this.opts = opts;
@@ -34,24 +24,7 @@ SiestaError.prototype.toString = function () {
     return JSON.stringify(this.opts, null, 4);
 };
 
-function unflattenArray(arr, modelArr) {
-    var n = 0;
-    var unflattened = [];
-    for (var i = 0; i < modelArr.length; i++) {
-        if (util.isArray(modelArr[i])) {
-            var newArr = [];
-            unflattened[i] = newArr;
-            for (var j = 0; j < modelArr[i].length; j++) {
-                newArr.push(arr[n]);
-                n++;
-            }
-        } else {
-            unflattened[i] = arr[n];
-            n++;
-        }
-    }
-    return unflattened;
-}
+
 
 /**
  * Defines an encapsulated mapping operation where opts takes a mappin
@@ -140,7 +113,7 @@ _.extend(BulkMappingOperation.prototype, {
             var op = self.subOps[f].op;
             var indexes = self.subOps[f].indexes;
             var relatedData = self.getRelatedData(f).relatedData;
-            var unflattenedObjects = unflattenArray(op.objects, relatedData);
+            var unflattenedObjects = util.unflattenArray(op.objects, relatedData);
             for (var i = 0; i < unflattenedObjects.length; i++) {
                 var idx = indexes[i];
                 // Errors are plucked from the suboperations.
@@ -362,7 +335,7 @@ _.extend(BulkMappingOperation.prototype, {
                 var indexes = __ret.indexes;
                 var relatedData = __ret.relatedData;
                 if (relatedData.length) {
-                    var flatRelatedData = flattenArray(relatedData);
+                    var flatRelatedData = util.flattenArray(relatedData);
                     var op = new BulkMappingOperation({
                         model: reverseModel,
                         data: flatRelatedData,
@@ -389,7 +362,7 @@ _.extend(BulkMappingOperation.prototype, {
             var errors = op.errors;
             if (errors.length) {
                 var relatedData = self.getRelatedData(name).relatedData;
-                var unflattenedErrors = unflattenArray(errors, relatedData);
+                var unflattenedErrors = util.unflattenArray(errors, relatedData);
                 for (var i = 0; i < unflattenedErrors.length; i++) {
                     var idx = indexes[i];
                     var err = unflattenedErrors[i];
@@ -425,7 +398,9 @@ _.extend(BulkMappingOperation.prototype, {
     }
 });
 
+module.exports = {
+    BulkMappingOperation: BulkMappingOperation,
+};
+
 
 exports.BulkMappingOperation = BulkMappingOperation;
-exports.flattenArray = flattenArray;
-exports.unflattenArray = unflattenArray;

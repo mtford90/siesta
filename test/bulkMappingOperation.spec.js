@@ -29,14 +29,14 @@ assert.arrEqual = function (arr1, arr2) {
 describe('array flattening', function () {
     describe('flatten', function () {
         it('mixture', function () {
-            var flattened = mappingOperation.flattenArray(['1', ['2', '3'],
+            var flattened = util.flattenArray(['1', ['2', '3'],
                 ['4'], '5'
             ]);
             assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
         });
 
         it('all arrays', function () {
-            var flattened = mappingOperation.flattenArray([
+            var flattened = util.flattenArray([
                 ['1'],
                 ['2', '3'],
                 ['4'],
@@ -46,13 +46,13 @@ describe('array flattening', function () {
         });
 
         it('no arrays', function () {
-            var flattened = mappingOperation.flattenArray(['1', '2', '3', '4', '5']);
+            var flattened = util.flattenArray(['1', '2', '3', '4', '5']);
             assert.arrEqual(['1', '2', '3', '4', '5'], flattened);
         });
     });
     describe('unflatten', function () {
         it('mixture', function () {
-            var unflattened = mappingOperation.unflattenArray(['a', 'b', 'c', 'd', 'e'], ['1', ['2', '3'],
+            var unflattened = util.unflattenArray(['a', 'b', 'c', 'd', 'e'], ['1', ['2', '3'],
                 ['4'], '5'
             ]);
             assert.arrEqual(['a', ['b', 'c'],

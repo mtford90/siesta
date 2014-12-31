@@ -209,5 +209,33 @@ _.extend(module.exports, {
     isArray: isArray,
     prettyPrint: function (o) {
         return JSON.stringify(o, null, 4);
+    },
+    flattenArray: function (arr) {
+        return _.reduce(arr, function (memo, e) {
+            if (isArray(e)) {
+                memo = memo.concat(e);
+            } else {
+                memo.push(e);
+            }
+            return memo;
+        }, []);
+    },
+    unflattenArray: function (arr, modelArr) {
+        var n = 0;
+        var unflattened = [];
+        for (var i = 0; i < modelArr.length; i++) {
+            if (isArray(modelArr[i])) {
+                var newArr = [];
+                unflattened[i] = newArr;
+                for (var j = 0; j < modelArr[i].length; j++) {
+                    newArr.push(arr[n]);
+                    n++;
+                }
+            } else {
+                unflattened[i] = arr[n];
+                n++;
+            }
+        }
+        return unflattened;
     }
 });
