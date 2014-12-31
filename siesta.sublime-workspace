@@ -354,7 +354,7 @@
 		"/Users/mtford/Playground/rest/docs/demo/http.js",
 		"/Users/mtford/Playground/rest/package.json",
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/dist/pouchdb.idb-alt.js",
-		"/Users/mtford/Playground/rest/src/proxy.js",
+		"/Users/mtford/Playground/rest/src/RelationshipProxy.js",
 		"/Users/mtford/Playground/rest/_site/demo/http.js",
 		"/Users/mtford/Desktop/unicode.mdown",
 		"/Users/mtford/Playground/rest/test/cache.spec.js",
@@ -370,7 +370,7 @@
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/lib/evalView.js",
 		"/Users/mtford/Playground/rest/src/error.js",
 		"/Users/mtford/Playground/rest/vendor/operations.js/src/operation.js",
-		"/Users/mtford/Playground/rest/src/oneToOneProxy.js",
+		"/Users/mtford/Playground/rest/src/OneToOneProxy.js",
 		"/Users/mtford/Playground/rest/src/object.js",
 		"/Users/mtford/Playground/rest/vendor/operations.js/src/log.js",
 		"/Users/mtford/Playground/rest/node_modules/load-grunt-tasks/load-grunt-tasks.js",
@@ -402,7 +402,7 @@
 		"/Users/mtford/Playground/rest/src/mapping.js",
 		"/Users/mtford/Playground/rest/test/proxy.spec.js",
 		"/Users/mtford/Playground/rest/src/mappingOperation.js",
-		"/Users/mtford/Playground/rest/src/oneToManyProxy.js",
+		"/Users/mtford/Playground/rest/src/OneToManyProxy.js",
 		"/Users/mtford/Playground/rest/test/relationshipInstallation.spec.js",
 		"/Users/mtford/Playground/rest/node_modules/browserify/test/require_cache.js",
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/spark-md5/test/readme_example.html",
@@ -429,7 +429,7 @@
 		"/Users/mtford/Playground/rest/test/storage/pouchDocAdapter.spec.js",
 		"/Users/mtford/Playground/rest/test/storage/proxy.changes.spec.js",
 		"/Users/mtford/Playground/rest/test/subclassing.spec.js",
-		"/Users/mtford/Playground/rest/src/manyToManyProxy.js",
+		"/Users/mtford/Playground/rest/src/ManyToManyProxy.js",
 		"/Users/mtford/Playground/rest/src/misc.js",
 		"/Users/mtford/Playground/rest/src/pouch/changes.js",
 		"/Users/mtford/Playground/rest/src/pouch/http.js",
@@ -440,7 +440,7 @@
 		"/Users/mtford/Playground/rest/src/pouch2/http.js",
 		"/Users/mtford/Playground/rest/src/pouch2/pouch.js",
 		"/Users/mtford/Playground/rest/src/pouch2/query.js",
-		"/Users/mtford/Playground/rest/src/relationship.js",
+		"/Users/mtford/Playground/rest/src/RelationshipType.js",
 		"/Users/mtford/Playground/rest/src/store.js",
 		"/Users/mtford/Playground/rest/node_modules/jstream/test/assets/many.json",
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/manifest.json",
@@ -991,7 +991,7 @@
 			],
 			[
 				"proxy.",
-				"src/proxy.js"
+				"src/RelationshipProxy.js"
 			],
 			[
 				"proxy.spe",
@@ -1007,11 +1007,11 @@
 			],
 			[
 				"prox",
-				"src/proxy.js"
+				"src/RelationshipProxy.js"
 			],
 			[
 				"onetoman",
-				"src/oneToManyProxy.js"
+				"src/OneToManyProxy.js"
 			],
 			[
 				"change.spec",
@@ -1067,11 +1067,11 @@
 			],
 			[
 				"manyto",
-				"src/manyToManyProxy.js"
+				"src/ManyToManyProxy.js"
 			],
 			[
 				"onetoon",
-				"src/oneToOneProxy.js"
+				"src/OneToOneProxy.js"
 			],
 			[
 				"gruntf",

@@ -1,18 +1,18 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('notifications', function() {
+describe('notifications', function () {
 
     before(function () {
         s.ext.storageEnabled = false;
     });
 
-    var Collection = require('../core/collection'),
-        ChangeType = require('../core/changes').ChangeType,
-        util = require('../core/util')
-    notifications = require('../core/notifications');
+    var ChangeType = require('../core/changes').ChangeType,
+        util = require('../core/util'),
+        notifications = require('../core/notifications'),
+        RelationshipType = require('../core/RelationshipType');
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(done);
     });
 
@@ -21,8 +21,8 @@ describe('notifications', function() {
 
     var notif, collectionNotif, genericNotif, localIdNotif, remoteIdNotif;
 
-    describe('attributes', function() {
-        afterEach(function() {
+    describe('attributes', function () {
+        afterEach(function () {
             notif = null;
             collectionNotif = null;
             genericNotif = null;
@@ -31,21 +31,21 @@ describe('notifications', function() {
             carMapping = null;
         });
 
-        describe('set value', function() {
+        describe('set value', function () {
 
-            beforeEach(function(done) {
+            beforeEach(function (done) {
                 collection = s.collection('myCollection');
                 carMapping = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
-                s.install(function(err) {
+                s.install(function (err) {
                     if (err) done(err);
                     carMapping.map({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: 'xyz'
-                    }, function(err, _car) {
+                    }, function (err, _car) {
                         if (err) {
                             done(err);
                         } else {
@@ -60,23 +60,24 @@ describe('notifications', function() {
                                     done();
                                 }
                             }
-                            s.once('myCollection:Car', function(n) {
+
+                            s.once('myCollection:Car', function (n) {
                                 notif = n;
                                 checkDone();
                             });
-                            s.once('myCollection', function(n) {
+                            s.once('myCollection', function (n) {
                                 collectionNotif = n;
                                 checkDone();
                             });
-                            s.once('Siesta', function(n) {
+                            s.once('Siesta', function (n) {
                                 genericNotif = n;
                                 checkDone();
                             });
-                            s.once(_car._id, function(n) {
+                            s.once(_car._id, function (n) {
                                 localIdNotif = n;
                                 checkDone();
                             });
-                            s.once('myCollection:Car:xyz', function(n) {
+                            s.once('myCollection:Car:xyz', function (n) {
                                 remoteIdNotif = n;
                                 checkDone();
                             });
@@ -87,45 +88,45 @@ describe('notifications', function() {
 
             });
 
-            it('all notifs equal', function() {
+            it('all notifs equal', function () {
                 assert.equal(notif, genericNotif);
                 assert.equal(genericNotif, collectionNotif);
                 assert.equal(collectionNotif, localIdNotif);
                 assert.equal(localIdNotif, remoteIdNotif);
             })
 
-            it('notif contains collection', function() {
+            it('notif contains collection', function () {
                 assert.equal(notif.collection, 'myCollection');
             });
 
-            it('notif contains mapping', function() {
+            it('notif contains mapping', function () {
                 assert.equal(notif.model, 'Car');
             });
 
-            it('changeDict contains attribute name', function() {
+            it('changeDict contains attribute name', function () {
                 assert.equal(notif.field, 'colour');
             });
 
-            it('changeDict contains change type', function() {
+            it('changeDict contains change type', function () {
                 assert.equal(notif.type, ChangeType.Set);
             });
 
-            it('changeDict contains old value', function() {
+            it('changeDict contains old value', function () {
                 assert.equal(notif.old, 'red');
             });
 
-            it('changeDict contains new value', function() {
+            it('changeDict contains new value', function () {
                 assert.equal(notif.new, 'blue');
             });
 
-            it('changeDict contains new value', function() {
+            it('changeDict contains new value', function () {
                 assert.equal(notif._id, car._id);
             });
 
         });
 
-        describe('array notifications', function() {
-            beforeEach(function(done) {
+        describe('array notifications', function () {
+            beforeEach(function (done) {
                 collection = s.collection('myCollection');
                 carMapping = collection.model('Car', {
                     id: 'id',
@@ -134,16 +135,16 @@ describe('notifications', function() {
                 s.install(done);
             });
 
-            it('sends notifications for all levels', function(done) {
+            it('sends notifications for all levels', function (done) {
                 var notifs = [];
                 carMapping.map({
                     colours: ['red', 'blue'],
                     name: 'Aston Martin',
                     id: 'xyz'
-                }, function(err, _car) {
+                }, function (err, _car) {
                     car = _car;
                     if (err) done(err);
-                    var listener = function(n) {
+                    var listener = function (n) {
                         notifs.push(n);
                         if (notifs.length >= 5) {
                             done();
@@ -159,16 +160,16 @@ describe('notifications', function() {
                 });
             });
 
-            describe('push', function() {
-                beforeEach(function(done) {
+            describe('push', function () {
+                beforeEach(function (done) {
                     carMapping.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
-                    }, function(err, _car) {
+                    }, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        s.once('myCollection:Car', function(n) {
+                        s.once('myCollection:Car', function (n) {
                             notif = n;
                             done();
                         });
@@ -177,19 +178,19 @@ describe('notifications', function() {
                     });
                 });
 
-                it('notif contains collection', function() {
+                it('notif contains collection', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains mapping', function() {
+                it('notif contains mapping', function () {
                     assert.equal(notif.model, 'Car');
                 });
 
-                it('notif contains object', function() {
+                it('notif contains object', function () {
                     assert.equal(notif._id, car._id);
                 });
 
-                it('changeDict contains change', function() {
+                it('changeDict contains change', function () {
                     assert.equal(notif.field, 'colours');
                     assert.equal(notif.type, ChangeType.Splice);
                     assert.equal(notif.index, 2);
@@ -199,16 +200,16 @@ describe('notifications', function() {
 
             });
 
-            describe('pop', function() {
-                beforeEach(function(done) {
+            describe('pop', function () {
+                beforeEach(function (done) {
                     carMapping.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
-                    }, function(err, _car) {
+                    }, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        s.once('myCollection:Car', function(n) {
+                        s.once('myCollection:Car', function (n) {
                             notif = n;
                             done();
                         });
@@ -217,19 +218,19 @@ describe('notifications', function() {
                     });
                 });
 
-                it('notif contains collection', function() {
+                it('notif contains collection', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains mapping', function() {
+                it('notif contains mapping', function () {
                     assert.equal(notif.model, 'Car');
                 });
 
-                it('notif contains _id', function() {
+                it('notif contains _id', function () {
                     assert.equal(notif._id, car._id);
                 });
 
-                it('notif contains change', function() {
+                it('notif contains change', function () {
                     assert.equal(notif.field, 'colours');
                     assert.equal(notif.type, ChangeType.Splice);
                     assert.equal(notif.index, 1);
@@ -239,16 +240,16 @@ describe('notifications', function() {
                 });
             });
 
-            describe('shift', function() {
-                beforeEach(function(done) {
+            describe('shift', function () {
+                beforeEach(function (done) {
                     carMapping.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
-                    }, function(err, _car) {
+                    }, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        s.once('myCollection:Car', function(n) {
+                        s.once('myCollection:Car', function (n) {
                             notif = n;
                             done();
                         });
@@ -257,19 +258,19 @@ describe('notifications', function() {
                     });
                 });
 
-                it('notif contains collection', function() {
+                it('notif contains collection', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains mapping', function() {
+                it('notif contains mapping', function () {
                     assert.equal(notif.model, 'Car');
                 });
 
-                it('notif contains id', function() {
+                it('notif contains id', function () {
                     assert.equal(notif._id, car._id);
                 });
 
-                it('notif contains change', function() {
+                it('notif contains change', function () {
                     assert.equal(notif.field, 'colours');
                     assert.equal(notif.type, ChangeType.Splice);
                     assert.equal(notif.index, 0);
@@ -282,16 +283,16 @@ describe('notifications', function() {
 
             });
 
-            describe('unshift', function() {
-                beforeEach(function(done) {
+            describe('unshift', function () {
+                beforeEach(function (done) {
                     carMapping.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
-                    }, function(err, _car) {
+                    }, function (err, _car) {
                         car = _car;
 
-                        s.once('myCollection:Car', function(n) {
+                        s.once('myCollection:Car', function (n) {
                             notif = n;
                             done();
                         });
@@ -301,19 +302,19 @@ describe('notifications', function() {
 
                 });
 
-                it('notif contains type', function() {
+                it('notif contains type', function () {
                     assert.equal(notif.collection, 'myCollection');
                 });
 
-                it('notif contains mapping', function() {
+                it('notif contains mapping', function () {
                     assert.equal(notif.model, 'Car');
                 });
 
-                it('notif contains object', function() {
+                it('notif contains object', function () {
                     assert.equal(notif._id, car._id);
                 });
 
-                it('notif contains change', function() {
+                it('notif contains change', function () {
                     assert.equal(notif.field, 'colours');
                     assert.equal(notif.type, ChangeType.Splice);
                     assert.equal(notif.index, 0);
@@ -323,19 +324,19 @@ describe('notifications', function() {
 
             });
 
-            describe('sort', function() {
+            describe('sort', function () {
                 var notifs = [];
 
-                beforeEach(function(done) {
+                beforeEach(function (done) {
                     notifs = [];
                     carMapping.map({
                         colours: ['red', 'green', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
-                    }, function(err, _car) {
+                    }, function (err, _car) {
                         car = _car;
                         if (err) done(err);
-                        var listener = function(n) {
+                        var listener = function (n) {
                             notifs.push(n);
                             if (notifs.length == 2) {
                                 s.removeListener('myCollection:Car', listener);
@@ -348,28 +349,28 @@ describe('notifications', function() {
                     });
                 });
 
-                it('notif contains colleciton', function() {
-                    _.each(notifs, function(notif) {
+                it('notif contains colleciton', function () {
+                    _.each(notifs, function (notif) {
                         assert.equal(notif.collection, 'myCollection');
                     });
                 });
 
-                it('notif contains mapping', function() {
-                    _.each(notifs, function(notif) {
+                it('notif contains mapping', function () {
+                    _.each(notifs, function (notif) {
                         assert.equal(notif.model, 'Car');
                     });
                 });
 
-                it('notif contains object', function() {
-                    _.each(notifs, function(notif) {
+                it('notif contains object', function () {
+                    _.each(notifs, function (notif) {
                         assert.equal(notif._id, car._id);
                     });
                 });
 
-                it('notif contains change', function() {
+                it('notif contains change', function () {
                     var removalNotif;
                     var addNotif;
-                    _.each(notifs, function(notif) {
+                    _.each(notifs, function (notif) {
                         assert.equal(notif.field, 'colours');
                         assert.equal(notif.type, ChangeType.Splice);
                         if (notif.removed.length) {
@@ -386,7 +387,7 @@ describe('notifications', function() {
 
     });
 
-    describe('relationships', function() {
+    describe('relationships', function () {
         var collection;
         var car, person;
         var carMapping, personMapping;
@@ -394,17 +395,17 @@ describe('notifications', function() {
         var Collection = require('../core/collection');
 
 
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             s.reset(done);
         });
 
-        describe('array', function() {
+        describe('array', function () {
 
             var personNotif, personGenericNotif, personCollectionNotif;
             var carNotif, carGenericNotif, carCollectionNotif;
 
-            describe('foreign key', function() {
-                beforeEach(function(done) {
+            describe('foreign key', function () {
+                beforeEach(function (done) {
                     collection = s.collection('myCollection');
 
                     carMapping = collection.model('Car', {
@@ -427,86 +428,86 @@ describe('notifications', function() {
                     s.install(done);
                 });
 
-                describe('push', function() {
+                describe('push', function () {
 
                     var anotherCar;
 
-                    beforeEach(function(done) {
+                    beforeEach(function (done) {
                         car = carMapping._new();
                         anotherCar = carMapping._new();
                         person = personMapping._new();
                         person.cars = [car];
-                        s.on('myCollection:Person', function(n) {
+                        s.on('myCollection:Person', function (n) {
                             if (n.type == ChangeType.Splice && n.model == 'Person') {
                                 personNotif = n;
                             }
                         });
-                        s.on('myCollection', function(n) {
+                        s.on('myCollection', function (n) {
                             if (n.type == ChangeType.Splice && n.model == 'Person') {
                                 personCollectionNotif = n;
                             }
                         });
-                        s.on('Siesta', function(n) {
+                        s.on('Siesta', function (n) {
                             if (n.type == ChangeType.Splice && n.model == 'Person') {
                                 personGenericNotif = n;
                             }
                         });
-                        s.on('myCollection:Car', function(n) {
+                        s.on('myCollection:Car', function (n) {
                             if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carNotif = n;
                             }
                         });
-                        s.on('myCollection', function(n) {
+                        s.on('myCollection', function (n) {
                             if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carCollectionNotif = n;
                             }
                         });
-                        s.on('Siesta', function(n) {
+                        s.on('Siesta', function (n) {
                             if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carGenericNotif = n;
                             }
                         });
                         person.cars.push(anotherCar);
-                        util.next(function() {
+                        util.next(function () {
                             notifications.removeAllListeners();
                             done();
                         })
                     });
 
-                    describe('person', function() {
-                        it('type', function() {
+                    describe('person', function () {
+                        it('type', function () {
                             assert.equal(personNotif.type, ChangeType.Splice);
                             assert.equal(personGenericNotif.type, ChangeType.Splice);
                             assert.equal(personCollectionNotif.type, ChangeType.Splice);
                         });
 
-                        it('id', function() {
+                        it('id', function () {
                             assert.include(personNotif.addedId, anotherCar._id);
                             assert.include(personGenericNotif.addedId, anotherCar._id);
                             assert.include(personCollectionNotif.addedId, anotherCar._id);
                         });
 
-                        it('added', function() {
+                        it('added', function () {
                             assert.include(personNotif.added, anotherCar);
                             assert.include(personGenericNotif.added, anotherCar);
                             assert.include(personCollectionNotif.added, anotherCar);
                         });
                     });
 
-                    describe('car', function() {
-                        it('type', function() {
+                    describe('car', function () {
+                        it('type', function () {
                             assert.equal(carNotif.type, ChangeType.Set);
                             assert.equal(carGenericNotif.type, ChangeType.Set);
                             assert.equal(carCollectionNotif.type, ChangeType.Set);
                         });
 
-                        it('id', function() {
+                        it('id', function () {
                             assert.equal(carNotif.newId, person._id);
                             assert.equal(carGenericNotif.newId, person._id);
                             assert.equal(carCollectionNotif.newId, person._id);
                         });
 
-                        it('new', function() {
+                        it('new', function () {
                             assert.equal(carNotif.new, person);
                             assert.equal(carGenericNotif.new, person);
                             assert.equal(carCollectionNotif.new, person);
@@ -514,95 +515,95 @@ describe('notifications', function() {
                     });
                 });
 
-                describe('splice', function(done) {
+                describe('splice', function (done) {
 
-                    beforeEach(function(done) {
+                    beforeEach(function (done) {
                         car = carMapping._new();
                         person = personMapping._new();
                         person.cars = [car];
-                        s.on('myCollection:Person', function(n) {
+                        s.on('myCollection:Person', function (n) {
                             if (n.type == ChangeType.Splice) {
                                 personNotif = n;
                             }
                         });
-                        s.on('myCollection', function(n) {
+                        s.on('myCollection', function (n) {
                             if (n.type == ChangeType.Splice) {
                                 personCollectionNotif = n;
                             }
                         });
-                        s.on('Siesta', function(n) {
+                        s.on('Siesta', function (n) {
                             if (n.type == ChangeType.Splice) {
                                 personGenericNotif = n;
                             }
                         });
-                        s.on('myCollection:Car', function(n) {
+                        s.on('myCollection:Car', function (n) {
                             if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carNotif = n;
                             }
                         });
-                        s.on('myCollection', function(n) {
+                        s.on('myCollection', function (n) {
                             if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carCollectionNotif = n;
                             }
                         });
-                        s.on('Siesta', function(n) {
+                        s.on('Siesta', function (n) {
                             if (n.type == ChangeType.Set && n.model == 'Car') {
                                 carGenericNotif = n;
                             }
                         });
                         person.cars.splice(0, 1);
-                        util.next(function() {
+                        util.next(function () {
                             notifications.removeAllListeners();
                             done();
                         })
                     });
 
-                    describe('person', function() {
-                        it('type', function() {
+                    describe('person', function () {
+                        it('type', function () {
                             assert.equal(personNotif.type, ChangeType.Splice);
                             assert.equal(personGenericNotif.type, ChangeType.Splice);
                             assert.equal(personCollectionNotif.type, ChangeType.Splice);
                         });
 
-                        it('id', function() {
+                        it('id', function () {
                             assert.include(personNotif.removedId, car._id);
                             assert.include(personGenericNotif.removedId, car._id);
                             assert.include(personCollectionNotif.removedId, car._id);
                         });
 
-                        it('added', function() {
+                        it('added', function () {
                             assert.include(personNotif.removed, car);
                             assert.include(personGenericNotif.removed, car);
                             assert.include(personCollectionNotif.removed, car);
                         });
                     });
 
-                    describe('car', function() {
-                        it('type', function() {
+                    describe('car', function () {
+                        it('type', function () {
                             assert.equal(carNotif.type, ChangeType.Set);
                             assert.equal(carGenericNotif.type, ChangeType.Set);
                             assert.equal(carCollectionNotif.type, ChangeType.Set);
                         });
 
-                        it('new id', function() {
+                        it('new id', function () {
                             assert.notOk(carNotif.newId)
                             assert.notOk(carGenericNotif.newId);
                             assert.notOk(carCollectionNotif.newId);
                         });
 
-                        it('new', function() {
+                        it('new', function () {
                             assert.notOk(carNotif.new);
                             assert.notOk(carGenericNotif.new);
                             assert.notOk(carCollectionNotif.new);
                         });
 
-                        it('old', function() {
+                        it('old', function () {
                             assert.equal(carNotif.old, person);
                             assert.equal(carGenericNotif.old, person);
                             assert.equal(carCollectionNotif.old, person);
                         });
 
-                        it('old id', function() {
+                        it('old id', function () {
                             assert.equal(carNotif.oldId, person._id);
                             assert.equal(carGenericNotif.oldId, person._id);
                             assert.equal(carCollectionNotif.oldId, person._id);
@@ -613,8 +614,8 @@ describe('notifications', function() {
 
             });
 
-            describe('many to many', function() {
-                beforeEach(function(done) {
+            describe('many to many', function () {
+                beforeEach(function (done) {
                     collection = s.collection('myCollection');
 
                     carMapping = collection.model('Car', {
@@ -637,88 +638,88 @@ describe('notifications', function() {
                     s.install(done);
                 });
 
-                describe('no faults', function() {
+                describe('no faults', function () {
 
                     var anotherCar;
 
-                    describe('push', function(done) {
-                        beforeEach(function(done) {
+                    describe('push', function (done) {
+                        beforeEach(function (done) {
                             car = carMapping._new();
                             anotherCar = carMapping._new();
                             person = personMapping._new();
                             person.cars = [car];
-                            s.on('myCollection:Person', function(n) {
+                            s.on('myCollection:Person', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     personNotif = n;
                                 }
                             });
-                            s.on('myCollection', function(n) {
+                            s.on('myCollection', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     personCollectionNotif = n;
                                 }
                             });
-                            s.on('Siesta', function(n) {
+                            s.on('Siesta', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     personGenericNotif = n;
                                 }
                             });
-                            s.on('myCollection:Car', function(n) {
+                            s.on('myCollection:Car', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carNotif = n;
                                 }
                             });
-                            s.on('myCollection', function(n) {
+                            s.on('myCollection', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carCollectionNotif = n;
                                 }
                             });
-                            s.on('Siesta', function(n) {
+                            s.on('Siesta', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carGenericNotif = n;
                                 }
                             });
                             person.cars.push(anotherCar);
-                            util.next(function() {
+                            util.next(function () {
                                 notifications.removeAllListeners();
                                 done();
                             });
                         });
 
-                        describe('person', function() {
+                        describe('person', function () {
 
-                            it('type', function() {
+                            it('type', function () {
                                 assert.equal(personNotif.type, ChangeType.Splice);
                                 assert.equal(personGenericNotif.type, ChangeType.Splice);
                                 assert.equal(personCollectionNotif.type, ChangeType.Splice);
                             });
 
-                            it('id', function() {
+                            it('id', function () {
                                 assert.include(personNotif.addedId, anotherCar._id);
                                 assert.include(personGenericNotif.addedId, anotherCar._id);
                                 assert.include(personCollectionNotif.addedId, anotherCar._id);
                             });
 
-                            it('added', function() {
+                            it('added', function () {
                                 assert.include(personNotif.added, anotherCar);
                                 assert.include(personGenericNotif.added, anotherCar);
                                 assert.include(personCollectionNotif.added, anotherCar);
                             });
                         });
 
-                        describe('car', function() {
-                            it('type', function() {
+                        describe('car', function () {
+                            it('type', function () {
                                 assert.equal(carNotif.type, ChangeType.Splice);
                                 assert.equal(carGenericNotif.type, ChangeType.Splice);
                                 assert.equal(carCollectionNotif.type, ChangeType.Splice);
                             });
 
-                            it('id', function() {
+                            it('id', function () {
                                 assert.include(carNotif.addedId, person._id);
                                 assert.include(carGenericNotif.addedId, person._id);
                                 assert.include(carCollectionNotif.addedId, person._id);
                             });
 
-                            it('added', function() {
+                            it('added', function () {
                                 assert.include(carNotif.added, person);
                                 assert.include(carGenericNotif.added, person);
                                 assert.include(carCollectionNotif.added, person);
@@ -726,54 +727,52 @@ describe('notifications', function() {
                         });
 
 
-
-
                     });
 
-                    describe('splice', function() {
-                        beforeEach(function(done) {
+                    describe('splice', function () {
+                        beforeEach(function (done) {
                             car = carMapping._new();
                             person = personMapping._new();
                             person.cars = [car];
-                            s.on('myCollection:Person', function(n) {
+                            s.on('myCollection:Person', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     notif = n;
                                 }
                             });
-                            s.on('myCollection', function(n) {
+                            s.on('myCollection', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     collectionNotif = n;
                                 }
                             });
-                            s.on('Siesta', function(n) {
+                            s.on('Siesta', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
                                     genericNotif = n;
                                 }
                             });
-                            s.on('myCollection:Car', function(n) {
+                            s.on('myCollection:Car', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carNotif = n;
                                 }
                             });
-                            s.on('myCollection', function(n) {
+                            s.on('myCollection', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carCollectionNotif = n;
                                 }
                             });
-                            s.on('Siesta', function(n) {
+                            s.on('Siesta', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Car') {
                                     carGenericNotif = n;
                                 }
                             });
                             person.cars.splice(0, 1);
-                            util.next(function() {
+                            util.next(function () {
                                 notifications.removeAllListeners();
                                 done();
                             })
                         });
 
 
-                        it('type', function() {
+                        it('type', function () {
                             assert.equal(notif.type, ChangeType.Splice);
                             assert.equal(genericNotif.type, ChangeType.Splice);
                             assert.equal(collectionNotif.type, ChangeType.Splice);
@@ -791,9 +790,9 @@ describe('notifications', function() {
 
     });
 
-    describe('new object', function() {
+    describe('new object', function () {
 
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
@@ -802,19 +801,19 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(function(err) {
+            s.install(function (err) {
                 if (err) done(err);
-                s.on('myCollection:Car', function(n) {
+                s.on('myCollection:Car', function (n) {
                     if (n.type == ChangeType.New) {
                         notif = n;
                     }
                 });
-                s.on('myCollection', function(n) {
+                s.on('myCollection', function (n) {
                     if (n.type == ChangeType.New) {
                         collectionNotif = n;
                     }
                 });
-                s.on('Siesta', function(n) {
+                s.on('Siesta', function (n) {
                     if (n.type == ChangeType.New) {
                         genericNotif = n;
                     }
@@ -823,7 +822,7 @@ describe('notifications', function() {
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
-                }, function(err, _car) {
+                }, function (err, _car) {
                     if (err) {
                         done(err);
                     } else {
@@ -835,31 +834,31 @@ describe('notifications', function() {
             });
         });
 
-        it('is notif', function() {
+        it('is notif', function () {
             assert.ok(notif);
         });
 
-        it('is genericNotif', function() {
+        it('is genericNotif', function () {
             assert.ok(genericNotif);
         });
 
-        it('is collectionNotif', function() {
+        it('is collectionNotif', function () {
             assert.ok(collectionNotif);
         });
 
-        it('type is New', function() {
+        it('type is New', function () {
             assert.equal(notif.type, ChangeType.New);
             assert.equal(genericNotif.type, ChangeType.New);
             assert.equal(collectionNotif.type, ChangeType.New);
         });
 
-        it('new', function() {
+        it('new', function () {
             assert.equal(notif.new, car);
             assert.equal(genericNotif.new, car);
             assert.equal(collectionNotif.new, car);
         });
 
-        it('_id', function() {
+        it('_id', function () {
             assert.equal(notif.newId, car._id);
             assert.equal(genericNotif.newId, car._id);
             assert.equal(collectionNotif.newId, car._id);
@@ -870,9 +869,9 @@ describe('notifications', function() {
 
     });
 
-    describe('object removal', function() {
+    describe('object removal', function () {
 
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
@@ -881,28 +880,28 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(function(err) {
+            s.install(function (err) {
                 if (err) done(err);
                 carMapping.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
-                }, function(err, _car) {
+                }, function (err, _car) {
                     if (err) {
                         done(err);
                     } else {
                         car = _car;
-                        s.on('myCollection:Car', function(n) {
+                        s.on('myCollection:Car', function (n) {
                             if (n.type == ChangeType.Remove) {
                                 notif = n;
                             }
                         });
-                        s.on('myCollection', function(n) {
+                        s.on('myCollection', function (n) {
                             if (n.type == ChangeType.Remove) {
                                 collectionNotif = n;
                             }
                         });
-                        s.on('Siesta', function(n) {
+                        s.on('Siesta', function (n) {
                             if (n.type == ChangeType.Remove) {
                                 genericNotif = n;
                             }
@@ -915,31 +914,31 @@ describe('notifications', function() {
             });
         });
 
-        it('is notif', function() {
+        it('is notif', function () {
             assert.ok(notif);
         });
 
-        it('is genericNotif', function() {
+        it('is genericNotif', function () {
             assert.ok(genericNotif);
         });
 
-        it('is collectionNotif', function() {
+        it('is collectionNotif', function () {
             assert.ok(collectionNotif);
         });
 
-        it('type is New', function() {
+        it('type is New', function () {
             assert.equal(notif.type, ChangeType.Remove);
             assert.equal(genericNotif.type, ChangeType.Remove);
             assert.equal(collectionNotif.type, ChangeType.Remove);
         });
 
-        it('new', function() {
+        it('new', function () {
             assert.equal(notif.old, car);
             assert.equal(genericNotif.old, car);
             assert.equal(collectionNotif.old, car);
         });
 
-        it('_id', function() {
+        it('_id', function () {
             assert.equal(notif.oldId, car._id);
             assert.equal(genericNotif.oldId, car._id);
             assert.equal(collectionNotif.oldId, car._id);
@@ -950,8 +949,8 @@ describe('notifications', function() {
 
     });
 
-    describe('object restoration', function() {
-        beforeEach(function(done) {
+    describe('object restoration', function () {
+        beforeEach(function (done) {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
@@ -960,29 +959,29 @@ describe('notifications', function() {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(function(err) {
+            s.install(function (err) {
                 if (err) done(err);
                 carMapping.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
-                }, function(err, _car) {
+                }, function (err, _car) {
                     if (err) {
                         done(err);
                     } else {
                         car = _car;
                         car.remove();
-                        s.on('myCollection:Car', function(n) {
+                        s.on('myCollection:Car', function (n) {
                             if (n.type == ChangeType.New) {
                                 notif = n;
                             }
                         });
-                        s.on('myCollection', function(n) {
+                        s.on('myCollection', function (n) {
                             if (n.type == ChangeType.New) {
                                 collectionNotif = n;
                             }
                         });
-                        s.on('Siesta', function(n) {
+                        s.on('Siesta', function (n) {
                             if (n.type == ChangeType.New) {
                                 genericNotif = n;
                             }
@@ -995,31 +994,31 @@ describe('notifications', function() {
             });
         });
 
-        it('is notif', function() {
+        it('is notif', function () {
             assert.ok(notif);
         });
 
-        it('is genericNotif', function() {
+        it('is genericNotif', function () {
             assert.ok(genericNotif);
         });
 
-        it('is collectionNotif', function() {
+        it('is collectionNotif', function () {
             assert.ok(collectionNotif);
         });
 
-        it('type is New', function() {
+        it('type is New', function () {
             assert.equal(notif.type, ChangeType.New);
             assert.equal(genericNotif.type, ChangeType.New);
             assert.equal(collectionNotif.type, ChangeType.New);
         });
 
-        it('new', function() {
+        it('new', function () {
             assert.equal(notif.new, car);
             assert.equal(genericNotif.new, car);
             assert.equal(collectionNotif.new, car);
         });
 
-        it('_id', function() {
+        it('_id', function () {
             assert.equal(notif.newId, car._id);
             assert.equal(genericNotif.newId, car._id);
             assert.equal(collectionNotif.newId, car._id);
@@ -1030,7 +1029,7 @@ describe('notifications', function() {
     });
 
     describe('convenience', function () {
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',

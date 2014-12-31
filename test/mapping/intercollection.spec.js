@@ -4,7 +4,7 @@ var s = require('../../core/index')
 describe('intercoll relationships', function () {
 
     var SiestaModel = require('../../core/modelInstance'),
-        RelationshipType = require('../../core/relationship').RelationshipType;
+        RelationshipType = require('../../core/RelationshipType');
 
     before(function () {
         s.ext.storageEnabled = false;

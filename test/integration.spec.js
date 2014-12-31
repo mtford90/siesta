@@ -9,7 +9,7 @@ var s = require('../core/index'),
     assert = require('chai').assert;
 
 var Collection = require('../core/collection');
-var RelationshipType = require('../core/relationship').RelationshipType;
+var RelationshipType = require('../core/RelationshipType');
 var cache = require('../core/cache');
 
 var async = require('async');

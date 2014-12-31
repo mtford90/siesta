@@ -2,7 +2,7 @@
  * @module relationships
  */
 
-var RelationshipProxy = require('./proxy')
+var RelationshipProxy = require('./RelationshipProxy')
     , Store = require('./store')
     , util = require('./util')
     , _ = util._

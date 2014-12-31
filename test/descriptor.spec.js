@@ -5,7 +5,7 @@ describe('request descriptor', function () {
 
     var Collection = require('../core/collection');
     var InternalSiestaError = require('../core/error').InternalSiestaError;
-    var RelationshipType = require('../core/relationship').RelationshipType;
+    var RelationshipType = require('../core/RelationshipType');
 
     var collection, carModel, personMapping;
 

@@ -6,7 +6,7 @@ describe('mapping relationships', function() {
 
     var Collection = require('../core/collection');
     var InternalSiestaError = require('../core/error').InternalSiestaError;
-    var RelationshipType = require('../core/relationship').RelationshipType;
+    var RelationshipType = require('../core/RelationshipType');
     before(function () {
         s.ext.storageEnabled = false;
     });

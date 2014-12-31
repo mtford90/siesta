@@ -8,7 +8,7 @@ describe('cache...', function() {
     var mapping;
 
     var ModelInstance = require('../core/modelInstance');
-    var RelationshipType = require('../core/relationship').RelationshipType;
+    var RelationshipType = require('../core/RelationshipType');
     var cache = require('../core/cache');
 
 

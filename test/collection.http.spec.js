@@ -4,7 +4,7 @@ var s = require('../core/index'),
 /*globals describe, it, beforeEach, before, after */
 describe('http!', function () {
 
-    var RelationshipType = require('../core/relationship').RelationshipType,
+    var RelationshipType = require('../core/RelationshipType'),
         SiestaModel = require('../core/modelInstance'),
         InternalSiestaError = require('../core/error').InternalSiestaError;
 

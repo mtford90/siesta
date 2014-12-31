@@ -4,7 +4,7 @@ var s = require('../core/index'),
 describe('serialisers', function() {
 
     var Collection = require('../core/collection');
-    var RelationshipType = require('../core/relationship').RelationshipType;
+    var RelationshipType = require('../core/RelationshipType');
 
     var collection, carMapping, personMapping, vitalSignsMapping;
 

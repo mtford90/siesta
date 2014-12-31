@@ -7,9 +7,9 @@ describe('new object proxy', function () {
         s.ext.storageEnabled = false;
     });
 
-    var RelationshipProxy = require('../core/proxy'),
-        OneToOneProxy = require('../core/oneToOneProxy'),
-        OneToManyProxy = require('../core/oneToManyProxy'),
+    var RelationshipProxy = require('../core/RelationshipProxy'),
+        OneToOneProxy = require('../core/OneToOneProxy'),
+        OneToManyProxy = require('../core/OneToManyProxy'),
         ManyToManyProxy = require('../core/manyToManyProxy'),
         SiestaModel = require('../core/modelInstance'),
         Fault = require('../core/fault'),
