@@ -390,14 +390,17 @@ _.extend(MappingOperation.prototype, {
         this._constructSubOperations();
         var relationshipNames = _.keys(this.subOps);
         if (relationshipNames.length) {
-            var subOperations = _.map(relationshipNames, function (k) {
-                return self.subOps[k].op
-            });
-            var tasks = _.map(subOperations, function (op) {
-                return function (done) {
-                    op.onCompletion(done);
+            var tasks = _.map(relationshipNames, function (k) {
+                var op = self.subOps[k].op, task;
+                task = function (done) {
+                    op.onCompletion(function () {
+                        task.errors = op.errors;
+                        done();
+                    });
                     op.start();
-                } 
+                };
+                self.subOps[k].task = task;
+                return task
             });
             async.parallel(tasks, function () {
                 self.gatherErrorsFromSubOperations(relationshipNames);
