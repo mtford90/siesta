@@ -258,110 +258,6 @@ _.extend(Collection.prototype, {
         return asJson ? util.prettyPrint(obj) : obj;
     },
 
-    _http: function (method) {
-        if (siesta.ext.httpEnabled) {
-            var args = Array.prototype.slice.call(arguments, 1);
-            args.unshift(this);
-            var f = siesta.ext.http[method];
-            f.apply(f, args);
-        } else {
-            throw new Error('HTTP module not installed.');
-        }
-    },
-
-    /**
-     * Send a GET request
-     * @param {String} path The path to the resource we want to GET
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @package HTTP
-     * @returns {Promise}
-     */
-    GET: function () {
-        return _.partial(this._http, 'GET').apply(this, arguments);
-    },
-
-    /**
-     * Send a OPTIONS request
-     * @param {String} path The path to the resource to which we want to send an OPTIONS request
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    OPTIONS: function () {
-        return _.partial(this._http, 'OPTIONS').apply(this, arguments);
-    },
-
-    /**
-     * Send a TRACE request
-     * @param {path} path The path to the resource to which we want to send a TRACE request
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    TRACE: function () {
-        return _.partial(this._http, 'TRACE').apply(this, arguments);
-    },
-
-    /**
-     * Send a HEAD request
-     * @param {String} path The path to the resource to which we want to send a HEAD request
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    HEAD: function () {
-        return _.partial(this._http, 'HEAD').apply(this, arguments);
-    },
-
-    /**
-     * Send a POST request
-     * @param {String} path The path to the resource to which we want to send a POST request
-     * @param {ModelInstance} model The model that we would like to POST
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    POST: function () {
-        return _.partial(this._http, 'POST').apply(this, arguments);
-    },
-
-    /**
-     * Send a PUT request
-     * @param {String} path The path to the resource to which we want to send a PUT request
-     * @param {ModelInstance} model The model that we would like to PUT
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    PUT: function () {
-        _.partial(this._http, 'PUT').apply(this, arguments);
-    },
-
-    /**
-     * Send a PATCH request
-     * @param {String} path The path to the resource to which we want to send a PATCH request
-     * @param {ModelInstance} model The model that we would like to PATCH
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    PATCH: function () {
-        return _.partial(this._http, 'PATCH').apply(this, arguments);
-    },
-
-    /**
-     * Send a DELETE request. Also removes the object.
-     * @param {String} path The path to the resource to which we want to DELETE
-     * @param {ModelInstance} model The model that we would like to PATCH
-     * @param {Object|Function} optsOrCallback Either an options object or a callback if can use defaults
-     * @param {Function} callback Callback if opts specified.
-     * @returns {Promise}
-     */
-    DELETE: function (path, object) {
-        return _.partial(this._http, 'DELETE').apply(this, arguments);
-    },
-
     /**
      * Returns the number of objects in this collection.
      *
@@ -383,7 +279,10 @@ _.extend(Collection.prototype, {
             deferred.finish(err, n);
         });
         return deferred.promise;
-    },
+    }
+});
+
+_.extend(Collection.prototype, {
     listen: function (fn) {
         notifications.on(this.name, fn);
         return function () {
@@ -397,6 +296,5 @@ _.extend(Collection.prototype, {
         return notifications.removeListener(this.name, fn);
     }
 });
-
 
 exports.Collection = Collection;

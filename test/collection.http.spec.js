@@ -145,7 +145,6 @@ describe('http!', function () {
                         resp = _resp;
                         done();
                     });
-                    ;
                 });
 
 
@@ -188,13 +187,13 @@ describe('http!', function () {
                         var method = "GET";
                         var status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
+                        assert.ok(collection.GET);
                         collection.GET('cars/5/', function (_err, _obj, _resp) {
                             err = _err;
                             obj = _obj;
                             resp = _resp;
                             done();
                         });
-                        ;
                     });
 
                     it('no error', function () {
