@@ -111,7 +111,7 @@ _.extend(siesta, {
                     CollectionRegistry[n].install(done);
                 }
             });
-        siesta.async.parallel(tasks, function (err) {
+        siesta.async.series(tasks, function (err) {
             if (err) {
                 callback(err);
             }

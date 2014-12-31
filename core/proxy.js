@@ -17,6 +17,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     coreChanges = require('./changes'),
     ChangeType = coreChanges.ChangeType;
 
+
 /**
  * A fault occurs when we try to access a property that has not been loaded from disk
  * @param {RelationshipProxy} proxy
@@ -94,13 +95,15 @@ function RelationshipProxy(opts) {
         }
     });
 
-    defineSubProperty.call(this, 'reverseModel', opts);
-    defineSubProperty.call(this, 'forwardModel', opts);
-    defineSubProperty.call(this, 'forwardName', opts);
-    defineSubProperty.call(this, 'reverseName', opts);
+    util.extendFromOpts(this, opts, {
+        reverseModel: null,
+        forwardModel: null,
+        forwardName: null,
+        reverseName: null,
+        isReverse: null
+    }, true);
+
     defineSubProperty.call(this, 'isReverse', opts);
-
-
 }
 
 _.extend(RelationshipProxy.prototype, {
@@ -147,7 +150,6 @@ _.extend(RelationshipProxy.prototype, {
         throw new InternalSiestaError('Must subclass RelationshipProxy');
     }
 });
-
 
 
 // TODO: Share code between getReverseProxyForObject and getForwardProxyForObject
@@ -468,13 +470,13 @@ module.exports = {
     checkInstalled: checkInstalled,
     set: set,
     registerSetChange: registerSetChange,
-    splice:splice,
+    splice: splice,
     spliceFactory: spliceFactory,
-    clearReverseRelated:  clearReverseRelated,
-    setReverse:  setReverse,
-    objAsString:  objAsString,
-    wrapArray:  wrapArray,
-    registerSpliceChange:  registerSpliceChange,
-    makeChangesToRelatedWithoutObservations:  makeChangesToRelatedWithoutObservations
+    clearReverseRelated: clearReverseRelated,
+    setReverse: setReverse,
+    objAsString: objAsString,
+    wrapArray: wrapArray,
+    registerSpliceChange: registerSpliceChange,
+    makeChangesToRelatedWithoutObservations: makeChangesToRelatedWithoutObservations
 };
 

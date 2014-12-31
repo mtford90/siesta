@@ -17,6 +17,7 @@ var log = require('./operation/log')
     , changes = require('./changes')
     , notifications = require('./notifications')
     , wrapArray = require('./notifications').wrapArray
+    , proxy = require('./proxy')
     , OneToManyProxy = require('./oneToManyProxy')
     , OneToOneProxy = require('./oneToOneProxy')
     , ManyToManyProxy = require('./manyToManyProxy')
@@ -169,51 +170,58 @@ _.extend(Model.prototype, {
                 for (var name in self._opts.relationships) {
                     if (self._opts.relationships.hasOwnProperty(name)) {
                         var relationship = self._opts.relationships[name];
-                        if (Logger.debug.isEnabled)
-                            Logger.debug(self.name + ': configuring relationship ' + name, relationship);
-                        if (self.singleton) {
-                            if (relationship.type != RelationshipType.OneToOne) {
-                                Logger.warn('Singleton mappings can only be used with OneToOne relationships');
-                            }
-                            relationship.type = RelationshipType.OneToOne;
-                        }
-                        if (relationship.type == RelationshipType.OneToMany ||
-                            relationship.type == RelationshipType.OneToOne ||
-                            relationship.type == RelationshipType.ManyToMany) {
-                            var modelName = relationship.model;
+                        // If a reverse relationship is installed beforehand, we do not want to process them.
+                        if (!relationship.isReverse) {
                             if (Logger.debug.isEnabled)
-                                Logger.debug('reverseModelName', modelName);
-                            if (!self.collection) throw new InternalSiestaError('Model must have collection');
-                            var collection = self.collection;
-                            if (!collection) {
-                                throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
-                            }
-                            var reverseModel = collection[modelName];
-                            if (!reverseModel) {
-                                var arr = modelName.split('.');
-                                if (arr.length == 2) {
-                                    var collectionName = arr[0];
-                                    modelName = arr[1];
-                                    var otherCollection = CollectionRegistry[collectionName];
-                                    if (!otherCollection) {
-                                        return 'Collection with name "' + collectionName + '" does not exist.';
-                                    }
-                                    reverseModel = otherCollection[modelName];
+                                Logger.debug(self.name + ': configuring relationship ' + name, relationship);
+                            if (self.singleton) {
+                                if (relationship.type != RelationshipType.OneToOne) {
+                                    Logger.warn('Singleton mappings can only be used with OneToOne relationships');
                                 }
+                                relationship.type = RelationshipType.OneToOne;
                             }
-                            if (Logger.debug.isEnabled)
-                                Logger.debug('reverseModel', reverseModel);
-                            if (reverseModel) {
-                                relationship.reverseModel = reverseModel;
-                                relationship.forwardModel = this;
-                                relationship.forwardName = name;
-                                relationship.reverseName = relationship.reverse;
-                                relationship.isReverse = false;
+                            if (relationship.type == RelationshipType.OneToMany ||
+                                relationship.type == RelationshipType.OneToOne ||
+                                relationship.type == RelationshipType.ManyToMany) {
+                                var modelName = relationship.model;
+                                console.log('relationship', relationship)
+                                delete relationship.model;
+                                if (Logger.debug.isEnabled)
+                                    Logger.debug('reverseModelName', modelName);
+                                if (!self.collection) throw new InternalSiestaError('Model must have collection');
+                                var collection = self.collection;
+                                if (!collection) {
+                                    throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
+                                }
+                                var reverseModel = collection[modelName];
+                                if (!reverseModel) {
+                                    var arr = modelName.split('.');
+                                    if (arr.length == 2) {
+                                        var collectionName = arr[0];
+                                        modelName = arr[1];
+                                        var otherCollection = CollectionRegistry[collectionName];
+                                        if (!otherCollection) {
+                                            return 'Collection with name "' + collectionName + '" does not exist.';
+                                        }
+                                        reverseModel = otherCollection[modelName];
+                                    }
+                                }
+                                if (Logger.debug.isEnabled)
+                                    Logger.debug('reverseModel', reverseModel);
+                                if (reverseModel) {
+                                    relationship.reverseModel = reverseModel;
+                                    relationship.forwardModel = this;
+                                    relationship.forwardName = name;
+                                    relationship.reverseName = relationship.reverse || 'reverse_' + name;
+                                    delete relationship.reverse;
+                                    relationship.isReverse = false;
+                                    console.log('relationship', relationship.reverseName);
+                                } else {
+                                    return 'Model with name "' + modelName.toString() + '" does not exist';
+                                }
                             } else {
-                                return 'Model with name "' + modelName.toString() + '" does not exist';
+                                return 'Relationship type ' + relationship.type + ' does not exist';
                             }
-                        } else {
-                            return 'Relationship type ' + relationship.type + ' does not exist';
                         }
                     }
                 }
@@ -515,15 +523,17 @@ _.extend(Model.prototype, {
             for (var name in this.relationships) {
                 var proxy;
                 if (this.relationships.hasOwnProperty(name)) {
-                    var relationship = this.relationships[name];
-                    if (relationship.type == RelationshipType.OneToMany) {
-                        proxy = new OneToManyProxy(relationship);
-                    } else if (relationship.type == RelationshipType.OneToOne) {
-                        proxy = new OneToOneProxy(relationship);
-                    } else if (relationship.type == RelationshipType.ManyToMany) {
-                        proxy = new ManyToManyProxy(relationship);
+                    var relationshipOpts = _.extend({}, this.relationships[name]),
+                        type = relationshipOpts.type;
+                    delete relationshipOpts.type;
+                    if (type == RelationshipType.OneToMany) {
+                        proxy = new OneToManyProxy(relationshipOpts);
+                    } else if (type == RelationshipType.OneToOne) {
+                        proxy = new OneToOneProxy(relationshipOpts);
+                    } else if (type == RelationshipType.ManyToMany) {
+                        proxy = new ManyToManyProxy(relationshipOpts);
                     } else {
-                        throw new InternalSiestaError('No such relationship type: ' + relationship.type);
+                        throw new InternalSiestaError('No such relationship type: ' + type);
                     }
                 }
                 proxy.install(newModel);
