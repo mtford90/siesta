@@ -2,7 +2,7 @@ var s = require('../core/index'),
     assert = require('chai').assert;
 
 
-var Query = require('../core/query').Query,
+var Query = require('../core/query'),
     Collection = require('../core/collection');
 
 

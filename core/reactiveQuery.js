@@ -6,7 +6,7 @@
  */
 
 var log = require('./operation/log')
-    , Query = require('./query').Query
+    , Query = require('./query')
     , _ = require('underscore')
     , EventEmitter = require('events').EventEmitter
     , notifications = require('./notifications')

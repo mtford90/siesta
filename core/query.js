@@ -240,4 +240,4 @@ _.extend(Query.prototype, {
     }
 });
 
-exports.Query = Query;
+module.exports = Query;
