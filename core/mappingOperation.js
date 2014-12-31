@@ -313,7 +313,6 @@ _.extend(MappingOperation.prototype, {
                 data: flatRelatedData,
                 disableNotifications: this.disableNotifications
             });
-            op.__relationshipName = name;
             op.__indexes = indexes;
         }
         return op;
@@ -341,7 +340,19 @@ _.extend(MappingOperation.prototype, {
             relationshipNames = _.keys(this.model.relationships);
         if (relationshipNames.length) {
             var tasks = _.reduce(relationshipNames, function (m, relationshipName) {
-                var op = self._constructSubOperation(relationshipName);
+                var relationship = self.model.relationships[relationshipName],
+                    reverseModel = relationship.forwardName == relationshipName ? relationship.reverseModel : relationship.forwardModel,
+                    __ret = this.getRelatedData(relationshipName),
+                    indexes = __ret.indexes,
+                    relatedData = __ret.relatedData;
+                if (relatedData.length) {
+                    var flatRelatedData = util.flattenArray(relatedData);
+                    var op = new MappingOperation({
+                        model: reverseModel,
+                        data: flatRelatedData,
+                        disableNotifications: self.disableNotifications
+                    });
+                }
                 if (op) {
                     var task;
                     task = function (done) {
@@ -349,9 +360,9 @@ _.extend(MappingOperation.prototype, {
                             self.subTaskResults[relationshipName] = {
                                 errors: op.errors,
                                 objects: op.objects,
-                                indexes: op.__indexes
+                                indexes: indexes
                             };
-                            self.processErrorsFromTask(relationshipName, op.errors, op.__indexes);
+                            self.processErrorsFromTask(relationshipName, op.errors, indexes);
                             done();
                         });
                         op.start();
@@ -359,7 +370,7 @@ _.extend(MappingOperation.prototype, {
                     m.push(task);
                 }
                 return m;
-            }, []);
+            }.bind(this), []);
             async.parallel(tasks, function () {
                 callback();
             });
