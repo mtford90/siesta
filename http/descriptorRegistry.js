@@ -4,7 +4,6 @@ var _internal = siesta._internal,
     log = _internal.log;
 
 var Logger = log.loggerWithName('DescriptorRegistry');
-Logger.setLevel(log.Level.warn);
 
 /**
  * @class Entry point for descriptor registration.

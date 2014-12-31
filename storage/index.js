@@ -21,7 +21,6 @@ var unsavedObjects = [],
     unsavedObjectsByCollection = {};
 
 var Logger = log.loggerWithName('Storage');
-Logger.setLevel(log.Level.trace);
 
 /**
  * Serialise a model down to PouchDB.

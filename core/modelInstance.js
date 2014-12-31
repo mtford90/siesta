@@ -8,7 +8,6 @@ var log = require('./operation/log')
     , cache = require('./cache');
 
 var Logger = log.loggerWithName('ModelInstance');
-Logger.setLevel(log.Level.warn);
 
 function ModelInstance(model) {
     var self = this;

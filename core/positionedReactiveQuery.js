@@ -12,7 +12,6 @@ var ReactiveQuery = require('./reactiveQuery'),
 
 
 var Logger = log.loggerWithName('PositionedReactiveQuery');
-Logger.setLevel(log.Level.warn);
 
 function PositionalReactiveQuery(query) {
     ReactiveQuery.call(this, query);

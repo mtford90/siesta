@@ -21,7 +21,6 @@ var SAFE_METHODS = ['GET', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT']
     , UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'];
 
 var Logger = log.loggerWithName('Collection');
-Logger.setLevel(log.Level.warn);
 
 
 /**

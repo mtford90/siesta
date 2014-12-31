@@ -7,7 +7,6 @@ var _internal = siesta._internal;
 var log = _internal.log
     , utils = _internal.util;
 var Logger = log.loggerWithName('Serialiser');
-Logger.setLevel(log.Level.warn);
 var _ = utils._;
 
 

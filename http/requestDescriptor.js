@@ -13,7 +13,6 @@ var _internal = siesta._internal
 ;
 
 var Logger = log.loggerWithName('RequestDescriptor');
-Logger.setLevel(log.Level.warn);
 
 /**
  * @class Describes a HTTP request

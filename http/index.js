@@ -21,7 +21,6 @@ var DescriptorRegistry = require('./descriptorRegistry').DescriptorRegistry;
 
 
 var Logger = log.loggerWithName('HTTP');
-Logger.setLevel(log.Level.warn);
 
 /**
  * Log a HTTP response

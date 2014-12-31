@@ -13,7 +13,6 @@ var InternalSiestaError = require('./error').InternalSiestaError
 
 
 var Logger = log.loggerWithName('Store');
-Logger.setLevel(log.Level.warn);
 
 /**
  * [get description]

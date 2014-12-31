@@ -3,17 +3,13 @@
  * Lookups are performed against the cache when mapping.
  * @module cache
  */
-var log = require('./operation/log')
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , util = require('./util');
+var log = require('./operation/log'),
+    InternalSiestaError = require('./error').InternalSiestaError,
+    util = require('./util');
 
 
 var LocalCacheLogger = log.loggerWithName('LocalCache'),
     RemoteCacheLogger = log.loggerWithName('RemoteCache');
-
-RemoteCacheLogger.setLevel(log.Level.warn);
-LocalCacheLogger.setLevel(log.Level.warn);
-
 
 var localCacheById = {},
     localCache = {},
@@ -27,7 +23,6 @@ function reset() {
     localCacheById = {};
     localCache = {};
 }
-
 
 /**
  * Return the object in the cache given a local id (_id)

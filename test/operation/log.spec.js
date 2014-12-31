@@ -14,10 +14,10 @@ describe('LocalCacheLogger', function () {
     it('set level', function () {
         var logger = Logger.loggerWithName('myLogger');
         var myOtherLogger = Logger.loggerWithName('myOtherLogger');
-        assert.ok(logger.info.isEnabled);
-        assert.ok(myOtherLogger.info.isEnabled);
-        logger.setLevel(Logger.Level.warning);
-        assert.notOk(logger.info.isEnabled);
+        assert.ok(logger.warn.isEnabled);
+        assert.ok(myOtherLogger.warn.isEnabled);
+        logger.setLevel(Logger.Level.error);
+        assert.notOk(logger.warn.isEnabled);
     });
 
     it('override operation', function (done) {

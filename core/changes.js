@@ -13,7 +13,6 @@ var defineSubProperty = require('./util').defineSubProperty
     , collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 var Logger = log.loggerWithName('changes');
-Logger.setLevel(log.Level.warn);
 
 /**
  * Constants that describe change events.

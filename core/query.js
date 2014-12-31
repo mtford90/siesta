@@ -8,7 +8,6 @@ var log = require('./operation/log')
     , _ = util._;
 
 var Logger = log.loggerWithName('Query');
-Logger.setLevel(log.Level.warn);
 
 /**
  * @class  [Query description]

@@ -7,7 +7,6 @@ var _internal = siesta._internal,
 var querystring = require('querystring');
 
 var Logger = log.loggerWithName('Paginator');
-Logger.setLevel(log.Level.warn);
 
 function Paginator(opts) {
     this.paginatorOpts = opts.paginator || {
