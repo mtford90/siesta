@@ -382,7 +382,5 @@ _.extend(RelationshipProxy.prototype, {
 });
 
 
-module.exports = {
-    RelationshipProxy: RelationshipProxy
-};
+module.exports = RelationshipProxy;
 

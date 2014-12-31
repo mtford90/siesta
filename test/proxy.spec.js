@@ -7,7 +7,7 @@ describe('new object proxy', function () {
         s.ext.storageEnabled = false;
     });
 
-    var RelationshipProxy = require('../core/proxy').RelationshipProxy,
+    var RelationshipProxy = require('../core/proxy'),
         OneToOneProxy = require('../core/oneToOneProxy'),
         OneToManyProxy = require('../core/oneToManyProxy'),
         ManyToManyProxy = require('../core/manyToManyProxy'),
