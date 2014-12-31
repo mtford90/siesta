@@ -177,7 +177,7 @@ _.extend(RelationshipProxy.prototype, {
     setIdAndRelated: function (obj, opts) {
         opts = opts || {};
         if (!opts.disableNotifications) {
-            registerSetChange.call(this, obj);
+            this.registerSetChange(obj);
         }
         if (obj) {
             if (util.isArray(obj)) {
@@ -202,7 +202,7 @@ _.extend(RelationshipProxy.prototype, {
         return function (idx, numRemove) {
             opts = opts || {};
             if (!opts.disableNotifications) {
-                registerSpliceChange.apply(this, arguments);
+                this.registerSpliceChange.apply(this, arguments);
             }
             var add = Array.prototype.slice.call(arguments, 2);
             var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
@@ -222,7 +222,7 @@ _.extend(RelationshipProxy.prototype, {
                 _.each(reverseProxies, function (p) {
                     if (util.isArray(p._id)) {
                         var idx = p._id.indexOf(self.object._id);
-                        makeChangesToRelatedWithoutObservations.call(p, function () {
+                        p.makeChangesToRelatedWithoutObservations(function () {
                             p.splicer(opts)(idx, 1);
                         });
                     } else {
@@ -280,7 +280,7 @@ _.extend(RelationshipProxy.prototype, {
         var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
         _.each(reverseProxies, function (p) {
             if (util.isArray(p._id)) {
-                makeChangesToRelatedWithoutObservations.call(p, function () {
+                p.makeChangesToRelatedWithoutObservations(function () {
                     p.splicer(opts)(p._id.length, 0, self.object);
                 });
             } else {
@@ -288,110 +288,101 @@ _.extend(RelationshipProxy.prototype, {
                 p.setIdAndRelated(self.object, opts);
             }
         });
+    },
+
+    makeChangesToRelatedWithoutObservations: function (f) {
+        if (this.related) {
+            this.related.oneToManyObserver.close();
+            this.related.oneToManyObserver = null;
+            f();
+            this.wrapArray(this.related);
+        } else {
+            // If there's a fault we can make changes anyway.
+            f();
+        }
+    },
+    registerSetChange: function (obj) {
+        var proxyObject = this.object;
+        if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
+        var model = proxyObject.model.name;
+        var collectionName = proxyObject.collectionName;
+        var newId;
+        if (util.isArray(obj)) {
+            newId = _.pluck(obj, '_id');
+        } else {
+            newId = obj ? obj._id : obj;
+        }
+        // We take [] == null == undefined in the case of relationships.
+        var oldId = this._id;
+        if (util.isArray(oldId) && !oldId.length) {
+            oldId = null;
+        }
+        var old = this.related;
+        if (util.isArray(old) && !old.length) {
+            old = null;
+        }
+        coreChanges.registerChange({
+            collection: collectionName,
+            model: model,
+            _id: proxyObject._id,
+            field: this.getForwardName(),
+            newId: newId,
+            oldId: oldId,
+            old: old,
+            new: obj,
+            type: ChangeType.Set,
+            obj: proxyObject
+        });
+    },
+
+    registerSpliceChange: function (idx, numRemove) {
+        var add = Array.prototype.slice.call(arguments, 2);
+        var model = this.object.model.name;
+        var coll = this.object.collectionName;
+        coreChanges.registerChange({
+            collection: coll,
+            model: model,
+            _id: this.object._id,
+            field: this.getForwardName(),
+            index: idx,
+            removedId: this._id.slice(idx, idx + numRemove),
+            removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
+            addedId: add.length ? _.pluck(add, '_id') : [],
+            added: add.length ? add : [],
+            type: ChangeType.Splice,
+            obj: this.object
+        });
+    },
+    wrapArray: function (arr) {
+        var self = this;
+        wrapArrayForAttributes(arr, this.reverseName, this.object);
+        if (!arr.oneToManyObserver) {
+            arr.oneToManyObserver = new ArrayObserver(arr);
+            var observerFunction = function (splices) {
+                splices.forEach(function (splice) {
+                    var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
+                    var model = self.getForwardModel();
+                    coreChanges.registerChange({
+                        collection: model.collectionName,
+                        model: model.name,
+                        _id: self.object._id,
+                        field: self.getForwardName(),
+                        removed: splice.removed,
+                        added: added,
+                        removedId: _.pluck(splice.removed, '_id'),
+                        addedId: _.pluck(splice.added, '_id'),
+                        type: ChangeType.Splice,
+                        obj: self.object
+                    });
+                });
+            };
+            arr.oneToManyObserver.open(observerFunction);
+        }
     }
 });
 
 
-function makeChangesToRelatedWithoutObservations(f) {
-    if (this.related) {
-        this.related.oneToManyObserver.close();
-        this.related.oneToManyObserver = null;
-        f();
-        wrapArray.call(this, this.related);
-    } else {
-        // If there's a fault we can make changes anyway.
-        f();
-    }
-}
-
-
-function registerSetChange(obj) {
-    var proxyObject = this.object;
-    if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
-    var model = proxyObject.model.name;
-    var collectionName = proxyObject.collectionName;
-    var newId;
-    if (util.isArray(obj)) {
-        newId = _.pluck(obj, '_id');
-    } else {
-        newId = obj ? obj._id : obj;
-    }
-    // We take [] == null == undefined in the case of relationships.
-    var oldId = this._id;
-    if (util.isArray(oldId) && !oldId.length) {
-        oldId = null;
-    }
-    var old = this.related;
-    if (util.isArray(old) && !old.length) {
-        old = null;
-    }
-    coreChanges.registerChange({
-        collection: collectionName,
-        model: model,
-        _id: proxyObject._id,
-        field: this.getForwardName(),
-        newId: newId,
-        oldId: oldId,
-        old: old,
-        new: obj,
-        type: ChangeType.Set,
-        obj: proxyObject
-    });
-}
-
-function registerSpliceChange(idx, numRemove) {
-    var add = Array.prototype.slice.call(arguments, 2);
-    var model = this.object.model.name;
-    var coll = this.object.collectionName;
-    coreChanges.registerChange({
-        collection: coll,
-        model: model,
-        _id: this.object._id,
-        field: this.getForwardName(),
-        index: idx,
-        removedId: this._id.slice(idx, idx + numRemove),
-        removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
-        addedId: add.length ? _.pluck(add, '_id') : [],
-        added: add.length ? add : [],
-        type: ChangeType.Splice,
-        obj: this.object
-    });
-}
-
-
-function wrapArray(arr) {
-    var self = this;
-    wrapArrayForAttributes(arr, this.reverseName, this.object);
-    if (!arr.oneToManyObserver) {
-        arr.oneToManyObserver = new ArrayObserver(arr);
-        var observerFunction = function (splices) {
-            splices.forEach(function (splice) {
-                var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
-                var model = self.getForwardModel();
-                coreChanges.registerChange({
-                    collection: model.collectionName,
-                    model: model.name,
-                    _id: self.object._id,
-                    field: self.getForwardName(),
-                    removed: splice.removed,
-                    added: added,
-                    removedId: _.pluck(splice.removed, '_id'),
-                    addedId: _.pluck(splice.added, '_id'),
-                    type: ChangeType.Splice,
-                    obj: self.object
-                });
-            });
-        };
-        arr.oneToManyObserver.open(observerFunction);
-    }
-}
-
 module.exports = {
-    RelationshipProxy: RelationshipProxy,
-    Fault: Fault,
-    registerSetChange: registerSetChange,
-    wrapArray: wrapArray,
-    registerSpliceChange: registerSpliceChange,
-    makeChangesToRelatedWithoutObservations: makeChangesToRelatedWithoutObservations
+    RelationshipProxy: RelationshipProxy
 };
 

@@ -55,7 +55,7 @@ _.extend(ManyToManyProxy.prototype, {
         _.each(removed, function (removedObject) {
             var reverseProxy = self.reverseProxyForInstance(removedObject);
             var idx = reverseProxy._id.indexOf(self.object._id);
-            proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
+            reverseProxy.makeChangesToRelatedWithoutObservations(function () {
                 reverseProxy.splice(idx, 1);
             });
         });
@@ -64,7 +64,7 @@ _.extend(ManyToManyProxy.prototype, {
         var self = this;
         _.each(added, function (addedObject) {
             var reverseProxy = self.reverseProxyForInstance(addedObject);
-            proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
+            reverseProxy.makeChangesToRelatedWithoutObservations(function () {
                 reverseProxy.splice(0, 0, self.object);
             });
         });
