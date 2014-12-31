@@ -6,10 +6,10 @@
  * @module changes
  */
 
-var defineSubProperty = require('./util').defineSubProperty
-    , notifications = require('./notifications')
+var notifications = require('./notifications')
     , InternalSiestaError = require('./error').InternalSiestaError
     , log = require('./operation/log')
+    , extend = require('./util')._.extend
     , collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 var Logger = log.loggerWithName('changes');
@@ -133,7 +133,13 @@ function registerChange(opts) {
     return c;
 }
 
-exports.Change = Change;
-exports.registerChange = registerChange;
-exports.validateChange = validateChange;
-exports.ChangeType = ChangeType;
+
+
+
+extend(exports, {
+    Change: Change,
+    registerChange: registerChange,
+    validateChange: validateChange,
+    ChangeType: ChangeType
+});
+

@@ -2,26 +2,20 @@
  * @module collection
  */
 
-var log = require('./operation/log');
+var log = require('./operation/log'),
+    CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+    Operation = require('./operation/operation').Operation,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    Model = require('./model').Model,
+    extend = require('extend'),
+    observe = require('../vendor/observe-js/src/observe').Platform,
+    notifications = require('./notifications'),
+    util = require('./util'),
+    _ = util._,
+    cache = require('./cache');
 
-var CollectionRegistry = require('./collectionRegistry').CollectionRegistry;
-var Operation = require('./operation/operation').Operation;
-var InternalSiestaError = require('./error').InternalSiestaError;
-var Model = require('./model').Model;
-var extend = require('extend');
-var observe = require('../vendor/observe-js/src/observe').Platform;
-var notifications = require('./notifications');
-
-var util = require('./util');
-var _ = util._;
-
-var cache = require('./cache');
-
-var SAFE_METHODS = ['GET', 'HEAD', 'TRACE', 'OPTIONS', 'CONNECT']
-    , UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'];
-
-var Logger = log.loggerWithName('Collection');
-
+var UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'],
+    Logger = log.loggerWithName('Collection');
 
 /**
  * A collection describes a set of models and optionally a REST API which we would
@@ -43,34 +37,38 @@ var Logger = log.loggerWithName('Collection');
 function Collection(name) {
     var self = this;
     if (!name) throw new Error('Collection must have a name');
-    this.name = name;
-    this._rawModels = {};
-    this._models = {};
-    /**
-     * The URL of the API e.g. http://api.github.com
-     * @type {string}
-     */
-    this.baseURL = '';
 
-    /**
-     * Set to true if installation has succeeded. You cannot use the collectio
-     * @type {boolean}
-     */
-    this.installed = false;
-    CollectionRegistry.register(this);
-
-
-    Object.defineProperty(this, 'dirty', {
-        get: function () {
-            if (siesta.ext.storageEnabled) {
-                var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                    hash = unsavedObjectsByCollection[self.name] || {};
-                return !!Object.keys(hash).length;
-            }
-            else return undefined;
-        },
-        enumerable: true
+    _.extend(this, {
+        name: name,
+        _rawModels: {},
+        _models: {},
+        /**
+         * The URL of the API e.g. http://api.github.com
+         * @type {string}
+         */
+        baseURL: '',
+        /**
+         * Set to true if installation has succeeded. You cannot use the collectio
+         * @type {boolean}
+         */
+        installed: false
     });
+
+    Object.defineProperties(this, {
+        dirty: {
+            get: function () {
+                if (siesta.ext.storageEnabled) {
+                    var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
+                        hash = unsavedObjectsByCollection[self.name] || {};
+                    return !!Object.keys(hash).length;
+                }
+                else return undefined;
+            },
+            enumerable: true
+        }
+    });
+
+    CollectionRegistry.register(this);
 }
 
 
