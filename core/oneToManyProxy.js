@@ -85,7 +85,7 @@ _.extend(OneToManyProxy.prototype, {
             reverseProxy.setIdAndRelated(null);
         });
     },
-    setReverse: function (added) {
+    setReverseOfAdded: function (added) {
         var self = this;
         _.each(added, function (added) {
             var forwardProxy = self.reverseProxyForInstance(added);
@@ -102,7 +102,7 @@ _.extend(OneToManyProxy.prototype, {
                     var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                     var removed = splice.removed;
                     self.clearReverse(removed);
-                    self.setReverse(added);
+                    self.setReverseOfAdded(added);
                     var model = self.getForwardModel();
                     coreChanges.registerChange({
                         collection: model.collectionName,
@@ -195,7 +195,7 @@ _.extend(OneToManyProxy.prototype, {
                 if (self.isReverse) {
                     this.wrapArray(self.related);
                 }
-                proxy.setReverse.call(self, obj, opts);
+                self.setIdAndRelatedReverse(obj, opts);
             }
         }
         else {

@@ -46,14 +46,14 @@ _.extend(OneToOneProxy.prototype, {
                 return errorMessage;
             }
             else {
-                this.clearReverseRelated(opts);;
-                self.setIdAndRelated( obj, opts);
-                proxy.setReverse.call(self, obj, opts);
+                this.clearReverseRelated(opts);
+                self.setIdAndRelated(obj, opts);
+                self.setIdAndRelatedReverse(obj, opts);
             }
         }
         else {
-            this.clearReverseRelated(opts);;
-            self.setIdAndRelated( obj, opts);
+            this.clearReverseRelated(opts);
+            self.setIdAndRelated(obj, opts);
         }
     },
     get: function (callback) {

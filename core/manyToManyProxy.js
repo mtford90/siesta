@@ -60,7 +60,7 @@ _.extend(ManyToManyProxy.prototype, {
             });
         });
     },
-    setReverse: function (added) {
+    setReverseOfAdded: function (added) {
         var self = this;
         _.each(added, function (addedObject) {
             var reverseProxy = self.reverseProxyForInstance(addedObject);
@@ -79,7 +79,7 @@ _.extend(ManyToManyProxy.prototype, {
                     var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                     var removed = splice.removed;
                     self.clearReverse(removed);
-                    self.setReverse(added);
+                    self.setReverseOfAdded(added);
                     var model = self.getForwardModel();
                     coreChanges.registerChange({
                         collection: model.collectionName,
@@ -137,7 +137,7 @@ _.extend(ManyToManyProxy.prototype, {
                 this.clearReverseRelated(opts);
                 self.setIdAndRelated( obj, opts);
                 this.wrapArray(obj);
-                proxy.setReverse.call(self, obj, opts);
+                self.setIdAndRelatedReverse(obj, opts);
             }
         }
         else {

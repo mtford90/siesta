@@ -273,10 +273,23 @@ _.extend(RelationshipProxy.prototype, {
                 throw new Error(this.getForwardName() + ' has no _id');
             }
         }
+    },
+    setIdAndRelatedReverse: function (obj, opts) {
+        var self = this;
+        var reverseProxy = this.reverseProxyForInstance(obj);
+        var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
+        _.each(reverseProxies, function (p) {
+            if (util.isArray(p._id)) {
+                makeChangesToRelatedWithoutObservations.call(p, function () {
+                    p.splicer(opts)(p._id.length, 0, self.object);
+                });
+            } else {
+                p.clearReverseRelated(opts);
+                p.setIdAndRelated(self.object, opts);
+            }
+        });
     }
 });
-
-
 
 
 function makeChangesToRelatedWithoutObservations(f) {
@@ -291,21 +304,6 @@ function makeChangesToRelatedWithoutObservations(f) {
     }
 }
 
-function setReverse(obj, opts) {
-    var self = this;
-    var reverseProxy = this.reverseProxyForInstance(obj);
-    var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-    _.each(reverseProxies, function (p) {
-        if (util.isArray(p._id)) {
-            makeChangesToRelatedWithoutObservations.call(p, function () {
-                p.splicer(opts)(p._id.length, 0, self.object);
-            });
-        } else {
-            p.clearReverseRelated(opts);
-            p.setIdAndRelated(self.object, opts);
-        }
-    });
-}
 
 function registerSetChange(obj) {
     var proxyObject = this.object;
@@ -392,7 +390,6 @@ module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
     registerSetChange: registerSetChange,
-    setReverse: setReverse,
     wrapArray: wrapArray,
     registerSpliceChange: registerSpliceChange,
     makeChangesToRelatedWithoutObservations: makeChangesToRelatedWithoutObservations
