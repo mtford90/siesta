@@ -375,7 +375,6 @@ function PATCH(collection) {
 }
 
 
-var ajax;
 
 
 var http = {
@@ -385,9 +384,6 @@ var http = {
     _resolveMethod: descriptor.resolveMethod,
     Serialiser: require('./serialiser'),
     DescriptorRegistry: require('./descriptorRegistry').DescriptorRegistry,
-    setAjax: function (_ajax) {
-        ajax = _ajax;
-    },
     _httpResponse: _httpResponse,
     _httpRequest: _httpRequest,
     DELETE: DELETE,
@@ -416,9 +412,59 @@ Object.defineProperty(http, 'ajax', {
     }
 });
 
-if (!siesta.ext) {
-    siesta.ext = {};
-}
+
+
+if (!siesta.ext) siesta.ext = {};
 siesta.ext.http = http;
+
+Object.defineProperties(siesta.ext, {
+    httpEnabled: {
+        get: function () {
+            console.log('http?', siesta.ext);
+            if (siesta.ext._httpEnabled !== undefined) {
+                return siesta.ext._httpEnabled;
+            }
+            return !!siesta.ext.http;
+        },
+        set: function (v) {
+            siesta.ext._httpEnabled = v;
+        },
+        enumerable: true
+    }
+});
+
+var ajax, serialisers = {};
+
+_.extend(siesta, {
+    setAjax: function (_ajax) {
+        ajax = _ajax;
+    },
+    getAjax: function () {
+        return siesta.ext.http.ajax;
+    },
+    serialisers: serialisers,
+    serializers: serialisers
+});
+
+Object.defineProperties(serialisers, {
+    id: {
+        get: function () {
+            console.log('wad');
+            console.log(siesta.ext.httpEnabled);
+            if (siesta.ext.httpEnabled) {
+                return siesta.ext.http.Serialiser.idSerialiser;
+            }
+            return null;
+        }
+    },
+    depth: {
+        get: function () {
+            if (siesta.ext.httpEnabled) {
+                return siesta.ext.http.Serialiser.depthSerializer;
+            }
+            return null;
+        }
+    }
+});
 
 if (typeof module != 'undefined') module.exports = http;

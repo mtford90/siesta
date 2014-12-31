@@ -85,19 +85,6 @@ Object.defineProperty(siesta, 'dirty', {
 });
 
 Object.defineProperties(siesta.ext, {
-    httpEnabled: {
-        get: function () {
-            console.log('http?', siesta.ext);
-            if (siesta.ext._httpEnabled !== undefined) {
-                return siesta.ext._httpEnabled;
-            }
-            return !!siesta.ext.http;
-        },
-        set: function (v) {
-            siesta.ext._httpEnabled = v;
-        },
-        enumerable: true
-    },
     storageEnabled: {
         get: function () {
             if (siesta.ext._storageEnabled !== undefined) {
@@ -111,6 +98,7 @@ Object.defineProperties(siesta.ext, {
         enumerable: true
     }
 });
+
 
 
 _.extend(siesta, {
@@ -191,6 +179,7 @@ _.extend(siesta, {
 
         return deferred ? deferred.promise : null;
     },
+    // TODO: Move to storage
     save: function () {
         if (siesta.ext.storageEnabled) {
             var save = siesta.ext.storage.save;
@@ -200,30 +189,6 @@ _.extend(siesta, {
             throw new Error('Cannot save without storage module enabled.');
         }
     },
-    /**
-     * Sets the ajax function to use e.g. $.ajax
-     * @param {Function} ajax - a jquery-like ajax function
-     * @example
-     * // Use zepto instead of jQuery for http ajax requests.
-     * siesta.setAjax(zepto.ajax);
-     */
-    setAjax: function (ajax) {
-        // TODO: Move this io http module?
-        console.log(siesta.ext);
-        if (siesta.ext.httpEnabled) {
-            siesta.ext.http.ajax = ajax;
-        } else {
-            throw new Error('http module not installed correctly (have you included siesta.http.js?)');
-        }
-    },
-    /**
-     * Returns the ajax function being used.
-     * @return {Function}
-     */
-    getAjax: function () {
-        // TODO: Move to http module??
-        return siesta.ext.http.ajax;
-    },
     setLogLevel: function (loggerName, level) {
         var Logger = log.loggerWithName(loggerName);
         Logger.setLevel(level);
@@ -231,33 +196,7 @@ _.extend(siesta, {
     notify: util.next
 });
 
-// TODO: Move all this shite to the http module?
-var serialisers = {};
 
-Object.defineProperty(serialisers, 'id', {
-    get: function () {
-        console.log('wad');
-        console.log(siesta.ext.httpEnabled);
-        if (siesta.ext.httpEnabled) {
-            return siesta.ext.http.Serialiser.idSerialiser;
-        }
-        return null;
-    }
-
-});
-Object.defineProperty(serialisers, 'depth', {
-    get: function () {
-        if (siesta.ext.httpEnabled) {
-            return siesta.ext.http.Serialiser.depthSerializer;
-        }
-        return null;
-    }
-
-});
-_.extend(siesta, {
-    serialisers: serialisers,
-    serializers: serialisers
-});
 
 
 if (typeof window != 'undefined') {
