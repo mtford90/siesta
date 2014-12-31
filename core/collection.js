@@ -10,7 +10,7 @@ var InternalSiestaError = require('./error').InternalSiestaError;
 var Model = require('./model').Model;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
-var notificationCentre = require('./notifications').notificationCentre;
+var notifications = require('./notifications');
 
 var util = require('./util');
 var _ = util._;
@@ -388,16 +388,16 @@ _.extend(Collection.prototype, {
         return deferred.promise;
     },
     listen: function (fn) {
-        notificationCentre.on(this.name, fn);
+        notifications.on(this.name, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notificationCentre.once(this.name, fn);
+        return notifications.once(this.name, fn);
     },
     removeListener: function (fn) {
-        return notificationCentre.removeListener(this.name, fn);
+        return notifications.removeListener(this.name, fn);
     }
 });
 

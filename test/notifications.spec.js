@@ -10,7 +10,7 @@ describe('notifications', function() {
     var Collection = require('../core/collection').Collection,
         ChangeType = require('../core/changes').ChangeType,
         util = require('../core/util')
-    notificationCentre = require('../core/notifications').notificationCentre;
+    notifications = require('../core/notifications');
 
     beforeEach(function(done) {
         s.reset(done);
@@ -468,7 +468,7 @@ describe('notifications', function() {
                         });
                         person.cars.push(anotherCar);
                         util.next(function() {
-                            notificationCentre.removeAllListeners();
+                            notifications.removeAllListeners();
                             done();
                         })
                     });
@@ -552,7 +552,7 @@ describe('notifications', function() {
                         });
                         person.cars.splice(0, 1);
                         util.next(function() {
-                            notificationCentre.removeAllListeners();
+                            notifications.removeAllListeners();
                             done();
                         })
                     });
@@ -679,7 +679,7 @@ describe('notifications', function() {
                             });
                             person.cars.push(anotherCar);
                             util.next(function() {
-                                notificationCentre.removeAllListeners();
+                                notifications.removeAllListeners();
                                 done();
                             });
                         });
@@ -767,7 +767,7 @@ describe('notifications', function() {
                             });
                             person.cars.splice(0, 1);
                             util.next(function() {
-                                notificationCentre.removeAllListeners();
+                                notifications.removeAllListeners();
                                 done();
                             })
                         });
@@ -828,7 +828,7 @@ describe('notifications', function() {
                         done(err);
                     } else {
                         car = _car;
-                        notificationCentre.removeAllListeners();
+                        notifications.removeAllListeners();
                         done();
                     }
                 });
@@ -908,7 +908,7 @@ describe('notifications', function() {
                             }
                         });
                         car.remove();
-                        notificationCentre.removeAllListeners();
+                        notifications.removeAllListeners();
                         done();
                     }
                 });
@@ -988,7 +988,7 @@ describe('notifications', function() {
                             }
                         });
                         car.restore();
-                        notificationCentre.removeAllListeners();
+                        notifications.removeAllListeners();
                         done();
                     }
                 });

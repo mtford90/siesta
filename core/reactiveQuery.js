@@ -9,7 +9,7 @@ var log = require('./operation/log')
     , Query = require('./query').Query
     , _ = require('underscore')
     , EventEmitter = require('events').EventEmitter
-    , notificationCentre = require('./notifications').notificationCentre
+    , notifications = require('./notifications')
     , changes = require('./changes')
     , InternalSiestaError = require('./error').InternalSiestaError
     , util = require('./util');
@@ -57,7 +57,7 @@ _.extend(ReactiveQuery.prototype, {
                         this._handleNotif(n);
                     }.bind(this);
                     this.handler = handler;
-                    notificationCentre.on(name, handler);
+                    notifications.on(name, handler);
                 }
                 if (Logger.trace) Logger.trace('Listening to ' + name);
                 if (cb) cb();
@@ -190,7 +190,7 @@ _.extend(ReactiveQuery.prototype, {
         return this.model.collectionName + ':' + this.model.name;
     },
     terminate: function () {
-        notificationCentre.removeListener(this._constructNotificationName(), this.handler);
+        notifications.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
         this.handler = null;
     }

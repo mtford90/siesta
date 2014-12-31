@@ -4,7 +4,7 @@ var collection = require('./collection'),
     Collection = collection.Collection,
     cache = require('./cache'),
     Model = require('./model').Model,
-    notificationCentre = require('./notifications').notificationCentre,
+    notifications = require('./notifications'),
     Operation = require('./operation/operation').Operation,
     OperationQueue = require('./operation/queue').OperationQueue,
     RelationshipType = require('./relationship').RelationshipType,
@@ -28,10 +28,10 @@ var siesta = function (ext) {
 
 // Notifications
 _.extend(siesta, {
-    on: notificationCentre.on.bind(notificationCentre),
-    off: notificationCentre.removeListener.bind(notificationCentre),
-    once: notificationCentre.once.bind(notificationCentre),
-    removeAllListeners: notificationCentre.removeAllListeners.bind(notificationCentre)
+    on: notifications.on.bind(notifications),
+    off: notifications.removeListener.bind(notifications),
+    once: notifications.once.bind(notifications),
+    removeAllListeners: notifications.removeAllListeners.bind(notifications)
 });
 _.extend(siesta, {
     removeListener: siesta.off,
@@ -52,7 +52,7 @@ _.extend(siesta, {
         ChangeType: changes.ChangeType,
         siestaModel: require('./modelInstance'),
         extend: require('extend'),
-        notificationCentre: require('./notifications'),
+        notifications: require('./notifications'),
         cache: require('./cache'),
         Operation: Operation,
         OperationQueue: OperationQueue,

@@ -7,7 +7,7 @@
  */
 
 var defineSubProperty = require('./util').defineSubProperty
-    , notificationCentre = require('./notifications').notificationCentre
+    , notifications = require('./notifications')
     , InternalSiestaError = require('./error').InternalSiestaError
     , log = require('./operation/log')
     , collectionRegistry = require('./collectionRegistry').CollectionRegistry;
@@ -78,16 +78,16 @@ Change.prototype._dump = function (json) {
  */
 function broadcast(collectionName, modelName, c) {
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collectionName + '" of type ' + c.type);
-    notificationCentre.emit(collectionName, c);
+    notifications.emit(collectionName, c);
     var modelNotif = collectionName + ':' + modelName;
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + modelNotif + '" of type ' + c.type);
-    notificationCentre.emit(modelNotif, c);
+    notifications.emit(modelNotif, c);
     var genericNotif = 'Siesta';
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '" of type ' + c.type);
-    notificationCentre.emit(genericNotif, c);
+    notifications.emit(genericNotif, c);
     var localIdNotif = c._id;
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + localIdNotif + '" of type ' + c.type);
-    notificationCentre.emit(localIdNotif, c);
+    notifications.emit(localIdNotif, c);
     var collection = collectionRegistry[collectionName];
     var err;
     if (!collection) {
@@ -104,7 +104,7 @@ function broadcast(collectionName, modelName, c) {
     if (model.id && c.obj[model.id]) {
         var remoteIdNotif = collectionName + ':' + modelName + ':' + c.obj[model.id];
         if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + remoteIdNotif + '" of type ' + c.type);
-        notificationCentre.emit(remoteIdNotif, c);
+        notifications.emit(remoteIdNotif, c);
     }
 }
 

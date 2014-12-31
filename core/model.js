@@ -15,7 +15,7 @@ var log = require('./operation/log')
     , store = require('./store')
     , extend = require('extend')
     , changes = require('./changes')
-    , notificationCentre = require('./notifications').notificationCentre
+    , notifications = require('./notifications')
     , wrapArray = require('./notifications').wrapArray
     , OneToManyProxy = require('./oneToManyProxy')
     , OneToOneProxy = require('./oneToOneProxy')
@@ -567,16 +567,16 @@ _.extend(Model.prototype, {
 
 _.extend(Model.prototype, {
     listen: function (fn) {
-        notificationCentre.on(this.collectionName + ':' + this.name, fn);
+        notifications.on(this.collectionName + ':' + this.name, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notificationCentre.once(this.collectionName + ':' + this.name, fn);
+        return notifications.once(this.collectionName + ':' + this.name, fn);
     },
     removeListener: function (fn) {
-        return notificationCentre.removeListener(this.collectionName + ':' + this.name, fn);
+        return notifications.removeListener(this.collectionName + ':' + this.name, fn);
     }
 });
 

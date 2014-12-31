@@ -11,7 +11,7 @@ var _i = siesta._internal,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
     util = _i.util,
-    notificationCentre = _i.notificationCentre.notificationCentre;
+    notifications = _i.notifications;
 
 var DB_NAME = 'siesta',
     pouch = new PouchDB(DB_NAME);
@@ -292,7 +292,7 @@ Object.defineProperties(siesta, {
                             saving = true;
                             siesta.save(function (err) {
                                 if (!err) {
-                                    notificationCentre.emit('saved');
+                                    notifications.emit('saved');
                                 }
                                 saving = false;
                             });

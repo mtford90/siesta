@@ -10,8 +10,8 @@ var proxy = require('./proxy')
     , InternalSiestaError = require('./error').InternalSiestaError
     , coreChanges = require('./changes')
     , SiestaModel = require('./modelInstance')
-    , notificationCentre = require('./notifications')
-    , wrapArrayForAttributes = notificationCentre.wrapArray
+    , notifications = require('./notifications')
+    , wrapArrayForAttributes = notifications.wrapArray
     , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
     , ChangeType = require('./changes').ChangeType
     ;
