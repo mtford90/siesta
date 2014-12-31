@@ -374,7 +374,7 @@ function PATCH(collection) {
     return _.partial(HTTP_METHOD, collection, true, 'PATCH').apply(this, args);
 }
 
- 
+
 
 
 var http = {
