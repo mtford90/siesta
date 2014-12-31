@@ -332,12 +332,11 @@ _.extend(MappingOperation.prototype, {
         };
     },
     _constructSubOperation: function (name) {
-        var relationships = this.model.relationships;
-        var relationship = relationships[name];
-        var reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel;
-        var __ret = this.getRelatedData(name);
-        var indexes = __ret.indexes;
-        var relatedData = __ret.relatedData;
+        var relationship = this.model.relationships[name],
+            reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel,
+            __ret = this.getRelatedData(name),
+            indexes = __ret.indexes,
+            relatedData = __ret.relatedData;
         if (relatedData.length) {
             var flatRelatedData = util.flattenArray(relatedData);
             var op = new MappingOperation({
@@ -350,54 +349,52 @@ _.extend(MappingOperation.prototype, {
         }
         return op;
     },
-    gatherErrorsFromTasks: function () {
-        var self = this;
-        var relationshipNames = _.keys(this.subOps);
-        _.each(relationshipNames, function (name) {
-            var task = self.subOps[name].task;
-            var indexes = self.subOps[name].__indexes;
-            var errors = task.errors;
-            if (errors.length) {
-                var relatedData = self.getRelatedData(name).relatedData;
-                var unflattenedErrors = util.unflattenArray(errors, relatedData);
-                for (var i = 0; i < unflattenedErrors.length; i++) {
-                    var idx = indexes[i];
-                    var err = unflattenedErrors[i];
-                    var isError = err;
-                    if (util.isArray(err)) isError = _.reduce(err, function (memo, x) {
-                        return memo || x
-                    }, false);
-                    if (isError) {
-                        if (!self.errors[idx]) self.errors[idx] = {};
-                        self.errors[idx][name] = err;
-                    }
+    processErrorsFromTask: function (task) {
+        var indexes = task.__indexes,
+            name = task.__relationshipName;
+        var errors = task.errors;
+        if (errors.length) {
+            var relatedData = this.getRelatedData(name).relatedData;
+            var unflattenedErrors = util.unflattenArray(errors, relatedData);
+            for (var i = 0; i < unflattenedErrors.length; i++) {
+                var idx = indexes[i];
+                var err = unflattenedErrors[i];
+                var isError = err;
+                if (util.isArray(err)) isError = _.reduce(err, function (memo, x) {
+                    return memo || x
+                }, false);
+                if (isError) {
+                    if (!this.errors[idx]) this.errors[idx] = {};
+                    this.errors[idx][name] = err;
                 }
             }
-        });
+        }
     },
     _executeSubOperations: function (callback) {
         var self = this;
         var relationshipNames = _.keys(this.model.relationships);
         if (relationshipNames.length) {
-            var tasks = _.reduce(relationshipNames, function (m, k) {
-                var op = self._constructSubOperation(k);
+            var tasks = _.reduce(relationshipNames, function (m, relationshipName) {
+                var op = self._constructSubOperation(relationshipName);
                 if (op) {
-                    self.subOps[k] = op;
+                    self.subOps[relationshipName] = op;
                     var task;
                     task = function (done) {
                         op.onCompletion(function () {
                             task.errors = op.errors;
+                            self.processErrorsFromTask(task);
                             done();
                         });
                         op.start();
                     };
-                    self.subOps[k].task = task;
+                    task.__indexes = op.__indexes;
+                    task.__relationshipName = op.__relationshipName;
+                    self.subOps[relationshipName].task = task;
                     m.push(task);
                 }
                 return m;
             }, []);
             async.parallel(tasks, function () {
-                self.gatherErrorsFromTasks(relationshipNames);
                 callback();
             });
         } else {
