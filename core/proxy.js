@@ -94,8 +94,6 @@ function RelationshipProxy(opts) {
         }
     });
 
-   
-
     defineSubProperty.call(this, 'reverseModel', this._opts);
     defineSubProperty.call(this, 'forwardModel', this._opts);
     defineSubProperty.call(this, 'forwardName', this._opts);
