@@ -189,7 +189,7 @@ _.extend(OneToManyProxy.prototype, {
                 return errorMessage;
             }
             else {
-                proxy.clearReverseRelated.call(this, opts);
+                this.clearReverseRelated(opts);;
 
                 self.setIdAndRelated( obj, opts);
                 if (self.isReverse) {
@@ -199,7 +199,7 @@ _.extend(OneToManyProxy.prototype, {
             }
         }
         else {
-            proxy.clearReverseRelated.call(this, opts);
+            this.clearReverseRelated(opts);;
             self.setIdAndRelated( obj, opts);
         }
     },

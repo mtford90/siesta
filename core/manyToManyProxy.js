@@ -134,14 +134,14 @@ _.extend(ManyToManyProxy.prototype, {
                 return errorMessage;
             }
             else {
-                proxy.clearReverseRelated.call(this, opts);
+                this.clearReverseRelated(opts);
                 self.setIdAndRelated( obj, opts);
                 this.wrapArray(obj);
                 proxy.setReverse.call(self, obj, opts);
             }
         }
         else {
-            proxy.clearReverseRelated.call(this, opts);
+            this.clearReverseRelated(opts);
             self.setIdAndRelated(obj, opts);
         }
     },

@@ -197,110 +197,87 @@ _.extend(RelationshipProxy.prototype, {
             throw new InternalSiestaError('Proxy must be installed on an object before can use it.');
         }
     },
-    splicer: splicer
+    splicer: function (opts) {
+        opts = opts || {};
+        return function (idx, numRemove) {
+            opts = opts || {};
+            if (!opts.disableNotifications) {
+                registerSpliceChange.apply(this, arguments);
+            }
+            var add = Array.prototype.slice.call(arguments, 2);
+            var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
+            if (this.related) {
+                _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+            }
+            return returnValue;
+        }.bind(this);
+    },
+    clearReverseRelated: function (opts) {
+        opts = opts || {};
+        var self = this;
+        if (!self.isFault) {
+            if (this.related) {
+                var reverseProxy = this.reverseProxyForInstance(this.related);
+                var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
+                _.each(reverseProxies, function (p) {
+                    if (util.isArray(p._id)) {
+                        var idx = p._id.indexOf(self.object._id);
+                        makeChangesToRelatedWithoutObservations.call(p, function () {
+                            p.splicer(opts)(idx, 1);
+                        });
+                    } else {
+                        p.setIdAndRelated(null, opts);
+                    }
+                });
+            }
+        } else {
+            if (self._id) {
+                var reverseName = this.getReverseName();
+                var reverseModel = this.getReverseModel();
+                var identifiers = util.isArray(self._id) ? self._id : [self._id];
+                if (this._reverseIsArray) {
+                    if (!opts.disableNotifications) {
+                        _.each(identifiers, function (_id) {
+                            coreChanges.registerChange({
+                                collection: reverseModel.collectionName,
+                                model: reverseModel.name,
+                                _id: _id,
+                                field: reverseName,
+                                removedId: [self.object._id],
+                                removed: [self.object],
+                                type: ChangeType.Delete,
+                                obj: self.object
+                            });
+                        });
+                    }
+                } else {
+                    if (!opts.disableNotifications) {
+                        _.each(identifiers, function (_id) {
+                            coreChanges.registerChange({
+                                collection: reverseModel.collectionName,
+                                model: reverseModel.name,
+                                _id: _id,
+                                field: reverseName,
+                                new: null,
+                                newId: null,
+                                oldId: self.object._id,
+                                old: self.object,
+                                type: ChangeType.Set,
+                                obj: self.object
+                            });
+                        });
+                    }
+                }
+
+            } else {
+                throw new Error(this.getForwardName() + ' has no _id');
+            }
+        }
+    }
 });
 
 
-function splicer(opts) {
-    opts = opts || {};
-    return function (idx, numRemove) {
-        opts = opts || {};
-        if (!opts.disableNotifications) {
-            registerSpliceChange.apply(this, arguments);
-        }
-        var add = Array.prototype.slice.call(arguments, 2);
-        var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
-        if (this.related) {
-            _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
-        }
-        return returnValue;
-    }.bind(this);
-}
 
-
-function objAsString(obj) {
-    function _objAsString(obj) {
-        if (obj) {
-            var model = obj.model;
-            var modelName = model.name;
-            var ident = obj._id;
-            if (typeof ident == 'string') {
-                ident = '"' + ident + '"';
-            }
-            return modelName + '[_id=' + ident + ']';
-        } else if (obj === undefined) {
-            return 'undefined';
-        } else if (obj === null) {
-            return 'null';
-        }
-    }
-
-    if (util.isArray(obj)) return _.map(_objAsString, obj).join(', ');
-    return _objAsString(obj);
-}
-
-function clearReverseRelated(opts) {
-    opts = opts || {};
-    var self = this;
-    if (!self.isFault) {
-        if (this.related) {
-            var reverseProxy = this.reverseProxyForInstance(this.related);
-            var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-            _.each(reverseProxies, function (p) {
-                if (util.isArray(p._id)) {
-                    var idx = p._id.indexOf(self.object._id);
-                    makeChangesToRelatedWithoutObservations.call(p, function () {
-                        p.splicer(opts)(idx, 1);
-                    });
-                } else {
-                    p.setIdAndRelated(null, opts);
-                }
-            });
-        }
-    } else {
-        if (self._id) {
-            var reverseName = this.getReverseName();
-            var reverseModel = this.getReverseModel();
-            var identifiers = util.isArray(self._id) ? self._id : [self._id];
-            if (this._reverseIsArray) {
-                if (!opts.disableNotifications) {
-                    _.each(identifiers, function (_id) {
-                        coreChanges.registerChange({
-                            collection: reverseModel.collectionName,
-                            model: reverseModel.name,
-                            _id: _id,
-                            field: reverseName,
-                            removedId: [self.object._id],
-                            removed: [self.object],
-                            type: ChangeType.Delete,
-                            obj: self.object
-                        });
-                    });
-                }
-            } else {
-                if (!opts.disableNotifications) {
-                    _.each(identifiers, function (_id) {
-                        coreChanges.registerChange({
-                            collection: reverseModel.collectionName,
-                            model: reverseModel.name,
-                            _id: _id,
-                            field: reverseName,
-                            new: null,
-                            newId: null,
-                            oldId: self.object._id,
-                            old: self.object,
-                            type: ChangeType.Set,
-                            obj: self.object
-                        });
-                    });
-                }
-            }
-
-        } else {
-            throw new Error(this.getForwardName() + ' has no _id');
-        }
-    }
-}
 
 function makeChangesToRelatedWithoutObservations(f) {
     if (this.related) {
@@ -324,7 +301,7 @@ function setReverse(obj, opts) {
                 p.splicer(opts)(p._id.length, 0, self.object);
             });
         } else {
-            clearReverseRelated.call(p, opts);
+            p.clearReverseRelated(opts);
             p.setIdAndRelated(self.object, opts);
         }
     });
@@ -415,9 +392,7 @@ module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
     registerSetChange: registerSetChange,
-    clearReverseRelated: clearReverseRelated,
     setReverse: setReverse,
-    objAsString: objAsString,
     wrapArray: wrapArray,
     registerSpliceChange: registerSpliceChange,
     makeChangesToRelatedWithoutObservations: makeChangesToRelatedWithoutObservations

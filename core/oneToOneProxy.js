@@ -46,13 +46,13 @@ _.extend(OneToOneProxy.prototype, {
                 return errorMessage;
             }
             else {
-                proxy.clearReverseRelated.call(this, opts);
+                this.clearReverseRelated(opts);;
                 self.setIdAndRelated( obj, opts);
                 proxy.setReverse.call(self, obj, opts);
             }
         }
         else {
-            proxy.clearReverseRelated.call(this, opts);
+            this.clearReverseRelated(opts);;
             self.setIdAndRelated( obj, opts);
         }
     },
