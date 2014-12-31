@@ -7,7 +7,7 @@
  */
 
 var defineSubProperty = require('./util').defineSubProperty
-    , notificationCentre = require('./notificationCentre').notificationCentre
+    , notificationCentre = require('./notifications').notificationCentre
     , InternalSiestaError = require('./error').InternalSiestaError
     , log = require('./operation/log')
     , collectionRegistry = require('./collectionRegistry').CollectionRegistry;

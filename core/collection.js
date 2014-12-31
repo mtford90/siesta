@@ -10,7 +10,7 @@ var InternalSiestaError = require('./error').InternalSiestaError;
 var Model = require('./model').Model;
 var extend = require('extend');
 var observe = require('../vendor/observe-js/src/observe').Platform;
-var notificationCentre = require('./notificationCentre').notificationCentre;
+var notificationCentre = require('./notifications').notificationCentre;
 
 var util = require('./util');
 var _ = util._;

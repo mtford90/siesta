@@ -4,7 +4,7 @@ var log = require('./operation/log')
     , error = require('./error')
     , InternalSiestaError = error.InternalSiestaError
     , coreChanges = require('./changes')
-    , notificationCentre = require('./notificationCentre').notificationCentre
+    , notificationCentre = require('./notifications').notificationCentre
     , cache = require('./cache');
 
 var Logger = log.loggerWithName('ModelInstance');

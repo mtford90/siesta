@@ -411,7 +411,7 @@
 		"/Users/mtford/Playground/rest/src/changes.js",
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/lie/node_modules/immediate/lib/stateChange.js",
 		"/Users/mtford/Playground/rest/test/changeIdentifiers.spec.js",
-		"/Users/mtford/Playground/rest/src/notificationCentre.js",
+		"/Users/mtford/Playground/rest/src/notifications.js",
 		"/Users/mtford/Playground/rest/node_modules/grunt-contrib-watch/test/tasks/nospawn_test.js",
 		"/Users/mtford/Playground/rest/node_modules/glob/test/new-glob-optional-options.js",
 		"/Users/mtford/Playground/rest/bower_components/async/nodelint.cfg",

@@ -10,7 +10,7 @@ describe('notifications', function() {
     var Collection = require('../core/collection').Collection,
         ChangeType = require('../core/changes').ChangeType,
         util = require('../core/util')
-    notificationCentre = require('../core/notificationCentre').notificationCentre;
+    notificationCentre = require('../core/notifications').notificationCentre;
 
     beforeEach(function(done) {
         s.reset(done);
