@@ -71,8 +71,8 @@ _.extend(ManyToManyProxy.prototype, {
     wrapArray: function (arr) {
         var self = this;
         wrapArrayForAttributes(arr, this.reverseName, this.object);
-        if (!arr.oneToManyObserver) {
-            arr.oneToManyObserver = new ArrayObserver(arr);
+        if (!arr.arrayObserver) {
+            arr.arrayObserver = new ArrayObserver(arr);
             var observerFunction = function (splices) {
                 splices.forEach(function (splice) {
                     var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
@@ -95,7 +95,7 @@ _.extend(ManyToManyProxy.prototype, {
                     });
                 });
             };
-            arr.oneToManyObserver.open(observerFunction);
+            arr.arrayObserver.open(observerFunction);
         }
     },
     get: function (callback) {

@@ -78,6 +78,10 @@ function RelationshipProxy(opts) {
     this.splice = this.splicer({});
 }
 
+_.extend(RelationshipProxy, {
+
+});
+
 _.extend(RelationshipProxy.prototype, {
     /**
      * Install this proxy on the given instance
@@ -289,11 +293,10 @@ _.extend(RelationshipProxy.prototype, {
             }
         });
     },
-
     makeChangesToRelatedWithoutObservations: function (f) {
         if (this.related) {
-            this.related.oneToManyObserver.close();
-            this.related.oneToManyObserver = null;
+            this.related.arrayObserver.close();
+            this.related.arrayObserver = null;
             f();
             this.wrapArray(this.related);
         } else {
@@ -356,8 +359,8 @@ _.extend(RelationshipProxy.prototype, {
     wrapArray: function (arr) {
         var self = this;
         wrapArrayForAttributes(arr, this.reverseName, this.object);
-        if (!arr.oneToManyObserver) {
-            arr.oneToManyObserver = new ArrayObserver(arr);
+        if (!arr.arrayObserver) {
+            arr.arrayObserver = new ArrayObserver(arr);
             var observerFunction = function (splices) {
                 splices.forEach(function (splice) {
                     var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
@@ -376,7 +379,7 @@ _.extend(RelationshipProxy.prototype, {
                     });
                 });
             };
-            arr.oneToManyObserver.open(observerFunction);
+            arr.arrayObserver.open(observerFunction);
         }
     }
 });
