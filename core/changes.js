@@ -53,7 +53,7 @@ function Change(opts) {
     }.bind(this));
 }
 
-Change.prototype._dump = function (json) {
+Change.prototype._dump = function (pretty) {
     var dumped = {};
     dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();
     dumped.model = (typeof this.model) == 'string' ? this.model : this.model.name;
@@ -65,7 +65,7 @@ Change.prototype._dump = function (json) {
     if (this.removed) dumped.removed = _.map(this.removed, function (x) {return x._dump()});
     if (this.old) dumped.old = this.old;
     if (this.new) dumped.new = this.new;
-    return json ? JSON.stringify(dumped, null, 4) : dumped;
+    return pretty ? util.prettyPrint(dumped) : dumped;
 };
 
 /**

@@ -206,5 +206,8 @@ _.extend(module.exports, {
         _.extend(obj, defaults);
     },
     isString: isString,
-    isArray: isArray
+    isArray: isArray,
+    prettyPrint: function (o) {
+        return JSON.stringify(o, null, 4);
+    }
 });

@@ -556,7 +556,7 @@ _.extend(Model.prototype, {
         dumped.relationships = _.map(this.relationships, function (r) {
             return r.isForward ? r.forwardName : r.reverseName;
         });
-        return asJSON ? JSON.stringify(dumped, null, 4) : dumped;
+        return asJSON ? util.prettyPrint(dumped) : dumped;
     },
     toString: function () {
         return 'Model[' + this.name + ']';

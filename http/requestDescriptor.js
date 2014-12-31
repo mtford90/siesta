@@ -93,7 +93,7 @@ _.extend(RequestDescriptor.prototype, {
             }
         }
         obj.transforms = transforms;
-        return asJson ? JSON.stringify(obj, null, 4) : obj;
+        return asJson ? util.prettyPrint(obj) : obj;
     }
 });
 

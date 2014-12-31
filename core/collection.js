@@ -257,7 +257,7 @@ _.extend(Collection.prototype, {
         obj.docId = this._docId;
         obj.name = this.name;
         obj.baseURL = this.baseURL;
-        return asJson ? JSON.stringify(obj, null, 4) : obj;
+        return asJson ? util.prettyPrint(obj) : obj;
     },
 
     _http: function (method) {

@@ -249,7 +249,7 @@ _.extend(BulkMappingOperation.prototype, {
                     var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
                     if (remoteIdentifiers.length) {
                         if (Logger.trace.isEnabled)
-                            Logger.trace('Looking up remoteIdentifiers: ' + JSON.stringify(remoteIdentifiers, null, 4));
+                            Logger.trace('Looking up remoteIdentifiers: ' + util.prettyPrint(remoteIdentifiers));
                         Store.getMultipleRemote(remoteIdentifiers, self.model, function (err, objects) {
                             if (!err) {
                                 if (Logger.trace.isEnabled) {
@@ -257,7 +257,7 @@ _.extend(BulkMappingOperation.prototype, {
                                     for (i = 0; i < objects.length; i++) {
                                         results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
                                     }
-                                    Logger.trace('Results for remoteIdentifiers: ' + JSON.stringify(results, null, 4));
+                                    Logger.trace('Results for remoteIdentifiers: ' + util.prettyPrint(results));
                                 }
                                 for (i = 0; i < objects.length; i++) {
                                     var obj = objects[i];

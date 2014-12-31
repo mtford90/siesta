@@ -34,7 +34,7 @@ function logHttpResponse(opts, xhr, data) {
         var logMessage = opts.type + ' ' + xhr.status + ' ' + opts.url;
         if (Logger.trace.isEnabled && data) {
             logger = Logger.trace;
-            logMessage += ': ' + JSON.stringify(data, null, 4);
+            logMessage += ': ' + util.prettyPrint(data);
         }
         logger(logMessage);
     }
@@ -106,7 +106,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
             }
             if (matchedDescriptor) {
                 if (Logger.trace.isEnabled) {
-                    Logger.trace('Model extracted data: ' + JSON.stringify(extractedData, null, 4));
+                    Logger.trace('Model extracted data: ' + util.prettyPrint(extractedData));
                 }
                 if (typeof(extractedData) == 'object') {
                     var mapping = matchedDescriptor.model;
