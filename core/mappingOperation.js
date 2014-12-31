@@ -318,12 +318,9 @@ _.extend(MappingOperation.prototype, {
         }
         return op;
     },
-    processErrorsFromTask: function (task) {
-        var indexes = task.__indexes,
-            name = task.__relationshipName;
-        var errors = task.errors;
+    processErrorsFromTask: function (relationshipName, errors, indexes) {
         if (errors.length) {
-            var relatedData = this.getRelatedData(name).relatedData;
+            var relatedData = this.getRelatedData(relationshipName).relatedData;
             var unflattenedErrors = util.unflattenArray(errors, relatedData);
             for (var i = 0; i < unflattenedErrors.length; i++) {
                 var idx = indexes[i];
@@ -334,7 +331,7 @@ _.extend(MappingOperation.prototype, {
                 }, false);
                 if (isError) {
                     if (!this.errors[idx]) this.errors[idx] = {};
-                    this.errors[idx][name] = err;
+                    this.errors[idx][relationshipName] = err;
                 }
             }
         }
@@ -354,15 +351,11 @@ _.extend(MappingOperation.prototype, {
                                 objects: op.objects,
                                 indexes: op.__indexes
                             };
-                            task.errors = op.errors;
-                            task.objects = op.objects;
-                            self.processErrorsFromTask(task);
+                            self.processErrorsFromTask(relationshipName, op.errors, op.__indexes);
                             done();
                         });
                         op.start();
                     };
-                    task.__indexes = op.__indexes;
-                    task.__relationshipName = op.__relationshipName;
                     m.push(task);
                 }
                 return m;
