@@ -18,7 +18,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     ChangeType = coreChanges.ChangeType;
 
 /**
- * @class  [Fault description]
+ * A fault occurs when we try to access a property that has not been loaded from disk
  * @param {RelationshipProxy} proxy
  * @constructor
  */
@@ -51,49 +51,57 @@ _.extend(Fault.prototype, {
  */
 function RelationshipProxy(opts) {
     this._opts = opts;
-    if (!this) return new RelationshipProxy(opts);
     var self = this;
-    this.fault = new Fault(this);
-    this.object = null;
-    this._id = undefined;
-    this.related = null;
-    Object.defineProperty(this, 'isFault', {
-        get: function () {
-            if (self._id) {
-                return !self.related;
-            } else if (self._id === null) {
-                return false;
-            }
-            return true;
-        },
-        set: function (v) {
-            if (v) {
-                self._id = undefined;
-                self.related = null;
-            } else {
-                if (!self._id) {
-                    self._id = null;
-                }
-            }
-        },
-        enumerable: true,
-        configurable: true
+
+    _.extend(this, {
+        fault: new Fault(this),
+        object: null,
+        _id: undefined,
+        related: null
     });
+
+    Object.defineProperties(this, {
+        isFault: {
+            get: function () {
+                if (self._id) {
+                    return !self.related;
+                } else if (self._id === null) {
+                    return false;
+                }
+                return true;
+            },
+            set: function (v) {
+                if (v) {
+                    self._id = undefined;
+                    self.related = null;
+                } else {
+                    if (!self._id) {
+                        self._id = null;
+                    }
+                }
+            },
+            enumerable: true,
+            configurable: true
+        },
+        isForward: {
+            get: function () {
+                return !self.isReverse;
+            },
+            set: function (v) {
+                self.isReverse = !v;
+            },
+            enumerable: true
+        }
+    });
+
+   
+
     defineSubProperty.call(this, 'reverseModel', this._opts);
     defineSubProperty.call(this, 'forwardModel', this._opts);
     defineSubProperty.call(this, 'forwardName', this._opts);
     defineSubProperty.call(this, 'reverseName', this._opts);
     defineSubProperty.call(this, 'isReverse', this._opts);
-    Object.defineProperty(this, 'isForward', {
-        get: function () {
-            return !self.isReverse;
-        },
-        set: function (v) {
-            self.isReverse = !v;
-        },
-        enumerable: true,
-        configurable: true
-    });
+
     if (this._opts.isReverse === undefined && this._opts.isForward !== undefined) {
         this.isReverse = !this._opts.isForward;
     }
