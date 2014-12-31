@@ -2,7 +2,7 @@ var s = require('../../core/index')
     , assert = require('chai').assert;
 
 describe('mapping!', function () {
-    var Model = require('../../core/model').Model;
+    var Model = require('../../core/model');
 
     before(function () {
         s.ext.storageEnabled = false;

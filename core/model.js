@@ -630,4 +630,4 @@ _.extend(Model.prototype, {
     }
 });
 
-exports.Model = Model;
+module.exports = Model;
