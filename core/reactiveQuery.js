@@ -24,14 +24,20 @@ var Logger = log.loggerWithName('ReactiveQuery');
 function ReactiveQuery(query) {
     var self = this;
     EventEmitter.call(this);
-    this._query = query;
-    this.results = null;
+
+    _.extend(this, {
+        _query: query,
+        results: null,
+        insertionPolicy: ReactiveQuery.InsertionPolicy.Back
+    });
+
     var initialisedGet = function () {return !!self.results};
-    Object.defineProperty(this, 'initialised', {get: initialisedGet});
-    Object.defineProperty(this, 'initialized', {get: initialisedGet}); // For my friends across the pond
-    Object.defineProperty(this, 'model', {get: function () { return self._query.model }});
-    Object.defineProperty(this, 'collection', {get: function () { return self.model.collectionName }});
-    this.insertionPolicy = ReactiveQuery.InsertionPolicy.Back;
+    Object.defineProperties(this, {
+        initialised: {get: initialisedGet},
+        initialized: {get: initialisedGet},
+        model: {get: function () { return self._query.model }},
+        collection: {get: function () { return self.model.collectionName }}
+    });
 }
 
 ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
