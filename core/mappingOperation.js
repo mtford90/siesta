@@ -41,44 +41,12 @@ function MappingOperation(opts) {
         disableNotifications: false
     });
 
-    //
-    ///**
-    // * @name mapping
-    // * @type {Model}
-    // */
-    //defineSubProperty.call(this, 'model', this._opts);
-    //
-    ///**
-    // * @name data
-    // * @type {Array}
-    // */
-    //defineSubProperty.call(this, 'data', this._opts);
-    //
-    ///**
-    // * @name objects
-    // * @type {Array}
-    // */
-    //defineSubProperty.call(this, 'objects', this._opts);
-    //
-    ///**
-    // * @name disableNotifications
-    // * @type {bool}
-    // */
-    //defineSubProperty.call(this, 'disableNotifications', this._opts);
-
-
-    //if (!this.objects) this.objects = [];
-
-    /**
-     * Array of errors where indexes map onto same index as the datum that caused an error.
-     * @type {Array}
-     */
-    this.errors = [];
-
-
-    this.name = 'Model Operation';
-    this.work = _.bind(this._start, this);
-    this.subOps = {};
+    _.extend(this, {
+        errors: [],
+        name: 'Model Operation',
+        work: _.bind(this._start, this),
+        subTaskResults: {}
+    });
 }
 
 MappingOperation.prototype = Object.create(Operation.prototype);
@@ -115,12 +83,13 @@ _.extend(MappingOperation.prototype, {
         var self = this;
         var err;
         this.mapAttributes();
-        var relationshipFields = _.keys(self.subOps);
+        var relationshipFields = _.keys(self.subTaskResults);
         _.each(relationshipFields, function (f) {
-            var op = self.subOps[f];
-            var indexes = op.__indexes;
+            var res = self.subTaskResults[f];
+            var indexes = res.indexes,
+                objects = res.objects;
             var relatedData = self.getRelatedData(f).relatedData;
-            var unflattenedObjects = util.unflattenArray(op.objects, relatedData);
+            var unflattenedObjects = util.unflattenArray(objects, relatedData);
             for (var i = 0; i < unflattenedObjects.length; i++) {
                 var idx = indexes[i];
                 // Errors are plucked from the suboperations.
@@ -371,17 +340,22 @@ _.extend(MappingOperation.prototype, {
         }
     },
     _executeSubOperations: function (callback) {
-        var self = this;
-        var relationshipNames = _.keys(this.model.relationships);
+        var self = this,
+            relationshipNames = _.keys(this.model.relationships);
         if (relationshipNames.length) {
             var tasks = _.reduce(relationshipNames, function (m, relationshipName) {
                 var op = self._constructSubOperation(relationshipName);
                 if (op) {
-                    self.subOps[relationshipName] = op;
                     var task;
                     task = function (done) {
                         op.onCompletion(function () {
+                            self.subTaskResults[relationshipName] = {
+                                errors: op.errors,
+                                objects: op.objects,
+                                indexes: op.__indexes
+                            };
                             task.errors = op.errors;
+                            task.objects = op.objects;
                             self.processErrorsFromTask(task);
                             done();
                         });
@@ -389,7 +363,6 @@ _.extend(MappingOperation.prototype, {
                     };
                     task.__indexes = op.__indexes;
                     task.__relationshipName = op.__relationshipName;
-                    self.subOps[relationshipName].task = task;
                     m.push(task);
                 }
                 return m;
