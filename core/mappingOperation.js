@@ -360,13 +360,13 @@ _.extend(MappingOperation.prototype, {
             Logger.trace('Constructed subops for relationships', Object.keys(subOps));
         }
     },
-    gatherErrorsFromSubOperations: function () {
+    gatherErrorsFromTasks: function () {
         var self = this;
         var relationshipNames = _.keys(this.subOps);
         _.each(relationshipNames, function (name) {
-            var op = self.subOps[name].op;
+            var task = self.subOps[name].task;
             var indexes = self.subOps[name].indexes;
-            var errors = op.errors;
+            var errors = task.errors;
             if (errors.length) {
                 var relatedData = self.getRelatedData(name).relatedData;
                 var unflattenedErrors = util.unflattenArray(errors, relatedData);
@@ -403,7 +403,7 @@ _.extend(MappingOperation.prototype, {
                 return task
             });
             async.parallel(tasks, function () {
-                self.gatherErrorsFromSubOperations(relationshipNames);
+                self.gatherErrorsFromTasks(relationshipNames);
                 callback();
             });
         } else {
