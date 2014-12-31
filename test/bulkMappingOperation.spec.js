@@ -190,42 +190,6 @@ describe('bulk mapping operation', function () {
             describe('foreign key', function () {
 
                 describe('forward', function () {
-                    it('sub operations', function () {
-                        var owner = {
-                            id: 6,
-                            login: 'mike'
-                        };
-                        var data = [{
-                            name: 'Repo',
-                            full_name: 'A Big Repo',
-                            description: 'Blah',
-                            _id: 'sdfsd'
-                        }, {
-                            name: 'Repo2',
-                            full_name: 'Another Big Repo',
-                            description: 'Blsdah',
-                            id: 'sdfsd',
-                            owner: 5
-                        }, {
-                            name: 'Repo3',
-                            full_name: 'Yet Another Big Repo',
-                            description: 'Blahasdasd',
-                            owner: owner
-                        }];
-                        var op = new MappingOperation({
-                            model: Repo,
-                            data: data
-                        });
-                        op._constructSubOperations();
-                        var ownerSubOperation = op.subOps.owner;
-                        var ownerIndexes = ownerSubOperation.__indexes;
-                        assert.equal(ownerIndexes.length, 2);
-                        assert.include(ownerIndexes, 1);
-                        assert.include(ownerIndexes, 2);
-                        assert.equal(ownerSubOperation.model, User);
-                        assert.equal(ownerSubOperation.data[0], 5);
-                        assert.equal(ownerSubOperation.data[1], owner);
-                    });
 
                     it('none existing', function (done) {
                         var owner = {

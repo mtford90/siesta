@@ -350,18 +350,6 @@ _.extend(MappingOperation.prototype, {
         }
         return op;
     },
-    _constructSubOperations: function () {
-        var subOps = this.subOps;
-        var relationships = this.model.relationships;
-        for (var name in  relationships) {
-            if (relationships.hasOwnProperty(name)) {
-                var op = this._constructSubOperation(name);
-                if (op) {
-                    subOps[name] = op;
-                }
-            }
-        }
-    },
     gatherErrorsFromTasks: function () {
         var self = this;
         var relationshipNames = _.keys(this.subOps);
@@ -389,21 +377,23 @@ _.extend(MappingOperation.prototype, {
     },
     _executeSubOperations: function (callback) {
         var self = this;
-        this._constructSubOperations();
-        var relationshipNames = _.keys(this.subOps);
+        var relationshipNames = _.keys(this.model.relationships);
         if (relationshipNames.length) {
             var tasks = _.reduce(relationshipNames, function (m, k) {
-                var op = self.subOps[k];
-                var task;
-                task = function (done) {
-                    op.onCompletion(function () {
-                        task.errors = op.errors;
-                        done();
-                    });
-                    op.start();
-                };
-                self.subOps[k].task = task;
-                m.push(task);
+                var op = self._constructSubOperation(k);
+                if (op) {
+                    self.subOps[k] = op;
+                    var task;
+                    task = function (done) {
+                        op.onCompletion(function () {
+                            task.errors = op.errors;
+                            done();
+                        });
+                        op.start();
+                    };
+                    self.subOps[k].task = task;
+                    m.push(task);
+                }
                 return m;
             }, []);
             async.parallel(tasks, function () {
