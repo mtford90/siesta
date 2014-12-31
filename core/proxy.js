@@ -86,7 +86,7 @@ _.extend(RelationshipProxy.prototype, {
             if (!this.object) {
                 this.object = modelInstance;
                 var self = this;
-                var name = getForwardName.call(this);
+                var name = this.getForwardName();
                 Object.defineProperty(modelInstance, name, {
                     get: function () {
                         if (self.isFault) {
@@ -129,7 +129,7 @@ _.extend(RelationshipProxy.prototype, {
 
 _.extend(RelationshipProxy.prototype, {
     proxyForInstance: function (modelInstance, reverse) {
-        var name = reverse ? this.getReverseName() : getForwardName.call(this),
+        var name = reverse ? this.getReverseName() : this.getForwardName(),
             model = reverse ? this.reverseModel : this.forwardModel;
         var ret;
         // This should never happen. Should g   et caught in the mapping operation?
@@ -155,14 +155,13 @@ _.extend(RelationshipProxy.prototype, {
     },
     getReverseName: function () {
         return this.isForward ? this.reverseName : this.forwardName;
+    },
+    getForwardName: function () {
+        return this.isForward ? this.forwardName : this.reverseName;
     }
+
 });
-
-
-function getForwardName() {
-    return this.isForward ? this.forwardName : this.reverseName;
-}
-
+ 
 function getReverseModel() {
     return this.isForward ? this.reverseModel : this.forwardModel;
 }
@@ -300,7 +299,7 @@ function clearReverseRelated(opts) {
             }
 
         } else {
-            throw new Error(getForwardName.call(this) + ' has no _id');
+            throw new Error(this.getForwardName() + ' has no _id');
         }
     }
 }
@@ -357,7 +356,7 @@ function registerSetChange(obj) {
         collection: collectionName,
         model: model,
         _id: proxyObject._id,
-        field: getForwardName.call(this),
+        field: this.getForwardName(),
         newId: newId,
         oldId: oldId,
         old: old,
@@ -375,7 +374,7 @@ function registerSpliceChange(idx, numRemove) {
         collection: coll,
         model: model,
         _id: this.object._id,
-        field: getForwardName.call(this),
+        field: this.getForwardName(),
         index: idx,
         removedId: this._id.slice(idx, idx + numRemove),
         removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
@@ -400,7 +399,7 @@ function wrapArray(arr) {
                     collection: model.collectionName,
                     model: model.name,
                     _id: self.object._id,
-                    field: getForwardName.call(self),
+                    field: self.getForwardName(),
                     removed: splice.removed,
                     added: added,
                     removedId: _.pluck(splice.removed, '_id'),
@@ -417,7 +416,6 @@ function wrapArray(arr) {
 module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
-    getForwardName: getForwardName,
     getReverseModel: getReverseModel,
     getForwardModel: getForwardModel,
     checkInstalled: checkInstalled,

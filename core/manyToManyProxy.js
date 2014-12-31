@@ -85,7 +85,7 @@ _.extend(ManyToManyProxy.prototype, {
                         collection: model.collectionName,
                         model: model.name,
                         _id: self.object._id,
-                        field: proxy.getForwardName.call(self),
+                        field: self.getForwardName(),
                         removed: removed,
                         added: added,
                         removedId: _.pluck(removed, '_id'),
