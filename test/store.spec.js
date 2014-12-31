@@ -4,7 +4,7 @@ var s = require('../core/index'),
 describe('store......', function() {
     var Store = require('../core/store');
     var SiestaModel = require('../core/modelInstance');
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var cache = require('../core/cache');
 
     var carMapping, collection;

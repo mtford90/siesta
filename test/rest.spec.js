@@ -3,7 +3,7 @@ var s = require('../core/index')
 
 
 describe('rest', function () {
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var CollectionRegistry = require('../core/collectionRegistry').CollectionRegistry;
     var collection;
     before(function () {

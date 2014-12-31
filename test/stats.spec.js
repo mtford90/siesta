@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 describe('statistics', function() {
     var Car, Person, coll;
 
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var cache = require('../core/cache');
     before(function () {
         s.ext.storageEnabled = false;

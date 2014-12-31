@@ -3,7 +3,7 @@ var s = require('../core/index'),
 
 
 var Query = require('../core/query').Query,
-    Collection = require('../core/collection').Collection;
+    Collection = require('../core/collection');
 
 
 describe('storage', function () {

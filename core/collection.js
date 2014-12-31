@@ -27,7 +27,7 @@ var UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'],
  *
  * @example
  * ```js
- * var GitHub = new siesta.Collection('GitHub')
+ * var GitHub = new siesta('GitHub')
  * // ... configure mappings, descriptors etc ...
  * GitHub.install(function () {
  *     // ... carry on.
@@ -70,7 +70,6 @@ function Collection(name) {
 
     CollectionRegistry.register(this);
 }
-
 
 _.extend(Collection.prototype, {
     /**
@@ -297,4 +296,4 @@ _.extend(Collection.prototype, {
     }
 });
 
-exports.Collection = Collection;
+module.exports = Collection;

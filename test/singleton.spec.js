@@ -4,7 +4,7 @@ var s = require('../core/index'),
 describe('singleton mapping', function () {
 
     var SiestaModel = require('../core/modelInstance');
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var cache = require('../core/cache');
     var store = require('../core/store');
 

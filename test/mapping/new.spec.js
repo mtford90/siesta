@@ -6,7 +6,7 @@ var s = require('../../core/index')
     , assert = require('chai').assert;
 
 describe('mapping new object', function () {
-    var Collection = require('../../core/collection').Collection;
+    var Collection = require('../../core/collection');
     var RelationshipType = require('../../core/relationship').RelationshipType;
     var OneToManyProxy = require('../../core/oneToManyProxy');
     var cache = require('../../core/cache');

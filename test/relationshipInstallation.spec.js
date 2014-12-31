@@ -4,7 +4,7 @@ var s = require('../core/index'),
 describe('mapping relationships', function() {
 
 
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var InternalSiestaError = require('../core/error').InternalSiestaError;
     var RelationshipType = require('../core/relationship').RelationshipType;
     before(function () {

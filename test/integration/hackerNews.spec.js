@@ -37,7 +37,7 @@
 //
 //
 //    it('problem with mapping', function () {
-//        var HackerNews = new siesta.Collection('HackerNews');
+//        var HackerNews = new siesta('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.model('Item', {
 //            id: 'id'
@@ -58,7 +58,7 @@
 //    });
 //
 //    it('Issue with regexp returning some array-like object', function (done) {
-//        var HackerNews = new siesta.Collection('HackerNews');
+//        var HackerNews = new siesta('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.model('Item', {
 //            id: 'id'
@@ -99,7 +99,7 @@
 //    });
 //
 //    it('default id works', function (done) {
-//        var HackerNews = new siesta.Collection('HackerNews');
+//        var HackerNews = new siesta('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.model('Item', {
 //            attributes: [
@@ -136,7 +136,7 @@
 //    });
 //
 //    it('kids', function (done) {
-//        var HackerNews = new siesta.Collection('HackerNews');
+//        var HackerNews = new siesta('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        HackerNews.model('Item', {
 //            attributes: [

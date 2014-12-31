@@ -7,7 +7,7 @@ var mappingOperation = require('../core/mappingOperation')
     , util = require('../core/util')
     , _ = util._
     , RelationshipType = require('../core/relationship').RelationshipType
-    , Collection = require('../core/collection').Collection
+    , Collection = require('../core/collection')
     , cache = require('../core/cache')
     , collection;
 

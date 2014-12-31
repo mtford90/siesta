@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-var Collection = s.Collection;
+var Collection = s;
 
 describe('auto save', function() {
     var MyCollection, Person;

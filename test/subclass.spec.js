@@ -3,7 +3,7 @@ var s = require('../core/index'),
 
 var SiestaModel = require('../core/modelInstance')
     , cache = require('../core/cache')
-    , Collection = require('../core/collection').Collection;
+    , Collection = require('../core/collection');
 
 describe('Subclass', function () {
 

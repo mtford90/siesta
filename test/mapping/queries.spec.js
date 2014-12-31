@@ -4,7 +4,7 @@ var s = require('../../core/index'),
 describe('mapping queries', function() {
 
     var SiestaModel = require('../../core/modelInstance');
-    var Collection = require('../../core/collection').Collection;
+    var Collection = require('../../core/collection');
     var RelationshipType = require('../../core/relationship').RelationshipType;
     var cache = require('../../core/cache');
 

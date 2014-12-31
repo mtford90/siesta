@@ -4,7 +4,7 @@ var s = require('../core/index'),
 
 describe('collection setup', function() {
 
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var InternalSiestaError = require('../core/error').InternalSiestaError;
 
     beforeEach(function(done) {

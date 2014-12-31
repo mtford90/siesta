@@ -3,7 +3,7 @@ var s = require('../core/index'),
 
 describe('query...', function () {
     var Query = require('../core/query').Query
-        , Collection = require('../core/collection').Collection;
+        , Collection = require('../core/collection');
     before(function () {
         s.ext.storageEnabled = false;
     });

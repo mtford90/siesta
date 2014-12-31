@@ -8,7 +8,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-var Collection = require('../core/collection').Collection;
+var Collection = require('../core/collection');
 var RelationshipType = require('../core/relationship').RelationshipType;
 var cache = require('../core/cache');
 

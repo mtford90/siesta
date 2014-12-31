@@ -3,7 +3,7 @@ var s = require('../core/index'),
 
 var ModelInstance = require('../core/modelInstance')
     , cache = require('../core/cache')
-    , Collection = require('../core/collection').Collection;
+    , Collection = require('../core/collection');
 
 describe('Models', function () {
     var mapping, collection;

@@ -14,7 +14,7 @@ describe('new object proxy', function() {
     var SiestaModel = require('../core/modelInstance');
     var Fault = require('../core/proxy').Fault;
     var InternalSiestaError = require('../core/error').InternalSiestaError;
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var cache = require('../core/cache');
     var ChangeType = require('../core/changes').ChangeType;
 

@@ -7,7 +7,7 @@ describe('notifications', function() {
         s.ext.storageEnabled = false;
     });
 
-    var Collection = require('../core/collection').Collection,
+    var Collection = require('../core/collection'),
         ChangeType = require('../core/changes').ChangeType,
         util = require('../core/util')
     notifications = require('../core/notifications');
@@ -391,7 +391,7 @@ describe('notifications', function() {
         var car, person;
         var carMapping, personMapping;
 
-        var Collection = require('../core/collection').Collection;
+        var Collection = require('../core/collection');
 
 
         beforeEach(function(done) {

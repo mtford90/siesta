@@ -3,7 +3,7 @@ var s = require('../core/index')
 
 describe('change identifiers', function () {
 
-    var Collection = require('../core/collection').Collection;
+    var Collection = require('../core/collection');
     var cache = require('../core/cache');
     var collection, carMapping;
 
