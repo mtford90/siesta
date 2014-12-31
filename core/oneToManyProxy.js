@@ -103,7 +103,7 @@ _.extend(OneToManyProxy.prototype, {
                     var removed = splice.removed;
                     self.clearReverse(removed);
                     self.setReverse(added);
-                    var model = proxy.getForwardModel.call(self);
+                    var model = self.getForwardModel();
                     coreChanges.registerChange({
                         collection: model.collectionName,
                         model: model.name,

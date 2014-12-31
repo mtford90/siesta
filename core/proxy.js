@@ -158,17 +158,14 @@ _.extend(RelationshipProxy.prototype, {
     },
     getForwardName: function () {
         return this.isForward ? this.forwardName : this.reverseName;
+    },
+    getReverseModel: function () {
+        return this.isForward ? this.reverseModel : this.forwardModel;
+    },
+    getForwardModel: function () {
+        return this.isForward ? this.forwardModel : this.reverseModel;
     }
-
 });
- 
-function getReverseModel() {
-    return this.isForward ? this.reverseModel : this.forwardModel;
-}
-
-function getForwardModel() {
-    return this.isForward ? this.forwardModel : this.reverseModel;
-}
 
 function checkInstalled() {
     if (!this.object) {
@@ -262,7 +259,7 @@ function clearReverseRelated(opts) {
     } else {
         if (self._id) {
             var reverseName = this.getReverseName();
-            var reverseModel = getReverseModel.call(this);
+            var reverseModel = this.getReverseModel();
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
                 if (!opts.disableNotifications) {
@@ -394,7 +391,7 @@ function wrapArray(arr) {
         var observerFunction = function (splices) {
             splices.forEach(function (splice) {
                 var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
-                var model = getForwardModel.call(self);
+                var model = self.getForwardModel();
                 coreChanges.registerChange({
                     collection: model.collectionName,
                     model: model.name,
@@ -416,8 +413,6 @@ function wrapArray(arr) {
 module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
-    getReverseModel: getReverseModel,
-    getForwardModel: getForwardModel,
     checkInstalled: checkInstalled,
     set: set,
     registerSetChange: registerSetChange,
