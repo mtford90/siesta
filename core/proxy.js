@@ -129,7 +129,7 @@ _.extend(RelationshipProxy.prototype, {
 
 _.extend(RelationshipProxy.prototype, {
     proxyForInstance: function (modelInstance, reverse) {
-        var name = reverse ? getReverseName.call(this) : getForwardName.call(this),
+        var name = reverse ? this.getReverseName() : getForwardName.call(this),
             model = reverse ? this.reverseModel : this.forwardModel;
         var ret;
         // This should never happen. Should g   et caught in the mapping operation?
@@ -152,13 +152,12 @@ _.extend(RelationshipProxy.prototype, {
     },
     forwardProxyForInstance: function (modelInstance) {
         return this.proxyForInstance(modelInstance, false);
+    },
+    getReverseName: function () {
+        return this.isForward ? this.reverseName : this.forwardName;
     }
 });
 
-
-function getReverseName() {
-    return this.isForward ? this.reverseName : this.forwardName;
-}
 
 function getForwardName() {
     return this.isForward ? this.forwardName : this.reverseName;
@@ -263,7 +262,7 @@ function clearReverseRelated(opts) {
         }
     } else {
         if (self._id) {
-            var reverseName = getReverseName.call(this);
+            var reverseName = this.getReverseName();
             var reverseModel = getReverseModel.call(this);
             var identifiers = util.isArray(self._id) ? self._id : [self._id];
             if (this._reverseIsArray) {
@@ -418,7 +417,6 @@ function wrapArray(arr) {
 module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
-    getReverseName: getReverseName,
     getForwardName: getForwardName,
     getReverseModel: getReverseModel,
     getForwardModel: getForwardModel,
