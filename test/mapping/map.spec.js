@@ -9,7 +9,6 @@ describe('perform mapping', function () {
 
     var SiestaModel = require('../../core/modelInstance');
     var cache = require('../../core/cache');
-    var Operation = require('../../core/operation/operation').Operation;
 
     var collection, carMapping, personMapping;
 
@@ -24,15 +23,6 @@ describe('perform mapping', function () {
         s.reset(done);
     });
 
-    afterEach(function () {
-        var numIncomplete = 0;
-        _.each(Operation.running, function (op) {
-            if (!op.completed) {
-                numIncomplete++;
-            }
-        });
-        assert.notOk(numIncomplete);
-    });
 
     describe('attributes', function () {
         describe('default values', function () {

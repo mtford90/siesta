@@ -1,4 +1,4 @@
-var log = require('./operation/log'),
+var log = require('./log'),
     util = require('./util'),
     _ = util._,
     error = require('./error'),

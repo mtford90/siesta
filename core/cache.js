@@ -3,7 +3,7 @@
  * Lookups are performed against the cache when mapping.
  * @module cache
  */
-var log = require('./operation/log'),
+var log = require('./log'),
     InternalSiestaError = require('./error').InternalSiestaError,
     util = require('./util');
 

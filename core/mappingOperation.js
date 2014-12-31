@@ -4,8 +4,7 @@
 
 var Store = require('./store'),
     SiestaModel = require('./modelInstance'),
-    log = require('./operation/log'),
-    Operation = require('./operation/operation').Operation,
+    log = require('./log'),
     InternalSiestaError = require('./error').InternalSiestaError,
     Query = require('./query'),
     cache = require('./cache'),
@@ -49,7 +48,6 @@ function MappingOperation(opts) {
     });
 }
 
-MappingOperation.prototype = Object.create(Operation.prototype);
 
 _.extend(MappingOperation.prototype, {
     mapAttributes: function () {

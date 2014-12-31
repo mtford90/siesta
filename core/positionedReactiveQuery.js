@@ -5,7 +5,7 @@
  */
 
 var ReactiveQuery = require('./reactiveQuery'),
-    log = require('./operation/log'),
+    log = require('./log'),
     util = require('./util'),
     InternalSiestaError = require('./error').InternalSiestaError,
     _ = util._;

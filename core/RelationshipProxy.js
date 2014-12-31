@@ -5,12 +5,11 @@
 
 var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
-    Operation = require('./operation/operation').Operation,
     util = require('./util'),
     _ = util._,
     Fault = require('./Fault'),
     Query = require('./query'),
-    log = require('./operation/log'),
+    log = require('./log'),
     notifications = require('./notifications'),
     wrapArrayForAttributes = notifications.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,

@@ -2,12 +2,11 @@
  * @module mapping
  */
 
-var log = require('./operation/log'),
+var log = require('./log'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     InternalSiestaError = require('./error').InternalSiestaError,
     RelationshipType = require('./RelationshipType'),
     Query = require('./query'),
-    Operation = require('./operation/operation').Operation,
     MappingOperation = require('./mappingOperation'),
     ModelInstance = require('./modelInstance'),
     util = require('./util'),

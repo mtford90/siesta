@@ -4,17 +4,13 @@ var util = require('./util'),
     cache = require('./cache'),
     Model = require('./model'),
     notifications = require('./notifications'),
-    Operation = require('./operation/operation').Operation,
-    OperationQueue = require('./operation/queue').OperationQueue,
     RelationshipType = require('./RelationshipType'),
     PositionedReactiveQuery = require('./positionedReactiveQuery'),
     ReactiveQuery = require('./reactiveQuery'),
     changes = require('./changes'),
-    log = require('./operation/log'),
+    log = require('./log'),
     _ = util._;
 
-Operation.logLevel = log.Level.warn;
-OperationQueue.logLevel = log.Level.warn;
 
 if (window.Q) window.q = window.Q;
 
@@ -53,8 +49,6 @@ _.extend(siesta, {
         extend: require('extend'),
         notifications: require('./notifications'),
         cache: require('./cache'),
-        Operation: Operation,
-        OperationQueue: OperationQueue,
         coreChanges: changes,
         CollectionRegistry: require('./collectionRegistry').CollectionRegistry,
         Collection: Collection,

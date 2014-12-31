@@ -8,7 +8,7 @@
 
 var notifications = require('./notifications'),
     InternalSiestaError = require('./error').InternalSiestaError,
-    log = require('./operation/log'),
+    log = require('./log'),
     extend = require('./util')._.extend,
     collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 

@@ -1,4 +1,4 @@
-var _ = require('../util')._;
+var _ = require('./util/index')._;
 
 var logLevels = {};
 

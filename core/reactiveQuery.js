@@ -5,7 +5,7 @@
  * @module reactiveQuery
  */
 
-var log = require('./operation/log'),
+var log = require('./log'),
     Query = require('./query'),
     _ = require('underscore'),
     EventEmitter = require('events').EventEmitter,

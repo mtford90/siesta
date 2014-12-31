@@ -2,7 +2,7 @@
  * @module query
  */
 
-var log = require('./operation/log'),
+var log = require('./log'),
     cache = require('./cache'),
     util = require('./util'),
     _ = util._;

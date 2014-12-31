@@ -2,9 +2,8 @@
  * @module collection
  */
 
-var log = require('./operation/log'),
+var log = require('./log'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
-    Operation = require('./operation/operation').Operation,
     InternalSiestaError = require('./error').InternalSiestaError,
     Model = require('./model'),
     extend = require('extend'),
