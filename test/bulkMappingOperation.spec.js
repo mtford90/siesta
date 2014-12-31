@@ -217,8 +217,8 @@ describe('bulk mapping operation', function () {
                             data: data
                         });
                         op._constructSubOperations();
-                        var ownerSubOperation = op.subOps.owner.op;
-                        var ownerIndexes = op.subOps.owner.indexes;
+                        var ownerSubOperation = op.subOps.owner;
+                        var ownerIndexes = ownerSubOperation.__indexes;
                         assert.equal(ownerIndexes.length, 2);
                         assert.include(ownerIndexes, 1);
                         assert.include(ownerIndexes, 2);

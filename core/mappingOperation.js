@@ -117,8 +117,8 @@ _.extend(MappingOperation.prototype, {
         this.mapAttributes();
         var relationshipFields = _.keys(self.subOps);
         _.each(relationshipFields, function (f) {
-            var op = self.subOps[f].op;
-            var indexes = self.subOps[f].indexes;
+            var op = self.subOps[f];
+            var indexes = op.__indexes;
             var relatedData = self.getRelatedData(f).relatedData;
             var unflattenedObjects = util.unflattenArray(op.objects, relatedData);
             for (var i = 0; i < unflattenedObjects.length; i++) {
@@ -345,20 +345,18 @@ _.extend(MappingOperation.prototype, {
                 disableNotifications: this.disableNotifications
             });
             op.__relationshipName = name;
+            op.__indexes = indexes;
         }
-        return op ? {
-            op: op,
-            indexes: indexes
-        } : null;
+        return op;
     },
     _constructSubOperations: function () {
         var subOps = this.subOps;
         var relationships = this.model.relationships;
         for (var name in relationships) {
             if (relationships.hasOwnProperty(name)) {
-                var subOp = this.extracted(relationships, name);
-                if (subOp) {
-                    subOps[name] = subOp;
+                var op = this.extracted(relationships, name);
+                if (op) {
+                    subOps[name] = op;
                 }
             }
         }
@@ -368,7 +366,7 @@ _.extend(MappingOperation.prototype, {
         var relationshipNames = _.keys(this.subOps);
         _.each(relationshipNames, function (name) {
             var task = self.subOps[name].task;
-            var indexes = self.subOps[name].indexes;
+            var indexes = self.subOps[name].__indexes;
             var errors = task.errors;
             if (errors.length) {
                 var relatedData = self.getRelatedData(name).relatedData;
@@ -394,7 +392,7 @@ _.extend(MappingOperation.prototype, {
         var relationshipNames = _.keys(this.subOps);
         if (relationshipNames.length) {
             var tasks = _.map(relationshipNames, function (k) {
-                var op = self.subOps[k].op, task;
+                var op = self.subOps[k], task;
                 task = function (done) {
                     op.onCompletion(function () {
                         task.errors = op.errors;
