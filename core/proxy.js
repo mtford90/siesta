@@ -164,38 +164,37 @@ _.extend(RelationshipProxy.prototype, {
     },
     getForwardModel: function () {
         return this.isForward ? this.forwardModel : this.reverseModel;
+    },
+    /**
+     * Configure _id and related with the new related object.
+     * @param obj
+     * @param {object} [opts]
+     * @param {boolean} [opts.disableNotifications]
+     * @returns {String|undefined} - Error message or undefined
+     */
+    setIdAndRelated: function (obj, opts) {
+        opts = opts || {};
+        if (!opts.disableNotifications) {
+            registerSetChange.call(this, obj);
+        }
+        if (obj) {
+            if (util.isArray(obj)) {
+                this._id = _.pluck(obj, '_id');
+                this.related = obj;
+            } else {
+                this._id = obj._id;
+                this.related = obj;
+            }
+        } else {
+            this._id = null;
+            this.related = null;
+        }
     }
 });
 
 function checkInstalled() {
     if (!this.object) {
         throw new InternalSiestaError('Proxy must be installed on an object before can use it.');
-    }
-}
-
-/**
- * Configure _id and related with the new related object.
- * @param obj
- * @param {object} [opts]
- * @param {boolean} [opts.disableNotifications]
- * @returns {String|undefined} - Error message or undefined
- */
-function set(obj, opts) {
-    opts = opts || {};
-    if (!opts.disableNotifications) {
-        registerSetChange.call(this, obj);
-    }
-    if (obj) {
-        if (util.isArray(obj)) {
-            this._id = _.pluck(obj, '_id');
-            this.related = obj;
-        } else {
-            this._id = obj._id;
-            this.related = obj;
-        }
-    } else {
-        this._id = null;
-        this.related = null;
     }
 }
 
@@ -252,7 +251,7 @@ function clearReverseRelated(opts) {
                         spliceFactory(opts).call(p, idx, 1);
                     });
                 } else {
-                    set.call(p, null, opts);
+                    p.setIdAndRelated(null, opts);
                 }
             });
         }
@@ -324,7 +323,7 @@ function setReverse(obj, opts) {
             });
         } else {
             clearReverseRelated.call(p, opts);
-            set.call(p, self.object, opts);
+            p.setIdAndRelated(self.object, opts);
         }
     });
 }
@@ -414,7 +413,6 @@ module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
     checkInstalled: checkInstalled,
-    set: set,
     registerSetChange: registerSetChange,
     splice: splice,
     spliceFactory: spliceFactory,

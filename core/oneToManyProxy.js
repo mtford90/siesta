@@ -82,14 +82,14 @@ _.extend(OneToManyProxy.prototype, {
         var self = this;
         _.each(removed, function (removedObject) {
             var reverseProxy = self.reverseProxyForInstance(removedObject);
-            proxy.set.call(reverseProxy, null);
+            reverseProxy.setIdAndRelated(null);
         });
     },
     setReverse: function (added) {
         var self = this;
         _.each(added, function (added) {
             var forwardProxy = self.reverseProxyForInstance(added);
-            proxy.set.call(forwardProxy, self.object);
+            forwardProxy.setIdAndRelated(self.object);
         });
     },
     wrapArray: function (arr) {
@@ -191,7 +191,7 @@ _.extend(OneToManyProxy.prototype, {
             else {
                 proxy.clearReverseRelated.call(this, opts);
 
-                proxy.set.call(self, obj, opts);
+                self.setIdAndRelated( obj, opts);
                 if (self.isReverse) {
                     this.wrapArray(self.related);
                 }
@@ -200,7 +200,7 @@ _.extend(OneToManyProxy.prototype, {
         }
         else {
             proxy.clearReverseRelated.call(this, opts);
-            proxy.set.call(self, obj, opts);
+            self.setIdAndRelated( obj, opts);
         }
     },
     install: function (obj) {

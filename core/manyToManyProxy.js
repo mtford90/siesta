@@ -135,14 +135,14 @@ _.extend(ManyToManyProxy.prototype, {
             }
             else {
                 proxy.clearReverseRelated.call(this, opts);
-                proxy.set.call(self, obj, opts);
+                self.setIdAndRelated( obj, opts);
                 this.wrapArray(obj);
                 proxy.setReverse.call(self, obj, opts);
             }
         }
         else {
             proxy.clearReverseRelated.call(this, opts);
-            proxy.set.call(self, obj), opts;
+            self.setIdAndRelated(obj, opts);
         }
     },
     install: function (obj) {
