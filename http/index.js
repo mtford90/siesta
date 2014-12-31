@@ -105,7 +105,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
             }
             if (matchedDescriptor) {
                 if (Logger.trace.isEnabled) {
-                    Logger.trace('Model extracted data: ' + util.prettyPrint(extractedData));
+                    Logger.trace('Model _constructSubOperation data: ' + util.prettyPrint(extractedData));
                 }
                 if (typeof(extractedData) == 'object') {
                     var mapping = matchedDescriptor.model;

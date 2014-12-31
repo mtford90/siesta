@@ -499,7 +499,7 @@
 			"@example",
 			"stdout",
 			"log",
-			"extracted",
+			"_constructSubOperation",
 			"bury",
 			"new Descriptor",
 			"test",

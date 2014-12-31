@@ -331,7 +331,8 @@ _.extend(MappingOperation.prototype, {
             relatedData: relatedData
         };
     },
-    extracted: function (relationships, name) {
+    _constructSubOperation: function (name) {
+        var relationships = this.model.relationships;
         var relationship = relationships[name];
         var reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel;
         var __ret = this.getRelatedData(name);
@@ -352,9 +353,9 @@ _.extend(MappingOperation.prototype, {
     _constructSubOperations: function () {
         var subOps = this.subOps;
         var relationships = this.model.relationships;
-        for (var name in relationships) {
+        for (var name in  relationships) {
             if (relationships.hasOwnProperty(name)) {
-                var op = this.extracted(relationships, name);
+                var op = this._constructSubOperation(name);
                 if (op) {
                     subOps[name] = op;
                 }
@@ -391,8 +392,9 @@ _.extend(MappingOperation.prototype, {
         this._constructSubOperations();
         var relationshipNames = _.keys(this.subOps);
         if (relationshipNames.length) {
-            var tasks = _.map(relationshipNames, function (k) {
-                var op = self.subOps[k], task;
+            var tasks = _.reduce(relationshipNames, function (m, k) {
+                var op = self.subOps[k];
+                var task;
                 task = function (done) {
                     op.onCompletion(function () {
                         task.errors = op.errors;
@@ -401,8 +403,9 @@ _.extend(MappingOperation.prototype, {
                     op.start();
                 };
                 self.subOps[k].task = task;
-                return task
-            });
+                m.push(task);
+                return m;
+            }, []);
             async.parallel(tasks, function () {
                 self.gatherErrorsFromTasks(relationshipNames);
                 callback();
