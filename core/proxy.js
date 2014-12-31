@@ -50,8 +50,8 @@ _.extend(Fault.prototype, {
  * @constructor
  */
 function RelationshipProxy(opts) {
-    this._opts = opts;
     var self = this;
+    opts = opts || {};
 
     _.extend(this, {
         fault: new Fault(this),
@@ -94,18 +94,13 @@ function RelationshipProxy(opts) {
         }
     });
 
-    defineSubProperty.call(this, 'reverseModel', this._opts);
-    defineSubProperty.call(this, 'forwardModel', this._opts);
-    defineSubProperty.call(this, 'forwardName', this._opts);
-    defineSubProperty.call(this, 'reverseName', this._opts);
-    defineSubProperty.call(this, 'isReverse', this._opts);
+    defineSubProperty.call(this, 'reverseModel', opts);
+    defineSubProperty.call(this, 'forwardModel', opts);
+    defineSubProperty.call(this, 'forwardName', opts);
+    defineSubProperty.call(this, 'reverseName', opts);
+    defineSubProperty.call(this, 'isReverse', opts);
 
-    if (this._opts.isReverse === undefined && this._opts.isForward !== undefined) {
-        this.isReverse = !this._opts.isForward;
-    }
-    else if (this._opts.isReverse === undefined && this._opts.isForward === undefined) {
-        throw new InternalSiestaError('Must specify either isReverse or isForward when configuring relationship proxy.');
-    }
+
 }
 
 _.extend(RelationshipProxy.prototype, {
