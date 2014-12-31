@@ -81,14 +81,14 @@ _.extend(OneToManyProxy.prototype, {
     clearReverse: function (removed) {
         var self = this;
         _.each(removed, function (removedObject) {
-            var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
+            var reverseProxy = proxy.reverseProxyForInstance.call(self, removedObject);
             proxy.set.call(reverseProxy, null);
         });
     },
     setReverse: function (added) {
         var self = this;
         _.each(added, function (added) {
-            var forwardProxy = proxy.getReverseProxyForObject.call(self, added);
+            var forwardProxy = proxy.reverseProxyForInstance.call(self, added);
             proxy.set.call(forwardProxy, self.object);
         });
     },

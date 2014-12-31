@@ -53,7 +53,7 @@ _.extend(ManyToManyProxy.prototype, {
     clearReverse: function (removed) {
         var self = this;
         _.each(removed, function (removedObject) {
-            var reverseProxy = proxy.getReverseProxyForObject.call(self, removedObject);
+            var reverseProxy = proxy.reverseProxyForInstance.call(self, removedObject);
             var idx = reverseProxy._id.indexOf(self.object._id);
             proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
                 proxy.splice.call(reverseProxy, idx, 1);
@@ -63,7 +63,7 @@ _.extend(ManyToManyProxy.prototype, {
     setReverse: function (added) {
         var self = this;
         _.each(added, function (addedObject) {
-            var reverseProxy = proxy.getReverseProxyForObject.call(self, addedObject);
+            var reverseProxy = proxy.reverseProxyForInstance.call(self, addedObject);
             proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
                 proxy.splice.call(reverseProxy, 0, 0, self.object);
             });

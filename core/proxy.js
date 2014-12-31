@@ -7,7 +7,6 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
     Operation = require('./operation/operation').Operation,
     util = require('./util'),
-    defineSubProperty = util.defineSubProperty,
     _ = util._,
     Query = require('./query'),
     log = require('./operation/log'),
@@ -101,22 +100,22 @@ function RelationshipProxy(opts) {
         forwardName: null,
         reverseName: null,
         isReverse: null
-    }, true);
+    });
 
-    defineSubProperty.call(this, 'isReverse', opts);
 }
 
 _.extend(RelationshipProxy.prototype, {
-    _dump: function (asJson) {
-        var dumped = {};
-    },
-    install: function (obj) {
-        if (obj) {
+    /**
+     * Install this proxy on the given instance
+     * @param {ModelInstance} modelInstance
+     */
+    install: function (modelInstance) {
+        if (modelInstance) {
             if (!this.object) {
-                this.object = obj;
+                this.object = modelInstance;
                 var self = this;
                 var name = getForwardName.call(this);
-                Object.defineProperty(obj, name, {
+                Object.defineProperty(modelInstance, name, {
                     get: function () {
                         if (self.isFault) {
                             return self.fault;
@@ -130,63 +129,58 @@ _.extend(RelationshipProxy.prototype, {
                     configurable: true,
                     enumerable: true
                 });
-                if (!obj.__proxies) obj.__proxies = {};
-                obj.__proxies[name] = this;
-                if (!obj._proxies) {
-                    obj._proxies = [];
+                if (!modelInstance.__proxies) modelInstance.__proxies = {};
+                modelInstance.__proxies[name] = this;
+                if (!modelInstance._proxies) {
+                    modelInstance._proxies = [];
                 }
-                obj._proxies.push(this);
+                modelInstance._proxies.push(this);
             } else {
                 throw new InternalSiestaError('Already installed.');
             }
         } else {
             throw new InternalSiestaError('No object passed to relationship install');
         }
-    },
-    set: function () {
+    }
+
+});
+
+//noinspection JSUnusedLocalSymbols
+_.extend(RelationshipProxy.prototype, {
+    set: function (obj, opts) {
         throw new InternalSiestaError('Must subclass RelationshipProxy');
     },
-    get: function () {
+    get: function (callback) {
         throw new InternalSiestaError('Must subclass RelationshipProxy');
     }
 });
 
 
-// TODO: Share code between getReverseProxyForObject and getForwardProxyForObject
-
-function getReverseProxyForObject(obj) {
-    var reverseName = getReverseName.call(this);
-    var reverseModel = this.reverseModel;
+function proxyForInstance(modelInstance, reverse) {
+    var name = reverse ? getReverseName.call(this) : getForwardName.call(this),
+        model = reverse ? this.reverseModel : this.forwardModel;
+    var ret;
     // This should never happen. Should g   et caught in the mapping operation?
-    if (util.isArray(obj)) {
-        return _.map(obj, function (o) {
-            return o.__proxies[reverseName];
-        })
+    if (util.isArray(modelInstance)) {
+        ret = _.map(modelInstance, function (o) {
+            return o.__proxies[name];
+        });
     } else {
-        var proxy = obj.__proxies[reverseName];
+        var proxy = modelInstance.__proxies[name];
         if (!proxy) {
-            var err = 'No proxy with name "' + reverseName + '" on mapping ' + reverseModel.name;
+            var err = 'No proxy with name "' + name + '" on mapping ' + model.name;
             throw new InternalSiestaError(err);
         }
-        return proxy;
+        ret = proxy;
     }
+    return ret;
+}
+function reverseProxyForInstance(modelInstance) {
+    return proxyForInstance.call(this, modelInstance, true);
 }
 
-function getForwardProxyForObject(obj) {
-    var forwardName = getForwardName.call(this);
-    var forwardModel = this.forwardModel;
-    if (util.isArray(obj)) {
-        return _.map(obj, function (o) {
-            return o.__proxies[forwardName];
-        })
-    } else {
-        var proxy = obj.__proxies[forwardName];
-        if (!proxy) {
-            var err = 'No proxy with name "' + forwardName + '" on mapping ' + forwardModel.name;
-            throw new InternalSiestaError(err);
-        }
-        return proxy;
-    }
+function forwardProxyForInstance(modelInstance) {
+    return proxyForInstance.call(this, modelInstance, false);
 }
 
 function getReverseName() {
@@ -255,16 +249,6 @@ function spliceFactory(opts) {
 
 var splice = spliceFactory({});
 
-//function splice(idx, numRemove) {
-//    registerSpliceChange.apply(this, arguments);
-//    var add = Array.prototype.slice.call(arguments, 2);
-//    var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
-//    if (this.related) {
-//        _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
-//    }
-//    return returnValue;
-//}
-
 function objAsString(obj) {
     function _objAsString(obj) {
         if (obj) {
@@ -291,7 +275,7 @@ function clearReverseRelated(opts) {
     var self = this;
     if (!self.isFault) {
         if (this.related) {
-            var reverseProxy = getReverseProxyForObject.call(this, this.related);
+            var reverseProxy = reverseProxyForInstance.call(this, this.related);
             var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
             _.each(reverseProxies, function (p) {
                 if (util.isArray(p._id)) {
@@ -363,7 +347,7 @@ function makeChangesToRelatedWithoutObservations(f) {
 
 function setReverse(obj, opts) {
     var self = this;
-    var reverseProxy = getReverseProxyForObject.call(this, obj);
+    var reverseProxy = reverseProxyForInstance.call(this, obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
     _.each(reverseProxies, function (p) {
         if (util.isArray(p._id)) {
@@ -461,8 +445,8 @@ function wrapArray(arr) {
 module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
-    getReverseProxyForObject: getReverseProxyForObject,
-    getForwardProxyForObject: getForwardProxyForObject,
+    reverseProxyForInstance: reverseProxyForInstance,
+    forwardProxyForInstance: forwardProxyForInstance,
     getReverseName: getReverseName,
     getForwardName: getForwardName,
     getReverseModel: getReverseModel,
