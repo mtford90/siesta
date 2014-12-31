@@ -73,32 +73,6 @@ _.extend(siesta, {
 });
 
 siesta.ext = {};
-Object.defineProperty(siesta, 'dirty', {
-    get: function () {
-        if (siesta.ext.storageEnabled) {
-            var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
-            return !!Object.keys(unsavedObjectsByCollection).length;
-        }
-        else return undefined;
-    },
-    enumerable: true
-});
-
-Object.defineProperties(siesta.ext, {
-    storageEnabled: {
-        get: function () {
-            if (siesta.ext._storageEnabled !== undefined) {
-                return siesta.ext._storageEnabled;
-            }
-            return !!siesta.ext.storage;
-        },
-        set: function (v) {
-            siesta.ext._storageEnabled = v;
-        },
-        enumerable: true
-    }
-});
-
 
 
 _.extend(siesta, {
@@ -178,16 +152,6 @@ _.extend(siesta, {
         });
 
         return deferred ? deferred.promise : null;
-    },
-    // TODO: Move to storage
-    save: function () {
-        if (siesta.ext.storageEnabled) {
-            var save = siesta.ext.storage.save;
-            return save.apply(save, arguments);
-        }
-        else {
-            throw new Error('Cannot save without storage module enabled.');
-        }
     },
     setLogLevel: function (loggerName, level) {
         var Logger = log.loggerWithName(loggerName);

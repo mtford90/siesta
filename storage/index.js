@@ -123,10 +123,10 @@ function _load(callback) {
             modelNames = Object.keys(collection._models);
         _.each(modelNames, function (modelName) {
             tasks.push(function (cb) {
-                 _loadModel({
-                     collectionName: collectionName,
-                     modelName: modelName
-                 }, cb);
+                _loadModel({
+                    collectionName: collectionName,
+                    modelName: modelName
+                }, cb);
             });
         });
     });
@@ -242,69 +242,97 @@ var storage = {
     }
 };
 
-Object.defineProperty(storage, '_unsavedObjects', {
-    get: function () {return unsavedObjects}
+Object.defineProperties(storage, {
+    _unsavedObjects: {
+        get: function () {return unsavedObjects}
+    },
+    _unsavedObjectsHash: {
+        get: function () {return unsavedObjectsHash}
+    },
+    _unsavedObjectsByCollection: {
+        get: function () {return unsavedObjectsByCollection}
+    },
+    _pouch: {
+        get: function () {return pouch}
+    }
 });
 
-Object.defineProperty(storage, '_unsavedObjectsHash', {
-    get: function () {return unsavedObjectsHash}
-});
 
-Object.defineProperty(storage, '_unsavedObjectsByCollection', {
-    get: function () {return unsavedObjectsByCollection}
-});
-
-Object.defineProperty(storage, '_pouch', {
-    get: function () {return pouch}
-});
-
-
-if (!siesta.ext) {
-    siesta.ext = {};
-}
+if (!siesta.ext) siesta.ext = {};
 siesta.ext.storage = storage;
+
+Object.defineProperties(siesta.ext, {
+    storageEnabled: {
+        get: function () {
+            if (siesta.ext._storageEnabled !== undefined) {
+                return siesta.ext._storageEnabled;
+            }
+            return !!siesta.ext.storage;
+        },
+        set: function (v) {
+            siesta.ext._storageEnabled = v;
+        },
+        enumerable: true
+    }
+});
+
 var interval, saving, autosaveDuration = 1000;
-Object.defineProperty(siesta, 'autosave', {
-    get: function () {
-        return !!interval;
-    },
-    set: function (autosave) {
-        if (autosave) {
-            if (!interval) {
-                interval = setInterval(function () {
-                    // Cheeky way of avoiding multiple saves happening...
-                    if (!saving) {
-                        saving = true;
-                        siesta.save(function (err) {
-                            if (!err) {
-                                notificationCentre.emit('saved');
-                            }
-                            saving = false;
-                        });
-                    }
-                }, siesta.autosaveDuration);
+
+Object.defineProperties(siesta, {
+    autosave: {
+        get: function () {
+            return !!interval;
+        },
+        set: function (autosave) {
+            if (autosave) {
+                if (!interval) {
+                    interval = setInterval(function () {
+                        // Cheeky way of avoiding multiple saves happening...
+                        if (!saving) {
+                            saving = true;
+                            siesta.save(function (err) {
+                                if (!err) {
+                                    notificationCentre.emit('saved');
+                                }
+                                saving = false;
+                            });
+                        }
+                    }, siesta.autosaveDuration);
+                }
+            }
+            else {
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
             }
         }
-        else {
+    },
+    autosaveDuration: {
+        get: function () {
+            return autosaveDuration;
+        },
+        set: function (_autosaveDuration) {
+            autosaveDuration = _autosaveDuration;
             if (interval) {
-                clearInterval(interval);
-                interval = null;
+                // Reset interval
+                siesta.autosave = false;
+                siesta.autosave = true;
             }
         }
-    }
-});
-Object.defineProperty(siesta, 'autosaveDuration', {
-    get: function () {
-        return autosaveDuration;
     },
-    set: function (_autosaveDuration) {
-        autosaveDuration = _autosaveDuration;
-        if (interval) {
-            // Reset interval
-            siesta.autosave = false;
-            siesta.autosave = true;
-        }
+    dirty: {
+        get: function () {
+            var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
+            return !!Object.keys(unsavedObjectsByCollection).length;
+        },
+        enumerable: true
     }
 });
+
+_.extend(siesta, {
+    save: save
+});
+
 
 module.exports = storage;
