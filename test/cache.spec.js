@@ -1,7 +1,7 @@
 var s = require('../core/index');
 var assert = require('chai').assert;
 
-describe('cache...', function() {
+describe('cache...', function () {
     before(function () {
         s.ext.storageEnabled = false;
     });
@@ -12,9 +12,8 @@ describe('cache...', function() {
     var cache = require('../core/cache');
 
 
-
-    describe('insertion', function() {
-        beforeEach(function(done) {
+    describe('insertion', function () {
+        beforeEach(function (done) {
             s.reset(function () {
                 var coll = s.collection('myCollection');
                 mapping = coll.model('Car', {
@@ -24,7 +23,7 @@ describe('cache...', function() {
                 s.install(done);
             });
         });
-        it('by pouch id', function() {
+        it('by pouch id', function () {
             var car = new ModelInstance(mapping);
             car._id = 'dsfsd';
             cache.insert(car);
@@ -32,7 +31,7 @@ describe('cache...', function() {
             assert.equal(car, cache._localCacheByType[car.model.collectionName][car.modelName][car._id], car);
         });
 
-        it('by default id', function() {
+        it('by default id', function () {
             var car = new ModelInstance(mapping);
             car.id = 'dsfsd';
             cache.insert(car);
@@ -41,7 +40,7 @@ describe('cache...', function() {
             assert.equal(car, remoteCache[car.collectionName][car.modelName][car.id]);
         });
 
-        it('by custom id', function() {
+        it('by custom id', function () {
             var m = mapping;
             m.id = 'customId';
             var car = new ModelInstance(m);
@@ -53,8 +52,8 @@ describe('cache...', function() {
 
     });
 
-    describe('get', function() {
-        beforeEach(function(done) {
+    describe('get', function () {
+        beforeEach(function (done) {
             s.reset(function () {
                 var coll = s.collection('myCollection');
                 mapping = coll.model('Car', {
@@ -64,7 +63,7 @@ describe('cache...', function() {
                 s.install(done);
             });
         });
-        it('by pouch id', function() {
+        it('by pouch id', function () {
             var r = new ModelInstance(mapping);
             r.id = 'dsfsd';
             cache.insert(r);
@@ -74,7 +73,7 @@ describe('cache...', function() {
             });
             assert.equal(returned, r);
         });
-        it('by rest id', function() {
+        it('by rest id', function () {
             var model = new ModelInstance(mapping);
             model.id = 'dsfsd';
             model._id = 'xyz';
@@ -87,10 +86,10 @@ describe('cache...', function() {
         });
     });
 
-    describe('full test', function() {
+    describe('full test', function () {
         var collection, Car, Person;
 
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             s.reset(function () {
                 collection = s.collection('myCollection');
                 Person = collection.model('Person', {
@@ -120,9 +119,9 @@ describe('cache...', function() {
 
         });
 
-        describe('errors', function() {
+        describe('errors', function () {
 
-            it('ignore duplicate inserts if is the same object', function() {
+            it('ignore duplicate inserts if is the same object', function () {
                 var person = Person._new({
                     name: 'Michael Ford',
                     age: 23,
@@ -132,7 +131,7 @@ describe('cache...', function() {
                 cache.insert(person); // Should be fine as is the exact same object.
             });
 
-            it('cant insert object with same _id', function() {
+            it('cant insert object with same _id', function () {
                 var person = Person._new({
                     name: 'Michael Ford',
                     age: 23,
@@ -141,12 +140,12 @@ describe('cache...', function() {
                 cache.insert(person);
                 var duplicateObject = new ModelInstance();
                 duplicateObject._id = person._id;
-                assert.throws(function() {
+                assert.throws(function () {
                     cache.insert(duplicateObject);
                 }, s.InternalsError);
             });
 
-            it('cant insert object with same id', function() {
+            it('cant insert object with same id', function () {
                 var person = Person._new({
                     name: 'Michael Ford',
                     age: 23,
@@ -154,7 +153,7 @@ describe('cache...', function() {
                 });
                 cache.insert(person);
 
-                assert.throws(function() {
+                assert.throws(function () {
                     cache.insert(Person._new({
                         name: 'Michael Ford',
                         age: 23,
@@ -165,7 +164,6 @@ describe('cache...', function() {
         });
 
     });
-
 
 
 });

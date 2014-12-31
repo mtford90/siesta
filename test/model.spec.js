@@ -1,9 +1,9 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-var ModelInstance = require('../core/modelInstance')
-    , cache = require('../core/cache')
-    , Collection = require('../core/collection');
+var ModelInstance = require('../core/modelInstance'),
+    cache = require('../core/cache'),
+    Collection = require('../core/collection');
 
 describe('Models', function () {
     var mapping, collection;
@@ -113,7 +113,6 @@ describe('Models', function () {
 
 
     });
-
 
 
 });

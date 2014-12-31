@@ -55,7 +55,7 @@ describe('examples', function () {
                 myQueue.addOperation(uselessOp);
                 logOp.addDependency(uselessOp);
             }
-            logOp.onCompletion(function (){
+            logOp.onCompletion(function () {
                 order.push(logOp);
                 done();
             });
@@ -68,13 +68,10 @@ describe('examples', function () {
         });
 
         it('last one to finish is the log operation', function () {
-            assert.equal(order[order.length-1], logOp);
+            assert.equal(order[order.length - 1], logOp);
         })
 
     });
-
-
-
 
 
 });

@@ -8,7 +8,8 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="vendor/sweetalert/lib/sweet-alert.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="vendor/intro/intro.js"></script></p>
+    <script type="text/javascript" src="vendor/intro/intro.js"></script>
+    </p>
     <script type="text/javascript" src="js/siesta/siesta.js"></script>
     <script type="text/javascript" src="js/siesta/siesta.http.js"></script>
     <script type="text/javascript" src="js/vis.js"></script>
@@ -20,7 +21,7 @@
     <link rel="stylesheet" type='text/css' href="vendor/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="vendor/intro/introjs.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
-    <link rel="stylesheet" type="text/css" href="css/spinner.css"> 
+    <link rel="stylesheet" type="text/css" href="css/spinner.css">
     <link rel="stylesheet" type="text/css" href="css/vis.css">
 </head>
 <body>
@@ -29,7 +30,7 @@
         <div class="cube1"></div>
         <div class="cube2"></div>
     </div>
-</div>  
+</div>
 <div class="outer-overlay" id="no-results" style="display: none">
     <div class="overlay">
         <div id="centred-text">No results.</div>
@@ -42,6 +43,7 @@
             <img/>
         </div>
         <h3 class="name"></h3>
+
         <div class="description"></div>
         <div class="stats">
             <div class="watchers stat">
@@ -69,25 +71,27 @@
         </div>
         <div class="border"></div>
     </div>
-</div>  
+</div>
 <div id="header">
     <h3>Siesta Github Demo</h3>
     <a class="button" id="statistics-button" onclick="showStats()">Statistics</a>
 </div>
-<div id="content" class="container"> 
-    <div id="repos">   
-        <div class="row"></div>    
+<div id="content" class="container">
+    <div id="repos">
+        <div class="row"></div>
     </div>
     <div id="visualisation" style="display: none">
-    </div><br>   
-</div> 
+    </div>
+    <br>
+</div>
 <div id="footer">
     <div id="inner-footer">
         <div class="form" id="query-form">
             <i class="glyphicon glyphicon-user"></i>
-            <input onkeypress="queryKeyPress(event)" id="INPUT_1" placeholder="Query" type="email" name="identification" ></input>
+            <input onkeypress="queryKeyPress(event)" id="INPUT_1" placeholder="Query" type="email"
+                   name="identification"></input>
             <button type="submit" class="go-button" onclick="query()">
-            Go
+                Go
             </button>
         </div>
         <a class="button" id="visualise" onclick="visualisePressed(this)">Visualise</a>
@@ -97,14 +101,14 @@
     var collection, repositories = [];
     var User, Repo;
     fadeReposOutImmediately();
-    addOverlayLayer(function(layer) {
-        getSiesta(function(err, siestaRepo) {
+    addOverlayLayer(function (layer) {
+        getSiesta(function (err, siestaRepo) {
             if (!err) {
                 console.log('howdy');
                 repositories = [siestaRepo];
                 console.log('Creating repo elements', repositories);
                 createRepoElements();
-                fadeReposIn(function() {
+                fadeReposIn(function () {
                     startIntro();
                     $(layer).find('#spinner').remove();
                 });

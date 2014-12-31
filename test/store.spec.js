@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('store......', function() {
+describe('store......', function () {
     var Store = require('../core/store');
     var SiestaModel = require('../core/modelInstance');
     var Collection = require('../core/collection');
@@ -13,7 +13,7 @@ describe('store......', function() {
         s.ext.storageEnabled = false;
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(function () {
             collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
@@ -24,31 +24,31 @@ describe('store......', function() {
         });
     });
 
-    describe('get', function() {
-        it('already cached', function(done) {
+    describe('get', function () {
+        it('already cached', function (done) {
             var model = new SiestaModel(carMapping);
             var pouchId = 'pouchId';
             model._id = pouchId;
             cache.insert(model);
             Store.get({
                 _id: pouchId
-            }, function(err, doc) {
+            }, function (err, doc) {
                 if (err) done(err);
                 assert.equal(doc, model);
                 done();
             });
         });
 
-        describe('multiple', function() {
+        describe('multiple', function () {
 
-            describe('getMultiple', function() {
+            describe('getMultiple', function () {
                 //TODO
             });
 
-            describe('getMultipleLocal', function() {
+            describe('getMultipleLocal', function () {
                 var cars;
 
-                beforeEach(function() {
+                beforeEach(function () {
                     var o = carMapping._new({
                         colour: 'red',
                         id: 'remoteId1'
@@ -67,11 +67,11 @@ describe('store......', function() {
                     cache.insert(o2);
                 });
 
-                it('xyz', function(done) {
-                    Store.getMultipleLocal(_.pluck(cars, '_id'), function(err, docs) {
+                it('xyz', function (done) {
+                    Store.getMultipleLocal(_.pluck(cars, '_id'), function (err, docs) {
                         if (err) done(err);
                         assert.equal(docs.length, 3);
-                        _.each(docs, function(d) {
+                        _.each(docs, function (d) {
                             assert.instanceOf(d, SiestaModel);
                         });
                         done();
@@ -81,12 +81,12 @@ describe('store......', function() {
 
             });
 
-            describe('getMultipleRemote', function() {
-                describe('cached', function() {
+            describe('getMultipleRemote', function () {
+                describe('cached', function () {
 
                     var cars;
 
-                    beforeEach(function() {
+                    beforeEach(function () {
                         var o = carMapping._new({
                             colour: 'red',
                             id: 'remoteId1'
@@ -105,11 +105,11 @@ describe('store......', function() {
                         cache.insert(o2);
                     });
 
-                    it('xyz', function(done) {
-                        Store.getMultipleRemote(_.pluck(cars, 'id'), carMapping, function(err, docs) {
+                    it('xyz', function (done) {
+                        Store.getMultipleRemote(_.pluck(cars, 'id'), carMapping, function (err, docs) {
                             if (err) done(err);
                             assert.equal(docs.length, 3);
-                            _.each(docs, function(d) {
+                            _.each(docs, function (d) {
                                 assert.instanceOf(d, SiestaModel);
                             });
                             done();

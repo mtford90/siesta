@@ -2,13 +2,13 @@ var chai = require('chai');
 var s = require('../core/index'),
     assert = chai.assert;
 
-var MappingOperation = require('../core/mappingOperation')
-    , util = require('../core/util')
-    , _ = util._
-    , RelationshipType = require('../core/RelationshipType')
-    , Collection = require('../core/collection')
-    , cache = require('../core/cache')
-    , collection;
+var MappingOperation = require('../core/mappingOperation'),
+    util = require('../core/util'),
+    _ = util._,
+    RelationshipType = require('../core/RelationshipType'),
+    Collection = require('../core/collection'),
+    cache = require('../core/cache'),
+    collection;
 
 
 var Repo, User;
@@ -144,7 +144,6 @@ describe('bulk mapping operation', function () {
                     assert.ok(op.error[2]);
                     assert.ok(op.error[2].repositories);
                 });
-
 
 
             });

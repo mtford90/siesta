@@ -9,26 +9,25 @@ var s = require('../../core/index'),
 var Operation = require('../../core/operation/operation').Operation;
 
 
-describe('Cancellation', function() {
+describe('Cancellation', function () {
     var op;
 
 
-
-    beforeEach(function() {
+    beforeEach(function () {
         op = new Operation('op');
     });
 
-    describe('single', function() {
-        it('cancels', function(done) {
-            op.work = function(finished) {
-                var token = setInterval(function() {
+    describe('single', function () {
+        it('cancels', function (done) {
+            op.work = function (finished) {
+                var token = setInterval(function () {
                     if (op.cancelled) {
                         clearTimeout(token);
                         finished();
                     }
                 }, 20);
             };
-            op.completion = function() {
+            op.completion = function () {
                 assert.ok(op.cancelled);
                 assert.notOk(op.failed);
                 assert.ok(op.completed);
@@ -36,7 +35,7 @@ describe('Cancellation', function() {
                 done();
             };
             op.start();
-            setTimeout(function() {
+            setTimeout(function () {
                 op.cancel();
                 assert.ok(op.running, 'should not finish straight away');
                 assert.notOk(op.completed, 'should not complete straight away');
@@ -44,13 +43,13 @@ describe('Cancellation', function() {
         });
     });
 
-    describe('composite', function() {
+    describe('composite', function () {
         var op;
 
-        describe('start and then cancel', function() {
-            beforeEach(function(done) {
-                var work = function(finished) {
-                    var token = setInterval(function() {
+        describe('start and then cancel', function () {
+            beforeEach(function (done) {
+                var work = function (finished) {
+                    var token = setInterval(function () {
                         if (op.cancelled) {
                             clearTimeout(token);
                             finished();
@@ -61,14 +60,14 @@ describe('Cancellation', function() {
                 op.start();
                 op.cancel(done);
             });
-            it('composite op is cancelled', function() {
+            it('composite op is cancelled', function () {
                 assert.ok(op.cancelled);
                 assert.notOk(op.failed);
                 assert.ok(op.completed);
                 assert.notOk(op.running);
             });
-            it('all subops are cancelled', function() {
-                _.each(op.work, function(subOp) {
+            it('all subops are cancelled', function () {
+                _.each(op.work, function (subOp) {
                     assert.ok(subOp.cancelled);
                     assert.notOk(subOp.failed);
                     assert.ok(subOp.completed);
@@ -77,10 +76,10 @@ describe('Cancellation', function() {
             });
         });
 
-        describe('cancel and then start', function() {
-            beforeEach(function(done) {
-                var work = function(finished) {
-                    var token = setInterval(function() {
+        describe('cancel and then start', function () {
+            beforeEach(function (done) {
+                var work = function (finished) {
+                    var token = setInterval(function () {
                         if (op.cancelled) {
                             clearTimeout(token);
                             finished();
@@ -91,14 +90,14 @@ describe('Cancellation', function() {
                 op.cancel(done);
                 op.start();
             });
-            it('composite op is cancelled', function() {
+            it('composite op is cancelled', function () {
                 assert.ok(op.cancelled);
                 assert.notOk(op.failed);
                 assert.ok(op.completed);
                 assert.notOk(op.running);
             });
-            it('all subops are cancelled', function() {
-                _.each(op.work, function(subOp) {
+            it('all subops are cancelled', function () {
+                _.each(op.work, function (subOp) {
                     assert.ok(subOp.cancelled);
                     assert.notOk(subOp.failed);
                     assert.ok(subOp.completed);
@@ -110,12 +109,12 @@ describe('Cancellation', function() {
 
     });
 
-    describe('dependencies', function() {
-        it('fails if dependency is cancelled', function(done) {
+    describe('dependencies', function () {
+        it('fails if dependency is cancelled', function (done) {
             var dependency = new Operation('dependent');
             op.addDependency(dependency, true);
             dependency.cancel();
-            op.completion = function() {
+            op.completion = function () {
                 assert.ok(op.failedDueToDependency);
                 assert.include(op.failedDueToCancellationOfDependency, dependency);
                 done();

@@ -9,8 +9,8 @@ module.exports = {
     test_dir: 'test',
 
     app_files: {
-        js: [ 'core/**/*.js', 'http/**/*.js', 'index.js', 'storage/**/*.js'],
-        jsunit: [ 'test/**/*.spec.js' ]
+        js: ['core/**/*.js', 'http/**/*.js', 'index.js', 'storage/**/*.js'],
+        jsunit: ['test/**/*.spec.js']
     },
 
     test_files: {

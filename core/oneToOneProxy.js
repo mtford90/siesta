@@ -2,11 +2,11 @@
  * @module relationships
  */
 
-var RelationshipProxy = require('./RelationshipProxy')
-    , Store = require('./store')
-    , util = require('./util')
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , SiestaModel = require('./modelInstance');
+var RelationshipProxy = require('./RelationshipProxy'),
+    Store = require('./store'),
+    util = require('./util'),
+    InternalSiestaError = require('./error').InternalSiestaError,
+    SiestaModel = require('./modelInstance');
 
 /**
  * [OneToOneProxy description]

@@ -1,5 +1,5 @@
-var s = require('../core/index')
-    , assert = require('chai').assert;
+var s = require('../core/index'),
+    assert = require('chai').assert;
 
 
 describe('rest', function () {

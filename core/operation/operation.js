@@ -32,7 +32,7 @@ function Operation() {
 
     Object.defineProperty(this, 'failed', {
         get: function () {
-            return  !!self.error || self.failedDueToDependency;
+            return !!self.error || self.failedDueToDependency;
         },
         enumerable: true,
         configurable: true

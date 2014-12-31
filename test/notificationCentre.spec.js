@@ -1,4 +1,3 @@
-
 var s = require('../core/index');
 
 var assert = require('chai').assert;
@@ -29,9 +28,6 @@ describe('Notification Centre', function () {
             notifications.emit('blah', p);
         });
     });
-
-
-
 
 
 });

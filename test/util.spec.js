@@ -1,5 +1,5 @@
-var s = require('../core/index')
-    , assert = require('chai').assert;
+var s = require('../core/index'),
+    assert = require('chai').assert;
 
 
 var util = require('../core/util');
@@ -10,20 +10,20 @@ describe('cb', function () {
         s.ext.storageEnabled = false;
     });
     describe('no error or result', function () {
-        function doSomethingWithNoErrorOrResult (callback) {
+        function doSomethingWithNoErrorOrResult(callback) {
             setTimeout(callback);
         }
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithNoErrorOrResult (util.cb(null, deferred));
+            doSomethingWithNoErrorOrResult(util.cb(null, deferred));
             deferred.promise.then(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorOrResult (util.cb(done));
+            doSomethingWithNoErrorOrResult(util.cb(done));
         });
 
         it('promise & callback returns', function (done) {
@@ -42,7 +42,7 @@ describe('cb', function () {
     });
 
     describe('an error, no result', function () {
-        function doSomethingWithAnError (callback) {
+        function doSomethingWithAnError(callback) {
             setTimeout(function () {
                 callback('some error');
             });
@@ -50,14 +50,14 @@ describe('cb', function () {
 
         it('promise returns', function (done) {
             var deferred = q.defer();
-            doSomethingWithAnError (util.cb(null, deferred));
+            doSomethingWithAnError(util.cb(null, deferred));
             deferred.promise.fail(function () {
                 done();
             });
         });
 
         it('callback returns', function (done) {
-            doSomethingWithAnError (util.cb(function (err) {
+            doSomethingWithAnError(util.cb(function (err) {
                 assert.ok(err);
                 done();
             }));
@@ -80,7 +80,7 @@ describe('cb', function () {
     });
 
     describe('no error and a single result', function () {
-        function doSomethingWithNoErrorAndASingleResult (callback) {
+        function doSomethingWithNoErrorAndASingleResult(callback) {
             setTimeout(function () {
                 callback(null, 'result');
             });
@@ -95,7 +95,7 @@ describe('cb', function () {
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorAndASingleResult (util.cb(function (err, res) {
+            doSomethingWithNoErrorAndASingleResult(util.cb(function (err, res) {
                 assert.notOk(err);
                 assert.equal(res, 'result');
                 done();
@@ -120,7 +120,7 @@ describe('cb', function () {
     });
 
     describe('no error and multiple results', function () {
-        function doSomethingWithNoErrorAndMultipleResults (callback) {
+        function doSomethingWithNoErrorAndMultipleResults(callback) {
             setTimeout(function () {
                 callback(null, 'result1', 'result2', 'result3');
             });
@@ -135,7 +135,7 @@ describe('cb', function () {
         });
 
         it('callback returns', function (done) {
-            doSomethingWithNoErrorAndMultipleResults (util.cb(function (err, res1, res2, res3) {
+            doSomethingWithNoErrorAndMultipleResults(util.cb(function (err, res1, res2, res3) {
                 assert.notOk(err);
                 assert.equal(res1, 'result1');
                 assert.equal(res2, 'result2');
@@ -176,9 +176,6 @@ describe('cb', function () {
             });
         });
     });
-
-
-
 
 
 });

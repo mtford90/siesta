@@ -2,17 +2,17 @@
  * @module relationships
  */
 
-var RelationshipProxy = require('./RelationshipProxy')
-    , Store = require('./store')
-    , util = require('./util')
-    , _ = util._
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , coreChanges = require('./changes')
-    , SiestaModel = require('./modelInstance')
-    , notifications = require('./notifications')
-    , wrapArrayForAttributes = notifications.wrapArray
-    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./changes').ChangeType
+var RelationshipProxy = require('./RelationshipProxy'),
+    Store = require('./store'),
+    util = require('./util'),
+    _ = util._,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    coreChanges = require('./changes'),
+    SiestaModel = require('./modelInstance'),
+    notifications = require('./notifications'),
+    wrapArrayForAttributes = notifications.wrapArray,
+    ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
+    ChangeType = require('./changes').ChangeType
     ;
 
 /**
@@ -188,9 +188,10 @@ _.extend(OneToManyProxy.prototype, {
                 return errorMessage;
             }
             else {
-                this.clearReverseRelated(opts);;
+                this.clearReverseRelated(opts);
+                ;
 
-                self.setIdAndRelated( obj, opts);
+                self.setIdAndRelated(obj, opts);
                 if (self.isReverse) {
                     this.wrapArray(self.related);
                 }
@@ -198,8 +199,9 @@ _.extend(OneToManyProxy.prototype, {
             }
         }
         else {
-            this.clearReverseRelated(opts);;
-            self.setIdAndRelated( obj, opts);
+            this.clearReverseRelated(opts);
+            ;
+            self.setIdAndRelated(obj, opts);
         }
     },
     install: function (obj) {

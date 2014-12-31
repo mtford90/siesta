@@ -6,17 +6,17 @@ Dot = require('./node_modules/grunt-mocha/node_modules/mocha/lib/reporters/dot.j
 
 module.exports = Dot;
 
-parseLine = function(line) {
+parseLine = function (line) {
     var file, frame, row, _, _ref;
     _ref = line.match(/file:\/\/\/(.*):(\d*)/), _ = _ref[0], file = _ref[1], row = _ref[2];
     return frame = {
-        getFileName: function() {
+        getFileName: function () {
             return file;
         },
-        getLineNumber: function() {
+        getLineNumber: function () {
             return row;
         },
-        getColumnNumber: function() {
+        getColumnNumber: function () {
             return 1;
         }
     };
@@ -24,12 +24,12 @@ parseLine = function(line) {
 
 superEpilogue = Dot.prototype.epilogue;
 
-Dot.prototype.epilogue = function() {
+Dot.prototype.epilogue = function () {
     var test, _i, _len, _ref;
     _ref = this.failures;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         test = _ref[_i];
-        test.err.stack = test.err.stack.split('\n').map(function(line) {
+        test.err.stack = test.err.stack.split('\n').map(function (line) {
             var mapped;
             if (line.match(/^    at /)) {
                 mapped = sourceMapper.wrapCallSite(parseLine(line));

@@ -2,18 +2,17 @@
  * @module relationships
  */
 
-var RelationshipProxy = require('./RelationshipProxy')
-    , Store = require('./store')
-    , util = require('./util')
-    , _ = util._
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , coreChanges = require('./changes')
-    , notifications = require('./notifications')
-    , wrapArrayForAttributes = notifications.wrapArray
-    , SiestaModel = require('./modelInstance')
-    , ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver
-    , ChangeType = require('./changes').ChangeType
-    ;
+var RelationshipProxy = require('./RelationshipProxy'),
+    Store = require('./store'),
+    util = require('./util'),
+    _ = util._,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    coreChanges = require('./changes'),
+    notifications = require('./notifications'),
+    wrapArrayForAttributes = notifications.wrapArray,
+    SiestaModel = require('./modelInstance'),
+    ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
+    ChangeType = require('./changes').ChangeType;
 
 /**
  * [ManyToManyProxy description]
@@ -134,7 +133,7 @@ _.extend(ManyToManyProxy.prototype, {
             }
             else {
                 this.clearReverseRelated(opts);
-                self.setIdAndRelated( obj, opts);
+                self.setIdAndRelated(obj, opts);
                 this.wrapArray(obj);
                 self.setIdAndRelatedReverse(obj, opts);
             }

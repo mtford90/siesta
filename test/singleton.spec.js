@@ -158,7 +158,7 @@ describe('singleton mapping', function () {
 
         it('relationships are automatically setup', function (done) {
             ParentConfig.get().then(function (parent) {
-                FirstChildConfig.get().then(function(firstChild) {
+                FirstChildConfig.get().then(function (firstChild) {
                     SecondChildConfig.get().then(function (secondChild) {
                         assert.equal(parent.settings, firstChild);
                         assert.equal(parent.otherSettings, secondChild);

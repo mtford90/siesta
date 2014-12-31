@@ -6,11 +6,11 @@
  * @module changes
  */
 
-var notifications = require('./notifications')
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , log = require('./operation/log')
-    , extend = require('./util')._.extend
-    , collectionRegistry = require('./collectionRegistry').CollectionRegistry;
+var notifications = require('./notifications'),
+    InternalSiestaError = require('./error').InternalSiestaError,
+    log = require('./operation/log'),
+    extend = require('./util')._.extend,
+    collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 var Logger = log.loggerWithName('changes');
 
@@ -132,8 +132,6 @@ function registerChange(opts) {
     broadcast(collection, model, c);
     return c;
 }
-
-
 
 
 extend(exports, {

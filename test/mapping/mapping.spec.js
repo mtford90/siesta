@@ -1,5 +1,5 @@
-var s = require('../../core/index')
-    , assert = require('chai').assert;
+var s = require('../../core/index'),
+    assert = require('chai').assert;
 
 describe('mapping!', function () {
     var Model = require('../../core/model');

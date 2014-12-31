@@ -5,18 +5,18 @@ var s = require('../core/index'),
  * Assertions against the observe-js library from polymer, modified to fit browserify.
  */
 
-describe('observer', function() {
+describe('observer', function () {
     before(function () {
         s.ext.storageEnabled = false;
     });
 
     var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 
-    it('indexes', function(done) {
+    it('indexes', function (done) {
         var arr = [1, 2, 3];
         var observer = new ArrayObserver(arr);
-        observer.open(function(splices) {
-            splices.forEach(function(splice) {
+        observer.open(function (splices) {
+            splices.forEach(function (splice) {
                 try {
                     assert.include(splice.removed, 1);
                     assert.include(splice.removed, 2);
@@ -33,11 +33,11 @@ describe('observer', function() {
         s.notify();
     });
 
-    it('push', function(done) {
+    it('push', function (done) {
         var arr = [1, 2, 3];
         var observer = new ArrayObserver(arr);
-        observer.open(function(splices) {
-            splices.forEach(function(splice) {
+        observer.open(function (splices) {
+            splices.forEach(function (splice) {
                 try {
                     assert.equal(splice.removed.length, 0);
                     assert.equal(splice.index, 3);
@@ -53,10 +53,10 @@ describe('observer', function() {
         s.notify();
     });
 
-    it('sort', function(done) {
+    it('sort', function (done) {
         var arr = [2, 1, 3];
         var observer = new ArrayObserver(arr);
-        observer.open(function(splices) {
+        observer.open(function (splices) {
             done();
         });
         arr.sort();

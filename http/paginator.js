@@ -95,8 +95,8 @@ _.extend(Paginator.prototype, {
         callback = util.cb(callback, deferred);
         var ajax = siesta.ext.http.ajax,
             ajaxOpts = _.extend({}, this.ajaxOpts);
-        var collection = this.paginatorOpts.model.collection
-            , url = collection.baseURL + this.paginatorOpts.path;
+        var collection = this.paginatorOpts.model.collection,
+            url = collection.baseURL + this.paginatorOpts.path;
         if (this.requestOpts.queryParams) {
             var parser = this._parseURL(url);
             var rawQuery = parser.search,

@@ -78,9 +78,7 @@ function RelationshipProxy(opts) {
     this.splice = this.splicer({});
 }
 
-_.extend(RelationshipProxy, {
-
-});
+_.extend(RelationshipProxy, {});
 
 _.extend(RelationshipProxy.prototype, {
     /**

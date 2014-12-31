@@ -2,12 +2,12 @@ var s = require('../core/index'),
     assert = require('chai').assert;
 
 
-describe('collection setup', function() {
+describe('collection setup', function () {
 
     var Collection = require('../core/collection');
     var InternalSiestaError = require('../core/error').InternalSiestaError;
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(done);
     });
 
@@ -15,36 +15,36 @@ describe('collection setup', function() {
         s.ext.storageEnabled = false;
     });
 
-    describe('install', function() {
+    describe('install', function () {
         var collection;
-        beforeEach(function() {
+        beforeEach(function () {
             collection = s.collection('MyCollection');
         });
 
-        it('not installed', function() {
+        it('not installed', function () {
             assert.notOk(collection.installed);
         });
 
-        describe('configure without mappings', function() {
-            it('eventually finishes', function(done) {
-                s.install(function(err) {
+        describe('configure without mappings', function () {
+            it('eventually finishes', function (done) {
+                s.install(function (err) {
                     if (err) done(err);
                     done();
                 });
             });
 
-            it('raises an error if trying to configure twice', function(done) {
-                s.install(function(err) {
+            it('raises an error if trying to configure twice', function (done) {
+                s.install(function (err) {
                     if (err) done(err);
-                    s.install(function(err) {
+                    s.install(function (err) {
                         assert.ok(err);
                         done();
                     })
                 });
             });
 
-            it('is accessible in the siesta object', function(done) {
-                s.install(function(err) {
+            it('is accessible in the siesta object', function (done) {
+                s.install(function (err) {
                     if (err) done(err);
                     assert.equal(s.MyCollection, collection);
                     done();
@@ -52,18 +52,18 @@ describe('collection setup', function() {
             });
         });
 
-        it('raises an error if trying to configure twice', function(done) {
-            s.install(function(err) {
+        it('raises an error if trying to configure twice', function (done) {
+            s.install(function (err) {
                 if (err) done(err);
-                s.install(function(err) {
+                s.install(function (err) {
                     assert.ok(err);
                     done();
                 })
             });
         });
 
-        describe('configure with mappings', function() {
-            it('name before object', function(done) {
+        describe('configure with mappings', function () {
+            it('name before object', function (done) {
                 var mapping1 = collection.model('mapping1', {
                     id: 'id',
                     attributes: ['attr1', 'attr2']
@@ -72,7 +72,7 @@ describe('collection setup', function() {
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']
                 });
-                s.install(function(err) {
+                s.install(function (err) {
                     if (err) done(err);
                     assert.equal(collection['mapping1'], mapping1);
                     assert.equal(collection['mapping2'], mapping2);
@@ -80,7 +80,7 @@ describe('collection setup', function() {
                 });
             });
 
-            it('name within object', function(done) {
+            it('name within object', function (done) {
                 var mapping1 = collection.model({
                     name: 'mapping1',
                     id: 'id',
@@ -91,7 +91,7 @@ describe('collection setup', function() {
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']
                 });
-                s.install(function(err) {
+                s.install(function (err) {
                     if (err) done(err);
                     assert.equal(collection['mapping1'], mapping1);
                     assert.equal(collection['mapping2'], mapping2);
@@ -99,8 +99,8 @@ describe('collection setup', function() {
                 });
             });
 
-            it('no name specified within object', function() {
-                assert.throws(function() {
+            it('no name specified within object', function () {
+                assert.throws(function () {
                     collection.model({
                         id: 'id',
                         attributes: ['attr1', 'attr2']
@@ -108,7 +108,7 @@ describe('collection setup', function() {
                 }, Error);
             });
 
-            it('vararg', function(done) {
+            it('vararg', function (done) {
                 var mappings = collection.model({
                     name: 'mapping1',
                     id: 'id',
@@ -118,7 +118,7 @@ describe('collection setup', function() {
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']
                 });
-                s.install(function(err) {
+                s.install(function (err) {
                     if (err) done(err);
                     assert.equal(collection['mapping1'], mappings[0]);
                     assert.equal(collection['mapping2'], mappings[1]);
@@ -126,7 +126,7 @@ describe('collection setup', function() {
                 });
             });
 
-            it('array', function(done) {
+            it('array', function (done) {
                 var mappings = collection.model([{
                     name: 'mapping1',
                     id: 'id',
@@ -136,7 +136,7 @@ describe('collection setup', function() {
                     id: 'id',
                     attributes: ['attr1', 'attr2', 'attr3']
                 }]);
-                s.install(function(err) {
+                s.install(function (err) {
                     if (err) done(err);
                     assert.equal(collection['mapping1'], mappings[0]);
                     assert.equal(collection['mapping2'], mappings[1]);
@@ -145,9 +145,9 @@ describe('collection setup', function() {
             });
         });
 
-        describe('configure with descriptors', function() {
+        describe('configure with descriptors', function () {
             var mapping1, mapping2;
-            beforeEach(function() {
+            beforeEach(function () {
                 mapping1 = collection.model('mapping1', {
                     id: 'id',
                     attributes: ['attr1', 'attr2']
@@ -158,8 +158,8 @@ describe('collection setup', function() {
                     attributes: ['attr1', 'attr2', 'attr3']
                 });
             });
-            describe('request descriptor', function() {
-                it('single', function(done) {
+            describe('request descriptor', function () {
+                it('single', function (done) {
                     var descriptors = collection.descriptor({
                         method: 'POST',
                         model: mapping1,
@@ -175,7 +175,7 @@ describe('collection setup', function() {
                     });
                     var requestDescriptor2 = descriptors[0];
                     assert.instanceOf(requestDescriptor2, siesta.ext.http.RequestDescriptor);
-                    s.install(function(err) {
+                    s.install(function (err) {
                         if (err) {
                             done(err);
                         }
@@ -187,8 +187,8 @@ describe('collection setup', function() {
 
 
             });
-            describe('response descriptor', function() {
-                it('single', function(done) {
+            describe('response descriptor', function () {
+                it('single', function (done) {
                     var descriptors = collection.descriptor({
                         method: 'GET',
                         model: mapping1,
@@ -205,7 +205,7 @@ describe('collection setup', function() {
                     assert.equal(descriptors.length, 1);
                     var responseDescriptor2 = descriptors[0];
                     assert.instanceOf(responseDescriptor2, siesta.ext.http.ResponseDescriptor);
-                    s.install(function(err) {
+                    s.install(function (err) {
                         if (err) {
                             done(err);
                         }
@@ -217,23 +217,23 @@ describe('collection setup', function() {
 
             });
 
-            describe('both', function() {
+            describe('both', function () {
                 var descriptors;
 
-                beforeEach(function(done) {
+                beforeEach(function (done) {
                     descriptors = collection.descriptor({
                         method: ['GET', 'POST'],
                         model: mapping1,
                         path: '/path/[0-9]'
-                    }); 
+                    });
                     s.install(done)
                 });
 
-                it('two descriptors', function() {
+                it('two descriptors', function () {
                     assert.equal(descriptors.length, 2);
                 });
 
-                it('types', function() {
+                it('types', function () {
                     var responseDescriptor1 = descriptors[0];
                     assert.instanceOf(responseDescriptor1, siesta.ext.http.RequestDescriptor);
                     var requestDescriptor1 = descriptors[1];

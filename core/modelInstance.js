@@ -1,11 +1,11 @@
-var log = require('./operation/log')
-    , util = require('./util')
-    , _ = util._
-    , error = require('./error')
-    , InternalSiestaError = error.InternalSiestaError
-    , coreChanges = require('./changes')
-    , notifications = require('./notifications')
-    , cache = require('./cache');
+var log = require('./operation/log'),
+    util = require('./util'),
+    _ = util._,
+    error = require('./error'),
+    InternalSiestaError = error.InternalSiestaError,
+    coreChanges = require('./changes'),
+    notifications = require('./notifications'),
+    cache = require('./cache');
 
 var Logger = log.loggerWithName('ModelInstance');
 

@@ -2,30 +2,30 @@
  * @module mapping
  */
 
-var log = require('./operation/log')
-    , CollectionRegistry = require('./collectionRegistry').CollectionRegistry
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , RelationshipType = require('./RelationshipType')
-    , Query = require('./query')
-    , Operation = require('./operation/operation').Operation
-    , MappingOperation = require('./mappingOperation')
-    , ModelInstance = require('./modelInstance')
-    , util = require('./util')
-    , cache = require('./cache')
-    , store = require('./store')
-    , extend = require('extend')
-    , changes = require('./changes')
-    , notifications = require('./notifications')
-    , wrapArray = require('./notifications').wrapArray
-    , proxy = require('./RelationshipProxy')
-    , OneToManyProxy = require('./OneToManyProxy')
-    , OneToOneProxy = require('./OneToOneProxy')
-    , ManyToManyProxy = require('./manyToManyProxy')
-    , ReactiveQuery = require('./reactiveQuery')
-    , PositionalReactiveQuery = require('./positionedReactiveQuery')
-    , _ = util._
-    , guid = util.guid
-    , ChangeType = changes.ChangeType
+var log = require('./operation/log'),
+    CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    RelationshipType = require('./RelationshipType'),
+    Query = require('./query'),
+    Operation = require('./operation/operation').Operation,
+    MappingOperation = require('./mappingOperation'),
+    ModelInstance = require('./modelInstance'),
+    util = require('./util'),
+    cache = require('./cache'),
+    store = require('./store'),
+    extend = require('extend'),
+    changes = require('./changes'),
+    notifications = require('./notifications'),
+    wrapArray = require('./notifications').wrapArray,
+    proxy = require('./RelationshipProxy'),
+    OneToManyProxy = require('./OneToManyProxy'),
+    OneToOneProxy = require('./OneToOneProxy'),
+    ManyToManyProxy = require('./manyToManyProxy'),
+    ReactiveQuery = require('./reactiveQuery'),
+    PositionalReactiveQuery = require('./positionedReactiveQuery'),
+    _ = util._,
+    guid = util.guid,
+    ChangeType = changes.ChangeType
     ;
 
 var Logger = log.loggerWithName('Model');

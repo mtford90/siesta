@@ -1,4 +1,3 @@
-
 var log = require('./log');
 var Logger = log.loggerWithName('OperationQueue');
 var _ = require('../util')._;

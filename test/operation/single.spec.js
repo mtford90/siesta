@@ -7,7 +7,7 @@ var s = require('../../core/index'),
 var Operation = require('../../core/operation/operation').Operation,
     OperationQueue = require('../../core/operation/queue').OperationQueue,
     Logger = require('../../core/operation/log').Logger;
-    
+
 describe('Operation', function () {
     var op;
 

@@ -1,7 +1,7 @@
 var s = require('../core/index');
 var assert = require('chai').assert;
 
-describe('statistics', function() {
+describe('statistics', function () {
     var Car, Person, coll;
 
     var Collection = require('../core/collection');
@@ -9,7 +9,7 @@ describe('statistics', function() {
     before(function () {
         s.ext.storageEnabled = false;
     });
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(function () {
             coll = s.collection('myCollection');
             Car = coll.model('Car', {
@@ -31,29 +31,29 @@ describe('statistics', function() {
         });
     });
 
-    before(function() {
+    before(function () {
         s.ext.storageEnabled = false;
     });
-    after(function() {
+    after(function () {
         s.ext.storageEnabled = true;
     });
-    describe('collection level', function() {
-        describe('single mapping', function() {
-            it('no objects', function(done) {
-                coll.count(function(err, n) {
+    describe('collection level', function () {
+        describe('single mapping', function () {
+            it('no objects', function (done) {
+                coll.count(function (err, n) {
                     if (err) done(err);
                     assert.equal(n, 0);
                     done();
                 });
             });
 
-            it('one object', function(done) {
+            it('one object', function (done) {
                 Car.map({
                     colour: 'red',
                     name: 'Aston Martin'
-                }, function(err, obj) {
+                }, function (err, obj) {
                     if (err) done(err);
-                    coll.count(function(err, n) {
+                    coll.count(function (err, n) {
                         if (err) done(err);
                         assert.equal(n, 1);
                         done();
@@ -61,7 +61,7 @@ describe('statistics', function() {
                 });
             });
 
-            it('multiple objects', function(done) {
+            it('multiple objects', function (done) {
                 Car.map([{
                     colour: 'red',
                     name: 'Aston Martin'
@@ -71,9 +71,9 @@ describe('statistics', function() {
                 }, {
                     colour: 'green',
                     name: 'Lambo'
-                }], function(err) {
+                }], function (err) {
                     if (err) done(err);
-                    coll.count(function(err, n) {
+                    coll.count(function (err, n) {
                         if (err) done(err);
                         assert.equal(n, 3);
                         done();
@@ -81,8 +81,8 @@ describe('statistics', function() {
                 });
             });
         });
-        describe('multiple mappings', function() {
-            it('multiple objects', function(done) {
+        describe('multiple mappings', function () {
+            it('multiple objects', function (done) {
                 Car.map([{
                     colour: 'red',
                     name: 'Aston Martin'
@@ -92,7 +92,7 @@ describe('statistics', function() {
                 }, {
                     colour: 'green',
                     name: 'Lambo'
-                }], function(err) {
+                }], function (err) {
                     if (err) done(err);
                     Person.map([{
                         age: 24,
@@ -100,9 +100,9 @@ describe('statistics', function() {
                     }, {
                         age: 25,
                         name: 'John Doe'
-                    }], function(err) {
+                    }], function (err) {
                         if (err) done(err);
-                        coll.count(function(err, n) {
+                        coll.count(function (err, n) {
                             if (err) done(err);
                             assert.equal(n, 5);
                             done();

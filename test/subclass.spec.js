@@ -1,9 +1,9 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-var SiestaModel = require('../core/modelInstance')
-    , cache = require('../core/cache')
-    , Collection = require('../core/collection');
+var SiestaModel = require('../core/modelInstance'),
+    cache = require('../core/cache'),
+    Collection = require('../core/collection');
 
 describe('Subclass', function () {
 
@@ -15,9 +15,8 @@ describe('Subclass', function () {
         var collection, Car, SportsCar;
 
 
-
         beforeEach(function (done) {
-            s.reset(function (){
+            s.reset(function () {
                 collection = s.collection('myCollection');
 
                 Car = collection.model('Car', {
@@ -140,7 +139,12 @@ describe('Subclass', function () {
                             .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
                                 mike = _mike;
                                 Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
-                                    .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
+                                    .then(SportsCar.map({
+                                        colour: 'yellow',
+                                        name: 'Lamborghini',
+                                        maxSpeed: 160,
+                                        owner: {_id: mike._id}
+                                    }))
                                     .then(function () {
                                         done();
                                     })
@@ -156,8 +160,8 @@ describe('Subclass', function () {
                 it('same relationship', function () {
                     assert.ok(mike);
                     assert.equal(mike.cars.length, 2);
-                    var car = _.filter(mike.cars, function (x) {return x.model == Car})[0]
-                        , sportsCar = _.filter(mike.cars, function (x) {return x.model == SportsCar})[0];
+                    var car = _.filter(mike.cars, function (x) {return x.model == Car})[0],
+                        sportsCar = _.filter(mike.cars, function (x) {return x.model == SportsCar})[0];
                     assert.ok(car);
                     assert.ok(sportsCar);
                     assert.equal(car.owner, mike);
@@ -190,7 +194,12 @@ describe('Subclass', function () {
                             .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
                                 mike = _mike;
                                 Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
-                                    .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owner: {_id: mike._id}}))
+                                    .then(SportsCar.map({
+                                        colour: 'yellow',
+                                        name: 'Lamborghini',
+                                        maxSpeed: 160,
+                                        owner: {_id: mike._id}
+                                    }))
                                     .then(function () {
                                         done();
                                     })
@@ -208,8 +217,8 @@ describe('Subclass', function () {
                     assert.ok(mike.car.isInstanceOf(SportsCar));
                     assert.equal(mike.car.owner, mike);
                     Car.all().execute().then(function (cars) {
-                        var car = _.filter(cars, function (x) {return x.model == Car})[0]
-                            , sportsCar = _.filter(cars, function (x) {return x.model == SportsCar})[0];
+                        var car = _.filter(cars, function (x) {return x.model == Car})[0],
+                            sportsCar = _.filter(cars, function (x) {return x.model == SportsCar})[0];
                         assert.ok(car);
                         assert.ok(sportsCar);
                         assert.notOk(car.owner, 'The plain car should no longer have an owner');
@@ -243,7 +252,12 @@ describe('Subclass', function () {
                             .then(Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
                                 mike = _mike;
                                 Car.map({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
-                                    .then(SportsCar.map({colour: 'yellow', name: 'Lamborghini', maxSpeed: 160, owners: [{_id: mike._id}]}))
+                                    .then(SportsCar.map({
+                                        colour: 'yellow',
+                                        name: 'Lamborghini',
+                                        maxSpeed: 160,
+                                        owners: [{_id: mike._id}]
+                                    }))
                                     .then(function () {
                                         done();
                                     })
@@ -258,15 +272,14 @@ describe('Subclass', function () {
                 it('same relationship', function () {
                     assert.ok(mike);
                     assert.equal(mike.cars.length, 2);
-                    var car = _.filter(mike.cars, function (x) {return x.model == Car})[0]
-                        , sportsCar = _.filter(mike.cars, function (x) {return x.model == SportsCar})[0];
+                    var car = _.filter(mike.cars, function (x) {return x.model == Car})[0],
+                        sportsCar = _.filter(mike.cars, function (x) {return x.model == SportsCar})[0];
                     assert.ok(car);
                     assert.ok(sportsCar);
                     assert.include(car.owners, mike);
                     assert.include(sportsCar.owners, mike);
                 });
             });
-
 
 
         });

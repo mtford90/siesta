@@ -2,17 +2,17 @@
  * @module mapping
  */
 
-var Store = require('./store')
-    , SiestaModel = require('./modelInstance')
-    , log = require('./operation/log')
-    , Operation = require('./operation/operation').Operation
-    , InternalSiestaError = require('./error').InternalSiestaError
-    , Query = require('./query')
-    , cache = require('./cache')
-    , util = require('./util')
-    , _ = util._
-    , defineSubProperty = util.defineSubProperty
-    , ChangeType = require('./changes').ChangeType;
+var Store = require('./store'),
+    SiestaModel = require('./modelInstance'),
+    log = require('./operation/log'),
+    Operation = require('./operation/operation').Operation,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    Query = require('./query'),
+    cache = require('./cache'),
+    util = require('./util'),
+    _ = util._,
+    defineSubProperty = util.defineSubProperty,
+    ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
 
@@ -23,7 +23,6 @@ function SiestaError(opts) {
 SiestaError.prototype.toString = function () {
     return JSON.stringify(this.opts, null, 4);
 };
-
 
 
 /**

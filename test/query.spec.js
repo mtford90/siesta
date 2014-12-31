@@ -2,8 +2,8 @@ var s = require('../core/index'),
     assert = require('chai').assert;
 
 describe('query...', function () {
-    var Query = require('../core/query')
-        , Collection = require('../core/collection');
+    var Query = require('../core/query'),
+        Collection = require('../core/collection');
     before(function () {
         s.ext.storageEnabled = false;
     });

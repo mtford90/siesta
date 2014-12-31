@@ -3,9 +3,9 @@ var s = require('../core/index'),
 
 var Collection = s;
 
-describe('auto save', function() {
+describe('auto save', function () {
     var MyCollection, Person;
-    before(function() {
+    before(function () {
         s.ext.storageEnabled = true;
     });
 
@@ -13,8 +13,8 @@ describe('auto save', function() {
         s.autosave = false;
     });
 
-    beforeEach(function(done) {
-        s.reset(function() {
+    beforeEach(function (done) {
+        s.reset(function () {
             MyCollection = s.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',

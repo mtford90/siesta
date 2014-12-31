@@ -2,8 +2,8 @@
  These tests deal with the creation of new SiestaModel objects.
  */
 
-var s = require('../../core/index')
-    , assert = require('chai').assert;
+var s = require('../../core/index'),
+    assert = require('chai').assert;
 
 describe('mapping new object', function () {
     var Collection = require('../../core/collection');
@@ -116,7 +116,6 @@ describe('mapping new object', function () {
         });
 
     });
-
 
 
 });

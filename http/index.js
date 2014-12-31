@@ -58,7 +58,6 @@ function logHttpRequest(opts) {
 }
 
 
-
 /**
  * Send a HTTP request to the given method and path parsing the response.
  * @param {String} method
@@ -356,7 +355,6 @@ function PUT() {
 function PATCH() {
     return _.partial(HTTP_METHOD, true, 'PATCH').apply(this, arguments);
 }
-
 
 
 var http = {

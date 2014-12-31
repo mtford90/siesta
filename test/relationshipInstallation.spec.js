@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('mapping relationships', function() {
+describe('mapping relationships', function () {
 
 
     var Collection = require('../core/collection');
@@ -11,7 +11,7 @@ describe('mapping relationships', function() {
         s.ext.storageEnabled = false;
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(done);
     });
 
@@ -37,35 +37,35 @@ describe('mapping relationships', function() {
         s.install(done);
     }
 
-    describe('valid', function() {
+    describe('valid', function () {
 
 
-        describe('Foreign Key', function() {
+        describe('Foreign Key', function () {
 
-            beforeEach(function(done) {
-                configureAPI(RelationshipType.OneToMany, function(err) {
+            beforeEach(function (done) {
+                configureAPI(RelationshipType.OneToMany, function (err) {
                     if (err) done(err);
                     done();
                 });
             });
 
-            it('configures reverse mapping', function() {
+            it('configures reverse mapping', function () {
                 assert.equal(carMapping.relationships.owner.reverseModel, personMapping);
             });
 
-            it('configures reverse name', function() {
+            it('configures reverse name', function () {
                 assert.equal(carMapping.relationships.owner.reverseName, 'cars');
 
-                it('configures forward mapping', function() {
+                it('configures forward mapping', function () {
                     assert.equal(carMapping.relationships.owner.forwardModel, carMapping);
                 });
 
             });
-            it('configures forward name', function() {
+            it('configures forward name', function () {
                 assert.equal(carMapping.relationships.owner.forwardName, 'owner');
             });
 
-            it('installs on reverse', function() {
+            it('installs on reverse', function () {
                 var keys = Object.keys(personMapping.relationships.cars);
                 for (var i = 0; i < keys.length; i++) {
                     var key = keys[i];
@@ -78,35 +78,34 @@ describe('mapping relationships', function() {
 
         });
 
-        describe('OneToOne', function() {
+        describe('OneToOne', function () {
 
-            beforeEach(function(done) {
-                configureAPI(RelationshipType.OneToOne, function(err) {
+            beforeEach(function (done) {
+                configureAPI(RelationshipType.OneToOne, function (err) {
                     if (err) done(err);
                     done();
                 });
 
 
             });
-            it('configures reverse mapping', function() {
+            it('configures reverse mapping', function () {
                 assert.equal(carMapping.relationships.owner.reverseModel, personMapping);
             });
 
-            it('configures reverse name', function() {
+            it('configures reverse name', function () {
                 assert.equal(carMapping.relationships.owner.reverseName, 'cars');
 
 
-
             });
 
-            it('configures forward mapping', function() {
+            it('configures forward mapping', function () {
                 assert.equal(carMapping.relationships.owner.forwardModel, carMapping);
             });
-            it('configures forward name', function() {
+            it('configures forward name', function () {
                 assert.equal(carMapping.relationships.owner.forwardName, 'owner');
             });
 
-            it('installs on reverse', function() {
+            it('installs on reverse', function () {
                 var keys = Object.keys(personMapping.relationships.cars);
                 for (var i = 0; i < keys.length; i++) {
                     var key = keys[i];
@@ -115,9 +114,6 @@ describe('mapping relationships', function() {
                     }
                 }
             });
-
-
-
 
 
         });
@@ -125,9 +121,8 @@ describe('mapping relationships', function() {
     });
 
 
-
-    describe('invalid', function() {
-        it('No such mapping', function(done) {
+    describe('invalid', function () {
+        it('No such mapping', function (done) {
             var collection = s.collection('myCollection');
             collection.model('Car', {
                 id: 'id',
@@ -140,13 +135,13 @@ describe('mapping relationships', function() {
                     }
                 }
             });
-            s.install(function(err) {
+            s.install(function (err) {
                 assert.ok(err);
                 done();
             });
         });
 
-        it('No such relationship type', function(done) {
+        it('No such relationship type', function (done) {
             var collection = s.collection('myCollection');
             collection.model('Car', {
                 id: 'id',
@@ -165,7 +160,7 @@ describe('mapping relationships', function() {
                 attributes: ['name', 'age']
             });
 
-            s.install(function(err) {
+            s.install(function (err) {
                 assert.ok(err);
                 done();
             });

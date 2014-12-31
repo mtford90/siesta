@@ -4,8 +4,8 @@
 
 var _internal = siesta._internal;
 
-var log = _internal.log
-    , utils = _internal.util;
+var log = _internal.log,
+    utils = _internal.util;
 var Logger = log.loggerWithName('Serialiser');
 var _ = utils._;
 
@@ -46,10 +46,10 @@ function depthSerialiser(depth, obj, callback) {
             data[f] = obj[f];
         }
     });
-    var waiting = []
-        , errors = []
-        , result = {}
-        , finished = [];
+    var waiting = [],
+        errors = [],
+        result = {},
+        finished = [];
     _.each(obj._relationshipNames, function (f) {
         if (Logger.trace.isEnabled)
             Logger.trace('relationshipField', f);

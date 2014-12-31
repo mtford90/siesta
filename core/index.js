@@ -159,8 +159,6 @@ _.extend(siesta, {
 });
 
 
-
-
 if (typeof window != 'undefined') {
     window.siesta = siesta;
 }

@@ -1,7 +1,7 @@
 var s = require('../../core/index'),
     assert = require('chai').assert;
 
-describe('mapping queries', function() {
+describe('mapping queries', function () {
 
     var SiestaModel = require('../../core/modelInstance');
     var Collection = require('../../core/collection');
@@ -12,19 +12,19 @@ describe('mapping queries', function() {
         s.ext.storageEnabled = false;
     });
 
-    beforeEach(function(done) {
+    beforeEach(function (done) {
         s.reset(done);
     });
 
-    describe('queries', function() {
+    describe('queries', function () {
         var collection, mapping;
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             collection = s.collection('myCollection');
             mapping = collection.model('Car', {
                 id: 'id',
                 attributes: ['color', 'name']
             });
-            s.install(function(err) {
+            s.install(function (err) {
                 if (err) done(err);
                 mapping.map([{
                     id: 4,
@@ -38,33 +38,33 @@ describe('mapping queries', function() {
             });
         });
 
-        it('all', function(done) {
-            mapping.all().execute(function(err, cars) {
+        it('all', function (done) {
+            mapping.all().execute(function (err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 2);
-                _.each(cars, function(car) {
+                _.each(cars, function (car) {
                     assert.instanceOf(car, SiestaModel);
                 });
                 done();
             });
         });
 
-        it('query', function(done) {
+        it('query', function (done) {
             this.timeout(10000);
             mapping.query({
                 color: 'red'
-            }).execute(function(err, cars) {
+            }).execute(function (err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 1);
-                _.each(cars, function(car) {
+                _.each(cars, function (car) {
                     assert.instanceOf(car, SiestaModel);
                 });
                 done();
             });
         });
 
-        it('get', function(done) {
-            mapping.get(4, function(err, car) {
+        it('get', function (done) {
+            mapping.get(4, function (err, car) {
                 if (err) done(err);
                 assert.ok(car);
                 assert.instanceOf(car, SiestaModel);
@@ -76,12 +76,12 @@ describe('mapping queries', function() {
 
     });
 
-    describe('reverse', function() {
+    describe('reverse', function () {
         var carMapping, personMapping;
 
         var collection;
 
-        beforeEach(function(done) {
+        beforeEach(function (done) {
             collection = s.collection('myCollection');
             carMapping = collection.model('Car', {
                 id: 'id',
@@ -101,7 +101,7 @@ describe('mapping queries', function() {
             s.install(done);
         });
 
-        it('cached', function(done) {
+        it('cached', function (done) {
             carMapping.map({
                 colour: 'red',
                 name: 'Aston Martin',
@@ -111,12 +111,12 @@ describe('mapping queries', function() {
                     id: '2'
                 },
                 id: 5
-            }, function(err, car) {
+            }, function (err, car) {
                 if (err) done(err);
-                personMapping.get('2', function(err, p) {
+                personMapping.get('2', function (err, p) {
                     if (err) done(err);
                     assert.ok(p, 'Should be able to fetch the person');
-                    p.__proxies['cars'].get(function(err, cars) {
+                    p.__proxies['cars'].get(function (err, cars) {
                         assert.equal(cars.length, 1);
                         assert.equal(cars[0].owner, p);
                         done(err);

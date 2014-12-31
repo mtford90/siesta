@@ -7,7 +7,15 @@ var Zepto = (function () {
     var undefined, key, $, classList, emptyArray = [], slice = emptyArray.slice, filter = emptyArray.filter,
         document = window.document,
         elementDisplay = {}, classCache = {},
-        cssNumber = { 'column-count': 1, 'columns': 1, 'font-weight': 1, 'line-height': 1, 'opacity': 1, 'z-index': 1, 'zoom': 1 },
+        cssNumber = {
+            'column-count': 1,
+            'columns': 1,
+            'font-weight': 1,
+            'line-height': 1,
+            'opacity': 1,
+            'z-index': 1,
+            'zoom': 1
+        },
         fragmentRE = /^\s*<(\w+|!)[^>]*>/,
         singleTagRE = /^<(\w+)\s*\/?>(?:<\/\1>|)$/,
         tagExpanderRE = /<(?!area|br|col|embed|hr|img|input|link|meta|param)(([\w:]+)[^>]*)\/>/ig,
@@ -17,7 +25,7 @@ var Zepto = (function () {
     // special attributes that should be get/set via method calls
         methodAttributes = ['val', 'css', 'html', 'text', 'data', 'width', 'height', 'offset'],
 
-        adjacencyOperators = [ 'after', 'prepend', 'before', 'append' ],
+        adjacencyOperators = ['after', 'prepend', 'before', 'append'],
         table = document.createElement('table'),
         tableRow = document.createElement('tr'),
         containers = {
@@ -65,7 +73,7 @@ var Zepto = (function () {
 
     function type(obj) {
         return obj == null ? String(obj) :
-            class2type[toString.call(obj)] || "object"
+        class2type[toString.call(obj)] || "object"
     }
 
     function isFunction(value) { return type(value) == "function" }
@@ -266,7 +274,7 @@ var Zepto = (function () {
             ( (found = element.getElementById(nameOnly)) ? [found] : [] ) :
             (element.nodeType !== 1 && element.nodeType !== 9) ? [] :
                 slice.call(
-                        isSimple && !maybeID ?
+                    isSimple && !maybeID ?
                         maybeClass ? element.getElementsByClassName(nameOnly) : // If it's simple, it could be a class
                             element.getElementsByTagName(selector) : // Or a tag
                         element.querySelectorAll(selector) // Or it's not simple, and we need to query all
@@ -316,12 +324,12 @@ var Zepto = (function () {
         var num
         try {
             return value ?
-                value == "true" ||
-                ( value == "false" ? false :
-                        value == "null" ? null :
-                        !/^0/.test(value) && !isNaN(num = Number(value)) ? num :
-                    /^[\[\{]/.test(value) ? $.parseJSON(value) :
-                        value )
+            value == "true" ||
+            ( value == "false" ? false :
+                value == "null" ? null :
+                    !/^0/.test(value) && !isNaN(num = Number(value)) ? num :
+                        /^[\[\{]/.test(value) ? $.parseJSON(value) :
+                            value )
                 : value
         } catch (e) {
             return value
@@ -351,8 +359,8 @@ var Zepto = (function () {
 
     // plugin compatibility
     $.uuid = 0
-    $.support = { }
-    $.expr = { }
+    $.support = {}
+    $.expr = {}
 
     $.map = function (elements, callback) {
         var value, values = [], i, key
@@ -390,7 +398,7 @@ var Zepto = (function () {
 
     // Populate the class2type map
     $.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function (i, name) {
-        class2type[ "[object " + name + "]" ] = name.toLowerCase()
+        class2type["[object " + name + "]"] = name.toLowerCase()
     })
 
     // Define methods that will be available on all
@@ -621,7 +629,7 @@ var Zepto = (function () {
             return (typeof name == 'string' && !(1 in arguments)) ?
                 (!this.length || this[0].nodeType !== 1 ? undefined :
                     (!(result = this[0].getAttribute(name)) && name in this[0]) ? this[0][name] : result
-                    ) :
+                ) :
                 this.each(function (idx) {
                     if (this.nodeType !== 1) return
                     if (isObject(name)) for (key in name) setAttribute(this, key, name[key])
@@ -656,7 +664,7 @@ var Zepto = (function () {
                 (this[0] && (this[0].multiple ?
                     $(this[0]).find('option').filter(function () { return this.selected }).pluck('value') :
                     this[0].value)
-                    )
+                )
         },
         offset: function (coordinates) {
             if (coordinates) return this.each(function (index) {
@@ -777,7 +785,7 @@ var Zepto = (function () {
                 offsetParent = this.offsetParent(),
             // Get correct offsets
                 offset = this.offset(),
-                parentOffset = rootNodeRE.test(offsetParent[0].nodeName) ? { top: 0, left: 0 } : offsetParent.offset()
+                parentOffset = rootNodeRE.test(offsetParent[0].nodeName) ? {top: 0, left: 0} : offsetParent.offset()
 
             // Subtract element margins
             // note: when an element has margin: auto the offsetLeft and marginLeft
@@ -818,7 +826,7 @@ var Zepto = (function () {
             var offset, el = this[0]
             if (value === undefined) return isWindow(el) ? el['inner' + dimensionProperty] :
                 isDocument(el) ? el.documentElement['scroll' + dimensionProperty] :
-                    (offset = this.offset()) && offset[dimension]
+                (offset = this.offset()) && offset[dimension]
             else return this.each(function (idx) {
                 el = $(this)
                 el.css(dimension, funcArg(this, value, idx, el[dimension]()))
@@ -852,9 +860,9 @@ var Zepto = (function () {
 
                 // convert all methods to a "before" operation
                 target = operatorIndex == 0 ? target.nextSibling :
-                        operatorIndex == 1 ? target.firstChild :
+                    operatorIndex == 1 ? target.firstChild :
                         operatorIndex == 2 ? target :
-                    null
+                            null
 
                 var parentInDocument = $.contains(document.documentElement, parent)
 
@@ -980,14 +988,14 @@ exports.Zepto = Zepto;
 
         var _callbackName = options.jsonpCallback,
             callbackName = ($.isFunction(_callbackName) ?
-                _callbackName() : _callbackName) || ('jsonp' + (++jsonpID)),
+                    _callbackName() : _callbackName) || ('jsonp' + (++jsonpID)),
             script = document.createElement('script'),
             originalCallback = window[callbackName],
             responseData,
             abort = function (errorType) {
                 $(script).triggerHandler('error', errorType || 'abort')
             },
-            xhr = { abort: abort }, abortTimeout
+            xhr = {abort: abort}, abortTimeout
 
         if (deferred) deferred.promise(xhr)
 
@@ -1069,8 +1077,8 @@ exports.Zepto = Zepto;
         if (mime) mime = mime.split(';', 2)[0]
         return mime && ( mime == htmlType ? 'html' :
                 mime == jsonType ? 'json' :
-            scriptTypeRE.test(mime) ? 'script' :
-                xmlTypeRE.test(mime) && 'xml' ) || 'text'
+                    scriptTypeRE.test(mime) ? 'script' :
+                    xmlTypeRE.test(mime) && 'xml' ) || 'text'
     }
 
     function appendQuery(url, query) {
@@ -1094,7 +1102,7 @@ exports.Zepto = Zepto;
         ajaxStart(settings)
 
         if (!settings.crossDomain) settings.crossDomain = /^([\w-]+:)?\/\/([^\/]+)/.test(settings.url) &&
-            RegExp.$2 != window.location.host
+        RegExp.$2 != window.location.host
 
         if (!settings.url) settings.url = window.location.toString()
         serializeData(settings)
@@ -1116,7 +1124,7 @@ exports.Zepto = Zepto;
         }
 
         var mime = settings.accepts[dataType],
-            headers = { },
+            headers = {},
             setHeader = function (name, value) { headers[name.toLowerCase()] = [name, value] },
             protocol = /^([\w-]+:)\/\//.test(settings.url) ? RegExp.$1 : window.location.protocol,
             xhr = settings.xhr(),
@@ -1233,7 +1241,7 @@ exports.Zepto = Zepto;
         $.each(obj, function (key, value) {
             type = $.type(value)
             if (scope) key = traditional ? scope :
-                scope + '[' + (hash || type == 'object' || type == 'array' ? key : '') + ']'
+            scope + '[' + (hash || type == 'object' || type == 'array' ? key : '') + ']'
             // handle data in serializeArray() format
             if (!scope && array) params.add(value.name, value.value)
             // recurse into nested objects
@@ -1264,8 +1272,8 @@ exports.Zepto = Zepto;
         handlers = {},
         specialEvents = {},
         focusinSupported = 'onfocusin' in window,
-        focus = { focus: 'focusin', blur: 'focusout' },
-        hover = { mouseenter: 'mouseover', mouseleave: 'mouseout' }
+        focus = {focus: 'focusin', blur: 'focusout'},
+        hover = {mouseenter: 'mouseover', mouseleave: 'mouseout'}
 
     specialEvents.click = specialEvents.mousedown = specialEvents.mouseup = specialEvents.mousemove = 'MouseEvents'
 
@@ -1345,7 +1353,7 @@ exports.Zepto = Zepto;
         })
     }
 
-    $.event = { add: add, remove: remove }
+    $.event = {add: add, remove: remove}
 
     $.proxy = function (fn, context) {
         var args = (2 in arguments) && slice.call(arguments, 2)
@@ -1399,14 +1407,14 @@ exports.Zepto = Zepto;
 
             if (source.defaultPrevented !== undefined ? source.defaultPrevented :
                     'returnValue' in source ? source.returnValue === false :
-                source.getPreventDefault && source.getPreventDefault())
+                    source.getPreventDefault && source.getPreventDefault())
                 event.isDefaultPrevented = returnTrue
         }
         return event
     }
 
     function createProxy(event) {
-        var key, proxy = { originalEvent: event }
+        var key, proxy = {originalEvent: event}
         for (key in event)
             if (!ignoreProperties.test(key) && event[key] !== undefined) proxy[key] = event[key]
 
@@ -1510,8 +1518,8 @@ exports.Zepto = Zepto;
         // shortcut methods for `.bind(event, fn)` for each event type
     ;
     ('focusin focusout load resize scroll unload click dblclick ' +
-        'mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave ' +
-        'change select keydown keypress keyup error').split(' ').forEach(function (event) {
+    'mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave ' +
+    'change select keydown keypress keyup error').split(' ').forEach(function (event) {
             $.fn[event] = function (callback) {
                 return callback ?
                     this.bind(event, callback) :
