@@ -206,7 +206,7 @@ _.extend(OneToManyProxy.prototype, {
     install: function (obj) {
         RelationshipProxy.prototype.install.call(this, obj);
         if (this.isReverse) {
-            obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
+            obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
         }
     }
 });

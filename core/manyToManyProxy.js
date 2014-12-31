@@ -56,7 +56,7 @@ _.extend(ManyToManyProxy.prototype, {
             var reverseProxy = self.reverseProxyForInstance(removedObject);
             var idx = reverseProxy._id.indexOf(self.object._id);
             proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
-                proxy.splice.call(reverseProxy, idx, 1);
+                reverseProxy.splice(idx, 1);
             });
         });
     },
@@ -65,7 +65,7 @@ _.extend(ManyToManyProxy.prototype, {
         _.each(added, function (addedObject) {
             var reverseProxy = self.reverseProxyForInstance(addedObject);
             proxy.makeChangesToRelatedWithoutObservations.call(reverseProxy, function () {
-                proxy.splice.call(reverseProxy, 0, 0, self.object);
+                reverseProxy.splice(0, 0, self.object);
             });
         });
     },
@@ -147,7 +147,7 @@ _.extend(ManyToManyProxy.prototype, {
     },
     install: function (obj) {
         RelationshipProxy.prototype.install.call(this, obj);
-        obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(proxy.splice, this);
+        obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
     }
 
 

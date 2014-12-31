@@ -74,6 +74,8 @@ function RelationshipProxy(opts) {
         reverseName: null,
         isReverse: null
     });
+
+    this.splice = this.splicer({});
 }
 
 _.extend(RelationshipProxy.prototype, {
@@ -194,11 +196,12 @@ _.extend(RelationshipProxy.prototype, {
         if (!this.object) {
             throw new InternalSiestaError('Proxy must be installed on an object before can use it.');
         }
-    }
+    },
+    splicer: splicer
 });
 
 
-function spliceFactory(opts) {
+function splicer(opts) {
     opts = opts || {};
     return function (idx, numRemove) {
         opts = opts || {};
@@ -211,10 +214,9 @@ function spliceFactory(opts) {
             _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
         }
         return returnValue;
-    }
+    }.bind(this);
 }
 
-var splice = spliceFactory({});
 
 function objAsString(obj) {
     function _objAsString(obj) {
@@ -248,7 +250,7 @@ function clearReverseRelated(opts) {
                 if (util.isArray(p._id)) {
                     var idx = p._id.indexOf(self.object._id);
                     makeChangesToRelatedWithoutObservations.call(p, function () {
-                        spliceFactory(opts).call(p, idx, 1);
+                        p.splicer(opts)(idx, 1);
                     });
                 } else {
                     p.setIdAndRelated(null, opts);
@@ -319,7 +321,7 @@ function setReverse(obj, opts) {
     _.each(reverseProxies, function (p) {
         if (util.isArray(p._id)) {
             makeChangesToRelatedWithoutObservations.call(p, function () {
-                spliceFactory(opts).call(p, p._id.length, 0, self.object);
+                p.splicer(opts)(p._id.length, 0, self.object);
             });
         } else {
             clearReverseRelated.call(p, opts);
@@ -413,8 +415,6 @@ module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
     registerSetChange: registerSetChange,
-    splice: splice,
-    spliceFactory: spliceFactory,
     clearReverseRelated: clearReverseRelated,
     setReverse: setReverse,
     objAsString: objAsString,
