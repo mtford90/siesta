@@ -181,7 +181,7 @@ _.extend(OneToManyProxy.prototype, {
         }
     },
     set: function (obj, opts) {
-        proxy.checkInstalled.call(this);
+        this.checkInstalled();
         var self = this;
         if (obj) {
             var errorMessage;

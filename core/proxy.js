@@ -189,14 +189,14 @@ _.extend(RelationshipProxy.prototype, {
             this._id = null;
             this.related = null;
         }
+    },
+    checkInstalled: function () {
+        if (!this.object) {
+            throw new InternalSiestaError('Proxy must be installed on an object before can use it.');
+        }
     }
 });
 
-function checkInstalled() {
-    if (!this.object) {
-        throw new InternalSiestaError('Proxy must be installed on an object before can use it.');
-    }
-}
 
 function spliceFactory(opts) {
     opts = opts || {};
@@ -412,7 +412,6 @@ function wrapArray(arr) {
 module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
-    checkInstalled: checkInstalled,
     registerSetChange: registerSetChange,
     splice: splice,
     spliceFactory: spliceFactory,
