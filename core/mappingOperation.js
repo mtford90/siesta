@@ -11,7 +11,7 @@ var Store = require('./store'),
     cache = require('./cache'),
     util = require('./util'),
     _ = util._,
-    defineSubProperty = util.defineSubProperty,
+    async = util.async,
     ChangeType = require('./changes').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
@@ -393,12 +393,16 @@ _.extend(MappingOperation.prototype, {
             var subOperations = _.map(relationshipNames, function (k) {
                 return self.subOps[k].op
             });
-            var compositeOperation = new Operation(subOperations);
-            compositeOperation.onCompletion(function () {
+            var tasks = _.map(subOperations, function (op) {
+                return function (done) {
+                    op.onCompletion(done);
+                    op.start();
+                } 
+            });
+            async.parallel(tasks, function () {
                 self.gatherErrorsFromSubOperations(relationshipNames);
                 callback();
             });
-            compositeOperation.start();
         } else {
             callback();
         }
