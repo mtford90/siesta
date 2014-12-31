@@ -74,7 +74,6 @@ function RelationshipProxy(opts) {
         reverseName: null,
         isReverse: null
     });
-
 }
 
 _.extend(RelationshipProxy.prototype, {
@@ -128,33 +127,34 @@ _.extend(RelationshipProxy.prototype, {
     }
 });
 
-
-function proxyForInstance(modelInstance, reverse) {
-    var name = reverse ? getReverseName.call(this) : getForwardName.call(this),
-        model = reverse ? this.reverseModel : this.forwardModel;
-    var ret;
-    // This should never happen. Should g   et caught in the mapping operation?
-    if (util.isArray(modelInstance)) {
-        ret = _.map(modelInstance, function (o) {
-            return o.__proxies[name];
-        });
-    } else {
-        var proxy = modelInstance.__proxies[name];
-        if (!proxy) {
-            var err = 'No proxy with name "' + name + '" on mapping ' + model.name;
-            throw new InternalSiestaError(err);
+_.extend(RelationshipProxy.prototype, {
+    proxyForInstance: function (modelInstance, reverse) {
+        var name = reverse ? getReverseName.call(this) : getForwardName.call(this),
+            model = reverse ? this.reverseModel : this.forwardModel;
+        var ret;
+        // This should never happen. Should g   et caught in the mapping operation?
+        if (util.isArray(modelInstance)) {
+            ret = _.map(modelInstance, function (o) {
+                return o.__proxies[name];
+            });
+        } else {
+            var proxy = modelInstance.__proxies[name];
+            if (!proxy) {
+                var err = 'No proxy with name "' + name + '" on mapping ' + model.name;
+                throw new InternalSiestaError(err);
+            }
+            ret = proxy;
         }
-        ret = proxy;
+        return ret;
+    },
+    reverseProxyForInstance: function (modelInstance) {
+        return this.proxyForInstance(modelInstance, true);
+    },
+    forwardProxyForInstance: function (modelInstance) {
+        return this.proxyForInstance(modelInstance, false);
     }
-    return ret;
-}
-function reverseProxyForInstance(modelInstance) {
-    return proxyForInstance.call(this, modelInstance, true);
-}
+});
 
-function forwardProxyForInstance(modelInstance) {
-    return proxyForInstance.call(this, modelInstance, false);
-}
 
 function getReverseName() {
     return this.isForward ? this.reverseName : this.forwardName;
@@ -248,7 +248,7 @@ function clearReverseRelated(opts) {
     var self = this;
     if (!self.isFault) {
         if (this.related) {
-            var reverseProxy = reverseProxyForInstance.call(this, this.related);
+            var reverseProxy = this.reverseProxyForInstance(this.related);
             var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
             _.each(reverseProxies, function (p) {
                 if (util.isArray(p._id)) {
@@ -320,7 +320,7 @@ function makeChangesToRelatedWithoutObservations(f) {
 
 function setReverse(obj, opts) {
     var self = this;
-    var reverseProxy = reverseProxyForInstance.call(this, obj);
+    var reverseProxy = this.reverseProxyForInstance(obj);
     var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
     _.each(reverseProxies, function (p) {
         if (util.isArray(p._id)) {
@@ -418,8 +418,6 @@ function wrapArray(arr) {
 module.exports = {
     RelationshipProxy: RelationshipProxy,
     Fault: Fault,
-    reverseProxyForInstance: reverseProxyForInstance,
-    forwardProxyForInstance: forwardProxyForInstance,
     getReverseName: getReverseName,
     getForwardName: getForwardName,
     getReverseModel: getReverseModel,
