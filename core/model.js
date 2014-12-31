@@ -405,16 +405,13 @@ _.extend(Model.prototype, {
     _mapBulk: function (data, opts, callback) {
         _.extend(opts, {model: this, data: data});
         var op = new MappingOperation(opts);
-        op.onCompletion(function () {
-            var err = op.error;
+        op.start(function (err, objects) {
             if (err) {
                 if (callback) callback(err);
             } else {
-                var objects = op.result;
                 callback(null, objects);
             }
         });
-        op.start();
     },
     _countCache: function () {
         var collCache = cache._localCacheByType[this.collectionName] || {};

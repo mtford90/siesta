@@ -124,25 +124,24 @@ describe('bulk mapping operation', function () {
                         model: User,
                         data: data
                     });
-                    op.onCompletion(function () {
+                    op.start(function () {
                         done();
                     });
-                    op.start();
 
                 });
 
                 it('scalar int', function () {
-                    assert.ok(op.error[0]);
-                    assert.ok(op.error[0].repositories);
+                    assert.ok(op.errors[0]);
+                    assert.ok(op.errors[0].repositories);
                 });
 
                 it('valid', function () {
-                    assert.notOk(op.error[1]);
+                    assert.notOk(op.errors[1]);
                 });
 
                 it('scalar string', function () {
-                    assert.ok(op.error[2]);
-                    assert.ok(op.error[2].repositories);
+                    assert.ok(op.errors[2]);
+                    assert.ok(op.errors[2].repositories);
                 });
 
 
@@ -158,11 +157,10 @@ describe('bulk mapping operation', function () {
                     model: Repo,
                     data: data
                 });
-                op.onCompletion(function () {
-                    assert.ok(op.error);
+                op.start(function (errors) {
+                    assert.ok(errors);
                     done();
                 });
-                op.start();
             });
 
             it('scalar to array', function (done) {
@@ -175,11 +173,10 @@ describe('bulk mapping operation', function () {
                     model: User,
                     data: data
                 });
-                op.onCompletion(function () {
-                    assert.ok(op.error);
+                op.start(function (errors) {
+                    assert.ok(errors);
                     done();
                 });
-                op.start();
             });
 
 
@@ -218,12 +215,11 @@ describe('bulk mapping operation', function () {
                             model: Repo,
                             data: data
                         });
-                        op.onCompletion(function () {
-                            var err = op.error;
-                            if (err) {
-                                done(err);
+
+                        op.start(function (errors, objects) {
+                            if (errors) {
+                                done(errors);
                             }
-                            var objects = this.objects;
                             var repo = objects[0];
                             var repo2 = objects[1];
                             var repo3 = objects[2];
@@ -244,7 +240,6 @@ describe('bulk mapping operation', function () {
                             assert.equal(repo2.owner, repo3.owner);
                             done();
                         });
-                        op.start();
                     });
 
                 });
@@ -264,12 +259,11 @@ describe('bulk mapping operation', function () {
                             model: User,
                             data: data
                         });
-                        op.onCompletion(function () {
-                            if (op.error) {
-                                console.error(JSON.stringify(op.error, null, 4));
-                                done(op.error);
+                        op.start(function (errors, objects) {
+                            if (errors) {
+                                console.error(JSON.stringify(errors, null, 4));
+                                done(errors);
                             }
-                            var objects = op.result;
                             assert.equal(objects.length, 1);
                             var obj = objects[0];
                             assert.equal(obj.login, 'mike');
@@ -282,7 +276,6 @@ describe('bulk mapping operation', function () {
                             assert.equal(repo.owner, obj);
                             done();
                         });
-                        op.start();
                     });
 
                     it('existing', function (done) {
@@ -305,11 +298,10 @@ describe('bulk mapping operation', function () {
                             model: User,
                             data: data
                         });
-                        op.onCompletion(function () {
-                            if (op.error) {
-                                done(op.error);
+                        op.start(function (errors, objects) {
+                            if (errors) {
+                                done(errors);
                             } else {
-                                var objects = op.result;
                                 try {
                                     assert.equal(objects.length, 1);
                                     var obj = objects[0];
@@ -327,7 +319,6 @@ describe('bulk mapping operation', function () {
                                 }
                             }
                         });
-                        op.start();
 
                     })
                 });
@@ -362,18 +353,21 @@ describe('bulk mapping operation', function () {
                     });
 
                     it('completion', function (done) {
-                        op.onCompletion(function () {
-                            var objects = op.result;
-                            assert.equal(objects.length, 2);
-                            var mike = objects[0];
-                            var bob = objects[1];
-                            assert.equal(mike.login, 'mike');
-                            assert.equal(mike.id, '123');
-                            assert.equal(bob.login, 'bob');
-                            assert.equal(bob.id, '1234');
-                            done();
+                        op.start(function (errors, objects) {
+                            if (errors) {
+                                done(errors);
+                            }
+                            else {
+                                assert.equal(objects.length, 2);
+                                var mike = objects[0];
+                                var bob = objects[1];
+                                assert.equal(mike.login, 'mike');
+                                assert.equal(mike.id, '123');
+                                assert.equal(bob.login, 'bob');
+                                assert.equal(bob.id, '1234');
+                                done();
+                            }
                         });
-                        op.start();
                     });
 
                 });
@@ -436,17 +430,15 @@ describe('bulk mapping operation', function () {
             });
 
             it('map', function (done) {
-                op.onCompletion(function () {
-                    var err = op.error;
-                    if (!err) {
-                        assert.equal(op.objects.length, 2);
-                        assert.equal(op.objects[0], op.objects[1]);
-                        assert.equal(op.objects[0].login, 'bob');
-                        assert.equal(op.objects[0].id, '1234');
+                op.start(function (errors, objects) {
+                    if (!errors) {
+                        assert.equal(objects.length, 2);
+                        assert.equal(objects[0], objects[1]);
+                        assert.equal(objects[0].login, 'bob');
+                        assert.equal(objects[0].id, '1234');
                     }
-                    done(err);
+                    done(errors);
                 });
-                op.start();
             });
         });
 
@@ -483,18 +475,16 @@ describe('bulk mapping operation', function () {
             });
 
             it('map', function (done) {
-                op.onCompletion(function () {
-                    var err = op.error;
-                    if (!err) {
-                        assert.equal(op.objects.length, 2);
-                        assert.equal(op.objects[0], obj);
-                        assert.equal(op.objects[0], op.objects[1]);
-                        assert.equal(op.objects[0].login, 'bob');
-                        assert.equal(op.objects[0].id, '1234');
+                op.start(function (errors, objects) {
+                    if (!errors) {
+                        assert.equal(objects.length, 2);
+                        assert.equal(objects[0], obj);
+                        assert.equal(objects[0], objects[1]);
+                        assert.equal(objects[0].login, 'bob');
+                        assert.equal(objects[0].id, '1234');
                     }
-                    done(err);
+                    done(errors);
                 });
-                op.start();
             });
         });
 

@@ -26,12 +26,14 @@ SiestaError.prototype.toString = function () {
 
 
 /**
- * Defines an encapsulated mapping operation where opts takes a mappin
+ * Encapsulates the idea of mapping arrays of data onto the object graph or arrays of objects.
  * @param {Object} opts
+ * @param opts.model
+ * @param opts.data
+ * @param opts.objects
+ * @param opts.disableNotifications
  */
 function MappingOperation(opts) {
-    Operation.call(this);
-
     this._opts = opts;
 
     util.extendFromOpts(this, opts, {
@@ -43,8 +45,6 @@ function MappingOperation(opts) {
 
     _.extend(this, {
         errors: [],
-        name: 'Model Operation',
-        work: _.bind(this._start, this),
         subTaskResults: {}
     });
 }
@@ -268,7 +268,7 @@ _.extend(MappingOperation.prototype, {
         });
         return deferred ? deferred.promise : null;
     },
-    _start: function (done) {
+    start: function (done) {
         if (this.data.length) {
             var self = this;
             var tasks = [];
@@ -299,23 +299,6 @@ _.extend(MappingOperation.prototype, {
             indexes: indexes,
             relatedData: relatedData
         };
-    },
-    _constructSubOperation: function (name) {
-        var relationship = this.model.relationships[name],
-            reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel,
-            __ret = this.getRelatedData(name),
-            indexes = __ret.indexes,
-            relatedData = __ret.relatedData;
-        if (relatedData.length) {
-            var flatRelatedData = util.flattenArray(relatedData);
-            var op = new MappingOperation({
-                model: reverseModel,
-                data: flatRelatedData,
-                disableNotifications: this.disableNotifications
-            });
-            op.__indexes = indexes;
-        }
-        return op;
     },
     processErrorsFromTask: function (relationshipName, errors, indexes) {
         if (errors.length) {
@@ -356,16 +339,15 @@ _.extend(MappingOperation.prototype, {
                 if (op) {
                     var task;
                     task = function (done) {
-                        op.onCompletion(function () {
+                        op.start(function (errors, objects) {
                             self.subTaskResults[relationshipName] = {
-                                errors: op.errors,
-                                objects: op.objects,
+                                errors: errors,
+                                objects: objects,
                                 indexes: indexes
                             };
                             self.processErrorsFromTask(relationshipName, op.errors, indexes);
                             done();
                         });
-                        op.start();
                     };
                     m.push(task);
                 }
