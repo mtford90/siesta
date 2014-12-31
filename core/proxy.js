@@ -8,6 +8,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     Operation = require('./operation/operation').Operation,
     util = require('./util'),
     _ = util._,
+    Fault = require('./Fault'),
     Query = require('./query'),
     log = require('./operation/log'),
     notifications = require('./notifications'),
@@ -15,34 +16,6 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
     coreChanges = require('./changes'),
     ChangeType = coreChanges.ChangeType;
-
-
-/**
- * A fault occurs when we try to access a property that has not been loaded from disk
- * @param {RelationshipProxy} proxy
- * @constructor
- */
-function Fault(proxy) {
-    var self = this;
-    this.proxy = proxy;
-    Object.defineProperty(this, 'isFault', {
-        get: function () {
-            return self.proxy.isFault;
-        },
-        enumerable: true,
-        configurable: true
-    });
-}
-
-_.extend(Fault.prototype, {
-    get: function () {
-        this.proxy.get.apply(this.proxy, arguments);
-    },
-    set: function () {
-        this.proxy.set.apply(this.proxy, arguments);
-    }
-});
-
 
 /**
  * @class  [RelationshipProxy description]
