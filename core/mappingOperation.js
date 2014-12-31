@@ -331,33 +331,36 @@ _.extend(MappingOperation.prototype, {
             relatedData: relatedData
         };
     },
+    extracted: function (relationships, name) {
+        var relationship = relationships[name];
+        var reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel;
+        var __ret = this.getRelatedData(name);
+        var indexes = __ret.indexes;
+        var relatedData = __ret.relatedData;
+        if (relatedData.length) {
+            var flatRelatedData = util.flattenArray(relatedData);
+            var op = new MappingOperation({
+                model: reverseModel,
+                data: flatRelatedData,
+                disableNotifications: this.disableNotifications
+            });
+            op.__relationshipName = name;
+        }
+        return op ? {
+            op: op,
+            indexes: indexes
+        } : null;
+    },
     _constructSubOperations: function () {
         var subOps = this.subOps;
         var relationships = this.model.relationships;
         for (var name in relationships) {
             if (relationships.hasOwnProperty(name)) {
-                var relationship = relationships[name];
-                var reverseModel = relationship.forwardName == name ? relationship.reverseModel : relationship.forwardModel;
-                var __ret = this.getRelatedData(name);
-                var indexes = __ret.indexes;
-                var relatedData = __ret.relatedData;
-                if (relatedData.length) {
-                    var flatRelatedData = util.flattenArray(relatedData);
-                    var op = new MappingOperation({
-                        model: reverseModel,
-                        data: flatRelatedData,
-                        disableNotifications: this.disableNotifications
-                    });
-                    op.__relationshipName = name;
-                    subOps[name] = {
-                        op: op,
-                        indexes: indexes
-                    };
+                var subOp = this.extracted(relationships, name);
+                if (subOp) {
+                    subOps[name] = subOp;
                 }
             }
-        }
-        if (Logger.trace) {
-            Logger.trace('Constructed subops for relationships', Object.keys(subOps));
         }
     },
     gatherErrorsFromTasks: function () {
