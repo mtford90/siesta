@@ -7,6 +7,7 @@ var _ = require('underscore');
 
 function s(pass) {
     return function (res) {
+        this.res = res;
         try {
             this.success.forEach(function (s) {s(pass ? res : undefined)});
         }
@@ -17,11 +18,14 @@ function s(pass) {
 }
 
 function f(err) {
+    this._fail = err;
+    this.error = err;
     this.failure.forEach(function (s) {s(err)});
     this.errors.forEach(function (s) {s(err)});
 }
 
 function e(err) {
+    this.error = err;
     this.errors.forEach(function (s) {s(err)});
 }
 
@@ -30,25 +34,49 @@ function Promise() {
         success: [],
         failure: [],
         errors: [],
-        nextPromise: null
+        /**
+         * @type Promise
+         */
+        _nextPromise: null
+    });
+    Object.defineProperty(this, 'nextPromise', {
+        get: function () {
+            if (!this._nextPromise) {
+                this._nextPromise = new Promise();
+                this.success.push(s(false).bind(this._nextPromise));
+                this.failure.push(f.bind(this._nextPromise));
+                this.errors.push(e.bind(this._nextPromise));
+                this._nextPromise._fail = this._fail;
+                this._nextPromise.error = this.error;
+                this._nextPromise.res = this.res;
+            }
+            return this._nextPromise;
+        }
     });
 }
+var fail = function (error) {
+    if (error) {
+        if (this.error) error(this.error);
+        else this.errors.push(error);
+    }
+};
 _.extend(Promise.prototype, {
     then: function (success, failure) {
-        if (success) this.success.push(success);
-        if (failure) this.failure.push(failure);
-        if (!this.nextPromise) {
-            this.nextPromise = new Promise();
-            this.success.push(s(false).bind(this.nextPromise));
-            this.failure.push(f.bind(this.nextPromise));
-            this.errors.push(e.bind(this.nextPromise));
+        if (success) {
+            if (this.res) success(this.res);
+            else this.success.push(success);
+        }
+        if (failure) {
+            if (this._fail) failure(this._fail);
+            else this.failure.push(failure);
         }
         return this.nextPromise;
     },
-    catch: function (error) {
-        if (error) this.errors.push(error);
-    },
-    done: function () {}
+    catch: fail,
+    fail: fail,
+    done: function (success, failure) {
+        this.then(success).catch(failure);
+    }
 });
 
 function Deferred(cb) {

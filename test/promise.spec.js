@@ -55,6 +55,27 @@ describe('custom promises', function () {
             });
             deferred.resolve(o);
         });
+        it('already resolved', function (done) {
+            var deferred = defer();
+            var o = {};
+            deferred.resolve(o);
+            deferred.promise.then(function (res) {
+                assert.equal(res, o);
+                done();
+            });
+        });
+        it('already resolved, chained', function (done) {
+            var deferred = defer();
+            var o = {};
+            deferred.resolve(o);
+            deferred.promise
+                .then(function (res) {
+                    assert.equal(res, o);
+                })
+                .then(function () {
+                    done();
+                })
+        });
     });
 
     describe('reject', function () {
@@ -113,6 +134,32 @@ describe('custom promises', function () {
                 });
                 deferred.reject(o);
             });
+            it('already rejected', function (done) {
+                var deferred = defer();
+                var o = {};
+                deferred.reject(o);
+                deferred.promise
+                    .catch(function (err) {
+                        assert.equal(err, o);
+                        done();
+                    })
+            });
+            it('already rejected, chained', function (done) {
+                var deferred = defer();
+                var o = {};
+                deferred.reject(o);
+                var success = function () {
+                    done('Should not have succeeded');
+                };
+                deferred.promise
+                    .then(success)
+                    .then(success)
+                    .then(success)
+                    .catch(function (err) {
+                        assert.equal(err, o);
+                        done();
+                    })
+            });
         });
         describe('then', function () {
             it('simple', function (done) {
@@ -134,6 +181,18 @@ describe('custom promises', function () {
                         done();
                     });
                 deferred.reject(err);
+            });
+            it('already rejected', function (done) {
+                var deferred = defer();
+                var err = 'err';
+                deferred.reject(err);
+                deferred.promise
+                    .then(function () {
+                        done('Should not have succeeded');
+                    }, function (_err) {
+                        assert.equal(_err, err);
+                        done();
+                    });
             });
             it('simple with err, chained', function (done) {
                 var deferred = defer();
@@ -160,6 +219,32 @@ describe('custom promises', function () {
                         done();
                     });
                 deferred.reject(err);
+            });
+            it('already rejected, chained', function (done) {
+                var deferred = defer();
+                var success = function () {
+                    done('Should not have succeeded');
+                };
+                var err = 'err',
+                    order = [];
+                deferred.reject(err);
+                deferred.promise
+                    .then(success, function (_err) {
+                        assert.equal(_err, err, 'error should be passed along');
+                        order.push(1);
+                    })
+                    .then(success, function (_err) {
+                        assert.equal(_err, err, 'error should be passed along');
+                        order.push(2);
+                    })
+                    .then(success, function (_err) {
+                        assert.equal(_err, err, 'error should be passed along');
+                        order.push(3);
+                        assert.equal(order[0], 1);
+                        assert.equal(order[1], 2);
+                        assert.equal(order[2], 3);
+                        done();
+                    });
             });
         });
     });
@@ -207,6 +292,21 @@ describe('custom promises', function () {
                     done();
                 });
             deferred.resolve();
+        });
+        it('already errored', function (done) {
+            var deferred = defer(),
+                error = Error('wtf!');
+            var promise = deferred.promise
+                .then(function () {})
+                .then(function () {
+                    throw error;
+                });
+            deferred.resolve();
+            promise.then(function () {})
+                .catch(function (err) {
+                    assert.equal(err, error, 'Should catch the error and pass to catch');
+                    done();
+                });
         });
     });
 
