@@ -72,10 +72,10 @@ function cacheForModel(model) {
 
 _.extend(Query.prototype, {
     execute: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         this._executeInMemory(callback);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     _dump: function (asJson) {
         return asJson ? '{}' : {};
@@ -128,8 +128,8 @@ _.extend(Query.prototype, {
         }, _.extend({}, cacheForModel(this.model)));
     },
     _executeInMemory: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var cacheByLocalId = this._getCacheByLocalId();
         var keys = Object.keys(cacheByLocalId);
         var self = this;
@@ -148,7 +148,7 @@ _.extend(Query.prototype, {
         }
         res = this._sortResults(res);
         callback(err, err ? null : res);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     orderBy: function () {
         this.ordering = [];

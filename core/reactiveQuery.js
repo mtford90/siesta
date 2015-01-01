@@ -52,7 +52,8 @@ _.extend(ReactiveQuery, {
 _.extend(ReactiveQuery.prototype, {
     init: function (cb) {
         if (Logger.trace) Logger.trace('init');
-        var deferred = window.q ? window.q.defer() : null;
+        var deferred = util.defer(cb);
+        cb = deferred.finish;
         this._query.execute(function (err, results) {
             if (!err) {
                 this.results = results;
@@ -65,29 +66,28 @@ _.extend(ReactiveQuery.prototype, {
                     notifications.on(name, handler);
                 }
                 if (Logger.trace) Logger.trace('Listening to ' + name);
-                if (cb) cb();
-                if (deferred) deferred.resolve();
+                cb();
             }
             else {
-                if (cb) cb(err);
-                if (deferred) deferred.reject(err);
+                cb(err);
             }
         }.bind(this));
-        return deferred ? deferred.promise : undefined;
+        return deferred.promise;
     },
     orderBy: function (field, cb) {
         var deferred = util.defer(cb);
+        cb = deferred.finish;
         this._query = this._query.orderBy(field);
         if (this.initialised) {
             this._query.execute(function (err, results) {
                 if (!err) {
                     this.results = results;
                 }
-                deferred.finish(err);
+                cb(err);
             }.bind(this));
         }
         else {
-            deferred.resolve();
+            cb();
         }
         return deferred.promise;
     },

@@ -122,8 +122,8 @@ _.extend(OneToManyProxy.prototype, {
         }
     },
     get: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var self = this;
         if (this.isFault) {
             if (this._id.length) {
@@ -145,7 +145,7 @@ _.extend(OneToManyProxy.prototype, {
         else {
             if (callback) callback(null, this.related);
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     /**
      * Validate the object that we're setting

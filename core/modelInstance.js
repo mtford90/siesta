@@ -59,15 +59,15 @@ function ModelInstance(model) {
 
 _.extend(ModelInstance.prototype, {
     get: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         callback(null, this);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     remove: function (callback, notification) {
         notification = notification == null ? true : notification;
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         cache.remove(this);
         this.removed = true;
         if (notification) {
@@ -82,11 +82,11 @@ _.extend(ModelInstance.prototype, {
             });
         }
         callback(null, this);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     restore: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         if (this.removed) {
             cache.insert(this);
             this.removed = false;
@@ -101,7 +101,7 @@ _.extend(ModelInstance.prototype, {
             obj: this
         });
         callback(null, this);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     }
 });
 

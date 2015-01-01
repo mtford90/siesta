@@ -303,8 +303,8 @@ _.extend(Model.prototype, {
         return new PositionalReactiveQuery(new Query(this, query || {}));
     },
     get: function (idOrCallback, callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         if (this.singleton) {
             if (typeof idOrCallback == 'function') {
                 callback = idOrCallback;
@@ -344,22 +344,22 @@ _.extend(Model.prototype, {
             }
 
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     all: function () {
         return new Query(this, {});
     },
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.name);
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         if (!this._installed) {
             this._installed = true;
             callback();
         } else {
             throw new InternalSiestaError('Model "' + this.name + '" has already been installed');
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     /**
      * Map data into Siesta.
@@ -421,11 +421,11 @@ _.extend(Model.prototype, {
         }, {});
     },
     count: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var hash = this._countCache();
         callback(null, Object.keys(hash).length)
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     /**
      * Convert raw data into a ModelInstance

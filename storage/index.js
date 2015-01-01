@@ -185,7 +185,7 @@ function saveToPouch(objects, callback, deferred) {
  * Save all changes down to PouchDB.
  */
 function save(callback) {
-    var deferred = window.q ? window.q.defer() : null;
+    var deferred = util.defer(callback);
     callback = callback || function () {};
     var objects = unsavedObjects;
     unsavedObjects = [];
@@ -197,7 +197,7 @@ function save(callback) {
         }))
     }
     saveToPouch(objects, callback, deferred);
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 var listener = function (n) {

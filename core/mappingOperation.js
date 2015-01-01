@@ -112,8 +112,8 @@ _.extend(MappingOperation.prototype, {
      * @private
      */
     _lookup: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var self = this;
         var remoteLookups = [];
         var localLookups = [];
@@ -239,11 +239,11 @@ _.extend(MappingOperation.prototype, {
                 }
             ],
             callback);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     _lookupSingleton: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var self = this;
         this.model.get(function (err, singleton) {
             // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
@@ -264,7 +264,7 @@ _.extend(MappingOperation.prototype, {
             }
             callback(err);
         });
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     start: function (done) {
         if (this.data.length) {

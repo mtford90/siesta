@@ -82,7 +82,6 @@ _.extend(Paginator.prototype, {
     },
     page: function (optsOrCallback, callback) {
         var self = this;
-        var deferred = window.q ? window.q.defer() : null;
         var opts = {};
         if (typeof optsOrCallback == 'function') {
             callback = optsOrCallback;
@@ -90,9 +89,11 @@ _.extend(Paginator.prototype, {
         else if (optsOrCallback) {
             opts = optsOrCallback;
         }
+        var deferred = util.defer(callback);
+
         var page = opts.page,
             pageSize = opts.pageSize;
-        callback = util.cb(callback, deferred);
+        callback = deferred.finish;
         var ajax = siesta.ext.http.ajax,
             ajaxOpts = _.extend({}, this.ajaxOpts);
         var collection = this.paginatorOpts.model.collection,
@@ -144,7 +145,7 @@ _.extend(Paginator.prototype, {
             fail: callback
         });
         ajax(ajaxOpts);
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     validate: function () {
         if (!this.paginatorOpts.model) throw new InternalSiestaError('Paginator must have a model');

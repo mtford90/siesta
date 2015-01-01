@@ -29,8 +29,8 @@ var Logger = log.loggerWithName('Store');
  * ```
  */
 function get(opts, callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer(callback);
+    callback = deferred.finish;
     if (Logger.debug.isEnabled)
         Logger.debug('get', opts);
     var siestaModel;
@@ -121,12 +121,12 @@ function get(opts, callback) {
         var msg = 'Invalid options given to store';
         throw new InternalSiestaError(msg, context);
     }
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 function getMultiple(optsArray, callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer(callback);
+    callback = deferred.finish;
     var docs = [];
     var errors = [];
     _.each(optsArray, function (opts) {
@@ -147,7 +147,7 @@ function getMultiple(optsArray, callback) {
             }
         });
     });
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 /**
  * Uses pouch bulk fetch API. Much faster than getMultiple.
@@ -155,8 +155,8 @@ function getMultiple(optsArray, callback) {
  * @param callback
  */
 function getMultipleLocal(localIdentifiers, callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer(callback);
+    callback = deferred.finish;
     var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({
             _id: _id
@@ -189,12 +189,12 @@ function getMultipleLocal(localIdentifiers, callback) {
 //    } else {
     finish();
 //    }
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 function getMultipleRemote(remoteIdentifiers, model, callback) {
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer(callback);
+    callback = deferred.finish;
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {
             model: model
@@ -225,7 +225,7 @@ function getMultipleRemote(remoteIdentifiers, model, callback) {
     }
 
     finish();
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 module.exports = {

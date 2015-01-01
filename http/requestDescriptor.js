@@ -42,8 +42,8 @@ RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 
 _.extend(RequestDescriptor.prototype, {
     _serialise: function (obj, callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var self = this;
         if (Logger.trace.isEnabled)
             Logger.trace('_serialise');
@@ -65,7 +65,7 @@ _.extend(RequestDescriptor.prototype, {
             if (Logger.trace.isEnabled)
                 Logger.trace('serialiser uses a callback', this.serialiser);
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     _dump: function (asJson) {
         var obj = {};

@@ -76,8 +76,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         opts = args[0];
         callback = args[1];
     }
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer();
     opts.type = method;
     if (!opts.url) { // Allow overrides.
         var baseURL = this.baseURL;
@@ -145,6 +144,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
     };
     logHttpRequest(opts);
     siesta.ext.http.ajax(opts);
+    return deferred.promise;
 }
 
 function _serialiseObject(opts, obj, cb) {
@@ -179,8 +179,8 @@ function _httpRequest(method, path, object) {
         opts = args[0];
         callback = args[1];
     }
-    var deferred = window.q ? window.q.defer() : null;
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer(callback);
+    callback = deferred.finish;
     args = Array.prototype.slice.call(args, 2);
     var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
     var matchedDescriptor;
@@ -217,7 +217,7 @@ function _httpRequest(method, path, object) {
             Logger.trace('Did not match descriptor');
         callback('No descriptor matched', null, null);
     }
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 /**
@@ -227,7 +227,6 @@ function _httpRequest(method, path, object) {
  * @returns {Promise}
  */
 function DELETE(path, object) {
-    var deferred = window.q ? window.q.defer() : null;
     var args = Array.prototype.slice.call(arguments, 2);
     var opts = {};
     var callback;
@@ -237,7 +236,7 @@ function DELETE(path, object) {
         opts = args[0];
         callback = args[1];
     }
-    callback = util.cb(callback, deferred);
+    var deferred = util.defer(callback);
     var deletionMode = opts.deletionMode || 'restore';
     // By default we do not map the response from a DELETE request.
     if (opts.parseResponse === undefined) opts.parseResponse = false;
@@ -250,11 +249,12 @@ function DELETE(path, object) {
             object.remove();
         }
         callback(err, x, y, z);
+        deferred.finish(err, {x: x, y: y, z:z});
     });
     if (deletionMode == 'now' || deletionMode == 'restore') {
         object.remove();
     }
-    return deferred ? deferred.promise : null;
+    return deferred.promise;
 }
 
 /**
