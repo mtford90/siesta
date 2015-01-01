@@ -1,6 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
+require('source-map-support').install();
 
 var util = require('../core/util');
 var q = require('q');

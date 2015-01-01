@@ -166,7 +166,7 @@ _.extend(MappingOperation.prototype, {
             }
         }
         util.async.parallel([
-                function (callback) {
+                function (done) {
                     var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
                     if (localIdentifiers.length) {
                         Store.getMultipleLocal(localIdentifiers, function (err, objects) {
@@ -186,13 +186,13 @@ _.extend(MappingOperation.prototype, {
                                     }
                                 }
                             }
-                            callback(err);
+                            done(err);
                         });
                     } else {
-                        callback();
+                        done();
                     }
                 },
-                function (callback) {
+                function (done) {
                     var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
                     if (remoteIdentifiers.length) {
                         if (Logger.trace.isEnabled)
@@ -231,10 +231,10 @@ _.extend(MappingOperation.prototype, {
                                     }
                                 }
                             }
-                            callback(err);
+                            done(err);
                         });
                     } else {
-                        callback();
+                        done();
                     }
                 }
             ],
