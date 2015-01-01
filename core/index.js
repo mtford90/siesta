@@ -93,12 +93,12 @@ _.extend(siesta, {
     },
     /**
      * Install all collections.
-     * @param {Function} [callback]
+     * @param {Function} [cb]
      * @returns {q.Promise}
      */
-    install: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+    install: function (cb) {
+        var deferred = util.defer(cb);
+        cb = deferred.finish;
         var collectionNames = CollectionRegistry.collectionNames,
             tasks = _.map(collectionNames, function (n) {
                 return function (done) {
@@ -107,7 +107,7 @@ _.extend(siesta, {
             });
         siesta.async.series(tasks, function (err) {
             if (err) {
-                callback(err);
+                cb(err);
             }
             else {
                 var ensureSingletons = function (err) {
@@ -126,11 +126,11 @@ _.extend(siesta, {
                             }
                         }
                         siesta.async.parallel(ensureSingletonTasks, function (err, res) {
-                            callback(err, res);
+                            cb(err, res);
                         });
                     }
                     else {
-                        callback(err);
+                        cb(err);
                     }
                 };
                 if (siesta.ext.storageEnabled) {
@@ -143,7 +143,7 @@ _.extend(siesta, {
             }
         });
 
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     setLogLevel: function (loggerName, level) {
         var Logger = log.loggerWithName(loggerName);

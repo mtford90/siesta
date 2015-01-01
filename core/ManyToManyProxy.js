@@ -98,8 +98,8 @@ _.extend(ManyToManyProxy.prototype, {
         }
     },
     get: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
-        callback = util.cb(callback, deferred);
+        var deferred = util.defer(callback);
+        callback = deferred.finish;
         var self = this;
         if (this.isFault) {
             Store.get({_id: this._id}, function (err, stored) {
@@ -115,7 +115,7 @@ _.extend(ManyToManyProxy.prototype, {
         else {
             if (callback) callback(null, this.related);
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
     validate: function (obj) {
         if (Object.prototype.toString.call(obj) != '[object Array]') {
