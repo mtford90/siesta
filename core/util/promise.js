@@ -1,50 +1,68 @@
 /**
- * A custom promise library. More lightweight than q.js but works with it.
+ * A crazy simple promise library.
  * @module util.promise
  */
 
 var _ = require('underscore');
 
-
-function Promise(deferred) {
-    _.extend(this, {
-        then: deferred.then.bind(deferred),
-        catch: deferred.then.bind(deferred),
-        success_p: [],
-        failure: [],
-        error: []
-    });
-    this.deferred = deferred;
+function s(res) {
+    this.success.forEach(function (s) {s(res)});
 }
 
+function f(err) {
+    this.failure.forEach(function (s) {s(err)});
+    this.errors.forEach(function (s) {s(err)});
+}
+
+function e(err) {
+    this.errors.forEach(function (s) {s(err)});
+}
+
+function Promise() {
+    _.extend(this, {
+        success: [],
+        failure: [],
+        errors: [],
+        nextPromise: null
+    });
+}
 _.extend(Promise.prototype, {
-    done: function () {}
+    then: function (success, failure) {
+        if (success) this.success.push(success);
+        if (failure) this.failure.push(failure);
+        if (!this.nextPromise) {
+            this.nextPromise = new Promise();
+            this.success.push(s.bind(this.nextPromise));
+            this.failure.push(f.bind(this.nextPromise));
+            this.errors.push(e.bind(this.nextPromise));
+        }
+        return this.nextPromise;
+    },
+    catch: function (error) {
+        if (error) this.errors.push(error);
+    }
 });
 
 function Deferred(cb) {
-    this.cb = cb || function () {};
-    this.promise = new Promise(this);
+    _.extend(this, {
+        cb: cb || function () {},
+        promise: new Promise()
+    });
 }
 
 _.extend(Deferred.prototype, {
     resolve: function (res) {
-        deferred.promise.success_fn.forEach(function (fn) {
-            fn(res);
-        });
-        deferred.promise.success_p.forEach(function (p) {
-
-        });
-        cb(res);
+        s.call(this.promise, res);
     },
     reject: function (err) {
-        cb(err);
+        f.call(this.promise, err);
     },
     finish: function (err, res) {
-        if (err) deferred.reject(err);
-        else deferred.resolve(res);
+        if (err) this.reject(err);
+        else this.resolve(res);
     }
 });
 
 module.exports = function (cb) {
-    return new Deferred(cb)
+    return new Deferred(cb);
 };
