@@ -77,7 +77,7 @@ _.extend(Collection.prototype, {
      * @class Collection
      */
     install: function (callback) {
-        var deferred = window.q ? window.q.defer() : null;
+        var deferred = util.defer(callback);
         var self = this;
         if (!this.installed) {
             var modelsToInstall = [];
@@ -96,7 +96,7 @@ _.extend(Collection.prototype, {
                 util.async.parallel(tasks, function (err) {
                     if (err) {
                         Logger.error('Failed to install collection', err);
-                        self._finaliseInstallation(err, callback, deferred);
+                        self._finaliseInstallation(err, deferred.finish);
                     }
                     else {
                         self.installed = true;
@@ -120,36 +120,33 @@ _.extend(Collection.prototype, {
                         } else if (errors.length) {
                             err = errors;
                         }
-                        self._finaliseInstallation(err, callback, deferred);
+                        self._finaliseInstallation(err, deferred.finish);
                     }
                 });
 
             } else {
-                self._finaliseInstallation(null, callback, deferred);
+                self._finaliseInstallation(null, deferred.finish);
             }
         } else {
             var err = new InternalSiestaError('Collection "' + this.name + '" has already been installed');
-            self._finaliseInstallation(err, callback, deferred);
+            self._finaliseInstallation(err, deferred.finish);
         }
-        return deferred ? deferred.promise : null;
+        return deferred.promise;
     },
 
     /**
      * Mark this collection as installed, and place the collection on the global Siesta object.
      * @param  {Object}   err
      * @param  {Function} callback
-     * @param {Q.promise} deferred
      * @class Collection
      */
-    _finaliseInstallation: function (err, callback, deferred) {
+    _finaliseInstallation: function (err, callback) {
         if (!err) {
             this.installed = true;
             var index = require('./index');
             index[this.name] = this;
         }
-        if (err)deferred.reject(err);
-        else deferred.resolve();
-        if (callback) callback(err);
+        callback(err);
     },
     /**
      * Given the name of a mapping and an options object describing the mapping, creating a Model
