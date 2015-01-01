@@ -5,8 +5,15 @@
 
 var _ = require('underscore');
 
-function s(res) {
-    this.success.forEach(function (s) {s(res)});
+function s(pass) {
+    return function (res) {
+        try {
+            this.success.forEach(function (s) {s(pass ? res : undefined)});
+        }
+        catch (err) {
+            e.call(this, err);
+        }
+    };
 }
 
 function f(err) {
@@ -32,7 +39,7 @@ _.extend(Promise.prototype, {
         if (failure) this.failure.push(failure);
         if (!this.nextPromise) {
             this.nextPromise = new Promise();
-            this.success.push(s.bind(this.nextPromise));
+            this.success.push(s(false).bind(this.nextPromise));
             this.failure.push(f.bind(this.nextPromise));
             this.errors.push(e.bind(this.nextPromise));
         }
@@ -40,7 +47,8 @@ _.extend(Promise.prototype, {
     },
     catch: function (error) {
         if (error) this.errors.push(error);
-    }
+    },
+    done: function () {}
 });
 
 function Deferred(cb) {
@@ -52,10 +60,12 @@ function Deferred(cb) {
 
 _.extend(Deferred.prototype, {
     resolve: function (res) {
-        s.call(this.promise, res);
+        s(true).call(this.promise, res);
+        this.cb(null, res);
     },
     reject: function (err) {
         f.call(this.promise, err);
+        this.cb(err ? err : true);
     },
     finish: function (err, res) {
         if (err) this.reject(err);
