@@ -304,7 +304,7 @@ _.extend(Model.prototype, {
     },
     get: function (idOrCallback, callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         if (this.singleton) {
             if (typeof idOrCallback == 'function') {
                 callback = idOrCallback;
@@ -352,7 +352,7 @@ _.extend(Model.prototype, {
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.name);
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         if (!this._installed) {
             this._installed = true;
             callback();
@@ -383,7 +383,7 @@ _.extend(Model.prototype, {
         delete opts.override;
         if (this.installed) {
             if (util.isArray(data)) {
-                this._mapBulk(data, opts, deferred.finish);
+                this._mapBulk(data, opts, deferred.finish.bind(deferred));
             } else {
 
                 this._mapBulk([data], opts, function (err, objects) {
@@ -422,7 +422,7 @@ _.extend(Model.prototype, {
     },
     count: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         var hash = this._countCache();
         callback(null, Object.keys(hash).length)
         return deferred.promise;

@@ -98,7 +98,7 @@ _.extend(siesta, {
      */
     install: function (cb) {
         var deferred = util.defer(cb);
-        cb = deferred.finish;
+        cb = deferred.finish.bind(deferred);
         var collectionNames = CollectionRegistry.collectionNames,
             tasks = _.map(collectionNames, function (n) {
                 return function (done) {

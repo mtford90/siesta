@@ -53,7 +53,7 @@ _.extend(ReactiveQuery.prototype, {
     init: function (cb) {
         if (Logger.trace) Logger.trace('init');
         var deferred = util.defer(cb);
-        cb = deferred.finish;
+        cb = deferred.finish.bind(deferred);
         this._query.execute(function (err, results) {
             if (!err) {
                 this.results = results;
@@ -76,7 +76,7 @@ _.extend(ReactiveQuery.prototype, {
     },
     orderBy: function (field, cb) {
         var deferred = util.defer(cb);
-        cb = deferred.finish;
+        cb = deferred.finish.bind(deferred);
         this._query = this._query.orderBy(field);
         if (this.initialised) {
             this._query.execute(function (err, results) {

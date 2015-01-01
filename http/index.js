@@ -180,7 +180,7 @@ function _httpRequest(method, path, object) {
         callback = args[1];
     }
     var deferred = util.defer(callback);
-    callback = deferred.finish;
+    callback = deferred.finish.bind(deferred);
     args = Array.prototype.slice.call(args, 2);
     var requestDescriptors = DescriptorRegistry.requestDescriptorsForCollection(this);
     var matchedDescriptor;

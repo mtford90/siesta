@@ -43,7 +43,7 @@ RequestDescriptor.prototype = Object.create(Descriptor.prototype);
 _.extend(RequestDescriptor.prototype, {
     _serialise: function (obj, callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         var self = this;
         if (Logger.trace.isEnabled)
             Logger.trace('_serialise');

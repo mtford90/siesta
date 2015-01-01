@@ -99,7 +99,7 @@ _.extend(ManyToManyProxy.prototype, {
     },
     get: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         var self = this;
         if (this.isFault) {
             Store.get({_id: this._id}, function (err, stored) {

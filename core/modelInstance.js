@@ -60,14 +60,14 @@ function ModelInstance(model) {
 _.extend(ModelInstance.prototype, {
     get: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         callback(null, this);
         return deferred.promise;
     },
     remove: function (callback, notification) {
         notification = notification == null ? true : notification;
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         cache.remove(this);
         this.removed = true;
         if (notification) {
@@ -86,7 +86,7 @@ _.extend(ModelInstance.prototype, {
     },
     restore: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         if (this.removed) {
             cache.insert(this);
             this.removed = false;

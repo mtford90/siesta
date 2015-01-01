@@ -30,7 +30,7 @@ var Logger = log.loggerWithName('Store');
  */
 function get(opts, callback) {
     var deferred = util.defer(callback);
-    callback = deferred.finish;
+    callback = deferred.finish.bind(deferred);
     if (Logger.debug.isEnabled)
         Logger.debug('get', opts);
     var siestaModel;
@@ -126,7 +126,7 @@ function get(opts, callback) {
 
 function getMultiple(optsArray, callback) {
     var deferred = util.defer(callback);
-    callback = deferred.finish;
+    callback = deferred.finish.bind(deferred);
     var docs = [];
     var errors = [];
     _.each(optsArray, function (opts) {
@@ -156,7 +156,7 @@ function getMultiple(optsArray, callback) {
  */
 function getMultipleLocal(localIdentifiers, callback) {
     var deferred = util.defer(callback);
-    callback = deferred.finish;
+    callback = deferred.finish.bind(deferred);
     var results = _.reduce(localIdentifiers, function (memo, _id) {
         var obj = cache.get({
             _id: _id
@@ -194,7 +194,7 @@ function getMultipleLocal(localIdentifiers, callback) {
 
 function getMultipleRemote(remoteIdentifiers, model, callback) {
     var deferred = util.defer(callback);
-    callback = deferred.finish;
+    callback = deferred.finish.bind(deferred);
     var results = _.reduce(remoteIdentifiers, function (memo, id) {
         var cacheQuery = {
             model: model

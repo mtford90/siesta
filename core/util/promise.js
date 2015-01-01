@@ -59,6 +59,7 @@ var fail = function (error) {
         if (this.error) error(this.error);
         else this.errors.push(error);
     }
+    return this.nextPromise;
 };
 _.extend(Promise.prototype, {
     then: function (success, failure) {
@@ -96,6 +97,7 @@ _.extend(Deferred.prototype, {
         this.cb(err ? err : true);
     },
     finish: function (err, res) {
+        if (this == window) throw 'wtf';
         if (err) this.reject(err);
         else this.resolve(res);
     }

@@ -123,7 +123,7 @@ _.extend(OneToManyProxy.prototype, {
     },
     get: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         var self = this;
         if (this.isFault) {
             if (this._id.length) {

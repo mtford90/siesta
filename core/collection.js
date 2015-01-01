@@ -96,7 +96,7 @@ _.extend(Collection.prototype, {
                 util.async.parallel(tasks, function (err) {
                     if (err) {
                         Logger.error('Failed to install collection', err);
-                        self._finaliseInstallation(err, deferred.finish);
+                        self._finaliseInstallation(err, deferred.finish.bind(deferred));
                     }
                     else {
                         self.installed = true;
@@ -120,16 +120,16 @@ _.extend(Collection.prototype, {
                         } else if (errors.length) {
                             err = errors;
                         }
-                        self._finaliseInstallation(err, deferred.finish);
+                        self._finaliseInstallation(err, deferred.finish.bind(deferred));
                     }
                 });
 
             } else {
-                self._finaliseInstallation(null, deferred.finish);
+                self._finaliseInstallation(null, deferred.finish.bind(deferred));
             }
         } else {
             var err = new InternalSiestaError('Collection "' + this.name + '" has already been installed');
-            self._finaliseInstallation(err, deferred.finish);
+            self._finaliseInstallation(err, deferred.finish.bind(deferred));
         }
         return deferred.promise;
     },

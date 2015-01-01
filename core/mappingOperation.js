@@ -113,7 +113,7 @@ _.extend(MappingOperation.prototype, {
      */
     _lookup: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         var self = this;
         var remoteLookups = [];
         var localLookups = [];
@@ -243,7 +243,7 @@ _.extend(MappingOperation.prototype, {
     },
     _lookupSingleton: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish;
+        callback = deferred.finish.bind(deferred);
         var self = this;
         this.model.get(function (err, singleton) {
             // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
