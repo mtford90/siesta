@@ -1,3 +1,8 @@
+/**
+ * Dead simple logging service.
+ * @module log
+ */
+
 var _ = require('./util/index')._;
 
 var logLevels = {};
