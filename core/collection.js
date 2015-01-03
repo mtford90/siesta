@@ -135,6 +135,28 @@ _.extend(Collection.prototype, {
     },
 
     /**
+     * Users are allowed to define an 'init' method within each model definiton e.g:
+     *     statics: {
+     *         init: function () {
+     *             ...
+     *         }
+     *     }
+     * This method will run through all models in this collection and execute each init method (if present)
+     * @private
+     */
+    _executeCustomModelInit: function () {
+        var models = this._models;
+        for (var modelName in  models) {
+            if (models.hasOwnProperty(modelName)) {
+                var model = models[modelName];
+                var init = model.init;
+                if (init) {
+                    init.call(model);
+                }
+            }
+        }
+    },
+    /**
      * Mark this collection as installed, and place the collection on the global Siesta object.
      * @param  {Object}   err
      * @param  {Function} callback

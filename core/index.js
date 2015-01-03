@@ -97,6 +97,9 @@ _.extend(siesta, {
      * @returns {q.Promise}
      */
     install: function (cb) {
+        /*
+        TODO: Clean up this fuckin' mess.
+         */
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
         var collectionNames = CollectionRegistry.collectionNames,
@@ -105,9 +108,21 @@ _.extend(siesta, {
                     CollectionRegistry[n].install(done);
                 }
             });
+
+        function finish(err, res) {
+            if (!err) {
+                // Execute all model static init functions (if present). See Collection._executeCustomModelInit for more details
+                collectionNames.forEach(function (collName) {
+                    var collection = CollectionRegistry[collName];
+                    collection._executeCustomModelInit();
+                });
+            }
+            cb(err, res);
+        }
+
         siesta.async.series(tasks, function (err) {
             if (err) {
-                cb(err);
+                finish(err);
             }
             else {
                 var ensureSingletons = function (err) {
@@ -126,11 +141,11 @@ _.extend(siesta, {
                             }
                         }
                         siesta.async.parallel(ensureSingletonTasks, function (err, res) {
-                            cb(err, res);
+                            finish(err, res);
                         });
                     }
                     else {
-                        cb(err);
+                        finish(err);
                     }
                 };
                 if (siesta.ext.storageEnabled) {

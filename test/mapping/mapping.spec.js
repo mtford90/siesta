@@ -93,6 +93,20 @@ describe('mapping!', function () {
     });
 
     describe('statics', function () {
+        it('init', function (done) {
+            var C = s.collection('C');
+            var M;
+            M = C.model('M', {
+                statics: {
+                    init: function () {
+                        assert.equal(this, M);
+                        done();
+                    }
+                },
+                attributes: ['attr']
+            });
+            siesta.install().catch(done);
+        });
         it('valid', function (done) {
             var C = s.collection('C');
             var M = C.model('M', {
