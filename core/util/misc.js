@@ -2,6 +2,12 @@ var observe = require('../../vendor/observe-js/src/observe').Platform,
     _ = require('./underscore'),
     InternalSiestaError = require('./../error').InternalSiestaError;
 
+// Used by paramNames function.
+var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
+    FN_ARG_SPLIT = /,/,
+    FN_ARG = /^\s*(_?)(.+?)\1\s*$/,
+    STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+
 function cb(callback, deferred) {
     return function (err) {
         if (callback) callback.apply(callback, arguments);
@@ -240,5 +246,25 @@ _.extend(module.exports, {
             }
         }
         return unflattened;
+    },
+    /**
+     * Return the parameter names of a function.
+     * Note: adapted from AngularJS dependency injection :)
+     * @param fn
+     */
+    paramNames: function (fn) {
+        // TODO: Is there a more robust way of doing this?
+        var params = [],
+            fnText,
+            argDecl;
+        fnText = fn.toString().replace(STRIP_COMMENTS, '');
+        argDecl = fnText.match(FN_ARGS);
+
+        argDecl[1].split(FN_ARG_SPLIT).forEach(function(arg){
+            arg.replace(FN_ARG, function(all, underscore, name){
+                params.push(name);
+            });
+        });
+        return params;
     }
 });

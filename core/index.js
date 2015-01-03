@@ -114,8 +114,13 @@ _.extend(siesta, {
                 // Execute all model static init functions (if present). See Collection._executeCustomModelInit for more details
                 collectionNames.forEach(function (collName) {
                     var collection = CollectionRegistry[collName];
-                    collection._executeCustomModelInit();
+                    collection._executeCustomModelInit(function (err) {
+                        cb(err, res);
+                    });
                 });
+            }
+            else {
+
             }
             cb(err, res);
         }

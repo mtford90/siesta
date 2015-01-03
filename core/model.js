@@ -155,6 +155,7 @@ _.extend(Model.prototype, {
                 }
             }.bind(this));
         }
+        return statics;
     },
     /**
      * Install relationships. Returns error in form of string if fails.

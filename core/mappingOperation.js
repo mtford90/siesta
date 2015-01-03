@@ -282,20 +282,37 @@ _.extend(MappingOperation.prototype, {
             tasks.push(_.bind(this._executeSubOperations, this));
             util.async.parallel(tasks, function () {
                 self._map();
-                /*
-                    Users are allowed to add a custom init method to the methods object when defining a Model e.g:
-                        methods: {
-                            __init: function (done) {
-                                // ...
-                            }
+
+                // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
+                //
+                // methods: {
+                //     __init: function ([done]) {
+                //        // ...
+                //     }
+                // }
+                //
+                // If done is passed, then __init must be executed asynchronously, and the mapping operation will not
+                // finish until all inits have executed.
+                //
+                // Here we ensure the execution of all of them
+
+                var initTasks = _.reduce(self._newObjects, function (m, o) {
+                    var methods = o.model.methods || {},
+                        init = methods.__init;
+                    if (init) {
+                        var paramNames = util.paramNames(init);
+                        if (paramNames.length) {
+                            m.push(_.bind(init, o, done));
                         }
-                    Here we ensure that all new objects have this method executed.
-                 */
-                // Execute the custom init methods on any new model instances.
-                self._newObjects.forEach(function (o) {
-                    if (o.__init) o.__init();
+                        else {
+                            init.call(o);
+                        }
+                    }
+                    return m;
+                }, []);
+                async.parallel(initTasks, function () {
+                    done(self.errors.length ? self.errors : null, self.objects);
                 });
-                done(self.errors.length ? self.errors : null, self.objects);
             });
         } else {
             done(null, []);

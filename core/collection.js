@@ -137,24 +137,37 @@ _.extend(Collection.prototype, {
     /**
      * Users are allowed to define an 'init' method within each model definiton e.g:
      *     statics: {
-     *         __init: function () {
+     *         __init: function ([done]) {
      *             ...
      *         }
      *     }
+     * If done is present, the method is executed asynchronously.
      * This method will run through all models in this collection and execute each init method (if present)
+     * @param cb
      * @private
      */
-    _executeCustomModelInit: function () {
-        var models = this._models;
-        for (var modelName in  models) {
+    _executeCustomModelInit: function (cb) {
+        var models = this._models,
+            tasks = [];
+        for (var modelName in models) {
             if (models.hasOwnProperty(modelName)) {
-                var model = models[modelName];
-                var init = model.__init;
+                var model = models[modelName],
+                    statics = model.statics || {},
+                    init = statics.__init;
                 if (init) {
-                    init.call(model);
+                    var paramNames = util.paramNames(init);
+                    if (paramNames.length) {
+                        (function (init) {
+                            tasks.push(init);
+                        })(init.bind(model));
+                    }
+                    else {
+                        init.call(model);
+                    }
                 }
             }
         }
+        async.parallel(tasks, cb);
     },
     /**
      * Mark this collection as installed, and place the collection on the global Siesta object.
