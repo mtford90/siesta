@@ -16,10 +16,26 @@ describe('notifications', function () {
         s.reset(done);
     });
 
-    var collection, carMapping;
-    var car;
-
+    var collection, carMapping, car;
     var notif, collectionNotif, genericNotif, localIdNotif, remoteIdNotif;
+
+    describe('basics', function () {
+        it('simple emissions work', function (done) {
+            notifications.once('blah', function () {
+                done();
+            });
+            notifications.emit('blah');
+        });
+
+        it('emissions with payloads work', function (done) {
+            var p = {};
+            notifications.once('blah', function (payload) {
+                assert.equal(payload, p);
+                done();
+            });
+            notifications.emit('blah', p);
+        });
+    });
 
     describe('attributes', function () {
         afterEach(function () {

@@ -3,10 +3,8 @@ var s = require('../core/index'),
 
 describe('singleton mapping', function () {
 
-    var SiestaModel = require('../core/modelInstance');
-    var Collection = require('../core/collection');
-    var cache = require('../core/cache');
-    var store = require('../core/store');
+    var SiestaModel = require('../core/modelInstance'),
+        cache = require('../core/cache');
 
     var collection, Car;
 
@@ -66,7 +64,6 @@ describe('singleton mapping', function () {
             });
         });
     });
-
 
     it('cache should return singleton', function (done) {
         Car.map({
@@ -168,6 +165,55 @@ describe('singleton mapping', function () {
                     }).catch(done).done();
                 }).catch(done).done();
             }).catch(done).done();
+        })
+    });
+
+    describe('methods', function () {
+        var Pomodoro, PomodoroTimer;
+        beforeEach(function (done) {
+            siesta.reset(function () {
+                var initialised = false;
+                Pomodoro = siesta.collection('Pomodoro');
+                PomodoroTimer = Pomodoro.model('PomodoroTimer', {
+                    attributes: [
+                        {
+                            name: 'seconds',
+                            default: 25 * 60
+                        },
+                        {
+                            name: 'round',
+                            default: 1
+                        },
+                        {
+                            name: 'target',
+                            default: 1
+                        }
+                    ],
+                    methods: {
+                        __init: function (cb) {
+                            initialised = true;
+                            this.poop = true;
+                            cb();
+                        }
+                    },
+                    singleton: true
+                });
+                siesta.install()
+                    .then(function () {
+                        assert.ok(initialised, 'singleton instance should have been initialised...');
+                        done();
+                    }).
+                    catch(done);
+            });
+        });
+        it('instance exists', function (done) {
+            PomodoroTimer.get()
+                .then(function (timer) {
+                    assert.ok(timer);
+                    assert.ok(timer.poop);
+                    done();
+                })
+                .catch(done);
         })
     });
 
