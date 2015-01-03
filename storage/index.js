@@ -20,10 +20,11 @@ var unsavedObjects = [],
     unsavedObjectsHash = {},
     unsavedObjectsByCollection = {};
 
+
 var Logger = log.loggerWithName('Storage');
 
 /**
- * Serialise a model down to PouchDB.
+ * Serialise a model into a format that PouchDB bulkDocs API can process
  * @param {ModelInstance} modelInstance
  */
 function _serialise(modelInstance) {
@@ -31,6 +32,7 @@ function _serialise(modelInstance) {
     serialised['collection'] = modelInstance.collectionName;
     serialised['model'] = modelInstance.modelName;
     serialised['_id'] = modelInstance._id;
+    if (modelInstance.removed) serialised['_deleted'] = true;
     var rev = modelInstance._rev;
     if (rev) serialised['_rev'] = rev;
     serialised = _.reduce(modelInstance._relationshipNames, function (memo, n) {

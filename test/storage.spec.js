@@ -153,7 +153,30 @@ describe('storage', function () {
                     }).catch(done);
                 }).catch(done).done();
             }).catch(done).done();
-        })
+        });
+
+
+        it('remove object', function (done) {
+            var car = s.ext.storage._unsavedObjects[0];
+            siesta.save().then(function () {
+                car.remove()
+                    .then(function () {
+                        s.notify(function () {
+                            s.save().then(function () {
+                                s.ext.storage._pouch.get(car._id).then(function () {
+                                    done('Should be deleted...');
+                                }).catch(function (e) {
+                                    assert.equal(e.status, 404);
+                                    console.log('e', e);
+                                    done();
+                                });
+                            }).catch(done);
+                        });
+                    })
+                    .catch(done);
+
+            }).catch(done);
+        });
 
     });
 
