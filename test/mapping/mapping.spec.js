@@ -58,7 +58,7 @@ describe('mapping!', function () {
             var C = s.collection('C');
             var M = C.model('M', {
                 methods: {
-                    init: function () {
+                    __init: function () {
                         assert.equal(this.attr, 1);
                         done();
                     }
@@ -98,7 +98,7 @@ describe('mapping!', function () {
             var M;
             M = C.model('M', {
                 statics: {
-                    init: function () {
+                    __init: function () {
                         assert.equal(this, M);
                         done();
                     }

@@ -137,7 +137,7 @@ _.extend(Collection.prototype, {
     /**
      * Users are allowed to define an 'init' method within each model definiton e.g:
      *     statics: {
-     *         init: function () {
+     *         __init: function () {
      *             ...
      *         }
      *     }
@@ -149,7 +149,7 @@ _.extend(Collection.prototype, {
         for (var modelName in  models) {
             if (models.hasOwnProperty(modelName)) {
                 var model = models[modelName];
-                var init = model.init;
+                var init = model.__init;
                 if (init) {
                     init.call(model);
                 }

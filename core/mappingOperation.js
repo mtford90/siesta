@@ -282,9 +282,18 @@ _.extend(MappingOperation.prototype, {
             tasks.push(_.bind(this._executeSubOperations, this));
             util.async.parallel(tasks, function () {
                 self._map();
+                /*
+                    Users are allowed to add a custom init method to the methods object when defining a Model e.g:
+                        methods: {
+                            __init: function (done) {
+                                // ...
+                            }
+                        }
+                    Here we ensure that all new objects have this method executed.
+                 */
                 // Execute the custom init methods on any new model instances.
                 self._newObjects.forEach(function (o) {
-                    if (o.init) o.init();
+                    if (o.__init) o.__init();
                 });
                 done(self.errors.length ? self.errors : null, self.objects);
             });
