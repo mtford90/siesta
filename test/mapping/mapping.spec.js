@@ -54,6 +54,23 @@ describe('mapping!', function () {
     });
 
     describe('methods', function () {
+        it('init', function (done) {
+            var C = s.collection('C');
+            var M = C.model('M', {
+                methods: {
+                    init: function () {
+                        assert.equal(this.attr, 1);
+                        done();
+                    }
+                },
+                attributes: ['attr']
+            });
+            siesta.install()
+                .then(function () {
+                    M.map({attr: 1});
+                })
+                .catch(done);
+        });
         it('valid', function (done) {
             var C = s.collection('C');
             var M = C.model('M', {

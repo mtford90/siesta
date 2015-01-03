@@ -44,7 +44,8 @@ function MappingOperation(opts) {
 
     _.extend(this, {
         errors: [],
-        subTaskResults: {}
+        subTaskResults: {},
+        _newObjects: []
     });
 }
 
@@ -157,7 +158,7 @@ _.extend(MappingOperation.prototype, {
                             }
                         }
                         if (shouldCreateNewObject) {
-                            this.objects[i] = self.model._new();
+                            this.objects[i] = self._new();
                         }
                     }
                 } else {
@@ -179,7 +180,7 @@ _.extend(MappingOperation.prototype, {
                                         // If there are multiple mapping operations going on, there may be
                                         obj = cache.get({_id: _id});
                                         if (!obj)
-                                            obj = self.model._new({_id: _id}, !self.disableNotifications);
+                                            obj = self._new({_id: _id}, !self.disableNotifications);
                                         self.objects[lookup.index] = obj;
                                     } else {
                                         self.objects[lookup.index] = obj;
@@ -223,7 +224,7 @@ _.extend(MappingOperation.prototype, {
                                         if (cached) {
                                             self.objects[lookup.index] = cached;
                                         } else {
-                                            self.objects[lookup.index] = self.model._new();
+                                            self.objects[lookup.index] = self._new();
                                             // It's important that we map the remote identifier here to ensure that it ends
                                             // up in the cache.
                                             self.objects[lookup.index][self.model.id] = remoteId;
@@ -256,7 +257,7 @@ _.extend(MappingOperation.prototype, {
                     break;
                 }
             }
-            if (!singleton) singleton = self.model._new(_id);
+            if (!singleton) singleton = self._new(_id);
             if (!err) {
                 for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = singleton;
@@ -265,6 +266,12 @@ _.extend(MappingOperation.prototype, {
             callback(err);
         });
         return deferred.promise;
+    },
+    _new: function () {
+        var model = this.model,
+            modelInstance = model._new.apply(model, arguments);
+        this._newObjects.push(modelInstance);
+        return modelInstance;
     },
     start: function (done) {
         if (this.data.length) {
@@ -275,6 +282,10 @@ _.extend(MappingOperation.prototype, {
             tasks.push(_.bind(this._executeSubOperations, this));
             util.async.parallel(tasks, function () {
                 self._map();
+                // Execute the custom init methods on any new model instances.
+                self._newObjects.forEach(function (o) {
+                    if (o.init) o.init();
+                });
                 done(self.errors.length ? self.errors : null, self.objects);
             });
         } else {
