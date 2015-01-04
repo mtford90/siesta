@@ -273,45 +273,55 @@ User.map(data, function (err, models) {
 
 Siesta features an API for querying all instances stored locally in the object graph.
 
-`Model.prototype.all(callback)` will return all models mapped by a particular mapping.
+`Model.prototype.all([callback])` will return all models mapped by a particular mapping.
 
 ```js
-User.all(function (err, users) {
-	users.forEach(function (u) {
-		console.log(u.login);
+User.all()
+	.execute()
+	.then(function (users) {
+		users.forEach(function (u) {
+			console.log(u.login);
+		});
 	});
-});
 ```
 
-`Model.prototype.query(opts, callback)` will return all models that match the query described by `opts`. Many types of queries can be executed, loosely inspired by Django's ORM query conventions:
+`Model.prototype.query(opts, [callback])` will return all models that match the query described by `opts`. Many types of queries can be executed, loosely inspired by Django's ORM query conventions:
 
 Query for a user with a particular local identifier.
 
 ```js
-User.query({_id: 'xyz', login: 'anotherLogin'}, function (err, u) {
-	console.log(u.login);
-});
+User.query({_id: 'xyz'})
+	.execute()
+	.then(function (u) {
+		console.log(u.login);
+	});
 ```
 
 Query for a user with a particular remote identifier:
 
 ```js
-User.query({id: 'xyz', login: 'aLogin'}, function (err, u) {
-	console.log(u.login);
-});
+User.query({id: 'xyz'})
+	.execute()
+	.then(function (u) {
+		console.log(u.login);
+	});
 ```
 
 Query for repos with more than 50 stars:
 
 ```js
-Repo.query({stars__gt: 50}, function (err, repos) {
-	repos.forEach(function (r) {
-		console.log(r.name);
+Repo.query({stars__gt: 50})
+	.execute()
+	.then(function (repos) {
+		repos.forEach(function (r) {
+			console.log(r.name);
+		});
 	});
-});
 ```
 
-Here is the complete list of queries currently possible:
+## Comparators
+
+Here are the current built-in comparators
 
 * `<field>` or `<field>__e` -  equality
 * `<field>__lt` - less than
@@ -319,13 +329,98 @@ Here is the complete list of queries currently possible:
 * `<field>__gt` - greater than
 * `<field>__gte` - greater than or equal to
 
+### Custom
+
+You can register your own comparators.
+
+```js
+// A custom < comparator.
+siesta.registerComparator('customLt', function (opts) {
+	var value = opts.object[opts.field];
+	return value < opts.value;
+});
+```
+
+And then use them in the usual manner.
+
+```js
+Repo.query({stars__customLt: 50})
+	.execute()
+	.then(function (repos) {
+			repos.forEach(function (r) {
+			console.log(r.name);
+		});
+	});
+```
+
+## Nested Queries
+
+You can query using key paths to access nested objects.
+
+```js
+Repo.query({'owner.username': 'mtford90'})
+	.execute()
+	.then(function (repos) {
+		// ...
+	});
+```
+
+## $and/$or
+
+It's also possible to use boolean logic when querying local data.
+
+Repo.query($and: [{$or: [{user.age__lt: 20}, {user.age__gt: 40}]}, {name: 'michael'}])
+	.exsecute()
+	.then(function (repos) {
+		// ...
+	});
+
+## Ordering
+
+`Query.prototype.orderBy(... fields)` can be used to order instances.
+
+```js
+User.query({age__gte: 18})
+	.orderBy('-age', 'name')  // Equivalent to .orderBy(['-age', 'name'])
+	.execute()
+	.then(function (results) {
+		console.log('results', results);
+	});
+```
+
+Prepending `-` signifies descending order.
+
+# Reactive Queries
+
+Reactive queries exist to support functional reactive programming when using Siesta. For those familar with Apple's Cocoa library and CoreData these are similar to the `NSFetchedResultsController` class. 
+
+A reactive query is a query that reacts to changes in the object graph, updating its result set and emitting events related to these updates.
+
+```js
+var rq = User.reactiveQuery({age__gte: 18});
+rq.listen(function (results, change) {
+	// ...
+});
+rq.init();
+```
+
+Reactive queries can be ordered in a similar fashion to ordinary queries.
+
+```js
+var rq = User.reactiveQuery({age__gte: 18}).orderBy('-age', 'name');
+```
+
+## Positional Reactive Queries
+
+TODO
+
 # Events
 
 Siesta emits a wide range of events that can be used 
 
 ## Models
 
-There are five events related to changes to `Model` instances.
+There are four events related to changes to `Model` instances.
 
 | Event | Description | Example |
 | ----- | ----------- | ------- |
@@ -361,6 +456,14 @@ Model.map({attr: 'something'})
 	});
 ```
 
+Note that is also impossible to listen to just one event before canceling the listener automatically.
+
+```js
+Something.listenOnce(function (e) {
+	// ... do something with the event
+});
+```
+
 All `listen` methods return a function that can be used to remove the listener.
 
 ```js
@@ -379,9 +482,7 @@ Every event features the following fields.
 |model|name of the model of which the modified object is an instance|
 |type|type of event, one of Set, Splice, New, Delete|
 
-#### Set Events
-
-Set events have the following extra fields
+`Set` events have the following extra fields
 
 |Field|Description|
 |-----|-----------|
@@ -389,9 +490,7 @@ Set events have the following extra fields
 |old|the old value|
 |field|name of the property that has changed|
 
-#### Splice Events
-
-Splice events have the following extra fields and obey Javascript splice convention of `array.splice(index, numDelete, ... itemsToAdd)
+`Splice` events have the following extra fields and obey Javascript splice convention of `array.splice(index, numDelete, ... itemsToAdd)
 
 |Field|Description|
 |-----|-----------|
@@ -401,15 +500,7 @@ Splice events have the following extra fields and obey Javascript splice convent
 |added|added model instances|
 |field|name of the property that refers to the spliced array|
 
-#### New Events
-
-New events have no additional fields.
-
-#### Delete Events
-
-Delete events have no additional fields.
-
-## Registering Listeners
+`New` and `Delete` events do not have any additional fields.
 
 ## Raw Events
 
