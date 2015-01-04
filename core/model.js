@@ -51,7 +51,8 @@ function Model(opts) {
         name: null,
         indexes: [],
         singleton: false,
-        statics: this.installStatics.bind(this)
+        statics: this.installStatics.bind(this),
+        properties: {}
     });
 
     this.attributes = Model._processAttributes(this.attributes);
@@ -492,11 +493,20 @@ _.extend(Model.prototype, {
             });
 
             _.each(Object.keys(this.methods), function (methodName) {
-                if (!newModel[methodName]) {
+                if (newModel[methodName] === undefined) {
                     newModel[methodName] = this.methods[methodName].bind(newModel);
                 }
                 else {
                     Logger.error('A method with name "' + methodName + '" already exists. Ignoring it.');
+                }
+            }.bind(this));
+
+            _.each(Object.keys(this.properties), function (propName) {
+                if (newModel[propName] === undefined) {
+                    Object.defineProperty(newModel, propName, this.properties[propName]);
+                }
+                else {
+                    Logger.error('A property/method with name "' + propName + '" already exists. Ignoring it.');
                 }
             }.bind(this));
 

@@ -53,7 +53,7 @@ describe('mapping!', function () {
         assert.equal(m.id, 'id');
     });
 
-    describe.only('customisation', function () {
+    describe('customisation', function () {
         describe('methods', function () {
             it('sync init', function (done) {
                 var C = s.collection('C');
@@ -349,10 +349,54 @@ describe('mapping!', function () {
             });
 
         });
+        describe('properties', function () {
+            it('define properties', function (done) {
+                var C = s.collection('C');
+                var M = C.model('M', {
+                    properties: {
+                        prop: {
+                            get: function () {
+                                return 'a'
+                            }
+                        }
+                    },
+                    attributes: ['attr']
+                });
+                siesta.install()
+                    .then(function () {
+                        M.map({attr: 1})
+                            .then(function (_m) {
+                                assert.equal(_m.prop, 'a');
+                                done();
+                            }).catch(done);
+                    })
+                    .catch(done);
+            });
+            it('clash', function (done) {
+                var C = s.collection('C');
+                var M = C.model('M', {
+                    properties: {
+                        restore: {
+                            get: function () {
+                                return 'a'
+                            }
+                        }
+                    },
+                    attributes: ['attr']
+                });
+                siesta.install()
+                    .then(function () {
+                        M.map({attr: 1})
+                            .then(function (_m) {
+                                assert.notEqual(_m.restore, 'a');
+                                done();
+                            }).catch(done);
+                    })
+                    .catch(done);
+            });
+
+        });
     });
-
-
-
 
 
 });
