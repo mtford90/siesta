@@ -492,7 +492,12 @@ _.extend(Model.prototype, {
             });
 
             _.each(Object.keys(this.methods), function (methodName) {
-                newModel[methodName] = this.methods[methodName].bind(newModel);
+                if (!newModel[methodName]) {
+                    newModel[methodName] = this.methods[methodName].bind(newModel);
+                }
+                else {
+                    Logger.error('A method with name "' + methodName + '" already exists. Ignoring it.');
+                }
             }.bind(this));
 
             Object.defineProperty(newModel, this.id, {
