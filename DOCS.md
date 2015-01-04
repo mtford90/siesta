@@ -1,14 +1,37 @@
 # Installation
 
-Use of Siesta varies depending on your project setup. You can use a script tag:
+There are several ways to use Siesta depending on your project setup.
+
+### Script Tag
+
+If using script tags you can just to install the entire Siesta bundle or specific modules.
+
+The siesta bundle includes all of the following:
+
+* Core
+* HTTP
+* Storage
+
+Simple include siesta.js or siesta.min.js.
+
 
 ```html
-<!-- Entire siesta bundle-->
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.bundle.min.js"></script>
-<!-- Modular -->
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
+```
+
+Siesta core is the only required module. Ensure that other modules are included **after** core.
+
+```html
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.core.min.js"></script>
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.min.js"></script>
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.bundle.min.js"></script>
 ```
+
+### RequireJS
+
+Use of Siesta varies depending on your project setup. You can use a script tag:
+
+
 
 Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta and any extensions after running `npm install siesta-orm --save`.
 
