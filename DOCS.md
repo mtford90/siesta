@@ -2,7 +2,7 @@
 
 There are several ways to use Siesta depending on your project setup.
 
-### Script Tag
+## Script Tag
 
 If using script tags you can just to install the entire Siesta bundle or specific modules.
 
@@ -27,7 +27,7 @@ Siesta core is the only required module. Ensure that other modules are included 
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.bundle.min.js"></script>
 ```
 
-### RequireJS
+## RequireJS
 
 Use of Siesta varies depending on your project setup. You can use a script tag:
 
