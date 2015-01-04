@@ -213,7 +213,6 @@ describe('bugs', function () {
                         .catch(done);
                 });
             });
-
         });
     });
 });
