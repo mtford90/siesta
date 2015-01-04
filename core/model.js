@@ -174,17 +174,18 @@ _.extend(Model.prototype, {
                         if (!relationship.isReverse) {
                             if (Logger.debug.isEnabled)
                                 Logger.debug(self.name + ': configuring relationship ' + name, relationship);
-                            if (self.singleton) {
-                                if (relationship.type != RelationshipType.OneToOne) {
-                                    Logger.warn('Singleton mappings can only be used with OneToOne relationships');
+                            if (!relationship.type) {
+                                if (self.singleton) {
+                                    relationship.type = RelationshipType.OneToOne;
                                 }
-                                relationship.type = RelationshipType.OneToOne;
+                                else {
+                                    relationship.type = RelationshipType.OneToMany;
+                                }
                             }
                             if (relationship.type == RelationshipType.OneToMany ||
                                 relationship.type == RelationshipType.OneToOne ||
                                 relationship.type == RelationshipType.ManyToMany) {
                                 var modelName = relationship.model;
-                                console.log('relationship', relationship)
                                 delete relationship.model;
                                 if (Logger.debug.isEnabled)
                                     Logger.debug('reverseModelName', modelName);
