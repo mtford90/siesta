@@ -1,219 +1,54 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>
-<html class="no-js ie6 oldie" lang="en"> <![endif]-->
-<!--[if IE 7]>
-<html class="no-js ie7 oldie" lang="en"> <![endif]-->
-<!--[if IE 8]>
-<html class="no-js ie8 oldie" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<!--suppress ALL -->
-<html class="no-js" lang="en"> <!--<![endif]-->
+<!doctype html>
 <head>
-    <title>Documentation: Getting Started</title>
-    <meta name="description" content="The Easiest Way To Document Your Project"/>
-    <meta name="author" content="Justin Walsh">
-    <!-- Mobile -->
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
 
-    <!-- Font -->
-    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700&subset=latin,cyrillic-ext,cyrillic'
-          rel='stylesheet' type='text/css'>
-    <!-- CSS -->
-    <link href='static/css/main.css' rel='stylesheet' type='text/css'>
+    <title>Siesta</title>
+
+    <!-- Flatdoc -->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/legacy.js'></script>
+    <script src='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/flatdoc.js'></script>
+
+    <!-- Flatdoc theme -->
+    <link  href='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/theme-white/style.css' rel='stylesheet'>
+    <script src='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/theme-white/script.js'></script>
+
+    <!-- Meta -->
+    <meta content="Siesta" property="og:title">
+    <meta content="Your Project description goes here." name="description">
+
+    <!-- Initializer -->
+    <script>
+        Flatdoc.run({
+            fetcher: Flatdoc.file('DOCS.md')
+        });
+    </script>
 </head>
-<body>
-<!-- Docs -->
-<a href="https://github.com/mtford90/siesta" target="_blank" id="github-ribbon" class="hidden-print"><img
-        src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<body role='flatdoc'>
 
-<div class="container-fluid fluid-height wrapper">
-<div class="navbar navbar-fixed-top hidden-print">
-    <div class="container-fluid">
-        <a class="brand navbar-brand pull-left" href="/">SIESTA</a>
-        <p class="brand navbar-text pull-right"><a href="/siesta/download.html">Download 0.0.11</a></p>
+<div class='header'>
+    <div class='left'>
+        <h1>Siesta</h1>
+        <ul>
+            <li><a href='https://github.com/mtford90/siesta'>View on GitHub</a></li>
+            <li><a href='https://github.com/mtford90/siesta/issues'>Issues</a></li>
+            <li><a href='docs.html'>Documentation</a></li>
+        </ul>
+    </div>
+    <div class='right'>
+        <!-- GitHub buttons: see http://ghbtns.com -->
+        <iframe src="http://ghbtns.com/github-btn.html?user=mtford90&amp;repo=siesta&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
     </div>
 </div>
-<div class="row columns content">
-<div class="left-column article-tree col-sm-3 hidden-print">
-    <!-- For Mobile -->
-    <div class="responsive-collapse">
-        <button type="button" class="btn btn-sidebar" id="menu-spinner-button">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
+
+<div class='content-root'>
+    <div class='menubar'>
+        <div class='menu section' role='flatdoc-menu'></div>
     </div>
-    <div id="sub-nav-collapse" class="sub-nav-collapse">
-        <!-- Navigation -->
-        <!--suppress HtmlUnknownTarget -->
-<ul class="nav nav-list">
-    <li class="active"><a href="/siesta/docs.html">Quick Start</a></li>
-    <li ><a href="/siesta/concepts.html">Concepts</a></li>
-    <li ><a href="/siesta/guide.html" %}>API</a></li>
-</ul>
-<div class="well well-sidebar">
-
-    <a href="/siesta/download.html" target="_blank">Download</a><br><a
-        href="https://github.com/mtford90/siesta" target="_blank">GitHub Repo</a><br><a
-        href="https://github.com/mtford90/siesta/issues" target="_blank">Help/Support/Bugs</a><br>
+    <div role='flatdoc-content' class='content'></div>
 </div>
-
-    </div>
-</div>
-<div class="right-column float-view content-area col-sm-9">
-<div class="content-page">
-<article>
-    <h2>Getting Started</h2>
-
-<p>This guide will get you up and running with Siesta with minimal effort.</p>
-
-<h3>Step 1: Installation</h3>
-
-<p>Use of Siesta varies depending on your project setup. You can use a script tag:</p>
-<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="c">&lt;!-- Entire siesta bundle--&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.11/siesta.bundle.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="c">&lt;!-- Modular --&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.11/siesta.core.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-<span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;https://github.com/mtford90/siesta/releases/download/0.0.11/siesta.http.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
-</code></pre></div>
-<p>Alternatively if you&#39;re using a bundler based on CommonJS (browserify, webpack etc) you can <code>require</code> siesta and any extensions after running <code>npm install siesta-orm --save</code>.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">siesta</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;siesta&#39;</span><span class="p">);</span> <span class="c1">// No extensions</span>
-<span class="kd">var</span> <span class="nx">siesta</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;siesta&#39;</span><span class="p">)({</span><span class="nx">http</span><span class="o">:</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;siesta/http&#39;</span><span class="p">))});</span> <span class="c1">// HTTP extension</span>
-</code></pre></div>
-<h3>Step 2: Create a collection</h3>
-
-<p>A <code>Collection</code> describes a set of models and optionally a REST API containing the resources the collection will represent.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">collection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">siesta</span><span class="p">.</span><span class="nx">Collection</span><span class="p">(</span><span class="s1">&#39;MyCollection&#39;</span><span class="p">);</span>
-<span class="nx">collection</span><span class="p">.</span><span class="nx">baseURL</span> <span class="o">=</span> <span class="s1">&#39;http://api.mysite.com&#39;</span><span class="p">;</span>
-</code></pre></div>
-<h3>Step 3: Configure object mappings</h3>
-
-<p>The mapping is the Siesta equivalent to models in traditional database ORMs. It describes how attributes and relationships in resources are mapped onto Javascript objects.</p>
-
-<p>A simple mapping will only declare attributes:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">(</span><span class="s1">&#39;Person&#39;</span><span class="p">,</span> <span class="p">{</span>
-    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">]</span>
-<span class="p">});</span>
-</code></pre></div>
-<p>A more complex mapping will define relationships with others:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">mapping</span><span class="p">(</span><span class="s1">&#39;Car&#39;</span><span class="p">,</span> <span class="p">{</span>
-    <span class="c1">// The field that uniquely identifies a Car object.</span>
-    <span class="nx">id</span><span class="o">:</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
-    <span class="c1">// Attributes represent simple data types such as strings and integers.</span>
-    <span class="nx">attributes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;colour&#39;</span><span class="p">,</span> <span class="s1">&#39;licensePlate&#39;</span><span class="p">],</span>
-    <span class="c1">// Relationships with other remote objects. </span>
-    <span class="c1">// In this case a Car has an owner, and a Person can own many cars.</span>
-    <span class="nx">relationships</span><span class="o">:</span> <span class="p">{</span>
-        <span class="nx">owner</span><span class="o">:</span> <span class="p">{</span>
-            <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Person&#39;</span><span class="p">,</span>
-            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;OneToMany&#39;</span><span class="p">,</span>
-            <span class="nx">reverse</span><span class="o">:</span> <span class="s1">&#39;cars&#39;</span> 
-        <span class="p">}</span>
-    <span class="p">}</span>
-<span class="p">});</span>
-</code></pre></div>
-<h3>Step 4: Configure descriptors</h3>
-
-<p>Descriptors are used to <em>describe</em> web services with which we want to interact. When a HTTP request is sent or a HTTP response is received, descriptors are used to map data to the object graph in the case of HTTP responses and to serialise data into JSON in the case of HTTP requests.</p>
-
-<p>An example response descriptor:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/(.*)/&#39;</span><span class="p">,</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;GET&#39;</span><span class="p">,</span> 
-    <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
-    <span class="c1">// Deserialise from data field in JSON response when receiving.</span>
-    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span> 
-<span class="p">});</span>
-</code></pre></div>
-<p>An example request descriptor:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/&#39;</span><span class="p">,</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-    <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span>
-<span class="p">});</span>
-</code></pre></div>
-<p>A more complex descriptor could use a regular expression:</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">descriptor</span><span class="p">({</span>
-    <span class="nx">path</span><span class="o">:</span> <span class="s1">&#39;cars/([a-b0-9]+)/&#39;</span>
-    <span class="nx">method</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="s1">&#39;PATCH&#39;</span><span class="p">],</span>
-    <span class="nx">mapping</span><span class="o">:</span> <span class="s1">&#39;Car&#39;</span><span class="p">,</span>
-    <span class="nx">data</span><span class="o">:</span> <span class="s1">&#39;data&#39;</span> <span class="c1">// Serialise to {data: {...}} when sending the request.</span>
-<span class="p">});</span>
-</code></pre></div>
-<h3>Step 6: Install the collection</h3>
-
-<p>Before we can use our collection we need to install it. This will configure the descriptors and mappings, hooking up any relationships and will return an error if anything is incorrect with the declarations.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">install</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span> 
-        <span class="c1">// Handle error.</span>
-    <span class="p">}</span>
-    <span class="k">else</span> <span class="p">{</span>
-        <span class="c1">// Do stuff.</span>
-    <span class="p">}</span>
-<span class="p">});</span>
-</code></pre></div>
-<h3>Step 7: Obtain some remote data</h3>
-
-<p>The descriptors declared earlier will be used to determine how to map the response bodies onto objects that we have locally.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">collection</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;cars/&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">cars</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;I got me some cars!&#39;</span><span class="p">,</span> <span class="nx">cars</span><span class="p">);</span>
-<span class="p">});</span>
-
-<span class="nx">collection</span><span class="p">.</span><span class="nx">GET</span><span class="p">(</span><span class="s1">&#39;cars/5&#39;</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">car</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;I got me a car!&#39;</span><span class="p">,</span> <span class="nx">car</span><span class="p">);</span>
-<span class="p">});</span>
-</code></pre></div>
-<h3>Step 8: Create some remote data</h3>
-
-<p>The descriptors declared above will also be used to determine how to serialise our models when sending them to the server.</p>
-<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">Person</span><span class="p">.</span><span class="nx">map</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s1">&#39;Bob&#39;</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">person</span><span class="p">){</span>
-    <span class="nx">collection</span><span class="p">.</span><span class="nx">POST</span><span class="p">(</span><span class="s1">&#39;people/&#39;</span><span class="p">,</span> <span class="nx">person</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Done.</span>
-    <span class="p">});</span>
-<span class="p">});</span>
-</code></pre></div>
-<h3>Step 9: Query local data</h3>
-
-<p>We can query for objects that have been mapped and held locally (either in-memory or persisted) by using the local query API.</p>
-<div class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">collection</span><span class="p">.</span><span class="nx">Car</span><span class="p">.</span><span class="nx">all</span><span class="p">().</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">allCars</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-<span class="p">});</span>
-
-<span class="nx">collection</span><span class="p">.</span><span class="nx">Car</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">colour</span><span class="o">:</span> <span class="s1">&#39;Red&#39;</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">redCars</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-<span class="p">});</span>
-
-<span class="nx">collection</span><span class="p">.</span><span class="nx">Person</span><span class="p">.</span><span class="nx">query</span><span class="p">({</span><span class="nx">age__lt</span><span class="o">:</span> <span class="mi">30</span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">peopleUnderThirty</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// ...</span>
-<span class="p">});</span>
-</code></pre></div>
-</article>
-</div>
-</div>
-</div>
-</div>
-
-
-<!-- jQuery -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script>
-    if (typeof jQuery == 'undefined')
-        document.write(unescape("%3Cscript src='js/jquery-1.11.0.min.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-<!-- hightlight.js -->
-<script src="static/js/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-
-<!-- JS -->
-
-<!-- Front end file editor -->
-<script src="static/js/custom.js"></script>
-<!--[if lt IE 9]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
 
 </body>
 </html>
-
