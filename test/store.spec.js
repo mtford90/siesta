@@ -16,7 +16,7 @@ describe('store......', function () {
     beforeEach(function (done) {
         s.reset(function () {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -26,7 +26,7 @@ describe('store......', function () {
 
     describe('get', function () {
         it('already cached', function (done) {
-            var model = new SiestaModel(carMapping);
+            var model = new SiestaModel(Car);
             var pouchId = 'pouchId';
             model._id = pouchId;
             cache.insert(model);
@@ -49,15 +49,15 @@ describe('store......', function () {
                 var cars;
 
                 beforeEach(function () {
-                    var o = carMapping._new({
+                    var o = Car._new({
                         colour: 'red',
                         id: 'remoteId1'
                     });
-                    var o1 = carMapping._new({
+                    var o1 = Car._new({
                         colour: 'blue',
                         id: 'remoteId2'
                     });
-                    var o2 = carMapping._new({
+                    var o2 = Car._new({
                         colour: 'green',
                         id: 'remoteId3'
                     });
@@ -87,15 +87,15 @@ describe('store......', function () {
                     var cars;
 
                     beforeEach(function () {
-                        var o = carMapping._new({
+                        var o = Car._new({
                             colour: 'red',
                             id: 'remoteId1'
                         });
-                        var o1 = carMapping._new({
+                        var o1 = Car._new({
                             colour: 'blue',
                             id: 'remoteId2'
                         });
-                        var o2 = carMapping._new({
+                        var o2 = Car._new({
                             colour: 'green',
                             id: 'remoteId3'
                         });
@@ -106,7 +106,7 @@ describe('store......', function () {
                     });
 
                     it('xyz', function (done) {
-                        Store.getMultipleRemote(_.pluck(cars, 'id'), carMapping, function (err, docs) {
+                        Store.getMultipleRemote(_.pluck(cars, 'id'), Car, function (err, docs) {
                             if (err) done(err);
                             assert.equal(docs.length, 3);
                             _.each(docs, function (d) {

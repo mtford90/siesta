@@ -18,10 +18,10 @@ describe('serialisers', function () {
     describe('id serialiser', function () {
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            personMapping = collection.model('Person', {
+            Person = collection.model('Person', {
                 attributes: ['name', 'age']
             });
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -35,7 +35,7 @@ describe('serialisers', function () {
             s.install(done);
         });
         it('should return the id if has one', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5
@@ -46,7 +46,7 @@ describe('serialisers', function () {
             });
         });
         it('should return null if doesnt have an id', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin'
             }, function (err, car) {
@@ -56,7 +56,7 @@ describe('serialisers', function () {
             });
         });
         it('should return null if no id field', function (done) {
-            personMapping.map({
+            Person.map({
                 name: 'Michael Ford'
             }, function (err, car) {
                 if (err) done(err);
@@ -70,7 +70,7 @@ describe('serialisers', function () {
         beforeEach(function (done) {
             collection = s.collection('myCollection');
 
-            personMapping = collection.model('Person', {
+            Person = collection.model('Person', {
                 attributes: ['name', 'age'],
                 id: 'id',
                 relationships: {
@@ -81,7 +81,7 @@ describe('serialisers', function () {
                     }
                 }
             });
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -101,7 +101,7 @@ describe('serialisers', function () {
         });
 
         it('depth 0', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5,
@@ -123,7 +123,7 @@ describe('serialisers', function () {
         });
 
         it('depth 1', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5,
@@ -150,7 +150,7 @@ describe('serialisers', function () {
         });
 
         it('depth 2', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5,

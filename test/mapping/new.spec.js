@@ -24,7 +24,7 @@ describe('mapping new object', function () {
 
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -32,8 +32,8 @@ describe('mapping new object', function () {
         });
 
         it('valid', function () {
-            var car = carMapping._new();
-            _.each(carMapping._attributeNames, function (f) {
+            var car = Car._new();
+            _.each(Car._attributeNames, function (f) {
                 assert(car[f] !== undefined);
             });
         });
@@ -41,7 +41,7 @@ describe('mapping new object', function () {
         describe('id field', function () {
             var car;
             beforeEach(function () {
-                car = carMapping._new();
+                car = Car._new();
             });
 
             it('should be present', function () {
@@ -79,7 +79,7 @@ describe('mapping new object', function () {
 
         function configureAPI(type, reverseName, done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -90,7 +90,7 @@ describe('mapping new object', function () {
                     }
                 }
             });
-            personMapping = collection.model('Person', {
+            Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['age', 'name']
             });
@@ -104,12 +104,12 @@ describe('mapping new object', function () {
         describe('installation of proxies', function () {
 
             it('installs forward related object proxy', function () {
-                var carObject = carMapping._new();
+                var carObject = Car._new();
                 assert.instanceOf(carObject.__proxies['owner'], OneToManyProxy);
             });
 
             it('installs reverse related object proxy', function () {
-                var personObject = personMapping._new();
+                var personObject = Person._new();
                 assert.instanceOf(personObject.__proxies['cars'], OneToManyProxy);
             });
 

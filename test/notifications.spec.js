@@ -44,20 +44,20 @@ describe('notifications', function () {
             genericNotif = null;
             car = null;
             collection = null;
-            carMapping = null;
+            Car = null;
         });
 
         describe('set value', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
                 s.install(function (err) {
                     if (err) done(err);
-                    carMapping.map({
+                    Car.map({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -144,7 +144,7 @@ describe('notifications', function () {
         describe('array notifications', function () {
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colours', 'name']
                 });
@@ -153,7 +153,7 @@ describe('notifications', function () {
 
             it('sends notifications for all levels', function (done) {
                 var notifs = [];
-                carMapping.map({
+                Car.map({
                     colours: ['red', 'blue'],
                     name: 'Aston Martin',
                     id: 'xyz'
@@ -178,7 +178,7 @@ describe('notifications', function () {
 
             describe('push', function () {
                 beforeEach(function (done) {
-                    carMapping.map({
+                    Car.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -218,7 +218,7 @@ describe('notifications', function () {
 
             describe('pop', function () {
                 beforeEach(function (done) {
-                    carMapping.map({
+                    Car.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -258,7 +258,7 @@ describe('notifications', function () {
 
             describe('shift', function () {
                 beforeEach(function (done) {
-                    carMapping.map({
+                    Car.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -301,7 +301,7 @@ describe('notifications', function () {
 
             describe('unshift', function () {
                 beforeEach(function (done) {
-                    carMapping.map({
+                    Car.map({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -345,7 +345,7 @@ describe('notifications', function () {
 
                 beforeEach(function (done) {
                     notifs = [];
-                    carMapping.map({
+                    Car.map({
                         colours: ['red', 'green', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -424,7 +424,7 @@ describe('notifications', function () {
                 beforeEach(function (done) {
                     collection = s.collection('myCollection');
 
-                    carMapping = collection.model('Car', {
+                    Car = collection.model('Car', {
                         id: 'id',
                         attributes: ['colours', 'name'],
                         relationships: {
@@ -436,7 +436,7 @@ describe('notifications', function () {
                         }
                     });
 
-                    personMapping = collection.model('Person', {
+                    Person = collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
@@ -449,9 +449,9 @@ describe('notifications', function () {
                     var anotherCar;
 
                     beforeEach(function (done) {
-                        car = carMapping._new();
-                        anotherCar = carMapping._new();
-                        person = personMapping._new();
+                        car = Car._new();
+                        anotherCar = Car._new();
+                        person = Person._new();
                         person.cars = [car];
                         s.on('myCollection:Person', function (n) {
                             if (n.type == ChangeType.Splice && n.model == 'Person') {
@@ -534,8 +534,8 @@ describe('notifications', function () {
                 describe('splice', function (done) {
 
                     beforeEach(function (done) {
-                        car = carMapping._new();
-                        person = personMapping._new();
+                        car = Car._new();
+                        person = Person._new();
                         person.cars = [car];
                         s.on('myCollection:Person', function (n) {
                             if (n.type == ChangeType.Splice) {
@@ -634,7 +634,7 @@ describe('notifications', function () {
                 beforeEach(function (done) {
                     collection = s.collection('myCollection');
 
-                    carMapping = collection.model('Car', {
+                    Car = collection.model('Car', {
                         id: 'id',
                         attributes: ['colours', 'name'],
                         relationships: {
@@ -646,7 +646,7 @@ describe('notifications', function () {
                         }
                     });
 
-                    personMapping = collection.model('Person', {
+                    Person = collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
@@ -660,9 +660,9 @@ describe('notifications', function () {
 
                     describe('push', function (done) {
                         beforeEach(function (done) {
-                            car = carMapping._new();
-                            anotherCar = carMapping._new();
-                            person = personMapping._new();
+                            car = Car._new();
+                            anotherCar = Car._new();
+                            person = Person._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
@@ -747,8 +747,8 @@ describe('notifications', function () {
 
                     describe('splice', function () {
                         beforeEach(function (done) {
-                            car = carMapping._new();
-                            person = personMapping._new();
+                            car = Car._new();
+                            person = Person._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function (n) {
                                 if (n.type == ChangeType.Splice && n.model == 'Person') {
@@ -813,7 +813,7 @@ describe('notifications', function () {
             genericNotif = null;
             collectionNotif = null;
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -834,7 +834,7 @@ describe('notifications', function () {
                         genericNotif = n;
                     }
                 });
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
@@ -892,13 +892,13 @@ describe('notifications', function () {
             genericNotif = null;
             collectionNotif = null;
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
             s.install(function (err) {
                 if (err) done(err);
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
@@ -971,13 +971,13 @@ describe('notifications', function () {
             genericNotif = null;
             collectionNotif = null;
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
             s.install(function (err) {
                 if (err) done(err);
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
@@ -1047,7 +1047,7 @@ describe('notifications', function () {
     describe('convenience', function () {
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -1061,7 +1061,7 @@ describe('notifications', function () {
                 done();
             };
             var cancelListen = collection.listen(listener);
-            carMapping.map({colour: 'red', name: 'Aston Martin'});
+            Car.map({colour: 'red', name: 'Aston Martin'});
         });
 
         it('mapping', function (done) {
@@ -1071,12 +1071,12 @@ describe('notifications', function () {
                 cancelListen();
                 done();
             };
-            var cancelListen = carMapping.listen(listener);
-            carMapping.map({colour: 'red', name: 'Aston Martin'});
+            var cancelListen = Car.listen(listener);
+            Car.map({colour: 'red', name: 'Aston Martin'});
         });
 
         it('object', function (done) {
-            carMapping.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
+            Car.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
                 var listener;
                 listener = function (n) {
                     assert.ok(n);
@@ -1084,7 +1084,7 @@ describe('notifications', function () {
                     done();
                 };
                 var cancelListen = car.listen(listener);
-                carMapping.map({id: 1, colour: 'blue'});
+                Car.map({id: 1, colour: 'blue'});
             }).catch(done).done();
         });
 

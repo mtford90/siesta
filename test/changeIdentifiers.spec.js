@@ -15,13 +15,13 @@ describe('change identifiers', function () {
     beforeEach(function (done) {
         s.reset(function () {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
             s.install(function (err) {
                 if (err) done(err);
-                carMapping.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
+                Car.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
                     if (err) done(err);
                     car = _car;
                     done();
@@ -31,10 +31,10 @@ describe('change identifiers', function () {
     });
 
     it('xyz', function (done) {
-        assert.equal(cache.get({id: 'xyz', model: carMapping}), car);
+        assert.equal(cache.get({id: 'xyz', model: Car}), car);
         car.id = 'abc';
-        assert.notOk(cache.get({id: 'xyz', model: carMapping}), car);
-        assert.equal(cache.get({id: 'abc', model: carMapping}), car);
+        assert.notOk(cache.get({id: 'xyz', model: Car}), car);
+        assert.equal(cache.get({id: 'abc', model: Car}), car);
         done();
     });
 

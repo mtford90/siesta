@@ -83,7 +83,7 @@ describe('mapping queries', function () {
 
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -94,7 +94,7 @@ describe('mapping queries', function () {
                     }
                 }
             });
-            personMapping = collection.model('Person', {
+            Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -102,7 +102,7 @@ describe('mapping queries', function () {
         });
 
         it('cached', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin',
                 owner: {
@@ -113,7 +113,7 @@ describe('mapping queries', function () {
                 id: 5
             }, function (err, car) {
                 if (err) done(err);
-                personMapping.get('2', function (err, p) {
+                Person.get('2', function (err, p) {
                     if (err) done(err);
                     assert.ok(p, 'Should be able to fetch the person');
                     p.__proxies['cars'].get(function (err, cars) {

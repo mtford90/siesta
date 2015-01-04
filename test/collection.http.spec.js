@@ -33,11 +33,11 @@ describe('http!', function () {
 
     function constructCollection() {
         collection = s.collection('myCollection');
-        personMapping = collection.model('Person', {
+        Person = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });
-        carMapping = collection.model('Car', {
+        Car = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -74,12 +74,12 @@ describe('http!', function () {
                 configureCollection(done);
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
-                    mxapping: carMapping,
+                    mxapping: Car,
                     path: '/cars/[0-9]+/[a-zA-Z0-9]+'
                 }));
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
-                    model: carMapping,
+                    model: Car,
                     path: '/cars/[a-zA-Z0-9]+'
                 }));
             });
@@ -171,7 +171,7 @@ describe('http!', function () {
                     beforeEach(function (done) {
                         siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                             method: 'GET',
-                            model: carMapping,
+                            model: Car,
                             path: '/cars/[0-9]+'
                         }));
                         var raw = {
@@ -227,7 +227,7 @@ describe('http!', function () {
                     beforeEach(function (done) {
                         siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                             method: 'GET',
-                            model: carMapping,
+                            model: Car,
                             path: '/cars/?'
                         }));
                         var raw = [{
@@ -287,12 +287,12 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        carMapping.map(data, function (err, _objectToDelete) {
+                        Car.map(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
-                                model: carMapping,
+                                model: Car,
                                 path: '/cars/[0-9]+'
                             }));
                             var headers = {
@@ -340,12 +340,12 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        carMapping.map(data, function (err, _objectToDelete) {
+                        Car.map(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
-                                model: carMapping,
+                                model: Car,
                                 path: '/cars/[0-9]+'
                             }));
                             var headers = {
@@ -374,12 +374,12 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        carMapping.map(data, function (err, _objectToDelete) {
+                        Car.map(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
-                                model: carMapping,
+                                model: Car,
                                 path: '/cars/[0-9]+'
                             }));
                             var headers = {
@@ -408,12 +408,12 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        carMapping.map(data, function (err, _objectToDelete) {
+                        Car.map(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                                 method: 'DELETE',
-                                model: carMapping,
+                                model: Car,
                                 path: '/cars/[0-9]+'
                             }));
                             var headers = {
@@ -444,13 +444,13 @@ describe('http!', function () {
                 configureCollection(done);
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'POST',
-                    model: carMapping,
+                    model: Car,
                     path: 'cars/?'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'POST',
-                    model: carMapping,
+                    model: Car,
                     path: 'cars/?'
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
@@ -469,7 +469,7 @@ describe('http!', function () {
                     var method = "POST";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    carMapping.map({
+                    Car.map({
                         colour: 'red',
                         name: 'Aston Martin'
                     }, function (err, _car) {
@@ -506,13 +506,13 @@ describe('http!', function () {
                 configureCollection(done);
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PUT',
-                    model: carMapping,
+                    model: Car,
                     path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'PUT',
-                    model: carMapping,
+                    model: Car,
                     path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
@@ -533,7 +533,7 @@ describe('http!', function () {
                     var method = "PUT";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    carMapping.map({
+                    Car.map({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: '5'
@@ -572,13 +572,13 @@ describe('http!', function () {
                 configureCollection(function () {
                     var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                         method: 'PATCH',
-                        model: carMapping,
+                        model: Car,
                         path: '/cars/[0-9]+'
                     });
                     siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                     var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                         method: 'PATCH',
-                        model: carMapping,
+                        model: Car,
                         path: '/cars/[0-9]+'
                     });
                     siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
@@ -601,7 +601,7 @@ describe('http!', function () {
                     var method = "PATCH";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    carMapping.map({
+                    Car.map({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: '5'
@@ -643,7 +643,7 @@ describe('http!', function () {
                 configureCollection(done);
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'OPTIONS',
-                    model: carMapping,
+                    model: Car,
                     path: 'something/?'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
@@ -690,13 +690,13 @@ describe('http!', function () {
                 configureCollection(done);
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'TRACE',
-                    model: carMapping,
+                    model: Car,
                     path: 'cars/'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'TRACE',
-                    model: carMapping,
+                    model: Car,
                     path: 'cars/'
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
@@ -715,7 +715,7 @@ describe('http!', function () {
                     var method = "TRACE";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    carMapping.map({
+                    Car.map({
                         colour: 'red'
                     }, function (err, _car) {
                         car = _car;
@@ -793,17 +793,17 @@ describe('http!', function () {
             configureCollection(function () {
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PATCH',
-                    model: carMapping,
+                    model: Car,
                     path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'PATCH',
-                    model: carMapping,
+                    model: Car,
                     path: '/cars/[0-9]+'
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: '5'
@@ -832,11 +832,11 @@ describe('http!', function () {
     //describe('no descriptor matches', function () {
     //    it('GET', function (done) {
     //        collection = s.collection('myCollection');
-    //        personMapping = collection.model('Person', {
+    //        Person = collection.model('Person', {
     //            id: 'id',
     //            attributes: ['name', 'age']
     //        });
-    //        carMapping = collection.model('Car', {
+    //        Car = collection.model('Car', {
     //            id: 'id',
     //            attributes: ['colour', 'name'],
     //            relationships: {
@@ -861,7 +861,7 @@ describe('http!', function () {
     //        collection.baseURL = 'http://mywebsite.co.uk/';
     //        collection.descriptor({
     //            method: 'GET',
-    //            model: carMapping,
+    //            model: Car,
     //            path: '/cars/?$'
     //        });
     //        s.install(function (err) {

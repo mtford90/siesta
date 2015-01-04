@@ -27,7 +27,7 @@ describe('request descriptor', function () {
                     }
                 }
             });
-            personMapping = collection.model('Person', {
+            Person = collection.model('Person', {
                 id: 'id',
                 attributes: ['name']
             });

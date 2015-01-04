@@ -98,11 +98,11 @@ describe('query...', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -118,7 +118,7 @@ describe('query...', function () {
 
             describe('attributes', function () {
                 it('matches', function (done) {
-                    personMapping.map([
+                    Person.map([
                         {
                             name: 'Michael',
                             age: 21
@@ -131,7 +131,7 @@ describe('query...', function () {
                         if (err) done(err);
                         else {
                             assert.ok(mapped);
-                            var q = new Query(personMapping, {
+                            var q = new Query(Person, {
                                 age__e: 21
                             });
                             q.execute(function (err, objs) {
@@ -146,7 +146,7 @@ describe('query...', function () {
                 });
 
                 it('no matches', function (done) {
-                    personMapping.map([
+                    Person.map([
                         {
                             name: 'Michael',
                             age: 21
@@ -159,7 +159,7 @@ describe('query...', function () {
                         if (err) done(err);
                         else {
                             assert.ok(mapped);
-                            var q = new Query(personMapping, {
+                            var q = new Query(Person, {
                                 age__e: 23
                             });
                             q.execute(function (err, objs) {
@@ -174,13 +174,13 @@ describe('query...', function () {
 
             describe('relationships', function () {
                 it('model', function (done) {
-                    personMapping.map({
+                    Person.map({
                         name: 'Michael',
                         age: 21
                     }, function (err, person) {
                         assert.ok(person, 'should return a person');
                         if (err) done(err);
-                        carMapping.map({
+                        Car.map({
                             colour: 'red',
                             name: 'Aston Martin',
                             owner: person
@@ -188,7 +188,7 @@ describe('query...', function () {
                             if (err) done(err);
                             else {
                                 assert.equal(car.owner, person);
-                                var q = new Query(carMapping, {
+                                var q = new Query(Car, {
                                     owner__e: person
                                 });
                                 q.execute().then(function (objs) {
@@ -207,7 +207,7 @@ describe('query...', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -215,7 +215,7 @@ describe('query...', function () {
             });
 
             it('null shouldnt match', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: null
@@ -228,7 +228,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lt: 22
                         });
                         q.execute(function (err, objs) {
@@ -242,7 +242,7 @@ describe('query...', function () {
             });
 
             it('undefined shouldnt match', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: undefined
@@ -255,7 +255,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lt: 22
                         });
                         q.execute(function (err, objs) {
@@ -269,7 +269,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -282,7 +282,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lt: 22
                         });
                         q.execute(function (err, objs) {
@@ -297,7 +297,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -310,7 +310,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lt: 22
                         });
                         q.execute(function (err, objs) {
@@ -324,7 +324,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -337,7 +337,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lt: 21
                         });
                         q.execute(function (err, objs) {
@@ -355,7 +355,7 @@ describe('query...', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -363,7 +363,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -376,7 +376,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lte: 21
                         });
                         q.execute(function (err, objs) {
@@ -391,7 +391,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -408,7 +408,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lte: 22
                         });
                         q.execute(function (err, objs) {
@@ -423,7 +423,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -436,7 +436,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__lte: 20
                         });
                         q.execute(function (err, objs) {
@@ -454,7 +454,7 @@ describe('query...', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -462,7 +462,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -475,7 +475,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__gt: 20
                         });
                         q.execute(function (err, objs) {
@@ -490,7 +490,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -507,7 +507,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__gt: 21
                         });
                         q.execute(function (err, objs) {
@@ -522,7 +522,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -535,7 +535,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__gt: 21
                         });
                         q.execute(function (err, objs) {
@@ -553,7 +553,7 @@ describe('query...', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -561,7 +561,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -574,7 +574,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__gte: 21
                         });
                         q.execute(function (err, objs) {
@@ -589,7 +589,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -606,7 +606,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__gte: 22
                         });
                         q.execute(function (err, objs) {
@@ -621,7 +621,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -634,7 +634,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__gte: 22
                         });
                         q.execute(function (err, objs) {
@@ -650,11 +650,11 @@ describe('query...', function () {
         describe('errors', function () {
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -669,7 +669,7 @@ describe('query...', function () {
             });
 
             it('invalid op', function (done) {
-                personMapping.map([
+                Person.map([
                     {
                         name: 'Michael',
                         age: 21
@@ -682,7 +682,7 @@ describe('query...', function () {
                     if (err) done(err);
                     else {
                         assert.ok(mapped);
-                        var q = new Query(personMapping, {
+                        var q = new Query(Person, {
                             age__dfsoigsd: 21
                         });
                         q.execute(function (err, objs) {

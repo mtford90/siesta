@@ -18,8 +18,8 @@ describe('perform mapping', function () {
 
     beforeEach(function (done) {
         collection = null;
-        carMapping = null;
-        personMapping = null;
+        Car = null;
+        Person = null;
         s.reset(done);
     });
 
@@ -59,7 +59,7 @@ describe('perform mapping', function () {
     describe('empty', function () {
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -67,7 +67,7 @@ describe('perform mapping', function () {
 
         });
         it('empty', function () {
-            carMapping.map({}, function (err, _obj) {
+            Car.map({}, function (err, _obj) {
                 assert.notOk(err);
                 assert.notOk(_obj);
             });
@@ -77,7 +77,7 @@ describe('perform mapping', function () {
     describe('no id', function () {
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -86,7 +86,7 @@ describe('perform mapping', function () {
         });
         it('xyz', function (done) {
             var obj;
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'Aston Martin'
             }, function (err, _obj) {
@@ -105,13 +105,13 @@ describe('perform mapping', function () {
 
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
             s.install(function (err) {
                 if (err) done(err);
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'dfadf'
@@ -144,7 +144,7 @@ describe('perform mapping', function () {
             describe('via id', function () {
                 var newObj;
                 beforeEach(function (done) {
-                    carMapping.map({
+                    Car.map({
                         colour: 'blue',
                         id: 'dfadf'
                     }, function (err, obj) {
@@ -166,7 +166,7 @@ describe('perform mapping', function () {
             describe('via _id', function () {
                 var newObj;
                 beforeEach(function (done) {
-                    carMapping.map({
+                    Car.map({
                         colour: 'blue',
                         _id: obj._id
                     }, function (err, obj) {
@@ -191,11 +191,11 @@ describe('perform mapping', function () {
         describe('foreign key', function () {
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -216,14 +216,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                carMapping.map({
+                                Car.map({
                                     name: 'Bentley',
                                     colour: 'black',
                                     owner: 'personRemoteId',
@@ -259,7 +259,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: 'personRemoteId',
@@ -304,12 +304,12 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                            Car._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) {
                                     done(err);
                                 } else {
                                     cars = objs;
-                                    personMapping.map({
+                                    Person.map({
                                         name: 'Michael Ford',
                                         age: 23,
                                         id: 'personRemoteId',
@@ -344,7 +344,7 @@ describe('perform mapping', function () {
                     describe('remoteids of objects that dont exist', function () {
                         var person;
                         beforeEach(function (done) {
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -379,10 +379,10 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                            Car._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) done(err);
                                 cars = objs;
-                                personMapping.map({
+                                Person.map({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
@@ -427,14 +427,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        personMapping.map({
+                        Person.map({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: person,
@@ -478,10 +478,10 @@ describe('perform mapping', function () {
                             name: 'Ford',
                             id: "remoteId3"
                         }];
-                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                        Car._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) done(err);
                             cars = objs;
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -513,14 +513,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        personMapping.map({
+                        Person.map({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -568,13 +568,13 @@ describe('perform mapping', function () {
                             name: 'Ford',
                             id: "remoteId3"
                         }];
-                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                        Car._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
 
                                 done(err);
                             } else {}
                             cars = objs;
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -613,14 +613,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId123'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                carMapping.map({
+                                Car.map({
                                     name: 'Bentley',
                                     colour: 'black',
                                     owner: {
@@ -655,7 +655,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -701,7 +701,7 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                            Car._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) {
 
                                     done(err);
@@ -710,7 +710,7 @@ describe('perform mapping', function () {
                                 }
                                 cars = objs;
 
-                                personMapping.map({
+                                Person.map({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
@@ -750,7 +750,7 @@ describe('perform mapping', function () {
                     describe('remoteids of objects that dont exist', function () {
                         var person;
                         beforeEach(function (done) {
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -791,10 +791,10 @@ describe('perform mapping', function () {
                                 name: 'Ford',
                                 id: "remoteId3"
                             }];
-                            carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                            Car._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) done(err);
                                 cars = objs;
-                                personMapping.map({
+                                Person.map({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
@@ -846,11 +846,11 @@ describe('perform mapping', function () {
             var personMapping;
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -872,14 +872,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                carMapping.map({
+                                Car.map({
                                     name: 'Bentley',
                                     colour: 'black',
                                     id: 'carRemoteId',
@@ -914,7 +914,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: 'personRemoteId',
@@ -943,7 +943,7 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId'
@@ -953,7 +953,7 @@ describe('perform mapping', function () {
                                     done(err);
                                 }
                                 car = _car;
-                                personMapping.map({
+                                Person.map({
                                     name: 'Michael Ford',
                                     age: 23,
                                     car: 'carRemoteId',
@@ -984,7 +984,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: 'personRemoteId',
@@ -1016,14 +1016,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                carMapping.map({
+                                Car.map({
                                     name: 'Bentley',
                                     colour: 'black',
                                     id: 'carRemoteId',
@@ -1060,7 +1060,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -1091,7 +1091,7 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId'
@@ -1101,7 +1101,7 @@ describe('perform mapping', function () {
                                     done(err);
                                 }
                                 car = _car;
-                                personMapping.map({
+                                Person.map({
                                     name: 'Michael Ford',
                                     age: 23,
                                     car: {
@@ -1134,7 +1134,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -1167,14 +1167,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        personMapping.map({
+                        Person.map({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId',
@@ -1210,7 +1210,7 @@ describe('perform mapping', function () {
                 describe('reverse', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        carMapping.map({
+                        Car.map({
                             name: 'Bentley',
                             colour: 'black',
                             id: 'carRemoteId'
@@ -1220,7 +1220,7 @@ describe('perform mapping', function () {
                                 done(err);
                             }
                             car = _car;
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 car: {
@@ -1256,14 +1256,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        personMapping.map({
+                        Person.map({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            carMapping.map({
+                            Car.map({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId',
@@ -1274,7 +1274,6 @@ describe('perform mapping', function () {
                                     done(err);
                                 }
                                 car = _car;
-
                                 done();
                             });
                         });
@@ -1297,7 +1296,7 @@ describe('perform mapping', function () {
                 describe('reverse', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        carMapping.map({
+                        Car.map({
                             name: 'Bentley',
                             colour: 'black',
                             id: 'carRemoteId'
@@ -1307,7 +1306,7 @@ describe('perform mapping', function () {
                                 done(err);
                             }
                             car = _car;
-                            personMapping.map({
+                            Person.map({
                                 name: 'Michael Ford',
                                 age: 23,
                                 car: car,
@@ -1342,7 +1341,7 @@ describe('perform mapping', function () {
     describe('caveats', function () {
         beforeEach(function (done) {
             collection = s.collection('myCollection');
-            carMapping = collection.model('Car', {
+            Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -1350,7 +1349,7 @@ describe('perform mapping', function () {
         });
 
         it('mapping an attribute that doesnt exist', function (done) {
-            carMapping.map({
+            Car.map({
                 colour: 'red',
                 name: 'aston martin',
                 extraneous: 'blah'
@@ -1368,11 +1367,11 @@ describe('perform mapping', function () {
             var personMapping;
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1387,7 +1386,7 @@ describe('perform mapping', function () {
             });
 
             it('assign array to scalar relationship', function (done) {
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
@@ -1400,7 +1399,7 @@ describe('perform mapping', function () {
             });
 
             it('assign array to scalar relationship reverse', function (done) {
-                personMapping.map({
+                Person.map({
                     name: 'Michael Ford',
                     car: ['remoteId1', 'remoteId2'],
                     age: 23,
@@ -1418,11 +1417,11 @@ describe('perform mapping', function () {
             var personMapping;
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1437,7 +1436,7 @@ describe('perform mapping', function () {
             });
 
             it('assign array to scalar relationship', function (done) {
-                carMapping.map({
+                Car.map({
                     colour: 'red',
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
@@ -1450,7 +1449,7 @@ describe('perform mapping', function () {
             });
 
             it('assign scalar to vector relationship reverse', function (done) {
-                personMapping.map({
+                Person.map({
                     name: 'Michael Ford',
                     cars: 'remoteId1',
                     age: 23,
@@ -1470,7 +1469,7 @@ describe('perform mapping', function () {
             describe('no relationships', function () {
                 beforeEach(function (done) {
                     collection = s.collection('myCollection');
-                    carMapping = collection.model('Car', {
+                    Car = collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
@@ -1491,7 +1490,7 @@ describe('perform mapping', function () {
                         name: 'Ford',
                         id: "remoteId3dfgdfgdfgdfg"
                     }];
-                    carMapping._mapBulk(raw, {}, function (err, objs) {
+                    Car._mapBulk(raw, {}, function (err, objs) {
                         if (err) done(err);
                         assert.equal(objs.length, raw.length);
                         assert.equal(objs[0].colour, 'red');
@@ -1506,11 +1505,11 @@ describe('perform mapping', function () {
 
                 beforeEach(function (done) {
                     collection = s.collection('myCollection');
-                    personMapping = collection.model('Person', {
+                    Person = collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    carMapping = collection.model('Car', {
+                    Car = collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -1542,7 +1541,7 @@ describe('perform mapping', function () {
                         id: "remoteId3",
                         owner: ownerId
                     }];
-                    carMapping._mapBulk(raw, {}, function (err, objs) {
+                    Car._mapBulk(raw, {}, function (err, objs) {
                         if (err) done(err);
                         assert.equal(objs.length, raw.length);
                         assert.equal(objs[0].owner, objs[1].owner);
@@ -1565,11 +1564,11 @@ describe('perform mapping', function () {
                         id: "remoteId2",
                         owner: ownerId
                     };
-                    carMapping.map(carRaw1, function (err, car1) {
+                    Car.map(carRaw1, function (err, car1) {
                         if (err) {
                             done(err);
                         } else {
-                            carMapping.map(carRaw2, function (err, car2) {
+                            Car.map(carRaw2, function (err, car2) {
                                 if (err) done(err);
                                 assert.equal(car1.owner, car2.owner);
                                 done();
@@ -1587,11 +1586,11 @@ describe('perform mapping', function () {
 
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
-                personMapping = collection.model('Person', {
+                Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                carMapping = collection.model('Car', {
+                Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1608,7 +1607,7 @@ describe('perform mapping', function () {
 
             describe('via remote id', function () {
                 beforeEach(function (done) {
-                    personMapping.map({
+                    Person.map({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1630,7 +1629,7 @@ describe('perform mapping', function () {
                             id: "remoteId3",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                        Car._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1653,7 +1652,7 @@ describe('perform mapping', function () {
             describe('bulk bulk', function () {
                 beforeEach(function (done) {
                     cars = [];
-                    personMapping.map({
+                    Person.map({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1675,7 +1674,7 @@ describe('perform mapping', function () {
                             id: "remoteId3",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw1, {}, function (err, objs, res) {
+                        Car._mapBulk(raw1, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1702,7 +1701,7 @@ describe('perform mapping', function () {
                             id: "remoteId6",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw2, {}, function (err, objs, res) {
+                        Car._mapBulk(raw2, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1729,7 +1728,7 @@ describe('perform mapping', function () {
                             id: "remoteId9",
                             owner: 'personRemoteId'
                         }];
-                        carMapping._mapBulk(raw3, {}, function (err, objs, res) {
+                        Car._mapBulk(raw3, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1755,7 +1754,7 @@ describe('perform mapping', function () {
 
             describe('via nested remote id', function () {
                 beforeEach(function (done) {
-                    personMapping.map({
+                    Person.map({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1783,7 +1782,7 @@ describe('perform mapping', function () {
                                 id: 'personRemoteId'
                             }
                         }];
-                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                        Car._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }
@@ -1805,7 +1804,7 @@ describe('perform mapping', function () {
             describe('via nested remote id with unmergedChanges', function () {
                 this.timeout(5000);
                 beforeEach(function (done) {
-                    personMapping.map({
+                    Person.map({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1834,7 +1833,7 @@ describe('perform mapping', function () {
                                 id: 'personRemoteId'
                             }
                         }];
-                        carMapping._mapBulk(raw, {}, function (err, objs, res) {
+                        Car._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) {
                                 done(err);
                             }

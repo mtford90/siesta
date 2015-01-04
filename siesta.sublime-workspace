@@ -452,7 +452,7 @@
 		"/Users/mtford/Playground/rest/node_modules/karma/node_modules/log4js/examples/flush-on-exit.js",
 		"/Users/mtford/Playground/rest/test/integration.spec.js",
 		"/Users/mtford/Playground/rest/bower_components/xregexp/tools/generate-category-ranges.sh",
-		"/Users/mtford/Playground/rest/test/bulkMappingOperation.spec.js",
+		"/Users/mtford/Playground/rest/test/mappingOperation.spec.js",
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/docs/_layouts/2ColLeft.html",
 		"/Users/mtford/Playground/rest/node_modules/grunt-contrib-clean/docs/clean-options.md",
 		"/Users/mtford/Playground/rest/bower_components/pouchdb/docs/static/less/bootstrap/component-animations.less"
@@ -1083,7 +1083,7 @@
 			],
 			[
 				"bulkmap",
-				"test/bulkMappingOperation.spec.js"
+				"test/mappingOperation.spec.js"
 			],
 			[
 				"map.spec",
@@ -1107,7 +1107,7 @@
 			],
 			[
 				"bulkmapping",
-				"test/bulkMappingOperation.spec.js"
+				"test/mappingOperation.spec.js"
 			],
 			[
 				"proy",

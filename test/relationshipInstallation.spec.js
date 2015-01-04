@@ -19,7 +19,7 @@ describe('mapping relationships', function () {
 
     function configureAPI(type, done) {
         collection = s.collection('myCollection');
-        carMapping = collection.model('Car', {
+        Car = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -30,7 +30,7 @@ describe('mapping relationships', function () {
                 }
             }
         });
-        personMapping = collection.model('Person', {
+        Person = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });
@@ -50,27 +50,27 @@ describe('mapping relationships', function () {
             });
 
             it('configures reverse mapping', function () {
-                assert.equal(carMapping.relationships.owner.reverseModel, personMapping);
+                assert.equal(Car.relationships.owner.reverseModel, Person);
             });
 
             it('configures reverse name', function () {
-                assert.equal(carMapping.relationships.owner.reverseName, 'cars');
+                assert.equal(Car.relationships.owner.reverseName, 'cars');
 
                 it('configures forward mapping', function () {
-                    assert.equal(carMapping.relationships.owner.forwardModel, carMapping);
+                    assert.equal(Car.relationships.owner.forwardModel, Car);
                 });
 
             });
             it('configures forward name', function () {
-                assert.equal(carMapping.relationships.owner.forwardName, 'owner');
+                assert.equal(Car.relationships.owner.forwardName, 'owner');
             });
 
             it('installs on reverse', function () {
-                var keys = Object.keys(personMapping.relationships.cars);
+                var keys = Object.keys(Person.relationships.cars);
                 for (var i = 0; i < keys.length; i++) {
                     var key = keys[i];
                     if (key != 'isForward' && key != 'isReverse') {
-                        assert.equal(personMapping.relationships.cars[key], carMapping.relationships.owner[key]);
+                        assert.equal(Person.relationships.cars[key], Car.relationships.owner[key]);
                     }
                 }
             });
@@ -89,28 +89,28 @@ describe('mapping relationships', function () {
 
             });
             it('configures reverse mapping', function () {
-                assert.equal(carMapping.relationships.owner.reverseModel, personMapping);
+                assert.equal(Car.relationships.owner.reverseModel, Person);
             });
 
             it('configures reverse name', function () {
-                assert.equal(carMapping.relationships.owner.reverseName, 'cars');
+                assert.equal(Car.relationships.owner.reverseName, 'cars');
 
 
             });
 
             it('configures forward mapping', function () {
-                assert.equal(carMapping.relationships.owner.forwardModel, carMapping);
+                assert.equal(Car.relationships.owner.forwardModel, Car);
             });
             it('configures forward name', function () {
-                assert.equal(carMapping.relationships.owner.forwardName, 'owner');
+                assert.equal(Car.relationships.owner.forwardName, 'owner');
             });
 
             it('installs on reverse', function () {
-                var keys = Object.keys(personMapping.relationships.cars);
+                var keys = Object.keys(Person.relationships.cars);
                 for (var i = 0; i < keys.length; i++) {
                     var key = keys[i];
                     if (key != 'isForward' && key != 'isReverse') {
-                        assert.equal(personMapping.relationships.cars[key], carMapping.relationships.owner[key]);
+                        assert.equal(Person.relationships.cars[key], Car.relationships.owner[key]);
                     }
                 }
             });

@@ -18,7 +18,7 @@ describe('intercoll relationships', function () {
 
     function configureAPI(type, done) {
         collection = s.collection('myCollection');
-        carMapping = collection.model('Car', {
+        Car = collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -29,7 +29,7 @@ describe('intercoll relationships', function () {
                 }
             }
         });
-        personMapping = collection.model('Person', {
+        Person = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });
