@@ -133,7 +133,6 @@ describe('mapping!', function () {
                 })
                 .catch(done);
         });
-
         it('valid', function (done) {
             var C = s.collection('C');
             var M = C.model('M', {
@@ -152,6 +151,86 @@ describe('mapping!', function () {
                     })
                     .catch(done).done();
             }).catch(done).done();
+        });
+        it('sync remove', function (done) {
+            var C = s.collection('C');
+            var m;
+            var M = C.model('M', {
+                methods: {
+                    __remove: function () {
+                        assert.equal(this, m);
+                        done();
+                    }
+                },
+                attributes: ['attr']
+            });
+            siesta.install()
+                .then(function () {
+                    M.map({attr: 1})
+                        .then(function (_m) {
+                            m = _m;
+                            _m.remove();
+                        });
+                })
+                .catch(done);
+        });
+        it('async remove', function (done) {
+            var C = s.collection('C');
+            var m;
+            var __removeCalled = false;
+            var M = C.model('M', {
+                methods: {
+                    __remove: function (cb) {
+                        assert.equal(this, m);
+                        __removeCalled = true;
+                        cb();
+                    }
+                },
+                attributes: ['attr']
+            });
+            siesta.install()
+                .then(function () {
+                    M.map({attr: 1})
+                        .then(function (_m) {
+                            m = _m;
+                            _m.remove()
+                                .then(function () {
+                                    assert.ok(__removeCalled);
+                                    done();
+                                })
+                                .catch(done);
+                        });
+                })
+                .catch(done);
+        });
+        it('init on restore', function (done) {
+            var C = s.collection('C');
+            var m;
+            var __initCalled = false;
+            var M = C.model('M', {
+                methods: {
+                    __init: function () {
+                        assert.equal(this.attr, 1);
+                        __initCalled = true;
+                    }
+                },
+                attributes: ['attr']
+            });
+            siesta.install()
+                .then(function () {
+                    M.map({attr: 1})
+                        .then(function (_m) {
+                            m = _m;
+                            _m.remove()
+                                .then(function () {
+                                    __initCalled = false;
+                                    _m.restore();
+                                    assert.ok(__initCalled);
+                                    done();
+                                }).catch(done);
+                        }).catch(done);
+                })
+                .catch(done);
         });
     });
 

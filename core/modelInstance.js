@@ -81,26 +81,61 @@ _.extend(ModelInstance.prototype, {
                 obj: this
             });
         }
-        callback(null, this);
+        var __remove = this.model.methods.__remove;
+        if (__remove) {
+            var paramNames = util.paramNames(__remove);
+            if (paramNames.length) {
+                var self = this;
+                __remove.call(this, function (err) {
+                    callback(err, self);
+                });
+            }
+            else {
+                __remove.call(this);
+                callback(null, this);
+            }
+        }
+        else {
+            callback(null, this);
+        }
         return deferred.promise;
     },
     restore: function (callback) {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
+        var _finish = function (err) {
+            if (!err) {
+                coreChanges.registerChange({
+                    collection: this.collectionName,
+                    model: this.model.name,
+                    _id: this._id,
+                    newId: this._id,
+                    new: this,
+                    type: coreChanges.ChangeType.New,
+                    obj: this
+                });
+            }
+            callback(err, this);
+        }.bind(this);
         if (this.removed) {
             cache.insert(this);
             this.removed = false;
+            var methods = this.model.methods || {},
+                __init = methods.__init;
+            if (__init) {
+                var paramNames = util.paramNames(__init);
+                if (paramNames.length) {
+                    __init.call(this, _finish);
+                }
+                else {
+                    __init.call(this);
+                    _finish();
+                }
+            }
+            else {
+                _finish();
+            }
         }
-        coreChanges.registerChange({
-            collection: this.collectionName,
-            model: this.model.name,
-            _id: this._id,
-            newId: this._id,
-            new: this,
-            type: coreChanges.ChangeType.New,
-            obj: this
-        });
-        callback(null, this);
         return deferred.promise;
     }
 });

@@ -109,7 +109,7 @@ describe('notifications', function () {
                 assert.equal(genericNotif, collectionNotif);
                 assert.equal(collectionNotif, localIdNotif);
                 assert.equal(localIdNotif, remoteIdNotif);
-            })
+            });
 
             it('notif contains collection', function () {
                 assert.equal(notif.collection, 'myCollection');
