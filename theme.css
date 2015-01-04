@@ -8,6 +8,7 @@ Instead, edit the stylus (.styl) files and compile it to CSS on your machine.
  * Fonts
  */
 @import url("//fonts.googleapis.com/css?family=Montserrat:700|Open+Sans:300");
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
 
 /* ----------------------------------------------------------------------------
  * Base
@@ -178,7 +179,7 @@ a:hover {
 }
 
 .content pre {
-    font-family: Menlo, monospace;
+    font-family: 'Source Code Pro', Menlo, monospace;
 }
 
 .content ul > li {
@@ -232,7 +233,7 @@ a:hover {
 }
 
 .content code {
-    font-family: Menlo, monospace;
+    font-family: 'Source Code Pro', Menlo, monospace;
     background: #f3f6fb;
     padding: 1px 3px;
     font-size: 0.95em;
@@ -242,7 +243,7 @@ a:hover {
     display: block;
     background: transparent;
     font-size: 0.85em;
-    letter-spacing: -1px;
+    letter-spacing: 0;
 }
 
 .content blockquote :first-child {

@@ -17,7 +17,7 @@ Similar projects to Siesta:
 
 * [Ember Data](https://github.com/emberjs/data) - Data persistence for EmberJS. Siesta aims to be less abstraction heavy and framework agnostic.
 
-##The Problem
+# The Problem
 
 As ever, this problem is best explained through an example.
 
@@ -73,7 +73,7 @@ console.log(threadData.op.email); // mike@gmail.com
 
 So not only do we now have **two** distinct live objects representing each remote resource, but one of those objects is now out of sync - we have two sources of truth, and one of those sources is blatantly lying to us.
 
-##The Solution
+# The Solution
 
 Siesta solves this issue through the use of object mapping. A **mapping** describes the remote object that we want to model. A **collection** groups together these mappings. For example we could have define a collection to represent each web service that we will interact with.
 
@@ -110,6 +110,6 @@ User.map(userData, function (user) {
 
 We now have one local representation for each remote representation! Note that we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
 
-##What next?
+# What next?
 
 Visit our <a href="{{site.baseurl}}/docs.html">Getting Started</a> guide which will walk you through installing and configuring Siesta.</br>
