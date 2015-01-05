@@ -1205,9 +1205,42 @@ var User = Collection.model('User', {
 });
 ```
 
-## Global App Configuration
+## App Settings
 
-TODO: Using singletons and relationships between singletons to make config objects.
+If you need to manage settings in your app you can use singletons, and relationships between them e.g.
+
+```js
+var Collection = siesta.collection('Collection'),
+    Settings = Collection.model('Settings', {
+        relationships: {
+             someSettings: {model: 'SomeSettings'},
+             someMoreSettings: {model: 'SomeMoreSettings'}
+        },
+        singleton: true
+    }),
+    SomeSettings = Collection.model('SomeSettings', {
+        attributes: ['setting1', 'setting2'],
+        singleton: true
+    });
+    SomeMoreSettings = Collection.model('SomeMoreSettings', {
+        attributes: ['setting3', 'setting4'],
+        singleton: true
+    });
+```
+
+And then update and listen to changes from anywhere in your app.
+
+```js
+siesta.install(function () {
+    Settings.get().then(function (settings) {
+        settings.someSettings.setting1 = 'something';
+        settings.someMoreSettings.setting4 = 'something else';
+        settings.someMoreSettings.listen(function (change) {
+            console.log('Some more settings changed!', change);
+        });
+    });
+});
+```
 
 # Logging
 
