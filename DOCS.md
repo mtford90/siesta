@@ -318,7 +318,7 @@ var User = Collection.model('User', {
 
 ### init
 
-`init` is executed on creation of a model instance.
+`init` is executed on creation of a model instance or if a deleted instance is restored via `ModelInstance.prototype.restore`
 
 ```js
 var Model = Collection.model('Model', {
@@ -431,6 +431,22 @@ User.map([
 });
 ```
 
+## Deleting Instances
+
+To delete instances from the object graph simply call `remove`.
+
+```js
+myModel.remove();
+console.log(myModel.removed); // true
+```
+
+You can restore a deleted instance by calling `restore`.
+
+```js
+myModel.restore();
+console.log(myModel.removed); // false
+```
+
 ## Events
 
 You can listen to model change events on the `Collection`, `Model` and `ModelInstance` levels.
@@ -537,6 +553,12 @@ Repo.query({stars__gt: 50})
         repos.forEach(function (r) {
             console.log(r.name);
         });
+    });
+
+// Get the number of Repo objects that we have locally.
+Repo.count()
+    .then(function (n) {
+        console.log(n); // Log the number of repos that we have locally.
     });
 ```
 
