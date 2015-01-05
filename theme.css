@@ -734,7 +734,8 @@ body.no-literate .content pre > code:hover::-webkit-scrollbar-thumb {
     top: 15px;
 }
 
-.header .right iframe {
+.header .right iframe,
+.header .right div{
     display: inline-block;
     vertical-align: middle;
 }
