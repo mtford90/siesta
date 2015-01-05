@@ -1,6 +1,15 @@
 # Getting Started
 
-## Installation
+You can get started with Siesta by manually including it within your project or by forking one of the boilerplate projects.
+
+## Manual Installation
+
+Siesta is available on both bower and npm.
+
+```bash
+npm install siesta-orm --save
+bower install siesta --save
+```
 
 ### Script tag
 
@@ -8,12 +17,12 @@ You can include the full Siesta bundle or include individual components. If you 
 
 ```html
 <!-- Include the entire bundle -->
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
+<script src="path/to/siesta/dist/siesta.min.js"></script>
 
 <!-- OR include individual components. Core must come before any extensions. -->
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.core.min.js"></script>
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.min.js"></script>
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.storage.min.js"></script>
+<script src="path/to/siesta/siesta.core.min.js"></script>
+<script src="path/to/siesta/siesta.http.min.js"></script>
+<script src="path/to/siesta/siesta.storage.min.js"></script>
 ```
 
 ### CommonJS
@@ -72,6 +81,15 @@ If you decide to use the storage module then you **must** include PouchDB. If th
 // If using CommonJS.
 window.PouchDB = require('pouchdb');
 ```
+
+## Boilerplate Projects
+
+The quickest way to get up and running is to fork one of the boilerplate/example projects.
+
+* [Script Tags]()
+* [CommonJS with Browserify]()
+* [CommonJS with Webpack]()
+* [CommonJS with Webpack & ReactJS]()
 
 # Collections
 
@@ -580,11 +598,11 @@ var q = User.query({age__gte: 18})
 
 Here are the current built-in comparators
 
-* `<field>` or `<field>__e` -  equality
-* `<field>__lt` - less than
-* `<field>__lte` - less than or equal to
-* `<field>__gt` - greater than
-* `<field>__gte` - greater than or equal to
+* `<attribute>` or `<attribute>__e` -  equality
+* `<attribute>__lt` - less than
+* `<attribute>__lte` - less than or equal to
+* `<attribute>__gt` - greater than
+* `<attribute>__gte` - greater than or equal to
 
 You can register your own comparators.
 
@@ -645,41 +663,62 @@ var cancelListen = rq.listen(function (results, change) {
 });
 ```
 
-# Positional Reactive Queries
+# Arranged Reactive Queries
 
-Positional Reactive Queries solve the common use case of manipulating the order of a set of instances. Once models have a value in the index attribute they will remain in that position unless changed using the mutation methods described below. Positional Reactive Queries are useful e.g. for allowing users of the app to apply an order to resources.
+Arranged Reactive Queries solve the common use case of allowing users to arrange instances e.g. drag and drop arrangements of todos in a todo list app. Once instances have a value in the index attribute they will remain in that position unless changed using the mutation methods described below. Arranged Reactive Queries are useful.
 
 ```js
-var prq = User.positionalReactiveQuery({age__gt: 10});
-prq.orderBy('age');
+var arq = Todo.arrangedReactQuery();
 // Model attribute in which to store the position.
-prq.indexAttribute = 'index';
+arq.indexAttribute = 'index';
+
+Todo.map([
+	{title: 'Do homework'},
+	{title: 'Do laundry'},
+	{title: 'Order food'}
+]).then(function (todos) {
+	arq.init().then(function () {
+		assert.equal(todos[0].index, 0);
+		assert.equal(todos[1].index, 1);
+		assert.equal(todos[2].index, 2);
+		arq.swapObjects(todos[0], todos[1]);
+		assert.equal(todos[0].index, 1);
+		assert.equal(todos[1].index, 0);
+	});
+});
+```
+
+You can kick off the arranged reactive query with an initial ordering based on the usual query API described in the previous sections.
+
+```js
+var arq = User.arrangedReactiveQuery({age__gt: 10});
+arq.orderBy('age');
+arq.indexAttribute = 'index';
 
 User.map([
 	{age: 55},
 	{age: 25},
 	{age: 70}
 ]).then(function (users) {
-	prq.init().then(function () {
+	arq.init().then(function () {
 		assert.equal(users[0].index, 0);
 		assert.equal(users[1].index, 1);
 		assert.equal(users[2].index, 2);
-		prq.swapObjects(users[0], users[1]);
+		arq.swapObjects(users[0], users[1]);
 		assert.equal(users[1].index, 0);
 		assert.equal(users[0].index, 1);
-		assert.equal(users[2].index, 2);
 	});
 });
 ```
 
-There are several ways to mutate the positions of the objects.
+There are several ways to mutate the arrangements of the objects.
 
 ```js
 // Swap the objects at indexes `from` and `to` and update the index field.
 prq.swapObjectsAtIndexes(from, to);
 // Swap the objects or throw an error if the objects are not within the result set.
 prq.swapObjects(obj1, obj2);
-// Move the object at index from to position to
+// Move the object at index from index "from" to index "to"
 prq.move(from, to);
 ```
 
@@ -698,48 +737,115 @@ Github.baseURL = 'https://api.github.com/';
 
 ## Descriptors
 
-`Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Model.prototype.map` which is also available for mapping arbritrary data onto the graph outside of HTTP.
+Descriptors describe interactions with web services and are used by Siesta to decide what changes to make to the object graph once these interactions are initiated and/or completed.
 
-The below descriptor describes the Github endpoint for obtaining a specific users repositories. `path` is a regular expression, `mapping`tells Siesta what kind of objects to expect from this endpoint and `method` is the HTTP method, list of http methods or a wildcard.
+The following descriptor describes the github endpoint for obtaining a users list repositories.
 
 ```js
 Github.descriptor({
+	// Paths are regular expressions.
     path: '/users/([a-b0-9]+)/repos/',
-    mapping: Repo,
+    // The model onto which we will map the received objects
+    model: Repo,
+    // HTTP method(s) to accept
     method: 'GET'
 });
 ```
 
-### Paths
+### path
 
-Paths take the form of Javascript regular expressions with one addition - named groups.
+Paths take the form of Javascript regular expressions, strings and arrays.
+
+```js
+Model.descriptor({
+    path: '/path/to/([a-b0-9]+)/'
+});
+
+Model.descriptor({
+    path: ['/path/to/something', '/path/to/something/else']
+});
+```
+
+### model
+
+The model can either be a `Model` object or a string describing the collection and the model.
+
+```js
+Github.descriptor({
+    model: Repo
+});
+
+Github.descriptor({
+    model: 'Github.Repo'
+});
+```
+
+### method
+
+The wildcard method refers to all HTTP methods
+
+```js
+Github.descriptor({
+    method: '*'
+});
+```
+
+We can also provide arrays of methods
 
 
+```js
+Github.descriptor({
+    method: ['GET', 'POST']
+});
+```
 
-### Nested Data
+Or just a singular method
 
-The Github search endpoint nests results in the `items` key. The `data` parameter can be used to deal with this:
+
+```js
+Github.descriptor({
+    method: 'GET'
+});
+```
+
+### data
+
+Sometimes the data that represents the models is nested within the response from the web service. The `data` key is used to deal with this.
+
+```js
+Model.descriptor({
+	data: 'path.to.data'
+});
+
+// Use a function instead.
+Model.descriptor({
+	data: function (raw) {
+		return raw.path.to.data;
+	}
+});
+```
+
+For example, the Github search endpoint nests results in the `items` key.
 
 ```js
 Github.descriptor({
     path: '/search/repositories/',
-    mapping: Repo,
-    // method: '*',
-    // method: ['GET', 'PATCH'],
+    model: Repo,
     method: 'GET',
-    data: 'items',
-    // data: 'items.further.nesting'
+    data: 'items'
 });
 ```
 
-### Transforms
 
-Transforms can be used for simple field conversions:
+
+### transforms
+
+Transforms can be used to transform fields in the raw data before the data is mapped onto the object graph. Note that this step is performed after the [data](#http-descriptors-data) step described above.
 
 ```js
 Github.descriptor({
     path: '/users/([a-b0-9]+)/repos/',
-    mapping: Repo,
+    model: Repo,
     method: 'GET',
     transforms: {
         'stargazers_count': 'num_stars'
@@ -751,22 +857,13 @@ We can use dot notation to transform nested data:
 
 ```js
 Github.descriptor({
-    path: '/users/[a-b0-9]+/repos/',
-    mapping: Repo,
-    method: 'GET',
     transforms: {
         'stargazers_count': 'path.to.num_stars'
     }
 });
-```
 
-We can also use a function instead:
-
-```js
+// Use a function instead
 Github.descriptor({
-    path: '/users/[a-b0-9]+/repos/',
-    mapping: Repo,
-    method: 'GET',
     transforms: {
         'stargazers_count': function (k) {
             return 'path.to.num_stars'
@@ -775,12 +872,12 @@ Github.descriptor({
 });
 ```
 
-Or for more complicated transformations you can define a top-level transformation function:
+For more complicated transformations, you can define a top-level transformation function
 
 ```js
 Github.descriptor({
     path: '/users/[a-b0-9]+/repos/',
-    mapping: Repo,
+    model: Repo,
     method: 'GET',
     transforms: function (data) {
         var n = data.stargazers_count;
@@ -791,82 +888,99 @@ Github.descriptor({
 });
 ```
 
-### Request vs. Response
+### serialiser
 
-If your descriptor contains unsafe methods then additional options can be passed. The `data` field will tell siesta where to nest outgoing (serialised) data.
-
-```js
-Github.descriptor({
-    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-    mapping: Repo,
-    method: ['PATCH', 'POST'],
-    data: 'data'
-})
-```
-
-### Serialisation
+Serialisation is the process of transforming a model instance into raw data that can be sent to the web service. Siesta comes with two stock serialisers.
 
 ```js
+// Serialise all repositories to the id
 Github.descriptor({
     path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-    mapping: Repo,
+    model: Repo,
     method: ['PATCH', 'POST'],
-    data: 'data',
     serialiser: siesta.serialisers.id
+});
+
+// Serialise all repositories and nested model instances to a depth of 2
+Github.descriptor({
+    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
+    model: Repo,
+    method: ['PATCH', 'POST'],
+    serialiser: siesta.serialisers.depth(2)
 });
 ```
 
+You can also define your own.
+
 ```js
 Github.descriptor({
     path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-    mapping: Repo,
+    model: Repo,
     method: ['PATCH', 'POST'],
-    data: 'data',
-    serialiser: siesta.serialisers.depth(2)
+    serialiser: function (obj) {
+    	return {name: obj.name};
+    }
 });
 ```
 
 ## Sending Requests
 
-One descriptors are defined, we can then send HTTP requests and receive HTTP responses through Siesta. Siesta will match against descriptors when determining how to serialise/deserialise objects.
+Once descriptors are defined, we can then send HTTP requests and receive HTTP responses through Siesta. Siesta will match against descriptors when determining how to serialise/deserialise objects.
 
 ### Safe Methods
 
-Safe methods refer to methods that do not generally change state on the server-side e.g. GET. Object
+Safe methods refer to methods that do not generally change state on the server-side.
 
-`Collection.prototype.<SAFE_HTTP_METHOD>(path, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
 ```js
-Github.GET('/users/mtford90/repos').then(function (repos) {
-    siesta.each(repos, function (r) {
-        console.log(r.name);
-    });
+Github.GET('/users/mtford90/repos')
+	.then(function (repos) {
+		repos.forEach(function (r) {
+			console.log(r.name);
+		});
+	});
+});
+
+// Query parameters
+Github.GET('/search/repositories', {data: 'siesta'})
+	.then(function (repos) {
+		repos.forEach(function (r) {
+			console.log(r.name);
+		});
 });
 ```
 
-```js
-Github.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
-    siesta.each(repos, function (r) {
-        console.log(r.name);
-    });
-});
-```
+You can also use HEAD, OPTIONS or TRACE however these are uncommon.
 
 ### Unsafe Methods
 
-Unsafe methods refer to methods that can change state on the server-side e.g. POST/PUT/DELETE. Objects are serialised as specified in the matched descriptor.
-
-`Collection.prototype.<UNSAFE_HTTP_METHOD>(path, object, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
+Unsafe methods refer to methods that can change state on the server-side. Objects are serialised as specified in the matched descriptor.
 
 ```js
-Github.PATCH('/users/mtford90/repos', myRepo, {fields: ['name']}).then(function (repos) {
-    siesta.each(repos, function (r) {
-        console.log(r.name);
-    });
-});
+myRepo.name = 'A new name';
+
+Github.PUT('/users/mtford90/repos/' + myRepo.id, myRepo)
+	.then(function (repos) {
+		assert.equal(repo, myRepo);
+	});
+
+Github.PATCH('/users/mtford90/repos/' + myRepo.id, myRepo, {fields: ['name']})
+	.then(function (repo) {
+		assert.equal(repo, myRepo);
+	});
+
+Github.POST('/users/mtford90/repos/', myRepo)
+	.then(function (repo) {
+		assert.ok(repo.id);
+	});
+
+Github.DELETE('/users/mtford90/repos/' + myRepo.id, myRepo)
+	.then(function () {
+		assert.ok(myRepo.removed);
+	});
 ```
 
-### Custom Ajax
+## Custom AJAX
 
 Siesta currently supports jQuery style ajax functions. This can be configured as follows:
 
@@ -878,100 +992,76 @@ siesta.setAjax(zepto.ajax);
 
 Siesta features a paginator for managing responses from paginated endpoints.
 
-`Model.paginator(paginatorSettings, ajaxSettings)` creates a paginator object for managing and mapping responses from paginated endpoints. `ajaxSettings` follows the same format as the HTTP methods (i.e. whatever ajax function you specify via `siesta.setAjax` or jQuery by default.
-
 ### Configuration
 
-The defaults are as follows:
+The default configuration is as follows. As well as the paginator options, the options object can take any option accepted by jQuery-like ajax functions.
 
 ```js
 var paginator = Model.paginator({
-    path: null,
-    paginator: {
-        request: {
-            page: 'page',
-            queryParams: true, // Place params in URL as query params. If false will be placed in body instead e.g. POST body
-            pageSize: 'pageSize'
-        },
-        response: {
-            numPages: 'numPages',
-            data: 'data',
-            count: 'count'
-        }
-    },
-    ajax: {
-        type: 'GET',
-        dataType: 'json'
-    }
+	page: 'page',
+	// Place params in URL as query params.
+	// If false will be placed in body instead e.g. POST body
+	queryParams: true,
+	pageSize: 'pageSize',
+	response: {
+		numPages: 'numPages',
+		data: 'data',
+		count: 'count'
+	},
+    type: 'GET',
+    dataType: 'json',
+    // This must be specified.
+    path: null
 });
 ```
 
-If our models are nested we can do the following:
+Like with descriptors, if our models are nested we can specify a `data` option.
 
 ```js
 paginator = Model.paginator({
-    response: {
-        data: 'path.to.data'
-    }
+	data: 'path.to.data'
 })
-```
 
-We could also define a function instead:
-
-```js
 paginator = Model.paginator({
-    response: {
-        data: function (response, jqXHR) {
-            return responseData.path.to.data;
-        }
-    }
+	data: function (response, jqXHR) {
+		return responseData.path.to.data;
+	}
 });
 ```
 
-Same with numPages and count:
+`numPages` and `count` will also accept functions for flexibility.
 
 ```js
 paginator = Model.paginator({
-    response: {
-        numPages: function (response, jqXHR) {
-            return jqXHR.getResponseHeader('X-Num-Pages');
-        },
-        count: function (response, jqXHR) {
-            return response.data.total_count;
-        }
-    }
+	numPages: function (response, jqXHR) {
+		return jqXHR.getResponseHeader('X-Num-Pages');
+	},
+	count: function (response, jqXHR) {
+		return response.data.total_count;
+	}
 });
 ```
 
-The below demonstrates the flexibility of the paginator against the Github API which makes use of the `Link` response header and described [here](https://developer.github.com/guides/traversing-with-pagination/)
+The below demonstrates the flexibility of the paginator against the Github API which makes use of the `Link` response header described [here](https://developer.github.com/guides/traversing-with-pagination/).
 
 ```js
 paginator = Github.paginator({
-    ajax: {
-        path: 'search/code?q=addClass+user:mozilla'
-    },
-    paginator: {
-        request: {
-            pageSize: 'per_page'
-        },
-        response: {
-            count: 'total_count',
-            numPages: function (response, jqXHR) {
-                var links = parseLinkHeader(jqXHR.getResponseHeader('Link')),
-                    lastURI = links['last'],
-                    queryParams = parseQueryParams(lastURI);
-                return queryParams['page'];
-            },
-            data: 'items'
-        }
-
-    }
+    path: 'search/code?q=addClass+user:mozilla'
+	pageSize: 'per_page',
+	count: 'total_count',
+	numPages: function (response, jqXHR) {
+		var links = parseLinkHeader(jqXHR.getResponseHeader('Link')),
+			lastURI = links['last'],
+			queryParams = parseQueryParams(lastURI);
+		return queryParams['page'];
+	},
+	data: 'items'
 })
 ```
 
 ###  Usage
 
-`paginator.page(page, optionsOrCallback, callback)` returns objects on a specific page.
+Get the model instances on a particular page.
 
 ```js
 paginator.page(4)
@@ -979,6 +1069,14 @@ paginator.page(4)
         // objects is the list of objects returned from the endpoint
     });
 ```
+
+Once you have obtained at least one page, you can access the following information.
+
+```js
+paginator.numPages; // Number of pages.
+paginator.count; // Number of objects.
+```
+
 # Storage
 
 The Siesta storage extension is responsible for storing model instances locally. Models are loaded from the local database automatically when the app starts. (Note: this is inefficient and is planned to change once faults are introduced, in a similar fashion to Apple's CoreData)
@@ -1050,65 +1148,54 @@ TODO: Using singletons and relationships between singletons to make config objec
 
 `siesta.setLogLevel(loggerName, logLevel)` is used for configuring logging in Siesta.
 
+```js
+siesta.setLogLevel('HTTP', siesta.log.trace);
+```
+
 Logging for various Siesta subsystems can be configured using the following log levels:
 
-* `siesta.LogLevel.trace`
-* `siesta.LogLevel.debug`
-* `siesta.LogLevel.info`
-* `siesta.LogLevel.warn`
-* `siesta.LogLevel.error`
-* `siesta.LogLevel.fatal`
+* `siesta.log.trace`
+* `siesta.log.debug`
+* `siesta.log.info`
+* `siesta.log.warn`
+* `siesta.log.error`
+* `siesta.log.fatal`
 
 The various loggers are listed below:
 
-* `Descriptor`: Logger used by HTTP request/response descriptors.
-* `RequestDescriptor`: Logger used by request descriptors specifically.
-* `ResponseDescriptor`: Logger used by response descriptors specifically.
-* `DescriptorRegistry`: All descriptors are registered in the DescriptorRegistry.
-* `HTTP`: Logger used by HTTP requests/responses.
-* `LocalCache`: Objects are cached by local id (_id) or their remote id. This logger is used by the local object cache.
-* `RemoteCache`:  Objects are cached by local id (_id) or their remote id. This logger is used by the remote object cache.
-* `changes`: The logger used by change notifications.
-* `Collection`: The logger used by the Collection class, which is used to describe a set of mappings.
-* `Model`: The logger used by the Model class.
-* `MappingOperation`: The logger used during mapping operations, i.e. mapping data onto the object graph.
-* `ModelInstance`: The logger used by the ModelInstance class, which makes up the individual nodes of the object graph.
-* `Performance`: The logger used by the performance monitoring extension (siesta.perf.js)
-* `Query`: The logger used during local queries against the object graph.
-* `Store`:
-* `Operation`: Much logic in Siesta is tied up in 'Operations'.
-* `OperationQueue`: Siesta makes use of queues of operations for managing concurrency and concurrent operation limits.
-
-For example:
-
-```js
-siesta.setLogLevel('HTTP', siesta.logLevel.trace);
-```
-
+* `Descriptor`: Logs related to matching against descriptors.
+* `HTTP`: Logs related to HTTP requests/responses.
+* `Cache`: Logs related to the in-memory caching of model instances.
+* `Mapping`: Logs related to the mapping of data to the object graph.
+* `Query`: Logs related to the querying of local data
 
 # Caveats
+
+## Object.observe shim
 
 Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for `Object.observe` which is currently only available in Chrome at the time of writing. It also comes with certain caveats.
 
 e.g. take the case whereby we are manipulating a user repositories.
 
 ```js
-Repo.map({name: 'MyNewRepo'}).then(function (repo) {
-    myUser.repositories.push(repo);
-    myUser.repositories.splice(0, 1); // Remove repo at index 0.
-});
+Repo.map({name: 'MyNewRepo'})
+	.then(function (repo) {
+		myUser.repositories.push(repo);
+		myUser.repositories.splice(0, 1); // Remove repo at index 0.
+	});
 ```
 
 In browsers that implement `Object.observe`, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until `siesta.notify()` is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:
 
 ```js
-Repo.map({name: 'MyNewRepo'}).then(function (repo) {
-    myUser.repositories.push(repo);
-    myUser.repositories.splice(0, 1); // Remove repo at index 0.
-    siesta.notify(function () {
-        // Send out all notifications.
-    });
-});
+Repo.map({name: 'MyNewRepo'})
+	.then(function (repo) {
+		myUser.repositories.push(repo);
+		myUser.repositories.splice(0, 1); // Remove repo at index 0.
+		siesta.notify(function () {
+			// Send out all notifications.
+		});
+	});
 ```
 
 Promises can also be used.
@@ -1121,5 +1208,40 @@ siesta.notify().then(function () {
 
 In browsers that implement `Object.observe`, `siesta.notify()` simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.
 
+# ReactJS mixin
 
+The ReactJS mixin adds useful methods to React components in order to make integration with Siesta more concise.
+
+## Installation
+
+The mixin is available on npm and bower.
+
+```bash
+npm install react-siesta --save
+bower install react-siesta --save
+```
+
+
+You can install via a script tag.
+
+```html
+<script src="path/to/react-siesta/dist/react-siesta.min.js"></script>
+```
+
+Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` the mixin after installing via NPM.
+
+```js
+var SiestaMixin = require('react-siesta');
+```
+
+Once installed you can use the mixin as follows.
+
+```js
+var MyComponent = React.createClass({
+	mixins: [SiestaMixin],
+	// ...
+});
+```
+
+## Usage
 
