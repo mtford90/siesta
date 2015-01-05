@@ -1154,9 +1154,56 @@ console.log(instance.collection.dirty); // true
 
 This section features various useful examples that demonstrate the power of Siesta and its dependencies.
 
+## HTTP Intercepts
+
+Siesta does not make available HTTP interception, but many ajax libraries that are compatible with Siesta do. e.g. if you're using jQuery (siesta will look for $.ajax by default) you can `ajaxSend` to intercept and modify HTTP requests before they are sent.
+
+```js
+$(document).ajaxSend(function (event, jqXHR, settings) {
+    jqXHR.setRequestHeader('X-My-Custom-Header', 'Something');
+});
+```
+
 ## Authentication
 
-TODO: Using HTTP listeners to handle auth headers.
+Authentication is best handled with the HTTP interceptors of whatever ajax library you're using. This can be integrated with your Siesta user model such as in the example.
+
+```js
+var User = Collection.model('User', {
+    attributes: ['username', 'token'],
+    properties: {
+        isAuthenticated: {
+            get: function() {
+                return !!this.token;
+            }
+        }
+    },
+    methods: {
+        _handleAjaxSend: function (e, jqXJR) {
+            jqXHR.setRequestHeader('Auth', token);
+        },
+        _handleAjaxError: function (e, jqXHR) {
+            if (jqXHR.status == 403) this._removeAjaxListeners();
+        },
+        _removeAjaxListeners: function () {
+            $(document).off('ajaxSend', this.sendListener);
+            $(document).off('ajaxError', this.errorListener);
+        },
+        login: function (password) {
+            $.post('https://myapi.com/login', {password: password})
+                .done(function (data) {
+                    this.token = data.token;
+                    $(document).ajaxSend(this.sendListener = this._handleAjaxSend.bind(this));
+                    $(document).ajaxError(this.errorListener = this._handleAjaxError.bind(this));
+                }.bind(this))
+                .fail(function () {
+                    this.token = null;
+                    handleFailedAuthentication();
+                }.bind(this));
+        }
+    }
+});
+```
 
 ## Global App Configuration
 
