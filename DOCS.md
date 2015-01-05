@@ -1132,10 +1132,6 @@ console.log(instance.collection.dirty); // true
 
 This section features various useful examples that demonstrate the power of Siesta and its dependencies.
 
-## HTTP Listeners
-
-TODO: Using jquery to intercept http requests.
-
 ## Authentication
 
 TODO: Using HTTP listeners to handle auth headers.
@@ -1257,20 +1253,56 @@ var MyComponent = React.createClass({
 
 All listeners are cancelled when `componentWillUnmount` is executed saving on repetitive calls, mistakes and memory leaks.
 
+You can listen to collections.
+
 ```js
-// Collections
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(rateLimit) {
-            // ...
-        };
+        var listener = function(event) {
+             this.setState(); // Rerender
+        }.bind(this);
 
         this.listen(MyCollection, listener).then(listener);
     }
 });
+```
 
-// Reactive Query
+You can listen to models.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        var listener = function(event) {
+             this.setState(); // Rerender
+        }.bind(this);
+
+        this.listen(MyModel, listener).then(listener);
+    }
+});
+```
+
+You can listen to instances of models.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        MyModel.map({attr: 1})
+            .then(function (myModel) {
+                 var listener = function(event) {
+                      this.setState(); // Rerender
+                 }.bind(this);
+                 this.listen(myModel, listener).then(listener);
+            });
+    }
+});
+```
+
+You can listen to reactive queries.
+
+```js
 var rq = User.reactiveQuery({age__gt: 20}).orderBy('age');
 
 var MyComponent = React.createClass({
@@ -1280,9 +1312,28 @@ var MyComponent = React.createClass({
             this.setState({
                 usersOlderThanTwenty: usersOlderThanTwenty
             });
-        };
+        }.bind(this);
         rq.init().then(listener);
         this.listen(rq, listener);
+    }
+});
+```
+
+You can listen to arranged reactive queries.
+
+```js
+var arq = Todo.arrangedReactiveQuery();
+
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        var listener = function(todos) {
+            this.setState({
+                todos: todos
+            });
+        }.bind(this);
+        arq.init().then(listener);
+        this.listen(arq, listener);
     }
 });
 ```
@@ -1292,15 +1343,32 @@ var MyComponent = React.createClass({
 Same as `this.listen` except takes a Singleton `Model` instead.
 
 ```js
+// We can do this.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(rateLimit) {
+        var listener = function(mySingleton) {
             this.setState({
-                rateLimit: rateLimit
+                mySingleton: mySingleton
             });
-        };
+        }.bind(this);
         this.listenToSingleton(MySingletonModel, listener).then(listener);
+    }
+});
+
+// Instead of this.
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        var listener = function(mySingleton) {
+            this.setState({
+                mySingleton: mySingleton
+            });
+        }.bind(this);
+        MySingletonModel.get()
+            .then(function (mySingleton) {
+                this.listen(mySingleton, listener).then(listener);
+            }.bind(this));
     }
 });
 ```
