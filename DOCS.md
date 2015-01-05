@@ -1245,3 +1245,62 @@ var MyComponent = React.createClass({
 
 ## Usage
 
+### listen
+
+`this.listen` will listen to events from any of:
+
+* `Collection`
+* `Model`
+* `ModelInstance`
+* `ReactiveQuery`
+* `ArrangedReactiveQuery`
+
+All listeners are cancelled when `componentWillUnmount` is executed saving on repetitive calls, mistakes and memory leaks.
+
+```js
+// Collections
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        var listener = function(rateLimit) {
+            // ...
+        };
+
+        this.listen(MyCollection, listener).then(listener);
+    }
+});
+
+// Reactive Query
+var rq = User.reactiveQuery({age__gt: 20}).orderBy('age');
+
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        var listener = function(usersOlderThanTwenty) {
+            this.setState({
+                usersOlderThanTwenty: usersOlderThanTwenty
+            });
+        };
+        rq.init().then(listener);
+        this.listen(rq, listener);
+    }
+});
+```
+
+### listenToSingleton
+
+Same as `this.listen` except takes a Singleton `Model` instead.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        var listener = function(rateLimit) {
+            this.setState({
+                rateLimit: rateLimit
+            });
+        };
+        this.listenToSingleton(MySingletonModel, listener).then(listener);
+    }
+});
+```
