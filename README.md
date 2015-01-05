@@ -1,6 +1,8 @@
 Siesta
 ======
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mtford90/siesta?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/mtford90/siesta.svg?branch=master)](https://travis-ci.org/mtford90/siesta)
 
 **BIG FAT WARNING:** This library is in **beta** and is under development. Whilst efforts are being made to keep master/releases stable there are no guarantees on this.
