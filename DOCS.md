@@ -1,26 +1,16 @@
-# Installation
+# Getting Started
 
-## Methods
+## Installation
 
-### Script Tag
+### Script tag
 
-If using script tags you can just to install the entire Siesta bundle or specific modules.
-
-The siesta bundle includes all of the following:
-
-* Core
-* HTTP
-* Storage
-
-Simply include siesta.js or siesta.min.js.
+You can include the full Siesta bundle or include individual components. If you decide to include individual components, ensure that other modules are included **after** core.
 
 ```html
+<!-- Include the entire bundle -->
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
-```
 
-Siesta core is the only required module. Ensure that other modules are included **after** core.
-
-```html
+<!-- OR include individual components. Core must come before any extensions. -->
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.core.min.js"></script>
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.min.js"></script>
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.storage.min.js"></script>
@@ -30,184 +20,182 @@ Siesta core is the only required module. Ensure that other modules are included 
 
 Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta and any extensions after running `npm install siesta-orm --save`.
 
-With no extensions:
-
 ```js
-var siesta = require('siesta'); // No extensions
-```
+// With no extensions.
+var siesta = require('siesta');
 
-With extensions.
-
-```js
+// With extensions (this only needs to be done once)
 var siesta = require('siesta') ({
-	http: require('siesta/http')),
-	storage: require('siesta/storage'))
-}); 
+    http: require('siesta/http')),
+    storage: require('siesta/storage'))
+});
 ```
 
-Note that extensions only need to be declared once. Any further extensions will be ignored after the first declaration
-
-## Promises
+### Promises
 
 Promises can be used anywhere in Siesta where callbacks are used, provided that [q.js](https://github.com/kriskowal/q) is made available.
 
-We recommend including q.js from a CDN.
-
 ```html
+<!-- If using script tags -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.1.2/q.js"></script>
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
-
 ```
-
-And from that point forward you can use promises.
 
 ```js
-var MyCollection = siesta.collection('MyCollection'),
-	 MyModel      = MyCollection.model('MyModel', {attributes: ['attr']});
-	
-siesta.install()
-	.then(function () {
-		MyModel.map({attr: 'something', id: 1})
-			.then(function (instance) {
-				console.log('Mapped something!', instance);
-			});
-	})
-	.catch(function (err) {
-		console.error('Handle error', err);	
-	});
+// If using CommonJS.
+window.Q = require('q');
 ```
 
-## Storage
+Once q.js is included in your project you can use promises anywhere in Siesta where you would normally use callbacks.
+
+```js
+siesta.install()
+      .then(function () {
+           // ...
+       })
+      .catch(function (err) {
+           console.error('Handle error', err);
+       });
+```
+
+### Storage
 
 If you decide to use the storage module then you **must** include PouchDB. If the availability of PouchDB is not detected then storage will be disabled.
 
 ```html
+<!-- If using script tags -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/pouchdb/3.2.0/pouchdb.min.js"></script>
 <script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
 ```
 
-# Getting Started
-
-The following will get a basic object graph up and running.
-
-First of all define a collection.
-
 ```js
-var Collection = siesta.collection('Collection');
-```
-
-Then define some models in that collection.
-
-```js
-var MyModel = Collection.model('MyModel', {
-		attributes: ['attr1', 'attr2']
-	},
-	MyOtherModel = Collection.model('MyOtherModel', {
-		attributes: ['attr3'],
-		relationships: {
-			related: {
-				model: 'MyModel',
-				type: 'OneToMany',
-				reverse: 'reverseRelated'
-			}
-		}
-	};
-```
-
-Once the siesta install process has finished, we can then map data onto the object graph produced.
-
-```js
-siesta.install().then(function () {
-	MyModel.map({
-		id: 1,
-		attr1: 'something',
-		attr2: 'somethingElse',
-		reverseRelated: [
-			{attr3: 2, id: 5},
-			{attr3: 5, id: 6}
-		]
-	}).then(function (instance) {
-		console.log(instance.attr1); // 'something'
-		console.log(instance.reverseRelated[0].attr3); // 2
-	});
-});
+// If using CommonJS.
+window.PouchDB = require('pouchdb');
 ```
 
 # Collections
 
-A collection organises a set of mappings and optionally descriptors and usually you'd create one per API.
-
-`siesta.collection(collectionName)` creates a new Collection. 
+A collection organises a set of models, descriptors and other components. If you are interacting with REST APIs, you would define a collection for each of them. For example we could define a collection for interacting with the Github API.
 
 ```js
-var GitHub = siesta.collection('MyCollection');
+var Github = siesta.collection('Github');
 ```
 
 # Models
 
-`Collection.prototype.model(opts)` is used for registering a model in a particular collection.
-
-The simplest model defines only attributes.
+A model defines the (possibly remote) resources that our app will deal with. *Instances* of our models will make up the object graph.
 
 ```js
-var User = GitHub.model('User', {
+var User = Github.model('User', {
     attributes: ['login', 'avatar_url', 'html_url']
 });
 ```
 
-A more complex model, for example, could define relationships with other models.
-
-```js
-var Repo = GitHub.model('Repo', {
-	id: 'id',
-	attributes: ['name', 'description', 'url', 'num_watchers', 'num_forks', 'num_stars'],
-	relationships: {
-		owner: {
-			mapping: 'User',
-			type: 'OneToMany',
-			// A 'repositories' property will be added to all User instances.
-			reverse: 'repositories'
-		},
-		forkedFrom: {
-			// Note that it's completely possible to add recursive relationships!
-			mapping: 'Repo',
-			type: 'OneToMany',
-			// A 'forks' property will be added to all Repo instances.
-			reverse: 'forks'
-		}
-	}
-})
-```
-
-## Definition
+## Defining models
 
 ### attributes
 
 Attributes are simple data types associated with a model. For example, a `User` model could have a username and an email.
 
 ```js
-var Collection = siesta.collection('Collection'),
-    User = Collection.model({
-		attributes: [
-			'username',
-			'name'
-		]
-	}); 
+var User = Collection.model({
+    attributes: [
+        'username',
+        'name'
+    ]
+});
 ```
 
 We can also define default values for attributes.
 
 ```js
 var User = Collection.model({
-	attributes: [
-		'username',
-		'name',
-		{
-			name: 'accessLevel',
-			default: 1
-		}
-	]
+    attributes: [
+        'username',
+        'name',
+        {
+            name: 'accessLevel',
+            default: 1
+        }
+    ]
 }); 
+```
+
+### relationships
+
+There are three types of relationships, described here with examples from the Github API.
+
+
+
+```js
+var Repo = Github.Repo('Repo', {
+    relationships: {
+        // One github user has many repositories.
+        owner: {
+            model: 'Repo',
+            type: 'OneToMany',
+            reverse: 'repos'
+        },
+        // One github user has one rate limit status.
+        rateLimit: {
+            model: 'RateLimit',
+            type: 'OneToOne',
+            reverse: 'user'
+        },
+        // Many github users can belong to many organisations.
+        organisation: {
+            model: 'Organisation',
+            type: 'ManyToMany',
+            reverse: 'users'
+        }
+    }
+}
+```
+
+Once a relationship is defined, Siesta will automatically manage the reverse of that relationship e.g.
+
+```js
+User.map({username: 'bob', id: 5})
+    .then(function (bob) {
+        Repo.map({name:'A repo', user: 5})
+            .then(function (repo) {
+                assert.equal(repo.owner, bob);
+            });
+    });
+```
+
+#### Intercollection Relationships
+
+It is entirely possible to define relationships between models that are in different collections.
+
+```js
+var MyCollection = siesta.collection('MyCollection'),
+    MyOtherCollection = siesta.collection('MyOtherCollection'),
+    MyModel = MyCollection.model({attributes: ['attr']}),
+    MyOtherModel = MyOtherCollection.model({
+        relationships: {
+            relation: {
+                model: MyModel
+            }
+        }
+    })
+```
+
+#### Recursive Relationships
+
+Relationships can also be recursive i.e. relate to themselves in some fashion.
+
+```js
+var Repo = Github.model('Repo', {
+    relationships: {
+        // A Repo can be forked from another Repo
+        forkedFrom: {
+            mapping: 'Repo',
+            type: 'OneToMany',
+            reverse: 'forks'
+        }
+    }
+})
 ```
 
 ### singleton
@@ -216,10 +204,10 @@ A singleton model will only ever have one instance, and this instance will be cr
 
 ```js
 // Maps loosely to https://api.github.com
-var RateLimit = GitHub.model({
-	name: 'RateLimit',
-	attributes: ['limit', 'remaining', 'reset'],
-	singleton: true
+var RateLimit = Github.model({
+    name: 'RateLimit',
+    attributes: ['limit', 'remaining', 'reset'],
+    singleton: true
 });
 ```
 
@@ -227,214 +215,133 @@ Anything mapped onto a singleton model will be mapped onto that unique instance.
 
 ```js
 RateLimit.map([
-	{
-		limit: 60,
-		remaining: 60,
-		reset: 1414606386
-	},
-	{
-		limit: 40,
-		remaining: 40,
-		reset: 1414602846
-	}
+    {limit: 60},
+    {limit: 40}
 ]).then(function (rateLimits) {
-	console.log(objs[0] == objs[1]); // true
-	console.log(objs[0].limit); // 40
-	console.log(objs[0].remaining); // 40
-	console.log(objs[0].reset); // 1414602846
+    console.log(objs[0] == objs[1]); // true
+    console.log(objs[0].limit); // 40
 });
 ```
 
-### relationships
-
-There are three types of relationships, described below with examples from the GitHub API.
-
-* `OneToMany` relationships e.g. one github user has many repositories.
-
-```js
-var Repo = Github.Repo('Repo', {
-	// ...
-	relationships: {
-		owner: {
-			model: 'Repo',
-			type: 'OneToMany',
-			reverse: 'repos'
-		}
-	},
-	// ...
-}
-```
-
-* `OneToOne` relationships e.g. one github user has one rate limit status.
-
-```js
-var Repo = Github.Repo('Repo', {
-	// ...
-	relationships: {
-		rateLimit: {
-			model: 'RateLimit',
-			type: 'OneToOne',
-			reverse: 'user'
-		}
-	},
-	// ...
-}
-```
-
-* `ManyToMany` relationships e.g. many github users can belong to many organisations.
-
-```js
-var User = Github.Repo('User', {
-	// ...
-	relationships: {
-		organisation: {
-			model: 'Organisation',
-			type: 'ManyToMany',
-			reverse: 'users'
-		}
-	},
-	// ...
-}
-```
-
-Once a relationship is defined, Siesta will automatically manage the reverse of that relationships e.g.
-
-```js
-User.map({username: 'bob', id: 5})
-	.then(function (bob) {
-		Repo.map({name:'A repo', user: 5})
-			.then(function (repo) {
-				assert.equal(repo.owner, bob);
-			});
-	});
-```
-
-## Methods
+### methods
 
 Custom methods for model instances can be defined using the methods option.
 
 ```js
 var Collection = siesta.collection('Collection'),
 	Account = Collection.model('Account', {
-		      	  attributes: ['transactions']
-				  methods: {
-					  getBalance: function () {
-					  	  var sum = 0;
-					  	  return this.transactions.forEach(function (v) { sum += v; });
-					  }
-				  }
-		      }
+                  attributes: ['transactions']
+                  methods: {
+                      getBalance: function () {
+                          var sum = 0;
+                          this.transactions.forEach(function (v) { sum += v; });
+                          return sum;
+                      }
+                  }
+              }
 ```
 
-Any model instances will now have that method.
+Any mapped instances will now have that method.
 
 ```js
 Account.map({transactions: [5, 3, -2]})
-	.then(function (acc) {
-		assert.equal(acc.getBalance(), 6);
-	});
+       .then(function (acc) {
+           assert.equal(acc.getBalance(), 6);
+       });
 ```
 
-### Special Methods
-
-There are currently two special methods which serve a particular function. They are useful e.g. for creating and destroying event listeners attached to model instances.
-
-#### __init
-
-`__init` is executed on creation of a model instance.
-
-```js
-methods: {
-	__init: function () {
-		doSomethingSynchronously(this);
-	}
-}
-```
-
-`__init` can also be asynchronous. Just add a `done` argument.
-
-```js
-methods: {
-	__init: function (done) {
-		doSomethingAsynchronously(this, done);
-	}
-}
-```
-
-#### __remove
-
-`__remove` is executed on removal of a modal instance.
-
-```js
-methods: {
-	__remove: function () {
-		doSomethingSynchronously(this);
-	}
-}
-```
-
-`__remove` can also be executed asynchronously. Just add a `done` argument.
-
-```js
-methods: {
-	__remove: function (done) {
-		doSomethingAsynchronously(this, done);
-	}
-}
-```
-
-## Properties
+### properties
 
 Similar to javascript's `Object.defineProperty` we can also define derived properties on our model instances.
 
 ```js
 var Collection = siesta.collection('Collection'),
-	Account = Collection.model('Account', {
-		      	  attributes: ['transactions']
-				  properties: {
-				  	  balance: {
-				  	  	  get: function () {
-				  	  	  	  var sum = 0;
-					  	      return this.transactions.forEach(function (v) { sum += v; });
-				  	  	  }
-				  	  }
-				  }
-		      }
+    Account = Collection.model('Account', {
+                  attributes: ['transactions']
+                  properties: {
+					   balance: {
+						   get: function () {
+							    var sum = 0;
+							    this.transactions.forEach(function (v) { sum += v; });
+							    return sum;
+						   }
+					   }
+                  }
+              }
 ```
 
-Any model instances will now have that property.
+Any mapped instances will now have that property.
 
 ```js
 Account.map({transactions: [5, 3, -2]})
-	.then(function (acc) {
-		assert.equal(acc.balance, 6);
-	});
+    .then(function (acc) {
+        assert.equal(acc.balance, 6);
+    });
 ```
 
-## Static Methods
+### statics
 
-### Special Methods
-
-#### __init
-
-`__init` is executed on initialisation of the model itself.
+We can also add methods to the `Model` itself which can useful e.g. for organising oft-used queries.
 
 ```js
-statics: {
-	__init: function () {
-		doSomethingSynchronously(this);
+var User = Collection.model('User', {
+	attributes: ['age'],
+	statics: {
+		findTeenageUsers: function (callback) {
+			return this.query({
+				age__gte: 10,
+				age__lte: 19
+			}, callback);
+		}
 	}
-}
+});
+
 ```
 
-Like the instance-level methods, `__init` can be executed asynchronously.
+### init
+
+`init` is executed on creation of a model instance.
 
 ```js
-statics: {
-	__init: function (done) {
+var Model = Collection.model('Model', {
+	init: function () {
+        doSomethingSynchronously(this);
+    }
+});
+```
+
+`init` can also be asynchronous. Just add a `done` argument.
+
+```js
+var Model = Collection.model('Model', {
+	init: function (done) {
 		doSomethingAsynchronously(this, done);
 	}
-}
+});
+
+```
+
+### remove
+
+`remove` is executed on removal of a modal instance.
+
+```js
+var Model = Collection.model('Model', {
+	remove: function () {
+		doSomethingSynchronously(this);
+	}
+});
+
+```
+
+`remove` can also be executed asynchronously. Just add a `done` argument.
+
+```js
+var Model = Collection.model('Model', {
+	remove: function (done) {
+		doSomethingAsynchronously(this, done);
+	}
+});
 ```
 
 ## Inheritance
@@ -448,365 +355,112 @@ var Collection         = siesta.collection('Collection'),
     JavascriptEngineer = SoftwareEngineer.child('JavascriptEngineer', {attributes: ['knowsNodeJS']});
 ```
 
-## Inspection
-
-Siesta presents numerous methods on both the model and instance level for inspecting the inheritance hierarchy of models and determining the type of siesta model instances.
-
-### Model Level
-
-`Model.prototype.isChildOf(parentModel)` returns true if the given model is a child of the parent model.
+We can inspect the inheritance hierarchy.
 
 ```js
 SoftwareEngineer.isChildOf(Employee); // true
-JavascriptEngineer.isChildOf(Employee); // false
-```
-
-`Model.prototype.isParentOf(childModel)` returns true if the given model is a parent of the child model.
-
-```js
 SoftwareEngineer.isParentOf(JavascriptEngineer); // true
-Employee.isParentOf(JavascriptEngineer); // false
-```
-
-`Model.prototype.isDescendantOf(model)` returns true if the given model is a descendant of the given model.
-
-```js
 SoftwareEngineer.isDescendantOf(Employee); // true
-JavascriptEngineer.isDescendantOf(Employee); // true
-```
-
-`Model.prototype.isAncestorOf(model)` returns true if the given model is an ancestor of the given model.
-
-```js
-Employee.isAncestorOf(JavascriptEngineer); // true
 SoftwareEngineer.isAncestorOf(JavascriptEngineer); // true
 ```
 
-### Instance Level
-
-`ModelInstance.prototype.isInstanceOf(model)` returns true if the instance is an instance of the given model.
+We can do the same on the instance level.
 
 ```js
-JavascriptEngineer.map({
-		name: 'Michael', 
-		programmingLanguages: ['python', 'javascript', 'objective-c'], 
-		knowsNodeJS: true
-	})
-	.then(function (engineer) {
-		engineer.isInstanceOf(JavascriptEngineer); // true
-		engineer.isInstanceOf(SoftwareEngineer); // false
-	});
+JavascriptEngineer
+	.map({
+        name: 'Michael',
+        programmingLanguages: ['python', 'javascript', 'objective-c'],
+        knowsNodeJS: true
+    })
+    .then(function (engineer) {
+    	engineer.isA(JavascriptEngineer); // true
+    	engineer.isA(SoftwareEngineer); // true
+        engineer.isInstanceOf(JavascriptEngineer); // true
+        engineer.isInstanceOf(SoftwareEngineer); // false
+    });
 ```
 
-`ModelInstance.prototype.isA(model)` returns true if the instance is an instance of the given model or any of its ancestors.
+## Creating instances
+
+In siesta, the process of creating new instances of models is known as *mapping*. This refers to mapping data onto the object graph.
 
 ```js
-JavascriptEngineer.map({
-		name: 'Michael', 
-		programmingLanguages: ['python', 'javascript', 'objective-c'], 
-		knowsNodeJS: true
-	})
-	.then(function (engineer) {
-		engineer.isA(JavascriptEngineer); // true
-		engineer.isA(SoftwareEngineer); // true
-	});
-```
-
-Note that we can mix and match descendants in relationships.
-
-## Mapping
-
-You do not have to send HTTP requests to map data into Siesta. If your application loads data from websockets or through other protocols/sources then there needs to be a way to map arbitrary data onto the object graph.
-
-`Model.prototype.map(data, callback)` will map data using a particular mapping e.g:
-
-```js
-var data = {
+// Map a single object.
+User.map({
 	login: 'mtford90',
 	avatar_url: 'http://domain.com/path/to/avatar.png',
 	id: 123
-};
-
-User.map(data, function (err, model) {
-	if (!err) console.log(model.login); // mtford90
-	else console.error(err);
+}).then(function (model) {
+    if (!err) console.log(model.login); // mtford90
+    else console.error(err);
 });
-```
 
-Promises can also be used:
-
-```js
-User.map(data).then(function (model) {
-	console.log(model.login); // mtford90
-}, function (err) {
-	console.log(err);
+// Map multiple objects
+User.map([
+	 {
+		 login: 'mtford90',
+		 id: 123
+	 },
+	 {
+		 login: 'bob',
+		 id: 456
+	 }
+]).then(function (models) {
+    models.forEach(function (m) {
+        console.log(m.login);
+    });
 });
-```
-
-Arrays of data can also be mapped:
-
-```js
-var data = [
-	{
-		login: 'mtford90',
-		id: 123
-	},
-	{
-		login: 'bob',
-		id: 456
-	}
-];
-User.map(data, function (err, models) {
-	models.forEach(function (m) {
-		console.log(m.login);
-	});
-});
-```
-
-# Queries
-
-Siesta features an API for querying all instances stored locally in the object graph.
-
-`Model.prototype.all([callback])` will return all models mapped by a particular mapping.
-
-```js
-User.all()
-	.execute()
-	.then(function (users) {
-		users.forEach(function (u) {
-			console.log(u.login);
-		});
-	});
-```
-
-`Model.prototype.query(opts, [callback])` will return all models that match the query described by `opts`. Many types of queries can be executed, loosely inspired by Django's ORM query conventions:
-
-Query for a user with a particular local identifier.
-
-```js
-User.query({_id: 'xyz'})
-	.execute()
-	.then(function (u) {
-		console.log(u.login);
-	});
-```
-
-Query for a user with a particular remote identifier:
-
-```js
-User.query({id: 'xyz'})
-	.execute()
-	.then(function (u) {
-		console.log(u.login);
-	});
-```
-
-Query for repos with more than 50 stars:
-
-```js
-Repo.query({stars__gt: 50})
-	.execute()
-	.then(function (repos) {
-		repos.forEach(function (r) {
-			console.log(r.name);
-		});
-	});
-```
-
-## Comparators
-
-Here are the current built-in comparators
-
-* `<field>` or `<field>__e` -  equality
-* `<field>__lt` - less than
-* `<field>__lte` - less than or equal to
-* `<field>__gt` - greater than
-* `<field>__gte` - greater than or equal to
-
-### Custom
-
-You can register your own comparators.
-
-```js
-// A custom < comparator.
-siesta.registerComparator('customLt', function (opts) {
-	var value = opts.object[opts.field];
-	return value < opts.value;
-});
-```
-
-And then use them in the usual manner.
-
-```js
-Repo.query({stars__customLt: 50})
-	.execute()
-	.then(function (repos) {
-			repos.forEach(function (r) {
-			console.log(r.name);
-		});
-	});
-```
-
-## Nested Queries
-
-You can query using key paths to access nested objects.
-
-```js
-Repo.query({'owner.username': 'mtford90'})
-	.execute()
-	.then(function (repos) {
-		// ...
-	});
-```
-
-## $and/$or
-
-It's also possible to use boolean logic when querying local data.
-
-Repo.query($and: [{$or: [{user.age__lt: 20}, {user.age__gt: 40}]}, {name: 'michael'}])
-	.exsecute()
-	.then(function (repos) {
-		// ...
-	});
-
-## Ordering
-
-`Query.prototype.orderBy(... fields)` can be used to order instances.
-
-```js
-User.query({age__gte: 18})
-	.orderBy('-age', 'name')  // Equivalent to .orderBy(['-age', 'name']) and .orderBy('-age').orderBy('name')
-	.execute()
-	.then(function (results) {
-		console.log('results', results);
-	});
-```
-
-Prepending `-` signifies descending order.
-
-# Reactive Queries
-
-Reactive queries exist to support functional reactive programming when using Siesta. For those familar with Apple's Cocoa library and CoreData these are similar to the `NSFetchedResultsController` class. 
-
-A reactive query is a query that reacts to changes in the object graph, updating its result set and emitting events related to these updates.
-
-```js
-var rq = User.reactiveQuery({age__gte: 18});
-rq.listen(function (results, change) {
-	// ...
-});
-rq.init();
-```
-
-Reactive queries can be ordered in a similar fashion to ordinary queries.
-
-```js
-var rq = User.reactiveQuery({age__gte: 18}).orderBy('-age', 'name');
 ```
 
 ## Events
 
-Reactive Query events are emitted under 4 circumstances:
-
-* An object has been removed from the result set due to no longer matching the query.
-* An object has been added to the result set due to now matching the query.
-* An object has been moved to a different position in the query due to ordering.
-* An object in the result set has changed but not removed. In this instance, the change object will be an event described in the [model events section](#events). 
-
-# Positional Reactive Queries
-
-Positional Reactive Queries solve the common use case of applying an ordering to a set of model instances and updating some index attribute with the new value. Note that positional reactive queries do not react to changes in the models, but are updated manually e.g. the user of the webapp rearranging some list.
+You can listen to model change events on the `Collection`, `Model` and `ModelInstance` levels.
 
 ```js
-var Collection = siesta.collection('Collection'),
-	User = Collection.model('User', {attr: ['index', 'age']});
-	
-siesta.install().then(function () {
-	User.map([
-		{age: 55},
-		{age: 25},
-		{age: 70}
-	]).then(function (users) {
-		var prq = MyModel.positionalReactiveQuery();
-		prq.orderBy('age');
-		prq.indexField = 'index'; // Defaults to 'index'. Must exist within the attributes defined in Model definition.
-		prq.init().then(function () {
-			assert.equal(users[0].index, 0);
-			assert.equal(users[1].index, 1);
-			assert.equal(users[2].index, 2);
-			prq.swapObjects(users[0], users[1]);
-			assert.equal(users[1].index, 0);
-			assert.equal(users[0].index, 1);
-			assert.equal(users[2].index, 2);
-		});
-	});
-});
-```
-
-`PositionalReactiveQuery.prototype.swapObjectsAtIndexes(from, to)` will swap the objects at indexes `from` and `to` and update the index field.
-
-`PositionalReactiveQuery.prototype.swapObjects(obj1, ob2)` will swap the objects or throw an error if the objects are not within the result set.
-
-`PositionalReactiveQuery.prototype.move(from, to)` will move the object at `from` to the position specified by `to`
-
-# Events
-
-Siesta emits a wide range of events that can be used 
-
-## Models
-
-There are four events related to changes to `Model` instances.
-
-| Event | Description | Example |
-| ----- | ----------- | ------- |
-|   Set   | Set events are     | ```modelInstance.attr = 1;``` | 
-|   Splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
-|   New   |  Emitted when new model instances are created              | `Model.map({id: 2, desc: 'A new model instance!'});` | 
-|   Remove   |  Emitted when model instances are removed from the object graph              | `myModel.remove()` |
-
-We can listen to events related to model instances in a particular collection.
-
-```js
+// Listen to events related to model instances in a particular collection
 Collection.listen(function (e) {
-	// ...
+    // ...
 });
-```
 
-We can listen to events releated to instances of particular models
-
-```js
+// Listen to events related to instances of particular models
 Model.listen(function (e) {
-	// ...
+    // ...
 });
-```
 
-And we can also listen to events related to particular instances.
-
-```js
+// Listen to events related to particular instances
 Model.map({attr: 'something'})
-	.then(function (instance) {
-		instance.listen(function (e) {
-		
-		});
-	});
-```
+    .then(function (instance) {
+        instance.listen(function (e) {
 
-Note that is also impossible to listen to just one event before canceling the listener automatically.
+        });
+    });
 
-```js
-Something.listenOnce(function (e) {
-	// ... do something with the event
+// Listen to just one event before canceling the listener automatically.
+something.listenOnce(function (e) {
+    // ...
 });
 ```
 
-All `listen` methods return a function that can be used to remove the listener.
+To stop listening to an event, call the return cancelListen function.
 
 ```js
-var cancelListen = Something.listen(function (e) { /* ... */ });
+var cancelListen = something.listen(function (e) { /* ... */ });
 cancelListen();
 ```
 
-### Event Object
+### Types
+
+There are four different event types.
+
+| Event | Description | Example |
+| ----- | ----------- | ------- |
+|   Set   | Set events are     | ```modelInstance.attr = 1;``` |
+|   Splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
+|   New   |  Emitted when new model instances are created              | `Model.map({id: 2, desc: 'A new model instance!'});` |
+|   Remove   |  Emitted when model instances are removed from the object graph              | `myModel.remove()` |
+
+### The Event Object
 
 Every event features the following fields.
 
@@ -837,54 +491,201 @@ Every event features the following fields.
 
 `New` and `Delete` events do not have any additional fields.
 
-## Raw Events
+# Queries
 
-Whilst most event listening is covered through the use of `listen` methods, it is possible to add handlers to the `EventEmitter` that Siesta uses to emit events.
-
-These raw events are described below. 
-
-| Event         | Description   | Example |
-| ------------- |-------------| ------- |
-| Siesta        | Events for all model instances. | `siesta.on('Siesta', handler);`  |
-| $collection      | Events relating to instances of models in a particular collection.    | `siesta.on('GitHub', handler);`  |
-| $collection:$model | Events relating to instances of a particular model.      |`siesta.on('GitHub:Repo', handler);`  |
-| $collection:$model:$remoteId | Events relating to an instance of a model with a particular remote identifier. |  `siesta.on('GitHub:Repo:542432', handler);`|
-| $id  | Events relating to an object with a particular local identifier. | `siesta.on('25892e17-80f6-415f-9c65-7395632f0223', handler);` |
-
-`siesta.on(notif, handler)` listens to Siesta object change notifications.
+The query API allows for interaction with locally stored instances.
 
 ```js
-var handler = function (e) {
-	console.log(e);
-};
-siesta.on('GitHub:User', handler);
+// Get all instances - equivalent to query({})
+User.all()
+    .execute()
+    .then(function (users) {
+        users.forEach(function (u) {
+            console.log(u.login);
+        });
+    });
+
+// Query for a user with a particular remote identifier:
+User.query({id: 'xyz'})
+    .execute()
+    .then(function (u) {
+        console.log(u.login);
+    });
+
+// Query for repos with more than 50 stars
+Repo.query({stars__gt: 50})
+    .execute()
+    .then(function (repos) {
+        repos.forEach(function (r) {
+            console.log(r.name);
+        });
+    });
 ```
 
-`siesta.off(notif, handler)` removes a previously registered handler.
+## Nested Queries
+
+You can query using dot syntax to access nested objects.
 
 ```js
-siesta.off('GitHub:User', handler);
+Repo.query({'owner.username': 'mtford90'})
+    .execute()
+    .then(function (repos) {
+        // ...
+    });
 ```
 
-`siesta.once(notif, handler)` listens for one event and then cancels.
+## $and/$or
+
+It's also possible to use boolean logic when querying local data.
 
 ```js
-siesta.once('GitHub:User', function (n) {
-	console.log(n);
+Repo.query({
+	$or: [
+		{user.age__lt: 20},
+		{user.age__gt: 40}
+	],
+	{
+		name: 'michael'
+	}
+}).execute().then(function (repos) {
+    // ...
 });
 ```
 
-`siesta.removeAllListeners(notif)` removes all handlers for one particular event.
+## Ordering
+
+`Query.prototype.orderBy(... fields)` can be used to order instances.
 
 ```js
-siesta.removeAllListeners('GitHub:User');
+User.query({age__gte: 18})
+    .orderBy('-age', 'name')
+    .execute()
+    .then(function (results) {
+        console.log('results', results);
+    });
 ```
 
-`siesta.removeAllListeners()` removes all handlers across all events.
+The following queries would achieve the same:
 
 ```js
-siesta.removeAllListeners();
+var q = User.query({age__gte: 18})
+    		.orderBy('-age')
+    		.orderBy('name');
+
+var q = User.query({age__gte: 18})
+    		.orderBy(['-age', 'name']);
 ```
+
+## Comparators
+
+Here are the current built-in comparators
+
+* `<field>` or `<field>__e` -  equality
+* `<field>__lt` - less than
+* `<field>__lte` - less than or equal to
+* `<field>__gt` - greater than
+* `<field>__gte` - greater than or equal to
+
+You can register your own comparators.
+
+```js
+// A custom < comparator.
+siesta.registerComparator('customLt', function (opts) {
+    var value = opts.object[opts.field];
+    return value < opts.value;
+});
+
+Repo.query({stars__customLt: 50})
+    .execute()
+    .then(function (repos) {
+            repos.forEach(function (r) {
+            console.log(r.name);
+        });
+    });
+```
+
+Prepending `-` signifies descending order.
+
+# Reactive Queries
+
+Reactive queries exist to support functional reactive programming when using Siesta. For those familar with Apple's Cocoa library and CoreData these are similar to the `NSFetchedResultsController` class. 
+
+A reactive query is a query that reacts to changes in the object graph, updating its result set and emitting events related to these updates.
+
+```js
+var rq = User.reactiveQuery({age__gte: 18});
+rq.init()
+  .then(function (results) {
+  	  // results are the same as User.query({age__gte: 18});
+  });
+```
+
+Reactive queries can be ordered in a similar fashion to ordinary queries.
+
+```js
+var rq = User.reactiveQuery({age__gte: 18})
+			 .orderBy('-age', 'name');
+```
+
+## Events
+
+Reactive Query events are emitted under 4 circumstances:
+
+* An object has been removed from the result set due to no longer matching the query.
+* An object has been added to the result set due to now matching the query.
+* An object has been moved to a different position in the query due to ordering.
+* An object in the result set has changed but not removed. In this instance, the change object will be an event described in the [model events section](#events).
+
+In a similar fashion to model events you can listen to reactive queries by calling `listen` with a handler.
+
+```js
+var cancelListen = rq.listen(function (results, change) {
+	// results is the complete result set
+	// change describes any changes to the result set
+});
+```
+
+# Positional Reactive Queries
+
+Positional Reactive Queries solve the common use case of manipulating the order of a set of instances. Once models have a value in the index attribute they will remain in that position unless changed using the mutation methods described below. Positional Reactive Queries are useful e.g. for allowing users of the app to apply an order to resources.
+
+```js
+var prq = User.positionalReactiveQuery({age__gt: 10});
+prq.orderBy('age');
+// Model attribute in which to store the position.
+prq.indexAttribute = 'index';
+
+User.map([
+	{age: 55},
+	{age: 25},
+	{age: 70}
+]).then(function (users) {
+	prq.init().then(function () {
+		assert.equal(users[0].index, 0);
+		assert.equal(users[1].index, 1);
+		assert.equal(users[2].index, 2);
+		prq.swapObjects(users[0], users[1]);
+		assert.equal(users[1].index, 0);
+		assert.equal(users[0].index, 1);
+		assert.equal(users[2].index, 2);
+	});
+});
+```
+
+There are several ways to mutate the positions of the objects.
+
+```js
+// Swap the objects at indexes `from` and `to` and update the index field.
+prq.swapObjectsAtIndexes(from, to);
+// Swap the objects or throw an error if the objects are not within the result set.
+prq.swapObjects(obj1, obj2);
+// Move the object at index from to position to
+prq.move(from, to);
+```
+
+## Events
+
+Events are exactly the same as for [Reactive Queries](#reactive-queries-events).
 
 # HTTP
 
@@ -899,10 +700,10 @@ Github.baseURL = 'https://api.github.com/';
 
 `Collection.prototype.descriptor(opts)` registers a descriptor with a particular collection. A descriptor describes HTTP requests and responses and used by Siesta to decide what changes to make to the object graph on both requests and responses. This is performed through the use of `Model.prototype.map` which is also available for mapping arbritrary data onto the graph outside of HTTP.
 
-The below descriptor describes the GitHub endpoint for obtaining a specific users repositories. `path` is a regular expression, `mapping`tells Siesta what kind of objects to expect from this endpoint and `method` is the HTTP method, list of http methods or a wildcard.
+The below descriptor describes the Github endpoint for obtaining a specific users repositories. `path` is a regular expression, `mapping`tells Siesta what kind of objects to expect from this endpoint and `method` is the HTTP method, list of http methods or a wildcard.
 
 ```js
-GitHub.descriptor({
+Github.descriptor({
     path: '/users/([a-b0-9]+)/repos/',
     mapping: Repo,
     method: 'GET'
@@ -917,10 +718,10 @@ Paths take the form of Javascript regular expressions with one addition - named 
 
 ### Nested Data
 
-The GitHub search endpoint nests results in the `items` key. The `data` parameter can be used to deal with this:
+The Github search endpoint nests results in the `items` key. The `data` parameter can be used to deal with this:
 
 ```js
-GitHub.descriptor({
+Github.descriptor({
     path: '/search/repositories/',
     mapping: Repo,
     // method: '*',
@@ -936,12 +737,12 @@ GitHub.descriptor({
 Transforms can be used for simple field conversions:
 
 ```js
-GitHub.descriptor({
+Github.descriptor({
     path: '/users/([a-b0-9]+)/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: {
-    	'stargazers_count': 'num_stars'
+        'stargazers_count': 'num_stars'
     }
 });
 ```
@@ -949,12 +750,12 @@ GitHub.descriptor({
 We can use dot notation to transform nested data:
 
 ```js
-GitHub.descriptor({
+Github.descriptor({
     path: '/users/[a-b0-9]+/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: {
-    	'stargazers_count': 'path.to.num_stars'
+        'stargazers_count': 'path.to.num_stars'
     }
 });
 ```
@@ -962,14 +763,14 @@ GitHub.descriptor({
 We can also use a function instead:
 
 ```js
-GitHub.descriptor({
+Github.descriptor({
     path: '/users/[a-b0-9]+/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: {
-    	'stargazers_count': function (k) {
-    		return 'path.to.num_stars'
-    	}
+        'stargazers_count': function (k) {
+            return 'path.to.num_stars'
+        }
     }
 });
 ```
@@ -977,15 +778,15 @@ GitHub.descriptor({
 Or for more complicated transformations you can define a top-level transformation function:
 
 ```js
-GitHub.descriptor({
+Github.descriptor({
     path: '/users/[a-b0-9]+/repos/',
     mapping: Repo,
     method: 'GET',
     transforms: function (data) {
-    	var n = data.stargazers_count;
-    	delete data.stargazers_count;
-    	data.num_stars = n;
-    	return data;
+        var n = data.stargazers_count;
+        delete data.stargazers_count;
+        data.num_stars = n;
+        return data;
     }
 });
 ```
@@ -995,33 +796,33 @@ GitHub.descriptor({
 If your descriptor contains unsafe methods then additional options can be passed. The `data` field will tell siesta where to nest outgoing (serialised) data.
 
 ```js
-GitHub.descriptor({
-	path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-	mapping: Repo,
-	method: ['PATCH', 'POST'],
-	data: 'data'
+Github.descriptor({
+    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
+    mapping: Repo,
+    method: ['PATCH', 'POST'],
+    data: 'data'
 })
 ```
 
 ### Serialisation
 
 ```js
-GitHub.descriptor({
-	path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-	mapping: Repo,
-	method: ['PATCH', 'POST'],
-	data: 'data',
-	serialiser: siesta.serialisers.id
+Github.descriptor({
+    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
+    mapping: Repo,
+    method: ['PATCH', 'POST'],
+    data: 'data',
+    serialiser: siesta.serialisers.id
 });
 ```
 
 ```js
-GitHub.descriptor({
-	path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-	mapping: Repo,
-	method: ['PATCH', 'POST'],
-	data: 'data',
-	serialiser: siesta.serialisers.depth(2)
+Github.descriptor({
+    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
+    mapping: Repo,
+    method: ['PATCH', 'POST'],
+    data: 'data',
+    serialiser: siesta.serialisers.depth(2)
 });
 ```
 
@@ -1036,18 +837,18 @@ Safe methods refer to methods that do not generally change state on the server-s
 `Collection.prototype.<SAFE_HTTP_METHOD>(path, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
 ```js
-GitHub.GET('/users/mtford90/repos').then(function (repos) {
-	siesta.each(repos, function (r) {
-		console.log(r.name);
-	});
+Github.GET('/users/mtford90/repos').then(function (repos) {
+    siesta.each(repos, function (r) {
+        console.log(r.name);
+    });
 });
 ```
 
 ```js
-GitHub.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
-	siesta.each(repos, function (r) {
-		console.log(r.name);
-	});
+Github.GET('/search/repositories', {data: 'siesta'}).then(function (repos) {
+    siesta.each(repos, function (r) {
+        console.log(r.name);
+    });
 });
 ```
 
@@ -1058,10 +859,10 @@ Unsafe methods refer to methods that can change state on the server-side e.g. PO
 `Collection.prototype.<UNSAFE_HTTP_METHOD>(path, object, ajaxOptsOrCallback, callbackIfOpts)` sends HTTP requests and uses the descriptors to perform appropriate mappings to the object graph.
 
 ```js
-GitHub.PATCH('/users/mtford90/repos', myRepo, {fields: ['name']}).then(function (repos) {
-	siesta.each(repos, function (r) {
-		console.log(r.name);
-	});
+Github.PATCH('/users/mtford90/repos', myRepo, {fields: ['name']}).then(function (repos) {
+    siesta.each(repos, function (r) {
+        console.log(r.name);
+    });
 });
 ```
 
@@ -1085,23 +886,23 @@ The defaults are as follows:
 
 ```js
 var paginator = Model.paginator({
-	path: null,
-	paginator: {
-		request: {
-    		page: 'page',
-        	queryParams: true, // Place params in URL as query params. If false will be placed in body instead e.g. POST body
-        	pageSize: 'pageSize'
-    	},
-    	response: {
-    		numPages: 'numPages',
-    		data: 'data',
-    		count: 'count'
-    	}
-	},
-	ajax: {
-		type: 'GET',
+    path: null,
+    paginator: {
+        request: {
+            page: 'page',
+            queryParams: true, // Place params in URL as query params. If false will be placed in body instead e.g. POST body
+            pageSize: 'pageSize'
+        },
+        response: {
+            numPages: 'numPages',
+            data: 'data',
+            count: 'count'
+        }
+    },
+    ajax: {
+        type: 'GET',
         dataType: 'json'
-	}
+    }
 });
 ```
 
@@ -1109,9 +910,9 @@ If our models are nested we can do the following:
 
 ```js
 paginator = Model.paginator({
-	response: {
-		data: 'path.to.data'
-	}
+    response: {
+        data: 'path.to.data'
+    }
 })
 ```
 
@@ -1119,11 +920,11 @@ We could also define a function instead:
 
 ```js
 paginator = Model.paginator({
-	response: {
-		data: function (response, jqXHR) {
-    		return responseData.path.to.data;
-    	}
-	}
+    response: {
+        data: function (response, jqXHR) {
+            return responseData.path.to.data;
+        }
+    }
 });
 ```
 
@@ -1131,40 +932,40 @@ Same with numPages and count:
 
 ```js
 paginator = Model.paginator({
-	response: {
-		numPages: function (response, jqXHR) {
-    		return jqXHR.getResponseHeader('X-Num-Pages');
-    	},
-    	count: function (response, jqXHR) {
-    		return response.data.total_count;
-    	}
-	}
+    response: {
+        numPages: function (response, jqXHR) {
+            return jqXHR.getResponseHeader('X-Num-Pages');
+        },
+        count: function (response, jqXHR) {
+            return response.data.total_count;
+        }
+    }
 });
 ```
 
-The below demonstrates the flexibility of the paginator against the GitHub API which makes use of the `Link` response header and described [here](https://developer.github.com/guides/traversing-with-pagination/)
+The below demonstrates the flexibility of the paginator against the Github API which makes use of the `Link` response header and described [here](https://developer.github.com/guides/traversing-with-pagination/)
 
 ```js
-paginator = GitHub.paginator({
-	ajax: {
-		path: 'search/code?q=addClass+user:mozilla'
-	},
-	paginator: {
-		request: {
-			pageSize: 'per_page'
-		},
-		response: {
-			count: 'total_count',
-			numPages: function (response, jqXHR) {
-				var links = parseLinkHeader(jqXHR.getResponseHeader('Link')),
-					lastURI = links['last'],
-					queryParams = parseQueryParams(lastURI);
-				return queryParams['page'];
-        	},
-        	data: 'items'
-		}
+paginator = Github.paginator({
+    ajax: {
+        path: 'search/code?q=addClass+user:mozilla'
+    },
+    paginator: {
+        request: {
+            pageSize: 'per_page'
+        },
+        response: {
+            count: 'total_count',
+            numPages: function (response, jqXHR) {
+                var links = parseLinkHeader(jqXHR.getResponseHeader('Link')),
+                    lastURI = links['last'],
+                    queryParams = parseQueryParams(lastURI);
+                return queryParams['page'];
+            },
+            data: 'items'
+        }
 
-	}
+    }
 })
 ```
 
@@ -1174,23 +975,60 @@ paginator = GitHub.paginator({
 
 ```js
 paginator.page(4)
-	.then(function (objects) {
-		// objects is the list of objects returned from the endpoint
-	});
+    .then(function (objects) {
+        // objects is the list of objects returned from the endpoint
+    });
 ```
 # Storage
 
-## PouchDB initialisation
-
-TODO: Custom Pouch DB initialisations
+The Siesta storage extension is responsible for storing model instances locally. Models are loaded from the local database automatically when the app starts. (Note: this is inefficient and is planned to change once faults are introduced, in a similar fashion to Apple's CoreData)
 
 ## Save
 
+`siesta.save([callback])` will save all changes to Siesta models to PouchDB.
+
+```js
+siesta.save()
+    .then(function () {
+        console.log('Save success!');
+    })
+    .catch(function (err) {
+        console.error('Error saving', err);
+    });
+```
+
 ### Autosave
 
-## Faults
+We can tell siesta to automatically save any changes to models. Siesta will check regularly for changes and then perform the save, as opposed to saving at every change. This is to ensure that no loops occur.
 
-TODO: Once actually implemented faults.
+
+
+```js
+siesta.autosave = true;
+siesta.autosaveInterval = 1000; // How regularly to check for changes to save.
+```
+
+## PouchDB initialisation
+
+It's possible to customise how PouchDB is initialised, e.g. using different storage backends. You can read about setting up PouchDB instances [here](http://pouchdb.com/api.html#create_database) and some more advanced options such as remote CouchDB databases [here](http://pouchdb.com/guides/databases.html).
+
+```js
+// The default implementation is as follows
+siesta.initPouchDb = function () {
+    return new PouchDB('siesta');
+};
+```
+
+## Dirtyness
+
+A `ModelInstance` is considered dirty if it holds an unsaved change. A `Model` is dirty if there exists an instance that is dirty. A `Collection` is dirty if there exists instances of models within that collection.
+
+```js
+instance.attr = 'value';
+console.log(instance.dirty); // true
+console.log(instance.model.dirty); // true
+console.log(instance.collection.dirty); // true
+```
 
 # Recipes
 
@@ -1256,8 +1094,8 @@ e.g. take the case whereby we are manipulating a user repositories.
 
 ```js
 Repo.map({name: 'MyNewRepo'}).then(function (repo) {
-	myUser.repositories.push(repo);
-	myUser.repositories.splice(0, 1); // Remove repo at index 0.
+    myUser.repositories.push(repo);
+    myUser.repositories.splice(0, 1); // Remove repo at index 0.
 });
 ```
 
@@ -1265,11 +1103,11 @@ In browsers that implement `Object.observe`, notifications will be sent on the n
 
 ```js
 Repo.map({name: 'MyNewRepo'}).then(function (repo) {
-	myUser.repositories.push(repo);
-	myUser.repositories.splice(0, 1); // Remove repo at index 0.
-	siesta.notify(function () {
-		// Send out all notifications.
-	});
+    myUser.repositories.push(repo);
+    myUser.repositories.splice(0, 1); // Remove repo at index 0.
+    siesta.notify(function () {
+        // Send out all notifications.
+    });
 });
 ```
 
@@ -1277,7 +1115,7 @@ Promises can also be used.
 
 ```js
 siesta.notify().then(function () {
-	// All notifications will have been sent.
+    // All notifications will have been sent.
 });
 ```
 

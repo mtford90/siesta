@@ -371,6 +371,10 @@ a:hover {
     font-size: 1.2em;
 }
 
+.content h4 {
+    font-size: 0.9em;
+}
+
 .content h1,
 .content .big-heading,
 body.big-h3 .content h3 {
@@ -432,7 +436,6 @@ body.big-h3 .content h3:before {
     }
 }
 
-.content h4,
 .content h5,
 .content .small-heading,
 body:not(.big-h3) .content h3 {
