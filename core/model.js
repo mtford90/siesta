@@ -21,7 +21,7 @@ var log = require('./log'),
     OneToOneProxy = require('./OneToOneProxy'),
     ManyToManyProxy = require('./manyToManyProxy'),
     ReactiveQuery = require('./reactiveQuery'),
-    PositionalReactiveQuery = require('./positionedReactiveQuery'),
+    ArrangedReactiveQuery = require('./ArrangedReactiveQuery'),
     _ = util._,
     guid = util.guid,
     ModelEventType = modelEvents.ModelEventType;
@@ -303,8 +303,8 @@ _.extend(Model.prototype, {
     reactiveQuery: function (query) {
         return new ReactiveQuery(new Query(this, query || {}));
     },
-    positionalReactiveQuery: function (query) {
-        return new PositionalReactiveQuery(new Query(this, query || {}));
+    arrangedReactiveQuery: function (query) {
+        return new ArrangedReactiveQuery(new Query(this, query || {}));
     },
     one: function (opts) {
         var query = this.query(opts);

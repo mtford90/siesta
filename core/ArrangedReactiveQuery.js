@@ -11,20 +11,20 @@ var ReactiveQuery = require('./reactiveQuery'),
     _ = util._;
 
 
-var Logger = log.loggerWithName('PositionedReactiveQuery');
+var Logger = log.loggerWithName('ArrangedReactiveQuery');
 
-function PositionalReactiveQuery(query) {
+function ArrangedReactiveQuery(query) {
     ReactiveQuery.call(this, query);
     this.indexAttribute = 'index';
 }
 
-PositionalReactiveQuery.prototype = Object.create(ReactiveQuery.prototype);
+ArrangedReactiveQuery.prototype = Object.create(ReactiveQuery.prototype);
 
-_.extend(PositionalReactiveQuery.prototype, {
+_.extend(ArrangedReactiveQuery.prototype, {
     _refreshIndexes: function () {
         var results = this.results,
             indexAttribute = this.indexAttribute;
-        if (!results) throw new InternalSiestaError('PositionalReactiveQuery must be initialised');
+        if (!results) throw new InternalSiestaError('ArrangedReactiveQuery must be initialised');
         for (var i = 0; i < results.length; i++) {
             var modelInstance = results[i];
             modelInstance[indexAttribute] = i;
@@ -172,4 +172,4 @@ _.extend(PositionalReactiveQuery.prototype, {
     }
 });
 
-module.exports = PositionalReactiveQuery;
+module.exports = ArrangedReactiveQuery;

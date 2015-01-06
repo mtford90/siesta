@@ -16,7 +16,7 @@ describe('positioned rquery', function () {
             attributes: ['name', 'age']
         });
         s.install(function () {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.init(function (err) {
                 assert.ok(err);
                 prq.terminate();
@@ -32,7 +32,7 @@ describe('positioned rquery', function () {
         });
         s.install(function () {
             // Just checking doesn't throw an error.
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.init().then(function () {
                 prq.terminate();
                 done();
@@ -47,7 +47,7 @@ describe('positioned rquery', function () {
         });
         s.install(function () {
             // Just checking doesn't throw an error.
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
                 prq.terminate();
@@ -76,7 +76,7 @@ describe('positioned rquery', function () {
                 .done();
         });
         it('order before init', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.init()
                 .then(function () {
@@ -94,7 +94,7 @@ describe('positioned rquery', function () {
                 .catch(done).done();
         });
         it('order after init', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.init()
                 .then(function () {
                     prq.orderBy('age')
@@ -116,7 +116,7 @@ describe('positioned rquery', function () {
 
         });
         it('change order should not rearrange anything if ordered by before init', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.init()
                 .then(function () {
@@ -138,7 +138,7 @@ describe('positioned rquery', function () {
                 .catch(done).done();
         });
         it('change order should not rearrange anything if ordered by after init', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.init()
                 .then(function () {
                     prq.orderBy('age');
@@ -182,7 +182,7 @@ describe('positioned rquery', function () {
         });
 
         it('swapObjectsAtIndexes', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -202,7 +202,7 @@ describe('positioned rquery', function () {
         });
 
         it('swapObjectsAtIndexes, non-existant to index should throw error', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -215,7 +215,7 @@ describe('positioned rquery', function () {
         });
 
         it('swapObjectsAtIndexes, non-existant from index should throw error', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -228,7 +228,7 @@ describe('positioned rquery', function () {
         });
 
         it('swapObjects', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -248,7 +248,7 @@ describe('positioned rquery', function () {
         });
 
         it('swapObjects, non-existant to index should throw error', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -262,7 +262,7 @@ describe('positioned rquery', function () {
         });
 
         it('swapObjects, non-existant from index should throw error', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -276,7 +276,7 @@ describe('positioned rquery', function () {
         });
 
         it('move', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.orderBy('age');
             prq.indexAttribute = 'customIndexField';
             prq.init().then(function () {
@@ -324,7 +324,7 @@ describe('positioned rquery', function () {
             });
 
             it('if order before init, should retain order from old indexes', function (done) {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.orderBy('age');
                 prq.init()
@@ -343,7 +343,7 @@ describe('positioned rquery', function () {
             });
 
             it('if order after init, should have new order', function (done) {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.init()
                     .then(function () {
@@ -370,7 +370,7 @@ describe('positioned rquery', function () {
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26, customIndexField: 1}
             ]).then(function () {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.orderBy('age');
                 prq.init()
@@ -397,7 +397,7 @@ describe('positioned rquery', function () {
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26, customIndexField: 2}
             ]).then(function () {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.orderBy('age');
                 prq.init()
@@ -425,7 +425,7 @@ describe('positioned rquery', function () {
                 {name: 'Peter', age: 21},
                 {name: 'John', age: 26}
             ]).then(function () {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.orderBy('age');
                 prq.init()
@@ -455,7 +455,7 @@ describe('positioned rquery', function () {
                 {name: 'Peter', age: 21},
                 {name: 'John', age: 26}
             ]).then(function () {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.orderBy('age');
                 prq.init()
@@ -485,7 +485,7 @@ describe('positioned rquery', function () {
                 {name: 'Peter', age: 21},
                 {name: 'John', age: 26}
             ]).then(function () {
-                var prq = Person.positionalReactiveQuery();
+                var prq = Person.arrangedReactiveQuery();
                 prq.indexAttribute = 'customIndexField';
                 prq.orderBy('age');
                 prq.init()
@@ -533,7 +533,7 @@ describe('positioned rquery', function () {
                 .done();
         });
         it('by default, insert at back', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.indexAttribute = 'customIndexField';
             prq.orderBy('age');
             prq.init()
@@ -554,7 +554,7 @@ describe('positioned rquery', function () {
                 .catch(done);
         });
         it('if Back, insert at back', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.indexAttribute = 'customIndexField';
             prq.insertionPolicy = s.InsertionPolicy.Back;
             prq.orderBy('age');
@@ -576,7 +576,7 @@ describe('positioned rquery', function () {
                 .catch(done);
         });
         it('if Front, insert at front', function (done) {
-            var prq = Person.positionalReactiveQuery();
+            var prq = Person.arrangedReactiveQuery();
             prq.indexAttribute = 'customIndexField';
             prq.insertionPolicy = s.InsertionPolicy.Front;
             prq.orderBy('age');
