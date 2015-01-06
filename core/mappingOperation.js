@@ -13,7 +13,7 @@ var Store = require('./store'),
     async = util.async,
     ModelEventType = require('./modelEvents').ModelEventType;
 
-var Logger = log.loggerWithName('MappingOperation');
+var Logger = log.loggerWithName('Mapping');
 
 
 function SiestaError(opts) {

@@ -12,7 +12,7 @@ var _internal = siesta._internal,
     defineSubProperty = util.defineSubProperty
     ;
 
-var Logger = log.loggerWithName('RequestDescriptor');
+var Logger = log.loggerWithName('Descriptor');
 
 /**
  * @class Describes a HTTP request

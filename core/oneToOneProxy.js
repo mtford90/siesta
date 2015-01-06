@@ -57,7 +57,6 @@ _.extend(OneToOneProxy.prototype, {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         callback(null, this.related);
-        var self = this;
         return deferred.promise;
     }
 });

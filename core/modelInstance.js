@@ -7,8 +7,6 @@ var log = require('./log'),
     events = require('./events'),
     cache = require('./cache');
 
-var Logger = log.loggerWithName('ModelInstance');
-
 function ModelInstance(model) {
     var self = this;
     this.model = model;

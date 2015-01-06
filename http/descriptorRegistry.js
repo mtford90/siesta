@@ -3,7 +3,7 @@ var _internal = siesta._internal,
     _ = util._,
     log = _internal.log;
 
-var Logger = log.loggerWithName('DescriptorRegistry');
+var Logger = log.loggerWithName('Descriptor');
 
 /**
  * @class Entry point for descriptor registration.

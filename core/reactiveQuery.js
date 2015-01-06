@@ -14,7 +14,7 @@ var log = require('./log'),
     InternalSiestaError = require('./error').InternalSiestaError,
     util = require('./util');
 
-var Logger = log.loggerWithName('ReactiveQuery');
+var Logger = log.loggerWithName('Query');
 
 /**
  *

@@ -14,6 +14,7 @@ var util = require('./util'),
 
 if (window.Q) window.q = window.Q;
 
+
 // Initialise siesta object. Strange format facilities using submodules with requireJS.
 var siesta = function (ext) {
     if (!siesta.ext) siesta.ext = {};
@@ -98,7 +99,7 @@ _.extend(siesta, {
      */
     install: function (cb) {
         /*
-        TODO: Clean up this fuckin' mess.
+         TODO: Clean up this fuckin' mess.
          */
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);

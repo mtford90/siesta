@@ -4,7 +4,7 @@ var events = require('./events'),
     extend = require('./util')._.extend,
     collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
-var Logger = log.loggerWithName('modelEvents');
+var Logger = log.loggerWithName('ModelEvents');
 
 /**
  * Constants that describe change events.
