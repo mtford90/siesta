@@ -531,7 +531,6 @@ _.extend(Model.prototype, {
                     collection: this.collectionName,
                     model: this.name,
                     _id: newModel._id,
-                    newId: newModel._id,
                     new: newModel,
                     type: ChangeType.New,
                     obj: newModel

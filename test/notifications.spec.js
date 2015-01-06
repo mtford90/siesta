@@ -512,12 +512,6 @@ describe('notifications', function () {
                             assert.equal(carCollectionNotif.type, ChangeType.Set);
                         });
 
-                        it('id', function () {
-                            assert.equal(carNotif.newId, person._id);
-                            assert.equal(carGenericNotif.newId, person._id);
-                            assert.equal(carCollectionNotif.newId, person._id);
-                        });
-
                         it('new', function () {
                             assert.equal(carNotif.new, person);
                             assert.equal(carGenericNotif.new, person);
@@ -590,12 +584,6 @@ describe('notifications', function () {
                             assert.equal(carCollectionNotif.type, ChangeType.Set);
                         });
 
-                        it('new id', function () {
-                            assert.notOk(carNotif.newId)
-                            assert.notOk(carGenericNotif.newId);
-                            assert.notOk(carCollectionNotif.newId);
-                        });
-
                         it('new', function () {
                             assert.notOk(carNotif.new);
                             assert.notOk(carGenericNotif.new);
@@ -608,11 +596,7 @@ describe('notifications', function () {
                             assert.equal(carCollectionNotif.old, person);
                         });
 
-                        it('old id', function () {
-                            assert.equal(carNotif.oldId, person._id);
-                            assert.equal(carGenericNotif.oldId, person._id);
-                            assert.equal(carCollectionNotif.oldId, person._id);
-                        });
+
                     });
 
                 });
@@ -856,9 +840,6 @@ describe('notifications', function () {
         });
 
         it('_id', function () {
-            assert.equal(notif.newId, car._id);
-            assert.equal(genericNotif.newId, car._id);
-            assert.equal(collectionNotif.newId, car._id);
             assert.equal(notif._id, car._id);
             assert.equal(genericNotif._id, car._id);
             assert.equal(collectionNotif._id, car._id);
@@ -923,22 +904,19 @@ describe('notifications', function () {
             assert.ok(collectionNotif);
         });
 
-        it('type is New', function () {
+        it('type is Remove', function () {
             assert.equal(notif.type, ChangeType.Remove);
             assert.equal(genericNotif.type, ChangeType.Remove);
             assert.equal(collectionNotif.type, ChangeType.Remove);
         });
 
-        it('new', function () {
+        it('old', function () {
             assert.equal(notif.old, car);
             assert.equal(genericNotif.old, car);
             assert.equal(collectionNotif.old, car);
         });
 
         it('_id', function () {
-            assert.equal(notif.oldId, car._id);
-            assert.equal(genericNotif.oldId, car._id);
-            assert.equal(collectionNotif.oldId, car._id);
             assert.equal(notif._id, car._id);
             assert.equal(genericNotif._id, car._id);
             assert.equal(collectionNotif._id, car._id);
@@ -1016,9 +994,6 @@ describe('notifications', function () {
         });
 
         it('_id', function () {
-            assert.equal(notif.newId, car._id);
-            assert.equal(genericNotif.newId, car._id);
-            assert.equal(collectionNotif.newId, car._id);
             assert.equal(notif._id, car._id);
             assert.equal(genericNotif._id, car._id);
             assert.equal(collectionNotif._id, car._id);
@@ -1026,6 +1001,7 @@ describe('notifications', function () {
     });
 
     describe('convenience', function () {
+        var Car;
         beforeEach(function (done) {
             collection = s.collection('myCollection');
             Car = collection.model('Car', {

@@ -259,8 +259,6 @@ _.extend(RelationshipProxy.prototype, {
                                 _id: _id,
                                 field: reverseName,
                                 new: null,
-                                newId: null,
-                                oldId: self.object._id,
                                 old: self.object,
                                 type: ChangeType.Set,
                                 obj: self.object
@@ -305,17 +303,7 @@ _.extend(RelationshipProxy.prototype, {
         if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
         var model = proxyObject.model.name;
         var collectionName = proxyObject.collectionName;
-        var newId;
-        if (util.isArray(obj)) {
-            newId = _.pluck(obj, '_id');
-        } else {
-            newId = obj ? obj._id : obj;
-        }
         // We take [] == null == undefined in the case of relationships.
-        var oldId = this._id;
-        if (util.isArray(oldId) && !oldId.length) {
-            oldId = null;
-        }
         var old = this.related;
         if (util.isArray(old) && !old.length) {
             old = null;
@@ -325,8 +313,6 @@ _.extend(RelationshipProxy.prototype, {
             model: model,
             _id: proxyObject._id,
             field: this.getForwardName(),
-            newId: newId,
-            oldId: oldId,
             old: old,
             new: obj,
             type: ChangeType.Set,

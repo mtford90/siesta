@@ -75,7 +75,6 @@ _.extend(ModelInstance.prototype, {
                 collection: this.collectionName,
                 model: this.model.name,
                 _id: this._id,
-                oldId: this._id,
                 old: this,
                 type: coreChanges.ChangeType.Remove,
                 obj: this
@@ -109,7 +108,6 @@ _.extend(ModelInstance.prototype, {
                     collection: this.collectionName,
                     model: this.model.name,
                     _id: this._id,
-                    newId: this._id,
                     new: this,
                     type: coreChanges.ChangeType.New,
                     obj: this
