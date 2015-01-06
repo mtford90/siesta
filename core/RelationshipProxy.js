@@ -38,10 +38,11 @@ function RelationshipProxy(opts) {
             get: function () {
                 if (self._id) {
                     return !self.related;
-                } else if (self._id === null) {
+                }
+                else if (self._id === null) {
                     return false;
                 }
-                return true;
+                return true; // if _id === undefined we return a Fault object
             },
             set: function (v) {
                 if (v) {
@@ -94,7 +95,15 @@ _.extend(RelationshipProxy.prototype, {
                 Object.defineProperty(modelInstance, name, {
                     get: function () {
                         if (self.isFault) {
-                            return self.fault;
+                            return {
+                                get: function () {
+                                    self.get.apply(self, arguments);
+                                },
+                                set: function () {
+                                    self.set.apply(self, arguments);
+                                }
+                            };
+                            //return self.fault;
                         } else {
                             return self.related;
                         }

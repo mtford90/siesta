@@ -78,14 +78,10 @@ describe('new object proxy', function () {
                         assert.notOk(proxy.isReverse);
                     });
 
-                    describe('no relationship', function () {
-                        it('is a fault object', function () {
-                            assert.instanceOf(car.owner, Fault);
-                        });
-
-                        it('is faulted, as no relationship set', function () {
-                            assert.ok(car.owner.isFault);
-                        });
+                    it('is a fault object', function () {
+                        assert(!car.owner.model);
+                        assert(car.owner.get instanceof Function);
+                        assert(car.owner.set instanceof Function);
                     });
 
 
@@ -116,56 +112,15 @@ describe('new object proxy', function () {
                     proxy.install(person);
 
                 });
-
-                describe('faults', function () {
-                    it('is reerse', function () {
-                        assert.ok(proxy.isReverse);
-                    });
-
-                    it('is not forward', function () {
-                        assert.notOk(proxy.isForward);
-                    });
-
-                    describe('no relationship', function () {
-                        it('is a fault object', function () {
-                            assert.instanceOf(person.cars, Fault);
-                        });
-
-                        it('is faulted, as no relationship set', function () {
-                            assert.ok(person.cars.isFault);
-                        });
-                    });
-
-                    describe('relationship, faulted', function () {
-                        beforeEach(function () {
-                            proxy._id = ['xyz'];
-                        });
-
-                        it('is a fault object', function () {
-                            assert.instanceOf(person.cars, Fault);
-                        });
-
-                        it('is faulted, as relationship set', function () {
-                            assert.ok(person.cars.isFault);
-                        });
-                    });
-
-                    describe('relationship, faulted', function () {
-                        beforeEach(function () {
-                            proxy._id = 'xyz';
-                            proxy.related = [new SiestaModel(Car)];
-                            proxy.related[0]._id = 'xyz';
-                        });
-
-                        it('is a fault object', function () {
-                            assert.equal(person.cars[0], proxy.related[0]);
-                        });
-
-                        it('is not faulted, as relationship set and related assigned', function () {
-                            assert.notOk(person.cars.isFault);
-                        });
-                    })
+                it('is reverse', function () {
+                    assert.ok(proxy.isReverse);
                 });
+
+                it('is not forward', function () {
+                    assert.notOk(proxy.isForward);
+                });
+
+
             });
         });
 
