@@ -653,7 +653,8 @@ describe('storage', function () {
                 _id: 'xyz'
             }).then(function () {
                 s.install(function () {
-                    ColourConfig.get()
+                    ColourConfig.one()
+                        .execute()
                         .then(function (colourConfig) {
                             extracted(function (err, rows) {
                                 if (!err) {

@@ -254,7 +254,7 @@ _.extend(Model.prototype, {
     },
     ensureSingletons: function (callback) {
         if (this.singleton) {
-            this.get(function (err, obj) {
+            this.one().execute(function (err, obj) {
                 if (err) {
                     callback(err);
                 }
@@ -305,49 +305,22 @@ _.extend(Model.prototype, {
     positionalReactiveQuery: function (query) {
         return new PositionalReactiveQuery(new Query(this, query || {}));
     },
-    get: function (idOrCallback, callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        if (this.singleton) {
-            if (typeof idOrCallback == 'function') {
-                callback = idOrCallback;
-            }
-            this.all().execute(function (err, objs) {
-                if (err) callback(err);
-                if (objs.length > 1) {
-                    throw new InternalSiestaError('Somehow more than one object has been created for a singleton mapping! ' +
-                    'This is a serious error, please file a bug report.');
-                } else if (objs.length) {
-                    callback(null, objs[0]);
-                } else {
-                    callback(null, null);
+    one: function (opts) {
+        var query = this.query(opts);
+        // Override the usual execute method, inserting a check that no more one instances returned.
+        query.execute = function (cb) {
+            var deferred = util.defer(cb);
+            cb = deferred.finish.bind(deferred);
+            this._executeInMemory(function (err, res) {
+                if (err) cb(err);
+                else {
+                    if (res.length > 1) cb('More than one instance returned when executing get query!');
+                    else cb(null, res.length ? res[0] : null);
                 }
             });
-        } else {
-            var opts = {};
-            opts[this.id] = idOrCallback;
-            opts.model = this;
-            var obj = cache.get(opts);
-            if (obj) {
-                callback(null, obj);
-            } else {
-                delete opts.model;
-                var query = new Query(this, opts);
-                query.execute(function (err, rows) {
-                    var obj = null;
-                    if (!err && rows.length) {
-                        if (rows.length > 1) {
-                            throw new InternalSiestaError('More than one object with id=' + idOrCallback.toString());
-                        } else {
-                            obj = rows[0];
-                        }
-                    }
-                    callback(err, obj);
-                });
-            }
-
-        }
-        return deferred.promise;
+            return deferred.promise;
+        }.bind(query);
+        return query;
     },
     all: function () {
         return new Query(this, {});

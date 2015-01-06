@@ -86,7 +86,7 @@ describe('singleton mapping', function () {
             id: 5
         }, function (err, car) {
             if (err) done(err);
-            Car.get(function (err, _car) {
+            Car.one().execute(function (err, _car) {
                 if (err) done(err);
                 assert.equal(car, _car);
                 done();
@@ -95,7 +95,7 @@ describe('singleton mapping', function () {
     });
 
     it('get should return an empty car, even if nothing has ever been mapped', function (done) {
-        Car.get().then(function (car) {
+        Car.one().execute().then(function (car) {
             assert.ok(car);
             done();
         }).catch(done);
@@ -116,7 +116,7 @@ describe('singleton mapping', function () {
     });
 
     it('default attributes should work with singletons', function (done) {
-        Car.get().then(function (car) {
+        Car.one().execute().then(function (car) {
             assert.ok(car);
             assert.equal(car.colour, 'red');
             done();
@@ -155,9 +155,9 @@ describe('singleton mapping', function () {
         });
 
         it('relationships are automatically setup', function (done) {
-            ParentConfig.get().then(function (parent) {
-                FirstChildConfig.get().then(function (firstChild) {
-                    SecondChildConfig.get().then(function (secondChild) {
+            ParentConfig.one().execute().then(function (parent) {
+                FirstChildConfig.one().execute().then(function (firstChild) {
+                    SecondChildConfig.one().execute().then(function (secondChild) {
                         assert.equal(parent.settings, firstChild);
                         assert.equal(parent.otherSettings, secondChild);
                         assert.equal(firstChild.parent, parent);
@@ -208,7 +208,8 @@ describe('singleton mapping', function () {
             });
         });
         it('instance exists', function (done) {
-            PomodoroTimer.get()
+            PomodoroTimer.one()
+                .execute()
                 .then(function (timer) {
                     assert.ok(timer);
                     assert.ok(timer.poop);

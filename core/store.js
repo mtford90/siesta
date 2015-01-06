@@ -90,12 +90,14 @@ function get(opts, callback) {
             } else {
                 var model = opts.model;
                 if (model.singleton) {
-                    model.get(callback);
+                    model.one().execute(callback);
                 } else {
                     var idField = model.id;
                     var id = opts[idField];
+                    var oneOpts = {};
+                    oneOpts[idField] = id;
                     if (id) {
-                        model.get(id, function (err, obj) {
+                        model.one(oneOpts).execute(function (err, obj) {
                             if (!err) {
                                 if (obj) {
                                     callback(null, obj);

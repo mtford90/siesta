@@ -457,7 +457,7 @@ describe('bulk mapping operation', function () {
                     model: User,
                     data: data
                 });
-                User.get().then(function (user) {
+                User.one().execute().then(function (user) {
                     obj = user;
                     done();
                 }).catch(done).done();

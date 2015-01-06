@@ -3,10 +3,9 @@ var s = require('../../core/index'),
 
 describe('mapping queries', function () {
 
-    var SiestaModel = require('../../core/modelInstance');
-    var Collection = require('../../core/collection');
-    var RelationshipType = require('../../core/RelationshipType');
-    var cache = require('../../core/cache');
+    var SiestaModel = require('../../core/modelInstance'),
+        RelationshipType = require('../../core/RelationshipType'),
+        cache = require('../../core/cache');
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -17,16 +16,16 @@ describe('mapping queries', function () {
     });
 
     describe('queries', function () {
-        var collection, mapping;
+        var Collection, Car;
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            mapping = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['color', 'name']
             });
             s.install(function (err) {
                 if (err) done(err);
-                mapping.map([{
+                Car.map([{
                     id: 4,
                     color: 'red',
                     name: 'Aston Martin'
@@ -39,7 +38,7 @@ describe('mapping queries', function () {
         });
 
         it('all', function (done) {
-            mapping.all().execute(function (err, cars) {
+            Car.all().execute(function (err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 2);
                 _.each(cars, function (car) {
@@ -51,7 +50,7 @@ describe('mapping queries', function () {
 
         it('query', function (done) {
             this.timeout(10000);
-            mapping.query({
+            Car.query({
                 color: 'red'
             }).execute(function (err, cars) {
                 if (err) done(err);
@@ -63,27 +62,39 @@ describe('mapping queries', function () {
             });
         });
 
-        it('get', function (done) {
-            mapping.get(4, function (err, car) {
-                if (err) done(err);
-                assert.ok(car);
-                assert.instanceOf(car, SiestaModel);
-                assert.equal(car.color, 'red');
-                done();
+        describe('one', function () {
+            it('remote id', function (done) {
+                Car.one({id: 4}).execute(function (err, car) {
+                    if (err) done(err);
+                    assert.ok(car);
+                    assert.instanceOf(car, SiestaModel);
+                    assert.equal(car.color, 'red');
+                    done();
+                });
             });
+            it('error if more than one match', function (done) {
+                Car.one({}).execute(function (err) {
+                    assert.ok(err);
+                    done();
+                });
+            });
+            it('null if no match', function (done) {
+                Car.one({id: 10000}).execute(function (err, res) {
+                    assert.notOk(err);
+                    assert.ok(res === null);
+                    done();
+                });
+            })
         });
-
 
     });
 
     describe('reverse', function () {
-        var carMapping, personMapping;
-
-        var collection;
+        var Car, Person, Collection;
 
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -94,7 +105,7 @@ describe('mapping queries', function () {
                     }
                 }
             });
-            Person = collection.model('Person', {
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
@@ -113,7 +124,7 @@ describe('mapping queries', function () {
                 id: 5
             }, function (err, car) {
                 if (err) done(err);
-                Person.get('2', function (err, p) {
+                Person.one({id: '2'}).execute(function (err, p) {
                     if (err) done(err);
                     assert.ok(p, 'Should be able to fetch the person');
                     p.__proxies['cars'].get(function (err, cars) {

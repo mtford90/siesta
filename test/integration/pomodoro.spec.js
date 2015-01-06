@@ -111,7 +111,8 @@ describe('pomodoro', function () {
                 _id: 'xyz'
             }).then(function () {
                 s.install(function () {
-                    ColourConfig.get()
+                    ColourConfig.one()
+                        .execute()
                         .then(function (colourConfig) {
                             assert.equal(colourConfig.primary, 'red');
                             assert.equal(colourConfig.shortBreak, 'blue');
@@ -136,7 +137,8 @@ describe('pomodoro', function () {
             }).then(function () {
                 s.install()
                     .then(function () {
-                        Config.get()
+                        Config.one()
+                            .execute()
                             .then(function (config) {
                                 var colourConfig = config.colours;
                                 assert.equal(colourConfig.primary, 'red');
@@ -161,7 +163,8 @@ describe('pomodoro', function () {
             }).then(function () {
                 s.install()
                     .then(function () {
-                        Config.get()
+                        Config.one()
+                            .execute()
                             .then(function (config) {
                                 var colourConfig = config.colours;
                                 colourConfig.primary = 'blue';

@@ -246,7 +246,7 @@ _.extend(MappingOperation.prototype, {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         var self = this;
-        this.model.get(function (err, singleton) {
+        this.model.one().execute(function (err, singleton) {
             // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
             // always be the same. This is just a precaution.
             var _ids = _.pluck(self.data, '_id'),

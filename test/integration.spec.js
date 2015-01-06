@@ -15,8 +15,7 @@ var cache = require('../core/cache');
 var async = require('async');
 
 describe('intercollection relationships', function () {
-    var myOfflineCollection;
-    var myOnlineCollection;
+    var MyOfflineCollection, MyOnlineCollection, OfflineUser, Photo, OnlineUser;
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -24,10 +23,10 @@ describe('intercollection relationships', function () {
 
     beforeEach(function (done) {
         s.reset(function () {
-            myOfflineCollection = s.collection('MyOfflineCollection');
-            myOnlineCollection = s.collection('MyOnlineCollection');
+            MyOfflineCollection = s.collection('MyOfflineCollection');
+            MyOnlineCollection = s.collection('MyOnlineCollection');
 
-            myOfflineCollection.model('Folder', {
+            MyOfflineCollection.model('Folder', {
                 attributes: ['name'],
                 relationships: {
                     createdBy: {
@@ -38,7 +37,7 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOfflineCollection.model('DownloadedPhoto', {
+            MyOfflineCollection.model('DownloadedPhoto', {
                 attributes: ['creationDate'],
                 relationships: {
                     createdBy: {
@@ -59,12 +58,12 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOfflineCollection.model('User', {
+            OfflineUser = MyOfflineCollection.model('User', {
                 attributes: ['username'],
                 indexes: ['username']
             });
 
-            myOnlineCollection.model('Photo', {
+            Photo = MyOnlineCollection.model('Photo', {
                 id: 'photoId',
                 attributes: ['height', 'width', 'url'],
                 relationships: {
@@ -76,7 +75,7 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOnlineCollection.model('User', {
+            OnlineUser = MyOnlineCollection.model('User', {
                 id: 'userId',
                 attributes: ['username', 'name']
             });
@@ -84,7 +83,7 @@ describe('intercollection relationships', function () {
             var finishedCreatingMyOnlineCollection = false;
             var finishedCreatingMyOfflineCollection = false;
 
-            myOfflineCollection.install(function (err) {
+            MyOfflineCollection.install(function (err) {
                 if (err) done(err);
                 finishedCreatingMyOfflineCollection = true;
                 if (finishedCreatingMyOnlineCollection) {
@@ -92,7 +91,7 @@ describe('intercollection relationships', function () {
                 }
             });
 
-            myOnlineCollection.install(function (err) {
+            MyOnlineCollection.install(function (err) {
                 if (err) done(err);
                 if (finishedCreatingMyOfflineCollection) {
                     done();
@@ -102,7 +101,7 @@ describe('intercollection relationships', function () {
     });
 
     function mapRemoteUsers(callback) {
-        myOnlineCollection.User.map([{
+        MyOnlineCollection.User.map([{
             username: 'mtford',
             name: 'Michael Ford',
             userId: '1'
@@ -118,7 +117,7 @@ describe('intercollection relationships', function () {
     }
 
     function mapRemotePhotos(callback) {
-        myOnlineCollection.Photo.map([{
+        MyOnlineCollection.Photo.map([{
             height: 500,
             width: 500,
             url: 'http://somewhere/image.jpeg',
@@ -140,7 +139,7 @@ describe('intercollection relationships', function () {
     }
 
     function mapOfflineUsers(callback) {
-        myOfflineCollection.User.map([{
+        MyOfflineCollection.User.map([{
             username: 'mike'
         }, {
             username: 'gaz'
@@ -168,7 +167,7 @@ describe('intercollection relationships', function () {
     describe('local queries', function () {
         describe('offline', function () {
             it('should return mike when querying for him', function (done) {
-                myOfflineCollection.User.query({
+                MyOfflineCollection.User.query({
                     username: 'gaz'
                 }).execute(function (err, users) {
                     if (err) done(err);
@@ -182,7 +181,7 @@ describe('intercollection relationships', function () {
         describe('online', function () {
 
             it('should return 3 users when run a local all query against users', function (done) {
-                myOnlineCollection.User.all().execute(function (err, users) {
+                MyOnlineCollection.User.all().execute(function (err, users) {
                     if (err) done(err);
                     assert.equal(users.length, 3);
                     done();
@@ -190,7 +189,7 @@ describe('intercollection relationships', function () {
             });
 
             it('should return 3 photos when run a local all query against photos', function (done) {
-                myOnlineCollection.Photo.all().execute(function (err, photos) {
+                MyOnlineCollection.Photo.all().execute(function (err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 3);
                     done();
@@ -199,7 +198,7 @@ describe('intercollection relationships', function () {
 
             it('should return 2 photos with height 500', function (done) {
                 this.timeout(10000);
-                myOnlineCollection.Photo.query({
+                MyOnlineCollection.Photo.query({
                     height: 500
                 }).execute(function (err, photos) {
                     if (err) done(err);
@@ -213,7 +212,7 @@ describe('intercollection relationships', function () {
 
             it('should return 1 photo with height 500, width, 750', function (done) {
                 this.timeout(10000);
-                myOnlineCollection.Photo.query({
+                MyOnlineCollection.Photo.query({
                     height: 500,
                     width: 750
                 }).execute(function (err, photos) {
@@ -226,7 +225,7 @@ describe('intercollection relationships', function () {
             });
 
             it('should be able to query by remote identifier', function (done) {
-                myOnlineCollection.User.get('1', function (err, user) {
+                MyOnlineCollection.User.one({userId: '1'}).execute(function (err, user) {
                     if (err) done(err);
                     assert.equal(user.userId, '1');
                     done();
@@ -239,7 +238,7 @@ describe('intercollection relationships', function () {
     describe('relationship mappings', function () {
         describe('online', function () {
             function assertNumPhotos(userId, numPhotos, done) {
-                myOnlineCollection.User.get(userId, function (err, user) {
+                OnlineUser.one({userId: userId}).execute(function (err, user) {
                     if (err) done(err);
                     assert.ok(user);
                     assert.equal(user.userId, userId);
