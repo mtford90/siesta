@@ -94,7 +94,7 @@ _.extend(RelationshipProxy.prototype, {
                 var name = this.getForwardName();
                 Object.defineProperty(modelInstance, name, {
                     get: function () {
-                        if (self.isFault) {
+                        if (self._id === undefined) {
                             return {
                                 get: function () {
                                     self.get.apply(self, arguments);
@@ -103,7 +103,6 @@ _.extend(RelationshipProxy.prototype, {
                                     self.set.apply(self, arguments);
                                 }
                             };
-                            //return self.fault;
                         } else {
                             return self.related;
                         }

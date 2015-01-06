@@ -193,7 +193,6 @@ describe('new object proxy', function () {
 
             it('forward', function (done) {
                 carProxy._id = person._id;
-                assert.ok(carProxy.isFault);
                 carProxy.get(function (err, obj) {
                     if (err) done(err);
                     assert.equal(person, obj);
@@ -203,7 +202,6 @@ describe('new object proxy', function () {
 
             it('reverse', function (done) {
                 personProxy._id = car._id;
-                assert.ok(personProxy.isFault);
                 personProxy.get(function (err, obj) {
                     if (err) done(err);
                     assert.equal(car, obj);
@@ -234,11 +232,9 @@ describe('new object proxy', function () {
                 car = new SiestaModel(Car);
                 car._id = 'car';
                 carProxy.install(car);
-                carProxy.isFault = false;
                 person = new SiestaModel(Person);
                 person._id = 'person';
                 personProxy.install(person);
-                personProxy.isFault = false;
             });
 
             describe('none pre-existing', function () {
@@ -293,7 +289,6 @@ describe('new object proxy', function () {
                         isReverse: true
                     });
                     anotherPersonProxy.install(anotherPerson);
-                    anotherPersonProxy.isFault = false;
                     cache.insert(anotherPerson);
                     cache.insert(person);
                     cache.insert(car);
@@ -321,7 +316,6 @@ describe('new object proxy', function () {
 
                         it('should clear the old', function () {
                             car.owner = person;
-                            assert.notOk(anotherPersonProxy.isFault);
                             assert.notOk(anotherPersonProxy._id);
                             assert.notOk(anotherPersonProxy.related);
                         });
@@ -346,7 +340,6 @@ describe('new object proxy', function () {
                             person.cars = car;
                             assert.notOk(anotherPersonProxy._id);
                             assert.notOk(anotherPersonProxy.related);
-                            assert.notOk(anotherPersonProxy.isFault);
                         });
 
                     });
@@ -428,38 +421,27 @@ describe('new object proxy', function () {
             });
 
             describe('get', function () {
-                describe('no fault', function () {
-
-                    beforeEach(function () {
-                        carProxy.isFault = false;
-                        personProxy.isFault = false;
-                    });
-
-                    it('forward', function (done) {
-                        carProxy._id = person._id;
-                        carProxy.related = person;
-                        carProxy.get(function (err, obj) {
-                            if (err) done(err);
-                            assert.equal(person, obj);
-                            done();
-                        });
-                    });
-
-                    it('reverse', function (done) {
-                        personProxy._id = [car._id];
-                        personProxy.related = [car];
-                        personProxy.get(function (err, cars) {
-                            if (err) done(err);
-                            assert.include(cars, car);
-                            assert.include(personProxy.related, car);
-                            done();
-                        });
+                it('forward', function (done) {
+                    carProxy._id = person._id;
+                    carProxy.related = person;
+                    carProxy.get(function (err, obj) {
+                        if (err) done(err);
+                        assert.equal(person, obj);
+                        done();
                     });
                 });
 
+                it('reverse', function (done) {
+                    personProxy._id = [car._id];
+                    personProxy.related = [car];
+                    personProxy.get(function (err, cars) {
+                        if (err) done(err);
+                        assert.include(cars, car);
+                        assert.include(personProxy.related, car);
+                        done();
+                    });
+                });
             });
-
-
         });
 
         describe('set', function () {
