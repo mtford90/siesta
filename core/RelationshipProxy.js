@@ -154,17 +154,11 @@ _.extend(RelationshipProxy.prototype, {
     reverseProxyForInstance: function (modelInstance) {
         return this.proxyForInstance(modelInstance, true);
     },
-    forwardProxyForInstance: function (modelInstance) {
-        return this.proxyForInstance(modelInstance, false);
-    },
     getReverseName: function () {
         return this.isForward ? this.reverseName : this.forwardName;
     },
     getForwardName: function () {
         return this.isForward ? this.forwardName : this.reverseName;
-    },
-    getReverseModel: function () {
-        return this.isForward ? this.reverseModel : this.forwardModel;
     },
     getForwardModel: function () {
         return this.isForward ? this.forwardModel : this.reverseModel;
