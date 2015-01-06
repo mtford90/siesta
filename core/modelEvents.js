@@ -97,7 +97,6 @@ function validateEventOpts(opts) {
     if (!opts.obj) throw new InternalSiestaError('Must pass the object');
 }
 
-
 function emit(opts) {
     validateEventOpts(opts);
     var collection = opts.collection;
@@ -107,11 +106,9 @@ function emit(opts) {
     return c;
 }
 
-
 extend(exports, {
     ModelEvent: ModelEvent,
     emit: emit,
     validateEventOpts: validateEventOpts,
     ModelEventType: ModelEventType
 });
-

@@ -277,7 +277,7 @@ Object.defineProperties(siesta.ext, {
     }
 });
 
-var interval, saving, autosaveDuration = 1000;
+var interval, saving, autosaveInterval = 1000;
 
 Object.defineProperties(siesta, {
     autosave: {
@@ -298,7 +298,7 @@ Object.defineProperties(siesta, {
                                 saving = false;
                             });
                         }
-                    }, siesta.autosaveDuration);
+                    }, siesta.autosaveInterval);
                 }
             }
             else {
@@ -309,12 +309,12 @@ Object.defineProperties(siesta, {
             }
         }
     },
-    autosaveDuration: {
+    autosaveInterval: {
         get: function () {
-            return autosaveDuration;
+            return autosaveInterval;
         },
-        set: function (_autosaveDuration) {
-            autosaveDuration = _autosaveDuration;
+        set: function (_autosaveInterval) {
+            autosaveInterval = _autosaveInterval;
             if (interval) {
                 // Reset interval
                 siesta.autosave = false;

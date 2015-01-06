@@ -8,6 +8,7 @@ var util = require('./util'),
     PositionedReactiveQuery = require('./positionedReactiveQuery'),
     ReactiveQuery = require('./reactiveQuery'),
     modelEvents = require('./modelEvents'),
+    Query = require('./Query'),
     log = require('./log'),
     _ = util._;
 
@@ -169,7 +170,8 @@ _.extend(siesta, {
         var Logger = log.loggerWithName(loggerName);
         Logger.setLevel(level);
     },
-    notify: util.next
+    notify: util.next,
+    registerComparator: Query.bind(Query)
 });
 
 
