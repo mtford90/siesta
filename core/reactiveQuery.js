@@ -194,6 +194,15 @@ _.extend(ReactiveQuery.prototype, {
         events.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
         this.handler = null;
+    },
+    listen: function (fn) {
+        this.on('change', fn);
+        return function () {
+            this.removeListener('change', fn);
+        }.bind(this);
+    },
+    listenOnce: function (fn) {
+        this.once('change', fn);
     }
 });
 
