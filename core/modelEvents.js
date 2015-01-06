@@ -16,19 +16,13 @@ var Logger = log.loggerWithName('modelEvents');
  * @type {Object}
  */
 var ModelEventType = {
-    Set: 'Set',
-    Splice: 'Splice',
-    Delete: 'Delete',
-    New: 'New',
-    Remove: 'Remove'
-};
-
-var ModelEventFields = [
-    'collection', 'model', '_id', 'field', 'type', 'index',
-    'added', 'addedId', 'removed', 'removedId', 'new', 'newId', 'old',
-    'oldId', 'obj'
-];
-
+        Set: 'Set',
+        Splice: 'Splice',
+        Delete: 'Delete',
+        New: 'New',
+        Remove: 'Remove'
+    },
+    ModelEventFields = ['collection', 'model', '_id', 'field', 'type', 'index', 'added', 'removed', 'new', 'old', 'obj'];
 
 /**
  * Represents an individual change.
@@ -36,12 +30,9 @@ var ModelEventFields = [
  * @constructor
  */
 function ModelEvent(opts) {
-    this._opts = opts;
-    if (!this._opts) {
-        this._opts = {};
-    }
-    _.each(ModelEventFields, function (f) {
-        this[f] = this._opts[f];
+    this._opts = opts || {};
+    ModelEventFields.forEach(function (f) {
+        if (this._opts[f] !== undefined) this[f] = this._opts[f];
     }.bind(this));
 }
 
