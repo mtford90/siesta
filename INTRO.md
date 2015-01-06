@@ -17,7 +17,7 @@ Siesta aims to cover **M** in **M**VC and takes inspiration from:
 
 Similar projects to Siesta:
 
-* [Ember Data](https://github.com/emberjs/data) - Data persistence for EmberJS. Siesta aims to be less abstraction heavy and framework agnostic.
+* [Ember Data](https://github.com/emberjs/data) - Data persistence for EmberJS. Siesta aims to be less abstraction heavy, more flexible and framework agnostic.
 
 # The Problem
 

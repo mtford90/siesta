@@ -9,6 +9,7 @@ Instead, edit the stylus (.styl) files and compile it to CSS on your machine.
  */
 @import url("//fonts.googleapis.com/css?family=Montserrat:700|Open+Sans:300");
 @import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 
 /* ----------------------------------------------------------------------------
  * Base
@@ -123,7 +124,7 @@ body,
 td,
 textarea,
 input {
-    font-family: Helvetica Neue, Open Sans, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     line-height: 1.6;
     font-size: 13px;
     color: #505050;
@@ -175,6 +176,7 @@ a:hover {
 .content h6 {
     font-weight: bold;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
 
