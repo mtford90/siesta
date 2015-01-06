@@ -18,7 +18,6 @@ var Logger = log.loggerWithName('modelEvents');
 var ModelEventType = {
         Set: 'Set',
         Splice: 'Splice',
-        Delete: 'Delete',
         New: 'New',
         Remove: 'Remove'
     },

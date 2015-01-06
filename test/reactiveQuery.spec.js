@@ -306,7 +306,7 @@ describe('reactive query', function () {
                                 }
                                 catch (e) {
                                     done(e);
-                                }  
+                                }
                             });
                             rq.init(function (err) {
                                 if (err) done(err);

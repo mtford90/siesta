@@ -10,6 +10,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     Fault = require('./Fault'),
     Query = require('./query'),
     log = require('./log'),
+    cache = require('./cache'),
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
@@ -216,60 +217,19 @@ _.extend(RelationshipProxy.prototype, {
     clearReverseRelated: function (opts) {
         opts = opts || {};
         var self = this;
-        if (!self.isFault) {
-            if (this.related) {
-                var reverseProxy = this.reverseProxyForInstance(this.related);
-                var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-                _.each(reverseProxies, function (p) {
-                    if (util.isArray(p._id)) {
-                        var idx = p._id.indexOf(self.object._id);
-                        p.makeChangesToRelatedWithoutObservations(function () {
-                            p.splicer(opts)(idx, 1);
-                        });
-                    } else {
-                        p.setIdAndRelated(null, opts);
-                    }
-                });
-            }
-        } else {
-            if (self._id) {
-                var reverseName = this.getReverseName();
-                var reverseModel = this.getReverseModel();
-                var identifiers = util.isArray(self._id) ? self._id : [self._id];
-                if (this._reverseIsArray) {
-                    if (!opts.disableevents) {
-                        _.each(identifiers, function (_id) {
-                            modelEvents.emit({
-                                collection: reverseModel.collectionName,
-                                model: reverseModel.name,
-                                _id: _id,
-                                field: reverseName,
-                                removed: [self.object],
-                                type: ModelEventType.Delete,
-                                obj: self.object
-                            });
-                        });
-                    }
+        if (this.related) {
+            var reverseProxy = this.reverseProxyForInstance(this.related);
+            var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
+            _.each(reverseProxies, function (p) {
+                if (util.isArray(p._id)) {
+                    var idx = p._id.indexOf(self.object._id);
+                    p.makeChangesToRelatedWithoutObservations(function () {
+                        p.splicer(opts)(idx, 1);
+                    });
                 } else {
-                    if (!opts.disableevents) {
-                        _.each(identifiers, function (_id) {
-                            modelEvents.emit({
-                                collection: reverseModel.collectionName,
-                                model: reverseModel.name,
-                                _id: _id,
-                                field: reverseName,
-                                new: null,
-                                old: self.object,
-                                type: ModelEventType.Set,
-                                obj: self.object
-                            });
-                        });
-                    }
+                    p.setIdAndRelated(null, opts);
                 }
-
-            } else {
-                throw new Error(this.getForwardName() + ' has no _id');
-            }
+            });
         }
     },
     setIdAndRelatedReverse: function (obj, opts) {
