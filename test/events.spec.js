@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('notifications', function () {
+describe('events', function () {
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -9,7 +9,7 @@ describe('notifications', function () {
 
     var ChangeType = require('../core/changes').ChangeType,
         util = require('../core/util'),
-        notifications = require('../core/notifications'),
+        events = require('../core/events'),
         RelationshipType = require('../core/RelationshipType');
 
     beforeEach(function (done) {
@@ -21,19 +21,19 @@ describe('notifications', function () {
 
     describe('basics', function () {
         it('simple emissions work', function (done) {
-            notifications.once('blah', function () {
+            events.once('blah', function () {
                 done();
             });
-            notifications.emit('blah');
+            events.emit('blah');
         });
 
         it('emissions with payloads work', function (done) {
             var p = {};
-            notifications.once('blah', function (payload) {
+            events.once('blah', function (payload) {
                 assert.equal(payload, p);
                 done();
             });
-            notifications.emit('blah', p);
+            events.emit('blah', p);
         });
     });
 
@@ -141,7 +141,7 @@ describe('notifications', function () {
 
         });
 
-        describe('array notifications', function () {
+        describe('array events', function () {
             beforeEach(function (done) {
                 collection = s.collection('myCollection');
                 Car = collection.model('Car', {
@@ -151,7 +151,7 @@ describe('notifications', function () {
                 s.install(done);
             });
 
-            it('sends notifications for all levels', function (done) {
+            it('sends events for all levels', function (done) {
                 var notifs = [];
                 Car.map({
                     colours: ['red', 'blue'],
@@ -485,7 +485,7 @@ describe('notifications', function () {
                         });
                         person.cars.push(anotherCar);
                         util.next(function () {
-                            notifications.removeAllListeners();
+                            events.removeAllListeners();
                             done();
                         })
                     });
@@ -558,7 +558,7 @@ describe('notifications', function () {
                         });
                         person.cars.splice(0, 1);
                         util.next(function () {
-                            notifications.removeAllListeners();
+                            events.removeAllListeners();
                             done();
                         })
                     });
@@ -669,7 +669,7 @@ describe('notifications', function () {
                             });
                             person.cars.push(anotherCar);
                             util.next(function () {
-                                notifications.removeAllListeners();
+                                events.removeAllListeners();
                                 done();
                             });
                         });
@@ -747,7 +747,7 @@ describe('notifications', function () {
                             });
                             person.cars.splice(0, 1);
                             util.next(function () {
-                                notifications.removeAllListeners();
+                                events.removeAllListeners();
                                 done();
                             })
                         });
@@ -808,7 +808,7 @@ describe('notifications', function () {
                         done(err);
                     } else {
                         car = _car;
-                        notifications.removeAllListeners();
+                        events.removeAllListeners();
                         done();
                     }
                 });
@@ -885,7 +885,7 @@ describe('notifications', function () {
                             }
                         });
                         car.remove();
-                        notifications.removeAllListeners();
+                        events.removeAllListeners();
                         done();
                     }
                 });
@@ -962,7 +962,7 @@ describe('notifications', function () {
                             }
                         });
                         car.restore();
-                        notifications.removeAllListeners();
+                        events.removeAllListeners();
                         done();
                     }
                 });

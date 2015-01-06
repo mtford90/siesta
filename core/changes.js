@@ -1,12 +1,12 @@
 /**
- * The changes module deals with changes to SiestaModel instances. In the in-memory case this
+ * The changes module deals with changes to model instances. In the in-memory case this
  * just means that notifications are sent on any change. If the storage module is being used,
  * the changes module is extended to deal with merging changes into whatever persistant storage
  * method is being used.
  * @module changes
  */
 
-var notifications = require('./notifications'),
+var events = require('./events'),
     InternalSiestaError = require('./error').InternalSiestaError,
     log = require('./log'),
     extend = require('./util')._.extend,
@@ -77,16 +77,16 @@ Change.prototype._dump = function (pretty) {
  */
 function broadcast(collectionName, modelName, c) {
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collectionName + '" of type ' + c.type);
-    notifications.emit(collectionName, c);
+    events.emit(collectionName, c);
     var modelNotif = collectionName + ':' + modelName;
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + modelNotif + '" of type ' + c.type);
-    notifications.emit(modelNotif, c);
+    events.emit(modelNotif, c);
     var genericNotif = 'Siesta';
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '" of type ' + c.type);
-    notifications.emit(genericNotif, c);
+    events.emit(genericNotif, c);
     var localIdNotif = c._id;
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + localIdNotif + '" of type ' + c.type);
-    notifications.emit(localIdNotif, c);
+    events.emit(localIdNotif, c);
     var collection = collectionRegistry[collectionName];
     var err;
     if (!collection) {
@@ -103,7 +103,7 @@ function broadcast(collectionName, modelName, c) {
     if (model.id && c.obj[model.id]) {
         var remoteIdNotif = collectionName + ':' + modelName + ':' + c.obj[model.id];
         if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + remoteIdNotif + '" of type ' + c.type);
-        notifications.emit(remoteIdNotif, c);
+        events.emit(remoteIdNotif, c);
     }
 }
 

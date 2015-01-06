@@ -3,7 +3,7 @@ var util = require('./util'),
     Collection = require('./collection'),
     cache = require('./cache'),
     Model = require('./model'),
-    notifications = require('./notifications'),
+    events = require('./events'),
     RelationshipType = require('./RelationshipType'),
     PositionedReactiveQuery = require('./positionedReactiveQuery'),
     ReactiveQuery = require('./reactiveQuery'),
@@ -23,10 +23,10 @@ var siesta = function (ext) {
 
 // Notifications
 _.extend(siesta, {
-    on: notifications.on.bind(notifications),
-    off: notifications.removeListener.bind(notifications),
-    once: notifications.once.bind(notifications),
-    removeAllListeners: notifications.removeAllListeners.bind(notifications)
+    on: events.on.bind(events),
+    off: events.removeListener.bind(events),
+    once: events.once.bind(events),
+    removeAllListeners: events.removeAllListeners.bind(events)
 });
 _.extend(siesta, {
     removeListener: siesta.off,
@@ -47,7 +47,7 @@ _.extend(siesta, {
         ChangeType: changes.ChangeType,
         siestaModel: require('./modelInstance'),
         extend: require('extend'),
-        notifications: require('./notifications'),
+        events: require('./events'),
         cache: require('./cache'),
         coreChanges: changes,
         CollectionRegistry: require('./collectionRegistry').CollectionRegistry,

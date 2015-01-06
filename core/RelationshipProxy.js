@@ -10,8 +10,8 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     Fault = require('./Fault'),
     Query = require('./query'),
     log = require('./log'),
-    notifications = require('./notifications'),
-    wrapArrayForAttributes = notifications.wrapArray,
+    events = require('./events'),
+    wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
     coreChanges = require('./changes'),
     ChangeType = coreChanges.ChangeType;
@@ -177,7 +177,7 @@ _.extend(RelationshipProxy.prototype, {
      */
     setIdAndRelated: function (obj, opts) {
         opts = opts || {};
-        if (!opts.disableNotifications) {
+        if (!opts.disableevents) {
             this.registerSetChange(obj);
         }
         if (obj) {
@@ -202,7 +202,7 @@ _.extend(RelationshipProxy.prototype, {
         opts = opts || {};
         return function (idx, numRemove) {
             opts = opts || {};
-            if (!opts.disableNotifications) {
+            if (!opts.disableevents) {
                 this.registerSpliceChange.apply(this, arguments);
             }
             var add = Array.prototype.slice.call(arguments, 2);
@@ -237,7 +237,7 @@ _.extend(RelationshipProxy.prototype, {
                 var reverseModel = this.getReverseModel();
                 var identifiers = util.isArray(self._id) ? self._id : [self._id];
                 if (this._reverseIsArray) {
-                    if (!opts.disableNotifications) {
+                    if (!opts.disableevents) {
                         _.each(identifiers, function (_id) {
                             coreChanges.registerChange({
                                 collection: reverseModel.collectionName,
@@ -251,7 +251,7 @@ _.extend(RelationshipProxy.prototype, {
                         });
                     }
                 } else {
-                    if (!opts.disableNotifications) {
+                    if (!opts.disableevents) {
                         _.each(identifiers, function (_id) {
                             coreChanges.registerChange({
                                 collection: reverseModel.collectionName,

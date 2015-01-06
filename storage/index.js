@@ -11,7 +11,7 @@ var _i = siesta._internal,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
     util = _i.util,
-    notifications = _i.notifications;
+    events = _i.events;
 
 var DB_NAME = 'siesta',
     pouch = new PouchDB(DB_NAME);
@@ -95,7 +95,7 @@ function _loadModel(opts, callback) {
                 return _prepareDatum(datum, Model);
             });
             if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
-            Model.map(data, {disableNotifications: true}, function (err, instances) {
+            Model.map(data, {disableevents: true}, function (err, instances) {
                 if (!err) {
                     if (Logger.trace)
                         Logger.trace('Loaded ' + instances.length.toString() + ' instances for ' + fullyQualifiedName);
@@ -293,7 +293,7 @@ Object.defineProperties(siesta, {
                             saving = true;
                             siesta.save(function (err) {
                                 if (!err) {
-                                    notifications.emit('saved');
+                                    events.emit('saved');
                                 }
                                 saving = false;
                             });

@@ -330,7 +330,7 @@
 	[
 		"/Users/mtford/Playground/rest/siesta.sublime-project",
 		"/Users/mtford/Playground/rest/node_modules/browserify/node_modules/events/tests/num-args.js",
-		"/Users/mtford/Playground/rest/test/notifications.spec.js",
+		"/Users/mtford/Playground/rest/test/events.spec.js",
 		"/Users/mtford/Playground/rest/node_modules/grunt-contrib-less/node_modules/less/test/browser/runner-errors-spec.js",
 		"/Users/mtford/Playground/rest/_site/static/less/import/bootstrap/responsive-embed.less",
 		"/Users/mtford/Playground/rest/README.md",
@@ -411,7 +411,7 @@
 		"/Users/mtford/Playground/rest/src/changes.js",
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/lie/node_modules/immediate/lib/stateChange.js",
 		"/Users/mtford/Playground/rest/test/changeIdentifiers.spec.js",
-		"/Users/mtford/Playground/rest/src/notifications.js",
+		"/Users/mtford/Playground/rest/src/events.js",
 		"/Users/mtford/Playground/rest/node_modules/grunt-contrib-watch/test/tasks/nospawn_test.js",
 		"/Users/mtford/Playground/rest/node_modules/glob/test/new-glob-optional-options.js",
 		"/Users/mtford/Playground/rest/bower_components/async/nodelint.cfg",
@@ -1019,7 +1019,7 @@
 			],
 			[
 				"notificati",
-				"test/notifications.spec.js"
+				"test/events.spec.js"
 			],
 			[
 				"karma",

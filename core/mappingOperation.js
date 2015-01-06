@@ -39,7 +39,7 @@ function MappingOperation(opts) {
         model: null,
         data: null,
         objects: [],
-        disableNotifications: false
+        disableevents: false
     });
 
     _.extend(this, {
@@ -61,9 +61,9 @@ _.extend(MappingOperation.prototype, {
                     var fields = this.model._attributeNames;
                     _.each(fields, function (f) {
                         if (datum[f] !== undefined) { // null is fine
-                            // If notifications are disabled we update __values object directly. This avoids triggering
-                            // notifications which are built into the set function of the property.
-                            if (this.disableNotifications) {
+                            // If events are disabled we update __values object directly. This avoids triggering
+                            // events which are built into the set function of the property.
+                            if (this.disableevents) {
                                 object.__values[f] = datum[f];
                             }
                             else {
@@ -98,7 +98,7 @@ _.extend(MappingOperation.prototype, {
                     var related = unflattenedObjects[i]; // Can be array or scalar.
                     var object = self.objects[idx];
                     if (object) {
-                        err = object.__proxies[f].set(related, {disableNotifications: self.disableNotifications});
+                        err = object.__proxies[f].set(related, {disableevents: self.disableevents});
                         if (err) {
                             if (!self.errors[idx]) self.errors[idx] = {};
                             self.errors[idx][f] = err;
@@ -180,7 +180,7 @@ _.extend(MappingOperation.prototype, {
                                         // If there are multiple mapping operations going on, there may be
                                         obj = cache.get({_id: _id});
                                         if (!obj)
-                                            obj = self._new({_id: _id}, !self.disableNotifications);
+                                            obj = self._new({_id: _id}, !self.disableevents);
                                         self.objects[lookup.index] = obj;
                                     } else {
                                         self.objects[lookup.index] = obj;
@@ -368,7 +368,7 @@ _.extend(MappingOperation.prototype, {
                     var op = new MappingOperation({
                         model: reverseModel,
                         data: flatRelatedData,
-                        disableNotifications: self.disableNotifications
+                        disableevents: self.disableevents
                     });
                 }
                 if (op) {

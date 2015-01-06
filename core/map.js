@@ -22,7 +22,7 @@ function _mapAttributes(opts) {
     var model = opts.model,
         data = opts.data,
         objects = opts.objects,
-        disableNotifications = opts.disableNotifications;
+        disableevents = opts.disableevents;
     for (var i = 0; i < data.length; i++) {
         var datum = data[i];
         var object = objects[i];
@@ -32,9 +32,9 @@ function _mapAttributes(opts) {
                 var fields = model._attributeNames;
                 _.each(fields, function (f) {
                     if (datum[f] !== undefined) { // null is fine
-                        // If notifications are disabled we update __values object directly. This avoids triggering
-                        // notifications which are built into the set function of the property.
-                        if (disableNotifications) {
+                        // If events are disabled we update __values object directly. This avoids triggering
+                        // events which are built into the set function of the property.
+                        if (disableevents) {
                             object.__values[f] = datum[f];
                         }
                         else {

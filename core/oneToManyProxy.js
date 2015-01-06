@@ -9,8 +9,8 @@ var RelationshipProxy = require('./RelationshipProxy'),
     InternalSiestaError = require('./error').InternalSiestaError,
     coreChanges = require('./changes'),
     SiestaModel = require('./modelInstance'),
-    notifications = require('./notifications'),
-    wrapArrayForAttributes = notifications.wrapArray,
+    events = require('./events'),
+    wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
     ChangeType = require('./changes').ChangeType
     ;

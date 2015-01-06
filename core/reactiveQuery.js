@@ -9,7 +9,7 @@ var log = require('./log'),
     Query = require('./query'),
     _ = require('underscore'),
     EventEmitter = require('events').EventEmitter,
-    notifications = require('./notifications'),
+    events = require('./events'),
     changes = require('./changes'),
     InternalSiestaError = require('./error').InternalSiestaError,
     util = require('./util');
@@ -63,7 +63,7 @@ _.extend(ReactiveQuery.prototype, {
                         this._handleNotif(n);
                     }.bind(this);
                     this.handler = handler;
-                    notifications.on(name, handler);
+                    events.on(name, handler);
                 }
                 if (Logger.trace) Logger.trace('Listening to ' + name);
                 cb();
@@ -113,7 +113,7 @@ _.extend(ReactiveQuery.prototype, {
     },
     _handleNotif: function (n) {
         if (Logger.trace) Logger.trace('_handleNotif', n);
-        if (!this.results) throw Error('ReactiveQuery must be initialised before receiving notifications.');
+        if (!this.results) throw Error('ReactiveQuery must be initialised before receiving events.');
         if (n.type == changes.ChangeType.New) {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
@@ -191,7 +191,7 @@ _.extend(ReactiveQuery.prototype, {
         return this.model.collectionName + ':' + this.model.name;
     },
     terminate: function () {
-        notifications.removeListener(this._constructNotificationName(), this.handler);
+        events.removeListener(this._constructNotificationName(), this.handler);
         this.results = null;
         this.handler = null;
     }

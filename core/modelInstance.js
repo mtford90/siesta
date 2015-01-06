@@ -4,7 +4,7 @@ var log = require('./log'),
     error = require('./error'),
     InternalSiestaError = error.InternalSiestaError,
     coreChanges = require('./changes'),
-    notifications = require('./notifications'),
+    events = require('./events'),
     cache = require('./cache');
 
 var Logger = log.loggerWithName('ModelInstance');
@@ -140,16 +140,16 @@ _.extend(ModelInstance.prototype, {
 
 _.extend(ModelInstance.prototype, {
     listen: function (fn) {
-        notifications.on(this._id, fn);
+        events.on(this._id, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notifications.once(this._id, fn);
+        return events.once(this._id, fn);
     },
     removeListener: function (fn) {
-        return notifications.removeListener(this._id, fn);
+        return events.removeListener(this._id, fn);
     }
 });
 

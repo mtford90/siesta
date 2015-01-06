@@ -14,8 +14,8 @@ var log = require('./log'),
     store = require('./store'),
     extend = require('extend'),
     changes = require('./changes'),
-    notifications = require('./notifications'),
-    wrapArray = require('./notifications').wrapArray,
+    events = require('./events'),
+    wrapArray = require('./events').wrapArray,
     proxy = require('./RelationshipProxy'),
     OneToManyProxy = require('./OneToManyProxy'),
     OneToOneProxy = require('./OneToOneProxy'),
@@ -561,16 +561,16 @@ _.extend(Model.prototype, {
 
 _.extend(Model.prototype, {
     listen: function (fn) {
-        notifications.on(this.collectionName + ':' + this.name, fn);
+        events.on(this.collectionName + ':' + this.name, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notifications.once(this.collectionName + ':' + this.name, fn);
+        return events.once(this.collectionName + ':' + this.name, fn);
     },
     removeListener: function (fn) {
-        return notifications.removeListener(this.collectionName + ':' + this.name, fn);
+        return events.removeListener(this.collectionName + ':' + this.name, fn);
     }
 });
 

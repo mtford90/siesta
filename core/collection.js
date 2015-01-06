@@ -8,7 +8,7 @@ var log = require('./log'),
     Model = require('./model'),
     extend = require('extend'),
     observe = require('../vendor/observe-js/src/observe').Platform,
-    notifications = require('./notifications'),
+    events = require('./events'),
     util = require('./util'),
     _ = util._,
     cache = require('./cache');
@@ -314,16 +314,16 @@ _.extend(Collection.prototype, {
 
 _.extend(Collection.prototype, {
     listen: function (fn) {
-        notifications.on(this.name, fn);
+        events.on(this.name, fn);
         return function () {
             this.removeListener(fn);
         }.bind(this);
     },
     listenOnce: function (fn) {
-        return notifications.once(this.name, fn);
+        return events.once(this.name, fn);
     },
     removeListener: function (fn) {
-        return notifications.removeListener(this.name, fn);
+        return events.removeListener(this.name, fn);
     }
 });
 
