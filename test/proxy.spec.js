@@ -12,7 +12,6 @@ describe('new object proxy', function () {
         OneToManyProxy = require('../core/OneToManyProxy'),
         ManyToManyProxy = require('../core/manyToManyProxy'),
         SiestaModel = require('../core/modelInstance'),
-        Fault = require('../core/fault'),
         InternalSiestaError = require('../core/error').InternalSiestaError,
         cache = require('../core/cache');
 

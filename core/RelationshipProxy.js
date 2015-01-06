@@ -7,7 +7,6 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
     util = require('./util'),
     _ = util._,
-    Fault = require('./Fault'),
     Query = require('./query'),
     log = require('./log'),
     cache = require('./cache'),
@@ -27,7 +26,6 @@ function RelationshipProxy(opts) {
     opts = opts || {};
 
     _.extend(this, {
-        fault: new Fault(this),
         object: null,
         _id: undefined,
         related: null
@@ -233,7 +231,6 @@ _.extend(RelationshipProxy.prototype, {
             f();
             this.wrapArray(this.related);
         } else {
-            // If there's a fault we can make modelEvents anyway.
             f();
         }
     },
