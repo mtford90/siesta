@@ -80,17 +80,17 @@ _.extend(ModelInstance.prototype, {
                 obj: this
             });
         }
-        var __remove = this.model.methods.__remove;
-        if (__remove) {
-            var paramNames = util.paramNames(__remove);
+        var remove = this.model.remove;
+        if (remove) {
+            var paramNames = util.paramNames(remove);
             if (paramNames.length) {
                 var self = this;
-                __remove.call(this, function (err) {
+                remove.call(this, function (err) {
                     callback(err, self);
                 });
             }
             else {
-                __remove.call(this);
+                remove.call(this);
                 callback(null, this);
             }
         }

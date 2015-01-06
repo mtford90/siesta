@@ -169,11 +169,9 @@ describe('mapping!', function () {
                 var C = s.collection('C');
                 var m;
                 var M = C.model('M', {
-                    methods: {
-                        __remove: function () {
-                            assert.equal(this, m);
-                            done();
-                        }
+                    remove: function () {
+                        assert.equal(this, m);
+                        done();
                     },
                     attributes: ['attr']
                 });
@@ -190,14 +188,12 @@ describe('mapping!', function () {
             it('async remove', function (done) {
                 var C = s.collection('C');
                 var m;
-                var __removeCalled = false;
+                var removeCalled = false;
                 var M = C.model('M', {
-                    methods: {
-                        __remove: function (cb) {
-                            assert.equal(this, m);
-                            __removeCalled = true;
-                            cb();
-                        }
+                    remove: function (cb) {
+                        assert.equal(this, m);
+                        removeCalled = true;
+                        cb();
                     },
                     attributes: ['attr']
                 });
@@ -208,7 +204,7 @@ describe('mapping!', function () {
                                 m = _m;
                                 _m.remove()
                                     .then(function () {
-                                        assert.ok(__removeCalled);
+                                        assert.ok(removeCalled);
                                         done();
                                     })
                                     .catch(done);
