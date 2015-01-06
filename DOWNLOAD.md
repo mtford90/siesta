@@ -1,68 +1,7 @@
-There are two ways to download Siesta. You can either download the bundle which includes most components or pick and choose the components that you'd like to use.
+**WARNING:** Siesta has undergone huge changes in the last few weeks whilst in use in a large project. A new version will be released in the next few weeks addressing many issues and shortcomings and is rapidly catching up with the documentation. (Siesta is documentation-driven).
 
-Siesta currently offers two components:
+Any comments or feedback on the docs would be hugely appreciated - you can get involved via the [Gitter](https://gitter.im/mtford90/siesta) chat above. I WILL respond to comments.
 
-* Core - object mapping
-* HTTP - provides a facility to describe web services and automatically maps data to and from the object graph. Can be configured with ajax libraries such as those offered by JQuery and Zepto.
+Old versions can be downloaded [here](https://github.com/mtford90/siesta/releases) but at the time of writing the last version is 187 commits behind.
 
-Future planned components:
-
-* Persistence
-* Object graph visualisation (see the demo for example) 
-* Performance monitoring
-
-<div class="row btn-row">
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js">
-        <button class="btn">siesta.min.js</button>
-    </a>
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.js">
-        <button class="btn">siesta.js</button>
-    </a>
-</div>
-
-### Modules
-
-<div class="row btn-row">
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.js">
-        <button class="btn">siesta.core.js</button>
-    </a>
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js">
-        <button class="btn">siesta.core.min.js</button>
-    </a>
-</div>
-
-<div class="row btn-row">
-    <a class="download" href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.js">
-        <button class="btn">siesta.http.js</button>
-    </a>
-     <a class="download"href="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.http.min.js">
-        <button class="btn">siesta.http.min.js</button>
-     </a>
-</div>
-
-### Installation
-
-The bundle can be simply included:
-
-```js
-<html>
-<body>
-<script src="siesta.js"></script>
-<!-- ... -->
-
-</body>
-</html>
-```
-
-Modules should be included after siesta core:
-
-```javascript
-<html>
-<body>
-<script src="siesta.core.js"></script>
-<script src="siesta.http.js"></script>
-<!-- ... -->
-
-</body>
-</html>
-```
+Watch this space!
