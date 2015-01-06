@@ -37,7 +37,7 @@ _.extend(siesta, {
 _.extend(siesta, {
     RelationshipType: RelationshipType,
     ModelEventType: modelEvents.ModelEventType,
-    LogLevel: log.Level,
+    log: log.Level,
     InsertionPolicy: ReactiveQuery.InsertionPolicy,
     _internal: {
         log: log,
