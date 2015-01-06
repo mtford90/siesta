@@ -21,6 +21,8 @@ var RelationshipProxy = require('./RelationshipProxy'),
 function ManyToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
     var self = this;
+    self._id = [];
+    self.related = [];
     Object.defineProperty(this, 'isFault', {
         get: function () {
             if (self._id) {
@@ -29,20 +31,9 @@ function ManyToManyProxy(opts) {
             return true;
         },
         set: function (v) {
-            if (v) {
-                self._id = undefined;
-                self.related = null;
-            }
-            else {
-                if (!self._id) {
-                    self._id = [];
-                    self.related = [];
-                    self.wrapArray(self.related);
-                }
-            }
+
         }
     });
-    this._reverseIsArray = true;
 }
 
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
@@ -69,6 +60,7 @@ _.extend(ManyToManyProxy.prototype, {
     },
     wrapArray: function (arr) {
         var self = this;
+        if (!this.object) throw Error('wtf');
         wrapArrayForAttributes(arr, this.reverseName, this.object);
         if (!arr.arrayObserver) {
             arr.arrayObserver = new ArrayObserver(arr);
@@ -129,6 +121,7 @@ _.extend(ManyToManyProxy.prototype, {
     },
     install: function (obj) {
         RelationshipProxy.prototype.install.call(this, obj);
+        this.wrapArray(this.related);
         obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
     }
 

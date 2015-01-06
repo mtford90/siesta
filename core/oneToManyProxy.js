@@ -70,8 +70,6 @@ function OneToManyProxy(opts) {
             }
         }
     });
-    this._reverseIsArray = true;
-    this._forwardIsArray = false;
 }
 
 OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);

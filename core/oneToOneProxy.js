@@ -14,8 +14,6 @@ var RelationshipProxy = require('./RelationshipProxy'),
  */
 function OneToOneProxy(opts) {
     RelationshipProxy.call(this, opts);
-    this._reverseIsArray = false;
-    this._forwardIsArray = false;
 }
 
 
