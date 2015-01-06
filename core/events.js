@@ -25,7 +25,6 @@ eventEmitter.wrapArray = function (array, field, modelInstance) {
                 });
             }
         });
-        array.isFault = false;
     }
 };
 module.exports = eventEmitter;

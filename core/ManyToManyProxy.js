@@ -98,21 +98,7 @@ _.extend(ManyToManyProxy.prototype, {
     get: function (callback) {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
-        var self = this;
-        if (this.isFault) {
-            Store.get({_id: this._id}, function (err, stored) {
-                if (err) {
-                    if (callback) callback(err);
-                }
-                else {
-                    self.related = stored;
-                    if (callback) callback(null, stored);
-                }
-            })
-        }
-        else {
-            if (callback) callback(null, this.related);
-        }
+        callback(null, this.related);
         return deferred.promise;
     },
     validate: function (obj) {

@@ -806,29 +806,6 @@ describe('new object proxy', function () {
                 });
             });
 
-            describe('fault', function () {
-                it('forward', function (done) {
-                    carProxy._id = [person._id];
-                    carProxy.get(function (err, people) {
-                        if (err) done(err);
-                        assert.include(people, person);
-                        assert.include(carProxy.related, person);
-                        done();
-                    });
-                });
-
-                it('reverse', function (done) {
-                    personProxy._id = [car._id];
-                    personProxy.get(function (err, cars) {
-                        if (err) done(err);
-                        assert.equal(cars.length, 1);
-                        assert.include(cars, car);
-                        assert.include(personProxy.related, car);
-                        done();
-                    });
-                });
-            });
-
         });
 
         describe('set', function () {
