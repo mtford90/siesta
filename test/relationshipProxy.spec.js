@@ -84,9 +84,7 @@ describe('relationship proxy', function () {
 
                     describe('relationship, faulted', function () {
                         beforeEach(function () {
-                            proxy._id = 'xyz';
                             proxy.related = new SiestaModel(Person);
-                            proxy.related._id = 'xyz';
                         });
 
                         it('is related', function () {
@@ -178,7 +176,7 @@ describe('relationship proxy', function () {
             });
 
             it('forward', function (done) {
-                carProxy._id = person._id;
+                carProxy.related = person;
                 carProxy.get(function (err, obj) {
                     if (err) done(err);
                     assert.equal(person, obj);
@@ -187,7 +185,7 @@ describe('relationship proxy', function () {
             });
 
             it('reverse', function (done) {
-                personProxy._id = car._id;
+                personProxy.related = car;
                 personProxy.get(function (err, obj) {
                     if (err) done(err);
                     assert.equal(car, obj);
@@ -228,14 +226,12 @@ describe('relationship proxy', function () {
                     it('should set forward', function () {
                         car.owner = person;
                         assert.equal(car.owner, person);
-                        assert.equal(carProxy._id, person._id);
                         assert.equal(carProxy.related, person);
                     });
 
                     it('should set reverse', function () {
                         car.owner = person;
                         assert.equal(person.cars, car);
-                        assert.equal(personProxy._id, car._id);
                         assert.equal(personProxy.related, car);
                     });
                 });
@@ -244,7 +240,6 @@ describe('relationship proxy', function () {
                     it('should set forward', function () {
                         person.cars = car;
                         assert.equal(person.cars, car);
-                        assert.equal(personProxy._id, car._id);
                         assert.equal(personProxy.related, car);
 
                     });
@@ -252,7 +247,6 @@ describe('relationship proxy', function () {
                     it('should set reverse', function () {
                         person.cars = car;
                         assert.equal(car.owner, person);
-                        assert.equal(carProxy._id, person._id);
                         assert.equal(carProxy.related, person);
                     });
                 });
@@ -289,14 +283,12 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             car.owner = person;
                             assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
                             assert.equal(carProxy.related, person);
                         });
 
                         it('should set reverse', function () {
                             car.owner = person;
                             assert.equal(person.cars, car);
-                            assert.equal(personProxy._id, car._id);
                             assert.equal(personProxy.related, car);
                         });
 
@@ -310,7 +302,6 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             person.cars = car;
                             assert.equal(person.cars, car);
-                            assert.equal(personProxy._id, car._id);
                             assert.equal(personProxy.related, car);
 
                         });
@@ -318,7 +309,6 @@ describe('relationship proxy', function () {
                         it('should set reverse', function () {
                             person.cars = car;
                             assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
                             assert.equal(carProxy.related, person);
                         });
 
@@ -331,46 +321,6 @@ describe('relationship proxy', function () {
                     });
                 });
 
-                describe('fault', function () {
-                    beforeEach(function () {
-                        car.owner = anotherPerson;
-                        carProxy.related = undefined;
-                        anotherPersonProxy.related = undefined;
-                    });
-                    describe('forward', function () {
-                        it('should set forward', function () {
-                            car.owner = person;
-                            assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
-                            assert.equal(carProxy.related, person);
-                        });
-
-                        it('should set reverse', function () {
-                            car.owner = person;
-                            assert.equal(person.cars, car);
-                            assert.equal(personProxy._id, car._id);
-                            assert.equal(personProxy.related, car);
-                        });
-
-                    });
-                    describe('backwards', function () {
-                        it('should set forward', function () {
-                            person.cars = car;
-                            assert.equal(person.cars, car);
-                            assert.equal(personProxy._id, car._id);
-                            assert.equal(personProxy.related, car);
-
-                        });
-
-                        it('should set reverse', function () {
-                            person.cars = car;
-                            assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
-                            assert.equal(carProxy.related, person);
-                        });
-
-                    });
-                });
 
             });
         })
@@ -408,7 +358,7 @@ describe('relationship proxy', function () {
 
             describe('get', function () {
                 it('forward', function (done) {
-                    carProxy._id = person._id;
+                    carProxy.related = person;
                     carProxy.related = person;
                     carProxy.get(function (err, obj) {
                         if (err) done(err);
@@ -418,7 +368,6 @@ describe('relationship proxy', function () {
                 });
 
                 it('reverse', function (done) {
-                    personProxy._id = [car._id];
                     personProxy.related = [car];
                     personProxy.get(function (err, cars) {
                         if (err) done(err);
@@ -461,14 +410,12 @@ describe('relationship proxy', function () {
                     it('should set forward', function () {
                         car.owner = person;
                         assert.equal(car.owner, person);
-                        assert.equal(carProxy._id, person._id);
                         assert.equal(carProxy.related, person);
                     });
 
                     it('should set reverse', function () {
                         car.owner = person;
                         assert.include(person.cars, car);
-                        assert.include(personProxy._id, car._id);
                         assert.include(personProxy.related, car);
                     });
 
@@ -496,7 +443,6 @@ describe('relationship proxy', function () {
                     it('should set forward', function () {
                         person.cars = [car];
                         assert.include(person.cars, car);
-                        assert.include(personProxy._id, car._id);
                         assert.include(personProxy.related, car);
 
                     });
@@ -504,7 +450,6 @@ describe('relationship proxy', function () {
                     it('should set reverse', function () {
                         person.cars = [car];
                         assert.equal(car.owner, person);
-                        assert.equal(carProxy._id, person._id);
                         assert.equal(carProxy.related, person);
                     });
                 });
@@ -537,20 +482,17 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             car.owner = person;
                             assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
                             assert.equal(carProxy.related, person);
                         });
 
                         it('should set reverse', function () {
                             car.owner = person;
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
                         it('should clear the old', function () {
                             car.owner = person;
-                            assert.equal(anotherPersonProxy._id.length, 0);
                             assert.equal(anotherPersonProxy.related.length, 0);
                         });
 
@@ -559,20 +501,17 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             person.cars = [car];
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
                         it('should set reverse', function () {
                             person.cars = [car];
                             assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
                             assert.equal(carProxy.related, person);
                         });
 
                         it('should clear the old', function () {
                             person.cars = [car];
-                            assert.equal(anotherPersonProxy._id.length, 0);
                             assert.equal(anotherPersonProxy.related.length, 0);
                         });
 
@@ -589,14 +528,12 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             car.owner = person;
                             assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
                             assert.equal(carProxy.related, person);
                         });
 
                         it('should set reverse', function () {
                             car.owner = person;
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
@@ -605,14 +542,12 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             person.cars = [car];
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
                         it('should set reverse', function () {
                             person.cars = [car];
                             assert.equal(car.owner, person);
-                            assert.equal(carProxy._id, person._id);
                             assert.equal(carProxy.related, person);
                         });
 
@@ -658,7 +593,6 @@ describe('relationship proxy', function () {
 
 
             it('forward', function (done) {
-                carProxy._id = [person._id];
                 carProxy.related = [person];
                 carProxy.get(function (err, people) {
                     if (err) done(err);
@@ -669,7 +603,6 @@ describe('relationship proxy', function () {
             });
 
             it('reverse', function (done) {
-                personProxy._id = [car._id];
                 personProxy.related = [car];
                 personProxy.get(function (err, cars) {
                     if (err) done(err);
@@ -712,14 +645,12 @@ describe('relationship proxy', function () {
                     it('should set forward', function () {
                         car.owners = [person];
                         assert.include(car.owners, person);
-                        assert.include(carProxy._id, person._id);
                         assert.include(carProxy.related, person);
                     });
 
                     it('should set reverse', function () {
                         car.owners = [person];
                         assert.include(person.cars, car);
-                        assert.include(personProxy._id, car._id);
                         assert.include(personProxy.related, car);
                     });
                 });
@@ -728,7 +659,6 @@ describe('relationship proxy', function () {
                     it('should set forward', function () {
                         person.cars = [car];
                         assert.include(person.cars, car);
-                        assert.include(personProxy._id, car._id);
                         assert.include(personProxy.related, car);
 
                     });
@@ -736,7 +666,6 @@ describe('relationship proxy', function () {
                     it('should set reverse', function () {
                         person.cars = [car];
                         assert.include(car.owners, person);
-                        assert.include(carProxy._id, person._id);
                         assert.include(carProxy.related, person);
                     });
                 });
@@ -772,20 +701,17 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             car.owners = [person];
                             assert.include(car.owners, person);
-                            assert.include(carProxy._id, person._id);
                             assert.include(carProxy.related, person);
                         });
 
                         it('should set reverse', function () {
                             car.owners = [person];
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
                         it('should clear the old', function () {
                             car.owners = [person];
-                            assert.equal(anotherPersonProxy._id.length, 0);
                             assert.equal(anotherPersonProxy.related.length, 0);
                         });
 
@@ -795,14 +721,12 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             person.cars = [car];
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
                         it('should set reverse', function () {
                             person.cars = [car];
                             assert.include(car.owners, person);
-                            assert.include(carProxy._id, person._id);
                             assert.include(carProxy.related, person);
                         });
                     });
@@ -818,14 +742,12 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             car.owners = [person];
                             assert.include(car.owners, person);
-                            assert.include(carProxy._id, person._id);
                             assert.include(carProxy.related, person);
                         });
 
                         it('should set reverse', function () {
                             car.owners = [person];
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
@@ -835,13 +757,11 @@ describe('relationship proxy', function () {
                         it('should set forward', function () {
                             person.cars = [car];
                             assert.include(person.cars, car);
-                            assert.include(personProxy._id, car._id);
                             assert.include(personProxy.related, car);
                         });
 
                         it('should set reverse', function () {
                             person.cars = [car];
-                            assert.include(carProxy._id, person._id);
                         });
 
 

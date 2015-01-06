@@ -21,13 +21,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
  */
 function OneToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
-    if (this.isForward) {
-        this._id = null;
-    }
-    else {
-        this._id = [];
-        this.related = [];
-    }
+    if (this.isReverse) this.related = [];
 }
 
 OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);

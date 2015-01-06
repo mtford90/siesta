@@ -56,18 +56,8 @@ _.extend(OneToOneProxy.prototype, {
     get: function (callback) {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
+        callback(null, this.related);
         var self = this;
-        if (this._id) {
-            Store.get({_id: this._id}, function (err, stored) {
-                if (err) {
-                    if (callback) callback(err);
-                }
-                else {
-                    self.related = stored;
-                    if (callback) callback(null, stored);
-                }
-            })
-        }
         return deferred.promise;
     }
 });

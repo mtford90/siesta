@@ -20,7 +20,6 @@ var RelationshipProxy = require('./RelationshipProxy'),
  */
 function ManyToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
-    this._id = [];
     this.related = [];
 }
 
@@ -31,7 +30,7 @@ _.extend(ManyToManyProxy.prototype, {
         var self = this;
         _.each(removed, function (removedObject) {
             var reverseProxy = self.reverseProxyForInstance(removedObject);
-            var idx = reverseProxy._id.indexOf(self.object._id);
+            var idx = reverseProxy.related.indexOf(self.object);
             reverseProxy.makeChangesToRelatedWithoutObservations(function () {
                 reverseProxy.splice(idx, 1);
             });

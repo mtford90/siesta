@@ -27,7 +27,6 @@ function RelationshipProxy(opts) {
 
     _.extend(this, {
         object: null,
-        _id: undefined,
         related: null
     });
 
@@ -149,14 +148,11 @@ _.extend(RelationshipProxy.prototype, {
         }
         if (obj) {
             if (util.isArray(obj)) {
-                this._id = _.pluck(obj, '_id');
                 this.related = obj;
             } else {
-                this._id = obj._id;
                 this.related = obj;
             }
         } else {
-            this._id = null;
             this.related = null;
         }
     },
@@ -173,11 +169,7 @@ _.extend(RelationshipProxy.prototype, {
                 this.registerSpliceChange.apply(this, arguments);
             }
             var add = Array.prototype.slice.call(arguments, 2);
-            var returnValue = _.partial(this._id.splice, idx, numRemove).apply(this._id, _.pluck(add, '_id'));
-            if (this.related) {
-                _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
-            }
-            return returnValue;
+            return _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
         }.bind(this);
     },
     clearReverseRelated: function (opts) {
@@ -187,8 +179,8 @@ _.extend(RelationshipProxy.prototype, {
             var reverseProxy = this.reverseProxyForInstance(this.related);
             var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
             _.each(reverseProxies, function (p) {
-                if (util.isArray(p._id)) {
-                    var idx = p._id.indexOf(self.object._id);
+                if (util.isArray(p.related)) {
+                    var idx = p.related.indexOf(self.object);
                     p.makeChangesToRelatedWithoutObservations(function () {
                         p.splicer(opts)(idx, 1);
                     });
@@ -203,9 +195,9 @@ _.extend(RelationshipProxy.prototype, {
         var reverseProxy = this.reverseProxyForInstance(obj);
         var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
         _.each(reverseProxies, function (p) {
-            if (util.isArray(p._id)) {
+            if (util.isArray(p.related)) {
                 p.makeChangesToRelatedWithoutObservations(function () {
-                    p.splicer(opts)(p._id.length, 0, self.object);
+                    p.splicer(opts)(p.related.length, 0, self.object);
                 });
             } else {
                 p.clearReverseRelated(opts);
