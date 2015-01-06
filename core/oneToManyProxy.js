@@ -21,7 +21,6 @@ var RelationshipProxy = require('./RelationshipProxy'),
  */
 function OneToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
-
     if (this.isForward) {
         this._id = null;
     }
@@ -29,18 +28,6 @@ function OneToManyProxy(opts) {
         this._id = [];
         this.related = [];
     }
-
-    var self = this;
-    Object.defineProperty(this, 'isFault', {
-        get: function () {
-            return false;
-        },
-        set: function (v) {
-            if (!v) {
-                if (!self.isForward) this.wrapArray(self.related);
-            }
-        }
-    });
 }
 
 OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
@@ -141,6 +128,7 @@ _.extend(OneToManyProxy.prototype, {
 
         if (this.isReverse) {
             obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
+            this.wrapArray(this.related);
         }
 
     }

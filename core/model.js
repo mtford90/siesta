@@ -524,7 +524,6 @@ _.extend(Model.prototype, {
                     }
                 }
                 proxy.install(newModel);
-                proxy.isFault = false;
             }
             cache.insert(newModel);
             if (shouldRegisterChange) {
