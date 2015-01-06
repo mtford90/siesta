@@ -49,7 +49,6 @@ _.extend(ManyToManyProxy.prototype, {
     },
     wrapArray: function (arr) {
         var self = this;
-        if (!this.object) throw Error('wtf');
         wrapArrayForAttributes(arr, this.reverseName, this.object);
         if (!arr.arrayObserver) {
             arr.arrayObserver = new ArrayObserver(arr);
