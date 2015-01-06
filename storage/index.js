@@ -184,7 +184,7 @@ function saveToPouch(objects, callback, deferred) {
     });
 }
 /**
- * Save all changes down to PouchDB.
+ * Save all modelEvents down to PouchDB.
  */
 function save(callback) {
     var deferred = util.defer(callback);

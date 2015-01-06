@@ -67,7 +67,7 @@ To make sure that all is well, run the tests:
 grunt test
 ```
 
-We can automatically run tests when changes are detected by running the following commands:
+We can automatically run tests when modelEvents are detected by running the following commands:
 
 ```bash
 grunt watch
@@ -76,7 +76,7 @@ grunt watch
 ## Website/Documentation
 
 ```bash
-# Watches for changes to the documentation/website and also serves the site at localhost:4000
+# Watches for modelEvents to the documentation/website and also serves the site at localhost:4000
 grunt watch
 # Build the documentation/website for use locally.
 grunt build-jekyll

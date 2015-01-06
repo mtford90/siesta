@@ -10,7 +10,7 @@ var log = require('./log'),
     _ = require('underscore'),
     EventEmitter = require('events').EventEmitter,
     events = require('./events'),
-    changes = require('./changes'),
+    modelEvents = require('./modelEvents'),
     InternalSiestaError = require('./error').InternalSiestaError,
     util = require('./util');
 
@@ -114,7 +114,7 @@ _.extend(ReactiveQuery.prototype, {
     _handleNotif: function (n) {
         if (Logger.trace) Logger.trace('_handleNotif', n);
         if (!this.results) throw Error('ReactiveQuery must be initialised before receiving events.');
-        if (n.type == changes.ChangeType.New) {
+        if (n.type == modelEvents.ChangeType.New) {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
                 if (Logger.trace) Logger.trace('New object matches', newObj._dumpString());
@@ -122,7 +122,7 @@ _.extend(ReactiveQuery.prototype, {
                 this.emit('change', {
                     index: idx,
                     added: [newObj],
-                    type: changes.ChangeType.Splice,
+                    type: modelEvents.ChangeType.Splice,
                     obj: this
                 });
             }
@@ -130,7 +130,7 @@ _.extend(ReactiveQuery.prototype, {
                 if (Logger.trace) Logger.trace('New object does not match', newObj._dumpString());
             }
         }
-        else if (n.type == changes.ChangeType.Set) {
+        else if (n.type == modelEvents.ChangeType.Set) {
             newObj = n.obj;
             var index = this.results.indexOf(newObj),
                 alreadyContains = index > -1,
@@ -141,7 +141,7 @@ _.extend(ReactiveQuery.prototype, {
                 this.emit('change', this.results, {
                     index: idx,
                     added: [newObj],
-                    type: changes.ChangeType.Splice,
+                    type: modelEvents.ChangeType.Splice,
                     obj: this
                 });
             }
@@ -152,7 +152,7 @@ _.extend(ReactiveQuery.prototype, {
                     index: index,
                     obj: this,
                     new: newObj,
-                    type: changes.ChangeType.Splice,
+                    type: modelEvents.ChangeType.Splice,
                     removed: removed
                 });
             }
@@ -165,7 +165,7 @@ _.extend(ReactiveQuery.prototype, {
                 this.emit('change', n);
             }
         }
-        else if (n.type == changes.ChangeType.Remove) {
+        else if (n.type == modelEvents.ChangeType.Remove) {
             newObj = n.obj;
             index = this.results.indexOf(newObj);
             if (index > -1) {
@@ -174,12 +174,12 @@ _.extend(ReactiveQuery.prototype, {
                 this.emit('change', this.results, {
                     index: index,
                     obj: this,
-                    type: changes.ChangeType.Splice,
+                    type: modelEvents.ChangeType.Splice,
                     removed: removed
                 });
             }
             else {
-                if (Logger.trace) Logger.trace('No changes neccessary.', newObj._dumpString());
+                if (Logger.trace) Logger.trace('No modelEvents neccessary.', newObj._dumpString());
             }
         }
         else {

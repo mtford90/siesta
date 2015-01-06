@@ -7,7 +7,7 @@ describe('events', function () {
         s.ext.storageEnabled = false;
     });
 
-    var ChangeType = require('../core/changes').ChangeType,
+    var ChangeType = require('../core/modelEvents').ChangeType,
         util = require('../core/util'),
         events = require('../core/events'),
         RelationshipType = require('../core/RelationshipType');

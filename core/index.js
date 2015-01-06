@@ -7,7 +7,7 @@ var util = require('./util'),
     RelationshipType = require('./RelationshipType'),
     PositionedReactiveQuery = require('./positionedReactiveQuery'),
     ReactiveQuery = require('./reactiveQuery'),
-    changes = require('./changes'),
+    modelEvents = require('./modelEvents'),
     log = require('./log'),
     _ = util._;
 
@@ -36,7 +36,7 @@ _.extend(siesta, {
 // Expose some stuff for usage by extensions and/or users
 _.extend(siesta, {
     RelationshipType: RelationshipType,
-    ChangeType: changes.ChangeType,
+    ChangeType: modelEvents.ChangeType,
     LogLevel: log.Level,
     InsertionPolicy: ReactiveQuery.InsertionPolicy,
     _internal: {
@@ -44,12 +44,12 @@ _.extend(siesta, {
         Model: Model,
         model: require('./model'),
         error: require('./error'),
-        ChangeType: changes.ChangeType,
+        ChangeType: modelEvents.ChangeType,
         siestaModel: require('./modelInstance'),
         extend: require('extend'),
         events: require('./events'),
         cache: require('./cache'),
-        coreChanges: changes,
+        coreChanges: modelEvents,
         CollectionRegistry: require('./collectionRegistry').CollectionRegistry,
         Collection: Collection,
         utils: util,

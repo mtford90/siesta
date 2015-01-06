@@ -11,7 +11,7 @@ var Store = require('./store'),
     util = require('./util'),
     _ = util._,
     async = util.async,
-    ChangeType = require('./changes').ChangeType;
+    ChangeType = require('./modelEvents').ChangeType;
 
 var Logger = log.loggerWithName('MappingOperation');
 

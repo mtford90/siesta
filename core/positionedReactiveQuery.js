@@ -117,7 +117,7 @@ _.extend(PositionalReactiveQuery.prototype, {
         return deferred.promise;
     },
     _handleNotif: function (n) {
-        // We don't want to keep executing the query each time index changes. We're changing
+        // We don't want to keep executing the query each time index modelEvents. We're changing
         // the index ourselves.
         if (n.field != this.indexField) {
             ReactiveQuery.prototype._handleNotif.call(this, n);

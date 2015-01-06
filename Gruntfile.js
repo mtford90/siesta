@@ -393,7 +393,7 @@ module.exports = function (grunt) {
         if (action == 'changed') {
             if (target == 'demo') {
                 var cmd;
-                // Optimisation to avoid copying every single demo file on changes.
+                // Optimisation to avoid copying every single demo file on modelEvents.
                 if (fs.existsSync('_site/demo')) {
                     var split = filepath.split('/');
                     split[0] = '_site';

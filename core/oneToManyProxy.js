@@ -7,12 +7,12 @@ var RelationshipProxy = require('./RelationshipProxy'),
     util = require('./util'),
     _ = util._,
     InternalSiestaError = require('./error').InternalSiestaError,
-    coreChanges = require('./changes'),
+    coreChanges = require('./modelEvents'),
     SiestaModel = require('./modelInstance'),
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-    ChangeType = require('./changes').ChangeType
+    ChangeType = require('./modelEvents').ChangeType
     ;
 
 /**

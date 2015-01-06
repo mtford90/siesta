@@ -13,7 +13,7 @@ var log = require('./log'),
     cache = require('./cache'),
     store = require('./store'),
     extend = require('extend'),
-    changes = require('./changes'),
+    modelEvents = require('./modelEvents'),
     events = require('./events'),
     wrapArray = require('./events').wrapArray,
     proxy = require('./RelationshipProxy'),
@@ -24,7 +24,7 @@ var log = require('./log'),
     PositionalReactiveQuery = require('./positionedReactiveQuery'),
     _ = util._,
     guid = util.guid,
-    ChangeType = changes.ChangeType
+    ChangeType = modelEvents.ChangeType
     ;
 
 var Logger = log.loggerWithName('Model');
@@ -447,7 +447,7 @@ _.extend(Model.prototype, {
                     set: function (v) {
                         var old = newModel.__values[field];
                         newModel.__values[field] = v;
-                        changes.registerChange({
+                        modelEvents.registerChange({
                             collection: self.collectionName,
                             model: self.name,
                             _id: newModel._id,
@@ -491,7 +491,7 @@ _.extend(Model.prototype, {
                 set: function (v) {
                     var old = newModel[self.id];
                     newModel.__values[self.id] = v;
-                    changes.registerChange({
+                    modelEvents.registerChange({
                         collection: self.collectionName,
                         model: self.name,
                         _id: newModel._id,
@@ -527,7 +527,7 @@ _.extend(Model.prototype, {
             }
             cache.insert(newModel);
             if (shouldRegisterChange) {
-                changes.registerChange({
+                modelEvents.registerChange({
                     collection: this.collectionName,
                     model: this.name,
                     _id: newModel._id,

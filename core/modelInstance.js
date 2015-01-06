@@ -3,7 +3,7 @@ var log = require('./log'),
     _ = util._,
     error = require('./error'),
     InternalSiestaError = error.InternalSiestaError,
-    coreChanges = require('./changes'),
+    modelEvents = require('./modelEvents'),
     events = require('./events'),
     cache = require('./cache');
 
@@ -71,12 +71,12 @@ _.extend(ModelInstance.prototype, {
         cache.remove(this);
         this.removed = true;
         if (notification) {
-            coreChanges.registerChange({
+            modelEvents.registerChange({
                 collection: this.collectionName,
                 model: this.model.name,
                 _id: this._id,
                 old: this,
-                type: coreChanges.ChangeType.Remove,
+                type: modelEvents.ChangeType.Remove,
                 obj: this
             });
         }
@@ -104,12 +104,12 @@ _.extend(ModelInstance.prototype, {
         callback = deferred.finish.bind(deferred);
         var _finish = function (err) {
             if (!err) {
-                coreChanges.registerChange({
+                modelEvents.registerChange({
                     collection: this.collectionName,
                     model: this.model.name,
                     _id: this._id,
                     new: this,
-                    type: coreChanges.ChangeType.New,
+                    type: modelEvents.ChangeType.New,
                     obj: this
                 });
             }

@@ -1,18 +1,10 @@
-/**
- * The changes module deals with changes to model instances. In the in-memory case this
- * just means that notifications are sent on any change. If the storage module is being used,
- * the changes module is extended to deal with merging changes into whatever persistant storage
- * method is being used.
- * @module changes
- */
-
 var events = require('./events'),
     InternalSiestaError = require('./error').InternalSiestaError,
     log = require('./log'),
     extend = require('./util')._.extend,
     collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
-var Logger = log.loggerWithName('changes');
+var Logger = log.loggerWithName('modelEvents');
 
 /**
  * Constants that describe change events.

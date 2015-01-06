@@ -13,7 +13,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-    coreChanges = require('./changes'),
+    coreChanges = require('./modelEvents'),
     ChangeType = coreChanges.ChangeType;
 
 /**
@@ -294,7 +294,7 @@ _.extend(RelationshipProxy.prototype, {
             f();
             this.wrapArray(this.related);
         } else {
-            // If there's a fault we can make changes anyway.
+            // If there's a fault we can make modelEvents anyway.
             f();
         }
     },

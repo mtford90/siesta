@@ -24,7 +24,7 @@ describe('auto save', function () {
         });
     });
 
-    it('autosaves on changes if enabled', function (done) {
+    it('autosaves on modelEvents if enabled', function (done) {
         s.autosave = true;
         s.once('saved', function () {
             s.ext.storage._pouch.allDocs()
@@ -40,7 +40,7 @@ describe('auto save', function () {
             .done();
     });
 
-    it('does not interval on changes if disabled', function (done) {
+    it('does not interval on modelEvents if disabled', function (done) {
         s.autosave = false;
         Person.map({name: 'Mike', age: 24})
             .then(function () {
