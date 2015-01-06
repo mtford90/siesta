@@ -20,9 +20,8 @@ var RelationshipProxy = require('./RelationshipProxy'),
  */
 function ManyToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
-    var self = this;
-    self._id = [];
-    self.related = [];
+    this._id = [];
+    this.related = [];
 }
 
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);

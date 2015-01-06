@@ -12,8 +12,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-    ModelEventType = require('./modelEvents').ModelEventType
-    ;
+    ModelEventType = require('./modelEvents').ModelEventType;
 
 /**
  * @class  [OneToManyProxy description]
@@ -23,27 +22,22 @@ var RelationshipProxy = require('./RelationshipProxy'),
 function OneToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
 
+    if (this.isForward) {
+        this._id = null;
+    }
+    else {
+        this._id = [];
+        this.related = [];
+    }
+
     var self = this;
     Object.defineProperty(this, 'isFault', {
         get: function () {
             return false;
         },
         set: function (v) {
-            if (v) {
-                self._id = undefined;
-                self.related = null;
-            }
-            else {
-                if (!self._id) {
-                    if (self.isForward) {
-                        self._id = null;
-                    }
-                    else {
-                        self._id = [];
-                        self.related = [];
-                        this.wrapArray(self.related);
-                    }
-                }
+            if (!v) {
+                if (!self.isForward) this.wrapArray(self.related);
             }
         }
     });
@@ -144,9 +138,11 @@ _.extend(OneToManyProxy.prototype, {
     },
     install: function (obj) {
         RelationshipProxy.prototype.install.call(this, obj);
+
         if (this.isReverse) {
             obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
         }
+
     }
 });
 
