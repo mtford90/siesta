@@ -465,11 +465,9 @@ describe('new object proxy', function () {
                 car = new SiestaModel(Car);
                 car._id = 'car';
                 carProxy.install(car);
-                carProxy.isFault = false;
                 person = new SiestaModel(Person);
                 person._id = 'person';
                 personProxy.install(person);
-                personProxy.isFault = false;
             });
             describe('none pre-existing', function () {
 
@@ -500,7 +498,6 @@ describe('new object proxy', function () {
                             isReverse: false
                         });
                         anotherCarProxy.install(anotherCar);
-                        anotherCarProxy.isFault = false;
                         anotherCar.owner = person;
                         assert.include(person.cars, car);
                         assert.include(person.cars, anotherCar);
@@ -541,7 +538,6 @@ describe('new object proxy', function () {
                         isReverse: true
                     });
                     anotherPersonProxy.install(anotherPerson);
-                    anotherPersonProxy.isFault = false;
                     cache.insert(anotherPerson);
                     cache.insert(person);
                     cache.insert(car);
@@ -674,36 +670,28 @@ describe('new object proxy', function () {
                 cache.insert(car);
             });
 
-            describe('no fault', function () {
 
-                beforeEach(function () {
-                    carProxy.isFault = false;
-                    personProxy.isFault = false;
-                });
-
-                it('forward', function (done) {
-                    carProxy._id = [person._id];
-                    carProxy.related = [person];
-                    carProxy.get(function (err, people) {
-                        if (err) done(err);
-                        assert.include(people, person);
-                        assert.include(carProxy.related, person);
-                        done();
-                    });
-                });
-
-                it('reverse', function (done) {
-                    personProxy._id = [car._id];
-                    personProxy.related = [car];
-                    personProxy.get(function (err, cars) {
-                        if (err) done(err);
-                        assert.include(cars, car);
-                        assert.include(personProxy.related, car);
-                        done();
-                    });
+            it('forward', function (done) {
+                carProxy._id = [person._id];
+                carProxy.related = [person];
+                carProxy.get(function (err, people) {
+                    if (err) done(err);
+                    assert.include(people, person);
+                    assert.include(carProxy.related, person);
+                    done();
                 });
             });
 
+            it('reverse', function (done) {
+                personProxy._id = [car._id];
+                personProxy.related = [car];
+                personProxy.get(function (err, cars) {
+                    if (err) done(err);
+                    assert.include(cars, car);
+                    assert.include(personProxy.related, car);
+                    done();
+                });
+            });
         });
 
         describe('set', function () {
@@ -727,11 +715,9 @@ describe('new object proxy', function () {
                 car = new SiestaModel(Car);
                 car._id = 'car';
                 carProxy.install(car);
-                carProxy.isFault = false;
                 person = new SiestaModel(Person);
                 person._id = 'person';
                 personProxy.install(person);
-                personProxy.isFault = false;
             });
 
             describe('none pre-existing', function () {
@@ -786,7 +772,6 @@ describe('new object proxy', function () {
                         isReverse: true
                     });
                     anotherPersonProxy.install(anotherPerson);
-                    anotherPersonProxy.isFault = false;
                     cache.insert(anotherPerson);
                     cache.insert(person);
                     cache.insert(car);

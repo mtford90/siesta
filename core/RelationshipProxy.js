@@ -34,29 +34,6 @@ function RelationshipProxy(opts) {
     });
 
     Object.defineProperties(this, {
-        isFault: {
-            get: function () {
-                if (self._id) {
-                    return !self.related;
-                }
-                else if (self._id === null) {
-                    return false;
-                }
-                return true; // if _id === undefined we return a Fault object
-            },
-            set: function (v) {
-                if (v) {
-                    self._id = undefined;
-                    self.related = null;
-                } else {
-                    if (!self._id) {
-                        self._id = null;
-                    }
-                }
-            },
-            enumerable: true,
-            configurable: true
-        },
         isForward: {
             get: function () {
                 return !self.isReverse;
