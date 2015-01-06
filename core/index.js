@@ -49,7 +49,7 @@ _.extend(siesta, {
         extend: require('extend'),
         events: require('./events'),
         cache: require('./cache'),
-        coreChanges: modelEvents,
+        modelEvents: modelEvents,
         CollectionRegistry: require('./collectionRegistry').CollectionRegistry,
         Collection: Collection,
         utils: util,

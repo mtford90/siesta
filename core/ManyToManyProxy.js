@@ -7,7 +7,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
     util = require('./util'),
     _ = util._,
     InternalSiestaError = require('./error').InternalSiestaError,
-    coreChanges = require('./modelEvents'),
+    modelEvents = require('./modelEvents'),
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     SiestaModel = require('./modelInstance'),
@@ -79,7 +79,7 @@ _.extend(ManyToManyProxy.prototype, {
                     self.clearReverse(removed);
                     self.setReverseOfAdded(added);
                     var model = self.getForwardModel();
-                    coreChanges.registerChange({
+                    modelEvents.registerChange({
                         collection: model.collectionName,
                         model: model.name,
                         _id: self.object._id,

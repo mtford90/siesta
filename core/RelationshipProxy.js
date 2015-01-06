@@ -13,8 +13,8 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-    coreChanges = require('./modelEvents'),
-    ChangeType = coreChanges.ChangeType;
+    modelEvents = require('./modelEvents'),
+    ChangeType = modelEvents.ChangeType;
 
 /**
  * @class  [RelationshipProxy description]
@@ -239,7 +239,7 @@ _.extend(RelationshipProxy.prototype, {
                 if (this._reverseIsArray) {
                     if (!opts.disableevents) {
                         _.each(identifiers, function (_id) {
-                            coreChanges.registerChange({
+                            modelEvents.registerChange({
                                 collection: reverseModel.collectionName,
                                 model: reverseModel.name,
                                 _id: _id,
@@ -253,7 +253,7 @@ _.extend(RelationshipProxy.prototype, {
                 } else {
                     if (!opts.disableevents) {
                         _.each(identifiers, function (_id) {
-                            coreChanges.registerChange({
+                            modelEvents.registerChange({
                                 collection: reverseModel.collectionName,
                                 model: reverseModel.name,
                                 _id: _id,
@@ -308,7 +308,7 @@ _.extend(RelationshipProxy.prototype, {
         if (util.isArray(old) && !old.length) {
             old = null;
         }
-        coreChanges.registerChange({
+        modelEvents.registerChange({
             collection: collectionName,
             model: model,
             _id: proxyObject._id,
@@ -324,7 +324,7 @@ _.extend(RelationshipProxy.prototype, {
         var add = Array.prototype.slice.call(arguments, 2);
         var model = this.object.model.name;
         var coll = this.object.collectionName;
-        coreChanges.registerChange({
+        modelEvents.registerChange({
             collection: coll,
             model: model,
             _id: this.object._id,
@@ -345,7 +345,7 @@ _.extend(RelationshipProxy.prototype, {
                 splices.forEach(function (splice) {
                     var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                     var model = self.getForwardModel();
-                    coreChanges.registerChange({
+                    modelEvents.registerChange({
                         collection: model.collectionName,
                         model: model.name,
                         _id: self.object._id,
