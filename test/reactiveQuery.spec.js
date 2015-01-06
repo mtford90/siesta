@@ -189,10 +189,8 @@ describe('reactive query', function () {
                             else {
                                 rq.on('change', function (results, change) {
                                     assertResultsOk(rq.results, person);
-                                    var removedId = change.removedId,
-                                        removed = change.removed;
+                                    var removed = change.removed;
                                     assert.include(removed, person);
-                                    assert.include(removedId, _id);
                                     assert.equal(change.type, s.ChangeType.Splice);
                                     assert.equal(change.obj, rq);
                                     rq.terminate();
@@ -264,17 +262,14 @@ describe('reactive query', function () {
                     Person.map(initialData)
                         .then(function (res) {
                             var person = res[0];
-                            var _id = person._id;
                             var rq = Person.reactiveQuery({age__lt: 30});
                             rq.init(function (err) {
                                 if (err) done(err);
                                 else {
                                     rq.on('change', function (results, change) {
                                         try {
-                                            var removedId = change.removedId,
-                                                removed = change.removed;
+                                            var removed = change.removed;
                                             assert.include(removed, person);
-                                            assert.include(removedId, _id);
                                             assert.equal(change.type, s.ChangeType.Splice);
                                             assert.equal(change.obj, rq);
                                             assertResultsCorrect(rq, person);

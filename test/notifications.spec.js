@@ -576,12 +576,6 @@ describe('notifications', function () {
                             assert.equal(personCollectionNotif.type, ChangeType.Splice);
                         });
 
-                        it('id', function () {
-                            assert.include(personNotif.removedId, car._id);
-                            assert.include(personGenericNotif.removedId, car._id);
-                            assert.include(personCollectionNotif.removedId, car._id);
-                        });
-
                         it('added', function () {
                             assert.include(personNotif.removed, car);
                             assert.include(personGenericNotif.removed, car);

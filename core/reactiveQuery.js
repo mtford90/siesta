@@ -153,8 +153,7 @@ _.extend(ReactiveQuery.prototype, {
                     obj: this,
                     new: newObj,
                     type: changes.ChangeType.Splice,
-                    removed: removed,
-                    removedId: [newObj._id]
+                    removed: removed
                 });
             }
             else if (!matches && !alreadyContains) {
@@ -176,8 +175,7 @@ _.extend(ReactiveQuery.prototype, {
                     index: index,
                     obj: this,
                     type: changes.ChangeType.Splice,
-                    removed: removed,
-                    removedId: [newObj._id]
+                    removed: removed
                 });
             }
             else {

@@ -110,7 +110,6 @@ _.extend(OneToManyProxy.prototype, {
                         field: self.getForwardName(),
                         removed: removed,
                         added: added,
-                        removedId: _.pluck(removed, '_id'),
                         type: ChangeType.Splice,
                         index: splice.index,
                         obj: self.object

@@ -244,7 +244,6 @@ _.extend(RelationshipProxy.prototype, {
                                 model: reverseModel.name,
                                 _id: _id,
                                 field: reverseName,
-                                removedId: [self.object._id],
                                 removed: [self.object],
                                 type: ChangeType.Delete,
                                 obj: self.object
@@ -345,7 +344,6 @@ _.extend(RelationshipProxy.prototype, {
             _id: this.object._id,
             field: this.getForwardName(),
             index: idx,
-            removedId: this._id.slice(idx, idx + numRemove),
             removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
             added: add.length ? add : [],
             type: ChangeType.Splice,
@@ -368,7 +366,6 @@ _.extend(RelationshipProxy.prototype, {
                         field: self.getForwardName(),
                         removed: splice.removed,
                         added: added,
-                        removedId: _.pluck(splice.removed, '_id'),
                         type: ChangeType.Splice,
                         obj: self.object
                     });
