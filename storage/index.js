@@ -2,9 +2,6 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
     throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
 }
 
-if (typeof PouchDB == 'undefined') {
-    throw new Error('Could not find PouchDB. Have you included the script?');
-}
 
 var _i = siesta._internal,
     cache = _i.cache,
@@ -20,8 +17,8 @@ var unsavedObjects = [],
     unsavedObjectsHash = {},
     unsavedObjectsByCollection = {};
 
-
-var Logger = log.loggerWithName('Storage');
+var storage = {},
+    Logger = log.loggerWithName('Storage');
 
 /**
  * Serialise a model into a format that PouchDB bulkDocs API can process
@@ -224,7 +221,8 @@ var listener = function (n) {
 };
 siesta.on('Siesta', listener);
 
-var storage = {
+
+_.extend(storage, {
     _load: _load,
     save: save,
     _serialise: _serialise,
@@ -241,7 +239,7 @@ var storage = {
             cb(err);
         })
     }
-};
+});
 
 Object.defineProperties(storage, {
     _unsavedObjects: {
@@ -335,5 +333,11 @@ _.extend(siesta, {
     save: save
 });
 
+
+if (typeof PouchDB == 'undefined') {
+    siesta.ext.storageEnabled = false;
+    Logger.error('Storage extension is present but could not find PouchDB. ' +
+    'Have you included pouchdb.js in your project? It must be present at window.PouchDB!');
+}
 
 module.exports = storage;
