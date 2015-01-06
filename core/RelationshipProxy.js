@@ -69,18 +69,7 @@ _.extend(RelationshipProxy.prototype, {
                 var name = this.getForwardName();
                 Object.defineProperty(modelInstance, name, {
                     get: function () {
-                        if (self._id === undefined) {
-                            return {
-                                get: function () {
-                                    self.get.apply(self, arguments);
-                                },
-                                set: function () {
-                                    self.set.apply(self, arguments);
-                                }
-                            };
-                        } else {
-                            return self.related;
-                        }
+                        return self.related;
                     },
                     set: function (v) {
                         self.set(v);

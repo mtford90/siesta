@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('new object proxy', function () {
+describe('relationship proxy', function () {
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -78,9 +78,7 @@ describe('new object proxy', function () {
                     });
 
                     it('is a fault object', function () {
-                        assert(!car.owner.model);
-                        assert(car.owner.get instanceof Function);
-                        assert(car.owner.set instanceof Function);
+                        assert(!car.owner);
                     });
 
 
@@ -144,18 +142,7 @@ describe('new object proxy', function () {
                 assert.throws(function () {
                     car.owner = person;
                 }, InternalSiestaError);
-                assert.throws(function () {
-                    car.owner.set(person);
-                }, InternalSiestaError);
             });
-
-            it('get should fail if not subclasses', function () {
-                assert.throws(function () {
-                    car.owner.get(function () {
-
-                    })
-                }, InternalSiestaError);
-            })
         })
 
     });

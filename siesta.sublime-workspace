@@ -400,7 +400,7 @@
 		"/Users/mtford/Playground/rest/node_modules/chai/History.md",
 		"/Users/mtford/Playground/rest/test/recursiveRelationships.spec.js",
 		"/Users/mtford/Playground/rest/src/mapping.js",
-		"/Users/mtford/Playground/rest/test/proxy.spec.js",
+		"/Users/mtford/Playground/rest/test/relationshipProxy.spec.js",
 		"/Users/mtford/Playground/rest/src/mappingOperation.js",
 		"/Users/mtford/Playground/rest/src/OneToManyProxy.js",
 		"/Users/mtford/Playground/rest/test/relationshipInstallation.spec.js",
@@ -995,7 +995,7 @@
 			],
 			[
 				"proxy.spe",
-				"test/proxy.spec.js"
+				"test/relationshipProxy.spec.js"
 			],
 			[
 				"mapp",
@@ -1111,7 +1111,7 @@
 			],
 			[
 				"proy",
-				"test/proxy.spec.js"
+				"test/relationshipProxy.spec.js"
 			],
 			[
 				"changeiden",
