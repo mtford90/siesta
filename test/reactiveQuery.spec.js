@@ -289,6 +289,36 @@ describe('reactive query', function () {
                 });
 
 
+                it('emission, having listened before init', function (done) {
+                    Person.map(initialData)
+                        .then(function (res) {
+                            var person = res[0];
+                            var rq = Person.reactiveQuery({age__lt: 30});
+                            rq.listenOnce(function (results, change) {
+                                try {
+                                    var removed = change.removed;
+                                    assert.include(removed, person);
+                                    assert.equal(change.type, s.ModelEventType.Splice);
+                                    assert.equal(change.obj, rq);
+                                    assertResultsCorrect(rq, person);
+                                    rq.terminate();
+                                    s.notify(done);
+                                }
+                                catch (e) {
+                                    done(e);
+                                }  
+                            });
+                            rq.init(function (err) {
+                                if (err) done(err);
+                                else {
+                                    person.remove();
+                                    s.notify();
+                                }
+                            });
+                        }).catch(done).done();
+                });
+
+
             });
 
 
