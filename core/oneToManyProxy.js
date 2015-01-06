@@ -122,27 +122,7 @@ _.extend(OneToManyProxy.prototype, {
     get: function (callback) {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
-        var self = this;
-        if (this.isFault) {
-            if (this._id.length) {
-                var storeOpts = {_id: this._id};
-                Store.get(storeOpts, function (err, stored) {
-                    if (err) {
-                        if (callback) callback(err);
-                    }
-                    else {
-                        self.related = stored;
-                        if (callback) callback(null, stored);
-                    }
-                });
-            }
-            else if (callback) {
-                callback(null, this.related);
-            }
-        }
-        else {
-            if (callback) callback(null, this.related);
-        }
+        callback(null, this.related);
         return deferred.promise;
     },
     /**
