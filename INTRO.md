@@ -1,3 +1,5 @@
+*<span style="color: red">**Warning**: Siesta is a work-in-progress and undergoing heavy development. The codebase is currently catching up with the docs and a new version is expected within the next few weeks. Feel free to get involved via the [gitter chat](https://gitter.im/mtford90/siesta), all feedback is appreciated.</span>*
+
 # Siesta
 
 <strong>Siesta</strong> is an object graph framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
