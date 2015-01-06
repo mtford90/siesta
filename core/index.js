@@ -110,25 +110,9 @@ _.extend(siesta, {
                 }
             });
 
-        function finish(err, res) {
-            if (!err) {
-                // Execute all model static init functions (if present). See Collection._executeCustomModelInit for more details
-                collectionNames.forEach(function (collName) {
-                    var collection = CollectionRegistry[collName];
-                    collection._executeCustomModelInit(function (err) {
-                        cb(err, res);
-                    });
-                });
-            }
-            else {
-
-            }
-            cb(err, res);
-        }
-
         siesta.async.series(tasks, function (err) {
             if (err) {
-                finish(err);
+                cb(err);
             }
             else {
                 var ensureSingletons = function (err) {
@@ -147,11 +131,11 @@ _.extend(siesta, {
                             }
                         }
                         siesta.async.parallel(ensureSingletonTasks, function (err, res) {
-                            finish(err, res);
+                            cb(err, res);
                         });
                     }
                     else {
-                        finish(err);
+                        cb(err);
                     }
                 };
                 if (siesta.ext.storageEnabled) {

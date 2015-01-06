@@ -255,66 +255,6 @@ describe('mapping!', function () {
             });
         });
         describe('statics', function () {
-            it('sync init', function (done) {
-                var C = s.collection('C');
-                var M;
-                M = C.model('M', {
-                    statics: {
-                        __init: function () {
-                            assert.equal(this, M);
-                            done();
-                        }
-                    },
-                    attributes: ['attr']
-                });
-                siesta.install().catch(done);
-            });
-            it('async init', function (done) {
-                var C = s.collection('C');
-                var initCalled = false;
-                var M = C.model('M', {
-                    statics: {
-                        __init: function (cb) {
-                            assert.equal(this, M);
-                            initCalled = true;
-                            cb();
-                        }
-                    },
-                    attributes: ['attr']
-                });
-                siesta.install().then(function () {
-                    assert.ok(initCalled);
-                    done();
-                }).catch(done);
-            });
-            it('mixture of sync and async init', function (done) {
-                var C = s.collection('C');
-                var syncInitCalled, asyncInitCalled;
-                var M = C.model('M', {
-                    statics: {
-                        __init: function (cb) {
-                            assert.equal(this, M);
-                            asyncInitCalled = true;
-                            cb();
-                        }
-                    },
-                    attributes: ['attr']
-                });
-                var M_2 = C.model('M_2', {
-                    statics: {
-                        __init: function () {
-                            assert.equal(this, M_2);
-                            syncInitCalled = true;
-                        }
-                    },
-                    attributes: ['attr']
-                });
-                siesta.install().then(function () {
-                    assert.ok(syncInitCalled);
-                    assert.ok(asyncInitCalled);
-                    done();
-                }).catch(done);
-            });
             it('valid', function (done) {
                 var C = s.collection('C');
                 var M = C.model('M', {
@@ -330,7 +270,6 @@ describe('mapping!', function () {
                     done();
                 }).catch(done).done();
             });
-
             it('clash', function (done) {
                 var C = s.collection('C');
                 var staticMethod = function () {
