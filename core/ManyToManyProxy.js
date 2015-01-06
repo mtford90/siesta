@@ -23,17 +23,6 @@ function ManyToManyProxy(opts) {
     var self = this;
     self._id = [];
     self.related = [];
-    Object.defineProperty(this, 'isFault', {
-        get: function () {
-            if (self._id) {
-                return !self.related;
-            }
-            return true;
-        },
-        set: function (v) {
-
-        }
-    });
 }
 
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
