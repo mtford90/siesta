@@ -58,11 +58,9 @@ describe('mapping!', function () {
             it('sync init', function (done) {
                 var C = s.collection('C');
                 var M = C.model('M', {
-                    methods: {
-                        __init: function () {
-                            assert.equal(this.attr, 1);
-                            done();
-                        }
+                    init: function () {
+                        assert.equal(this.attr, 1);
+                        done();
                     },
                     attributes: ['attr']
                 });
@@ -76,12 +74,10 @@ describe('mapping!', function () {
                 var C = s.collection('C');
                 var initExecuted = false;
                 var M = C.model('M', {
-                    methods: {
-                        __init: function (cb) {
-                            assert.equal(this.attr, 1);
-                            initExecuted = true;
-                            cb();
-                        }
+                    init: function (cb) {
+                        assert.equal(this.attr, 1);
+                        initExecuted = true;
+                        cb();
                     },
                     attributes: ['attr']
                 });
@@ -101,21 +97,17 @@ describe('mapping!', function () {
                 var asyncInitExecuted = false,
                     syncInitExecuted = false;
                 var M = C.model('M', {
-                        methods: {
-                            __init: function (cb) {
-                                assert.equal(this.attr, 1);
-                                asyncInitExecuted = true;
-                                cb();
-                            }
+                        init: function (cb) {
+                            assert.equal(this.attr, 1);
+                            asyncInitExecuted = true;
+                            cb();
                         },
                         attributes: ['attr']
                     }),
                     M_2 = C.model('M_2', {
-                        methods: {
-                            __init: function () {
-                                assert.equal(this.attr, 2);
-                                syncInitExecuted = true;
-                            }
+                        init: function () {
+                            assert.equal(this.attr, 2);
+                            syncInitExecuted = true;
                         },
                         attributes: ['attr']
                     });
@@ -227,13 +219,11 @@ describe('mapping!', function () {
             it('init on restore', function (done) {
                 var C = s.collection('C');
                 var m;
-                var __initCalled = false;
+                var initCalled = false;
                 var M = C.model('M', {
-                    methods: {
-                        __init: function () {
-                            assert.equal(this.attr, 1);
-                            __initCalled = true;
-                        }
+                    init: function () {
+                        assert.equal(this.attr, 1);
+                        initCalled = true;
                     },
                     attributes: ['attr']
                 });
@@ -244,9 +234,9 @@ describe('mapping!', function () {
                                 m = _m;
                                 _m.remove()
                                     .then(function () {
-                                        __initCalled = false;
+                                        initCalled = false;
                                         _m.restore();
-                                        assert.ok(__initCalled);
+                                        assert.ok(initCalled);
                                         done();
                                     }).catch(done);
                             }).catch(done);

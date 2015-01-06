@@ -24,8 +24,7 @@ var log = require('./log'),
     PositionalReactiveQuery = require('./positionedReactiveQuery'),
     _ = util._,
     guid = util.guid,
-    ModelEventType = modelEvents.ModelEventType
-    ;
+    ModelEventType = modelEvents.ModelEventType;
 
 var Logger = log.loggerWithName('Model');
 
@@ -52,7 +51,9 @@ function Model(opts) {
         indexes: [],
         singleton: false,
         statics: this.installStatics.bind(this),
-        properties: {}
+        properties: {},
+        init: null,
+        remove: null
     });
 
     this.attributes = Model._processAttributes(this.attributes);

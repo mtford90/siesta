@@ -297,8 +297,7 @@ _.extend(MappingOperation.prototype, {
                 // Here we ensure the execution of all of them
 
                 var initTasks = _.reduce(self._newObjects, function (m, o) {
-                    var methods = o.model.methods || {},
-                        init = methods.__init;
+                    var init = o.model.init;
                     if (init) {
                         var paramNames = util.paramNames(init);
                         if (paramNames.length) {

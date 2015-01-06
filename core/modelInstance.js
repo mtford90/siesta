@@ -118,15 +118,14 @@ _.extend(ModelInstance.prototype, {
         if (this.removed) {
             cache.insert(this);
             this.removed = false;
-            var methods = this.model.methods || {},
-                __init = methods.__init;
-            if (__init) {
-                var paramNames = util.paramNames(__init);
+            var init = this.model.init;
+            if (init) {
+                var paramNames = util.paramNames(init);
                 if (paramNames.length) {
-                    __init.call(this, _finish);
+                    init.call(this, _finish);
                 }
                 else {
-                    __init.call(this);
+                    init.call(this);
                     _finish();
                 }
             }

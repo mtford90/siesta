@@ -190,12 +190,10 @@ describe('singleton mapping', function () {
                             default: 1
                         }
                     ],
-                    methods: {
-                        __init: function (cb) {
-                            initialised = true;
-                            this.poop = true;
-                            cb();
-                        }
+                    init: function (cb) {
+                        initialised = true;
+                        this.poop = true;
+                        cb();
                     },
                     singleton: true
                 });
@@ -333,7 +331,6 @@ describe('singleton mapping', function () {
                     });
             });
         });
-
 
 
     });
