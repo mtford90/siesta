@@ -7,7 +7,7 @@ describe('events', function () {
         s.ext.storageEnabled = false;
     });
 
-    var ChangeType = require('../core/modelEvents').ChangeType,
+    var ModelEventType = require('../core/modelEvents').ModelEventType,
         util = require('../core/util'),
         events = require('../core/events'),
         RelationshipType = require('../core/RelationshipType');
@@ -124,7 +124,7 @@ describe('events', function () {
             });
 
             it('changeDict contains change type', function () {
-                assert.equal(notif.type, ChangeType.Set);
+                assert.equal(notif.type, ModelEventType.Set);
             });
 
             it('changeDict contains old value', function () {
@@ -208,7 +208,7 @@ describe('events', function () {
 
                 it('changeDict contains change', function () {
                     assert.equal(notif.field, 'colours');
-                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.type, ModelEventType.Splice);
                     assert.equal(notif.index, 2);
                     assert.equal(notif.removed.length, 0);
                     assert.equal(notif.added.length, 1);
@@ -248,7 +248,7 @@ describe('events', function () {
 
                 it('notif contains change', function () {
                     assert.equal(notif.field, 'colours');
-                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.type, ModelEventType.Splice);
                     assert.equal(notif.index, 1);
                     assert.equal(notif.removed.length, 1);
                     assert.include(notif.removed, 'blue');
@@ -288,7 +288,7 @@ describe('events', function () {
 
                 it('notif contains change', function () {
                     assert.equal(notif.field, 'colours');
-                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.type, ModelEventType.Splice);
                     assert.equal(notif.index, 0);
                     assert.equal(notif.removed.length, 1);
                     assert.include(notif.removed, 'red');
@@ -332,7 +332,7 @@ describe('events', function () {
 
                 it('notif contains change', function () {
                     assert.equal(notif.field, 'colours');
-                    assert.equal(notif.type, ChangeType.Splice);
+                    assert.equal(notif.type, ModelEventType.Splice);
                     assert.equal(notif.index, 0);
                     assert.equal(notif.removed.length, 0);
                     assert.equal(notif.added.length, 1);
@@ -388,7 +388,7 @@ describe('events', function () {
                     var addNotif;
                     _.each(notifs, function (notif) {
                         assert.equal(notif.field, 'colours');
-                        assert.equal(notif.type, ChangeType.Splice);
+                        assert.equal(notif.type, ModelEventType.Splice);
                         if (notif.removed.length) {
                             removalNotif = notif;
                         } else if (notif.added) {
@@ -454,32 +454,32 @@ describe('events', function () {
                         person = Person._new();
                         person.cars = [car];
                         s.on('myCollection:Person', function (n) {
-                            if (n.type == ChangeType.Splice && n.model == 'Person') {
+                            if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                 personNotif = n;
                             }
                         });
                         s.on('myCollection', function (n) {
-                            if (n.type == ChangeType.Splice && n.model == 'Person') {
+                            if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                 personCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function (n) {
-                            if (n.type == ChangeType.Splice && n.model == 'Person') {
+                            if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                 personGenericNotif = n;
                             }
                         });
                         s.on('myCollection:Car', function (n) {
-                            if (n.type == ChangeType.Set && n.model == 'Car') {
+                            if (n.type == ModelEventType.Set && n.model == 'Car') {
                                 carNotif = n;
                             }
                         });
                         s.on('myCollection', function (n) {
-                            if (n.type == ChangeType.Set && n.model == 'Car') {
+                            if (n.type == ModelEventType.Set && n.model == 'Car') {
                                 carCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function (n) {
-                            if (n.type == ChangeType.Set && n.model == 'Car') {
+                            if (n.type == ModelEventType.Set && n.model == 'Car') {
                                 carGenericNotif = n;
                             }
                         });
@@ -492,9 +492,9 @@ describe('events', function () {
 
                     describe('person', function () {
                         it('type', function () {
-                            assert.equal(personNotif.type, ChangeType.Splice);
-                            assert.equal(personGenericNotif.type, ChangeType.Splice);
-                            assert.equal(personCollectionNotif.type, ChangeType.Splice);
+                            assert.equal(personNotif.type, ModelEventType.Splice);
+                            assert.equal(personGenericNotif.type, ModelEventType.Splice);
+                            assert.equal(personCollectionNotif.type, ModelEventType.Splice);
                         });
 
 
@@ -507,9 +507,9 @@ describe('events', function () {
 
                     describe('car', function () {
                         it('type', function () {
-                            assert.equal(carNotif.type, ChangeType.Set);
-                            assert.equal(carGenericNotif.type, ChangeType.Set);
-                            assert.equal(carCollectionNotif.type, ChangeType.Set);
+                            assert.equal(carNotif.type, ModelEventType.Set);
+                            assert.equal(carGenericNotif.type, ModelEventType.Set);
+                            assert.equal(carCollectionNotif.type, ModelEventType.Set);
                         });
 
                         it('new', function () {
@@ -527,32 +527,32 @@ describe('events', function () {
                         person = Person._new();
                         person.cars = [car];
                         s.on('myCollection:Person', function (n) {
-                            if (n.type == ChangeType.Splice) {
+                            if (n.type == ModelEventType.Splice) {
                                 personNotif = n;
                             }
                         });
                         s.on('myCollection', function (n) {
-                            if (n.type == ChangeType.Splice) {
+                            if (n.type == ModelEventType.Splice) {
                                 personCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function (n) {
-                            if (n.type == ChangeType.Splice) {
+                            if (n.type == ModelEventType.Splice) {
                                 personGenericNotif = n;
                             }
                         });
                         s.on('myCollection:Car', function (n) {
-                            if (n.type == ChangeType.Set && n.model == 'Car') {
+                            if (n.type == ModelEventType.Set && n.model == 'Car') {
                                 carNotif = n;
                             }
                         });
                         s.on('myCollection', function (n) {
-                            if (n.type == ChangeType.Set && n.model == 'Car') {
+                            if (n.type == ModelEventType.Set && n.model == 'Car') {
                                 carCollectionNotif = n;
                             }
                         });
                         s.on('Siesta', function (n) {
-                            if (n.type == ChangeType.Set && n.model == 'Car') {
+                            if (n.type == ModelEventType.Set && n.model == 'Car') {
                                 carGenericNotif = n;
                             }
                         });
@@ -565,9 +565,9 @@ describe('events', function () {
 
                     describe('person', function () {
                         it('type', function () {
-                            assert.equal(personNotif.type, ChangeType.Splice);
-                            assert.equal(personGenericNotif.type, ChangeType.Splice);
-                            assert.equal(personCollectionNotif.type, ChangeType.Splice);
+                            assert.equal(personNotif.type, ModelEventType.Splice);
+                            assert.equal(personGenericNotif.type, ModelEventType.Splice);
+                            assert.equal(personCollectionNotif.type, ModelEventType.Splice);
                         });
 
                         it('added', function () {
@@ -579,9 +579,9 @@ describe('events', function () {
 
                     describe('car', function () {
                         it('type', function () {
-                            assert.equal(carNotif.type, ChangeType.Set);
-                            assert.equal(carGenericNotif.type, ChangeType.Set);
-                            assert.equal(carCollectionNotif.type, ChangeType.Set);
+                            assert.equal(carNotif.type, ModelEventType.Set);
+                            assert.equal(carGenericNotif.type, ModelEventType.Set);
+                            assert.equal(carCollectionNotif.type, ModelEventType.Set);
                         });
 
                         it('new', function () {
@@ -638,32 +638,32 @@ describe('events', function () {
                             person = Person._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Person') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                     personNotif = n;
                                 }
                             });
                             s.on('myCollection', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Person') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                     personCollectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Person') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                     personGenericNotif = n;
                                 }
                             });
                             s.on('myCollection:Car', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Car') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Car') {
                                     carNotif = n;
                                 }
                             });
                             s.on('myCollection', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Car') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Car') {
                                     carCollectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Car') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Car') {
                                     carGenericNotif = n;
                                 }
                             });
@@ -677,9 +677,9 @@ describe('events', function () {
                         describe('person', function () {
 
                             it('type', function () {
-                                assert.equal(personNotif.type, ChangeType.Splice);
-                                assert.equal(personGenericNotif.type, ChangeType.Splice);
-                                assert.equal(personCollectionNotif.type, ChangeType.Splice);
+                                assert.equal(personNotif.type, ModelEventType.Splice);
+                                assert.equal(personGenericNotif.type, ModelEventType.Splice);
+                                assert.equal(personCollectionNotif.type, ModelEventType.Splice);
                             });
 
 
@@ -693,9 +693,9 @@ describe('events', function () {
 
                         describe('car', function () {
                             it('type', function () {
-                                assert.equal(carNotif.type, ChangeType.Splice);
-                                assert.equal(carGenericNotif.type, ChangeType.Splice);
-                                assert.equal(carCollectionNotif.type, ChangeType.Splice);
+                                assert.equal(carNotif.type, ModelEventType.Splice);
+                                assert.equal(carGenericNotif.type, ModelEventType.Splice);
+                                assert.equal(carCollectionNotif.type, ModelEventType.Splice);
                             });
 
 
@@ -716,32 +716,32 @@ describe('events', function () {
                             person = Person._new();
                             person.cars = [car];
                             s.on('myCollection:Person', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Person') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                     notif = n;
                                 }
                             });
                             s.on('myCollection', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Person') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                     collectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Person') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Person') {
                                     genericNotif = n;
                                 }
                             });
                             s.on('myCollection:Car', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Car') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Car') {
                                     carNotif = n;
                                 }
                             });
                             s.on('myCollection', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Car') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Car') {
                                     carCollectionNotif = n;
                                 }
                             });
                             s.on('Siesta', function (n) {
-                                if (n.type == ChangeType.Splice && n.model == 'Car') {
+                                if (n.type == ModelEventType.Splice && n.model == 'Car') {
                                     carGenericNotif = n;
                                 }
                             });
@@ -754,12 +754,12 @@ describe('events', function () {
 
 
                         it('type', function () {
-                            assert.equal(notif.type, ChangeType.Splice);
-                            assert.equal(genericNotif.type, ChangeType.Splice);
-                            assert.equal(collectionNotif.type, ChangeType.Splice);
-                            assert.equal(carNotif.type, ChangeType.Splice);
-                            assert.equal(carGenericNotif.type, ChangeType.Splice);
-                            assert.equal(carCollectionNotif.type, ChangeType.Splice);
+                            assert.equal(notif.type, ModelEventType.Splice);
+                            assert.equal(genericNotif.type, ModelEventType.Splice);
+                            assert.equal(collectionNotif.type, ModelEventType.Splice);
+                            assert.equal(carNotif.type, ModelEventType.Splice);
+                            assert.equal(carGenericNotif.type, ModelEventType.Splice);
+                            assert.equal(carCollectionNotif.type, ModelEventType.Splice);
                         });
 
                     });
@@ -785,17 +785,17 @@ describe('events', function () {
             s.install(function (err) {
                 if (err) done(err);
                 s.on('myCollection:Car', function (n) {
-                    if (n.type == ChangeType.New) {
+                    if (n.type == ModelEventType.New) {
                         notif = n;
                     }
                 });
                 s.on('myCollection', function (n) {
-                    if (n.type == ChangeType.New) {
+                    if (n.type == ModelEventType.New) {
                         collectionNotif = n;
                     }
                 });
                 s.on('Siesta', function (n) {
-                    if (n.type == ChangeType.New) {
+                    if (n.type == ModelEventType.New) {
                         genericNotif = n;
                     }
                 });
@@ -828,9 +828,9 @@ describe('events', function () {
         });
 
         it('type is New', function () {
-            assert.equal(notif.type, ChangeType.New);
-            assert.equal(genericNotif.type, ChangeType.New);
-            assert.equal(collectionNotif.type, ChangeType.New);
+            assert.equal(notif.type, ModelEventType.New);
+            assert.equal(genericNotif.type, ModelEventType.New);
+            assert.equal(collectionNotif.type, ModelEventType.New);
         });
 
         it('new', function () {
@@ -870,17 +870,17 @@ describe('events', function () {
                     } else {
                         car = _car;
                         s.on('myCollection:Car', function (n) {
-                            if (n.type == ChangeType.Remove) {
+                            if (n.type == ModelEventType.Remove) {
                                 notif = n;
                             }
                         });
                         s.on('myCollection', function (n) {
-                            if (n.type == ChangeType.Remove) {
+                            if (n.type == ModelEventType.Remove) {
                                 collectionNotif = n;
                             }
                         });
                         s.on('Siesta', function (n) {
-                            if (n.type == ChangeType.Remove) {
+                            if (n.type == ModelEventType.Remove) {
                                 genericNotif = n;
                             }
                         });
@@ -905,9 +905,9 @@ describe('events', function () {
         });
 
         it('type is Remove', function () {
-            assert.equal(notif.type, ChangeType.Remove);
-            assert.equal(genericNotif.type, ChangeType.Remove);
-            assert.equal(collectionNotif.type, ChangeType.Remove);
+            assert.equal(notif.type, ModelEventType.Remove);
+            assert.equal(genericNotif.type, ModelEventType.Remove);
+            assert.equal(collectionNotif.type, ModelEventType.Remove);
         });
 
         it('old', function () {
@@ -947,17 +947,17 @@ describe('events', function () {
                         car = _car;
                         car.remove();
                         s.on('myCollection:Car', function (n) {
-                            if (n.type == ChangeType.New) {
+                            if (n.type == ModelEventType.New) {
                                 notif = n;
                             }
                         });
                         s.on('myCollection', function (n) {
-                            if (n.type == ChangeType.New) {
+                            if (n.type == ModelEventType.New) {
                                 collectionNotif = n;
                             }
                         });
                         s.on('Siesta', function (n) {
-                            if (n.type == ChangeType.New) {
+                            if (n.type == ModelEventType.New) {
                                 genericNotif = n;
                             }
                         });
@@ -982,9 +982,9 @@ describe('events', function () {
         });
 
         it('type is New', function () {
-            assert.equal(notif.type, ChangeType.New);
-            assert.equal(genericNotif.type, ChangeType.New);
-            assert.equal(collectionNotif.type, ChangeType.New);
+            assert.equal(notif.type, ModelEventType.New);
+            assert.equal(genericNotif.type, ModelEventType.New);
+            assert.equal(collectionNotif.type, ModelEventType.New);
         });
 
         it('new', function () {

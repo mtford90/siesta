@@ -11,14 +11,14 @@ eventEmitter.wrapArray = function (array, field, modelInstance) {
             var fieldIsAttribute = modelInstance._attributeNames.indexOf(field) > -1;
             if (fieldIsAttribute) {
                 splices.forEach(function (splice) {
-                    modelEvents.registerChange({
+                    modelEvents.emit({
                         collection: modelInstance.collectionName,
                         model: modelInstance.model.name,
                         _id: modelInstance._id,
                         index: splice.index,
                         removed: splice.removed,
                         added: splice.addedCount ? array.slice(splice.index, splice.index + splice.addedCount) : [],
-                        type: modelEvents.ChangeType.Splice,
+                        type: modelEvents.ModelEventType.Splice,
                         field: field,
                         obj: modelInstance
                     });

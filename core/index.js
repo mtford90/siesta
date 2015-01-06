@@ -36,7 +36,7 @@ _.extend(siesta, {
 // Expose some stuff for usage by extensions and/or users
 _.extend(siesta, {
     RelationshipType: RelationshipType,
-    ChangeType: modelEvents.ChangeType,
+    ModelEventType: modelEvents.ModelEventType,
     LogLevel: log.Level,
     InsertionPolicy: ReactiveQuery.InsertionPolicy,
     _internal: {
@@ -44,7 +44,7 @@ _.extend(siesta, {
         Model: Model,
         model: require('./model'),
         error: require('./error'),
-        ChangeType: modelEvents.ChangeType,
+        ModelEventType: modelEvents.ModelEventType,
         siestaModel: require('./modelInstance'),
         extend: require('extend'),
         events: require('./events'),

@@ -24,7 +24,7 @@ var log = require('./log'),
     PositionalReactiveQuery = require('./positionedReactiveQuery'),
     _ = util._,
     guid = util.guid,
-    ChangeType = modelEvents.ChangeType
+    ModelEventType = modelEvents.ModelEventType
     ;
 
 var Logger = log.loggerWithName('Model');
@@ -447,13 +447,13 @@ _.extend(Model.prototype, {
                     set: function (v) {
                         var old = newModel.__values[field];
                         newModel.__values[field] = v;
-                        modelEvents.registerChange({
+                        modelEvents.emit({
                             collection: self.collectionName,
                             model: self.name,
                             _id: newModel._id,
                             new: v,
                             old: old,
-                            type: ChangeType.Set,
+                            type: ModelEventType.Set,
                             field: field,
                             obj: newModel
                         });
@@ -491,13 +491,13 @@ _.extend(Model.prototype, {
                 set: function (v) {
                     var old = newModel[self.id];
                     newModel.__values[self.id] = v;
-                    modelEvents.registerChange({
+                    modelEvents.emit({
                         collection: self.collectionName,
                         model: self.name,
                         _id: newModel._id,
                         new: v,
                         old: old,
-                        type: ChangeType.Set,
+                        type: ModelEventType.Set,
                         field: self.id,
                         obj: newModel
                     });
@@ -527,12 +527,12 @@ _.extend(Model.prototype, {
             }
             cache.insert(newModel);
             if (shouldRegisterChange) {
-                modelEvents.registerChange({
+                modelEvents.emit({
                     collection: this.collectionName,
                     model: this.name,
                     _id: newModel._id,
                     new: newModel,
-                    type: ChangeType.New,
+                    type: ModelEventType.New,
                     obj: newModel
                 });
             }

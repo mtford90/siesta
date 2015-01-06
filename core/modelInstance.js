@@ -71,12 +71,12 @@ _.extend(ModelInstance.prototype, {
         cache.remove(this);
         this.removed = true;
         if (notification) {
-            modelEvents.registerChange({
+            modelEvents.emit({
                 collection: this.collectionName,
                 model: this.model.name,
                 _id: this._id,
                 old: this,
-                type: modelEvents.ChangeType.Remove,
+                type: modelEvents.ModelEventType.Remove,
                 obj: this
             });
         }
@@ -104,12 +104,12 @@ _.extend(ModelInstance.prototype, {
         callback = deferred.finish.bind(deferred);
         var _finish = function (err) {
             if (!err) {
-                modelEvents.registerChange({
+                modelEvents.emit({
                     collection: this.collectionName,
                     model: this.model.name,
                     _id: this._id,
                     new: this,
-                    type: modelEvents.ChangeType.New,
+                    type: modelEvents.ModelEventType.New,
                     obj: this
                 });
             }

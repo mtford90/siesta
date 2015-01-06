@@ -102,7 +102,7 @@ describe('reactive query', function () {
                                     var added = change.added;
                                     assert.equal(added.length, 1);
                                     var peter = added[0];
-                                    assert.equal(change.type, s.ChangeType.Splice);
+                                    assert.equal(change.type, s.ModelEventType.Splice);
                                     assertExpectedResults(results, peter);
                                     rq.terminate();
                                     s.notify(done);
@@ -191,7 +191,7 @@ describe('reactive query', function () {
                                     assertResultsOk(rq.results, person);
                                     var removed = change.removed;
                                     assert.include(removed, person);
-                                    assert.equal(change.type, s.ChangeType.Splice);
+                                    assert.equal(change.type, s.ModelEventType.Splice);
                                     assert.equal(change.obj, rq);
                                     rq.terminate();
                                     s.notify(done);
@@ -270,7 +270,7 @@ describe('reactive query', function () {
                                         try {
                                             var removed = change.removed;
                                             assert.include(removed, person);
-                                            assert.equal(change.type, s.ChangeType.Splice);
+                                            assert.equal(change.type, s.ModelEventType.Splice);
                                             assert.equal(change.obj, rq);
                                             assertResultsCorrect(rq, person);
                                             rq.terminate();

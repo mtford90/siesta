@@ -12,7 +12,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-    ChangeType = require('./modelEvents').ChangeType
+    ModelEventType = require('./modelEvents').ModelEventType
     ;
 
 /**
@@ -103,14 +103,14 @@ _.extend(OneToManyProxy.prototype, {
                     self.clearReverse(removed);
                     self.setReverseOfAdded(added);
                     var model = self.getForwardModel();
-                    modelEvents.registerChange({
+                    modelEvents.emit({
                         collection: model.collectionName,
                         model: model.name,
                         _id: self.object._id,
                         field: self.getForwardName(),
                         removed: removed,
                         added: added,
-                        type: ChangeType.Splice,
+                        type: ModelEventType.Splice,
                         index: splice.index,
                         obj: self.object
                     });

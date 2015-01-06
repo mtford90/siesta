@@ -15,7 +15,7 @@ var Logger = log.loggerWithName('modelEvents');
  * New => Object creation events
  * @type {Object}
  */
-var ChangeType = {
+var ModelEventType = {
     Set: 'Set',
     Splice: 'Splice',
     Delete: 'Delete',
@@ -23,7 +23,7 @@ var ChangeType = {
     Remove: 'Remove'
 };
 
-var ChangeOptFields = [
+var ModelEventFields = [
     'collection', 'model', '_id', 'field', 'type', 'index',
     'added', 'addedId', 'removed', 'removedId', 'new', 'newId', 'old',
     'oldId', 'obj'
@@ -35,17 +35,17 @@ var ChangeOptFields = [
  * @param opts
  * @constructor
  */
-function Change(opts) {
+function ModelEvent(opts) {
     this._opts = opts;
     if (!this._opts) {
         this._opts = {};
     }
-    _.each(ChangeOptFields, function (f) {
+    _.each(ModelEventFields, function (f) {
         this[f] = this._opts[f];
     }.bind(this));
 }
 
-Change.prototype._dump = function (pretty) {
+ModelEvent.prototype._dump = function (pretty) {
     var dumped = {};
     dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();
     dumped.model = (typeof this.model) == 'string' ? this.model : this.model.name;
@@ -67,7 +67,7 @@ Change.prototype._dump = function (pretty) {
  * @param  {Object} c an options dictionary representing the change
  * @return {[type]}
  */
-function broadcast(collectionName, modelName, c) {
+function broadcastEvent(collectionName, modelName, c) {
     if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collectionName + '" of type ' + c.type);
     events.emit(collectionName, c);
     var modelNotif = collectionName + ':' + modelName;
@@ -99,37 +99,28 @@ function broadcast(collectionName, modelName, c) {
     }
 }
 
-/**
- * Throw an error if the change is incorrect.
- * @param changeOpts
- * @throws {InternalSiestaError} If change options are invalid
- */
-function validateChange(changeOpts) {
-    if (!changeOpts.model) throw new InternalSiestaError('Must pass a model');
-    if (!changeOpts.collection) throw new InternalSiestaError('Must pass a collection');
-    if (!changeOpts._id) throw new InternalSiestaError('Must pass a local identifier');
-    if (!changeOpts.obj) throw new InternalSiestaError('Must pass the object');
+function validateEventOpts(opts) {
+    if (!opts.model) throw new InternalSiestaError('Must pass a model');
+    if (!opts.collection) throw new InternalSiestaError('Must pass a collection');
+    if (!opts._id) throw new InternalSiestaError('Must pass a local identifier');
+    if (!opts.obj) throw new InternalSiestaError('Must pass the object');
 }
 
-/**
- * Register that a change has been made.
- * @param opts
- * @return {Change} The constructed change
- */
-function registerChange(opts) {
-    validateChange(opts);
+
+function emit(opts) {
+    validateEventOpts(opts);
     var collection = opts.collection;
     var model = opts.model;
-    var c = new Change(opts);
-    broadcast(collection, model, c);
+    var c = new ModelEvent(opts);
+    broadcastEvent(collection, model, c);
     return c;
 }
 
 
 extend(exports, {
-    Change: Change,
-    registerChange: registerChange,
-    validateChange: validateChange,
-    ChangeType: ChangeType
+    ModelEvent: ModelEvent,
+    emit: emit,
+    validateEventOpts: validateEventOpts,
+    ModelEventType: ModelEventType
 });
 

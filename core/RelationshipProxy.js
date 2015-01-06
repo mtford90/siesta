@@ -14,7 +14,7 @@ var InternalSiestaError = require('./error').InternalSiestaError,
     wrapArrayForAttributes = events.wrapArray,
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
     modelEvents = require('./modelEvents'),
-    ChangeType = modelEvents.ChangeType;
+    ModelEventType = modelEvents.ModelEventType;
 
 /**
  * @class  [RelationshipProxy description]
@@ -239,13 +239,13 @@ _.extend(RelationshipProxy.prototype, {
                 if (this._reverseIsArray) {
                     if (!opts.disableevents) {
                         _.each(identifiers, function (_id) {
-                            modelEvents.registerChange({
+                            modelEvents.emit({
                                 collection: reverseModel.collectionName,
                                 model: reverseModel.name,
                                 _id: _id,
                                 field: reverseName,
                                 removed: [self.object],
-                                type: ChangeType.Delete,
+                                type: ModelEventType.Delete,
                                 obj: self.object
                             });
                         });
@@ -253,14 +253,14 @@ _.extend(RelationshipProxy.prototype, {
                 } else {
                     if (!opts.disableevents) {
                         _.each(identifiers, function (_id) {
-                            modelEvents.registerChange({
+                            modelEvents.emit({
                                 collection: reverseModel.collectionName,
                                 model: reverseModel.name,
                                 _id: _id,
                                 field: reverseName,
                                 new: null,
                                 old: self.object,
-                                type: ChangeType.Set,
+                                type: ModelEventType.Set,
                                 obj: self.object
                             });
                         });
@@ -308,14 +308,14 @@ _.extend(RelationshipProxy.prototype, {
         if (util.isArray(old) && !old.length) {
             old = null;
         }
-        modelEvents.registerChange({
+        modelEvents.emit({
             collection: collectionName,
             model: model,
             _id: proxyObject._id,
             field: this.getForwardName(),
             old: old,
             new: obj,
-            type: ChangeType.Set,
+            type: ModelEventType.Set,
             obj: proxyObject
         });
     },
@@ -324,7 +324,7 @@ _.extend(RelationshipProxy.prototype, {
         var add = Array.prototype.slice.call(arguments, 2);
         var model = this.object.model.name;
         var coll = this.object.collectionName;
-        modelEvents.registerChange({
+        modelEvents.emit({
             collection: coll,
             model: model,
             _id: this.object._id,
@@ -332,7 +332,7 @@ _.extend(RelationshipProxy.prototype, {
             index: idx,
             removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
             added: add.length ? add : [],
-            type: ChangeType.Splice,
+            type: ModelEventType.Splice,
             obj: this.object
         });
     },
@@ -345,14 +345,14 @@ _.extend(RelationshipProxy.prototype, {
                 splices.forEach(function (splice) {
                     var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
                     var model = self.getForwardModel();
-                    modelEvents.registerChange({
+                    modelEvents.emit({
                         collection: model.collectionName,
                         model: model.name,
                         _id: self.object._id,
                         field: self.getForwardName(),
                         removed: splice.removed,
                         added: added,
-                        type: ChangeType.Splice,
+                        type: ModelEventType.Splice,
                         obj: self.object
                     });
                 });
