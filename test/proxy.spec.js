@@ -88,19 +88,6 @@ describe('new object proxy', function () {
                         });
                     });
 
-                    describe('relationship, faulted', function () {
-                        beforeEach(function () {
-                            proxy._id = 'xyz';
-                        });
-
-                        it('is a fault object', function () {
-                            assert.instanceOf(car.owner, Fault);
-                        });
-
-                        it('is faulted, as _id exists, but no related object', function () {
-                            assert.ok(car.owner.isFault);
-                        });
-                    });
 
                     describe('relationship, faulted', function () {
                         beforeEach(function () {
@@ -109,12 +96,8 @@ describe('new object proxy', function () {
                             proxy.related._id = 'xyz';
                         });
 
-                        it('is a fault object', function () {
+                        it('is related', function () {
                             assert.equal(car.owner, proxy.related);
-                        });
-
-                        it('is not faulted, as relationship set and related assigned', function () {
-                            assert.notOk(car.owner.isFault);
                         });
                     })
                 });
