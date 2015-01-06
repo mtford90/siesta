@@ -158,6 +158,9 @@ _.extend(ModelInstance.prototype, {
         return _.extend({}, this.__values);
     },
     isInstanceOf: function (model) {
+        return this.model == model;
+    },
+    isA: function (model) {
         return this.model == model || this.model.isDescendantOf(model);
     }
 });

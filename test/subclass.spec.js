@@ -415,14 +415,30 @@ describe('Subclass', function () {
             SuperCar.map({colour: 'red', name: 'lamborghini', attr: 1})
                 .then(function (car) {
                     assert.ok(car.isInstanceOf(SuperCar));
-                    assert.ok(car.isInstanceOf(SportsCar));
-                    assert.ok(car.isInstanceOf(Car));
+                    assert.notOk(car.isInstanceOf(SportsCar));
+                    assert.notOk(car.isInstanceOf(Car));
                     assert.notOk(car.isInstanceOf(Person));
                     done();
                 })
                 .catch(done)
                 .done();
         });
+
+        it('isA', function (done) {
+            SuperCar.map({colour: 'red', name: 'lamborghini', attr: 1})
+                .then(function (car) {
+                    assert.ok(car.isA(SuperCar));
+                    assert.ok(car.isA(SportsCar));
+                    assert.ok(car.isA(Car));
+                    assert.notOk(car.isInstanceOf(Person));
+                    done();
+                })
+                .catch(done)
+                .done();
+        });
+
+
+
 
 
     })
