@@ -497,11 +497,6 @@ describe('notifications', function () {
                             assert.equal(personCollectionNotif.type, ChangeType.Splice);
                         });
 
-                        it('id', function () {
-                            assert.include(personNotif.addedId, anotherCar._id);
-                            assert.include(personGenericNotif.addedId, anotherCar._id);
-                            assert.include(personCollectionNotif.addedId, anotherCar._id);
-                        });
 
                         it('added', function () {
                             assert.include(personNotif.added, anotherCar);
@@ -709,11 +704,7 @@ describe('notifications', function () {
                                 assert.equal(personCollectionNotif.type, ChangeType.Splice);
                             });
 
-                            it('id', function () {
-                                assert.include(personNotif.addedId, anotherCar._id);
-                                assert.include(personGenericNotif.addedId, anotherCar._id);
-                                assert.include(personCollectionNotif.addedId, anotherCar._id);
-                            });
+
 
                             it('added', function () {
                                 assert.include(personNotif.added, anotherCar);
@@ -729,11 +720,7 @@ describe('notifications', function () {
                                 assert.equal(carCollectionNotif.type, ChangeType.Splice);
                             });
 
-                            it('id', function () {
-                                assert.include(carNotif.addedId, person._id);
-                                assert.include(carGenericNotif.addedId, person._id);
-                                assert.include(carCollectionNotif.addedId, person._id);
-                            });
+
 
                             it('added', function () {
                                 assert.include(carNotif.added, person);

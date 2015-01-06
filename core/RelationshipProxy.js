@@ -347,7 +347,6 @@ _.extend(RelationshipProxy.prototype, {
             index: idx,
             removedId: this._id.slice(idx, idx + numRemove),
             removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
-            addedId: add.length ? _.pluck(add, '_id') : [],
             added: add.length ? add : [],
             type: ChangeType.Splice,
             obj: this.object
@@ -370,7 +369,6 @@ _.extend(RelationshipProxy.prototype, {
                         removed: splice.removed,
                         added: added,
                         removedId: _.pluck(splice.removed, '_id'),
-                        addedId: _.pluck(splice.added, '_id'),
                         type: ChangeType.Splice,
                         obj: self.object
                     });

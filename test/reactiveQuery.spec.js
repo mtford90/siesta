@@ -99,13 +99,10 @@ describe('reactive query', function () {
                             if (err) done(err);
                             else {
                                 rq.once('change', function (results, change) {
-                                    var added = change.added,
-                                        addedId = change.addedId;
+                                    var added = change.added;
                                     assert.equal(added.length, 1);
                                     var peter = added[0];
                                     assert.equal(change.type, s.ChangeType.Splice);
-                                    assert.equal(addedId.length, 1);
-                                    assert.include(addedId, peter._id);
                                     assertExpectedResults(results, peter);
                                     rq.terminate();
                                     s.notify(done);

@@ -122,7 +122,6 @@ _.extend(ReactiveQuery.prototype, {
                 this.emit('change', {
                     index: idx,
                     added: [newObj],
-                    addedId: [newObj._id],
                     type: changes.ChangeType.Splice,
                     obj: this
                 });
@@ -142,7 +141,6 @@ _.extend(ReactiveQuery.prototype, {
                 this.emit('change', this.results, {
                     index: idx,
                     added: [newObj],
-                    addedId: [newObj._id],
                     type: changes.ChangeType.Splice,
                     obj: this
                 });
