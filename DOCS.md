@@ -146,7 +146,7 @@ There are three types of relationships, described here with examples from the Gi
 
 
 ```js
-var Repo = Github.Repo('Repo', {
+var Repo = Github.model('Repo', {
     relationships: {
         // One github user has many repositories.
         owner: {
@@ -208,7 +208,7 @@ var Repo = Github.model('Repo', {
     relationships: {
         // A Repo can be forked from another Repo
         forkedFrom: {
-            mapping: 'Repo',
+            model: 'Repo',
             type: 'OneToMany',
             reverse: 'forks'
         }
@@ -236,8 +236,8 @@ RateLimit.map([
     {limit: 60},
     {limit: 40}
 ]).then(function (rateLimits) {
-    console.log(objs[0] == objs[1]); // true
-    console.log(objs[0].limit); // 40
+    console.log(rateLimits[0] == rateLimits[1]); // true
+    console.log(rateLimits[0].limit); // 40
 });
 ```
 
@@ -307,7 +307,7 @@ var User = Collection.model('User', {
 	statics: {
 		findTeenageUsers: function (callback) {
 			return this.query({
-				age__gte: 10,
+				age__gte: 13,
 				age__lte: 19
 			}, callback);
 		}
@@ -410,8 +410,7 @@ User.map({
 	avatar_url: 'http://domain.com/path/to/avatar.png',
 	id: 123
 }).then(function (model) {
-    if (!err) console.log(model.login); // mtford90
-    else console.error(err);
+    console.log(model.login); // mtford90
 });
 
 // Map multiple objects
@@ -436,15 +435,15 @@ User.map([
 To delete instances from the object graph simply call `remove`.
 
 ```js
-myModel.remove();
-console.log(myModel.removed); // true
+myInstance.remove();
+console.log(myInstance.removed); // true
 ```
 
 You can restore a deleted instance by calling `restore`.
 
 ```js
-myModel.restore();
-console.log(myModel.removed); // false
+myInstance.restore();
+console.log(myInstance.removed); // false
 ```
 
 ## Events
@@ -476,7 +475,7 @@ something.listenOnce(function (e) {
 });
 ```
 
-To stop listening to an event, call the return cancelListen function.
+`listen` returns a function which you can call to stop listening.
 
 ```js
 var cancelListen = something.listen(function (e) { /* ... */ });
@@ -492,7 +491,7 @@ There are four different event types.
 |   Set   | Set events are     | ```modelInstance.attr = 1;``` |
 |   Splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
 |   New   |  Emitted when new model instances are created              | `Model.map({id: 2, desc: 'A new model instance!'});` |
-|   Remove   |  Emitted when model instances are removed from the object graph              | `myModel.remove()` |
+|   Remove   |  Emitted when model instances are removed from the object graph              | `myInstance.remove()` |
 
 ### The Event Object
 
