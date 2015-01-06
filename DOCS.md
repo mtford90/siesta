@@ -1,3 +1,5 @@
+*<span style="color: red">**Warning**: Siesta is a work-in-progress and undergoing heavy development. The codebase is currently catching up with the docs and a new version is expected within the next few weeks. Please read through the docs and get involved via the [gitter chat](https://gitter.im/mtford90/siesta). All feedback is appreciated!</span>*
+
 # Getting Started
 
 You can get started with Siesta by manually including it within your project or by forking one of the boilerplate projects.
