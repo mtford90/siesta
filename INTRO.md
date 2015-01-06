@@ -77,7 +77,7 @@ So not only do we now have **two** distinct live objects representing each remot
 
 # The Solution
 
-Siesta solves this issue through the use of object mapping. A **mapping** describes the remote object that we want to model. A **collection** groups together these mappings. For example we could have define a collection to represent each web service that we will interact with.
+Siesta solves this issue by mapping *data* onto an *object graph* consisting of *models* linked by *relationships*. A **Model** describes the remote object that we want to model. A **Collection** groups together these models. For example we could have define a collection to represent each web service that we will interact with.
 
 ```javascript
 var Forum = new Collection('Forum');
@@ -92,14 +92,14 @@ var Thread = Forum.model({
     attributes: ['title']
     relationships: {
         op: {
-              mapping: User,
+              model: User,
               reverse: 'threads'
         }
     }
 });
 ```
 
-We can then map the raw data into Siesta, which will use the mappings we defined early to decide which data should to which local object.
+We can then map the raw data into Siesta, which will use the models we defined early to decide which data should to which local model instance.
 
 ```javascript
 User.map(userData, function (user) {
@@ -110,7 +110,7 @@ User.map(userData, function (user) {
 });
 ```
 
-We now have one local representation for each remote representation! Note that we will rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
+We now have one local representation for each remote representation! Note that when interacting with web services we rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
 
 # What next?
 
