@@ -15,7 +15,7 @@ var Logger = log.loggerWithName('PositionedReactiveQuery');
 
 function PositionalReactiveQuery(query) {
     ReactiveQuery.call(this, query);
-    this.indexField = 'index';
+    this.indexAttribute = 'index';
 }
 
 PositionalReactiveQuery.prototype = Object.create(ReactiveQuery.prototype);
@@ -23,11 +23,11 @@ PositionalReactiveQuery.prototype = Object.create(ReactiveQuery.prototype);
 _.extend(PositionalReactiveQuery.prototype, {
     _refreshIndexes: function () {
         var results = this.results,
-            indexField = this.indexField;
+            indexAttribute = this.indexAttribute;
         if (!results) throw new InternalSiestaError('PositionalReactiveQuery must be initialised');
         for (var i = 0; i < results.length; i++) {
             var modelInstance = results[i];
-            modelInstance[indexField] = i;
+            modelInstance[indexAttribute] = i;
         }
     },
     _mergeIndexes: function () {
@@ -37,7 +37,7 @@ _.extend(PositionalReactiveQuery.prototype, {
             unindexed = [];
         for (var i = 0; i < results.length; i++) {
             var res = results[i],
-                storedIndex = res[this.indexField];
+                storedIndex = res[this.indexAttribute];
             if (storedIndex == undefined) { // null or undefined
                 unindexed.push(res);
             }
@@ -55,13 +55,13 @@ _.extend(PositionalReactiveQuery.prototype, {
             }
         }
         outOfBounds = _.sortBy(outOfBounds, function (x) {
-            return x[this.indexField];
+            return x[this.indexAttribute];
         }.bind(this));
         // Shift the index of all models with indexes out of bounds into the correct range.
         for (i = 0; i < outOfBounds.length; i++) {
             res = outOfBounds[i];
             var resultsIndex = this.results.length - outOfBounds.length + i;
-            res[this.indexField] = resultsIndex;
+            res[this.indexAttribute] = resultsIndex;
             newResults[resultsIndex] = res;
         }
         unindexed = this._query._sortResults(unindexed);
@@ -72,7 +72,7 @@ _.extend(PositionalReactiveQuery.prototype, {
                 n++;
             }
             newResults[n] = res;
-            res[this.indexField] = n;
+            res[this.indexAttribute] = n;
         }
 
         this.results = newResults;
@@ -83,8 +83,8 @@ _.extend(PositionalReactiveQuery.prototype, {
         var deferred = util.defer(cb);
         ReactiveQuery.prototype.init.call(this, function (err) {
             if (!err) {
-                if (!this.model.hasAttributeNamed(this.indexField)) {
-                    err = 'Model "' + this.model.name + '" does not have an attribute named "' + this.indexField + '"';
+                if (!this.model.hasAttributeNamed(this.indexAttribute)) {
+                    err = 'Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"';
                 }
                 else {
                     this._mergeIndexes();
@@ -119,7 +119,7 @@ _.extend(PositionalReactiveQuery.prototype, {
     _handleNotif: function (n) {
         // We don't want to keep executing the query each time index modelEvents. We're changing
         // the index ourselves.
-        if (n.field != this.indexField) {
+        if (n.field != this.indexAttribute) {
             ReactiveQuery.prototype._handleNotif.call(this, n);
             this._refreshIndexes();
         }
@@ -148,8 +148,8 @@ _.extend(PositionalReactiveQuery.prototype, {
         }
         this.results[to] = fromModel;
         this.results[from] = toModel;
-        fromModel[this.indexField] = to;
-        toModel[this.indexField] = from;
+        fromModel[this.indexAttribute] = to;
+        toModel[this.indexAttribute] = from;
     },
     swapObjects: function (obj1, obj2) {
         var fromIdx = this.results.indexOf(obj1),
