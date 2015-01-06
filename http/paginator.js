@@ -9,30 +9,24 @@ var querystring = require('querystring');
 var Logger = log.loggerWithName('Paginator');
 
 function Paginator(opts) {
-    this.paginatorOpts = opts.paginator || {
+    this.opts = {};
+    util.extendFromOpts(this.opts, opts, {
         path: '/',
-        model: null
-    };
-    this.requestOpts = {
+        model: null,
         page: 'page',
         queryParams: true,
-        pageSize: 'pageSize'
-    };
-    _.extend(this.requestOpts, this.paginatorOpts.request);
-    this.responseOpts = {
+        pageSize: 'pageSize',
         numPages: 'numPages',
-        data: 'data',
-        count: 'count'
-    };
-    _.extend(this.responseOpts, this.paginatorOpts.response);
-    delete this.paginatorOpts.request;
-    delete this.paginatorOpts.response;
-    this.ajaxOpts = opts.ajax || {
+        dataPath: 'data',
+        count: 'count',
         type: 'GET',
         dataType: 'json'
-    };
-    this.numPages = null;
-    this.count = null;
+    }, false);
+    _.extend(this, {
+        numPages: null,
+        count: null
+    });
+
     this.validate();
 }
 
@@ -53,13 +47,13 @@ _.extend(Paginator.prototype, {
         return data;
     },
     _extractData: function (data, jqXHR) {
-        return this._extract(this.responseOpts.data, data, jqXHR);
+        return this._extract(this.opts.dataPath, data, jqXHR);
     },
     _extractNumPages: function (data, jqXHR) {
-        return this._extract(this.responseOpts.numPages, data, jqXHR);
+        return this._extract(this.opts.numPages, data, jqXHR);
     },
     _extractCount: function (data, jqXHR) {
-        return this._extract(this.responseOpts.count, data, jqXHR);
+        return this._extract(this.opts.count, data, jqXHR);
     },
     /**
      * var parser = document.createElement('a');
@@ -90,25 +84,24 @@ _.extend(Paginator.prototype, {
             opts = optsOrCallback;
         }
         var deferred = util.defer(callback);
-
         var page = opts.page,
             pageSize = opts.pageSize;
         callback = deferred.finish.bind(deferred);
         var ajax = siesta.ext.http.ajax,
-            ajaxOpts = _.extend({}, this.ajaxOpts);
-        var collection = this.paginatorOpts.model.collection,
-            url = collection.baseURL + this.paginatorOpts.path;
-        if (this.requestOpts.queryParams) {
+            ajaxOpts = _.extend({}, this.opts);
+        var collection = this.opts.model.collection,
+            url = collection.baseURL + this.opts.path;
+        if (this.opts.queryParams) {
             var parser = this._parseURL(url);
             var rawQuery = parser.search,
                 rawQuerySplt = rawQuery.split('?');
             if (rawQuerySplt.length > 1) rawQuery = rawQuerySplt[1];
             var query = querystring.parse(rawQuery);
             if (page) {
-                query[this.requestOpts.page] = page;
+                query[this.opts.page] = page;
             }
             if (pageSize) {
-                query[this.requestOpts.pageSize] = pageSize;
+                query[this.opts.pageSize] = pageSize;
             }
             if (Object.keys(query).length) {
                 parser.search = '?' + querystring.stringify(query);
@@ -118,20 +111,25 @@ _.extend(Paginator.prototype, {
         else {
             var data = {};
             if (page) {
-                data[this.requestOpts.page] = page;
+                data[this.opts.page] = page;
             }
             if (pageSize) {
-                data[this.requestOpts.pageSize] = pageSize;
+                data[this.opts.pageSize] = pageSize;
             }
             ajaxOpts.data = data
         }
+        console.log('url', url);
         _.extend(ajaxOpts, {
             url: url,
             success: function (data, textStatus, jqXHR) {
                 var modelData = self._extractData(data, jqXHR),
                     count = self._extractCount(data, jqXHR),
                     numPages = self._extractNumPages(data, jqXHR);
-                self.paginatorOpts.model.map(modelData, function (err, modelInstances) {
+                console.log('success!', modelData);
+
+                self.opts.model.map(modelData, function (err, modelInstances) {
+                    console.log('err', err);
+                    console.log('modelInstances', modelInstances);
                     if (!err) {
                         self.count = count;
                         self.numPages = numPages;
@@ -148,7 +146,7 @@ _.extend(Paginator.prototype, {
         return deferred.promise;
     },
     validate: function () {
-        if (!this.paginatorOpts.model) throw new InternalSiestaError('Paginator must have a model');
+        if (!this.opts.model) throw new InternalSiestaError('Paginator must have a model');
     }
 });
 
