@@ -26,30 +26,7 @@ function OneToManyProxy(opts) {
     var self = this;
     Object.defineProperty(this, 'isFault', {
         get: function () {
-            if (self.isForward) {
-                if (self._id) {
-                    return !self.related;
-                }
-                else if (self._id === null) {
-                    return false;
-                }
-                return true;
-            }
-            else {
-                if (self._id) {
-                    if (self.related) {
-                        if (self._id.length != self.related.length) {
-                            self.validateRelated();
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-                return true;
-            }
+            return false;
         },
         set: function (v) {
             if (v) {
@@ -143,18 +120,6 @@ _.extend(OneToManyProxy.prototype, {
         }
         return null;
     },
-    validateRelated: function () {
-        var self = this;
-        if (self._id) {
-            if (self.related) {
-                if (self._id.length != self.related.length) {
-                    if (self.related.length > 0) {
-                        throw new InternalSiestaError('_id and related are somehow out of sync');
-                    }
-                }
-            }
-        }
-    },
     set: function (obj, opts) {
         this.checkInstalled();
         var self = this;
@@ -165,8 +130,6 @@ _.extend(OneToManyProxy.prototype, {
             }
             else {
                 this.clearReverseRelated(opts);
-                ;
-
                 self.setIdAndRelated(obj, opts);
                 if (self.isReverse) {
                     this.wrapArray(self.related);
@@ -176,7 +139,6 @@ _.extend(OneToManyProxy.prototype, {
         }
         else {
             this.clearReverseRelated(opts);
-            ;
             self.setIdAndRelated(obj, opts);
         }
     },
