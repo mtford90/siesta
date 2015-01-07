@@ -8,7 +8,7 @@ describe('http!', function () {
         SiestaModel = require('../core/modelInstance'),
         InternalSiestaError = require('../core/error').InternalSiestaError;
 
-    var collection, carMapping, personMapping, vitalSignsMapping;
+    var collection, Car, Person, vitalSignsMapping;
 
     var server;
 
@@ -62,16 +62,11 @@ describe('http!', function () {
         collection.baseURL = 'http://mywebsite.co.uk/';
     }
 
-    function configureCollection(callback) {
-        constructCollection();
-        s.install(callback);
-    }
-
 
     describe('path regex', function () {
         describe('check', function () {
-            beforeEach(function (done) {
-                configureCollection(done);
+            beforeEach(function () {
+                constructCollection();
                 siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
                     mxapping: Car,
@@ -158,11 +153,7 @@ describe('http!', function () {
 
         describe('GET', function () {
 
-            beforeEach(function (done) {
-
-                configureCollection(done);
-
-            });
+            beforeEach(constructCollection);
 
             describe('success', function () {
                 var err, obj, resp;
@@ -273,12 +264,10 @@ describe('http!', function () {
         });
 
         describe('DELETE', function () {
-            beforeEach(function (done) {
-                configureCollection(done);
-            });
+            beforeEach(constructCollection);
 
             describe('success', function () {
-                describe('default', function (done) {
+                describe('default', function () {
                     var err, obj, resp, objectToDelete;
 
                     beforeEach(function (done) {
@@ -441,7 +430,8 @@ describe('http!', function () {
         describe('POST', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                configureCollection(done);
+                constructCollection();
+                done();
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'POST',
                     model: Car,
@@ -503,7 +493,8 @@ describe('http!', function () {
         describe('PUT', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                configureCollection(done);
+                constructCollection();
+                done();
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'PUT',
                     model: Car,
@@ -568,22 +559,20 @@ describe('http!', function () {
 
         describe('PATCH', function () {
             var err, obj, resp;
-            beforeEach(function (done) {
-                configureCollection(function () {
-                    var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                        method: 'PATCH',
-                        model: Car,
-                        path: '/cars/[0-9]+'
-                    });
-                    siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                    var requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                        method: 'PATCH',
-                        model: Car,
-                        path: '/cars/[0-9]+'
-                    });
-                    siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                    done();
+            beforeEach(function () {
+                constructCollection();
+                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                    method: 'PATCH',
+                    model: Car,
+                    path: '/cars/[0-9]+'
                 });
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
+                    method: 'PATCH',
+                    model: Car,
+                    path: '/cars/[0-9]+'
+                });
+                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
             });
 
             describe('success', function () {
@@ -640,7 +629,8 @@ describe('http!', function () {
         describe('OPTIONS', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                configureCollection(done);
+                constructCollection();
+                done();
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'OPTIONS',
                     model: Car,
@@ -687,7 +677,8 @@ describe('http!', function () {
         describe('TRACE', function () {
             var err, obj, resp;
             beforeEach(function (done) {
-                configureCollection(done);
+                constructCollection();
+                done();
                 var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
                     method: 'TRACE',
                     model: Car,
@@ -790,38 +781,37 @@ describe('http!', function () {
 
     describe('specific fields', function () {
         beforeEach(function (done) {
-            configureCollection(function () {
-                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    method: 'PATCH',
-                    model: Car,
-                    path: '/cars/[0-9]+'
-                });
-                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                    method: 'PATCH',
-                    model: Car,
-                    path: '/cars/[0-9]+'
-                });
-                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                Car.map({
-                    colour: 'red',
-                    name: 'Aston Martin',
-                    id: '5'
-                }, function (err, _car) {
+            constructCollection();
+            var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
+                method: 'PATCH',
+                model: Car,
+                path: '/cars/[0-9]+'
+            });
+            siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
+            var requestDescriptor = new siesta.ext.http.RequestDescriptor({
+                method: 'PATCH',
+                model: Car,
+                path: '/cars/[0-9]+'
+            });
+            siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
+            Car.map({
+                colour: 'red',
+                name: 'Aston Martin',
+                id: '5'
+            }, function (err, _car) {
+                if (err) done(err);
+                car = _car;
+                assert.equal(car.colour, 'red');
+                assert.equal(car.name, 'Aston Martin');
+                assert.equal(car.id, '5');
+                siesta.ext.http._serialiseObject.call(requestDescriptor, {fields: ['colour']}, car, function (err, data) {
                     if (err) done(err);
-                    car = _car;
-                    assert.equal(car.colour, 'red');
-                    assert.equal(car.name, 'Aston Martin');
-                    assert.equal(car.id, '5');
-                    siesta.ext.http._serialiseObject.call(requestDescriptor, {fields: ['colour']}, car, function (err, data) {
-                        if (err) done(err);
-                        else {
-                            var keys = Object.keys(data);
-                            assert.equal(keys.length, 1);
-                            assert.equal(keys[0], 'colour');
-                            done();
-                        }
-                    });
+                    else {
+                        var keys = Object.keys(data);
+                        assert.equal(keys.length, 1);
+                        assert.equal(keys[0], 'colour');
+                        done();
+                    }
                 });
             });
         });

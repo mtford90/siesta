@@ -18,14 +18,11 @@ describe('change identifiers', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(function (err) {
+            Car.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
                 if (err) done(err);
-                Car.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
-                    if (err) done(err);
-                    car = _car;
-                    done();
-                })
-            });
+                car = _car;
+                done();
+            })
         });
     });
 
