@@ -183,7 +183,7 @@ _.extend(siesta, {
         if (!installed) {
             if (!installing) {
                 this.install(function (err) {
-                    console.error('Error setting up siesta', err);
+                    if (err) console.error('Error setting up siesta', err);
                     delete this.queuedTasks;
                 }.bind(this));
             }

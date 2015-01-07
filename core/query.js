@@ -73,8 +73,10 @@ function cacheForModel(model) {
 _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        this._executeInMemory(callback);
+        siesta._afterInstall(function () {
+            callback = deferred.finish.bind(deferred);
+            this._executeInMemory(callback);
+        }.bind(this));
         return deferred.promise;
     },
     _dump: function (asJson) {
