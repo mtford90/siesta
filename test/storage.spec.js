@@ -97,18 +97,14 @@ describe('storage', function () {
     });
 
     describe('save', function () {
-        var collection, Car;
+        var Collection, Car;
 
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 attributes: ['colour', 'name']
             });
-            s.install()
-                .then(Car.map({colour: 'black', name: 'bentley', id: 2}))
-                .then(function () {done()})
-                .catch(done)
-                .done();
+            Car.map({colour: 'black', name: 'bentley', id: 2}).then(function () {done()}).catch(done);
         });
 
         it('new object', function (done) {
@@ -180,11 +176,11 @@ describe('storage', function () {
     describe('load', function () {
 
         describe('attributes only', function () {
-            var collection, Car;
+            var Collection, Car;
 
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
                 s.install(done);
@@ -238,44 +234,41 @@ describe('storage', function () {
                     Person = collection.model('Person', {
                         attributes: ['name', 'age']
                     });
-                    s.install()
-                        .then(function () {
-                            s.ext.storage._pouch.bulkDocs([
-                                {
-                                    collection: 'myCollection',
-                                    model: 'Car',
-                                    colour: 'red',
-                                    name: 'Aston Martin',
-                                    owner: 'xyz',
-                                    _id: 'abc'
-                                },
-                                {
-                                    collection: 'myCollection',
-                                    model: 'Car',
-                                    colour: 'black',
-                                    name: 'Bentley',
-                                    owner: 'xyz',
-                                    _id: 'def'
-                                },
-                                {
-                                    collection: 'myCollection',
-                                    model: 'Person',
-                                    name: 'Michael',
-                                    age: 24,
-                                    _id: 'xyz',
-                                    cars: ['abc', 'def']
-                                }
-                            ])
-                                .then(function () {
-                                    s.ext.storage._load().then(function () {
-                                        assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-                                        done();
-                                    }).catch(done).done();
-                                })
-                                .catch(done);
-                        })
-                        .catch(done)
-                        .done();
+
+                    s.ext.storage._pouch.bulkDocs([
+                        {
+                            collection: 'myCollection',
+                            model: 'Car',
+                            colour: 'red',
+                            name: 'Aston Martin',
+                            owner: 'xyz',
+                            _id: 'abc'
+                        },
+                        {
+                            collection: 'myCollection',
+                            model: 'Car',
+                            colour: 'black',
+                            name: 'Bentley',
+                            owner: 'xyz',
+                            _id: 'def'
+                        },
+                        {
+                            collection: 'myCollection',
+                            model: 'Person',
+                            name: 'Michael',
+                            age: 24,
+                            _id: 'xyz',
+                            cars: ['abc', 'def']
+                        }
+                    ]).then(function () {
+                        s.install().then(function () {
+                            s.ext.storage._load().then(function () {
+                                assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+                                done();
+                            }).catch(done).done();
+                        }).catch(done);
+                    }).catch(done);
+
                 });
 
                 it('cars', function (done) {
