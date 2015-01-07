@@ -217,7 +217,6 @@ _.extend(Model.prototype, {
                                     relationship.reverseName = relationship.reverse || 'reverse_' + name;
                                     delete relationship.reverse;
                                     relationship.isReverse = false;
-                                    console.log('relationship', relationship.reverseName);
                                 } else {
                                     return 'Model with name "' + modelName.toString() + '" does not exist';
                                 }
@@ -372,7 +371,6 @@ _.extend(Model.prototype, {
                 });
             }
         }.bind(this);
-        console.log('opts', opts);
         if (opts._ignoreInstalled) {
             _map();
         }

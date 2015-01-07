@@ -106,7 +106,6 @@ function _loadModel(opts, callback) {
             });
         })
         .catch(function (err) {
-            console.log('err', err);
             callback(err);
         });
 }

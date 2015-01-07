@@ -116,18 +116,14 @@ _.extend(Paginator.prototype, {
             }
             ajaxOpts.data = data
         }
-        console.log('url', url);
         _.extend(ajaxOpts, {
             url: url,
             success: function (data, textStatus, jqXHR) {
                 var modelData = self._extractData(data, jqXHR),
                     count = self._extractCount(data, jqXHR),
                     numPages = self._extractNumPages(data, jqXHR);
-                console.log('success!', modelData);
 
                 self.opts.model.map(modelData, function (err, modelInstances) {
-                    console.log('err', err);
-                    console.log('modelInstances', modelInstances);
                     if (!err) {
                         self.count = count;
                         self.numPages = numPages;

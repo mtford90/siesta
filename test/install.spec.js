@@ -12,6 +12,8 @@ describe('install step', function () {
         s.reset(done);
     });
 
+
+
     describe('no storage', function () {
         before(function () {
             s.ext.storageEnabled = false;
@@ -64,6 +66,13 @@ describe('install step', function () {
                 })
                 .catch(done);
         });
+
+        it('should not be able to define a model after install', function (done) {
+            s.install().then(function () {
+
+                done();
+            }).catch(done);
+        })
     });
 
     describe('storage', function () {

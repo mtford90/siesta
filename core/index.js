@@ -103,7 +103,6 @@ _.extend(siesta, {
      * @returns {q.Promise}
      */
     install: function (cb) {
-        console.log('INSTALL');
         installing = true;
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
@@ -114,16 +113,13 @@ _.extend(siesta, {
                 }
             });
         var self = this;
-        console.log('installing collections');
         siesta.async.series(collectionInstallTasks, function (err) {
             if (err) {
                 installing = false;
                 cb(err);
             }
             else {
-                console.log('installed collections, now ensuring singletons');
                 var ensureSingletons = function (err) {
-                    console.log('ensured singletons');
                     if (!err) {
                         var ensureSingletonTasks = [];
                         for (var i = 0; i < collectionNames.length; i++) {
@@ -141,7 +137,6 @@ _.extend(siesta, {
                         siesta.async.parallel(ensureSingletonTasks, function (err, res) {
                             if (!err) {
                                 installed = true;
-                                console.log('done', installed);
                                 if (self.queuedTasks) self.queuedTasks.execute();
                             }
                             installing = false;
@@ -155,7 +150,6 @@ _.extend(siesta, {
                 };
                 if (siesta.ext.storageEnabled) {
                     // Load models from PouchDB.
-                    console.log('loading from pouch!');
                     siesta.ext.storage._load(ensureSingletons);
                 }
                 else {
@@ -167,12 +161,10 @@ _.extend(siesta, {
         return deferred.promise;
     },
     _pushTask: function (task) {
-        console.log('_pushTask');
         if (!this.queuedTasks) {
             this.queuedTasks = new function Queue() {
                 this.tasks = [];
                 this.execute = function () {
-                    console.log('executing ' + this.tasks.length + ' queued tasks');
                     this.tasks.forEach(function (f) {f()});
                     this.tasks = [];
                 }.bind(this);
@@ -181,7 +173,6 @@ _.extend(siesta, {
         this.queuedTasks.tasks.push(task);
     },
     _afterInstall: function (task) {
-        console.log('_afterInstall', installed);
         if (!installed) {
             if (!installing) {
                 this.install(function (err) {

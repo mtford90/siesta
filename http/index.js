@@ -409,7 +409,6 @@ siesta.ext.http = http;
 Object.defineProperties(siesta.ext, {
     httpEnabled: {
         get: function () {
-            console.log('http?', siesta.ext);
             if (siesta.ext._httpEnabled !== undefined) {
                 return siesta.ext._httpEnabled;
             }
