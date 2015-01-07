@@ -31,16 +31,13 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    s.install()
-                        .then(function () {
-                            Person.map({name: 'Michael', id: 1})
-                                .then(function (person) {
-                                    Car.map({name: 'car', owner: person})
-                                        .then(function (car) {
-                                            assert.equal(car.owner, person);
-                                            done();
-                                        })
-                                        .catch(done);
+
+                    Person.map({name: 'Michael', id: 1})
+                        .then(function (person) {
+                            Car.map({name: 'car', owner: person})
+                                .then(function (car) {
+                                    assert.equal(car.owner, person);
+                                    done();
                                 })
                                 .catch(done);
                         })
@@ -63,20 +60,18 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    s.install()
-                        .then(function () {
-                            Car.map({name: 'car'})
-                                .then(function (car) {
-                                    Person.map({name: 'Michael', id: 1, car: car})
-                                        .then(function (person) {
-                                            assert.equal(person.car, car);
-                                        })
-                                        .catch(done);
-                                    done();
+
+                    Car.map({name: 'car'})
+                        .then(function (car) {
+                            Person.map({name: 'Michael', id: 1, car: car})
+                                .then(function (person) {
+                                    assert.equal(person.car, car);
                                 })
                                 .catch(done);
+                            done();
                         })
                         .catch(done);
+
                 });
             });
             describe('OneToMany', function () {
@@ -97,16 +92,12 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    s.install()
-                        .then(function () {
-                            Person.map({name: 'Michael', id: 1})
-                                .then(function (person) {
-                                    Car.map({name: 'car', owner: person})
-                                        .then(function (car) {
-                                            assert.equal(car.owner, person);
-                                            done();
-                                        })
-                                        .catch(done);
+                    Person.map({name: 'Michael', id: 1})
+                        .then(function (person) {
+                            Car.map({name: 'car', owner: person})
+                                .then(function (car) {
+                                    assert.equal(car.owner, person);
+                                    done();
                                 })
                                 .catch(done);
                         })
@@ -129,21 +120,19 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    s.install()
-                        .then(function () {
-                            Car.map([{name: 'car'}, {name: 'anotherCar'}])
-                                .then(function (cars) {
-                                    Person.map({name: 'Michael', id: 1, cars: cars})
-                                        .then(function (person) {
-                                            assert.include(person.cars, cars[0]);
-                                            assert.include(person.cars, cars[1]);
-                                            done();
-                                        })
-                                        .catch(done);
+
+                    Car.map([{name: 'car'}, {name: 'anotherCar'}])
+                        .then(function (cars) {
+                            Person.map({name: 'Michael', id: 1, cars: cars})
+                                .then(function (person) {
+                                    assert.include(person.cars, cars[0]);
+                                    assert.include(person.cars, cars[1]);
+                                    done();
                                 })
                                 .catch(done);
                         })
                         .catch(done);
+
                 });
             });
             describe('ManyToMany', function () {
@@ -164,16 +153,12 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    s.install()
-                        .then(function () {
-                            Person.map([{name: 'Michael', id: 1}])
-                                .then(function (people) {
-                                    Car.map({name: 'car', owners: people})
-                                        .then(function (car) {
-                                            assert.include(car.owners, people[0]);
-                                            done();
-                                        })
-                                        .catch(done);
+                    Person.map([{name: 'Michael', id: 1}])
+                        .then(function (people) {
+                            Car.map({name: 'car', owners: people})
+                                .then(function (car) {
+                                    assert.include(car.owners, people[0]);
+                                    done();
                                 })
                                 .catch(done);
                         })
@@ -196,17 +181,13 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    s.install()
-                        .then(function () {
-                            Car.map([{name: 'car'}, {name: 'anotherCar'}])
-                                .then(function (cars) {
-                                    Person.map({name: 'Michael', id: 1, cars: cars})
-                                        .then(function (person) {
-                                            assert.include(person.cars, cars[0]);
-                                            assert.include(person.cars, cars[1]);
-                                            done();
-                                        })
-                                        .catch(done);
+                    Car.map([{name: 'car'}, {name: 'anotherCar'}])
+                        .then(function (cars) {
+                            Person.map({name: 'Michael', id: 1, cars: cars})
+                                .then(function (person) {
+                                    assert.include(person.cars, cars[0]);
+                                    assert.include(person.cars, cars[1]);
+                                    done();
                                 })
                                 .catch(done);
                         })

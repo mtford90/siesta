@@ -3,9 +3,8 @@ var s = require('../core/index'),
 
 describe('change identifiers', function () {
 
-    var Collection = require('../core/collection');
     var cache = require('../core/cache');
-    var collection, carMapping;
+    var Collection, Car;
 
     var car;
 
@@ -14,8 +13,8 @@ describe('change identifiers', function () {
     });
     beforeEach(function (done) {
         s.reset(function () {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });

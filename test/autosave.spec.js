@@ -20,7 +20,7 @@ describe('auto save', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
+            done();
         });
     });
 

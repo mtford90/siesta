@@ -5,7 +5,7 @@ describe('cache...', function () {
     before(function () {
         s.ext.storageEnabled = false;
     });
-    var mapping;
+    var Car;
 
     var ModelInstance = require('../core/modelInstance');
     var RelationshipType = require('../core/RelationshipType');
@@ -16,7 +16,7 @@ describe('cache...', function () {
         beforeEach(function (done) {
             s.reset(function () {
                 var coll = s.collection('myCollection');
-                mapping = coll.model('Car', {
+                Car = coll.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
@@ -24,7 +24,7 @@ describe('cache...', function () {
             });
         });
         it('by pouch id', function () {
-            var car = new ModelInstance(mapping);
+            var car = new ModelInstance(Car);
             car._id = 'dsfsd';
             cache.insert(car);
             assert.equal(car, cache._localCache()[car._id]);
@@ -32,7 +32,7 @@ describe('cache...', function () {
         });
 
         it('by default id', function () {
-            var car = new ModelInstance(mapping);
+            var car = new ModelInstance(Car);
             car.id = 'dsfsd';
             cache.insert(car);
 
@@ -41,7 +41,7 @@ describe('cache...', function () {
         });
 
         it('by custom id', function () {
-            var m = mapping;
+            var m = Car;
             m.id = 'customId';
             var car = new ModelInstance(m);
             car.customId = 'dsfsd';
@@ -55,8 +55,8 @@ describe('cache...', function () {
     describe('get', function () {
         beforeEach(function (done) {
             s.reset(function () {
-                var coll = s.collection('myCollection');
-                mapping = coll.model('Car', {
+                var Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
@@ -64,22 +64,22 @@ describe('cache...', function () {
             });
         });
         it('by pouch id', function () {
-            var r = new ModelInstance(mapping);
+            var r = new ModelInstance(Car);
             r.id = 'dsfsd';
             cache.insert(r);
             var returned = cache.get({
-                model: mapping,
+                model: Car,
                 id: 'dsfsd'
             });
             assert.equal(returned, r);
         });
         it('by rest id', function () {
-            var model = new ModelInstance(mapping);
+            var model = new ModelInstance(Car);
             model.id = 'dsfsd';
             model._id = 'xyz';
             cache.insert(model);
             var returned = cache.get({
-                model: mapping,
+                model: Car,
                 id: 'dsfsd'
             });
             assert.equal(returned, model);
