@@ -61,7 +61,7 @@ describe('array flattening', function () {
     });
 });
 
-describe('bulk mapping operation', function () {
+describe('mapping operation', function () {
     before(function () {
         s.ext.storageEnabled = false;
     });

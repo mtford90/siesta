@@ -42,16 +42,18 @@ describe('perform mapping', function () {
                             'field3'
                         ]
                     });
-                MyCollection.install();
-                Mapping.map({field1: 5, field3: 'abc'})
-                    .then(function (p) {
-                        assert.equal(p.field1, 5);
-                        assert.equal(p.field2, 'xyz');
-                        assert.equal(p.field3, 'abc');
-                        done();
-                    })
-                    .catch(done)
-                    .done();
+                s.install()
+                    .then(function () {
+                        Mapping.map({field1: 5, field3: 'abc'})
+                            .then(function (p) {
+                                assert.equal(p.field1, 5);
+                                assert.equal(p.field2, 'xyz');
+                                assert.equal(p.field3, 'abc');
+                                done();
+                            })
+                            .catch(done);
+                    }).catch(done);
+
             });
         });
     });

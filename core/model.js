@@ -270,7 +270,7 @@ _.extend(Model.prototype, {
                             }
                             return data;
                         }, data);
-                        this.map(data, function (err, obj) {
+                        this.map(data, {_ignoreInstalled: true}, function (err, obj) {
                             if (Logger.trace) Logger.trace('Ensured singleton mapping "' + this.name + '"', obj);
                             callback(err, obj);
                         }.bind(this));
@@ -342,27 +342,26 @@ _.extend(Model.prototype, {
      * Map data into Siesta.
      *
      * @param data Raw data received remotely or otherwise
-     * @param {function|object} [optsOrCallback]
-     * @param {boolean} optsOrCallback.override
+     * @param {function|object} [opts]
+     * @param {boolean} opts.override
+     * @param {boolean} opts._ignoreInstalled - An escape clause that allows mapping onto Models even if install process has not finished.
      * @param {function} [callback] Called once pouch persistence returns.
      */
-    map: function (data, optsOrCallback, callback) {
-        var opts;
-        if (typeof optsOrCallback == 'function') callback = optsOrCallback;
-        else if (optsOrCallback) opts = optsOrCallback;
+    map: function (data, opts, callback) {
+        if (typeof opts == 'function') callback = opts;
         opts = opts || {};
         var deferred = util.defer(callback);
-        var overrides = opts.override;
-        if (overrides) {
-            if (util.isArray(overrides)) opts.objects = overrides;
-            else opts.objects = [overrides];
-        }
-        delete opts.override;
-        if (this.installed) {
+        var _map = function () {
+            var overrides = opts.override;
+            if (overrides) {
+                if (util.isArray(overrides)) opts.objects = overrides;
+                else opts.objects = [overrides];
+            }
+            delete opts.override;
+            delete opts._ignoreInstalled;
             if (util.isArray(data)) {
                 this._mapBulk(data, opts, deferred.finish.bind(deferred));
             } else {
-
                 this._mapBulk([data], opts, function (err, objects) {
                     var obj;
                     if (objects) {
@@ -373,9 +372,12 @@ _.extend(Model.prototype, {
                     deferred.finish(err ? err[0] : null, obj);
                 });
             }
-        } else {
-            throw new InternalSiestaError('Model must be fully installed before creating any models');
+        }.bind(this);
+        console.log('opts', opts);
+        if (opts._ignoreInstalled) {
+            _map();
         }
+        else siesta._afterInstall(_map);
         return deferred.promise;
     },
     _mapBulk: function (data, opts, callback) {

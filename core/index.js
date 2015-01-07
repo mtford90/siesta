@@ -67,12 +67,17 @@ _.extend(siesta, {
 
 siesta.ext = {};
 
+var installed = false,
+    installing = false;
 
 _.extend(siesta, {
     /**
      * Wipe everything. Used during test generally.
      */
     reset: function (cb) {
+        installed = false;
+        installing = false;
+        delete this.queuedTasks;
         cache.reset();
         CollectionRegistry.reset();
         siesta.ext.http.DescriptorRegistry.reset();
@@ -98,24 +103,27 @@ _.extend(siesta, {
      * @returns {q.Promise}
      */
     install: function (cb) {
-        /*
-         TODO: Clean up this fuckin' mess.
-         */
+        console.log('INSTALL');
+        installing = true;
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
         var collectionNames = CollectionRegistry.collectionNames,
-            tasks = _.map(collectionNames, function (n) {
+            collectionInstallTasks = _.map(collectionNames, function (n) {
                 return function (done) {
                     CollectionRegistry[n].install(done);
                 }
             });
-
-        siesta.async.series(tasks, function (err) {
+        var self = this;
+        console.log('installing collections');
+        siesta.async.series(collectionInstallTasks, function (err) {
             if (err) {
+                installing = false;
                 cb(err);
             }
             else {
+                console.log('installed collections, now ensuring singletons');
                 var ensureSingletons = function (err) {
+                    console.log('ensured singletons');
                     if (!err) {
                         var ensureSingletonTasks = [];
                         for (var i = 0; i < collectionNames.length; i++) {
@@ -131,10 +139,17 @@ _.extend(siesta, {
                             }
                         }
                         siesta.async.parallel(ensureSingletonTasks, function (err, res) {
+                            if (!err) {
+                                installed = true;
+                                console.log('done', installed);
+                                if (self.queuedTasks) self.queuedTasks.execute();
+                            }
+                            installing = false;
                             cb(err, res);
                         });
                     }
                     else {
+                        installing = false;
                         cb(err);
                     }
                 };
@@ -149,6 +164,39 @@ _.extend(siesta, {
         });
 
         return deferred.promise;
+    },
+    _pushTask: function (task) {
+        console.log('_pushTask');
+        if (!this.queuedTasks) {
+            this.queuedTasks = new function Queue() {
+                this.tasks = [];
+                this.execute = function () {
+                    console.log('executing ' + this.tasks.length + ' queued tasks');
+                    this.tasks.forEach(function (f) {f()});
+                }.bind(this);
+            };
+        }
+        this.queuedTasks.tasks.push(task);
+    },
+    _afterInstall: function (task) {
+        console.log('_afterInstall', installed);
+        if (!installed) {
+            if (!installing) {
+                this.install(function (err) {
+                    console.error('Error setting up siesta', err);
+                    delete this.queuedTasks;
+                }.bind(this));
+            }
+            if (!installed) { // In case installed straight away e.g. if storage extension not installed.
+                this._pushTask(task);
+            }
+            else {
+                task();
+            }
+        }
+        else {
+            task();
+        }
     },
     setLogLevel: function (loggerName, level) {
         var Logger = log.loggerWithName(loggerName);

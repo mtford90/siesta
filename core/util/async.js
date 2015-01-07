@@ -116,6 +116,8 @@ function each(arr, iterator, callback) {
 }
 
 
+
+
 var _parallel = function (eachfn, tasks, callback) {
     callback = callback || function () {};
     if (misc.isArray(tasks)) {

@@ -64,7 +64,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1});
                     })
@@ -81,7 +81,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function () {
@@ -111,7 +111,7 @@ describe('mapping!', function () {
                         },
                         attributes: ['attr']
                     });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function () {
@@ -136,7 +136,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                C.install().then(function () {
+                s.install().then(function () {
                     M.map({attr: 'xyz'})
                         .then(function (m) {
                             assert.equal(m.attr, m.f());
@@ -155,7 +155,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                C.install().then(function () {
+                s.install().then(function () {
                     M.map({attr: 'xyz'})
                         .then(function (m) {
                             assert.notEqual(m.restore(), 'a', 'Should not replace existing definitions')
@@ -175,7 +175,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function (_m) {
@@ -197,7 +197,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function (_m) {
@@ -223,7 +223,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function (_m) {
@@ -251,7 +251,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                C.install().then(function () {
+                s.install().then(function () {
                     assert.equal(M.f(), M);
                     done();
                 }).catch(done).done();
@@ -267,7 +267,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                C.install().then(function () {
+                s.install().then(function () {
                     assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
                     done();
                 }).catch(done).done();
@@ -287,7 +287,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function (_m) {
@@ -309,7 +309,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                siesta.install()
+                s.install()
                     .then(function () {
                         M.map({attr: 1})
                             .then(function (_m) {

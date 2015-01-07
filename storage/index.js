@@ -92,7 +92,7 @@ function _loadModel(opts, callback) {
                 return _prepareDatum(datum, Model);
             });
             if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
-            Model.map(data, {disableevents: true}, function (err, instances) {
+            Model.map(data, {disableevents: true, _ignoreInstalled: true}, function (err, instances) {
                 if (!err) {
                     if (Logger.trace)
                         Logger.trace('Loaded ' + instances.length.toString() + ' instances for ' + fullyQualifiedName);
@@ -185,17 +185,19 @@ function saveToPouch(objects, callback, deferred) {
  */
 function save(callback) {
     var deferred = util.defer(callback);
-    callback = callback || function () {};
-    var objects = unsavedObjects;
-    unsavedObjects = [];
-    unsavedObjectsHash = {};
-    unsavedObjectsByCollection = {};
-    if (Logger.trace) {
-        Logger.trace('Saving objects', _.map(objects, function (x) {
-            return x._dump()
-        }))
-    }
-    saveToPouch(objects, callback, deferred);
+    siesta._afterInstall(function () {
+        callback = callback || function () {};
+        var objects = unsavedObjects;
+        unsavedObjects = [];
+        unsavedObjectsHash = {};
+        unsavedObjectsByCollection = {};
+        if (Logger.trace) {
+            Logger.trace('Saving objects', _.map(objects, function (x) {
+                return x._dump()
+            }))
+        }
+        saveToPouch(objects, callback, deferred);
+    });
     return deferred.promise;
 }
 

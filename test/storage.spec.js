@@ -26,7 +26,7 @@ describe('storage', function () {
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('storage', function (done) {
@@ -67,7 +67,7 @@ describe('storage', function () {
                     attributes: ['age', 'name']
 
                 });
-                collection.install(done);
+                s.install(done);
             });
 
             it('onetomany', function (done) {
@@ -107,9 +107,9 @@ describe('storage', function () {
             Car = collection.model('Car', {
                 attributes: ['colour', 'name']
             });
-            collection.install()
+            s.install()
                 .then(Car.map({colour: 'black', name: 'bentley', id: 2}))
-                .then(done)
+                .then(function () {done()})
                 .catch(done)
                 .done();
         });
@@ -190,7 +190,7 @@ describe('storage', function () {
                 Car = collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
-                collection.install(done);
+                s.install(done);
             });
             it('abc', function (done) {
                 s.ext.storage._pouch.bulkDocs([
@@ -241,7 +241,7 @@ describe('storage', function () {
                     Person = collection.model('Person', {
                         attributes: ['name', 'age']
                     });
-                    collection.install()
+                    s.install()
                         .then(function () {
                             s.ext.storage._pouch.bulkDocs([
                                 {
@@ -333,7 +333,7 @@ describe('storage', function () {
                 Person = collection.model('Person', {
                     attributes: ['name', 'age']
                 });
-                collection.install()
+                s.install()
                     .then(function () {
                         s.ext.storage._pouch.bulkDocs([
                             {
@@ -410,7 +410,7 @@ describe('storage', function () {
                 Person = collection.model('Person', {
                     attributes: ['name', 'age']
                 });
-                collection.install()
+                s.install()
                     .then(function () {
                         s.ext.storage._pouch.bulkDocs([
                             {
@@ -557,7 +557,7 @@ describe('storage', function () {
             MyOtherModel = MyOtherCollection.model('MyOtherModel', {
                 attributes: ['attr']
             });
-            MyCollection.install()
+            s.install()
                 .then(Car.map({colour: 'black', name: 'bentley', id: 2})
                     .then(function (_car) {
                         car = _car;
@@ -567,7 +567,6 @@ describe('storage', function () {
                                 done();
                             });
                     }).catch(done).done())
-                .then(MyOtherCollection.install())
                 .catch(done)
                 .done();
         });

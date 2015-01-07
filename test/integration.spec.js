@@ -80,23 +80,7 @@ describe('intercollection relationships', function () {
                 attributes: ['username', 'name']
             });
 
-            var finishedCreatingMyOnlineCollection = false;
-            var finishedCreatingMyOfflineCollection = false;
-
-            MyOfflineCollection.install(function (err) {
-                if (err) done(err);
-                finishedCreatingMyOfflineCollection = true;
-                if (finishedCreatingMyOnlineCollection) {
-                    done();
-                }
-            });
-
-            MyOnlineCollection.install(function (err) {
-                if (err) done(err);
-                if (finishedCreatingMyOfflineCollection) {
-                    done();
-                }
-            });
+            s.install().then(function () {done()}).catch(done);
         });
     });
 
