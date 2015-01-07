@@ -12,8 +12,6 @@ describe('install step', function () {
         s.reset(done);
     });
 
-
-
     describe('no storage', function () {
         before(function () {
             s.ext.storageEnabled = false;
@@ -69,6 +67,12 @@ describe('install step', function () {
 
         it('should not be able to define a model after install', function (done) {
             s.install().then(function () {
+                assert.throws(function () {
+                    MyCollection.model('AnotherModel', {
+                        id: 'id',
+                        attributes: ['something']
+                    });
+                }, Error);
 
                 done();
             }).catch(done);

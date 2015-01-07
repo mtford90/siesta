@@ -180,25 +180,31 @@ _.extend(Collection.prototype, {
      * @class Collection
      */
     model: function () {
-        var self = this;
-        if (arguments.length) {
-            if (arguments.length == 1) {
-                if (util.isArray(arguments[0])) {
-                    return _.map(arguments[0], function (m) {
-                        return self._model(m.name, m);
-                    });
+        var acceptModels = !this.installed;
+        if (acceptModels) {
+            var self = this;
+            if (arguments.length) {
+                if (arguments.length == 1) {
+                    if (util.isArray(arguments[0])) {
+                        return _.map(arguments[0], function (m) {
+                            return self._model(m.name, m);
+                        });
+                    } else {
+                        return this._model(arguments[0].name, arguments[0]);
+                    }
                 } else {
-                    return this._model(arguments[0].name, arguments[0]);
-                }
-            } else {
-                if (typeof arguments[0] == 'string') {
-                    return this._model(arguments[0], arguments[1]);
-                } else {
-                    return _.map(arguments, function (m) {
-                        return self._model(m.name, m);
-                    });
+                    if (typeof arguments[0] == 'string') {
+                        return this._model(arguments[0], arguments[1]);
+                    } else {
+                        return _.map(arguments, function (m) {
+                            return self._model(m.name, m);
+                        });
+                    }
                 }
             }
+        }
+        else {
+            throw Error('Cannot create new models once the object graph is established!');
         }
         return null;
     },
