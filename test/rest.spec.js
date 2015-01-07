@@ -5,7 +5,7 @@ var s = require('../core/index'),
 describe('rest', function () {
     var Collection = require('../core/collection');
     var CollectionRegistry = require('../core/collectionRegistry').CollectionRegistry;
-    var collection;
+    var Collection;
     before(function () {
         s.ext.storageEnabled = false;
     });
@@ -17,24 +17,24 @@ describe('rest', function () {
     describe('Create Basic Rest API', function () {
 
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
+            Collection = s.collection('myCollection');
             s.install(done);
         });
 
         it('global access', function () {
-            assert.equal(CollectionRegistry.myCollection, collection);
+            assert.equal(CollectionRegistry.myCollection, Collection);
         });
 
     });
 
     describe('Object mapping registration', function () {
 
-        var collection;
+        var Collection;
         describe('basic', function () {
 
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                collection.model('Person', {
+                Collection = s.collection('myCollection');
+                Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
@@ -55,7 +55,7 @@ describe('rest', function () {
                 }
 
                 it('mappings', function () {
-                    assertMapping(collection);
+                    assertMapping(Collection);
                 });
             });
 

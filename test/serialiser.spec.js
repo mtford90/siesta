@@ -3,25 +3,25 @@ var s = require('../core/index'),
 
 describe('serialisers', function () {
 
-    var Collection = require('../core/collection');
     var RelationshipType = require('../core/RelationshipType');
 
-    var collection, carMapping, personMapping, vitalSignsMapping;
+    var Collection, Car, Person, VitalSigns;
 
     before(function () {
         s.ext.storageEnabled = false;
     });
+
     beforeEach(function (done) {
         s.reset(done);
     });
 
     describe('id serialiser', function () {
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Person = collection.model('Person', {
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Person = Collection.model('Person', {
                 attributes: ['name', 'age']
             });
-            Car = collection.model('Car', {
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -32,7 +32,6 @@ describe('serialisers', function () {
                     }
                 }
             });
-            s.install(done);
         });
         it('should return the id if has one', function (done) {
             Car.map({
@@ -67,10 +66,9 @@ describe('serialisers', function () {
     });
 
     describe('depth serialiser', function () {
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-
-            Person = collection.model('Person', {
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Person = Collection.model('Person', {
                 attributes: ['name', 'age'],
                 id: 'id',
                 relationships: {
@@ -81,7 +79,7 @@ describe('serialisers', function () {
                     }
                 }
             });
-            Car = collection.model('Car', {
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -92,12 +90,10 @@ describe('serialisers', function () {
                     }
                 }
             });
-            vitalSignsMapping = collection.model('VitalSigns', {
+            VitalSigns = Collection.model('VitalSigns', {
                 id: 'id',
                 attributes: ['heartRate', 'bloodPressure']
             });
-            s.install(done);
-
         });
 
         it('depth 0', function (done) {

@@ -37,8 +37,6 @@ describe('mapping relationships', function () {
     }
 
     describe('valid', function () {
-
-
         describe('Foreign Key', function () {
 
             beforeEach(function (done) {
