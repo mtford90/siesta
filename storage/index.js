@@ -20,6 +20,8 @@ var unsavedObjects = [],
 var storage = {},
     Logger = log.loggerWithName('Storage');
 
+Logger.setLevel(siesta.log.warn);
+
 /**
  * Serialise a model into a format that PouchDB bulkDocs API can process
  * @param {ModelInstance} modelInstance

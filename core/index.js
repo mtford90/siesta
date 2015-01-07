@@ -155,6 +155,7 @@ _.extend(siesta, {
                 };
                 if (siesta.ext.storageEnabled) {
                     // Load models from PouchDB.
+                    console.log('loading from pouch!');
                     siesta.ext.storage._load(ensureSingletons);
                 }
                 else {
@@ -173,6 +174,7 @@ _.extend(siesta, {
                 this.execute = function () {
                     console.log('executing ' + this.tasks.length + ' queued tasks');
                     this.tasks.forEach(function (f) {f()});
+                    this.tasks = [];
                 }.bind(this);
             };
         }
