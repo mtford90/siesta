@@ -335,7 +335,8 @@ Object.defineProperties(siesta, {
 _.extend(siesta, {
     save: save,
     setPouch: function (_p) {
-        pouch = _p;
+        if (siesta._canChange) pouch = _p;
+        else throw new Error('Cannot change PouchDB instance when an object graph exists.');
     }
 });
 

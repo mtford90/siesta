@@ -196,6 +196,16 @@ _.extend(siesta, {
     registerComparator: Query.bind(Query)
 });
 
+Object.defineProperties(siesta, {
+    _canChange: {
+        get: function () {
+
+            var b = !(installing || installed);
+            console.log('_canChange', b, installing, installed);
+            return b
+        }
+    }
+});
 
 if (typeof window != 'undefined') {
     window.siesta = siesta;

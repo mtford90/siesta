@@ -658,10 +658,19 @@ describe('storage', function () {
 
     describe('custom pouch', function () {
         it('custom pouch', function () {
-            s.ext.storageEnabled = true;
             var pouch = new PouchDB('customPouch');
             siesta.setPouch(pouch);
             assert.equal(siesta.ext.storage._pouch, pouch);
+        });
+        it('throw an error if installed', function () {
+            var collection = siesta.collection('Collection'),
+                MyModel = collection.model('MyModel', {attributes: ['blah']});
+            siesta.install(function () {
+                var pouch = new PouchDB('customPouch');
+                assert.throws(function () {
+                    siesta.setPouch(pouch);
+                }, Error);
+            });
         });
     });
 
