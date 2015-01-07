@@ -19,14 +19,13 @@ describe('storage', function () {
     describe('serialisation', function () {
 
         describe('attributes only', function () {
-            var collection, Car;
+            var Collection, Car;
 
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     attributes: ['colour', 'name']
                 });
-                s.install(done);
             });
 
             it('storage', function (done) {
@@ -49,11 +48,11 @@ describe('storage', function () {
         });
 
         describe('relationships', function () {
-            var collection, Car, Person;
+            var Collection, Car, Person;
 
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
@@ -63,11 +62,9 @@ describe('storage', function () {
                         }
                     }
                 });
-                Person = collection.model('Person', {
+                Person = Collection.model('Person', {
                     attributes: ['age', 'name']
-
                 });
-                s.install(done);
             });
 
             it('onetomany', function (done) {

@@ -2,17 +2,16 @@ var s = require('../core/index');
 var assert = require('chai').assert;
 
 describe('statistics', function () {
-    var Car, Person, coll;
+    var Car, Person, Collection;
 
-    var Collection = require('../core/collection');
     var cache = require('../core/cache');
     before(function () {
         s.ext.storageEnabled = false;
     });
-    beforeEach(function (done) {
+    beforeEach(function () {
         s.reset(function () {
-            coll = s.collection('myCollection');
-            Car = coll.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -23,11 +22,10 @@ describe('statistics', function () {
                     }
                 }
             });
-            Person = coll.model('Person', {
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['age', 'name']
             });
-            s.install(done);
         });
     });
 
@@ -40,7 +38,7 @@ describe('statistics', function () {
     describe('collection level', function () {
         describe('single mapping', function () {
             it('no objects', function (done) {
-                coll.count(function (err, n) {
+                Collection.count(function (err, n) {
                     if (err) done(err);
                     assert.equal(n, 0);
                     done();
@@ -53,7 +51,7 @@ describe('statistics', function () {
                     name: 'Aston Martin'
                 }, function (err, obj) {
                     if (err) done(err);
-                    coll.count(function (err, n) {
+                    Collection.count(function (err, n) {
                         if (err) done(err);
                         assert.equal(n, 1);
                         done();
@@ -73,7 +71,7 @@ describe('statistics', function () {
                     name: 'Lambo'
                 }], function (err) {
                     if (err) done(err);
-                    coll.count(function (err, n) {
+                    Collection.count(function (err, n) {
                         if (err) done(err);
                         assert.equal(n, 3);
                         done();
@@ -102,7 +100,7 @@ describe('statistics', function () {
                         name: 'John Doe'
                     }], function (err) {
                         if (err) done(err);
-                        coll.count(function (err, n) {
+                        Collection.count(function (err, n) {
                             if (err) done(err);
                             assert.equal(n, 5);
                             done();
