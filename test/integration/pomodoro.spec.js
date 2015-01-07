@@ -27,7 +27,7 @@ describe('pomodoro', function () {
                         'index'
                     ]
                 });
-                s.install(done);
+                done();
             });
         });
 
@@ -110,18 +110,16 @@ describe('pomodoro', function () {
                 longBreak: 'green',
                 _id: 'xyz'
             }).then(function () {
-                s.install(function () {
-                    ColourConfig.one()
-                        .execute()
-                        .then(function (colourConfig) {
-                            assert.equal(colourConfig.primary, 'red');
-                            assert.equal(colourConfig.shortBreak, 'blue');
-                            assert.equal(colourConfig.longBreak, 'green');
-                            done();
-                        })
-                        .catch(done)
-                        .done();
-                });
+                ColourConfig.one()
+                    .execute()
+                    .then(function (colourConfig) {
+                        assert.equal(colourConfig.primary, 'red');
+                        assert.equal(colourConfig.shortBreak, 'blue');
+                        assert.equal(colourConfig.longBreak, 'green');
+                        done();
+                    })
+                    .catch(done)
+                    .done();
             }).catch(done);
 
         });
@@ -135,20 +133,16 @@ describe('pomodoro', function () {
                 longBreak: 'green',
                 _id: 'xyz'
             }).then(function () {
-                s.install()
-                    .then(function () {
-                        Config.one()
-                            .execute()
-                            .then(function (config) {
-                                var colourConfig = config.colours;
-                                assert.equal(colourConfig.primary, 'red');
-                                assert.equal(colourConfig.shortBreak, 'blue');
-                                assert.equal(colourConfig.longBreak, 'green');
-                                done();
-                            })
-                            .catch(done)
-                            .done();
-                    }).catch(done);
+                Config.one()
+                    .execute()
+                    .then(function (config) {
+                        var colourConfig = config.colours;
+                        assert.equal(colourConfig.primary, 'red');
+                        assert.equal(colourConfig.shortBreak, 'blue');
+                        assert.equal(colourConfig.longBreak, 'green');
+                        done();
+                    })
+                    .catch(done)
             }).catch(done);
         });
 
@@ -161,35 +155,32 @@ describe('pomodoro', function () {
                 longBreak: 'green',
                 _id: 'xyz'
             }).then(function () {
-                s.install()
-                    .then(function () {
-                        Config.one()
-                            .execute()
-                            .then(function (config) {
-                                var colourConfig = config.colours;
-                                colourConfig.primary = 'blue';
-                                s.save()
-                                    .then(function () {
-                                        colourConfig.primary = 'orange';
-                                        s.save().then(function () {
-                                            s.ext.storage._pouch.query(function (doc) {
-                                                if (doc.model == 'ColourConfig') {
-                                                    emit(doc._id, doc);
-                                                }
-                                            }, {include_docs: true})
-                                                .then(function (resp) {
-                                                    var rows = resp.rows;
-                                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
-                                                    done();
-                                                })
-                                                .catch(done);
-                                        }).catch(done);
-                                    })
-                                    .catch(done);
+                Config.one()
+                    .execute()
+                    .then(function (config) {
+                        var colourConfig = config.colours;
+                        colourConfig.primary = 'blue';
+                        s.save()
+                            .then(function () {
+                                colourConfig.primary = 'orange';
+                                s.save().then(function () {
+                                    s.ext.storage._pouch.query(function (doc) {
+                                        if (doc.model == 'ColourConfig') {
+                                            emit(doc._id, doc);
+                                        }
+                                    }, {include_docs: true})
+                                        .then(function (resp) {
+                                            var rows = resp.rows;
+                                            assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
+                                            done();
+                                        })
+                                        .catch(done);
+                                }).catch(done);
                             })
-                            .catch(done)
-                            .done();
-                    }).catch(done);
+                            .catch(done);
+                    })
+                    .catch(done)
+                    .done();
             }).catch(done);
         });
     });

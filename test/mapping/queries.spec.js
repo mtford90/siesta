@@ -23,18 +23,15 @@ describe('mapping queries', function () {
                 id: 'id',
                 attributes: ['color', 'name']
             });
-            s.install(function (err) {
-                if (err) done(err);
-                Car.map([{
-                    id: 4,
-                    color: 'red',
-                    name: 'Aston Martin'
-                }, {
-                    id: 5,
-                    color: 'blue',
-                    name: 'Ford'
-                }], done);
-            });
+            Car.map([{
+                id: 4,
+                color: 'red',
+                name: 'Aston Martin'
+            }, {
+                id: 5,
+                color: 'blue',
+                name: 'Ford'
+            }], done);
         });
 
         it('all', function (done) {
@@ -92,7 +89,7 @@ describe('mapping queries', function () {
     describe('reverse', function () {
         var Car, Person, Collection;
 
-        beforeEach(function (done) {
+        beforeEach(function () {
             Collection = s.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
@@ -109,7 +106,6 @@ describe('mapping queries', function () {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
         });
 
         it('cached', function (done) {

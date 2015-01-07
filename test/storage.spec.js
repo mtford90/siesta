@@ -216,12 +216,12 @@ describe('storage', function () {
         describe('relationships', function () {
 
 
-            var collection, Car, Person;
+            var Collection, Car, Person;
 
             describe('one-to-many', function () {
                 beforeEach(function (done) {
-                    collection = s.collection('myCollection');
-                    Car = collection.model('Car', {
+                    Collection = s.collection('myCollection');
+                    Car = Collection.model('Car', {
                         attributes: ['colour', 'name'],
                         relationships: {
                             owner: {
@@ -231,7 +231,7 @@ describe('storage', function () {
                             }
                         }
                     });
-                    Person = collection.model('Person', {
+                    Person = Collection.model('Person', {
                         attributes: ['name', 'age']
                     });
 
@@ -309,8 +309,8 @@ describe('storage', function () {
 
 
             it('manytomany', function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owners: {
@@ -320,7 +320,7 @@ describe('storage', function () {
                         }
                     }
                 });
-                Person = collection.model('Person', {
+                Person = Collection.model('Person', {
                     attributes: ['name', 'age']
                 });
                 s.install()
@@ -386,8 +386,8 @@ describe('storage', function () {
             });
 
             it('onetoone', function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
                         owner: {
@@ -397,7 +397,7 @@ describe('storage', function () {
                         }
                     }
                 });
-                Person = collection.model('Person', {
+                Person = Collection.model('Person', {
                     attributes: ['name', 'age']
                 });
                 s.install()
@@ -500,17 +500,7 @@ describe('storage', function () {
                         _id: 'xyz',
                         cars: ['abc', 'def']
                     }
-                ])
-                    .then(function () {
-                        s.install()
-                            .then(function () {
-                                done();
-                            })
-                            .catch(done)
-                            .done();
-                    })
-                    .catch(done);
-
+                ]).then(function () { done(); }).catch(done);
 
             });
 
@@ -547,18 +537,15 @@ describe('storage', function () {
             MyOtherModel = MyOtherCollection.model('MyOtherModel', {
                 attributes: ['attr']
             });
-            s.install()
-                .then(Car.map({colour: 'black', name: 'bentley', id: 2})
-                    .then(function (_car) {
-                        car = _car;
-                        Person.map({name: 'Michael', age: 24})
-                            .then(function (_person) {
-                                person = _person;
-                                done();
-                            });
-                    }).catch(done).done())
-                .catch(done)
-                .done();
+            Car.map({colour: 'black', name: 'bentley', id: 2})
+                .then(function (_car) {
+                    car = _car;
+                    Person.map({name: 'Michael', age: 24})
+                        .then(function (_person) {
+                            person = _person;
+                            done();
+                        });
+                }).catch(done).done();
         });
 
         it('global dirtyness', function (done) {
@@ -641,32 +628,29 @@ describe('storage', function () {
                 longBreak: 'green',
                 _id: 'xyz'
             }).then(function () {
-                s.install(function () {
-                    ColourConfig.one()
-                        .execute()
-                        .then(function (colourConfig) {
-                            extracted(function (err, rows) {
-                                if (!err) {
-                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
-                                    assert.equal(colourConfig.primary, 'red');
-                                    assert.equal(colourConfig.shortBreak, 'blue');
-                                    assert.equal(colourConfig.longBreak, 'green');
-                                    s.save()
-                                        .then(function () {
-                                            extracted(function (err, rows) {
-                                                if (!err) {
-                                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
-                                                    done();
-                                                }
-                                                else done(err);
-                                            });
-                                        }).catch(done);
-                                }
-                                else done(err);
-                            });
-
-                        }).catch(done)
-                }).catch(done);
+                ColourConfig.one()
+                    .execute()
+                    .then(function (colourConfig) {
+                        extracted(function (err, rows) {
+                            if (!err) {
+                                assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
+                                assert.equal(colourConfig.primary, 'red');
+                                assert.equal(colourConfig.shortBreak, 'blue');
+                                assert.equal(colourConfig.longBreak, 'green');
+                                s.save()
+                                    .then(function () {
+                                        extracted(function (err, rows) {
+                                            if (!err) {
+                                                assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
+                                                done();
+                                            }
+                                            else done(err);
+                                        });
+                                    }).catch(done);
+                            }
+                            else done(err);
+                        });
+                    }).catch(done)
             }).catch(done);
         });
 

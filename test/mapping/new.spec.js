@@ -20,7 +20,7 @@ describe('mapping new object', function () {
     });
 
     describe('fields', function () {
-        var collection, carMapping;
+        var collection, Car;
 
         beforeEach(function (done) {
             collection = s.collection('myCollection');

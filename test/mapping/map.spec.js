@@ -4,20 +4,18 @@ var s = require('../../core/index'),
 describe('perform mapping', function () {
 
 
-    var Collection = require('../../core/collection');
-    var RelationshipType = require('../../core/RelationshipType');
+    var RelationshipType = require('../../core/RelationshipType'),
+        SiestaModel = require('../../core/modelInstance'),
+        cache = require('../../core/cache');
 
-    var SiestaModel = require('../../core/modelInstance');
-    var cache = require('../../core/cache');
-
-    var collection, carMapping, personMapping;
+    var Collection, Car, Person;
 
     before(function () {
         s.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        collection = null;
+        Collection = null;
         Car = null;
         Person = null;
         s.reset(done);
@@ -42,31 +40,25 @@ describe('perform mapping', function () {
                             'field3'
                         ]
                     });
-                s.install()
-                    .then(function () {
-                        Mapping.map({field1: 5, field3: 'abc'})
-                            .then(function (p) {
-                                assert.equal(p.field1, 5);
-                                assert.equal(p.field2, 'xyz');
-                                assert.equal(p.field3, 'abc');
-                                done();
-                            })
-                            .catch(done);
-                    }).catch(done);
-
+                Mapping.map({field1: 5, field3: 'abc'})
+                    .then(function (p) {
+                        assert.equal(p.field1, 5);
+                        assert.equal(p.field2, 'xyz');
+                        assert.equal(p.field3, 'abc');
+                        done();
+                    })
+                    .catch(done);
             });
         });
     });
 
     describe('empty', function () {
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(done);
-
         });
         it('empty', function () {
             Car.map({}, function (err, _obj) {
@@ -77,14 +69,12 @@ describe('perform mapping', function () {
     });
 
     describe('no id', function () {
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(done);
-
         });
         it('xyz', function (done) {
             var obj;
@@ -106,24 +96,21 @@ describe('perform mapping', function () {
         var obj;
 
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(function (err) {
-                if (err) done(err);
-                Car.map({
-                    colour: 'red',
-                    name: 'Aston Martin',
-                    id: 'dfadf'
-                }, function (err, _obj) {
-                    if (err) {
-                        done(err);
-                    }
-                    obj = _obj;
-                    done();
-                });
+            Car.map({
+                colour: 'red',
+                name: 'Aston Martin',
+                id: 'dfadf'
+            }, function (err, _obj) {
+                if (err) {
+                    done(err);
+                }
+                obj = _obj;
+                done();
             });
         });
 
@@ -192,12 +179,12 @@ describe('perform mapping', function () {
     describe('with relationship', function () {
         describe('foreign key', function () {
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                Car = collection.model('Car', {
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -847,12 +834,12 @@ describe('perform mapping', function () {
         describe('one-to-one', function () {
             var personMapping;
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                Car = collection.model('Car', {
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1341,13 +1328,12 @@ describe('perform mapping', function () {
     });
 
     describe('caveats', function () {
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(done);
         });
 
         it('mapping an attribute that doesnt exist', function (done) {
@@ -1366,14 +1352,13 @@ describe('perform mapping', function () {
 
     describe('errors', function () {
         describe('one-to-one', function () {
-            var personMapping;
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                Car = collection.model('Car', {
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1384,7 +1369,6 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                s.install(done);
             });
 
             it('assign array to scalar relationship', function (done) {
@@ -1416,14 +1400,13 @@ describe('perform mapping', function () {
         });
         describe('foreign key', function () {
 
-            var personMapping;
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                Car = collection.model('Car', {
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -1434,7 +1417,6 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                s.install(done);
             });
 
             it('assign array to scalar relationship', function (done) {
@@ -1443,7 +1425,7 @@ describe('perform mapping', function () {
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
                     id: 'carRemoteId'
-                }, function (err, obj) {
+                }, function (err) {
                     var ownerError = err.owner;
                     assert.ok(ownerError);
                     done();
@@ -1470,8 +1452,8 @@ describe('perform mapping', function () {
         describe('new', function () {
             describe('no relationships', function () {
                 beforeEach(function (done) {
-                    collection = s.collection('myCollection');
-                    Car = collection.model('Car', {
+                    Collection = s.collection('myCollection');
+                    Car = Collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
@@ -1506,12 +1488,12 @@ describe('perform mapping', function () {
                 var personMapping;
 
                 beforeEach(function (done) {
-                    collection = s.collection('myCollection');
-                    Person = collection.model('Person', {
+                    Collection = s.collection('myCollection');
+                    Person = Collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
                     });
-                    Car = collection.model('Car', {
+                    Car = Collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name'],
                         relationships: {
@@ -1587,12 +1569,12 @@ describe('perform mapping', function () {
             var personMapping;
 
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                Car = collection.model('Car', {
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
