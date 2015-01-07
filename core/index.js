@@ -199,10 +199,7 @@ _.extend(siesta, {
 Object.defineProperties(siesta, {
     _canChange: {
         get: function () {
-
-            var b = !(installing || installed);
-            console.log('_canChange', b, installing, installed);
-            return b
+            return !(installing || installed);
         }
     }
 });
