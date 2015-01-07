@@ -84,14 +84,140 @@ If you decide to use the storage module then you **must** include PouchDB. If th
 window.PouchDB = require('pouchdb');
 ```
 
-## Boilerplate Projects
+## Boilerplate Projects [TODO]
 
 The quickest way to get up and running is to fork one of the boilerplate/example projects.
 
-* [Script Tags]()
-* [CommonJS with Browserify]()
-* [CommonJS with Webpack]()
-* [CommonJS with Webpack & ReactJS]()
+* Script Tags
+* CommonJS with Browserify
+* CommonJS with Webpack
+* CommonJS with Webpack & ReactJS
+
+# Concepts
+
+Before reading through this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
+
+## Model
+
+A `Model` describes a (possibly remote) resource that you would like to represent in your app. For example if you were writing an app that downloaded information on repositories from the Github API an (admittedly simple) model could look like the following.
+
+```js
+{
+    attributes: ['name', 'stars', 'watchers', 'forks']
+}
+```
+
+## Relationship
+
+A `Relationship` describes a relation between two models. For example, all Github repositories have a user that owns that repository. We would define a relationship between our `Repo` and `User` model to describe this.
+
+```js
+var User = {
+    attributes: ['username']
+}
+
+var Repo = {
+    attributes: ['name', 'stars', 'watchers', 'forks'],
+    relationships: {
+        owner: {
+            model: User,
+            reverse: 'repositories'
+        }
+    }
+}
+```
+
+## Model Instance
+
+A `ModelInstance` is an instance of a `Model`. It can be used in the same fashion as a generic Javascript object.
+
+```js
+myRepo.name = 'an awesome repo';
+myUser.repositories.push(myRepo);
+```
+
+## Collection
+
+A `Collection` organises our model definitions. For example if we are communicating with the Github API and want to define various models with which to represent remote resources we would organise them under a collection.
+
+```js
+var Github = siesta.collection('Github', {
+        baseURL: 'https://api.github.com'
+    }),
+    User   = Github.model('User' , {
+        attributes: ['username']
+    }),
+    Repo   = Github.model('Repo', {
+        attributes: ['name', 'stars', 'watchers', 'forks'],
+        relationships: {
+            owner: {
+                model: User,
+                reverse: 'repositories'
+            }
+        }
+    });
+```
+
+## Object Graph
+
+When models and the relationships between those models are instantiated, what results is an **object graph** where the model instances (the nodes) are linked together by relationships (the edges).
+
+Carrying on the Github example, we could have two relationships, `owner` and `forkedFrom`. `owner` is a relationship between a `User` and a `Repo`. `forkedFrom` is a relationship between a `Repo` and itself. Once we have created instances of our models we could end up with an object graph that looks like the following.
+
+<pre><img src="objgraph.png" style="width: 460px"/></pre>
+
+Siesta is all about interacting with and manipulating this object graph and aims to present a robust solution for modelling data in the browser via this mechanism.
+
+## Object Mapping
+
+Object mapping refers to the process of taking raw data and placing this data onto the object graph. This process will create and update existing model instances and their relationships as per the data and the model definitions that you have provided.
+
+For example, to create the Github object graph from earlier we could map the following data.
+
+```js
+Repo.map([
+    {
+        name: 'siesta',
+        id: 23079554,
+        owner: {
+            id: 1734057,
+            login: 'mtford90'
+        }
+    },
+    {
+        name: 'siesta',
+        id: 27406882,
+        owner: {
+            id: 2001903,
+            login: 'cmmartin'
+        },
+        forkedFrom: {
+            id: 23079554
+        }
+    },
+    {
+        name: 'siesta',
+        id: 25102369,
+        owner: {
+            id: 26195,
+            login: 'wallyqs'
+        },
+        forkedFrom: {
+            id: 23079554
+        }
+    }
+]);
+```
+
+Siesta will automatically create and update model instances, hook up relationships and reverse relationships before returning the objects. The robust representation ensures that we have no duplicate representations of the resources that we are representing.
+
+## What Next?
+
+The rest of this documentation deals with the various ways in which you can interact with the object graph. For example:
+
+* Map resources to and from the object graph using HTTP.
+* Saving the object graph in client-side storage.
+* Various methods of querying the object graph.
 
 # Collections
 
@@ -556,6 +682,13 @@ Repo.query({stars__gt: 50})
         });
     });
 
+// Get one instance. Throws an error if more than one instance is returned
+Repo.one({id: 55623})
+    .execute()
+    .then(function (repo) {
+        console.log(repo.name);
+    });
+
 // Get the number of Repo objects that we have locally.
 Repo.count()
     .then(function (n) {
@@ -666,6 +799,12 @@ Reactive queries can be ordered in a similar fashion to ordinary queries.
 ```js
 var rq = User.reactiveQuery({age__gte: 18})
 			 .orderBy('-age', 'name');
+```
+
+Once initialised you can terminate a reactive query by calling `terminate`. This will prevent it from responding to model events and hence updating its result set.
+
+```js
+rq.terminate();
 ```
 
 ## Events
@@ -1042,11 +1181,11 @@ Like with descriptors, if our models are nested we can specify a `data` option.
 
 ```js
 paginator = Model.paginator({
-	data: 'path.to.data'
+	dataPath: 'path.to.data'
 })
 
 paginator = Model.paginator({
-	data: function (response, jqXHR) {
+	dataPath: function (response, jqXHR) {
 		return responseData.path.to.data;
 	}
 });
@@ -1078,7 +1217,21 @@ paginator = Github.paginator({
 			queryParams = parseQueryParams(lastURI);
 		return queryParams['page'];
 	},
-	data: 'items'
+	dataPath: 'items'
+})
+```
+
+Note that any additional configuration items passed to the paginator will be passed to the ajax function.
+
+```js
+paginator = Github.paginator({
+    path: 'path/to/something'
+	dataPath: 'items',
+	// Will be sent as post data
+	data: {
+	    key: 'value'
+	},
+	type: 'POST'
 })
 ```
 
@@ -1129,17 +1282,6 @@ siesta.autosave = true;
 siesta.autosaveInterval = 1000; // How regularly to check for changes to save.
 ```
 
-## PouchDB initialisation
-
-It's possible to customise how PouchDB is initialised, e.g. using different storage backends. You can read about setting up PouchDB instances [here](http://pouchdb.com/api.html#create_database) and some more advanced options such as remote CouchDB databases [here](http://pouchdb.com/guides/databases.html).
-
-```js
-// The default implementation is as follows
-siesta.initPouchDb = function () {
-    return new PouchDB('siesta');
-};
-```
-
 ## Dirtyness
 
 A `ModelInstance` is considered dirty if it holds an unsaved change. A `Model` is dirty if there exists an instance that is dirty. A `Collection` is dirty if there exists instances of models within that collection.
@@ -1149,6 +1291,20 @@ instance.attr = 'value';
 console.log(instance.dirty); // true
 console.log(instance.model.dirty); // true
 console.log(instance.collection.dirty); // true
+```
+
+## PouchDB Configuration
+
+PouchDB has a rich set of configuration options which you can explore in their [docs](http://pouchdb.com/api.html). By default, Siesta will initialise with PouchDB's own defaults.
+
+```js
+new PouchDB('siesta');
+```
+
+You can inject your own instance pouch by calling `siesta.setPouch`. Note that this will throw an error if an object graph has been initialised and therefore must be done before any map or query operations.
+
+```js
+siesta.setPouch(new PouchDB('custom'));
 ```
 
 # Recipes
@@ -1232,13 +1388,11 @@ var Collection = siesta.collection('Collection'),
 And then update and listen to changes from anywhere in your app.
 
 ```js
-siesta.install(function () {
-    Settings.get().then(function (settings) {
-        settings.someSettings.setting1 = 'something';
-        settings.someMoreSettings.setting4 = 'something else';
-        settings.someMoreSettings.listen(function (change) {
-            console.log('Some more settings changed!', change);
-        });
+Settings.one().then(function (settings) {
+    settings.someSettings.setting1 = 'something';
+    settings.someMoreSettings.setting4 = 'something else';
+    settings.someMoreSettings.listen(function (change) {
+        console.log('Some more settings changed!', change);
     });
 });
 ```
@@ -1262,11 +1416,13 @@ Logging for various Siesta subsystems can be configured using the following log 
 
 The various loggers are listed below:
 
+* `HTTP`: Logs related to actual HTTP requests/responses.
 * `Descriptor`: Logs related to matching against descriptors.
-* `HTTP`: Logs related to HTTP requests/responses.
+* `Serialisation`: Logs related to serialisation of instances during HTTP requests.
 * `Cache`: Logs related to the in-memory caching of model instances.
 * `Mapping`: Logs related to the mapping of data to the object graph.
 * `Query`: Logs related to the querying of local data
+* `Storage`: Logs related to saving and loading of the object graph to storage.
 
 # Caveats
 
@@ -1441,9 +1597,7 @@ var MyComponent = React.createClass({
 });
 ```
 
-### listenToSingleton
-
-Same as `this.listen` except takes a Singleton `Model` instead.
+You can listen to singleton models.
 
 ```js
 // We can do this.
@@ -1455,7 +1609,7 @@ var MyComponent = React.createClass({
                 mySingleton: mySingleton
             });
         }.bind(this);
-        this.listenToSingleton(MySingletonModel, listener).then(listener);
+        this.listen(MySingletonModel, listener).then(listener);
     }
 });
 
@@ -1468,7 +1622,7 @@ var MyComponent = React.createClass({
                 mySingleton: mySingleton
             });
         }.bind(this);
-        MySingletonModel.get()
+        MySingletonModel.one()
             .then(function (mySingleton) {
                 this.listen(mySingleton, listener).then(listener);
             }.bind(this));
