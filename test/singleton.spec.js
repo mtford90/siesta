@@ -3,16 +3,10 @@ var s = require('../core/index'),
 
 describe('singleton mapping', function () {
 
-    var SiestaModel = require('../core/modelInstance'),
-        cache = require('../core/cache');
+    var cache = require('../core/cache');
 
     var Collection, Car;
 
-    function CarObject() {
-        SiestaModel.apply(this, arguments);
-    }
-
-    CarObject.prototype = Object.create(SiestaModel.prototype);
     before(function () {
         s.ext.storageEnabled = false;
     });
@@ -28,7 +22,7 @@ describe('singleton mapping', function () {
                 ],
                 singleton: true
             });
-            s.install(done);
+            done();
         });
     });
 
@@ -150,7 +144,7 @@ describe('singleton mapping', function () {
                     attributes: ['field3', 'field4'],
                     singleton: true
                 });
-                s.install(done);
+                done();
             });
         });
 
@@ -241,14 +235,12 @@ describe('singleton mapping', function () {
                     id: 'id',
                     attributes: ['name']
                 });
-                s.install(function () {
-                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
-                        .then(function (car) {
-                            assert.ok(car);
-                            done();
-                        })
-                        .catch(done);
-                });
+                Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                    .then(function (car) {
+                        assert.ok(car);
+                        done();
+                    })
+                    .catch(done);
             });
         });
 
@@ -273,22 +265,17 @@ describe('singleton mapping', function () {
                     id: 'id',
                     attributes: ['name']
                 });
-                s.install()
-                    .then(function () {
-                        Car.map({name: 'Blah', owners: [{name: 'Blah blah'}, {name: 'Michael'}]})
-                            .then(function (car) {
-                                assert.ok(car);
-                                assert.equal(car.owners.length, 2);
-                                done();
-                            })
-                            .catch(function (err) {
-                                console.error(err);
-                                done(err);
-                            });
-                    }).catch(function (err) {
+                Car.map({name: 'Blah', owners: [{name: 'Blah blah'}, {name: 'Michael'}]})
+                    .then(function (car) {
+                        assert.ok(car);
+                        assert.equal(car.owners.length, 2);
+                        done();
+                    })
+                    .catch(function (err) {
                         console.error(err);
                         done(err);
                     });
+
             });
         });
 
@@ -313,19 +300,13 @@ describe('singleton mapping', function () {
                     id: 'id',
                     attributes: ['name']
                 });
-                s.install()
-                    .then(function () {
-                        Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
-                            .then(function (car) {
-                                assert.ok(car);
-                                assert.ok(car.owner);
-                                done();
-                            })
-                            .catch(function (err) {
-                                console.error(err);
-                                done(err);
-                            });
-                    }).catch(function (err) {
+                Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                    .then(function (car) {
+                        assert.ok(car);
+                        assert.ok(car.owner);
+                        done();
+                    })
+                    .catch(function (err) {
                         console.error(err);
                         done(err);
                     });

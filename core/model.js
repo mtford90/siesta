@@ -255,7 +255,7 @@ _.extend(Model.prototype, {
     },
     ensureSingletons: function (callback) {
         if (this.singleton) {
-            this.one().execute(function (err, obj) {
+            this.one({_ignoreInstalled: true}).execute(function (err, obj) {
                 if (err) {
                     callback(err);
                 }
@@ -358,7 +358,6 @@ _.extend(Model.prototype, {
                 else opts.objects = [overrides];
             }
             delete opts.override;
-            delete opts._ignoreInstalled;
             if (util.isArray(data)) {
                 this._mapBulk(data, opts, deferred.finish.bind(deferred));
             } else {

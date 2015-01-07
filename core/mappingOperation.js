@@ -39,7 +39,8 @@ function MappingOperation(opts) {
         model: null,
         data: null,
         objects: [],
-        disableevents: false
+        disableevents: false,
+        _ignoreInstalled: false
     });
 
     _.extend(this, {
@@ -246,7 +247,7 @@ _.extend(MappingOperation.prototype, {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         var self = this;
-        this.model.one().execute(function (err, singleton) {
+        this.model.one({_ignoreInstalled: this._ignoreInstalled}).execute(function (err, singleton) {
             // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
             // always be the same. This is just a precaution.
             var _ids = _.pluck(self.data, '_id'),
@@ -367,7 +368,8 @@ _.extend(MappingOperation.prototype, {
                     var op = new MappingOperation({
                         model: reverseModel,
                         data: flatRelatedData,
-                        disableevents: self.disableevents
+                        disableevents: self.disableevents,
+                        _ignoreInstalled: self._ignoreInstalled
                     });
                 }
                 if (op) {

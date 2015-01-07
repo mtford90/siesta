@@ -10,7 +10,7 @@ var log = require('./log'),
 var Logger = log.loggerWithName('Query');
 
 /**
- * @class  [Query description]
+ * @class [Query description]
  * @param {Model} model
  * @param {Object} opts
  */
@@ -18,8 +18,10 @@ function Query(model, opts) {
     _.extend(this, {
         model: model,
         query: opts,
+        _ignoreInstalled: opts._ignoreInstalled,
         ordering: null
     });
+    delete opts._ignoreInstalled;
 }
 
 _.extend(Query, {
@@ -74,10 +76,7 @@ _.extend(Query.prototype, {
     execute: function (callback) {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
-        siesta._afterInstall(function () {
-            console.log('123456')
-            this._executeInMemory(callback);
-        }.bind(this));
+        this._executeInMemory(callback);
         return deferred.promise;
     },
     _dump: function (asJson) {
@@ -131,27 +130,31 @@ _.extend(Query.prototype, {
         }, _.extend({}, cacheForModel(this.model)));
     },
     _executeInMemory: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        var cacheByLocalId = this._getCacheByLocalId();
-        var keys = Object.keys(cacheByLocalId);
-        var self = this;
-        var res = [];
-        var err;
-        for (var i = 0; i < keys.length; i++) {
-            var k = keys[i];
-            var obj = cacheByLocalId[k];
-            var matches = self.objectMatchesQuery(obj);
-            if (typeof(matches) == 'string') {
-                err = matches;
-                break;
-            } else {
-                if (matches) res.push(obj);
+        var _executeInMemory = function () {
+            var cacheByLocalId = this._getCacheByLocalId();
+            var keys = Object.keys(cacheByLocalId);
+            var self = this;
+            var res = [];
+            var err;
+            for (var i = 0; i < keys.length; i++) {
+                var k = keys[i];
+                var obj = cacheByLocalId[k];
+                var matches = self.objectMatchesQuery(obj);
+                if (typeof(matches) == 'string') {
+                    err = matches;
+                    break;
+                } else {
+                    if (matches) res.push(obj);
+                }
             }
+            res = this._sortResults(res);
+            callback(err, err ? null : res);
+        }.bind(this);
+        if (this._ignoreInstalled) _executeInMemory();
+        else {
+            siesta._afterInstall(_executeInMemory);
         }
-        res = this._sortResults(res);
-        callback(err, err ? null : res);
-        return deferred.promise;
+
     },
     orderBy: function () {
         this.ordering = [];
