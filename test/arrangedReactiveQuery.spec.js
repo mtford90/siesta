@@ -15,14 +15,12 @@ describe('positioned rquery', function () {
             id: 'id',
             attributes: ['name', 'age']
         });
-        s.install(function () {
-            var prq = Person.arrangedReactiveQuery();
-            prq.init(function (err) {
-                assert.ok(err);
-                prq.terminate();
-                done();
-            })
-        });
+        var prq = Person.arrangedReactiveQuery();
+        prq.init(function (err) {
+            assert.ok(err);
+            prq.terminate();
+            done();
+        })
     });
     it('default index field', function (done) {
         MyCollection = s.collection('MyCollection');
@@ -30,14 +28,12 @@ describe('positioned rquery', function () {
             id: 'id',
             attributes: ['name', 'age', 'index']
         });
-        s.install(function () {
-            // Just checking doesn't throw an error.
-            var prq = Person.arrangedReactiveQuery();
-            prq.init().then(function () {
-                prq.terminate();
-                done();
-            }).catch(done);
-        });
+        // Just checking doesn't throw an error.
+        var prq = Person.arrangedReactiveQuery();
+        prq.init().then(function () {
+            prq.terminate();
+            done();
+        }).catch(done);
     });
     it('custom index field', function (done) {
         MyCollection = s.collection('MyCollection');
@@ -45,15 +41,13 @@ describe('positioned rquery', function () {
             id: 'id',
             attributes: ['name', 'age', 'customIndexField']
         });
-        s.install(function () {
-            // Just checking doesn't throw an error.
-            var prq = Person.arrangedReactiveQuery();
-            prq.indexAttribute = 'customIndexField';
-            prq.init().then(function () {
-                prq.terminate();
-                done();
-            }).catch(done);
-        });
+        // Just checking doesn't throw an error.
+        var prq = Person.arrangedReactiveQuery();
+        prq.indexAttribute = 'customIndexField';
+        prq.init().then(function () {
+            prq.terminate();
+            done();
+        }).catch(done);
     });
 
     describe('ordering', function () {
@@ -63,17 +57,12 @@ describe('positioned rquery', function () {
                 id: 'id',
                 attributes: ['name', 'age', 'index']
             });
-            s.install()
-                .then(Person.map([
-                    {name: 'Michael', age: 24},
-                    {name: 'Bob', age: 30},
-                    {name: 'John', age: 26}
-                ]))
-                .then(function () {
-                    done()
-                })
-                .catch(done)
-                .done();
+            Person.map([
+                {name: 'Michael', age: 24},
+                {name: 'Bob', age: 30},
+                {name: 'John', age: 26}
+            ]).then(function () {done()}).catch(done);
+
         });
         it('order before init', function (done) {
             var prq = Person.arrangedReactiveQuery();
@@ -168,17 +157,11 @@ describe('positioned rquery', function () {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
             });
-            s.install()
-                .then(Person.map([
-                    {name: 'Michael', age: 24},
-                    {name: 'Bob', age: 30},
-                    {name: 'John', age: 26}
-                ]))
-                .then(function () {
-                    done()
-                })
-                .catch(done)
-                .done();
+            Person.map([
+                {name: 'Michael', age: 24},
+                {name: 'Bob', age: 30},
+                {name: 'John', age: 26}
+            ]).then(function () { done() }).catch(done);
         });
 
         it('swapObjectsAtIndexes', function (done) {
@@ -302,13 +285,12 @@ describe('positioned rquery', function () {
     });
 
     describe('indices exist', function () {
-        beforeEach(function (done) {
+        beforeEach(function () {
             MyCollection = s.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
             });
-            s.install(done);
         });
         describe('full range of indexes exists', function () {
             beforeEach(function (done) {
@@ -520,17 +502,11 @@ describe('positioned rquery', function () {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
             });
-            s.install()
-                .then(Person.map([
-                    {name: 'Michael', age: 24},
-                    {name: 'Bob', age: 30},
-                    {name: 'John', age: 26}
-                ]))
-                .then(function () {
-                    done()
-                })
-                .catch(done)
-                .done();
+            Person.map([
+                {name: 'Michael', age: 24},
+                {name: 'Bob', age: 30},
+                {name: 'John', age: 26}
+            ]).then(function () {done()}).catch(done);
         });
         it('by default, insert at back', function (done) {
             var prq = Person.arrangedReactiveQuery();
