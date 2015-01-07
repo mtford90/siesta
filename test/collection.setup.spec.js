@@ -4,9 +4,6 @@ var s = require('../core/index'),
 
 describe('collection setup', function () {
 
-    var Collection = require('../core/collection');
-    var InternalSiestaError = require('../core/error').InternalSiestaError;
-
     beforeEach(function (done) {
         s.reset(done);
     });

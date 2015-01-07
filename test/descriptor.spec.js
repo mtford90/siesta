@@ -3,11 +3,10 @@ var s = require('../core/index'),
 
 describe('request descriptor', function () {
 
-    var Collection = require('../core/collection');
-    var InternalSiestaError = require('../core/error').InternalSiestaError;
-    var RelationshipType = require('../core/RelationshipType');
+    var InternalSiestaError = require('../core/error').InternalSiestaError,
+        RelationshipType = require('../core/RelationshipType');
 
-    var collection, carModel, personMapping;
+    var Collection, Car, Person;
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -15,8 +14,8 @@ describe('request descriptor', function () {
 
     beforeEach(function (done) {
         s.reset(function () {
-            collection = s.collection('myCollection');
-            carModel = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
                 relationships: {
@@ -27,11 +26,11 @@ describe('request descriptor', function () {
                     }
                 }
             });
-            Person = collection.model('Person', {
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name']
             });
-            s.install(done);
+            done();
         });
     });
 
@@ -41,7 +40,7 @@ describe('request descriptor', function () {
             it('match id', function () {
                 var r = new siesta.ext.http.Descriptor({
                     path: '\/cars\/([0-9]+)?$',
-                    model: carModel
+                    model: Car
                 });
                 var match = r._matchPath('/cars/5');
                 assert.ok(match);
@@ -50,7 +49,7 @@ describe('request descriptor', function () {
             it('query params', function () {
                 var descriptor = new siesta.ext.http.Descriptor({
                     method: '*',
-                    model: carModel,
+                    model: Car,
                     path: '/cars/[0-9]+'
                 });
                 var match = descriptor._matchPath('/cars/5?x=5&y=random');
@@ -61,7 +60,7 @@ describe('request descriptor', function () {
                 it('multiple', function () {
                     var descriptor = new siesta.ext.http.Descriptor({
                         method: '*',
-                        model: carModel,
+                        model: Car,
                         path: ['/cars/[0-9]+', '/vehicles/[0-9]+']
                     });
                     var match = descriptor._matchPath('/cars/5?x=5&y=random');
@@ -75,7 +74,7 @@ describe('request descriptor', function () {
                 it('one', function () {
                     var descriptor = new siesta.ext.http.Descriptor({
                         method: '*',
-                        model: carModel,
+                        model: Car,
                         path: ['/cars/[0-9]+']
                     });
                     var match = descriptor._matchPath('/cars/5?x=5&y=random');
@@ -92,21 +91,21 @@ describe('request descriptor', function () {
             it('all http methods', function () {
                 var r = new siesta.ext.http.Descriptor({
                     method: '*',
-                    model: carModel
+                    model: Car
                 });
                 _.each(r.httpMethods, function (method) {
                     assert.include(r.method, method);
                 });
                 r = new siesta.ext.http.Descriptor({
                     method: ['*'],
-                    model: carModel
+                    model: Car
                 });
                 _.each(r.httpMethods, function (method) {
                     assert.include(r.method, method);
                 });
                 r = new siesta.ext.http.Descriptor({
                     method: ['*', 'GET'],
-                    model: carModel
+                    model: Car
                 });
                 _.each(r.httpMethods, function (method) {
                     assert.include(r.method, method);
@@ -115,7 +114,7 @@ describe('request descriptor', function () {
             it('match against all', function () {
                 var r = new siesta.ext.http.Descriptor({
                     method: '*',
-                    model: carModel
+                    model: Car
                 });
                 _.each(r.httpMethods, function (method) {
                     assert.ok(r._matchMethod(method));
@@ -126,7 +125,7 @@ describe('request descriptor', function () {
             it('match against some', function () {
                 var r = new siesta.ext.http.Descriptor({
                     method: ['POST', 'PUT'],
-                    model: carModel
+                    model: Car
                 });
                 assert.ok(r._matchMethod('POST'));
                 assert.ok(r._matchMethod('PUT'));
@@ -150,23 +149,23 @@ describe('request descriptor', function () {
 
                 assertMatchMethod(new siesta.ext.http.Descriptor({
                     method: ['POST'],
-                    model: carModel
+                    model: Car
                 }));
                 assertMatchMethod(new siesta.ext.http.Descriptor({
                     method: ['pOsT'],
-                    model: carModel
+                    model: Car
                 }));
                 assertMatchMethod(new siesta.ext.http.Descriptor({
                     method: 'pOsT',
-                    model: carModel
+                    model: Car
                 }));
                 assertMatchMethod(new siesta.ext.http.Descriptor({
                     method: 'post',
-                    model: carModel
+                    model: Car
                 }));
                 assertMatchMethod(new siesta.ext.http.Descriptor({
                     method: 'POST',
-                    model: carModel
+                    model: Car
                 }));
             })
         });
@@ -175,9 +174,9 @@ describe('request descriptor', function () {
     describe('specify mapping', function () {
         it('as object', function () {
             var r = new siesta.ext.http.Descriptor({
-                model: carModel
+                model: Car
             });
-            assert.equal(r.model, carModel);
+            assert.equal(r.model, Car);
         });
         it('as string', function () {
             var r = new siesta.ext.http.Descriptor({
@@ -189,7 +188,7 @@ describe('request descriptor', function () {
         it('as string, but collection as object', function () {
             var r = new siesta.ext.http.Descriptor({
                 model: 'Car',
-                collection: collection
+                collection: Collection
             });
             assert.equal('Car', r.model.name);
         });
@@ -204,28 +203,28 @@ describe('request descriptor', function () {
         it('if null, should be null', function () {
             var r = new siesta.ext.http.Descriptor({
                 data: null,
-                model: carModel
+                model: Car
             });
             assert.notOk(r.data);
         });
         it('if empty string, should be null', function () {
             var r = new siesta.ext.http.Descriptor({
                 data: '',
-                model: carModel
+                model: Car
             });
             assert.notOk(r.data);
         });
         it('if length 1, should be a string', function () {
             var r = new siesta.ext.http.Descriptor({
                 data: 'abc',
-                model: carModel
+                model: Car
             });
             assert.equal(r.data, 'abc');
         });
         it('if > length 1, should be an object', function () {
             var r = new siesta.ext.http.Descriptor({
                 data: 'path.to.data',
-                model: carModel
+                model: Car
             });
             assert.equal(r.data.path.to, 'data');
         });
@@ -238,28 +237,28 @@ describe('request descriptor', function () {
             it('if null, should simply return the object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: null,
-                    model: carModel
+                    model: Car
                 });
                 assert.equal(data, r._embedData(data));
             });
             it('if empty string, should simply return the object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: '',
-                    model: carModel
+                    model: Car
                 });
                 assert.equal(data, r._embedData(data));
             });
             it('if length 1, should return 1 level deep object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: 'abc',
-                    model: carModel
+                    model: Car
                 });
                 assert.equal(data, r._embedData(data).abc);
             });
             it('if > length 1, should return n level deep object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: 'path.to.data',
-                    model: carModel
+                    model: Car
                 });
                 var extractData = r._embedData(data);
                 assert.equal(data, extractData.path.to.data);
@@ -274,7 +273,7 @@ describe('request descriptor', function () {
             it('if null, should simply return the object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: null,
-                    model: carModel
+                    model: Car
                 });
                 var extractData = r._extractData(data);
                 assert.equal(extractData, data);
@@ -282,7 +281,7 @@ describe('request descriptor', function () {
             it('if empty string, should simply return the object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: '',
-                    model: carModel
+                    model: Car
                 });
                 var extractData = r._extractData(data);
                 assert.equal(extractData, data);
@@ -290,7 +289,7 @@ describe('request descriptor', function () {
             it('if length 1, should return 1 level deep object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: 'abc',
-                    model: carModel
+                    model: Car
                 });
                 var extractData = r._extractData({
                     abc: data
@@ -300,7 +299,7 @@ describe('request descriptor', function () {
             it('if > length 1, should return n level deep object', function () {
                 var r = new siesta.ext.http.Descriptor({
                     data: 'path.to.data',
-                    model: carModel
+                    model: Car
                 });
                 var extractData = r._extractData({
                     path: {
@@ -318,25 +317,25 @@ describe('request descriptor', function () {
         it('should register request descriptor', function () {
             var r = new siesta.ext.http.RequestDescriptor({
                 data: 'path.to.data',
-                model: carModel
+                model: Car
             });
             siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(r);
-            assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptors[carModel.collectionName], r);
+            assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptors[Car.collectionName], r);
         });
         describe('request descriptors for collection', function () {
             var descriptor;
             beforeEach(function () {
                 descriptor = new siesta.ext.http.RequestDescriptor({
                     data: 'path.to.data',
-                    model: carModel
+                    model: Car
                 });
                 siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(descriptor);
             });
             it('request descriptors should be accessible by collection name', function () {
-                assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(carModel.collectionName), descriptor);
+                assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(Car.collectionName), descriptor);
             });
             it('request descriptors should be accessible by collection', function () {
-                assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(collection), descriptor);
+                assert.include(siesta.ext.http.DescriptorRegistry.requestDescriptorsForCollection(Collection), descriptor);
             });
         });
 
@@ -348,7 +347,7 @@ describe('request descriptor', function () {
             beforeEach(function () {
                 descriptor = new siesta.ext.http.Descriptor({
                     method: 'POST',
-                    model: carModel,
+                    model: Car,
                     path: '/cars/[0-9]+/?'
                 });
             });
@@ -379,7 +378,7 @@ describe('request descriptor', function () {
         describe('data specified', function () {
             beforeEach(function () {
                 descriptor = new siesta.ext.http.Descriptor({
-                    model: carModel,
+                    model: Car,
                     data: 'path.to.data'
                 });
             });
@@ -418,7 +417,7 @@ describe('request descriptor', function () {
         beforeEach(function () {
             descriptor = new siesta.ext.http.Descriptor({
                 method: 'POST',
-                model: carModel,
+                model: Car,
                 path: '/cars/[0-9]+',
                 data: 'path.to.data'
             });
@@ -448,7 +447,7 @@ describe('request descriptor', function () {
         var descriptor;
         beforeEach(function () {
             descriptor = new siesta.ext.http.Descriptor({
-                model: carModel
+                model: Car
             });
         });
         it('default method is GET', function () {
@@ -478,7 +477,7 @@ describe('request descriptor', function () {
             it('default', function () {
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({
                     method: 'POST',
-                    model: carModel,
+                    model: Car,
                     path: '/cars/[0-9]+'
                 });
                 assert.notEqual(requestDescriptor.serialiser, siesta.ext.http.Serialiser.idSerialiser);
@@ -491,7 +490,7 @@ describe('request descriptor', function () {
                     beforeEach(function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
-                            model: carModel,
+                            model: Car,
                             path: '/cars/[0-9]+',
                             serialiser: siesta.ext.http.Serialiser.idSerialiser
                         });
@@ -500,7 +499,7 @@ describe('request descriptor', function () {
                         assert.equal(requestDescriptor.serialiser, siesta.ext.http.Serialiser.idSerialiser);
                     });
                     it('serialises', function (done) {
-                        carModel.map({
+                        Car.map({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz'
@@ -520,7 +519,7 @@ describe('request descriptor', function () {
                     beforeEach(function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
-                            model: carModel,
+                            model: Car,
                             path: '/cars/[0-9]+',
                             serialiser: siesta.ext.http.Serialiser.depthSerializer(0)
                         });
@@ -531,7 +530,7 @@ describe('request descriptor', function () {
                     });
 
                     it('serialises at depth', function (done) {
-                        carModel.map({
+                        Car.map({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -555,7 +554,7 @@ describe('request descriptor', function () {
 
                     it('key paths', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                            model: carModel,
+                            model: Car,
                             transforms: {
                                 'colour': 'path.to.colour'
                             }
@@ -570,7 +569,7 @@ describe('request descriptor', function () {
 
                     it('key', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                            model: carModel,
+                            model: Car,
                             transforms: {
                                 'colour': 'color'
                             }
@@ -585,7 +584,7 @@ describe('request descriptor', function () {
 
                     it('function with return val', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                            model: carModel,
+                            model: Car,
                             transforms: {
                                 'colour': function (val) {
                                     var newVal = val;
@@ -605,7 +604,7 @@ describe('request descriptor', function () {
 
                     it('function with return val and key', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                            model: carModel,
+                            model: Car,
                             transforms: {
                                 'colour': function (val) {
                                     var newVal = val;
@@ -626,7 +625,7 @@ describe('request descriptor', function () {
 
                     it('invalid', function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                            model: carModel,
+                            model: Car,
                             transforms: {
                                 'colour': {
                                     wtf: {
@@ -648,7 +647,7 @@ describe('request descriptor', function () {
                         beforeEach(function () {
                             requestDescriptor = new siesta.ext.http.RequestDescriptor({
                                 method: 'POST',
-                                model: carModel,
+                                model: Car,
                                 path: '/cars/[0-9]',
                                 serialiser: siesta.ext.http.Serialiser.depthSerializer(0),
                                 transforms: {
@@ -658,7 +657,7 @@ describe('request descriptor', function () {
                         });
 
                         it('performs transform', function (done) {
-                            carModel.map({
+                            Car.map({
                                 colour: 'red',
                                 name: 'Aston Martin',
                                 id: 'xyz',
@@ -692,7 +691,7 @@ describe('request descriptor', function () {
                     beforeEach(function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
-                            model: carModel,
+                            model: Car,
                             path: '/cars/[0-9]+',
                             data: 'path.to',
                             serialiser: siesta.ext.http.Serialiser.idSerialiser
@@ -700,7 +699,7 @@ describe('request descriptor', function () {
                     });
 
                     it('serialises at depth', function (done) {
-                        carModel.map({
+                        Car.map({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -724,7 +723,7 @@ describe('request descriptor', function () {
                     beforeEach(function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
-                            model: carModel,
+                            model: Car,
                             path: '/cars/[0-9]+',
                             data: 'path.to'
                         });
@@ -732,7 +731,7 @@ describe('request descriptor', function () {
 
 
                     it('serialises at depth', function (done) {
-                        carModel.map({
+                        Car.map({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -756,7 +755,7 @@ describe('request descriptor', function () {
                     beforeEach(function () {
                         requestDescriptor = new siesta.ext.http.RequestDescriptor({
                             method: 'POST',
-                            model: carModel,
+                            model: Car,
                             path: '/cars/[0-9]+',
                             data: 'path.to',
                             serialiser: function (obj) {
@@ -767,7 +766,7 @@ describe('request descriptor', function () {
 
 
                     it('serialises', function (done) {
-                        carModel.map({
+                        Car.map({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -817,7 +816,7 @@ describe('request descriptor', function () {
                     serialiser = _.partial(carSerialiser, ['name']);
                     requestDescriptor = new siesta.ext.http.RequestDescriptor({
                         method: 'POST',
-                        model: carModel,
+                        model: Car,
                         path: '/cars/?',
                         serialiser: serialiser
                     });
@@ -828,7 +827,7 @@ describe('request descriptor', function () {
                 });
 
                 it('serialises', function (done) {
-                    carModel.map({
+                    Car.map({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: 'xyz',
@@ -857,7 +856,7 @@ describe('request descriptor', function () {
             var responseDescriptor;
             it('key paths', function () {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: {
                         'colour': 'path.to.colour'
                     }
@@ -872,7 +871,7 @@ describe('request descriptor', function () {
 
             it('key', function () {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: {
                         'colour': 'color'
                     }
@@ -887,7 +886,7 @@ describe('request descriptor', function () {
 
             it('function with return val', function () {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: {
                         'colour': function (val) {
                             var newVal = val;
@@ -907,7 +906,7 @@ describe('request descriptor', function () {
 
             it('function with return val and key', function () {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: {
                         'colour': function (val) {
                             var newVal = val;
@@ -931,7 +930,7 @@ describe('request descriptor', function () {
                     colour: 'red'
                 };
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: function (_data) {
                         assert.equal(data, _data);
                         return {
@@ -946,7 +945,7 @@ describe('request descriptor', function () {
 
             it('invalid', function () {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: {
                         'colour': {
                             wtf: {
@@ -971,7 +970,7 @@ describe('request descriptor', function () {
 
             beforeEach(function () {
                 responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    model: carModel,
+                    model: Car,
                     transforms: {
                         'colour': 'color'
                     }

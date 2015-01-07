@@ -16,7 +16,7 @@ describe('events', function () {
         s.reset(done);
     });
 
-    var collection, carMapping, car;
+    var Collection, Car, car;
     var notif, collectionNotif, genericNotif, localIdNotif, remoteIdNotif;
 
     describe('basics', function () {
@@ -43,15 +43,15 @@ describe('events', function () {
             collectionNotif = null;
             genericNotif = null;
             car = null;
-            collection = null;
+            Collection = null;
             Car = null;
         });
 
         describe('set value', function () {
 
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
@@ -143,8 +143,8 @@ describe('events', function () {
 
         describe('array events', function () {
             beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Car = collection.model('Car', {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colours', 'name']
                 });
@@ -777,8 +777,8 @@ describe('events', function () {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -853,8 +853,8 @@ describe('events', function () {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -929,8 +929,8 @@ describe('events', function () {
             notif = null;
             genericNotif = null;
             collectionNotif = null;
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -1003,8 +1003,8 @@ describe('events', function () {
     describe('convenience', function () {
         var Car;
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
@@ -1017,7 +1017,7 @@ describe('events', function () {
                 cancelListen();
                 done();
             };
-            var cancelListen = collection.listen(listener);
+            var cancelListen = Collection.listen(listener);
             Car.map({colour: 'red', name: 'Aston Martin'});
         });
 
