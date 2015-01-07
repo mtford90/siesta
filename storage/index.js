@@ -333,7 +333,10 @@ Object.defineProperties(siesta, {
 });
 
 _.extend(siesta, {
-    save: save
+    save: save,
+    setPouch: function (_p) {
+        pouch = _p;
+    }
 });
 
 

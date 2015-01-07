@@ -656,5 +656,13 @@ describe('storage', function () {
 
     });
 
+    describe('custom pouch', function () {
+        it('custom pouch', function () {
+            s.ext.storageEnabled = true;
+            var pouch = new PouchDB('customPouch');
+            siesta.setPouch(pouch);
+            assert.equal(siesta.ext.storage._pouch, pouch);
+        });
+    });
 
 });
