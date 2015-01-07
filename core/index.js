@@ -187,12 +187,9 @@ _.extend(siesta, {
                     delete this.queuedTasks;
                 }.bind(this));
             }
-            if (!installed) { // In case installed straight away e.g. if storage extension not installed.
-                this._pushTask(task);
-            }
-            else {
-                task();
-            }
+            // In case installed straight away e.g. if storage extension not installed.
+            if (!installed) this._pushTask(task);
+            else task();
         }
         else {
             task();
