@@ -172,6 +172,8 @@ Siesta is all about interacting with and manipulating this object graph and aims
 
 Object mapping refers to the process of taking raw data and placing this data onto the object graph. This process will create and update existing model instances and their relationships as per the data and the model definitions that you have provided.
 
+Siesta determines which objects to create and which objects to update by using the unique identifier, `id` that is supplied when you define your models.
+
 For example, to create the Github object graph from earlier we could map the following data.
 
 ```js
@@ -529,7 +531,9 @@ JavascriptEngineer
 
 ## Creating instances
 
-In siesta, the process of creating new instances of models is known as *mapping*. This refers to mapping data onto the object graph.
+In siesta, model instances are created and updated during the process of [mapping](#concepts-object-mapping). This refers to mapping data onto the object graph and is explained [here](#concepts-object-mapping).
+
+When data is mapped onto the object graph a new model instance will be created if, and only if an instance does not exist with the `id` supplied in the mapped data.
 
 ```js
 // Map a single object.
@@ -557,6 +561,10 @@ User.map([
     });
 });
 ```
+
+## Updating Instances
+
+
 
 ## Deleting Instances
 
