@@ -15,11 +15,11 @@ describe('mapping relationships', function () {
         s.reset(done);
     });
 
-    var collection, carMapping, personMapping;
+    var Collection, Car, Person;
 
     function configureAPI(type, done) {
-        collection = s.collection('myCollection');
-        Car = collection.model('Car', {
+        Collection = s.collection('myCollection');
+        Car = Collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -30,7 +30,7 @@ describe('mapping relationships', function () {
                 }
             }
         });
-        Person = collection.model('Person', {
+        Person = Collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });

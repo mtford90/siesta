@@ -21,7 +21,7 @@ describe('intercollection relationships', function () {
         s.ext.storageEnabled = false;
     });
 
-    beforeEach(function (done) {
+    beforeEach(function () {
         s.reset(function () {
             MyOfflineCollection = s.collection('MyOfflineCollection');
             MyOnlineCollection = s.collection('MyOnlineCollection');
@@ -79,8 +79,6 @@ describe('intercollection relationships', function () {
                 id: 'userId',
                 attributes: ['username', 'name']
             });
-
-            s.install().then(function () {done()}).catch(done);
         });
     });
 

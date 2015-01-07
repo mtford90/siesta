@@ -3,10 +3,9 @@ var s = require('../core/index'),
 
 describe('recursive relationships', function () {
 
-    var Collection = require('../core/collection');
     var cache = require('../core/cache');
-    var collection;
-    var Repo;
+
+    var Collection, Repo;
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -14,9 +13,9 @@ describe('recursive relationships', function () {
 
     beforeEach(function (done) {
         s.reset(function () {
-            collection = s.collection('MyCollection');
-            collection.baseURL = 'https://api.github.com';
-            Repo = collection.model('Repo', {
+            Collection = s.collection('MyCollection');
+            Collection.baseURL = 'https://api.github.com';
+            Repo = Collection.model('Repo', {
                 id: 'id',
                 attributes: ['name'],
                 relationships: {
@@ -27,7 +26,7 @@ describe('recursive relationships', function () {
                     }
                 }
             });
-            s.install(done);
+            done();
         });
     });
 

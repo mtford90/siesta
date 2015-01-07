@@ -11,25 +11,24 @@ describe('query...', function () {
     });
 
     describe('basic', function () {
-        var collection, mapping;
+        var Collection, Mapping;
 
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            mapping = collection.model('Person', {
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Mapping = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
         });
         it('object exists', function (done) {
-            mapping.map({
+            Mapping.map({
                 name: 'Michael',
                 age: 15
             }, function (err, obj) {
                 if (err) done(err);
                 else {
                     assert.ok(obj);
-                    var q = new Query(mapping, {
+                    var q = new Query(Mapping, {
                         age: 15
                     });
                     q.execute(function (err, objs) {
@@ -43,14 +42,14 @@ describe('query...', function () {
         });
 
         it('object does not exist', function (done) {
-            mapping.map({
+            Mapping.map({
                 name: 'Michael',
                 age: 21
             }, function (err, obj) {
                 if (err) done(err);
                 else {
                     assert.ok(obj);
-                    var q = new Query(mapping, {
+                    var q = new Query(Mapping, {
                         age: 15
                     });
                     q.execute(function (err, objs) {
@@ -63,7 +62,7 @@ describe('query...', function () {
         });
 
         it('multiple matches', function (done) {
-            mapping.map([
+            Mapping.map([
                 {
                     name: 'Michael',
                     age: 21
@@ -76,7 +75,7 @@ describe('query...', function () {
                 if (err) done(err);
                 else {
                     assert.ok(mapped);
-                    var q = new Query(mapping, {
+                    var q = new Query(Mapping, {
                         age: 21
                     });
                     q.execute(function (err, objs) {
@@ -93,9 +92,9 @@ describe('query...', function () {
 
     describe('built-in comparators', function () {
         describe('e', function () {
-            var collection, personMapping, carMapping;
+            var collection, Person, Car;
 
-            beforeEach(function (done) {
+            beforeEach(function () {
                 collection = s.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
@@ -112,7 +111,6 @@ describe('query...', function () {
                         }
                     }
                 });
-                s.install(done);
             });
 
             describe('attributes', function () {
@@ -202,15 +200,14 @@ describe('query...', function () {
         });
 
         describe('lt', function () {
-            var collection, personMapping, carMapping;
+            var Collection, Person;
 
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                s.install(done);
             });
 
             it('null shouldnt match', function (done) {
@@ -350,15 +347,14 @@ describe('query...', function () {
         });
 
         describe('lte', function () {
-            var collection, personMapping, carMapping;
+            var collection, Person;
 
-            beforeEach(function (done) {
+            beforeEach(function () {
                 collection = s.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                s.install(done);
             });
 
             it('matches all', function (done) {
@@ -449,15 +445,14 @@ describe('query...', function () {
         });
 
         describe('gt', function () {
-            var collection, personMapping, carMapping;
+            var collection, Person;
 
-            beforeEach(function (done) {
+            beforeEach(function () {
                 collection = s.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                s.install(done);
             });
 
             it('matches all', function (done) {
@@ -548,15 +543,14 @@ describe('query...', function () {
         });
 
         describe('gte', function () {
-            var collection, personMapping, carMapping;
+            var Collection, Person;
 
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                s.install(done);
             });
 
             it('matches all', function (done) {
@@ -647,13 +641,14 @@ describe('query...', function () {
         });
 
         describe('errors', function () {
-            beforeEach(function (done) {
-                collection = s.collection('myCollection');
-                Person = collection.model('Person', {
+            var Collection, Person, Car;
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                Car = collection.model('Car', {
+                Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -664,7 +659,6 @@ describe('query...', function () {
                         }
                     }
                 });
-                s.install(done);
             });
 
             it('invalid op', function (done) {
@@ -697,14 +691,13 @@ describe('query...', function () {
     });
 
     describe('order', function () {
-        var collection, Person;
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Person = collection.model('Person', {
+        var Collection, Person;
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
         });
 
         it('descending order', function (done) {
@@ -766,14 +759,13 @@ describe('query...', function () {
     });
 
     describe('$or', function () {
-        var collection, Person;
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Person = collection.model('Person', {
+        var Collection, Person;
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
         });
         it('simple', function (done) {
             Person.map([
@@ -846,14 +838,13 @@ describe('query...', function () {
     });
 
     describe('$and', function () {
-        var collection, Person;
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Person = collection.model('Person', {
+        var Collection, Person;
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
         });
         it('simple', function (done) {
             Person.map([
@@ -903,10 +894,10 @@ describe('query...', function () {
     });
 
     describe('nested', function () {
-        var collection, Car, Person;
-        beforeEach(function (done) {
-            collection = s.collection('myCollection');
-            Car = collection.model('Car', {
+        var Collection, Car, Person;
+        beforeEach(function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['name', 'colour'],
                 relationships: {
@@ -917,11 +908,10 @@ describe('query...', function () {
                     }
                 }
             });
-            Person = collection.model('Person', {
+            Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(done);
         });
 
         it('nested equals', function (done) {
