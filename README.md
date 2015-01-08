@@ -5,9 +5,7 @@ Siesta
 
 [![Build Status](https://travis-ci.org/mtford90/siesta.svg?branch=master)](https://travis-ci.org/mtford90/siesta)
 
-**BIG FAT WARNING:** This library is in **beta** and is under development. Whilst efforts are being made to keep master/releases stable there are no guarantees on this.
-
-Siesta is an object mapping framework for Javascript. It makes it easier to model, consume and interact with RESTful web services.
+Siesta is an Object Graph framework for Javascript. Siesta makes it easy to model, consume and interact with relational data in the browser.
 
 * [Website](http://mtford.co.uk/siesta/)
 * [Docs](http://mtford.co.uk/siesta/docs.html)

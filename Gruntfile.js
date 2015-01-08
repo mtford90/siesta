@@ -276,7 +276,7 @@ module.exports = function (grunt) {
         sh.run('cp -r build/* dist/');
         sh.run('rm -f dist/*.gz dist/test-bundle.js');
     });
- 
+
     grunt.registerTask('npmPublish', function () {
         sh.run('npm publish ./');
     });
