@@ -220,18 +220,6 @@ module.exports = function (grunt) {
             }
         },
 
-        shell: {
-            jekyllBuild: {
-                command: 'jekyll build -s docs/ -d _site/ -c docs/_config.dev.yml'
-            },
-            jekyllCompile: {
-                command: 'jekyll build -s docs/ -d _site/ -c docs/_config.yml'
-            },
-            jekyllDist: {
-                command: 'cd _site/ && git add * && git commit -a -m "Jekyll Build" && git push origin gh-pages'
-            }
-        },
-
         index: {
             build: {
                 dir: '<%= test_dir %>',
