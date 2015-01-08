@@ -14,4 +14,4 @@
 	branch = gh-pages
 [submodule "react-siesta"]
 	path = react-siesta
-	url = git@github.com:mtford90/react-siesta.git
+	url = https://github.com/mtford90/react-siesta.git
