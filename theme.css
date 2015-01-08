@@ -360,7 +360,6 @@ a:hover {
     font-size: 1.5em;
 }
 
-
 .content h1 {
     font-size: 1.5em;
 }
@@ -737,7 +736,7 @@ body.no-literate .content pre > code:hover::-webkit-scrollbar-thumb {
 }
 
 .header .right iframe,
-.header .right div{
+.header .right div {
     display: inline-block;
     vertical-align: middle;
 }
@@ -1022,8 +1021,7 @@ code .comment {
     font-weight: 300;
 }
 
-.title-area {
-    min-height: 100px;
+.custom-title-area {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -1034,13 +1032,79 @@ code .comment {
     overflow: hidden;
 }
 
-.title-area > img.bg {
+.custom-title-area > img.bg {
     z-index: 0;
     position: absolute;
     left: -9999px;
 }
 
-.title-area > div {
+.custom-title-area > div {
     position: relative;
     z-index: 1;
+}
+
+.custom-title-card {
+    background-position: center center;
+    background-size: cover;
+    color: #ccc;
+    text-align: center;
+    position: relative;
+    background-color: #2badad;
+
+    z-index: 1;
+    width: 100%;
+    display: table;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.custom-title-card .custom-headline {
+    vertical-align: middle;
+    display: inline-block;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    /* text-shadow: 0 0 4px rgba(0, 0, 0, 0.5); */
+    padding-left: 40px;
+    padding-right: 40px;
+    line-height: 1.7;
+}
+
+.custom-title-card h1 {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 3.3em;
+    font-weight: 700;
+    line-height: 1.1;
+    color: rgb(37, 41, 52);
+}
+
+.custom-title-card h5 {
+    font-family: montserrat, sans-serif;
+    font-weight: bold;
+    color: rgb(37, 41, 52);
+    font-size: 1.8em;
+}
+
+.custom-title-card h5 span {
+    display: inline-block;
+    padding: 5px 20px;
+    border: solid 3px #fff;
+}
+
+.custom-title-card p {
+    font-family: montserrat, sans-serif;
+    color: #b8eaea;
+    font-weight: bold;
+    font-size: 1.3em;
+}
+
+.custom-title-card > .in {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+ .content > p.brief {
+    font-size: 1.3em;
+    font-family: Open Sans, sans-serif;
+    font-weight: 300;
 }

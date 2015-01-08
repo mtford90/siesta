@@ -99,7 +99,7 @@ Before reading through this documentation you should understand the concepts out
 
 ## Model
 
-A `Model` describes a (possibly remote) resource that you would like to represent in your app. For example if you were writing an app that downloaded information on repositories from the Github API an (admittedly simple) model could look like the following.
+A `Model` describes a (possibly remote) resource that you would like to represent in your app. For example if you were writing an app that downloaded information on repositories from the Github API an (admittedly simple) model could look like the following:
 
 ```js
 {
@@ -162,7 +162,7 @@ var Github = siesta.collection('Github', {
 
 When models and the relationships between those models are instantiated, what results is an **object graph** where the model instances (the nodes) are linked together by relationships (the edges).
 
-Carrying on the Github example, we could have two relationships, `owner` and `forkedFrom`. `owner` is a relationship between a `User` and a `Repo`. `forkedFrom` is a relationship between a `Repo` and itself. Once we have created instances of our models we could end up with an object graph that looks like the following.
+Carrying on the Github example, we could have two relationships, `owner` and `forkedFrom`. `owner` is a relationship between a `User` and a `Repo`. `forkedFrom` is a relationship between a `Repo` and itself. Once we have created instances of our models we could end up with an object graph that looks like the following:
 
 <pre><img src="objgraph.png" style="width: 460px"/></pre>
 
@@ -267,6 +267,16 @@ var User = Collection.model({
         }
     ]
 }); 
+```
+
+### id
+
+Define the field that uniquely identifies each model instance. The value of this field will be used by Siesta to determine onto which object data should be mapped. If an object within the object graph exists with the unique identifier, data will be mapped onto that instance, otherwise a new object will be created.
+
+```js
+var Repo = Github.model({
+    id: 'id' // Defaults to id
+});
 ```
 
 ### relationships
