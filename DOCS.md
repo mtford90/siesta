@@ -668,7 +668,6 @@ The query API allows for interaction with locally stored instances.
 ```js
 // Get all instances - equivalent to query({})
 User.all()
-    .execute()
     .then(function (users) {
         users.forEach(function (u) {
             console.log(u.login);
@@ -677,14 +676,12 @@ User.all()
 
 // Query for a user with a particular remote identifier:
 User.query({id: 'xyz'})
-    .execute()
     .then(function (u) {
         console.log(u.login);
     });
 
 // Query for repos with more than 50 stars
 Repo.query({stars__gt: 50})
-    .execute()
     .then(function (repos) {
         repos.forEach(function (r) {
             console.log(r.name);
@@ -693,7 +690,6 @@ Repo.query({stars__gt: 50})
 
 // Get one instance. Throws an error if more than one instance is returned
 Repo.one({id: 55623})
-    .execute()
     .then(function (repo) {
         console.log(repo.name);
     });
@@ -711,7 +707,6 @@ You can query using dot syntax to access nested objects.
 
 ```js
 Repo.query({'owner.username': 'mtford90'})
-    .execute()
     .then(function (repos) {
         // ...
     });
@@ -730,33 +725,28 @@ Repo.query({
 	{
 		name: 'michael'
 	}
-}).execute().then(function (repos) {
+}).then(function (repos) {
     // ...
 });
 ```
 
 ## Ordering
 
-`Query.prototype.orderBy(... fields)` can be used to order instances.
+***TODO***
+
+* Implement the new order by mechanism.
+* Get rid of .execute()
+
+We can also order instances using an `opts` object:
 
 ```js
-User.query({age__gte: 18})
-    .orderBy('-age', 'name')
-    .execute()
+User.query({
+        query: {age__gte: 18},
+        orderBy: ['-age', 'name']
+    })
     .then(function (results) {
         console.log('results', results);
     });
-```
-
-The following queries would achieve the same:
-
-```js
-var q = User.query({age__gte: 18})
-    		.orderBy('-age')
-    		.orderBy('name');
-
-var q = User.query({age__gte: 18})
-    		.orderBy(['-age', 'name']);
 ```
 
 ## Comparators
@@ -779,15 +769,47 @@ siesta.registerComparator('customLt', function (opts) {
 });
 
 Repo.query({stars__customLt: 50})
-    .execute()
     .then(function (repos) {
-            repos.forEach(function (r) {
-            console.log(r.name);
-        });
+        repos.forEach(function (r) {
+        console.log(r.name);
     });
 ```
 
 Prepending `-` signifies descending order.
+
+## Query Set
+
+TODO:
+
+* Implement querysets
+
+Once a query has completed successfully we can access the `QuerySet` instance which contains the results of the query. This is an array-like object and can be treat as such.
+
+ The query set has additional methods that allow us to apply bulk operations to all instances within it for example:
+
+```js
+// Delete model instances for all repositories with >= 1000 stars.
+Repo.query({stars__gte: 1000})
+    .then(function (repos) {
+        repos.remove();
+    });
+
+// Change the name for all repositories with >= 1000 stars.
+Repo.query({stars__gte: 1000})
+    .then(function (repos) {
+        repos.name = 'A Popular Repo';
+    });
+```
+
+We can also access the query set using the `results` attribute once a query has completed.
+
+```js
+var query;
+query = Repo.query({stars__gte: 1000})
+            .then(function (repos) {
+                assert.equal(repos, query.results);
+            });
+```
 
 # Reactive Queries
 
@@ -806,8 +828,10 @@ rq.init()
 Reactive queries can be ordered in a similar fashion to ordinary queries.
 
 ```js
-var rq = User.reactiveQuery({age__gte: 18})
-			 .orderBy('-age', 'name');
+var rq = User.reactiveQuery({
+    query: {age__gte: 18},
+    orderBy: ['-age', 'name']
+});
 ```
 
 Once initialised you can terminate a reactive query by calling `terminate`. This will prevent it from responding to model events and hence updating its result set.
@@ -832,6 +856,30 @@ var cancelListen = rq.listen(function (results, change) {
 	// results is the complete result set
 	// change describes any changes to the result set
 });
+```
+
+## Query Set
+
+In a similar fashion to ordinary queries, results presented by reactive queries are `QuerySet` instances and so can be used to manipulate all instances in the result set.
+
+```js
+// Whenever a new user less than 18 years of age is created, remove it.
+var rq = User.reactiveQuery({age__lt: 18});
+rq.init()
+  .then(function (users) {
+       rq.listen(function (users) {
+            users.remove();
+       });
+  });
+
+// Convert the names of all users to uppercase as they are created.
+var rq = User.reactiveQuery();
+rq.init()
+  .then(function (users) {
+       rq.listen(function (users) {
+           users.name = users.name.toUpperCase();
+       });
+  });
 ```
 
 # Arranged Reactive Queries
@@ -862,9 +910,10 @@ Todo.map([
 You can kick off the arranged reactive query with an initial ordering based on the usual query API described in the previous sections.
 
 ```js
-var arq = User.arrangedReactiveQuery({age__gt: 10});
-arq.orderBy('age');
-arq.indexAttribute = 'index';
+var arq = User.arrangedReactiveQuery({
+    query: {age__gt: 10}
+});
+arq.indexAttribute = 'index'; // Default attribute to use is index
 
 User.map([
 	{age: 55},
@@ -1406,6 +1455,63 @@ Settings.one().then(function (settings) {
 });
 ```
 
+# Error handling
+
+***TODO***
+
+* Implementation of `siesta.errorHandler`.
+* Implementation of `SiestaCustomError`
+* List all components that we can listen to.
+
+Following Node convention the first parameter of all callbacks in Siesta is the error parameter. e.g. if you attempted to map a string onto the object graph.
+
+```js
+Model.map('sdfsdfsdf'), function (err) {
+    assert.instanceOf(err, siesta.CustomSiestaError);
+    assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
+    console.log(err.message); // Cannot map strings onto the object graph.
+});
+```
+
+Similarly you can catch errors using the `then` function of promises
+
+```js
+Model.map('sdfsdfsdf')
+    .then(function (instance) {
+        // This will never be called.
+    }, function (err) {
+        assert.instanceOf(err, siesta.CustomSiestaError);
+        assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
+        console.log(err.message); // Cannot map strings onto the object graph.
+    });
+```
+
+`catch` will be equivalent in this case. Note, however, that `catch` will also catch any errors thrown by Javascript e.g. type errors.
+
+```js
+Model.map('sdfsdfsdf')
+    .then(function (instance) {
+        // This will never be called.
+    })
+    .catch(function (err) {
+        assert.instanceOf(err, siesta.CustomSiestaError);
+        assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
+        console.log(err.message); // Cannot map strings onto the object graph.
+    });
+```
+
+## Global Error Handling
+
+If appropriate, rather than sprinkling error handlers all over our codebase we can also register global error handlers.
+
+```js
+var cancelListen = siesta.errorHandler(function (err) {
+    if (err.component == 'Mapping') {
+        console.error('Mapping error', err.message);
+    }
+});
+```
+
 # Logging
 
 `siesta.setLogLevel(loggerName, logLevel)` is used for configuring logging in Siesta.
@@ -1571,7 +1677,10 @@ var MyComponent = React.createClass({
 You can listen to reactive queries.
 
 ```js
-var rq = User.reactiveQuery({age__gt: 20}).orderBy('age');
+var rq = User.reactiveQuery({
+    query: {age__gt: 20},
+    orderBy: 'age'
+});
 
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
@@ -1624,7 +1733,6 @@ var MyComponent = React.createClass({
 
 // Instead of this.
 var MyComponent = React.createClass({
-    mixins: [SiestaMixin],
     componentDidMount: function () {
         var listener = function(mySingleton) {
             this.setState({
@@ -1635,6 +1743,76 @@ var MyComponent = React.createClass({
             .then(function (mySingleton) {
                 this.listen(mySingleton, listener).then(listener);
             }.bind(this));
+    }
+});
+```
+
+### query
+
+***TODO:***
+
+* Implement the below
+
+The `query` function will execute a query and then populate the state with the passed key.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.query(User, {age__gt: 20}, 'users');
+    }
+});
+```
+
+Which is equivalent to:
+
+```js
+var MyComponent = React.createClass({
+    componentDidMount: function () {
+        User.query({age__gt: 20}).then(function (users) {
+            this.setState({
+                users: users
+            });
+        }.bind(this));
+    }
+});
+```
+
+### listenAndSet
+
+***TODO:***
+
+* Implement the below
+
+The `listenAndSet` function will listen to a reactive query or an arranged reactive query and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.listenAndSet(MyModel.reactiveQuery({age__gt: 20}), 'users');
+    }
+});
+```
+
+which is equivalent to:
+
+```js
+var MyComponent = React.createClass({
+    updateState: function (results) {
+      this.setState({
+          users: results
+      });
+    },
+    componentDidMount: function () {
+        var rq = MyModel.reactiveQuery({age__gt: 20}),
+            updateState = this.updateState.bind(this);
+        rq.init().then(updateState);
+        this.cancelListen = rq.listen(updateState);
+
+    },
+    componentWillUnmount: function () {
+        this.cancelListen();
     }
 });
 ```
