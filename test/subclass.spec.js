@@ -5,7 +5,7 @@ var SiestaModel = require('../core/modelInstance'),
     cache = require('../core/cache'),
     Collection = require('../core/collection');
 
-describe('Subclass', function () {
+describe.only('Subclass', function () {
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -380,7 +380,42 @@ describe('Subclass', function () {
     });
 
     describe('id', function () {
-        // TODO
+        var Collection, Car, SportsCar;
+        beforeEach(function (done) {
+            s.reset(done);
+
+
+        });
+
+        it('inherits', function (done) {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
+                id: 'blah'
+            });
+            SportsCar = Car.child('SportsCar', {
+            });
+            s.install(function () {
+                assert.equal(Car.id, 'blah');
+                assert.equal(SportsCar.id, 'blah');
+                done();
+            });
+        });
+
+        it('overrides', function (done) {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
+                id: 'blah'
+            });
+            SportsCar = Car.child('SportsCar', {
+                id: 'blah2'
+            });
+            s.install(function () {
+                assert.equal(Car.id, 'blah');
+                assert.equal(SportsCar.id, 'blah2');
+                done();
+            });
+        });
+
     });
 
     describe('properties', function () {

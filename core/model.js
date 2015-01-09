@@ -585,8 +585,9 @@ _.extend(Model.prototype, {
         _.extend(opts, {
             attributes: Array.prototype.concat.call(opts.attributes || [], this._opts.attributes),
             relationships: _.extend(opts.relationships || {}, this._opts.relationships),
-            methods: _.extend(opts.methods || {}, this._opts.methods),
-            statics: _.extend(opts.statics || {}, this._opts.statics)
+            methods: _.extend(_.extend({}, this._opts.methods) || {}, opts.methods),
+            statics: _.extend(_.extend({}, this._opts.statics) || {}, opts.statics),
+            id: opts.id || this._opts.id
         });
 
         console.log('_opts', this._opts);
