@@ -5,7 +5,7 @@ var SiestaModel = require('../core/modelInstance'),
     cache = require('../core/cache'),
     Collection = require('../core/collection');
 
-describe.only('Subclass', function () {
+describe('Subclass', function () {
     var Collection, Car, SportsCar;
 
     before(function () {
