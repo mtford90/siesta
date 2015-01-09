@@ -6,29 +6,30 @@ var SiestaModel = require('../core/modelInstance'),
     Collection = require('../core/collection');
 
 describe.only('Subclass', function () {
+    var Collection, Car, SportsCar;
 
     before(function () {
         s.ext.storageEnabled = false;
     });
 
+    beforeEach(function (done) {
+        s.reset(done);
+    });
+
+
     describe('hierarchy', function () {
-        var collection, Car, SportsCar;
-
-
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('myCollection');
+            Collection = s.collection('myCollection');
 
-                Car = collection.model('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name']
-                });
-                SportsCar = Car.child('SportsCar', {
-                    attributes: ['maxSpeed']
-                });
-
-                s.install(done);
+            Car = Collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
             });
+            SportsCar = Car.child('SportsCar', {
+                attributes: ['maxSpeed']
+            });
+
+            s.install(done);
         });
 
         it('children', function () {
@@ -42,22 +43,18 @@ describe.only('Subclass', function () {
     });
 
     describe('attributes', function () {
-        var collection, Car, SportsCar;
-
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('myCollection');
+            Collection = s.collection('myCollection');
 
-                Car = collection.model('Car', {
-                    id: 'id',
-                    attributes: ['colour', 'name']
-                });
-                SportsCar = Car.child('SportsCar', {
-                    attributes: ['maxSpeed']
-                });
-
-                s.install(done);
+            Car = Collection.model('Car', {
+                id: 'id',
+                attributes: ['colour', 'name']
             });
+            SportsCar = Car.child('SportsCar', {
+                attributes: ['maxSpeed']
+            });
+
+            s.install(done);
         });
 
         it('child attributes', function () {
@@ -80,27 +77,25 @@ describe.only('Subclass', function () {
 
         describe('names', function () {
             beforeEach(function (done) {
-                s.reset(function () {
-                    Collection = s.collection('myCollection');
-                    Car = Collection.model('Car', {
-                        attributes: ['colour', 'name'],
-                        relationships: {
-                            owner: {
-                                model: 'Person',
-                                type: 'OneToMany',
-                                reverse: 'cars'
-                            }
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
+                    attributes: ['colour', 'name'],
+                    relationships: {
+                        owner: {
+                            model: 'Person',
+                            type: 'OneToMany',
+                            reverse: 'cars'
                         }
-                    });
-                    SportsCar = Car.child('SportsCar', {
-                        attributes: ['maxSpeed']
-                    });
-                    Person = Collection.model('Person', {
-                        attributes: ['age', 'name']
-                    });
-
-                    s.install(done);
+                    }
                 });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['maxSpeed']
+                });
+                Person = Collection.model('Person', {
+                    attributes: ['age', 'name']
+                });
+
+                s.install(done);
             });
             it('child attributes', function () {
                 assert.include(SportsCar._relationshipNames, 'owner');
@@ -380,20 +375,13 @@ describe.only('Subclass', function () {
     });
 
     describe('id', function () {
-        var Collection, Car, SportsCar;
-        beforeEach(function (done) {
-            s.reset(done);
-
-
-        });
 
         it('inherits', function (done) {
             Collection = s.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'blah'
             });
-            SportsCar = Car.child('SportsCar', {
-            });
+            SportsCar = Car.child('SportsCar', {});
             s.install(function () {
                 assert.equal(Car.id, 'blah');
                 assert.equal(SportsCar.id, 'blah');
@@ -419,16 +407,149 @@ describe.only('Subclass', function () {
     });
 
     describe('properties', function () {
-        // TODO
+        beforeEach(function (done) {
+            Collection = s.collection('myCollection');
+
+            Car = Collection.model('Car', {
+                attributes: ['x'],
+                properties: {
+                    parent: {
+                        get: function () {
+                            return 'a';
+                        }
+                    }
+                }
+            });
+            SportsCar = Car.child('SportsCar', {
+                attributes: ['y'],
+                properties: {
+                    child: {
+                        get: function () {
+                            return 'b';
+                        }
+                    }
+                }
+            });
+
+            s.install(done);
+        });
+
+        it('parent property should be available on parent', function (done) {
+            Car.map({x: 1})
+                .then(function (c) {
+                    assert.equal(c.parent, 'a');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('child property should not be available on parent', function (done) {
+            Car.map({x: 1})
+                .then(function (c) {
+                    assert.notOk(c.child);
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('parent property should be available on child', function (done) {
+            SportsCar.map({x: 1})
+                .then(function (c) {
+                    assert.equal(c.parent, 'a');
+                    done();
+                })
+                .catch(done);
+        });
+
+        it('child property should be available on child', function (done) {
+            SportsCar.map({x: 1})
+                .then(function (c) {
+                    assert.equal(c.child, 'b');
+                    done();
+                })
+                .catch(done);
+        });
     });
 
     describe('init', function () {
-        // TODO
+        var Collection, Car, SportsCar;
+
+        it('parent init inherited by child', function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
+                init: function () {
+                    return 'a';
+                }
+            });
+            SportsCar = Car.child('SportsCar', {
+
+            });
+            s.install(function () {
+                console.log(Car);
+                assert.equal(Car.init(), 'a');
+                assert.equal(SportsCar.init(), 'a');
+            });
+        });
+
+        it('parent init overriden by child', function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
+                init: function () {
+                    return 'a';
+                }
+            });
+            SportsCar = Car.child('SportsCar', {
+                init: function () {
+                    return 'b';
+                }
+            });
+            s.install(function () {
+                assert.equal(Car.init(), 'a');
+                assert.equal(SportsCar.init(), 'b');
+            });
+        });
+
     });
 
     describe('remove', function () {
-        // TODO
+        var Collection, Car, SportsCar;
+
+        it('parent remove inherited by child', function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
+                remove: function () {
+                    return 'a';
+                }
+            });
+            SportsCar = Car.child('SportsCar', {
+
+            });
+            s.install(function () {
+                assert.equal(Car.remove(), 'a');
+                assert.equal(SportsCar.remove(), 'a');
+            });
+        });
+
+        it('parent remove overriden by child', function () {
+            Collection = s.collection('myCollection');
+            Car = Collection.model('Car', {
+                remove: function () {
+                    return 'a';
+                }
+            });
+            SportsCar = Car.child('SportsCar', {
+                remove: function () {
+                    return 'b';
+                }
+            });
+            s.install(function () {
+                assert.equal(Car.remove(), 'a');
+                assert.equal(SportsCar.remove(), 'b');
+            });
+        });
+
     });
+
 
     describe('query', function () {
         var collection, Car, SportsCar, SuperCar;

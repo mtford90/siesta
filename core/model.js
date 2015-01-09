@@ -35,7 +35,6 @@ var Logger = log.loggerWithName('Model');
 function Model(opts) {
     var self = this;
     this._opts = opts ? _.extend({}, opts) : {};
-    console.log('constructor opts', this._opts);
 
     util.extendFromOpts(this, opts, {
         methods: {},
@@ -587,14 +586,12 @@ _.extend(Model.prototype, {
             relationships: _.extend(opts.relationships || {}, this._opts.relationships),
             methods: _.extend(_.extend({}, this._opts.methods) || {}, opts.methods),
             statics: _.extend(_.extend({}, this._opts.statics) || {}, opts.statics),
-            id: opts.id || this._opts.id
+            properties: _.extend(_.extend({}, this._opts.properties) || {}, opts.properties),
+            id: opts.id || this._opts.id,
+            init: opts.init || this._opts.init,
+            remove: opts.remove || this._opts.remove
         });
-
-        console.log('_opts', this._opts);
-        console.log('opts', opts);
-
-        var collection = this.collection,
-            model = collection.model(opts.name, opts);
+        var model = this.collection.model(opts.name, opts);
         model.parent = this;
         this.children.push(model);
         return model;
