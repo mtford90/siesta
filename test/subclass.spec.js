@@ -16,7 +16,6 @@ describe('Subclass', function () {
         s.reset(done);
     });
 
-
     describe('hierarchy', function () {
         beforeEach(function (done) {
             Collection = s.collection('myCollection');
