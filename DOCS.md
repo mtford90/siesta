@@ -84,15 +84,6 @@ If you decide to use the storage module then you **must** include PouchDB. If th
 window.PouchDB = require('pouchdb');
 ```
 
-## Boilerplate Projects [TODO]
-
-The quickest way to get up and running is to fork one of the boilerplate/example projects.
-
-* Script Tags
-* CommonJS with Browserify
-* CommonJS with Webpack
-* CommonJS with Webpack & ReactJS
-
 # Concepts
 
 Before reading through this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
