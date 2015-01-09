@@ -34,7 +34,8 @@ var Logger = log.loggerWithName('Model');
  */
 function Model(opts) {
     var self = this;
-    this._opts = opts;
+    this._opts = opts ? _.extend({}, opts) : {};
+    console.log('constructor opts', this._opts);
 
     util.extendFromOpts(this, opts, {
         methods: {},
@@ -64,7 +65,6 @@ function Model(opts) {
         _reverseRelationshipsInstalled: false,
         children: []
     });
-
 
     Object.defineProperties(this, {
         _relationshipNames: {
@@ -120,6 +120,7 @@ function Model(opts) {
             enumerable: true
         }
     });
+
 
 }
 
@@ -581,11 +582,18 @@ _.extend(Model.prototype, {
         } else {
             opts = name;
         }
-        opts.attributes
-            = Array.prototype.concat.call(opts.attributes || [], this._opts.attributes);
-        opts.relationships = _.extend(opts.relationships || {}, this._opts.relationships);
-        var collection = this.collection;
-        var model = collection.model(opts.name, opts);
+        _.extend(opts, {
+            attributes: Array.prototype.concat.call(opts.attributes || [], this._opts.attributes),
+            relationships: _.extend(opts.relationships || {}, this._opts.relationships),
+            methods: _.extend(opts.methods || {}, this._opts.methods),
+            statics: _.extend(opts.statics || {}, this._opts.statics)
+        });
+
+        console.log('_opts', this._opts);
+        console.log('opts', opts);
+
+        var collection = this.collection,
+            model = collection.model(opts.name, opts);
         model.parent = this;
         this.children.push(model);
         return model;

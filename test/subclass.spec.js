@@ -281,6 +281,120 @@ describe('Subclass', function () {
 
     });
 
+    describe('methods', function () {
+        var Collection, Car, SportsCar;
+        beforeEach(function (done) {
+            s.reset(function () {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
+                    attributes: ['x'],
+                    methods: {
+                        aMethod: function () {
+                            return 'a';
+                        }
+                    }
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['y'],
+                    methods: {
+                        anotherMethod: function () {
+                            return 'b';
+                        }
+                    }
+                });
+                s.install(done);
+            });
+        });
+
+        it('parent method available on parent', function (done) {
+            Car.map({x: 1}).then(function (c) {
+                assert.equal(c.aMethod(), 'a');
+                done();
+            }).catch(done);
+        });
+
+        it('child method not available on parent', function (done) {
+            Car.map({x: 1}).then(function (c) {
+                assert.notOk(c.anotherMethod);
+                done();
+            }).catch(done);
+        });
+
+        it('parent method available on child', function (done) {
+            SportsCar.map({x: 1, y: 2}).then(function (c) {
+                assert.equal(c.aMethod(), 'a');
+                done();
+            }).catch(done);
+        });
+
+        it('the childs other method is available', function (done) {
+            SportsCar.map({x: 1, y: 2}).then(function (c) {
+                assert.equal(c.anotherMethod(), 'b');
+                done();
+            }).catch(done);
+        });
+    });
+
+    describe('statics', function () {
+        var Collection, Car, SportsCar;
+        beforeEach(function (done) {
+            s.reset(function () {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
+                    attributes: ['x'],
+                    statics: {
+                        aStaticMethod: function () {
+                            return 'a';
+                        }
+                    }
+                });
+                SportsCar = Car.child('SportsCar', {
+                    attributes: ['y'],
+                    statics: {
+                        anotherStaticMethod: function () {
+                            return 'b';
+                        }
+                    }
+                });
+                s.install(done);
+            });
+        });
+
+        it('parent static available on parent', function () {
+            assert.equal(Car.aStaticMethod(), 'a');
+        });
+
+
+        it('child static not available on parent', function () {
+            assert.notOk(Car.anotherStaticMethod);
+        });
+
+
+        it('child static available', function () {
+            assert.equal(SportsCar.anotherStaticMethod(), 'b');
+        });
+
+        it('parents static available on child', function () {
+            assert.equal(SportsCar.aStaticMethod(), 'a');
+        });
+    });
+
+    describe('id', function () {
+        // TODO
+    });
+
+    describe('properties', function () {
+        // TODO
+    });
+
+    describe('init', function () {
+        // TODO
+    });
+
+    describe('remove', function () {
+        // TODO
+    });
+
     describe('query', function () {
         var collection, Car, SportsCar, SuperCar;
 
