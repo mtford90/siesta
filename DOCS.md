@@ -274,8 +274,6 @@ var Repo = Github.model({
 
 There are three types of relationships, described here with examples from the Github API.
 
-
-
 ```js
 var Repo = Github.model('Repo', {
     relationships: {
@@ -301,7 +299,7 @@ var Repo = Github.model('Repo', {
 }
 ```
 
-Once a relationship is defined, Siesta will automatically manage the reverse of that relationship e.g.
+Once a relationship is defined, Siesta will automatically manage the reverse of that relationship, the name of which is defined by the `reverse` key when defining your models. e.g.
 
 ```js
 User.map({username: 'bob', id: 5})
@@ -312,6 +310,8 @@ User.map({username: 'bob', id: 5})
             });
     });
 ```
+
+If you do not define a reverse a default name will be used instead which takes the form of `reverse_<name>`.
 
 #### Intercollection Relationships
 
@@ -777,15 +777,9 @@ Repo.query({stars__customLt: 50})
 
 Prepending `-` signifies descending order.
 
-## Query Set
+## Result Set
 
-TODO:
-
-* Implement querysets
-
-Once a query has completed successfully we can access the `QuerySet` instance which contains the results of the query. This is an array-like object and can be treat as such.
-
- The query set has additional methods that allow us to apply bulk operations to all instances within it for example:
+Once a query has completed successfully we can access the result set which contains the results of the query. This is an array-like object and can be treated as such however has additional methods that allows us to apply bulk operations to all instances within it. For example:
 
 ```js
 // Delete model instances for all repositories with >= 1000 stars.
@@ -799,9 +793,34 @@ Repo.query({stars__gte: 1000})
     .then(function (repos) {
         repos.name = 'A Popular Repo';
     });
+
+// Capitalise the names of all repos.
+Repo.all()
+    .then(function (repos) {
+        repos.name = repos.name.toUpperCase();
+    });
+
+Each method call returns another result set and hence we can chain method calls.
+
+```js
+Repo.all()
+    .then(function (repos) {
+        repos.name = repos.name.toUpperCase().toLowerCase();
+    });
 ```
 
-We can also access the query set using the `results` attribute once a query has completed.
+If a method call returns promises then instead of a result set we will get a composite promise which can be treated like any other promise.
+
+```js
+Repo.query({stars__gte: 1000})
+    .then(function (repos) {
+        repos.remove().then(function () {
+            // All removed.
+        });
+    });
+```
+
+We can also access the result set using the `results` attribute once a query has completed.
 
 ```js
 var query;
