@@ -206,7 +206,51 @@ describe('one to one relationship proxy', function () {
 
 
         });
-    })
+    });
+
+    describe('removal', function () {
+        beforeEach(function () {
+            carProxy = new OneToOneProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'car',
+                forwardName: 'owner',
+                isReverse: false
+            });
+            personProxy = new OneToOneProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'car',
+                forwardName: 'owner',
+                isReverse: true
+            });
+            car = new SiestaModel(Car);
+            car._id = 'car';
+            carProxy.install(car);
+            person = new SiestaModel(Person);
+            person._id = 'person';
+            personProxy.install(person);
+            cache.insert(car);
+            cache.insert(person);
+        });
+
+        it('removal', function (done) {
+            car.owner = person;
+            person.remove().then(function () {
+                assert.notOk(car.owner);
+                done();
+            }).catch(done);
+        });
+
+        it('reverse removal', function (done) {
+            person.car = car;
+            car.remove().then(function () {
+                assert.notOk(person.car);
+                done();
+            }).catch(done);
+        });
+
+    });
 
 
 });

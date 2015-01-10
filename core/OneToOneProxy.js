@@ -6,6 +6,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
     Store = require('./store'),
     util = require('./util'),
     InternalSiestaError = require('./error').InternalSiestaError,
+    ModelEventType = require('./modelEvents').ModelEventType,
     SiestaModel = require('./modelInstance');
 
 /**
@@ -34,6 +35,23 @@ _.extend(OneToOneProxy.prototype, {
         }
         return null;
     },
+    /**
+     * If the related object is removed from the object graph, we need to ensure that the relationship is cleared.
+     * @param obj
+     */
+    listenForRemoval: function (obj) {
+        if (this.cancelRemovalListen) {
+            this.cancelRemovalListen();
+            this.cancelRemovalListen = null;
+        }
+        this.cancelRemovalListen = obj.listen(function (e) {
+            if (e.type == ModelEventType.Remove) {
+                this.set(null);
+                this.cancelRemovalListen();
+                this.cancelRemovalListen = null;
+            }
+        }.bind(this));
+    },
     set: function (obj, opts) {
         this.checkInstalled();
         var self = this;
@@ -43,6 +61,7 @@ _.extend(OneToOneProxy.prototype, {
                 return errorMessage;
             }
             else {
+                this.listenForRemoval(obj);
                 this.clearReverseRelated(opts);
                 self.setIdAndRelated(obj, opts);
                 self.setIdAndRelatedReverse(obj, opts);
