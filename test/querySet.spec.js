@@ -3,7 +3,7 @@ var s = require('../core/index'),
     SiestaCustomError = require('../core/error').SiestaCustomError,
     assert = require('chai').assert;
 
-describe.only('query sets', function () {
+describe('query sets', function () {
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -71,7 +71,6 @@ describe.only('query sets', function () {
             assert.equal(bob.name, 'BOB');
         });
 
-
         it('uppercase then lowercase all names', function () {
             var nameQuerySet = querySet.name;
             assert.include(nameQuerySet, 'Michael');
@@ -82,7 +81,57 @@ describe.only('query sets', function () {
             assert.equal(bob.name, 'bob');
         });
 
-
-
     });
+
+    describe('relationships', function () {
+        var Collection, Person, Car;
+        var michael, bob;
+        beforeEach(function (done) {
+            Collection = s.collection('myCollection');
+            Person = Collection.model('Person', {
+                attributes: ['name', 'age']
+            });
+            Car = Collection.model('Car', {
+                attributes: ['colour'],
+                relationships: {
+                    owner: {
+                        model: 'Person',
+                        reverse: 'cars'
+                    }
+                }
+            });
+            s.install(function () {
+                michael = Person._new({name: 'Michael', age: 24});
+                bob = Person._new({name: 'Bob', age: 21});
+                michael.cars = [Car._new({colour: 'red'}), Car._new({colour: 'blue'})];
+
+                done();
+            });
+
+        });
+
+        it('new owner', function () {
+            var querySet = createQuerySet(michael.cars, Car);
+            querySet.owner = bob;
+            assert.equal(bob.cars.length, 2);
+            assert.equal(michael.cars.length, 0)
+        });
+
+        it('remove all cars', function (done) {
+            var cars = _.extend([], michael.cars),
+                querySet = createQuerySet(cars, Car);
+
+            querySet.remove().then(function () {
+                s.notify(function () {
+                    cars.forEach(function (c) {
+                        assert.ok(c.removed);
+                    });
+                    assert.equal(bob.cars.length, 0);
+                    assert.equal(michael.cars.length, 0);
+                    done();
+                });
+            });
+        })
+    });
+
 });

@@ -1,5 +1,6 @@
 var util = require('./util'),
     SiestaCustomError = require('./error').SiestaCustomError,
+    ModelInstance = require('./ModelInstance'),
     _ = require('./util')._;
 
 /*
@@ -35,6 +36,11 @@ function getPropertyNames(object) {
     return propertyNames;
 }
 
+/**
+ * Define a proxy property to attributes on objects in the array
+ * @param arr
+ * @param prop
+ */
 function defineAttribute(arr, prop) {
     if (!(prop in arr)) { // e.g. we cannot redefine .length
         Object.defineProperty(arr, prop, {
@@ -58,14 +64,26 @@ function defineAttribute(arr, prop) {
     }
 }
 
+function isPromise(obj) {
+    // TODO: Don't think this is very robust.
+    return obj.then && obj.catch;
+}
+
+/**
+ * Define a proxy method on the array if not already in existence.
+ * @param arr
+ * @param prop
+ */
 function defineMethod(arr, prop) {
     if (!(prop in arr)) { // e.g. we don't want to redefine toString
         arr[prop] = function () {
             var args = arguments,
                 res = this.map(function (p) {
-                    return p[prop].call(p, args);
+                    return p[prop].apply(p, args);
                 });
-            return querySet(res);
+            var arePromises = false;
+            if (res.length) arePromises = isPromise(res[0]);
+            return arePromises ? window.Q.all(res) : querySet(res);
         };
     }
 }
@@ -77,8 +95,13 @@ function defineMethod(arr, prop) {
  * @param model - The model with which to proxy to
  */
 function modelQuerySet(arr, model) {
-    var names = model._attributeNames.concat(model._relationshipNames);
+    arr = _.extend([], arr);
+    var attributeNames = model._attributeNames,
+        relationshipNames = model._relationshipNames,
+        names = attributeNames.concat(relationshipNames).concat(instanceMethods);
     names.forEach(_.partial(defineAttribute, arr));
+    var instanceMethods = Object.keys(ModelInstance.prototype);
+    instanceMethods.forEach(_.partial(defineMethod, arr));
     return renderImmutable(arr);
 }
 
