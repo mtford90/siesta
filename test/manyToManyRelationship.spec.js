@@ -16,6 +16,8 @@ describe('relationship proxy', function () {
         cache = require('../core/cache');
 
     var MyCollection, Car, Person;
+    var carProxy, personProxy;
+    var car, person;
 
 
     beforeEach(function (done) {
@@ -33,85 +35,138 @@ describe('relationship proxy', function () {
         });
     });
 
-    describe('many-to-many', function () {
+
+    describe('get', function () {
+        beforeEach(function () {
+            carProxy = new ManyToManyProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'cars',
+                forwardName: 'owners',
+                isReverse: false
+            });
+            personProxy = new ManyToManyProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'cars',
+                forwardName: 'owners',
+                isReverse: true
+            });
+            car = new SiestaModel(Car);
+            car._id = 'car';
+            carProxy.install(car);
+            person = new SiestaModel(Person);
+            person._id = 'person';
+            personProxy.install(person);
+            cache.insert(person);
+            cache.insert(car);
+        });
+
+
+        it('forward', function (done) {
+            carProxy.related = [person];
+            carProxy.get(function (err, people) {
+                if (err) done(err);
+                assert.include(people, person);
+                assert.include(carProxy.related, person);
+                done();
+            });
+        });
+
+        it('reverse', function (done) {
+            personProxy.related = [car];
+            personProxy.get(function (err, cars) {
+                if (err) done(err);
+                assert.include(cars, car);
+                assert.include(personProxy.related, car);
+                done();
+            });
+        });
+    });
+
+    describe('set', function () {
         var carProxy, personProxy;
         var car, person;
-
-        describe('get', function () {
-            beforeEach(function () {
-                carProxy = new ManyToManyProxy({
-                    reverseModel: Person,
-                    forwardModel: Car,
-                    reverseName: 'cars',
-                    forwardName: 'owners',
-                    isReverse: false
-                });
-                personProxy = new ManyToManyProxy({
-                    reverseModel: Person,
-                    forwardModel: Car,
-                    reverseName: 'cars',
-                    forwardName: 'owners',
-                    isReverse: true
-                });
-                car = new SiestaModel(Car);
-                car._id = 'car';
-                carProxy.install(car);
-                person = new SiestaModel(Person);
-                person._id = 'person';
-                personProxy.install(person);
-                cache.insert(person);
-                cache.insert(car);
+        beforeEach(function () {
+            carProxy = new ManyToManyProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'cars',
+                forwardName: 'owners',
+                isReverse: false
             });
+            personProxy = new ManyToManyProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'cars',
+                forwardName: 'owners',
+                isReverse: true
+            });
+            car = new SiestaModel(Car);
+            car._id = 'car';
+            carProxy.install(car);
+            person = new SiestaModel(Person);
+            person._id = 'person';
+            personProxy.install(person);
+        });
 
+        describe('none pre-existing', function () {
 
-            it('forward', function (done) {
-                carProxy.related = [person];
-                carProxy.get(function (err, people) {
-                    if (err) done(err);
-                    assert.include(people, person);
+            describe('forward', function () {
+                it('should set forward', function () {
+                    car.owners = [person];
+                    assert.include(car.owners, person);
                     assert.include(carProxy.related, person);
-                    done();
+                });
+
+                it('should set reverse', function () {
+                    car.owners = [person];
+                    assert.include(person.cars, car);
+                    assert.include(personProxy.related, car);
                 });
             });
 
-            it('reverse', function (done) {
-                personProxy.related = [car];
-                personProxy.get(function (err, cars) {
-                    if (err) done(err);
-                    assert.include(cars, car);
+            describe('backwards', function () {
+                it('should set forward', function () {
+                    person.cars = [car];
+                    assert.include(person.cars, car);
                     assert.include(personProxy.related, car);
-                    done();
+
+                });
+
+                it('should set reverse', function () {
+                    person.cars = [car];
+                    assert.include(car.owners, person);
+                    assert.include(carProxy.related, person);
                 });
             });
         });
 
-        describe('set', function () {
-            var carProxy, personProxy;
-            var car, person;
+
+        describe('pre-existing', function () {
+
+            var anotherPerson, anotherPersonProxy;
+
             beforeEach(function () {
-                carProxy = new ManyToManyProxy({
-                    reverseModel: Person,
-                    forwardModel: Car,
-                    reverseName: 'cars',
-                    forwardName: 'owners',
-                    isReverse: false
-                });
-                personProxy = new ManyToManyProxy({
+                anotherPerson = new SiestaModel(Person);
+                anotherPerson._id = 'anotherPerson';
+                anotherPersonProxy = new ManyToManyProxy({
                     reverseModel: Person,
                     forwardModel: Car,
                     reverseName: 'cars',
                     forwardName: 'owners',
                     isReverse: true
                 });
-                car = new SiestaModel(Car);
-                car._id = 'car';
-                carProxy.install(car);
-                person = new SiestaModel(Person);
-                person._id = 'person';
-                personProxy.install(person);
+                anotherPersonProxy.install(anotherPerson);
+                cache.insert(anotherPerson);
+                cache.insert(person);
+                cache.insert(car);
             });
 
-            describe('none pre-existing', function () {
+            describe('no fault', function () {
+                beforeEach(function () {
+                    car.owners = [anotherPerson];
+                });
 
                 describe('forward', function () {
                     it('should set forward', function () {
@@ -125,6 +180,12 @@ describe('relationship proxy', function () {
                         assert.include(person.cars, car);
                         assert.include(personProxy.related, car);
                     });
+
+                    it('should clear the old', function () {
+                        car.owners = [person];
+                        assert.equal(anotherPersonProxy.related.length, 0);
+                    });
+
                 });
 
                 describe('backwards', function () {
@@ -132,7 +193,6 @@ describe('relationship proxy', function () {
                         person.cars = [car];
                         assert.include(person.cars, car);
                         assert.include(personProxy.related, car);
-
                     });
 
                     it('should set reverse', function () {
@@ -143,109 +203,46 @@ describe('relationship proxy', function () {
                 });
             });
 
-
-            describe('pre-existing', function () {
-
-                var anotherPerson, anotherPersonProxy;
-
+            describe('fault', function () {
                 beforeEach(function () {
-                    anotherPerson = new SiestaModel(Person);
-                    anotherPerson._id = 'anotherPerson';
-                    anotherPersonProxy = new ManyToManyProxy({
-                        reverseModel: Person,
-                        forwardModel: Car,
-                        reverseName: 'cars',
-                        forwardName: 'owners',
-                        isReverse: true
-                    });
-                    anotherPersonProxy.install(anotherPerson);
-                    cache.insert(anotherPerson);
-                    cache.insert(person);
-                    cache.insert(car);
+                    car.owners = [anotherPerson];
+                    carProxy.related = undefined;
+                    anotherPersonProxy.related = undefined;
                 });
-
-                describe('no fault', function () {
-                    beforeEach(function () {
-                        car.owners = [anotherPerson];
+                describe('forward', function () {
+                    it('should set forward', function () {
+                        car.owners = [person];
+                        assert.include(car.owners, person);
+                        assert.include(carProxy.related, person);
                     });
 
-                    describe('forward', function () {
-                        it('should set forward', function () {
-                            car.owners = [person];
-                            assert.include(car.owners, person);
-                            assert.include(carProxy.related, person);
-                        });
-
-                        it('should set reverse', function () {
-                            car.owners = [person];
-                            assert.include(person.cars, car);
-                            assert.include(personProxy.related, car);
-                        });
-
-                        it('should clear the old', function () {
-                            car.owners = [person];
-                            assert.equal(anotherPersonProxy.related.length, 0);
-                        });
-
-                    });
-
-                    describe('backwards', function () {
-                        it('should set forward', function () {
-                            person.cars = [car];
-                            assert.include(person.cars, car);
-                            assert.include(personProxy.related, car);
-                        });
-
-                        it('should set reverse', function () {
-                            person.cars = [car];
-                            assert.include(car.owners, person);
-                            assert.include(carProxy.related, person);
-                        });
-                    });
-                });
-
-                describe('fault', function () {
-                    beforeEach(function () {
-                        car.owners = [anotherPerson];
-                        carProxy.related = undefined;
-                        anotherPersonProxy.related = undefined;
-                    });
-                    describe('forward', function () {
-                        it('should set forward', function () {
-                            car.owners = [person];
-                            assert.include(car.owners, person);
-                            assert.include(carProxy.related, person);
-                        });
-
-                        it('should set reverse', function () {
-                            car.owners = [person];
-                            assert.include(person.cars, car);
-                            assert.include(personProxy.related, car);
-                        });
-
-                    });
-
-                    describe('backwards', function () {
-                        it('should set forward', function () {
-                            person.cars = [car];
-                            assert.include(person.cars, car);
-                            assert.include(personProxy.related, car);
-                        });
-
-                        it('should set reverse', function () {
-                            person.cars = [car];
-                        });
-
-
+                    it('should set reverse', function () {
+                        car.owners = [person];
+                        assert.include(person.cars, car);
+                        assert.include(personProxy.related, car);
                     });
 
                 });
 
+                describe('backwards', function () {
+                    it('should set forward', function () {
+                        person.cars = [car];
+                        assert.include(person.cars, car);
+                        assert.include(personProxy.related, car);
+                    });
+
+                    it('should set reverse', function () {
+                        person.cars = [car];
+                    });
+
+
+                });
 
             });
-        })
 
 
-    });
+        });
+    })
+
 
 });
