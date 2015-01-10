@@ -10,9 +10,7 @@ describe('one to one relationship proxy', function () {
     var RelationshipProxy = require('../core/RelationshipProxy'),
         OneToOneProxy = require('../core/OneToOneProxy'),
         OneToManyProxy = require('../core/OneToManyProxy'),
-        ManyToManyProxy = require('../core/manyToManyProxy'),
         SiestaModel = require('../core/modelInstance'),
-        InternalSiestaError = require('../core/error').InternalSiestaError,
         cache = require('../core/cache');
 
     var MyCollection, Car, Person;

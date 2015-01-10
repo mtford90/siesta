@@ -12,7 +12,6 @@ describe('relationship proxy', function () {
         OneToManyProxy = require('../core/OneToManyProxy'),
         ManyToManyProxy = require('../core/manyToManyProxy'),
         SiestaModel = require('../core/modelInstance'),
-        InternalSiestaError = require('../core/error').InternalSiestaError,
         cache = require('../core/cache');
 
     var MyCollection, Car, Person;
