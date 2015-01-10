@@ -48,6 +48,7 @@ describe('reactive query', function () {
                 rq.init(function (err, results) {
                     if (err) done(err);
                     else {
+                        assert.equal(results, rq.results);
                         assert.ok(rq.initialised, 'Should be initialised');
                         assert.ok(rq.initialized, 'Should be initialized');
                         assert.equal(rq.results.length, 2, 'Should be 2 results');
@@ -75,9 +76,10 @@ describe('reactive query', function () {
                 it('results are as expected', function (done) {
                     Person.map(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
-                        rq.init(function (err) {
+                        rq.init(function (err, results) {
                             if (err) done(err);
                             else {
+                                assert.equal(results, rq.results);
                                 Person.map({name: 'Peter', age: 21, id: 4}).then(function (peter) {
                                     try {
                                         assertExpectedResults(rq.results, peter);
@@ -96,9 +98,10 @@ describe('reactive query', function () {
                 it('emission', function (done) {
                     Person.map(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
-                        rq.init(function (err) {
+                        rq.init(function (err, results) {
                             if (err) done(err);
                             else {
+                                assert.equal(results, rq.results);
                                 rq.listenOnce(function (results, change) {
                                     var added = change.added;
                                     assert.equal(added.length, 1);
@@ -130,9 +133,10 @@ describe('reactive query', function () {
                 it('results match', function (done) {
                     Person.map(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
-                        rq.init(function (err) {
+                        rq.init(function (err, results) {
                             if (err) done(err);
                             else {
+                                assert.equal(results, rq.results);
                                 Person.map({name: 'Peter', age: 33, id: 4}).then(function (peter) {
                                     try {
                                         matchResults(rq, peter);
@@ -162,9 +166,10 @@ describe('reactive query', function () {
                         var person = res[0];
                         person.age = 40;
                         var rq = Person.reactiveQuery({age__lt: 30});
-                        rq.init(function (err) {
+                        rq.init(function (err, results) {
                             if (err) done(err);
                             else {
+                                assert.equal(results, rq.results);
                                 s.notify(function () {
                                     try {
                                         assertResultsOk(rq.results, person);
@@ -189,6 +194,7 @@ describe('reactive query', function () {
                             else {
                                 var cancelListen;
                                 cancelListen = rq.listen(function (results, change) {
+                                    assert.equal(results, rq.results)
                                     assertResultsOk(rq.results, person);
                                     var removed = change.removed;
                                     assert.include(removed, person);

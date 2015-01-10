@@ -89,7 +89,7 @@ _.extend(ArrangedReactiveQuery.prototype, {
                     this._query.clearOrdering();
                 }
             }
-            deferred.finish(err);
+            deferred.finish(err, err ? null : this.results);
         }.bind(this));
         return deferred.promise;
     },

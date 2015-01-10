@@ -66,7 +66,7 @@ _.extend(ReactiveQuery.prototype, {
                     events.on(name, handler);
                 }
                 if (Logger.trace) Logger.trace('Listening to ' + name);
-                cb();
+                cb(null, this.results);
             }
             else {
                 cb(err);

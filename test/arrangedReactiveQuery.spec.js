@@ -30,7 +30,8 @@ describe('positioned rquery', function () {
         });
         // Just checking doesn't throw an error.
         var prq = Person.arrangedReactiveQuery();
-        prq.init().then(function () {
+        prq.init().then(function (results) {
+            assert.equal(prq.results, results);
             prq.terminate();
             done();
         }).catch(done);
@@ -44,7 +45,8 @@ describe('positioned rquery', function () {
         // Just checking doesn't throw an error.
         var prq = Person.arrangedReactiveQuery();
         prq.indexAttribute = 'customIndexField';
-        prq.init().then(function () {
+        prq.init().then(function (results) {
+            assert.equal(prq.results, results);
             prq.terminate();
             done();
         }).catch(done);
