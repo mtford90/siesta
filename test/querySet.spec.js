@@ -61,5 +61,28 @@ describe.only('query sets', function () {
             assert.equal(michael.age, newAge);
             assert.equal(bob.age, newAge);
         });
+
+        it('uppercase all names', function () {
+            var nameQuerySet = querySet.name;
+            assert.include(nameQuerySet, 'Michael');
+            assert.include(nameQuerySet, 'Bob');
+            querySet.name = nameQuerySet.toUpperCase();
+            assert.equal(michael.name, 'MICHAEL');
+            assert.equal(bob.name, 'BOB');
+        });
+
+
+        it('uppercase then lowercase all names', function () {
+            var nameQuerySet = querySet.name;
+            assert.include(nameQuerySet, 'Michael');
+            assert.include(nameQuerySet, 'Bob');
+            var upper = nameQuerySet.toUpperCase();
+            querySet.name = upper.toLowerCase();
+            assert.equal(michael.name, 'michael');
+            assert.equal(bob.name, 'bob');
+        });
+
+
+
     });
 });

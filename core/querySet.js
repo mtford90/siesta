@@ -36,31 +36,37 @@ function getPropertyNames(object) {
 }
 
 function defineAttribute(arr, prop) {
-    Object.defineProperty(arr, prop, {
-        get: function () {
-            return querySet(_.pluck(arr, prop));
-        },
-        set: function (v) {
-            if (util.isArray(v)) {
-                if (this.length != v.length) throw new SiestaCustomError({message: 'Must be same length'});
-                for (var i = 0; i < v.length; i++) {
-                    this[i][prop] = v[i];
+    if (!(prop in arr)) { // e.g. we cannot redefine .length
+        Object.defineProperty(arr, prop, {
+            get: function () {
+                return querySet(_.pluck(arr, prop));
+            },
+            set: function (v) {
+                if (util.isArray(v)) {
+                    if (this.length != v.length) throw new SiestaCustomError({message: 'Must be same length'});
+                    for (var i = 0; i < v.length; i++) {
+                        this[i][prop] = v[i];
+                    }
+                }
+                else {
+                    for (i = 0; i < this.length; i++) {
+                        this[i][prop] = v;
+                    }
                 }
             }
-            else {
-                for (i = 0; i < this.length; i++) {
-                    this[i][prop] = v;
-                }
-            }
-        }
-    });
+        });
+    }
 }
 
-function defineMethod(arr, prop, arguments) {
-    arr[prop] = function () {
-        this.forEach(function (p) {
-            p[prop].call(p, arguments);
-        });
+function defineMethod(arr, prop) {
+    if (!(prop in arr)) { // e.g. we don't want to redefine toString
+        arr[prop] = function () {
+            var args = arguments,
+                res = this.map(function (p) {
+                    return p[prop].call(p, args);
+                });
+            return querySet(res);
+        };
     }
 }
 
