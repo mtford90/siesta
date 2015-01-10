@@ -35,28 +35,9 @@ _.extend(OneToOneProxy.prototype, {
         }
         return null;
     },
-    clearRemovalListener: function () {
-        if (this.cancelRemovalListen) {
-            this.cancelRemovalListen();
-            this.cancelRemovalListen = null;
-        }
-    },
-
-    /**
-     * If the related object is removed from the object graph, we need to ensure that the relationship is cleared.
-     * @param obj
-     */
-    listenForRemoval: function (obj) {
-        this.cancelRemovalListen = obj.listen(function (e) {
-            if (e.type == ModelEventType.Remove) {
-                this.clearReverseRelated();
-                this.setIdAndRelated(null);
-                this.cancelRemovalListen();
-                this.cancelRemovalListen = null;
-            }
-        }.bind(this));
-    },
     set: function (obj, opts) {
+        console.log('related', this.object, this.related);
+        console.log('set', this.object, obj);
         this.checkInstalled();
         if (obj) {
             var errorMessage;
@@ -64,15 +45,12 @@ _.extend(OneToOneProxy.prototype, {
                 return errorMessage;
             }
             else {
-                this.clearRemovalListener();
-                this.listenForRemoval(obj);
                 this.clearReverseRelated(opts);
                 this.setIdAndRelated(obj, opts);
                 this.setIdAndRelatedReverse(obj, opts);
             }
         }
         else {
-            this.clearRemovalListener();
             this.clearReverseRelated(opts);
             this.setIdAndRelated(obj, opts);
         }

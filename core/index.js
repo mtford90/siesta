@@ -80,6 +80,7 @@ _.extend(siesta, {
         delete this.queuedTasks;
         cache.reset();
         CollectionRegistry.reset();
+        events.removeAllListeners();
         siesta.ext.http.DescriptorRegistry.reset();
         if (siesta.ext.storageEnabled) {
             siesta.ext.storage._reset(cb);

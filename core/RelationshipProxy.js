@@ -49,6 +49,8 @@ function RelationshipProxy(opts) {
         reverseName: null,
         isReverse: null
     });
+
+    this.cancelListens = {};
 }
 
 _.extend(RelationshipProxy, {});
@@ -132,6 +134,31 @@ _.extend(RelationshipProxy.prototype, {
     getForwardModel: function () {
         return this.isForward ? this.forwardModel : this.reverseModel;
     },
+    clearRemovalListener: function (obj) {
+        console.log('clearRemovalListener', obj);
+        var _id = obj._id;
+        var cancelListen = this.cancelListens[_id];
+        // TODO: Remove this check. cancelListen should always exist
+        if (cancelListen) {
+            cancelListen();
+            this.cancelListens[_id] = null;
+        }
+    },
+    listenForRemoval: function (obj) {
+        console.log('listenForRemoval', obj);
+        this.cancelListens[obj._id] = obj.listen(function (e) {
+            if (e.type == ModelEventType.Remove) {
+                if (util.isArray(this.related)) {
+                    var idx = this.related.indexOf(obj);
+                    this.splice(idx, 1);
+                }
+                else {
+                    this.setIdAndRelated(null);
+                }
+                this.clearRemovalListener(obj);
+            }
+        }.bind(this));
+    },
     /**
      * Configure _id and related with the new related object.
      * @param obj
@@ -144,13 +171,20 @@ _.extend(RelationshipProxy.prototype, {
         if (!opts.disableevents) {
             this.registerSetChange(obj);
         }
+        var previouslyRelated = this.related;
+        if (previouslyRelated) this.clearRemovalListener(previouslyRelated);
         if (obj) {
             if (util.isArray(obj)) {
                 this.related = obj;
+                obj.forEach(function (_obj) {
+                    this.listenForRemoval(_obj);
+                }.bind(this));
             } else {
                 this.related = obj;
+                this.listenForRemoval(obj);
             }
-        } else {
+        }
+        else {
             this.related = null;
         }
     },
