@@ -7,12 +7,12 @@
 
 var log = require('./log'),
     Query = require('./query'),
-    _ = require('underscore'),
     EventEmitter = require('events').EventEmitter,
     events = require('./events'),
     modelEvents = require('./modelEvents'),
     InternalSiestaError = require('./error').InternalSiestaError,
-    util = require('./util');
+    util = require('./util'),
+    _ = util._;
 
 var Logger = log.loggerWithName('Query');
 

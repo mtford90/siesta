@@ -3,8 +3,6 @@
  * @module util.promise
  */
 
-var _ = require('underscore');
-
 function s(pass) {
     return function (res) {
         this.res = res;
