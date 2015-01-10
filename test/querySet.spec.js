@@ -1,6 +1,6 @@
 var s = require('../core/index'),
     createQuerySet = require('../core/querySet'),
-    SiestaCustomError = require('../core/error').SiestaCustomError,
+    SiestaUserError = require('../core/error').SiestaUserError,
     assert = require('chai').assert;
 
 describe('query sets', function () {
@@ -52,7 +52,7 @@ describe('query sets', function () {
         it('should throw an error if attempt to set with a diff. length array', function () {
             assert.throws(function () {
                 querySet.age = [1, 2, 3];
-            }, SiestaCustomError);
+            }, SiestaUserError);
         });
 
         it('can set a single age', function () {

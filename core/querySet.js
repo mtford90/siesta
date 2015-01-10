@@ -1,5 +1,5 @@
 var util = require('./util'),
-    SiestaCustomError = require('./error').SiestaCustomError,
+    SiestaUserError = require('./error').SiestaUserError,
     ModelInstance = require('./ModelInstance'),
     _ = require('./util')._;
 
@@ -49,7 +49,7 @@ function defineAttribute(arr, prop) {
             },
             set: function (v) {
                 if (util.isArray(v)) {
-                    if (this.length != v.length) throw new SiestaCustomError({message: 'Must be same length'});
+                    if (this.length != v.length) throw new SiestaUserError({message: 'Must be same length'});
                     for (var i = 0; i < v.length; i++) {
                         this[i][prop] = v[i];
                     }
