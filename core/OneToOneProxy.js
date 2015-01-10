@@ -41,6 +41,7 @@ _.extend(OneToOneProxy.prototype, {
             this.cancelRemovalListen = null;
         }
     },
+
     /**
      * If the related object is removed from the object graph, we need to ensure that the relationship is cleared.
      * @param obj

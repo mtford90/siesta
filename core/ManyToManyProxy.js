@@ -21,6 +21,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
 function ManyToManyProxy(opts) {
     RelationshipProxy.call(this, opts);
     this.related = [];
+    this.relatedCancelListeners = {};
 }
 
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
@@ -109,9 +110,16 @@ _.extend(ManyToManyProxy.prototype, {
         RelationshipProxy.prototype.install.call(this, obj);
         this.wrapArray(this.related);
         obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
+    },
+    registerRemovalListener: function (obj) {
+        this.relatedCancelListeners[obj._id] = obj.listen(function (e) {
+
+        }.bind(this));
+    },
+    splice: function () {
+        var splicer = this.splicer({});
+        splicer.apply(this, arguments);
     }
-
-
 });
 
 

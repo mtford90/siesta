@@ -50,7 +50,7 @@ function RelationshipProxy(opts) {
         isReverse: null
     });
 
-    this.splice = this.splicer({});
+    //this.splice = this.splicer({});
 }
 
 _.extend(RelationshipProxy, {});
@@ -277,6 +277,7 @@ _.extend(RelationshipProxy.prototype, {
             arr.arrayObserver.open(observerFunction);
         }
     }
+
 });
 
 

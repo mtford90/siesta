@@ -241,7 +241,51 @@ describe('relationship proxy', function () {
 
 
         });
-    })
+    });
+
+    describe('removal', function () {
+        beforeEach(function () {
+            carProxy = new ManyToManyProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'cars',
+                forwardName: 'owners',
+                isReverse: false
+            });
+            personProxy = new ManyToManyProxy({
+                reverseModel: Person,
+                forwardModel: Car,
+                reverseName: 'cars',
+                forwardName: 'owners',
+                isReverse: true
+            });
+            car = new SiestaModel(Car);
+            car._id = 'car';
+            carProxy.install(car);
+            person = new SiestaModel(Person);
+            person._id = 'person';
+            personProxy.install(person);
+            cache.insert(person);
+            cache.insert(car);
+        });
+
+        it('removal', function (done) {
+            car.owners = [person];
+            person.remove().then(function () {
+                assert.notOk(car.owners.length);
+                done();
+            }).catch(done);
+        });
+
+        it('reverse removal', function (done) {
+            person.cars = [car];
+            car.remove().then(function () {
+                assert.notOk(person.cars.length);
+                done();
+            }).catch(done);
+        });
+
+    });
 
 
 });
