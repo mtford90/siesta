@@ -53,6 +53,7 @@ Message[ErrorCode.NoDescriptorMatched] = 'No descriptor matched the HTTP respons
 
 module.exports = {
     InternalSiestaError: InternalSiestaError,
+    SiestaCustomError: InternalSiestaError,
     ErrorCode: ErrorCode,
     ErrorField: ErrorField,
     Message: Message
