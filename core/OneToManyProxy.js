@@ -125,10 +125,6 @@ _.extend(OneToManyProxy.prototype, {
             this.wrapArray(this.related);
         }
 
-    },
-    splice: function () {
-        var splicer = this.splicer({});
-        splicer.apply(this, arguments);
     }
 });
 

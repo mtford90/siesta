@@ -49,8 +49,6 @@ function RelationshipProxy(opts) {
         reverseName: null,
         isReverse: null
     });
-
-    //this.splice = this.splicer({});
 }
 
 _.extend(RelationshipProxy, {});
@@ -276,6 +274,9 @@ _.extend(RelationshipProxy.prototype, {
             };
             arr.arrayObserver.open(observerFunction);
         }
+    },
+    splice: function () {
+        this.splicer({}).apply(this, arguments);
     }
 
 });

@@ -115,10 +115,6 @@ _.extend(ManyToManyProxy.prototype, {
         this.relatedCancelListeners[obj._id] = obj.listen(function (e) {
 
         }.bind(this));
-    },
-    splice: function () {
-        var splicer = this.splicer({});
-        splicer.apply(this, arguments);
     }
 });
 
