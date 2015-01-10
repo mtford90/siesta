@@ -3,7 +3,7 @@
  * @module log
  */
 
-var _ = require('./util/index')._;
+var _ = require('./util')._;
 
 var logLevels = {};
 

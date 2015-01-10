@@ -1,4 +1,5 @@
-var misc = require('./misc');
+var misc = require('./misc'),
+    _ = require('./underscore');
 
 function doParallel(fn) {
     return function () {

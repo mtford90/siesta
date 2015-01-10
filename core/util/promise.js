@@ -12,7 +12,7 @@ function s(pass) {
         catch (err) {
             e.call(this, err);
         }
-    };
+    }
 }
 
 function f(err) {

@@ -8,6 +8,7 @@ var _i = siesta._internal,
     CollectionRegistry = _i.CollectionRegistry,
     log = _i.log,
     util = _i.util,
+    _ = util._,
     events = _i.events;
 
 var DB_NAME = 'siesta',
