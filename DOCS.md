@@ -576,7 +576,7 @@ myInstance.remove();
 console.log(myInstance.removed); // true
 ```
 
-You can restore a deleted instance by calling `restore`.
+You can restore a deleted instance by calling `restore` however do note that all relationships will now be cleared.
 
 ```js
 myInstance.restore();
@@ -732,17 +732,12 @@ Repo.query({
 
 ## Ordering
 
-***TODO***
-
-* Implement the new order by mechanism.
-* Get rid of .execute()
-
 We can also order instances using an `opts` object:
 
 ```js
 User.query({
-        query: {age__gte: 18},
-        orderBy: ['-age', 'name']
+        age__gte: 18,
+        __order: ['-age', 'name']
     })
     .then(function (results) {
         console.log('results', results);
@@ -838,18 +833,17 @@ A reactive query is a query that reacts to changes in the object graph, updating
 
 ```js
 var rq = User.reactiveQuery({age__gte: 18});
-rq.init()
-  .then(function (results) {
-  	  // results are the same as User.query({age__gte: 18});
-  });
+rq.init().then(function (results) {
+  	// results are the same as User.query({age__gte: 18});
+});
 ```
 
 Reactive queries can be ordered in a similar fashion to ordinary queries.
 
 ```js
 var rq = User.reactiveQuery({
-    query: {age__gte: 18},
-    orderBy: ['-age', 'name']
+    age__gte: 18,
+    __order: ['-age', 'name']
 });
 ```
 
@@ -930,7 +924,7 @@ You can kick off the arranged reactive query with an initial ordering based on t
 
 ```js
 var arq = User.arrangedReactiveQuery({
-    query: {age__gt: 10}
+    age__gt: 10
 });
 arq.indexAttribute = 'index'; // Default attribute to use is index
 
@@ -1476,12 +1470,6 @@ Settings.one().then(function (settings) {
 
 # Error handling
 
-***TODO***
-
-* Implementation of `siesta.errorHandler`.
-* Implementation of `SiestaCustomError`
-* List all components that we can listen to.
-
 Following Node convention the first parameter of all callbacks in Siesta is the error parameter. e.g. if you attempted to map a string onto the object graph.
 
 ```js
@@ -1517,18 +1505,6 @@ Model.map('sdfsdfsdf')
         assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
         console.log(err.message); // Cannot map strings onto the object graph.
     });
-```
-
-## Global Error Handling
-
-If appropriate, rather than sprinkling error handlers all over our codebase we can also register global error handlers.
-
-```js
-var cancelListen = siesta.errorHandler(function (err) {
-    if (err.component == 'Mapping') {
-        console.error('Mapping error', err.message);
-    }
-});
 ```
 
 # Logging
@@ -1697,8 +1673,8 @@ You can listen to reactive queries.
 
 ```js
 var rq = User.reactiveQuery({
-    query: {age__gt: 20},
-    orderBy: 'age'
+    age__gt: 20,
+    __order: 'age'
 });
 
 var MyComponent = React.createClass({
@@ -1741,36 +1717,43 @@ You can listen to singleton models.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(mySingleton) {
+        this.listen(MySingletonModel, function (e) {
+            if (e.type == 'Set') {
+                this.setState(); // Render
+            }
+        }.bind(this));
+        MySingletonModel.one().then(function (singleton) {
             this.setState({
-                mySingleton: mySingleton
+                singleton: singleton
             });
-        }.bind(this);
-        this.listen(MySingletonModel, listener).then(listener);
+        }.bind(this))
     }
 });
 
 // Instead of this.
 var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(mySingleton) {
+        MySingletonModel.one().then(function (singleton) {
             this.setState({
-                mySingleton: mySingleton
+                singleton: singleton
             });
-        }.bind(this);
-        MySingletonModel.one()
-            .then(function (mySingleton) {
-                this.listen(mySingleton, listener).then(listener);
-            }.bind(this));
+            this.cancelListen = singleton.listen(function (e) {
+                if (e.type == 'Set') {
+                    this.setState(); // Render
+                }
+            });
+        }.bind(this))
+    },
+    componentWillUnmount: function () {
+        this.cancelListen();
     }
 });
 ```
 
+Note: we can reduce this code even further by using [listenAndSet](#reactjs-mixin-usage-listenandset)
+
 ### query
-
-***TODO:***
-
-* Implement the below
 
 The `query` function will execute a query and then populate the state with the passed key.
 
@@ -1797,13 +1780,44 @@ var MyComponent = React.createClass({
 });
 ```
 
+Note that promises still work.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.query(User, {age__gt: 20}, 'users')
+            .then(function () {
+                assert.ok(this.state.users);
+            }.bind(this))
+    }
+});
+```
+
+### all
+
+The `all` function is similar to query except it retrieves all instances of the model.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.all(User, 'users');
+    }
+});
+
+// Or with an ordering.
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.all(User, {__order: ['name']}, 'users');
+    }
+});
+```
+
 ### listenAndSet
 
-***TODO:***
-
-* Implement the below
-
-The `listenAndSet` function will listen to a reactive query or an arranged reactive query and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
+The `listenAndSet` function will listen to a reactive query, arranged reactive query or singleton and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
 
 ```js
 var MyComponent = React.createClass({
@@ -1828,10 +1842,40 @@ var MyComponent = React.createClass({
             updateState = this.updateState.bind(this);
         rq.init().then(updateState);
         this.cancelListen = rq.listen(updateState);
-
     },
     componentWillUnmount: function () {
         this.cancelListen();
     }
 });
+```
+
+In the case of a singleton:
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.listenAndSet(MySingletonModel, 'singleton');
+    }
+});
+```
+
+Instead of:
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.listen(MySingletonModel, function (e) {
+            if (e.type == 'Set') {
+                this.setState(); // Render
+            }
+        }.bind(this));
+        MySingletonModel.one().then(function (singleton) {
+            this.setState({
+                singleton: singleton
+            });
+        }.bind(this))    
+    }
+});   
 ```
