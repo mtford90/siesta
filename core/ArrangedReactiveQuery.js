@@ -7,7 +7,9 @@
 var ReactiveQuery = require('./reactiveQuery'),
     log = require('./log'),
     util = require('./util'),
-    InternalSiestaError = require('./error').InternalSiestaError,
+    error = require('./error'),
+    InternalSiestaError = error.InternalSiestaError,
+    constructError = error.errorFactory(error.Components.ArrangedReactiveQuery),
     _ = util._;
 
 
@@ -82,7 +84,7 @@ _.extend(ArrangedReactiveQuery.prototype, {
         ReactiveQuery.prototype.init.call(this, function (err) {
             if (!err) {
                 if (!this.model.hasAttributeNamed(this.indexAttribute)) {
-                    err = 'Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"';
+                    err = constructError('Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"')
                 }
                 else {
                     this._mergeIndexes();

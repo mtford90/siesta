@@ -46,8 +46,11 @@ var ErrorField = {
 
     Components = {
         Mapping: 'Mapping',
-        HTTP: 'HTTP'
+        HTTP: 'HTTP',
+        ReactiveQuery: 'ReactiveQuery',
+        ArrangedReactiveQuery: 'ArrangedReactiveQuery'
     };
+
 
 /**
  * @param component
@@ -80,5 +83,16 @@ module.exports = {
     ErrorCode: ErrorCode,
     ErrorField: ErrorField,
     Message: Message,
-    Components: Components
+    Components: Components,
+    errorFactory: function (component) {
+        if (component in Components) {
+            return function (message, extra) {
+                return new InternalSiestaError(component, message, extra);
+            }
+        }
+
+        else {
+            throw new InternalSiestaError('No such component "' + component + '"');
+        }
+    }
 };
