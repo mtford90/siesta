@@ -27,14 +27,13 @@ function ReactiveQuery(query) {
 
     _.extend(this, {
         _query: query,
-        results: null,
-        insertionPolicy: ReactiveQuery.InsertionPolicy.Back
+        results: [],
+        insertionPolicy: ReactiveQuery.InsertionPolicy.Back,
+        initialised: false
     });
 
-    var initialisedGet = function () {return !!self.results};
     Object.defineProperties(this, {
-        initialised: {get: initialisedGet},
-        initialized: {get: initialisedGet},
+        initialized: {get: function () {return this.initialised}},
         model: {get: function () { return self._query.model }},
         collection: {get: function () { return self.model.collectionName }}
     });
@@ -54,24 +53,30 @@ _.extend(ReactiveQuery.prototype, {
         if (Logger.trace) Logger.trace('init');
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
-        this._query.execute(function (err, results) {
-            if (!err) {
-                this.results = results;
-                if (!this.handler) {
-                    var name = this._constructNotificationName();
-                    var handler = function (n) {
-                        this._handleNotif(n);
-                    }.bind(this);
-                    this.handler = handler;
-                    events.on(name, handler);
+        if (!this.initialised) {
+            this._query.execute(function (err, results) {
+                if (!err) {
+                    this.results = results;
+                    if (!this.handler) {
+                        var name = this._constructNotificationName();
+                        var handler = function (n) {
+                            this._handleNotif(n);
+                        }.bind(this);
+                        this.handler = handler;
+                        events.on(name, handler);
+                    }
+                    if (Logger.trace) Logger.trace('Listening to ' + name);
+                    this.initialised = true;
+                    cb(null, this.results);
                 }
-                if (Logger.trace) Logger.trace('Listening to ' + name);
-                cb(null, this.results);
-            }
-            else {
-                cb(err);
-            }
-        }.bind(this));
+                else {
+                    cb(err);
+                }
+            }.bind(this));
+        }
+        else {
+            cb(null, this.results);
+        }
         return deferred.promise;
     },
     insert: function (newObj) {
