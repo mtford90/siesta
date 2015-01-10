@@ -706,16 +706,16 @@ describe('query...', function () {
                 {name: 'Bob', age: 40},
                 {name: 'John', age: 12}
             ]).then(function () {
-                var query = Person.query({});
-                query.orderBy('-age').execute().then(function (orderedPeople) {
-                    var lastAge = orderedPeople[0].age;
-                    for (var i = 1; i < orderedPeople.length; i++) {
-                        var person = orderedPeople[i];
-                        assert(person.age < lastAge, 'Should be descending');
-                        lastAge = person.age;
-                    }
-                    done();
-                }).catch(done).done();
+                Person.query({__order: '-age'})
+                    .then(function (orderedPeople) {
+                        var lastAge = orderedPeople[0].age;
+                        for (var i = 1; i < orderedPeople.length; i++) {
+                            var person = orderedPeople[i];
+                            assert(person.age < lastAge, 'Should be descending');
+                            lastAge = person.age;
+                        }
+                        done();
+                    }).catch(done).done();
             }).catch(done).done();
         });
 
@@ -725,16 +725,16 @@ describe('query...', function () {
                 {name: 'Bob', age: 40},
                 {name: 'John', age: 12}
             ]).then(function () {
-                var query = Person.query({});
-                query.orderBy('age').execute().then(function (orderedPeople) {
-                    var lastAge = orderedPeople[0].age;
-                    for (var i = 1; i < orderedPeople.length; i++) {
-                        var person = orderedPeople[i];
-                        assert(person.age > lastAge, 'Should be descending');
-                        lastAge = person.age;
-                    }
-                    done();
-                }).catch(done).done();
+                Person.query({__order: 'age'})
+                    .then(function (orderedPeople) {
+                        var lastAge = orderedPeople[0].age;
+                        for (var i = 1; i < orderedPeople.length; i++) {
+                            var person = orderedPeople[i];
+                            assert(person.age > lastAge, 'Should be descending');
+                            lastAge = person.age;
+                        }
+                        done();
+                    }).catch(done).done();
             }).catch(done).done();
         });
 
@@ -744,16 +744,16 @@ describe('query...', function () {
                 {name: 'Bob', age: 24},
                 {name: 'John', age: 12}
             ]).then(function () {
-                var query = Person.query({});
-                query.orderBy(['age', 'name']).execute().then(function (orderedPeople) {
-                    var lastAge = orderedPeople[0].age;
-                    for (var i = 1; i < orderedPeople.length; i++) {
-                        var person = orderedPeople[i];
-                        assert(person.age >= lastAge, 'Should be descending');
-                        lastAge = person.age;
-                    }
-                    done();
-                }).catch(done).done();
+                var query = Person.query({__order: ['age', 'name']})
+                    .then(function (orderedPeople) {
+                        var lastAge = orderedPeople[0].age;
+                        for (var i = 1; i < orderedPeople.length; i++) {
+                            var person = orderedPeople[i];
+                            assert(person.age >= lastAge, 'Should be descending');
+                            lastAge = person.age;
+                        }
+                        done();
+                    }).catch(done).done();
             }).catch(done).done();
         })
     });
@@ -779,7 +779,7 @@ describe('query...', function () {
                             {age: 24},
                             {age: 22}
                         ]
-                    }).execute().then(function (res) {
+                    }).then(function (res) {
                         assert.equal(res.length, 2);
                         _.each(res, function (r) {
                             assert.ok(r.age == 24 || r.age == 22);
@@ -802,7 +802,7 @@ describe('query...', function () {
                             {age: 24, name: 'Mike'},
                             {age: 22}
                         ]
-                    }).execute().then(function (res) {
+                    }).then(function (res) {
                         assert.equal(res.length, 2);
                         _.each(res, function (r) {
                             assert.ok(r.age == 24 || r.age == 22);
@@ -827,7 +827,7 @@ describe('query...', function () {
                             {$or: [{name: 'Mike'}, {name: 'Peter'}], age: 24},
                             {age: 22}
                         ]
-                    }).execute().then(function (res) {
+                    }).then(function (res) {
                         assert.equal(res.length, 3);
                         done();
                     }).catch(done).done();
@@ -858,7 +858,7 @@ describe('query...', function () {
                             {age: 24},
                             {name: 'Mike'}
                         ]
-                    }).execute().then(function (res) {
+                    }).then(function (res) {
                         assert.equal(res.length, 1);
                         var r = res[0];
                         assert.equal(r.age, 24);
@@ -883,7 +883,7 @@ describe('query...', function () {
                             {$or: [{name: 'Mike'}, {name: 'Peter'}]},
                             {age: 24}
                         ]
-                    }).execute().then(function (res) {
+                    }).then(function (res) {
                         assert.equal(res.length, 2);
                         done();
                     }).catch(done).done();
@@ -922,7 +922,6 @@ describe('query...', function () {
             ])
                 .then(function () {
                     Car.query({'owner.age': 23})
-                        .execute()
                         .then(function (cars) {
                             assert.equal(cars.length, 2);
                             done();
@@ -942,7 +941,6 @@ describe('query...', function () {
             ])
                 .then(function () {
                     Car.query({'owner.age__lte': 24})
-                        .execute()
                         .then(function (cars) {
                             assert.equal(cars.length, 2);
                             done();

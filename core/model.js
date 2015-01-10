@@ -261,7 +261,7 @@ _.extend(Model.prototype, {
     },
     ensureSingletons: function (callback) {
         if (this.singleton) {
-            this.one({__ignoreInstalled: true}).execute(function (err, obj) {
+            this.one({__ignoreInstalled: true}, function (err, obj) {
                 if (err) {
                     callback(err);
                 }
@@ -303,8 +303,12 @@ _.extend(Model.prototype, {
         }
         else callback();
     },
-    query: function (query) {
-        return new Query(this, query || {});
+    _query: function (query) {
+        var query = new Query(this, query || {});
+        return query;
+    },
+    query: function (query, callback) {
+        return (this._query(query)).execute(callback);
     },
     reactiveQuery: function (query) {
         return new ReactiveQuery(new Query(this, query || {}));
@@ -312,10 +316,15 @@ _.extend(Model.prototype, {
     arrangedReactiveQuery: function (query) {
         return new ArrangedReactiveQuery(new Query(this, query || {}));
     },
-    one: function (opts) {
-        var query = this.query(opts);
+    one: function (opts, cb) {
+        opts = opts || {};
+        if (typeof opts == 'function') {
+            cb = opts;
+            opts = {};
+        }
+        var query = this._query(opts);
         // Override the usual execute method, inserting a check that no more one instances returned.
-        query.execute = function (cb) {
+        return (function (cb) {
             var deferred = util.defer(cb);
             cb = deferred.finish.bind(deferred);
             this._executeInMemory(function (err, res) {
@@ -326,11 +335,17 @@ _.extend(Model.prototype, {
                 }
             });
             return deferred.promise;
-        }.bind(query);
-        return query;
+        }).call(query, cb)
     },
-    all: function () {
-        return new Query(this, {});
+    all: function (q, cb) {
+        if (typeof q == 'function') {
+            cb = q;
+            q = {};
+        }
+        q = q || {};
+        var query = {};
+        if (q.__order) query.__order = q.__order;
+        return (new Query(this, query)).execute(cb);
     },
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.name);

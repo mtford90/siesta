@@ -35,7 +35,7 @@ describe('mapping queries', function () {
         });
 
         it('all', function (done) {
-            Car.all().execute(function (err, cars) {
+            Car.all(function (err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 2);
                 _.each(cars, function (car) {
@@ -49,7 +49,7 @@ describe('mapping queries', function () {
             this.timeout(10000);
             Car.query({
                 color: 'red'
-            }).execute(function (err, cars) {
+            }, function (err, cars) {
                 if (err) done(err);
                 assert.equal(cars.length, 1);
                 _.each(cars, function (car) {
@@ -61,7 +61,7 @@ describe('mapping queries', function () {
 
         describe('one', function () {
             it('remote id', function (done) {
-                Car.one({id: 4}).execute(function (err, car) {
+                Car.one({id: 4}, function (err, car) {
                     if (err) done(err);
                     assert.ok(car);
                     assert.instanceOf(car, SiestaModel);
@@ -70,13 +70,13 @@ describe('mapping queries', function () {
                 });
             });
             it('error if more than one match', function (done) {
-                Car.one({}).execute(function (err) {
+                Car.one({}, function (err) {
                     assert.ok(err);
                     done();
                 });
             });
             it('null if no match', function (done) {
-                Car.one({id: 10000}).execute(function (err, res) {
+                Car.one({id: 10000}, function (err, res) {
                     assert.notOk(err);
                     assert.ok(res === null);
                     done();
@@ -120,7 +120,7 @@ describe('mapping queries', function () {
                 id: 5
             }, function (err, car) {
                 if (err) done(err);
-                Person.one({id: '2'}).execute(function (err, p) {
+                Person.one({id: '2'}, function (err, p) {
                     if (err) done(err);
                     assert.ok(p, 'Should be able to fetch the person');
                     p.__proxies['cars'].get(function (err, cars) {

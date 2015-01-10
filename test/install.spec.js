@@ -35,7 +35,6 @@ describe('install step', function () {
 
         it('query', function (done) {
             Person.query({age__gt: 23})
-                .execute()
                 .then(function (res) {
                     assert.notOk(res.length, 'Should be no results');
                     done();
@@ -117,7 +116,6 @@ describe('install step', function () {
                 {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
             ]).then(function () {
                 Person.query({age__gt: 23})
-                    .execute()
                     .then(function (res) {
                         assert.equal(res.length, 1, 'Should have installed and loaded before returning from the query');
                         done();

@@ -76,8 +76,6 @@ _.extend(ArrangedReactiveQuery.prototype, {
         }
 
         this.results = newResults;
-
-
     },
     init: function (cb) {
         var deferred = util.defer(cb);
@@ -93,27 +91,6 @@ _.extend(ArrangedReactiveQuery.prototype, {
             }
             deferred.finish(err);
         }.bind(this));
-        return deferred.promise;
-    },
-    orderBy: function (field, cb) {
-        var deferred = util.defer(cb);
-        ReactiveQuery.prototype.orderBy.call(this, field, function (err) {
-            if (!err) {
-                // We do not want to reorder on every update. Ordering is handled by the user instead with
-                // positional reactive queries.
-                if (this.initialised) {
-                    this._query.clearOrdering();
-                    this._refreshIndexes();
-                }
-            }
-            deferred.finish(err);
-        }.bind(this));
-        return deferred.promise;
-    },
-    clearOrdering: function (cb) {
-        this._query.clearOrdering();
-        var deferred = util.defer(cb);
-        deferred.resolve();
         return deferred.promise;
     },
     _handleNotif: function (n) {

@@ -194,7 +194,7 @@ describe('storage', function () {
                     s.ext.storage._load().then(function () {
                         console.log('loaded..');
                         assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-                        Car.all().execute().then(function (cars) {
+                        Car.all().then(function (cars) {
                             assert.equal(cars.length, 2, 'Should have loaded the two cars');
                             var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
                                 blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
@@ -272,7 +272,7 @@ describe('storage', function () {
                 });
 
                 it('cars', function (done) {
-                    Car.all().execute().then(function (cars) {
+                    Car.all().then(function (cars) {
                         assert.equal(cars.length, 2, 'Should have loaded the two cars');
                         var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
                             blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
@@ -292,7 +292,7 @@ describe('storage', function () {
                 });
 
                 it('people', function (done) {
-                    Person.all().execute().then(function (people) {
+                    Person.all().then(function (people) {
                         assert.equal(people.length, 1, 'Should have loaded one person');
                         var person = people[0];
                         assert.equal(person.name, 'Michael');
@@ -361,7 +361,7 @@ describe('storage', function () {
                         ]).then(function () {
                             s.ext.storage._load().then(function () {
                                 assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-                                Car.all().execute().then(function (cars) {
+                                Car.all().then(function (cars) {
                                     assert.equal(cars.length, 2, 'Should have loaded the two cars');
                                     var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
                                         blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
@@ -430,7 +430,7 @@ describe('storage', function () {
                         ]).then(function () {
                             s.ext.storage._load().then(function () {
                                 assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-                                Car.all().execute().then(function (cars) {
+                                Car.all().then(function (cars) {
                                     assert.equal(cars.length, 2, 'Should have loaded the two cars');
                                     var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
                                         blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
@@ -505,14 +505,14 @@ describe('storage', function () {
             });
 
             it('cars', function (done) {
-                Car.all().execute().then(function (cars) {
+                Car.all().then(function (cars) {
                     assert.equal(cars.length, 2);
                     done();
                 }).catch(done).done();
             });
 
             it('people', function (done) {
-                Person.all().execute().then(function (people) {
+                Person.all().then(function (people) {
                     assert.equal(people.length, 1);
                     done();
                 }).catch(done).done();
@@ -629,7 +629,6 @@ describe('storage', function () {
                 _id: 'xyz'
             }).then(function () {
                 ColourConfig.one()
-                    .execute()
                     .then(function (colourConfig) {
                         extracted(function (err, rows) {
                             if (!err) {

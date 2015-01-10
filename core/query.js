@@ -27,9 +27,10 @@ function Query(model, query) {
     _.extend(this, {
         model: model,
         query: query,
-        opts: opts,
-        ordering: null
+        opts: opts
     });
+    opts.order = opts.order || [];
+    if (!util.isArray(opts.order)) opts.order = [opts.order];
 }
 
 _.extend(Query, {
@@ -109,8 +110,9 @@ _.extend(Query.prototype, {
         return s;
     },
     _sortResults: function (res) {
-        if (res && this.ordering) {
-            var fields = _.map(this.ordering, function (ordering) {
+        var order = this.opts.order;
+        if (res && order) {
+            var fields = _.map(order, function (ordering) {
                 var splt = ordering.split('-'),
                     ascending = true,
                     field = null;
@@ -164,21 +166,8 @@ _.extend(Query.prototype, {
         }
 
     },
-    orderBy: function () {
-        this.ordering = [];
-        for (var i = 0; i < arguments.length; i++) {
-            var ordering = arguments[i];
-            if (util.isArray(ordering)) {
-                this.ordering = this.ordering.concat(ordering);
-            }
-            else {
-                this.ordering.push(ordering);
-            }
-        }
-        return this;
-    },
     clearOrdering: function () {
-        this.ordering = null;
+        this.opts.order = null;
     },
     objectMatchesOrQuery: function (obj, orQuery) {
         for (var idx in orQuery) {

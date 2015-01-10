@@ -74,34 +74,6 @@ _.extend(ReactiveQuery.prototype, {
         }.bind(this));
         return deferred.promise;
     },
-    orderBy: function (field, cb) {
-        var deferred = util.defer(cb);
-        cb = deferred.finish.bind(deferred);
-        this._query = this._query.orderBy(field);
-        if (this.initialised) {
-            this._query.execute(function (err, results) {
-                if (!err) {
-                    this.results = results;
-                }
-                cb(err);
-            }.bind(this));
-        }
-        else {
-            cb();
-        }
-        return deferred.promise;
-    },
-    clearOrdering: function (cb) {
-        this._query.clearOrdering();
-        if (this.initialised) {
-            return this.init(cb);
-        }
-        else {
-            var deferred = util.defer(cb);
-            deferred.resolve();
-            return deferred.promise;
-        }
-    },
     insert: function (newObj) {
         if (this.insertionPolicy == ReactiveQuery.InsertionPolicy.Back) {
             var idx = this.results.push(newObj);
@@ -191,7 +163,9 @@ _.extend(ReactiveQuery.prototype, {
         return this.model.collectionName + ':' + this.model.name;
     },
     terminate: function () {
-        events.removeListener(this._constructNotificationName(), this.handler);
+        if (this.handler) {
+            events.removeListener(this._constructNotificationName(), this.handler);
+        }
         this.results = null;
         this.handler = null;
     },

@@ -457,7 +457,7 @@ describe('mapping operation', function () {
                     model: User,
                     data: data
                 });
-                User.one().execute().then(function (user) {
+                User.one().then(function (user) {
                     obj = user;
                     done();
                 }).catch(done).done();

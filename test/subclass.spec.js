@@ -206,7 +206,7 @@ describe('Subclass', function () {
                     assert.ok(mike);
                     assert.ok(mike.car.isInstanceOf(SportsCar));
                     assert.equal(mike.car.owner, mike);
-                    Car.all().execute().then(function (cars) {
+                    Car.all().then(function (cars) {
                         var car = _.filter(cars, function (x) {return x.model == Car})[0],
                             sportsCar = _.filter(cars, function (x) {return x.model == SportsCar})[0];
                         assert.ok(car);
@@ -588,7 +588,6 @@ describe('Subclass', function () {
 
         it('parent query', function (done) {
             Car.all()
-                .execute()
                 .then(function (cars) {
                     assert.equal(cars.length, 3, 'All descends should be returned');
                     done();
@@ -599,7 +598,6 @@ describe('Subclass', function () {
 
         it('middle query', function (done) {
             SportsCar.all()
-                .execute()
                 .then(function (cars) {
                     assert.equal(cars.length, 2, 'Sports cars and super cars should be returned');
                     done();
@@ -610,7 +608,6 @@ describe('Subclass', function () {
 
         it('child query', function (done) {
             SuperCar.all()
-                .execute()
                 .then(function (cars) {
                     assert.equal(cars.length, 1, 'Only the supercar should be returned');
                     done();
@@ -629,7 +626,6 @@ describe('Subclass', function () {
         beforeEach(function (done) {
             s.reset(function () {
                 collection = s.collection('myCollection');
-
                 Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']

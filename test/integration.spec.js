@@ -151,7 +151,7 @@ describe('intercollection relationships', function () {
             it('should return mike when querying for him', function (done) {
                 MyOfflineCollection.User.query({
                     username: 'gaz'
-                }).execute(function (err, users) {
+                }, function (err, users) {
                     if (err) done(err);
                     assert.equal(users.length, 1);
                     assert.equal(users[0].username, 'gaz');
@@ -163,7 +163,7 @@ describe('intercollection relationships', function () {
         describe('online', function () {
 
             it('should return 3 users when run a local all query against users', function (done) {
-                MyOnlineCollection.User.all().execute(function (err, users) {
+                MyOnlineCollection.User.all(function (err, users) {
                     if (err) done(err);
                     assert.equal(users.length, 3);
                     done();
@@ -171,7 +171,7 @@ describe('intercollection relationships', function () {
             });
 
             it('should return 3 photos when run a local all query against photos', function (done) {
-                MyOnlineCollection.Photo.all().execute(function (err, photos) {
+                MyOnlineCollection.Photo.all(function (err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 3);
                     done();
@@ -182,7 +182,7 @@ describe('intercollection relationships', function () {
                 this.timeout(10000);
                 MyOnlineCollection.Photo.query({
                     height: 500
-                }).execute(function (err, photos) {
+                }, function (err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 2);
                     _.each(photos, function (p) {
@@ -197,7 +197,7 @@ describe('intercollection relationships', function () {
                 MyOnlineCollection.Photo.query({
                     height: 500,
                     width: 750
-                }).execute(function (err, photos) {
+                }, function (err, photos) {
                     if (err) done(err);
                     assert.equal(photos.length, 1);
                     assert.equal(photos[0].height, 500);
@@ -207,7 +207,7 @@ describe('intercollection relationships', function () {
             });
 
             it('should be able to query by remote identifier', function (done) {
-                MyOnlineCollection.User.one({userId: '1'}).execute(function (err, user) {
+                MyOnlineCollection.User.one({userId: '1'}, function (err, user) {
                     if (err) done(err);
                     assert.equal(user.userId, '1');
                     done();
@@ -220,7 +220,7 @@ describe('intercollection relationships', function () {
     describe('relationship mappings', function () {
         describe('online', function () {
             function assertNumPhotos(userId, numPhotos, done) {
-                OnlineUser.one({userId: userId}).execute(function (err, user) {
+                OnlineUser.one({userId: userId}, function (err, user) {
                     if (err) done(err);
                     assert.ok(user);
                     assert.equal(user.userId, userId);

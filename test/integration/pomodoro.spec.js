@@ -32,8 +32,7 @@ describe('pomodoro', function () {
         });
 
         it('sad', function (done) {
-            var incompleteTasks = Task.reactiveQuery({completed: false});
-            incompleteTasks.orderBy('index');
+            var incompleteTasks = Task.reactiveQuery({completed: false, __order: 'index'});
             incompleteTasks.init().then(function () {
                 incompleteTasks.once('change', function () {
                     done();
@@ -111,7 +110,6 @@ describe('pomodoro', function () {
                 _id: 'xyz'
             }).then(function () {
                 ColourConfig.one()
-                    .execute()
                     .then(function (colourConfig) {
                         assert.equal(colourConfig.primary, 'red');
                         assert.equal(colourConfig.shortBreak, 'blue');
@@ -134,7 +132,6 @@ describe('pomodoro', function () {
                 _id: 'xyz'
             }).then(function () {
                 Config.one()
-                    .execute()
                     .then(function (config) {
                         var colourConfig = config.colours;
                         assert.equal(colourConfig.primary, 'red');
@@ -156,7 +153,6 @@ describe('pomodoro', function () {
                 _id: 'xyz'
             }).then(function () {
                 Config.one()
-                    .execute()
                     .then(function (config) {
                         var colourConfig = config.colours;
                         colourConfig.primary = 'blue';
