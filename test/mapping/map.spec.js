@@ -49,6 +49,69 @@ describe('perform mapping', function () {
                     })
                     .catch(done);
             });
+
+            it('false', function (done) {
+                var MyCollection = s.collection('MyCollection'),
+                    Mapping = MyCollection.model('Mapping', {
+                        id: 'id',
+                        attributes: [
+                            {
+                                name: 'field1',
+                                default: false
+                            },
+                            'field2'
+                        ]
+                    });
+                Mapping.map({field2: 'abc'})
+                    .then(function (p) {
+                        assert(p.field1 === false, 'should be false');
+                        assert.equal(p.field2, 'abc');
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('true', function (done) {
+                var MyCollection = s.collection('MyCollection'),
+                    Mapping = MyCollection.model('Mapping', {
+                        id: 'id',
+                        attributes: [
+                            {
+                                name: 'field1',
+                                default: true
+                            },
+                            'field2'
+                        ]
+                    });
+                Mapping.map({field2: 'abc'})
+                    .then(function (p) {
+                        assert(p.field1 === true, 'should be true');
+                        assert.equal(p.field2, 'abc');
+                        done();
+                    })
+                    .catch(done);
+            });
+
+            it('null', function (done) {
+                var MyCollection = s.collection('MyCollection'),
+                    Mapping = MyCollection.model('Mapping', {
+                        id: 'id',
+                        attributes: [
+                            {
+                                name: 'field1',
+                                default: null
+                            },
+                            'field2'
+                        ]
+                    });
+                Mapping.map({field2: 'abc'})
+                    .then(function (p) {
+                        assert(p.field1 === null);
+                        assert.equal(p.field2, 'abc');
+                        done();
+                    })
+                    .catch(done);
+            });
         });
     });
 

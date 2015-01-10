@@ -433,7 +433,7 @@ _.extend(Model.prototype, {
             var values = {};
             newModel.__values = values;
             var defaults = _.reduce(this.attributes, function (m, a) {
-                if (a.default) {
+                if (a.default !== undefined) {
                     m[a.name] = a.default;
                 }
                 return m;
