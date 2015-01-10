@@ -261,7 +261,7 @@ _.extend(Model.prototype, {
     },
     ensureSingletons: function (callback) {
         if (this.singleton) {
-            this.one({_ignoreInstalled: true}).execute(function (err, obj) {
+            this.one({__ignoreInstalled: true}).execute(function (err, obj) {
                 if (err) {
                     callback(err);
                 }

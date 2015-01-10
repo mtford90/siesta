@@ -955,6 +955,7 @@ describe('query...', function () {
         });
 
 
-    })
+    });
+
 
 });

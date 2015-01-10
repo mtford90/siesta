@@ -12,16 +12,24 @@ var Logger = log.loggerWithName('Query');
 /**
  * @class [Query description]
  * @param {Model} model
- * @param {Object} opts
+ * @param {Object} query
  */
-function Query(model, opts) {
+function Query(model, query) {
+    var opts = {};
+    for (var prop in query) {
+        if (query.hasOwnProperty(prop)) {
+            if (prop.slice(0, 2) == '__') {
+                opts[prop.slice(2)] = query[prop];
+                delete query[prop];
+            }
+        }
+    }
     _.extend(this, {
         model: model,
-        query: opts,
-        _ignoreInstalled: opts._ignoreInstalled,
+        query: query,
+        opts: opts,
         ordering: null
     });
-    delete opts._ignoreInstalled;
 }
 
 _.extend(Query, {
@@ -150,7 +158,7 @@ _.extend(Query.prototype, {
             res = this._sortResults(res);
             callback(err, err ? null : res);
         }.bind(this);
-        if (this._ignoreInstalled) _executeInMemory();
+        if (this.opts.ignoreInstalled) _executeInMemory();
         else {
             siesta._afterInstall(_executeInMemory);
         }
