@@ -112,6 +112,28 @@ describe('perform mapping', function () {
                     })
                     .catch(done);
             });
+
+
+            it('empty string', function (done) {
+                var MyCollection = s.collection('MyCollection'),
+                    Mapping = MyCollection.model('Mapping', {
+                        id: 'id',
+                        attributes: [
+                            {
+                                name: 'field1',
+                                default: ''
+                            },
+                            'field2'
+                        ]
+                    });
+                Mapping.map({field2: 'abc'})
+                    .then(function (p) {
+                        assert(p.field1 == '');
+                        assert.equal(p.field2, 'abc');
+                        done();
+                    })
+                    .catch(done);
+            });
         });
     });
 
