@@ -35,18 +35,21 @@ _.extend(OneToOneProxy.prototype, {
         }
         return null;
     },
+    clearRemovalListener: function () {
+        if (this.cancelRemovalListen) {
+            this.cancelRemovalListen();
+            this.cancelRemovalListen = null;
+        }
+    },
     /**
      * If the related object is removed from the object graph, we need to ensure that the relationship is cleared.
      * @param obj
      */
     listenForRemoval: function (obj) {
-        if (this.cancelRemovalListen) {
-            this.cancelRemovalListen();
-            this.cancelRemovalListen = null;
-        }
         this.cancelRemovalListen = obj.listen(function (e) {
             if (e.type == ModelEventType.Remove) {
-                this.set(null);
+                this.clearReverseRelated();
+                this.setIdAndRelated(null);
                 this.cancelRemovalListen();
                 this.cancelRemovalListen = null;
             }
@@ -54,22 +57,23 @@ _.extend(OneToOneProxy.prototype, {
     },
     set: function (obj, opts) {
         this.checkInstalled();
-        var self = this;
         if (obj) {
             var errorMessage;
-            if (errorMessage = self.validate(obj)) {
+            if (errorMessage = this.validate(obj)) {
                 return errorMessage;
             }
             else {
+                this.clearRemovalListener();
                 this.listenForRemoval(obj);
                 this.clearReverseRelated(opts);
-                self.setIdAndRelated(obj, opts);
-                self.setIdAndRelatedReverse(obj, opts);
+                this.setIdAndRelated(obj, opts);
+                this.setIdAndRelatedReverse(obj, opts);
             }
         }
         else {
+            this.clearRemovalListener();
             this.clearReverseRelated(opts);
-            self.setIdAndRelated(obj, opts);
+            this.setIdAndRelated(obj, opts);
         }
     },
     get: function (callback) {
