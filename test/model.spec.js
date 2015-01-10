@@ -6,7 +6,7 @@ var ModelInstance = require('../core/modelInstance'),
     Collection = require('../core/collection');
 
 describe('Models', function () {
-    var mapping, collection;
+    var Model, Collection;
 
     before(function () {
         s.ext.storageEnabled = false;
@@ -14,8 +14,8 @@ describe('Models', function () {
 
     beforeEach(function (done) {
         s.reset(function () {
-            collection = s.collection('myCollection');
-            mapping = collection.model({
+            Collection = s.collection('myCollection');
+            Model = Collection.model({
                 name: 'Car',
                 id: 'id',
                 attributes: ['colour', 'name'],
@@ -26,7 +26,7 @@ describe('Models', function () {
     });
 
     it('get attributes', function (done) {
-        mapping.map({id: 1, colour: 'red', name: 'Aston martin'})
+        Model.map({id: 1, colour: 'red', name: 'Aston martin'})
             .then(function (car) {
                 var attributes = car.getAttributes();
                 assert.equal(Object.keys(attributes).length, 3);
@@ -38,18 +38,70 @@ describe('Models', function () {
             .catch(done).done();
     });
 
+    it('define relationship with string', function (done) {
+        s.reset(function () {
+            var Collection = s.collection('myCollection'),
+                Person = Collection.model('Person', {
+                    attributes: ['name']
+                }),
+                Car = Collection.model('Car', {
+                    attributes: ['colour'],
+                    relationships: {
+                        owner: {
+                            model: 'Person',
+                            reverse: 'cars'
+                        }
+                    }
+                });
+
+            Car.map({colour: 'red', owner: {name: 'bob'}})
+                .then(function (car) {
+                    assert.ok(car);
+                    assert.ok(car.owner);
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
+    it('define relationship with model', function (done) {
+        s.reset(function () {
+            var Collection = s.collection('myCollection'),
+                Person = Collection.model('Person', {
+                    attributes: ['name']
+                }),
+                Car = Collection.model('Car', {
+                    attributes: ['colour'],
+                    relationships: {
+                        owner: {
+                            model: Person,
+                            reverse: 'cars'
+                        }
+                    }
+                });
+
+            Car.map({colour: 'red', owner: {name: 'bob'}})
+                .then(function (car) {
+                    assert.ok(car);
+                    assert.ok(car.owner);
+                    done();
+                })
+                .catch(done);
+        });
+    });
+
     describe('fields', function () {
 
 
         it('modelName field', function () {
-            var r = new ModelInstance(mapping);
+            var r = new ModelInstance(Model);
             assert.equal(r.modelName, 'Car');
         });
 
         it('collection field', function () {
-            var modelInstance = new ModelInstance(mapping);
+            var modelInstance = new ModelInstance(Model);
             assert.equal(modelInstance.collectionName, 'myCollection');
-            assert.equal(modelInstance.collection, collection);
+            assert.equal(modelInstance.collection, Collection);
         });
 
     });
@@ -59,7 +111,7 @@ describe('Models', function () {
 
         describe('remote id', function () {
             function remove() {
-                car = new ModelInstance(mapping);
+                car = new ModelInstance(Model);
                 car.colour = 'red';
                 car.name = 'Aston Martin';
                 car.id = '2';
@@ -87,7 +139,7 @@ describe('Models', function () {
 
         describe('no remote id', function () {
             function remove() {
-                car = new ModelInstance(mapping);
+                car = new ModelInstance(Model);
                 car.colour = 'red';
                 car.name = 'Aston Martin';
                 car._id = 'xyz';

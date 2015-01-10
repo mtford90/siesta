@@ -188,14 +188,21 @@ _.extend(Model.prototype, {
                                 relationship.type == RelationshipType.ManyToMany) {
                                 var modelName = relationship.model;
                                 delete relationship.model;
-                                if (Logger.debug.isEnabled)
-                                    Logger.debug('reverseModelName', modelName);
-                                if (!self.collection) throw new InternalSiestaError('Model must have collection');
-                                var collection = self.collection;
-                                if (!collection) {
-                                    throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
+                                var reverseModel;
+                                if (modelName instanceof Model) {
+                                    reverseModel = modelName;
                                 }
-                                var reverseModel = collection[modelName];
+                                else {
+                                    if (Logger.debug.isEnabled)
+                                        Logger.debug('reverseModelName', modelName);
+                                    if (!self.collection) throw new InternalSiestaError('Model must have collection');
+                                    var collection = self.collection;
+                                    if (!collection) {
+                                        throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
+                                    }
+                                    reverseModel = collection[modelName];
+                                }
+
                                 if (!reverseModel) {
                                     var arr = modelName.split('.');
                                     if (arr.length == 2) {
