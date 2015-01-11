@@ -220,8 +220,9 @@ describe('reactive query', function () {
                     rq.init(function (err) {
                         if (err) done(err);
                         else {
-                            rq.listenOnce(function (n) {
+                            rq.listenOnce(function (results, n) {
                                 console.log('rq.results', rq.results);
+                                assert.equal(results, rq.results);
                                 assert.equal(rq.results.length, 2, 'Should still be 2 results');
                                 assert.equal(n.obj, person);
                                 assert.equal(n.field, 'age');

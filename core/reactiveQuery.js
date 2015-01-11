@@ -139,7 +139,7 @@ _.extend(ReactiveQuery.prototype, {
             else if (matches && alreadyContains) {
                 if (Logger.trace) Logger.trace('Matches but already contains', newObj._dumpString());
                 // Send the notification over. 
-                this.emit('change', n);
+                this.emit('change', this.results, n);
             }
         }
         else if (n.type == modelEvents.ModelEventType.Remove) {

@@ -89,21 +89,17 @@ _.extend(ArrangedReactiveQuery.prototype, {
                 else {
                     this._mergeIndexes();
                     this._query.clearOrdering();
-                }
+                } 
             }
             deferred.finish(err, err ? null : this.results);
         }.bind(this));
         return deferred.promise;
     },
     _handleNotif: function (n) {
-        // We don't want to keep executing the query each time index modelEvents. We're changing
-        // the index ourselves.
+        // We don't want to keep executing the query each time the index event fires as we're changing the index ourselves
         if (n.field != this.indexAttribute) {
             ReactiveQuery.prototype._handleNotif.call(this, n);
             this._refreshIndexes();
-        }
-        else {
-            this.emit('change', this.results);
         }
     },
     validateIndex: function (idx) {

@@ -48,7 +48,9 @@ var ErrorField = {
         Mapping: 'Mapping',
         HTTP: 'HTTP',
         ReactiveQuery: 'ReactiveQuery',
-        ArrangedReactiveQuery: 'ArrangedReactiveQuery'
+        ArrangedReactiveQuery: 'ArrangedReactiveQuery',
+        Collection: 'Collection',
+        Query: 'Query'
     };
 
 

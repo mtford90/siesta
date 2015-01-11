@@ -5,6 +5,8 @@
 var log = require('./log'),
     cache = require('./cache'),
     util = require('./util'),
+    error = require('./error'),
+    constructError = error.errorFactory(error.Components.Query),
     _ = util._;
 
 var Logger = log.loggerWithName('Query');
@@ -151,7 +153,7 @@ _.extend(Query.prototype, {
                 var obj = cacheByLocalId[k];
                 var matches = self.objectMatchesQuery(obj);
                 if (typeof(matches) == 'string') {
-                    err = matches;
+                    err = constructError(matches);
                     break;
                 } else {
                     if (matches) res.push(obj);

@@ -1,7 +1,7 @@
 var s = require('../core/index'),
     assert = require('chai').assert;
 
-describe('positioned rquery', function () {
+describe('arranged rquery', function () {
     var MyCollection, Person;
     before(function () {
         s.ext.storageEnabled = false;
