@@ -84,6 +84,12 @@ If you decide to use the storage module then you **must** include PouchDB. If th
 window.PouchDB = require('pouchdb');
 ```
 
+## Example Projects
+
+At the moment the only example project is the ReactJS/Siesta TodoMVC implementation, the demo of which is [here](http://mtford.co.uk/siesta-reactjs-todomvc/) and source [here](https://github.com/mtford90/siesta-reactjs-todomvc).
+
+Various web apps and hybrid mobile apps are currently under development using Siesta and will be listed here upon completion.
+
 # Concepts
 
 Before reading through this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
@@ -825,6 +831,16 @@ query = Repo.query({stars__gte: 1000})
             });
 ```
 
+Result sets are *immutable* and hence cannot be modified. To convert a result set into a regular array simply call `asArray`.
+
+```js
+var query;
+query = Repo.query({stars__gte: 1000})
+            .then(function (repoResultSet) {
+                var mutableArrayOfRepos = repoResultSet.asArray();
+            });
+```
+
 # Reactive Queries
 
 Reactive queries exist to support functional reactive programming when using Siesta. For those familar with Apple's Cocoa library and CoreData these are similar to the `NSFetchedResultsController` class. 
@@ -835,6 +851,14 @@ A reactive query is a query that reacts to changes in the object graph, updating
 var rq = User.reactiveQuery({age__gte: 18});
 rq.init().then(function (results) {
   	// results are the same as User.query({age__gte: 18});
+});
+```
+
+To listen to events:
+
+```js
+var cancelListen = rq.listen(function (results, e) {
+    // ...
 });
 ```
 
@@ -871,7 +895,7 @@ var cancelListen = rq.listen(function (results, change) {
 });
 ```
 
-## Query Set
+## Result Set
 
 In a similar fashion to ordinary queries, results presented by reactive queries are `QuerySet` instances and so can be used to manipulate all instances in the result set.
 
@@ -927,6 +951,11 @@ var arq = User.arrangedReactiveQuery({
     age__gt: 10
 });
 arq.indexAttribute = 'index'; // Default attribute to use is index
+
+// Listening is exactly the same as ordinary reactive queries.
+var cancelListen = arq.listen(function (results, e) {
+    // ...
+});
 
 User.map([
 	{age: 55},
@@ -1858,24 +1887,19 @@ var MyComponent = React.createClass({
         this.listenAndSet(MySingletonModel, 'singleton');
     }
 });
-```
 
-Instead of:
-
-```js
+// Instead of 
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        this.listen(MySingletonModel, function (e) {
-            if (e.type == 'Set') {
-                this.setState(); // Render
-            }
-        }.bind(this));
-        MySingletonModel.one().then(function (singleton) {
+        MySingletonModel.one(function (err, singleton) {
             this.setState({
                 singleton: singleton
             });
-        }.bind(this))    
+            this.listen(MySingletonModel, function (e) {
+                if (e.type == 'Set') this.setState();
+            }.bind(this));
+        }.bind(this));
     }
 });   
 ```
