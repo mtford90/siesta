@@ -13,18 +13,33 @@ Siesta is an Object Graph framework for Javascript. Siesta makes it easy to mode
 
 # Roadmap
 
-The below lists ongoing and suggested features. Ideas and contributions are most welcome.
+The below is the current roadmap for Siesta features & improvements. Feedback and suggestions are welcome!
 
 ## 0.1
 * Stability
 
 ## 0.2
-* Store binary data.
-* Save changes to model instances rather than entire model instances when dirty.
+* Store binary data
+* Save changes to model instances rather than entire model instances when dirty
+* Database compaction
 
 ## 0.3
 * Faulting Mechanism (i.e. don't load all data from storage at once...)
-   
+* PouchDB indexing
+
+## 0.4
+* Undo/Redo changes to models
+* Global error handling mechanism
+
+## 0.5
+* Performance extension
+    * Built using Siesta itself
+* Visualisation extension (Already half done due to a siesta demo at Hacker School)
+    * Built using Siesta itself.
+
+## 1.0
+* API freeze
+
 ## Later
 * NodeJS support.
 
