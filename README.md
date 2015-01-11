@@ -39,8 +39,6 @@ The below is the current roadmap for Siesta features & improvements. Feedback an
 
 ## 1.0
 * API freeze
-
-## Later
 * NodeJS support.
 
 # Contributing

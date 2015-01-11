@@ -135,6 +135,17 @@ function renderImmutable(arr) {
     ARRAY_METHODS.forEach(function (p) {
         arr[p] = throwImmutableError;
     });
+    arr.immutable = true;
+    arr.mutableCopy = arr.asArray = function () {
+        var mutableArr = _.map(this, function (x) {return x});
+        mutableArr.asQuerySet = function () {
+            return querySet(this);
+        };
+        mutableArr.asModelQuerySet = function (model) {
+            return modelQuerySet(this, model);
+        };
+        return mutableArr;
+    };
     return arr;
 }
 

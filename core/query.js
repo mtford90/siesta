@@ -6,6 +6,7 @@ var log = require('./log'),
     cache = require('./cache'),
     util = require('./util'),
     error = require('./error'),
+    constructQuerySet = require('./querySet'),
     constructError = error.errorFactory(error.Components.Query),
     _ = util._;
 
@@ -128,6 +129,7 @@ _.extend(Query.prototype, {
                 return {field: field, ascending: ascending};
             }.bind(this));
             var s = this.sortFunc(fields);
+            if (res.immutable) res = res.mutableCopy();
             res.sort(s);
         }
         return res;
@@ -160,7 +162,7 @@ _.extend(Query.prototype, {
                 }
             }
             res = this._sortResults(res);
-            callback(err, err ? null : res);
+            callback(err, err ? null : constructQuerySet(res, this.model));
         }.bind(this);
         if (this.opts.ignoreInstalled) _executeInMemory();
         else {

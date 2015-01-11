@@ -9,6 +9,7 @@ var ReactiveQuery = require('./reactiveQuery'),
     util = require('./util'),
     error = require('./error'),
     InternalSiestaError = error.InternalSiestaError,
+    constructQuerySet = require('./querySet'),
     constructError = error.errorFactory(error.Components.ArrangedReactiveQuery),
     _ = util._;
 
@@ -77,7 +78,7 @@ _.extend(ArrangedReactiveQuery.prototype, {
             res[this.indexAttribute] = n;
         }
 
-        this.results = newResults;
+        this.results = constructQuerySet(newResults, this.model);
     },
     init: function (cb) {
         var deferred = util.defer(cb);
@@ -134,6 +135,7 @@ _.extend(ArrangedReactiveQuery.prototype, {
     move: function (from, to) {
         this.validateIndex(from);
         this.validateIndex(to);
+        var results = this.results.mutableCopy();
         (function (oldIndex, newIndex) {
             if (newIndex >= this.length) {
                 var k = newIndex - this.length;
@@ -142,7 +144,8 @@ _.extend(ArrangedReactiveQuery.prototype, {
                 }
             }
             this.splice(newIndex, 0, this.splice(oldIndex, 1)[0]);
-        }).call(this.results, from, to);
+        }).call(results, from, to);
+        this.results = results.asModelQuerySet(this.model);
         this._refreshIndexes();
     }
 });
