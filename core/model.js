@@ -260,6 +260,7 @@ _.extend(Model.prototype, {
         }
     },
     ensureSingletons: function (callback) {
+        console.log('ensureSingletons');
         if (this.singleton) {
             this.one({__ignoreInstalled: true}, function (err, obj) {
                 if (err) {

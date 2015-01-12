@@ -626,7 +626,7 @@ describe('storage', function () {
                 primary: 'red',
                 shortBreak: 'blue',
                 longBreak: 'green',
-                _id: 'xyz'
+                _id: 'xyz' 
             }).then(function () {
                 ColourConfig.one()
                     .then(function (colourConfig) {

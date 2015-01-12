@@ -135,7 +135,7 @@ var _parallel = function (eachfn, tasks, callback) {
         }, callback);
     } else {
         var results = {};
-        eachfn.each(keys(tasks), function (k, callback) {
+        eachfn.each(Object.keys(tasks), function (k, callback) {
             tasks[k](function (err) {
                 var args = Array.prototype.slice.call(arguments, 1);
                 if (args.length <= 1) {

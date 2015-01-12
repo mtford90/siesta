@@ -40,7 +40,8 @@ function Collection(name, opts) {
     var self = this;
     if (!name) throw new Error('Collection must have a name');
 
-    util.extendFromOpts(this, opts || {}, {
+    opts = opts || {};
+    util.extendFromOpts(this, opts, {
         /**
          * The URL of the API e.g. http://api.github.com
          * @type {string}
@@ -52,6 +53,7 @@ function Collection(name, opts) {
         name: name,
         _rawModels: {},
         _models: {},
+        _opts: opts,
         /**
          * Set to true if installation has succeeded. You cannot use the collectio
          * @type {boolean}

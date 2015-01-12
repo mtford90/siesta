@@ -146,6 +146,7 @@ _.extend(Query.prototype, {
     _executeInMemory: function (callback) {
         var _executeInMemory = function () {
             var cacheByLocalId = this._getCacheByLocalId();
+            console.log('cacheByLocalId', cacheByLocalId);
             var keys = Object.keys(cacheByLocalId);
             var self = this;
             var res = [];

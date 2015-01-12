@@ -70,6 +70,23 @@ siesta.ext = {};
 var installed = false,
     installing = false;
 
+function _ensureSingletons(collectionNames, cb) {
+    var ensureSingletonTasks = [];
+    for (var i = 0; i < collectionNames.length; i++) {
+        var collection = CollectionRegistry[collectionNames[i]],
+            modelNames = Object.keys(collection._models);
+        for (var j = 0; j < modelNames.length; j++) {
+            var modelName = modelNames[j],
+                model = collection[modelName];
+            var fn = function (done) {
+                this.ensureSingletons(done);
+            }.bind(model);
+            ensureSingletonTasks.push(fn);
+        }
+    }
+    siesta.async.parallel(ensureSingletonTasks, cb);
+}
+
 _.extend(siesta, {
     /**
      * Wipe everything. Used during test generally.
@@ -81,13 +98,46 @@ _.extend(siesta, {
         cache.reset();
         CollectionRegistry.reset();
         events.removeAllListeners();
-        siesta.ext.http.DescriptorRegistry.reset();
+        if (siesta.ext.httpEnabled) {
+            siesta.ext.http.DescriptorRegistry.reset();
+        }
         if (siesta.ext.storageEnabled) {
             siesta.ext.storage._reset(cb);
         }
         else {
             cb();
         }
+    },
+    /**
+     * Removes all data. Used during tests generally.
+     * @param [cb]
+     */
+    resetData: function (cb) {
+        var deferred = util.defer(cb);
+        cb = deferred.finish.bind(deferred);
+        var collectionNames = [],
+            tasks = CollectionRegistry.collectionNames.reduce(function (memo, collectionName) {
+                var collection = CollectionRegistry[collectionName],
+                    models = collection._models;
+                collectionNames.push(collectionName);
+                Object.keys(models).forEach(function (k) {
+                    var model = models[k];
+                    memo.push(function (done) {
+                        model.all(function (err, res) {
+                            if (!err) res.remove();
+                            done(err);
+                        });
+                    });
+                });
+                return memo;
+            }, []);
+        util.async.series(
+            [
+                _.partial(util.async.parallel, tasks),
+                _.partial(_ensureSingletons, collectionNames)
+            ],
+            cb);
+        return deferred.promise;
     },
     /**
      * Creates and registers a new Collection.
@@ -122,20 +172,8 @@ _.extend(siesta, {
             else {
                 var ensureSingletons = function (err) {
                     if (!err) {
-                        var ensureSingletonTasks = [];
-                        for (var i = 0; i < collectionNames.length; i++) {
-                            var collection = CollectionRegistry[collectionNames[i]],
-                                modelNames = Object.keys(collection._models);
-                            for (var j = 0; j < modelNames.length; j++) {
-                                var modelName = modelNames[j],
-                                    model = collection[modelName];
-                                var fn = function (done) {
-                                    this.ensureSingletons(done);
-                                }.bind(model);
-                                ensureSingletonTasks.push(fn);
-                            }
-                        }
-                        siesta.async.parallel(ensureSingletonTasks, function (err, res) {
+
+                        _ensureSingletons(collectionNames, function (err, res) {
                             if (!err) {
                                 installed = true;
                                 if (self.queuedTasks) self.queuedTasks.execute();
@@ -143,6 +181,7 @@ _.extend(siesta, {
                             installing = false;
                             cb(err, res);
                         });
+
                     }
                     else {
                         installing = false;
