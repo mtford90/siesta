@@ -8,6 +8,7 @@ module.exports = function (grunt) {
 
     var userConfig = require('./build.config.js');
     var LIVERELOAD_PORT = 47835;
+    var CONNECT_PORT = 4001;
     var taskConfig = {
         pkg: grunt.file.readJSON("package.json"),
 
@@ -30,6 +31,12 @@ module.exports = function (grunt) {
                 pushTo: 'upstream',
                 gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
                 globalReplace: false
+            }
+        },
+
+        open: {
+            mocha: {
+                path: 'http://localhost:4001'
             }
         },
 
@@ -199,8 +206,8 @@ module.exports = function (grunt) {
             site: {
                 options: {
                     livereload: LIVERELOAD_PORT,
-                    port: 4000,
-                    base: './_site'
+                    port: CONNECT_PORT,
+                    base: './'
                 }
             }
         },
@@ -300,7 +307,8 @@ module.exports = function (grunt) {
     grunt.registerTask('watch', [
         'test',
         'connect:site',
-        'delta'
+        'delta',
+        'open:mocha'
     ]);
 
     grunt.registerTask('build', [

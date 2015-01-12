@@ -55,77 +55,145 @@ describe('mapping!', function () {
 
     describe('customisation', function () {
         describe('methods', function () {
-            it('sync init', function (done) {
-                var C = s.collection('C');
-                var M = C.model('M', {
-                    init: function () {
-                        assert.equal(this.attr, 1);
-                        done();
-                    },
-                    attributes: ['attr']
-                });
-                s.install()
-                    .then(function () {
-                        M.map({attr: 1});
-                    })
-                    .catch(done);
-            });
-            it('async init', function (done) {
-                var C = s.collection('C');
-                var initExecuted = false;
-                var M = C.model('M', {
-                    init: function (cb) {
-                        assert.equal(this.attr, 1);
-                        initExecuted = true;
-                        cb();
-                    },
-                    attributes: ['attr']
-                });
-                s.install()
-                    .then(function () {
-                        M.map({attr: 1})
-                            .then(function () {
-                                assert.ok(initExecuted);
-                                done();
-                            })
-                            .catch(done);
-                    })
-                    .catch(done);
-            });
-            it('mixture of async and sync init', function (done) {
-                var C = s.collection('C');
-                var asyncInitExecuted = false,
-                    syncInitExecuted = false;
-                var M = C.model('M', {
-                        init: function (cb) {
-                            assert.equal(this.attr, 1);
-                            asyncInitExecuted = true;
-                            cb();
-                        },
-                        attributes: ['attr']
-                    }),
-                    M_2 = C.model('M_2', {
+            describe('init', function () {
+                it('sync', function (done) {
+                    var C = s.collection('C');
+                    var M = C.model('M', {
                         init: function () {
-                            assert.equal(this.attr, 2);
-                            syncInitExecuted = true;
+                            assert.equal(this.attr, 1);
+                            done();
                         },
                         attributes: ['attr']
                     });
-                s.install()
-                    .then(function () {
-                        M.map({attr: 1})
-                            .then(function () {
-                                M_2.map({attr: 2})
-                                    .then(function () {
-                                        assert.ok(asyncInitExecuted);
-                                        assert.ok(syncInitExecuted);
-                                        done();
-                                    }).catch(done);
+                    s.install()
+                        .then(function () {
+                            M.map({
+                                attr: 1
+                            });
+                        })
+                        .catch(done);
+                });
+                it('async', function (done) {
+                    var C = s.collection('C');
+                    var initExecuted = false;
+                    var M = C.model('M', {
+                        init: function (cb) {
+                            assert.equal(this.attr, 1);
+                            initExecuted = true;
+                            cb();
+                        },
+                        attributes: ['attr']
+                    });
+                    s.install()
+                        .then(function () {
+                            M.map({
+                                attr: 1
                             })
-                            .catch(done);
-                    })
-                    .catch(done);
+                                .then(function () {
+                                    assert.ok(initExecuted);
+                                    done();
+                                })
+                                .catch(done);
+                        })
+                        .catch(done);
+                });
+                it('mixture of async and sync', function (done) {
+                    var C = s.collection('C');
+                    var asyncInitExecuted = false,
+                        syncInitExecuted = false;
+                    var M = C.model('M', {
+                            init: function (cb) {
+                                assert.equal(this.attr, 1);
+                                asyncInitExecuted = true;
+                                cb();
+                            },
+                            attributes: ['attr']
+                        }),
+                        M_2 = C.model('M_2', {
+                            init: function () {
+                                assert.equal(this.attr, 2);
+                                syncInitExecuted = true;
+                            },
+                            attributes: ['attr']
+                        });
+                    s.install()
+                        .then(function () {
+                            M.map({
+                                attr: 1
+                            })
+                                .then(function () {
+                                    M_2.map({
+                                        attr: 2
+                                    })
+                                        .then(function () {
+                                            assert.ok(asyncInitExecuted);
+                                            assert.ok(syncInitExecuted);
+                                            done();
+                                        }).catch(done);
+                                })
+                                .catch(done);
+                        })
+                        .catch(done);
+                });
+
+                it('use queries within', function (done) {
+                    var C = s.collection('C');
+                    var asyncInitExecuted = false,
+                        syncInitExecuted = false;
+                    var M = C.model('M', {
+                            init: function (cb) {
+                                M_2.query({}).then(function () {
+                                    asyncInitExecuted = true;
+                                    cb();
+                                }).catch(cb);
+                            },
+                            attributes: ['attr']
+                        }),
+                        M_2 = C.model('M_2', {
+                            init: function () {
+                                assert.equal(this.attr, 2);
+                                syncInitExecuted = true;
+                            },
+                            attributes: ['attr']
+                        });
+                    M.map({
+                        attr: 1
+                    }).then(function () {
+                        M_2.map({
+                            attr: 2
+                        }).then(function () {
+                            assert.ok(asyncInitExecuted);
+                            assert.ok(syncInitExecuted);
+                            done();
+                        }).catch(done);
+                    }).catch(done);
+                });
+
+                it('use singleton within', function (done) {
+                    var C = s.collection('C');
+                    var asyncInitExecuted = false;
+                    var M = C.model('M', {
+                            init: function (cb) {
+                                M_2.one().then(function () {
+                                    asyncInitExecuted = true;
+                                    cb();
+                                }).catch(cb);
+                            },
+                            attributes: ['attr']
+                        }),
+                        M_2 = C.model('M_2', {
+                            attributes: ['attr'],
+                            singleton: true
+                        });
+                    M.map({
+                        attr: 1
+                    }).then(function () {
+                        assert.ok(asyncInitExecuted);
+                        done();
+                    }).catch(done);
+                });
             });
+
             it('valid', function (done) {
                 var C = s.collection('C');
                 var M = C.model('M', {
@@ -137,7 +205,9 @@ describe('mapping!', function () {
                     attributes: ['attr']
                 });
                 s.install().then(function () {
-                    M.map({attr: 'xyz'})
+                    M.map({
+                        attr: 'xyz'
+                    })
                         .then(function (m) {
                             assert.equal(m.attr, m.f());
                             done();
@@ -156,7 +226,9 @@ describe('mapping!', function () {
                     attributes: ['attr']
                 });
                 s.install().then(function () {
-                    M.map({attr: 'xyz'})
+                    M.map({
+                        attr: 'xyz'
+                    })
                         .then(function (m) {
                             assert.notEqual(m.restore(), 'a', 'Should not replace existing definitions')
                             done();
@@ -177,7 +249,9 @@ describe('mapping!', function () {
                 });
                 s.install()
                     .then(function () {
-                        M.map({attr: 1})
+                        M.map({
+                            attr: 1
+                        })
                             .then(function (_m) {
                                 m = _m;
                                 _m.remove();
@@ -199,7 +273,9 @@ describe('mapping!', function () {
                 });
                 s.install()
                     .then(function () {
-                        M.map({attr: 1})
+                        M.map({
+                            attr: 1
+                        })
                             .then(function (_m) {
                                 m = _m;
                                 _m.remove()
@@ -225,7 +301,9 @@ describe('mapping!', function () {
                 });
                 s.install()
                     .then(function () {
-                        M.map({attr: 1})
+                        M.map({
+                            attr: 1
+                        })
                             .then(function (_m) {
                                 m = _m;
                                 _m.remove()
@@ -289,7 +367,9 @@ describe('mapping!', function () {
                 });
                 s.install()
                     .then(function () {
-                        M.map({attr: 1})
+                        M.map({
+                            attr: 1
+                        })
                             .then(function (_m) {
                                 assert.equal(_m.prop, 'a');
                                 done();
@@ -311,7 +391,9 @@ describe('mapping!', function () {
                 });
                 s.install()
                     .then(function () {
-                        M.map({attr: 1})
+                        M.map({
+                            attr: 1
+                        })
                             .then(function (_m) {
                                 assert.notEqual(_m.restore, 'a');
                                 done();
