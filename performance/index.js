@@ -53,5 +53,24 @@ function timeMaps() {
     };
 }
 
-timeMaps();
+function timeQueries() {
+    var Model = siesta._internal.Model,
+        oldQuery = Model.prototype.query;
+    Model.prototype.query = function (query, callback) {
+        var deferred = util.defer(callback);
+        callback = deferred.finish.bind(deferred);
+        var start = (new Date).getTime();
+        oldQuery.call(this, query, function (err, res) {
+            var end = (new Date).getTime(),
+                timeTaken = end - start;
+            console.info('[Performance: Model.prototype.query] It took ' + timeTaken + 'ms to query');
+            callback(err, res);
+        });
+
+        return deferred.promise;
+    };
+}
+
+//timeMaps();
+timeQueries();
 module.exports = performance;
