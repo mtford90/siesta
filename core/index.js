@@ -48,6 +48,7 @@ _.extend(siesta, {
         ModelEventType: modelEvents.ModelEventType,
         siestaModel: require('./modelInstance'),
         extend: require('extend'),
+        MappingOperation: require('./mappingOperation'),
         events: require('./events'),
         cache: require('./cache'),
         modelEvents: modelEvents,
