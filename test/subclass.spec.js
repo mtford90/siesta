@@ -484,7 +484,6 @@ describe('Subclass', function () {
 
             });
             s.install(function () {
-                console.log(Car);
                 assert.equal(Car.init(), 'a');
                 assert.equal(SportsCar.init(), 'a');
             });

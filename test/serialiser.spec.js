@@ -176,8 +176,6 @@ describe('serialisers', function () {
 
     describe('availibility on siesta', function () {
         it('id, anglophone', function () {
-            console.log('eh');
-            console.log('s.serialisers', s.serialisers);
             assert.equal(s.serialisers.id, siesta.ext.http.Serialiser.idSerialiser);
         });
 

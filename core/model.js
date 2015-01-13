@@ -303,19 +303,14 @@ _.extend(Model.prototype, {
         }
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
-        console.log('one');
         this.query(opts, function (err, res) {
-            console.log('two');
             if (err) cb(err);
             else {
-                console.log('three');
                 if (res.length > 1) {
-                    console.log('four');
                     cb('More than one instance returned when executing get query!');
                 }
                 else {
                     res = res.length ? res[0] : null;
-                    console.log('five', res);
                     cb(null, res);
                 }
             }

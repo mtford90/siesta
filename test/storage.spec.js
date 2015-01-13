@@ -160,7 +160,6 @@ describe('storage', function () {
                                     done('Should be deleted...');
                                 }).catch(function (e) {
                                     assert.equal(e.status, 404);
-                                    console.log('e', e);
                                     done();
                                 });
                             }).catch(done);
@@ -190,9 +189,7 @@ describe('storage', function () {
                     {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
                     {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
                 ]).then(function () {
-                    console.log('bulk..');
                     s.ext.storage._load().then(function () {
-                        console.log('loaded..');
                         assert.notOk(s.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                         Car.all().then(function (cars) {
                             assert.equal(cars.length, 2, 'Should have loaded the two cars');

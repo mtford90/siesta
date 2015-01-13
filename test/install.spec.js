@@ -87,7 +87,6 @@ describe('install step', function () {
             s.reset(function () {
                 s.ext.storageEnabled = false;
                 s.ext.storage._pouch.allDocs().then(function (resp) {
-                    console.log('allDocs', resp);
                     done();
                 });
             })

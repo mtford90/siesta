@@ -135,7 +135,6 @@ _.extend(RelationshipProxy.prototype, {
         return this.isForward ? this.forwardModel : this.reverseModel;
     },
     clearRemovalListener: function (obj) {
-        console.log('clearRemovalListener', obj);
         var _id = obj._id;
         var cancelListen = this.cancelListens[_id];
         // TODO: Remove this check. cancelListen should always exist
@@ -145,7 +144,6 @@ _.extend(RelationshipProxy.prototype, {
         }
     },
     listenForRemoval: function (obj) {
-        console.log('listenForRemoval', obj);
         this.cancelListens[obj._id] = obj.listen(function (e) {
             if (e.type == ModelEventType.Remove) {
                 if (util.isArray(this.related)) {

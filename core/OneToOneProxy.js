@@ -36,8 +36,6 @@ _.extend(OneToOneProxy.prototype, {
         return null;
     },
     set: function (obj, opts) {
-        console.log('related', this.object, this.related);
-        console.log('set', this.object, obj);
         this.checkInstalled();
         if (obj) {
             var errorMessage;

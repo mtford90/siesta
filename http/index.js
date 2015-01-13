@@ -437,7 +437,6 @@ _.extend(siesta, {
 Object.defineProperties(serialisers, {
     id: {
         get: function () {
-            console.log(siesta.ext.httpEnabled);
             if (siesta.ext.httpEnabled) {
                 return siesta.ext.http.Serialiser.idSerialiser;
             }

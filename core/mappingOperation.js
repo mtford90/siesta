@@ -52,7 +52,6 @@ function MappingOperation(opts) {
 
 _.extend(MappingOperation.prototype, {
     mapAttributes: function () {
-        console.log('mapAttributes')
         for (var i = 0; i < this.data.length; i++) {
             var datum = this.data[i];
             var object = this.objects[i];
@@ -244,7 +243,6 @@ _.extend(MappingOperation.prototype, {
         }
         // The mapping operation is responsible for creating singleton instances if they do not already exist.
         var singleton = cache.getSingleton(this.model) || this._new(_id);
-        console.log('_lookupSingleton', this.model.name);
         for (var i = 0; i < self.data.length; i++) {
             self.objects[i] = singleton;
         }
@@ -339,7 +337,6 @@ _.extend(MappingOperation.prototype, {
     _executeSubOperations: function (callback) {
         var self = this,
             relationshipNames = _.keys(this.model.relationships);
-        console.log('subop models', this.model);
         if (relationshipNames.length) {
             var tasks = _.reduce(relationshipNames, function (m, relationshipName) {
                 var relationship = self.model.relationships[relationshipName],
@@ -353,8 +350,6 @@ _.extend(MappingOperation.prototype, {
                 var __ret = this.getRelatedData(relationshipName),
                     indexes = __ret.indexes,
                     relatedData = __ret.relatedData;
-                console.log('this.data', this.data);
-                console.log('relatedData', relatedData);
                 if (relatedData.length) {
                     var flatRelatedData = util.flattenArray(relatedData);
                     var op = new MappingOperation({
@@ -382,7 +377,6 @@ _.extend(MappingOperation.prototype, {
                 }
                 return m;
             }.bind(this), []);
-            console.log('tasks', tasks.length);
             async.parallel(tasks, function (err) {
                 callback(err);
             });
