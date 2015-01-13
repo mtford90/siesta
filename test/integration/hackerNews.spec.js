@@ -20,13 +20,14 @@
 //
 //    var server;
 //
-//    beforeEach(function () {
-//        siesta.reset(true);
-//        console.log('sinon', sinon);
-//        this.sinon = sinon.sandbox.create();
-//        this.server = sinon.fakeServer.create();
-//        this.server.autoRespond = true;
-//        server = this.server;
+//    beforeEach(function (done) {
+//        siesta.reset(function () {
+//            this.sinon = sinon.sandbox.create();
+//            this.server = sinon.fakeServer.create();
+//            this.server.autoRespond = true;
+//            server = this.server;
+//            done();
+//        }.bind(this));
 //    });
 //
 //    afterEach(function () {
@@ -37,7 +38,7 @@
 //
 //
 //    it('problem with mapping', function () {
-//        var HackerNews = new siesta('HackerNews');
+//        var HackerNews = siesta.collection('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.model('Item', {
 //            id: 'id'
@@ -58,7 +59,7 @@
 //    });
 //
 //    it('Issue with regexp returning some array-like object', function (done) {
-//        var HackerNews = new siesta('HackerNews');
+//        var HackerNews = siesta.collection('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.model('Item', {
 //            id: 'id'
@@ -93,13 +94,12 @@
 //                    }
 //                    done(err);
 //                });
-//                ;
 //            }
 //        });
 //    });
 //
 //    it('default id works', function (done) {
-//        var HackerNews = new siesta('HackerNews');
+//        var HackerNews = siesta.collection('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        var Item = HackerNews.model('Item', {
 //            attributes: [
@@ -124,19 +124,18 @@
 //                server.respondWith("GET", "https://hacker-news.firebaseio.com/v0/item/8582985.json",
 //                    [200, {"Content-Type": "application/json"},
 //                        JSON.stringify(data)]);
-//                HackerNews.GET('item/8582985.json', function (err, item) {
-//                    if (err) done(err);
-//                    assert.ok(item.id, 'should have id');
-//                    assert.ok(item.__values.id, 'should have id');
-//                    done(err);
-//                });
-//                ;
+//                HackerNews.GET('item/8582985.json')
+//                    .then(function (item) {
+//                        assert.ok(item.id, 'should have id');
+//                        assert.ok(item.__values.id, 'should have id');
+//                        done();
+//                    }).catch(done);
 //            }
 //        });
 //    });
 //
 //    it('kids', function (done) {
-//        var HackerNews = new siesta('HackerNews');
+//        var HackerNews = siesta.collection('HackerNews');
 //        HackerNews.baseURL = 'https://hacker-news.firebaseio.com/v0/';
 //        HackerNews.model('Item', {
 //            attributes: [
@@ -166,7 +165,6 @@
 //            HackerNews.GET('item/8582985.json', function (err, item) {
 //                done();
 //            });
-//            ;
 //        });
 //    });
 //
