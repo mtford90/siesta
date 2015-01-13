@@ -236,7 +236,6 @@ _.extend(storage, {
     save: save,
     _serialise: _serialise,
     _reset: function (cb) {
-        console.log('resetting');
         siesta.removeListener('Siesta', listener);
         unsavedObjects = [];
         unsavedObjectsHash = {};
