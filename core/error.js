@@ -89,12 +89,12 @@ module.exports = {
     errorFactory: function (component) {
         if (component in Components) {
             return function (message, extra) {
-                return new InternalSiestaError(component, message, extra);
+                return new SiestaUserError(component, message, extra);
             }
         }
 
         else {
-            throw new InternalSiestaError('No such component "' + component + '"');
+            throw new SiestaUserError('No such component "' + component + '"');
         }
     }
 };

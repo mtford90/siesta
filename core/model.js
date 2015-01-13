@@ -268,10 +268,12 @@ _.extend(Model.prototype, {
         else {
             var deferred = util.defer(callback);
             callback = deferred.finish.bind(deferred);
-            (this._query({})).execute(function (err, objs) {
+            (this._query({__ignoreInstalled: true})).execute(function (err, objs) {
                 if (err) callback(err);
                 else {
                     // Cache a new singleton and then reexecute the query
+                    query = _.extend({}, query);
+                    query.__ignoreInstalled = true;
                     if (!objs.length) {
                         this.map({}, function (err) {
                             if (!err) {

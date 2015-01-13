@@ -164,7 +164,9 @@ _.extend(Query.prototype, {
             res = this._sortResults(res);
             callback(err, err ? null : constructQuerySet(res, this.model));
         }.bind(this);
-        if (this.opts.ignoreInstalled) _executeInMemory();
+        if (this.opts.ignoreInstalled) {
+            _executeInMemory();
+        }
         else {
             siesta._afterInstall(_executeInMemory);
         }

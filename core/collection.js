@@ -85,6 +85,7 @@ _.extend(Collection.prototype, {
      * @class Collection
      */
     install: function (callback) {
+        console.log('installing', this.name);
         var deferred = util.defer(callback);
         var self = this;
         if (!this.installed) {
@@ -136,8 +137,7 @@ _.extend(Collection.prototype, {
                 self._finaliseInstallation(null, deferred.finish.bind(deferred));
             }
         } else {
-            var err = new InternalSiestaError('Collection "' + this.name + '" has already been installed');
-            self._finaliseInstallation(err, deferred.finish.bind(deferred));
+            throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
         }
         return deferred.promise;
     },

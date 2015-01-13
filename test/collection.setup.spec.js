@@ -33,10 +33,10 @@ describe('collection setup', function () {
             it('raises an error if trying to configure twice', function (done) {
                 s.install(function (err) {
                     if (err) done(err);
-                    s.install(function (err) {
-                        assert.ok(err);
-                        done();
-                    })
+                    assert.throws(function () {
+                        s.install();
+                    });
+                    done();
                 });
             });
 
@@ -52,10 +52,10 @@ describe('collection setup', function () {
         it('raises an error if trying to configure twice', function (done) {
             s.install(function (err) {
                 if (err) done(err);
-                s.install(function (err) {
-                    assert.ok(err);
-                    done();
-                })
+                assert.throws(function () {
+                    s.install();
+                });
+                done();
             });
         });
 

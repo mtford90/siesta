@@ -21,7 +21,7 @@ var unsavedObjects = [],
 var storage = {},
     Logger = log.loggerWithName('Storage');
 
-Logger.setLevel(siesta.log.warn);
+Logger.setLevel(siesta.log.trace);
 
 /**
  * Serialise a model into a format that PouchDB bulkDocs API can process
@@ -96,13 +96,13 @@ function _loadModel(opts, callback) {
             });
             if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
             Model.map(data, {disableevents: true, _ignoreInstalled: true}, function (err, instances) {
-                if (!err) {
-                    if (Logger.trace)
-                        Logger.trace('Loaded ' + instances.length.toString() + ' instances for ' + fullyQualifiedName);
+                if (!err && Logger.trace.isEnabled) {
+                    Logger.trace('Loaded ' + instances.length.toString() + ' instances for ' + fullyQualifiedName);
                 }
                 else {
                     Logger.error('Error loading models', err);
                 }
+                console.log('....?');
                 callback(err, instances);
             });
         })
@@ -116,28 +116,33 @@ function _loadModel(opts, callback) {
  */
 function _load(callback) {
     var deferred = util.defer(callback);
-    var collectionNames = CollectionRegistry.collectionNames;
-    var tasks = [];
-    _.each(collectionNames, function (collectionName) {
-        var collection = CollectionRegistry[collectionName],
-            modelNames = Object.keys(collection._models);
-        _.each(modelNames, function (modelName) {
-            tasks.push(function (cb) {
-                _loadModel({
-                    collectionName: collectionName,
-                    modelName: modelName
-                }, cb);
+    if (siesta.ext.storageEnabled) {
+        var collectionNames = CollectionRegistry.collectionNames;
+        var tasks = [];
+        _.each(collectionNames, function (collectionName) {
+            var collection = CollectionRegistry[collectionName],
+                modelNames = Object.keys(collection._models);
+            _.each(modelNames, function (modelName) {
+                tasks.push(function (cb) {
+                    _loadModel({
+                        collectionName: collectionName,
+                        modelName: modelName
+                    }, cb);
+                });
             });
         });
-    });
-    siesta.async.parallel(tasks, function (err, results) {
-        if (!err) {
-            var instances = [];
-            siesta._.each(results, function (r) {instances.concat(r)});
-            if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
-        }
-        deferred.finish(err);
-    });
+        siesta.async.parallel(tasks, function (err, results) {
+            if (!err) {
+                var instances = [];
+                siesta._.each(results, function (r) {instances.concat(r)});
+                if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
+            }
+            deferred.finish(err);
+        });
+    }
+    else {
+        deferred.finish();
+    }
     return deferred.promise;
 }
 

@@ -3,6 +3,7 @@ var util = require('./util'),
     Collection = require('./collection'),
     cache = require('./cache'),
     Model = require('./model'),
+    error = require('./error'),
     events = require('./events'),
     RelationshipType = require('./RelationshipType'),
     ReactiveQuery = require('./reactiveQuery'),
@@ -72,7 +73,6 @@ var installed = false,
     installing = false;
 
 
-
 _.extend(siesta, {
     /**
      * Wipe everything. Used during test generally.
@@ -139,34 +139,40 @@ _.extend(siesta, {
      * @returns {q.Promise}
      */
     install: function (cb) {
-        installing = true;
-        var deferred = util.defer(cb);
-        cb = deferred.finish.bind(deferred);
-        var collectionNames = CollectionRegistry.collectionNames,
-            collectionInstallTasks = _.map(collectionNames, function (n) {
-                return function (done) {
-                    CollectionRegistry[n].install(done);
+        if (!(installing || installed)) {
+            console.log('install');
+            installing = true;
+            var deferred = util.defer(cb);
+            cb = deferred.finish.bind(deferred);
+            var collectionNames = CollectionRegistry.collectionNames,
+                collectionInstallTasks = _.map(collectionNames, function (n) {
+                    return function (done) {
+                        CollectionRegistry[n].install(done);
+                    }
+                });
+            var self = this;
+            console.log('collectionInstallTasks', collectionInstallTasks);
+            siesta.async.series(collectionInstallTasks, function (err) {
+                if (err) {
+                    cb(err);
+                }
+                else {
+                    siesta.ext.storage._load(function (err) {
+                        if (!err) {
+                            installed = true;
+                            if (self.queuedTasks) self.queuedTasks.execute();
+                        }
+                        cb(err);
+                    });
                 }
             });
-        var self = this;
-        siesta.async.series(collectionInstallTasks, function (err) {
-            if (err) {
-                installing = false;
-                cb(err);
-            }
-            else {
-                siesta.ext.storage._load(function (err) {
-                    if (!err) {
-                        installed = true;
-                        if (self.queuedTasks) self.queuedTasks.execute();
-                    }
-                    installing = false;
-                    cb(err);
-                });
-            }
-        });
 
-        return deferred.promise;
+            return deferred.promise;
+        }
+        else {
+            throw new error.InternalSiestaError('Already installing...');
+        }
+
     },
     _pushTask: function (task) {
         if (!this.queuedTasks) {
