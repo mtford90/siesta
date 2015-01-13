@@ -6,7 +6,6 @@ var Store = require('./store'),
     SiestaModel = require('./modelInstance'),
     log = require('./log'),
     InternalSiestaError = require('./error').InternalSiestaError,
-    Query = require('./query'),
     cache = require('./cache'),
     util = require('./util'),
     _ = util._,
@@ -53,6 +52,7 @@ function MappingOperation(opts) {
 
 _.extend(MappingOperation.prototype, {
     mapAttributes: function () {
+        console.log('mapAttributes')
         for (var i = 0; i < this.data.length; i++) {
             var datum = this.data[i];
             var object = this.objects[i];
@@ -145,22 +145,7 @@ _.extend(MappingOperation.prototype, {
                             datum: datum
                         });
                     } else {
-                        // Create a new object if and only if the data has any fields that will actually
-                        var datumFields = Object.keys(datum);
-                        var objectFields = _.reduce(Object.keys(self.model.relationships).concat(self.model._attributeNames), function (m, x) {
-                            m[x] = {};
-                            return m;
-                        }, {});
-                        var shouldCreateNewObject = false;
-                        for (var j = 0; j < datumFields.length; j++) {
-                            if (objectFields[datumFields[j]]) {
-                                shouldCreateNewObject = true;
-                                break;
-                            }
-                        }
-                        if (shouldCreateNewObject) {
-                            this.objects[i] = self._new();
-                        }
+                        this.objects[i] = self._new();
                     }
                 } else {
                     this.objects[i] = null;
@@ -247,25 +232,23 @@ _.extend(MappingOperation.prototype, {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         var self = this;
-        this.model.one({__ignoreInstalled: this._ignoreInstalled}, function (err, singleton) {
-            // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
-            // always be the same. This is just a precaution.
-            var _ids = _.pluck(self.data, '_id'),
-                _id;
-            for (i = 0; i < _ids.length; i++) {
-                if (_ids[i]) {
-                    _id = {_id: _ids[i]};
-                    break;
-                }
+        // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
+        // always be the same. This is just a precaution.
+        var _ids = _.pluck(self.data, '_id'),
+            _id;
+        for (i = 0; i < _ids.length; i++) {
+            if (_ids[i]) {
+                _id = {_id: _ids[i]};
+                break;
             }
-            if (!singleton) singleton = self._new(_id);
-            if (!err) {
-                for (var i = 0; i < self.data.length; i++) {
-                    self.objects[i] = singleton;
-                }
-            }
-            callback(err);
-        });
+        }
+        // The mapping operation is responsible for creating singleton instances if they do not already exist.
+        var singleton = cache.getSingleton(this.model) || this._new(_id);
+        console.log('_lookupSingleton', this.model.name);
+        for (var i = 0; i < self.data.length; i++) {
+            self.objects[i] = singleton;
+        }
+        callback();
         return deferred.promise;
     },
     _new: function () {
@@ -286,11 +269,11 @@ _.extend(MappingOperation.prototype, {
 
                 // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
                 //
-                // methods: {
-                //     __init: function ([done]) {
-                //        // ...
-                //     }
-                // }
+                //
+                // init: function ([done]) {
+                //     // ...
+                //  }
+                //
                 //
                 // If done is passed, then __init must be executed asynchronously, and the mapping operation will not
                 // finish until all inits have executed.
@@ -356,13 +339,22 @@ _.extend(MappingOperation.prototype, {
     _executeSubOperations: function (callback) {
         var self = this,
             relationshipNames = _.keys(this.model.relationships);
+        console.log('subop models', this.model);
         if (relationshipNames.length) {
             var tasks = _.reduce(relationshipNames, function (m, relationshipName) {
                 var relationship = self.model.relationships[relationshipName],
-                    reverseModel = relationship.forwardName == relationshipName ? relationship.reverseModel : relationship.forwardModel,
-                    __ret = this.getRelatedData(relationshipName),
+                    reverseModel = relationship.forwardName == relationshipName ? relationship.reverseModel : relationship.forwardModel;
+                // Mock any missing singleton data to ensure that all singleton instances are created.
+                if (reverseModel.singleton && !relationship.isReverse) {
+                    this.data.forEach(function (datum) {
+                        if (!datum[relationshipName]) datum[relationshipName] = {};
+                    });
+                }
+                var __ret = this.getRelatedData(relationshipName),
                     indexes = __ret.indexes,
                     relatedData = __ret.relatedData;
+                console.log('this.data', this.data);
+                console.log('relatedData', relatedData);
                 if (relatedData.length) {
                     var flatRelatedData = util.flattenArray(relatedData);
                     var op = new MappingOperation({
@@ -372,6 +364,7 @@ _.extend(MappingOperation.prototype, {
                         _ignoreInstalled: self._ignoreInstalled
                     });
                 }
+
                 if (op) {
                     var task;
                     task = function (done) {
@@ -389,8 +382,9 @@ _.extend(MappingOperation.prototype, {
                 }
                 return m;
             }.bind(this), []);
-            async.parallel(tasks, function () {
-                callback();
+            console.log('tasks', tasks.length);
+            async.parallel(tasks, function (err) {
+                callback(err);
             });
         } else {
             callback();

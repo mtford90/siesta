@@ -145,11 +145,11 @@ describe('perform mapping', function () {
                 attributes: ['colour', 'name']
             });
         });
-        it('empty', function () {
-            Car.map({}, function (err, _obj) {
-                assert.notOk(err);
-                assert.notOk(_obj);
-            });
+        it('empty', function (done) {
+            Car.map({}).then(function (_obj) {
+                assert.ok(_obj);
+                done();
+            }).catch(done);
         });
     });
 

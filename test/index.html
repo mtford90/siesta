@@ -21,13 +21,7 @@
     <script>
         onload = function () {
             mocha.globals(['jQuery']);
-            var runner;
-            if (typeof mochaPhantomJS !== 'undefined') {
-                runner = mochaPhantomJS.run();
-            }
-            else {
-                runner = mocha.run();
-            }
+            var runner = mocha.run();
         };
     </script>
 </head>

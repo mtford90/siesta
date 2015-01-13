@@ -70,22 +70,7 @@ siesta.ext = {};
 var installed = false,
     installing = false;
 
-function _ensureSingletons(collectionNames, cb) {
-    var ensureSingletonTasks = [];
-    for (var i = 0; i < collectionNames.length; i++) {
-        var collection = CollectionRegistry[collectionNames[i]],
-            modelNames = Object.keys(collection._models);
-        for (var j = 0; j < modelNames.length; j++) {
-            var modelName = modelNames[j],
-                model = collection[modelName];
-            var fn = function (done) {
-                this.ensureSingletons(done);
-            }.bind(model);
-            ensureSingletonTasks.push(fn);
-        }
-    }
-    siesta.async.parallel(ensureSingletonTasks, cb);
-}
+
 
 _.extend(siesta, {
     /**
@@ -133,8 +118,7 @@ _.extend(siesta, {
             }, []);
         util.async.series(
             [
-                _.partial(util.async.parallel, tasks),
-                _.partial(_ensureSingletons, collectionNames)
+                _.partial(util.async.parallel, tasks)
             ],
             cb);
         return deferred.promise;
@@ -170,31 +154,14 @@ _.extend(siesta, {
                 cb(err);
             }
             else {
-                var ensureSingletons = function (err) {
+                siesta.ext.storage._load(function (err) {
                     if (!err) {
-
-                        _ensureSingletons(collectionNames, function (err, res) {
-                            if (!err) {
-                                installed = true;
-                                if (self.queuedTasks) self.queuedTasks.execute();
-                            }
-                            installing = false;
-                            cb(err, res);
-                        });
-
+                        installed = true;
+                        if (self.queuedTasks) self.queuedTasks.execute();
                     }
-                    else {
-                        installing = false;
-                        cb(err);
-                    }
-                };
-                if (siesta.ext.storageEnabled) {
-                    // Load models from PouchDB.
-                    siesta.ext.storage._load(ensureSingletons);
-                }
-                else {
-                    ensureSingletons();
-                }
+                    installing = false;
+                    cb(err);
+                });
             }
         });
 

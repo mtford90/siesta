@@ -40,10 +40,6 @@ module.exports = function (grunt) {
             }
         },
 
-        mocha_phantomjs: {
-            all: ['test/index.html']
-        },
-
         browserify: {
             options: {
                 browserifyOptions: {

@@ -58,6 +58,42 @@ _.map = _.collect = function (obj, iterator, context) {
     return results;
 };
 
+// Internal function that returns an efficient (for current engines) version
+// of the passed-in callback, to be repeatedly applied in other Underscore
+// functions.
+var createCallback = function (func, context, argCount) {
+    if (context === void 0) return func;
+    switch (argCount == null ? 3 : argCount) {
+        case 1:
+            return function (value) {
+                return func.call(context, value);
+            };
+        case 2:
+            return function (value, other) {
+                return func.call(context, value, other);
+            };
+        case 3:
+            return function (value, index, collection) {
+                return func.call(context, value, index, collection);
+            };
+        case 4:
+            return function (accumulator, value, index, collection) {
+                return func.call(context, accumulator, value, index, collection);
+            };
+    }
+    return function () {
+        return func.apply(context, arguments);
+    };
+};
+
+// Run a function **n** times.
+_.times = function (n, iteratee, context) {
+    var accum = new Array(Math.max(0, n));
+    iteratee = createCallback(iteratee, context, 1);
+    for (var i = 0; i < n; i++) accum[i] = iteratee(i);
+    return accum;
+};
+
 // Partially apply a function by creating a version that has had some of its
 // arguments pre-filled, without changing its dynamic `this` context. _ acts
 // as a placeholder, allowing any combination of arguments to be pre-filled.

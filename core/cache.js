@@ -375,3 +375,4 @@ exports.reset = reset;
 exports._dump = dump;
 exports.contains = contains;
 exports.remove = remove;
+exports.getSingleton = getSingleton;

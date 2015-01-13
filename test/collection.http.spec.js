@@ -657,13 +657,9 @@ describe('http!', function () {
                         resp = _resp;
                         done();
                     });
-                    ;
                 });
                 it('no err', function () {
                     assert.notOk(err);
-                });
-                it('no obj', function () {
-                    assert.notOk(obj);
                 });
                 it('resp', function () {
                     assert.ok(resp);

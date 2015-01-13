@@ -192,6 +192,30 @@ describe('mapping!', function () {
                         done();
                     }).catch(done);
                 });
+
+                it('use with singleton', function (done) {
+                    var C = s.collection('C');
+                    var asyncInitExecuted = false;
+                    var M = C.model('M', {
+                            init: function (cb) {
+                                M_2.one().then(function () {
+                                    asyncInitExecuted = true;
+                                    cb();
+                                }).catch(cb);
+                            },
+                            attributes: ['attr'],
+                            singleton: true
+                        }),
+                        M_2 = C.model('M_2', {
+                            attributes: ['attr']
+                        });
+                    M.map({
+                        attr: 1
+                    }).then(function () {
+                        assert.ok(asyncInitExecuted);
+                        done();
+                    }).catch(done);
+                });
             });
 
             it('valid', function (done) {

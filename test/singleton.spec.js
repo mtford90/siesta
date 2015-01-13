@@ -40,8 +40,8 @@ describe('singleton mapping', function () {
                 assert.equal(car.colour, 'blue');
                 assert.equal(car.id, 10);
                 done();
-            }).catch(done).done();
-        }).catch(done).done()
+            }).catch(done);
+        }).catch(done);
     });
 
     it('should map onto the same singleton object', function (done) {
@@ -74,7 +74,7 @@ describe('singleton mapping', function () {
         });
     });
 
-    it('get should simply return the car', function (done) {
+    it('one should simply return the car', function (done) {
         Car.map({
             colour: 'red',
             id: 5
@@ -148,26 +148,39 @@ describe('singleton mapping', function () {
             });
         });
 
-        it('relationships are automatically setup', function (done) {
-            ParentConfig.one().then(function (parent) {
-                FirstChildConfig.one().then(function (firstChild) {
-                    SecondChildConfig.one().then(function (secondChild) {
-                        assert.equal(parent.settings, firstChild);
-                        assert.equal(parent.otherSettings, secondChild);
-                        assert.equal(firstChild.parent, parent);
-                        assert.equal(secondChild.parent, parent);
-                        done();
+        describe('relationships are automatically setup', function () {
+            it('when mapped', function (done) {
+                ParentConfig.map({}).then(function (parent) {
+                    assert.ok(parent);
+                    assert.ok(parent.settings, 'should have created an instance for the first singleton child');
+                    assert.ok(parent.otherSettings, 'should have created an instance for the second singleton child');
+                    done();
+                }).catch(done);
+            });
+            it('and the same is returned when queried', function (done) {
+                ParentConfig.one().then(function (parent) {
+                    FirstChildConfig.one().then(function (firstChild) {
+                        SecondChildConfig.one().then(function (secondChild) {
+                            assert.equal(parent.settings, firstChild);
+                            assert.equal(parent.otherSettings, secondChild);
+                            assert.equal(firstChild.parent, parent);
+                            assert.equal(secondChild.parent, parent);
+                            done();
+                        }).catch(done).done();
                     }).catch(done).done();
                 }).catch(done).done();
-            }).catch(done).done();
-        })
+            })
+        });
+
+
     });
 
     describe('methods', function () {
         var Pomodoro, PomodoroTimer;
+        var initialised;
         beforeEach(function (done) {
             siesta.reset(function () {
-                var initialised = false;
+                initialised = false;
                 Pomodoro = siesta.collection('Pomodoro');
                 PomodoroTimer = Pomodoro.model('PomodoroTimer', {
                     attributes: [
@@ -191,19 +204,15 @@ describe('singleton mapping', function () {
                     },
                     singleton: true
                 });
-                siesta.install()
-                    .then(function () {
-                        assert.ok(initialised, 'singleton instance should have been initialised...');
-                        done();
-                    }).
-                    catch(done);
+                siesta.install().then(function () {done()}).catch(done);
             });
         });
         it('instance exists', function (done) {
             PomodoroTimer.one()
                 .then(function (timer) {
-                    assert.ok(timer);
-                    assert.ok(timer.poop);
+                    assert.ok(timer, 'the singleton instance should exist');
+                    assert.ok(initialised, 'init should have been called');
+                    assert.ok(timer.poop, 'attribute should have been set');
                     done();
                 })
                 .catch(done);

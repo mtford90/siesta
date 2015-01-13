@@ -259,57 +259,36 @@ _.extend(Model.prototype, {
             throw new InternalSiestaError('Reverse relationships for "' + this.name + '" have already been installed.');
         }
     },
-    ensureSingletons: function (callback) {
-        console.log('ensureSingletons');
-        if (this.singleton) {
-            this.one({__ignoreInstalled: true}, function (err, obj) {
-                if (err) {
-                    callback(err);
-                }
-                else {
-                    if (!obj) {
-                        var data = {};
-                        var relationships = this.relationships;
-                        data = _.reduce(Object.keys(relationships), function (m, name) {
-                            var r = relationships[name];
-                            if (r.isReverse) {
-                                data[r.reverseName] = {};
-                            }
-                            return data;
-                        }, data);
-                        this.map(data, {_ignoreInstalled: true}, function (err, obj) {
-                            if (Logger.trace) Logger.trace('Ensured singleton mapping "' + this.name + '"', obj);
-                            callback(err, obj);
-                        }.bind(this));
-                    }
-                    else {
-                        if (Logger.trace) Logger.trace('Singleton already exists for mapping "' + this.name + '"', obj);
-                        callback(null, obj);
-                    }
-                }
-            }.bind(this));
-        }
-        else {
-            callback();
-        }
-    }, /**
-     * Any post installation steps that need to be performed.
-     */
-    finaliseInstallation: function (callback) {
-        if (this.singleton) {
-            // Ensure that the singleton objects exist, and that all singleton relationships
-            // are hooked up.
-            // TODO: Any parent singletons will be having empty data mapped twice when their own finalise is called... Pointless.
-            this.ensureSingletons(callback);
-        }
-        else callback();
-    },
     _query: function (query) {
         var query = new Query(this, query || {});
         return query;
     },
     query: function (query, callback) {
-        return (this._query(query)).execute(callback);
+        if (!this.singleton) return (this._query(query)).execute(callback);
+        else {
+            var deferred = util.defer(callback);
+            callback = deferred.finish.bind(deferred);
+            (this._query({})).execute(function (err, objs) {
+                if (err) callback(err);
+                else {
+                    // Cache a new singleton and then reexecute the query
+                    if (!objs.length) {
+                        this.map({}, function (err) {
+                            if (!err) {
+                                (this._query(query)).execute(callback);
+                            }
+                            else {
+                                callback(err);
+                            }
+                        }.bind(this));
+                    }
+                    else {
+                        (this._query(query)).execute(callback);
+                    }
+                }
+            }.bind(this));
+            return deferred.promise;
+        }
     },
     reactiveQuery: function (query) {
         return new ReactiveQuery(new Query(this, query || {}));
@@ -318,25 +297,30 @@ _.extend(Model.prototype, {
         return new ArrangedReactiveQuery(new Query(this, query || {}));
     },
     one: function (opts, cb) {
-        opts = opts || {};
         if (typeof opts == 'function') {
             cb = opts;
             opts = {};
         }
-        var query = this._query(opts);
-        // Override the usual execute method, inserting a check that no more one instances returned.
-        return (function (cb) {
-            var deferred = util.defer(cb);
-            cb = deferred.finish.bind(deferred);
-            this._executeInMemory(function (err, res) {
-                if (err) cb(err);
-                else {
-                    if (res.length > 1) cb('More than one instance returned when executing get query!');
-                    else cb(null, res.length ? res[0] : null);
+        var deferred = util.defer(cb);
+        cb = deferred.finish.bind(deferred);
+        console.log('one');
+        this.query(opts, function (err, res) {
+            console.log('two');
+            if (err) cb(err);
+            else {
+                console.log('three');
+                if (res.length > 1) {
+                    console.log('four');
+                    cb('More than one instance returned when executing get query!');
                 }
-            });
-            return deferred.promise;
-        }).call(query, cb)
+                else {
+                    res = res.length ? res[0] : null;
+                    console.log('five', res);
+                    cb(null, res);
+                }
+            }
+        });
+        return deferred.promise;
     },
     all: function (q, cb) {
         if (typeof q == 'function') {
@@ -346,7 +330,7 @@ _.extend(Model.prototype, {
         q = q || {};
         var query = {};
         if (q.__order) query.__order = q.__order;
-        return (new Query(this, query)).execute(cb);
+        return this.query(q, cb);
     },
     install: function (callback) {
         if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.name);
