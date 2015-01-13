@@ -13,7 +13,7 @@ var Store = require('./store'),
     ModelEventType = require('./modelEvents').ModelEventType;
 
 var Logger = log.loggerWithName('Mapping');
-
+Logger.setLevel(log.Level.trace);
 
 function SiestaError(opts) {
     this.opts = opts;
@@ -292,10 +292,12 @@ _.extend(MappingOperation.prototype, {
                     return m;
                 }, []);
                 async.parallel(initTasks, function () {
+                    console.log('objects', self.objects);
                     done(self.errors.length ? self.errors : null, self.objects);
                 });
             });
         } else {
+            console.log('well shit')
             done(null, []);
         }
     },

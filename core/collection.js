@@ -85,7 +85,6 @@ _.extend(Collection.prototype, {
      * @class Collection
      */
     install: function (callback) {
-        console.log('installing', this.name);
         var deferred = util.defer(callback);
         var self = this;
         if (!this.installed) {

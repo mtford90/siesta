@@ -102,7 +102,6 @@ function _loadModel(opts, callback) {
                 else {
                     Logger.error('Error loading models', err);
                 }
-                console.log('....?');
                 callback(err, instances);
             });
         })
@@ -115,6 +114,7 @@ function _loadModel(opts, callback) {
  * Load all data from PouchDB.
  */
 function _load(callback) {
+    if (saving) throw new Error('not loaded yet how can i save');
     var deferred = util.defer(callback);
     if (siesta.ext.storageEnabled) {
         var collectionNames = CollectionRegistry.collectionNames;
@@ -236,6 +236,7 @@ _.extend(storage, {
     save: save,
     _serialise: _serialise,
     _reset: function (cb) {
+        console.log('resetting');
         siesta.removeListener('Siesta', listener);
         unsavedObjects = [];
         unsavedObjectsHash = {};

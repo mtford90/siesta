@@ -596,59 +596,214 @@ describe('storage', function () {
     describe('singleton', function () {
         var Pomodoro, ColourConfig;
 
-        beforeEach(function () {
-            Pomodoro = siesta.collection('Pomodoro');
-            ColourConfig = Pomodoro.model('ColourConfig', {
-                attributes: ['primary', 'shortBreak', 'longBreak'],
-                singleton: true
+        describe('save', function () {
+
+            beforeEach(function () {
+                Pomodoro = siesta.collection('Pomodoro');
+                ColourConfig = Pomodoro.model('ColourConfig', {
+                    attributes: ['primary', 'shortBreak', 'longBreak'],
+                    singleton: true
+                });
+            });
+
+            function extracted(cb) {
+                s.ext.storage._pouch.query(function (doc) {
+                    if (doc.model == 'ColourConfig') {
+                        emit(doc._id, doc);
+                    }
+                }, {include_docs: true})
+                    .then(function (resp) {
+                        var rows = resp.rows;
+                        cb(null, rows);
+                    }).catch(cb);
+            }
+
+            it('repeated saves', function (done) {
+                s.ext.storage._pouch.put({
+                    collection: 'Pomodoro',
+                    model: 'ColourConfig',
+                    primary: 'red',
+                    shortBreak: 'blue',
+                    longBreak: 'green',
+                    _id: 'xyz'
+                }).then(function () {
+                    ColourConfig.one()
+                        .then(function (colourConfig) {
+                            extracted(function (err, rows) {
+                                if (!err) {
+                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
+                                    assert.equal(colourConfig.primary, 'red');
+                                    assert.equal(colourConfig.shortBreak, 'blue');
+                                    assert.equal(colourConfig.longBreak, 'green');
+                                    s.save()
+                                        .then(function () {
+                                            extracted(function (err, rows) {
+                                                if (!err) {
+                                                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
+                                                    done();
+                                                }
+                                                else done(err);
+                                            });
+                                        }).catch(done);
+                                }
+                                else done(err);
+                            });
+                        }).catch(done)
+                }).catch(done);
             });
         });
 
-        function extracted(cb) {
-            s.ext.storage._pouch.query(function (doc) {
-                if (doc.model == 'ColourConfig') {
-                    emit(doc._id, doc);
-                }
-            }, {include_docs: true})
-                .then(function (resp) {
-                    var rows = resp.rows;
-                    cb(null, rows);
-                }).catch(cb);
-        }
+        describe('singleton relationships', function () {
+            var Pomodoro, Config, ColourConfig, PomodoroConfig, PomodoroTimer;
+            beforeEach(function () {
+                Pomodoro = siesta.collection('Pomodoro');
 
-        it('repeated saves', function (done) {
-            s.ext.storage._pouch.put({
-                collection: 'Pomodoro',
-                model: 'ColourConfig',
-                primary: 'red',
-                shortBreak: 'blue',
-                longBreak: 'green',
-                _id: 'xyz' 
-            }).then(function () {
-                ColourConfig.one()
-                    .then(function (colourConfig) {
-                        extracted(function (err, rows) {
-                            if (!err) {
-                                assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
-                                assert.equal(colourConfig.primary, 'red');
-                                assert.equal(colourConfig.shortBreak, 'blue');
-                                assert.equal(colourConfig.longBreak, 'green');
-                                s.save()
-                                    .then(function () {
-                                        extracted(function (err, rows) {
-                                            if (!err) {
-                                                assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
-                                                done();
-                                            }
-                                            else done(err);
-                                        });
-                                    }).catch(done);
+                var DEFAULT_COLOURS = {
+                    primary: '#df423c',
+                    shortBreak: '#37a2c4',
+                    longBreak: '#292f37'
+                };
+
+                Config = Pomodoro.model('Config', {
+                    relationships: {
+                        pomodoro: {model: 'PomodoroConfig'},
+                        colours: {model: 'ColourConfig'}
+                    },
+                    singleton: true
+                });
+                ColourConfig = Pomodoro.model('ColourConfig', {
+                    attributes: [
+                        {
+                            name: 'primary',
+                            default: DEFAULT_COLOURS.primary
+                        },
+                        {
+                            name: 'shortBreak',
+                            default: DEFAULT_COLOURS.shortBreak
+                        },
+                        {
+                            name: 'longBreak',
+                            default: DEFAULT_COLOURS.longBreak
+                        }
+                    ],
+                    singleton: true
+                });
+                PomodoroConfig = Pomodoro.model('PomodoroConfig', {
+                    attributes: [
+                        {
+                            name: 'pomodoroLength',
+                            default: 25
+                        },
+                        {
+                            name: 'longBreakLength',
+                            default: 15
+                        },
+                        {
+                            name: 'shortBreakLength',
+                            default: 5
+                        },
+                        {
+                            name: 'roundLength',
+                            default: 4
+                        }
+                    ],
+                    singleton: true
+                });
+                PomodoroTimer = Pomodoro.model('PomodoroTimer', {
+                    attributes: [
+                        {
+                            name: 'seconds',
+                            default: 25 * 60
+                        },
+                        {
+                            name: 'round',
+                            default: 1
+                        },
+                        {
+                            name: 'target',
+                            default: 1
+                        }
+                    ],
+                    init: function (done) {
+                        // Setup listeners.
+                        // Note: The reason why we listen to self rather than simply execute logic when we decrement seconds in
+                        // the interval is that this options leaves open the possibility of modifying seconds outside of the model
+                        // instance.
+                        this.listen(function (n) {
+                            if (n.field == 'seconds') this.onSecondsChange();
+                        }.bind(this));
+                        console.log('starting');
+                        data.PomodoroConfig.one()
+                            .then(function (config) {
+                                console.log('started');
+
+                                config.listen(this.onConfigChange.bind(this));
+                                done();
+                            }.bind(this))
+                            .catch(done);
+                    },
+                    methods: {
+                        onSecondsChange: function () {
+                            if (this.seconds == 0) {
+
                             }
-                            else done(err);
-                        });
-                    }).catch(done)
-            }).catch(done);
+                        },
+                        onConfigChange: function (n) {
+                            switch (n.field) {
+                                case 'pomodoroLength':
+                                    this.onPomodoroLengthChange(n.old, n.new);
+                                    break;
+                                case 'longBreakLength':
+                                    this.onLongBreakLengthChange(n.old, n.new);
+                                    break;
+                                case 'shortBreakLength':
+                                    this.onShortBreakLengthChange(n.old, n.new);
+                                    break;
+                                case 'roundLength':
+                                    this.onRoundLengthChange(n.old, n.new);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+                        onPomodoroLengthChange: function (old, _new) {
+
+                        },
+                        onLongBreakLengthChange: function (old, _new) {
+
+                        },
+                        onShortBreakLengthChange: function (old, _new) {
+
+                        },
+                        onRoundLengthChange: function (old, _new) {
+
+                        },
+                        start: function () {
+                            if (!this._token) {
+                                this._token = setInterval(function () {
+                                    this.seconds--;
+                                }, 1000);
+                            }
+                        },
+                        stop: function () {
+                            if (this._token) {
+                                clearInterval(this._token);
+                                this._token = null;
+                            }
+                        }
+                    },
+                    singleton: true
+                });
+
+            });
+
+            it('install', function () {
+                siesta.install(function (err) {
+                    done(err);
+                });
+            })
         });
+
 
     });
 

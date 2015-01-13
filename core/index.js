@@ -101,27 +101,29 @@ _.extend(siesta, {
     resetData: function (cb) {
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
-        var collectionNames = [],
-            tasks = CollectionRegistry.collectionNames.reduce(function (memo, collectionName) {
-                var collection = CollectionRegistry[collectionName],
-                    models = collection._models;
-                collectionNames.push(collectionName);
-                Object.keys(models).forEach(function (k) {
-                    var model = models[k];
-                    memo.push(function (done) {
-                        model.all(function (err, res) {
-                            if (!err) res.remove();
-                            done(err);
+        siesta.ext.storage._reset(function () {
+            var collectionNames = [],
+                tasks = CollectionRegistry.collectionNames.reduce(function (memo, collectionName) {
+                    var collection = CollectionRegistry[collectionName],
+                        models = collection._models;
+                    collectionNames.push(collectionName);
+                    Object.keys(models).forEach(function (k) {
+                        var model = models[k];
+                        memo.push(function (done) {
+                            model.all(function (err, res) {
+                                if (!err) res.remove();
+                                done(err);
+                            });
                         });
                     });
-                });
-                return memo;
-            }, []);
-        util.async.series(
-            [
-                _.partial(util.async.parallel, tasks)
-            ],
-            cb);
+                    return memo;
+                }, []);
+            util.async.series(
+                [
+                    _.partial(util.async.parallel, tasks)
+                ],
+                cb);
+        });
         return deferred.promise;
     },
     /**
@@ -140,7 +142,6 @@ _.extend(siesta, {
      */
     install: function (cb) {
         if (!(installing || installed)) {
-            console.log('install');
             installing = true;
             var deferred = util.defer(cb);
             cb = deferred.finish.bind(deferred);
@@ -151,7 +152,6 @@ _.extend(siesta, {
                     }
                 });
             var self = this;
-            console.log('collectionInstallTasks', collectionInstallTasks);
             siesta.async.series(collectionInstallTasks, function (err) {
                 if (err) {
                     cb(err);
@@ -171,7 +171,7 @@ _.extend(siesta, {
         }
         else {
             throw new error.InternalSiestaError('Already installing...');
-        }
+        }rese
 
     },
     _pushTask: function (task) {
