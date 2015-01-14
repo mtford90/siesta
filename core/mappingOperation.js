@@ -263,37 +263,43 @@ _.extend(MappingOperation.prototype, {
             tasks.push(_.bind(lookupFunc, this));
             tasks.push(_.bind(this._executeSubOperations, this));
             util.async.parallel(tasks, function () {
-                self._map();
+                try {
+                    self._map();
 
-                // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
-                //
-                //
-                // init: function ([done]) {
-                //     // ...
-                //  }
-                //
-                //
-                // If done is passed, then __init must be executed asynchronously, and the mapping operation will not
-                // finish until all inits have executed.
-                //
-                // Here we ensure the execution of all of them
+                    // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
+                    //
+                    //
+                    // init: function ([done]) {
+                    //     // ...
+                    //  }
+                    //
+                    //
+                    // If done is passed, then __init must be executed asynchronously, and the mapping operation will not
+                    // finish until all inits have executed.
+                    //
+                    // Here we ensure the execution of all of them
 
-                var initTasks = _.reduce(self._newObjects, function (m, o) {
-                    var init = o.model.init;
-                    if (init) {
-                        var paramNames = util.paramNames(init);
-                        if (paramNames.length) {
-                            m.push(_.bind(init, o, done));
+                    var initTasks = _.reduce(self._newObjects, function (m, o) {
+                        var init = o.model.init;
+                        if (init) {
+                            var paramNames = util.paramNames(init);
+                            if (paramNames.length) {
+                                m.push(_.bind(init, o, done));
+                            }
+                            else {
+                                init.call(o);
+                            }
                         }
-                        else {
-                            init.call(o);
-                        }
-                    }
-                    return m;
-                }, []);
-                async.parallel(initTasks, function () {
-                    done(self.errors.length ? self.errors : null, self.objects);
-                });
+                        return m;
+                    }, []);
+                    async.parallel(initTasks, function () {
+                        done(self.errors.length ? self.errors : null, self.objects);
+                    });
+                }
+                catch (e) {
+                    console.error('caught error', e);
+                    done(e);
+                }
             });
         } else {
             done(null, []);

@@ -371,7 +371,7 @@ _.extend(Model.prototype, {
                             obj = objects[0];
                         }
                     }
-                    deferred.finish(err ? err[0] : null, obj);
+                    deferred.finish(err ? (util.isArray(err) ? err[0] : err) : null, obj);
                 });
             }
         }.bind(this);
@@ -450,7 +450,29 @@ _.extend(Model.prototype, {
                     },
                     set: function (v) {
                         var old = newModel.__values[field];
+                        var propertyDependencies = this._propertyDependencies[field];
+                        propertyDependencies = _.map(propertyDependencies, function (dependant) {
+                            return {
+                                prop: dependant,
+                                old: this[dependant]
+                            }
+                        }.bind(this));
                         newModel.__values[field] = v;
+                        propertyDependencies.forEach(function (dep) {
+                            var propertyName = dep.prop;
+                            console.log('propertyName', propertyName);
+                            var new_ = this[propertyName];
+                            modelEvents.emit({
+                                collection: self.collectionName,
+                                model: self.name,
+                                _id: newModel._id,
+                                new: new_,
+                                old: dep.old,
+                                type: ModelEventType.Set,
+                                field: propertyName,
+                                obj: newModel
+                            });
+                        }.bind(this));
                         modelEvents.emit({
                             collection: self.collectionName,
                             model: self.name,
@@ -479,14 +501,25 @@ _.extend(Model.prototype, {
                 }
             }.bind(this));
 
-            _.each(Object.keys(this.properties), function (propName) {
+            var _propertyNames = Object.keys(this.properties),
+                _propertyDependencies = {};
+            _.each(_propertyNames, function (propName) {
+                var propDef = this.properties[propName];
+                var dependencies = propDef.dependencies || [];
+                dependencies.forEach(function (attr) {
+                    if (!_propertyDependencies[attr]) _propertyDependencies[attr] = [];
+                    _propertyDependencies[attr].push(propName);
+                });
+                delete propDef.dependencies;
                 if (newModel[propName] === undefined) {
-                    Object.defineProperty(newModel, propName, this.properties[propName]);
+                    Object.defineProperty(newModel, propName, propDef);
                 }
                 else {
                     Logger.error('A property/method with name "' + propName + '" already exists. Ignoring it.');
                 }
             }.bind(this));
+
+            newModel._propertyDependencies = _propertyDependencies;
 
             Object.defineProperty(newModel, this.id, {
                 get: function () {
