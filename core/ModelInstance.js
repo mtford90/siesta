@@ -81,13 +81,8 @@ _.extend(ModelInstance.prototype, {
         cache.remove(this);
         this.removed = true;
         if (notification) {
-            modelEvents.emit({
-                collection: this.collectionName,
-                model: this.model.name,
-                _id: this._id,
-                old: this,
-                type: modelEvents.ModelEventType.Remove,
-                obj: this
+            this.emit(modelEvents.ModelEventType.Remove, {
+                old: this
             });
         }
         var remove = this.model.remove;
@@ -114,13 +109,8 @@ _.extend(ModelInstance.prototype, {
         callback = deferred.finish.bind(deferred);
         var _finish = function (err) {
             if (!err) {
-                modelEvents.emit({
-                    collection: this.collectionName,
-                    model: this.model.name,
-                    _id: this._id,
-                    new: this,
-                    type: modelEvents.ModelEventType.New,
-                    obj: this
+                this.emit(modelEvents.ModelEventType.New, {
+                    new: this
                 });
             }
             callback(err, this);
