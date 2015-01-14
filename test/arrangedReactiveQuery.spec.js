@@ -226,25 +226,66 @@ describe('arranged rquery', function () {
             }).catch(done);
         });
 
-        it('move', function (done) {
-            var prq = Person.arrangedReactiveQuery({__order: 'age'});
-            prq.indexAttribute = 'customIndexField';
-            prq.init().then(function () {
-                var mike = prq.results[0],
-                    bob = prq.results[1],
-                    john = prq.results[2];
-                prq.move(2, 0);
-                assert.equal(prq.results[0], john);
-                assert.equal(prq.results[1], mike);
-                assert.equal(prq.results[2], bob);
-                for (var i = 0; i < prq.results.length; i++) {
-                    assert.equal(prq.results[i][prq.indexAttribute], i);
-                }
-                prq.terminate();
-                done();
-            }).catch(function (err) {
-                prq.terminate();
-                done(err);
+        describe('move', function () {
+            it('move', function (done) {
+                var prq = Person.arrangedReactiveQuery({__order: 'age'});
+                prq.indexAttribute = 'customIndexField';
+                prq.init().then(function () {
+                    var mike = prq.results[0],
+                        bob = prq.results[1],
+                        john = prq.results[2];
+                    prq.move(2, 0);
+                    assert.equal(prq.results[0], john);
+                    assert.equal(prq.results[1], mike);
+                    assert.equal(prq.results[2], bob);
+                    for (var i = 0; i < prq.results.length; i++) {
+                        assert.equal(prq.results[i][prq.indexAttribute], i);
+                    }
+                    prq.terminate();
+                    done();
+                }).catch(function (err) {
+                    prq.terminate();
+                    done(err);
+                });
+            });
+            it('emission on move', function (done) {
+                var prq = Person.arrangedReactiveQuery({__order: 'age'});
+                prq.indexAttribute = 'customIndexField';
+                prq.init().then(function () {
+                    var from = 2,
+                        to = 0,
+                        cancelListen,
+                        removalNotifReceived,
+                        addNotifReceived;
+                    var movedUser = prq.results[2];
+                    cancelListen = prq.listen(function (results, n) {
+                        var type = n.type,
+                            removed = n.removed,
+                            added = n.added;
+                        assert.equal(n.field, 'results');
+                        assert.equal(n.obj, prq);
+                        if (type == 'Splice' && removed) {
+                            assert.equal(removed.length, 1);
+                            assert.include(removed, movedUser, 'Mike should have been removed');
+                            removalNotifReceived = true;
+                        }
+                        else if (type == 'Splice' && added) {
+                            assert.equal(added.length, 1);
+                            assert.include(added, movedUser);
+                            addNotifReceived = true;
+                        }
+                        if (removalNotifReceived && addNotifReceived) {
+                            cancelListen();
+                            prq.terminate();
+                            done();
+                        }
+                    });
+                    prq.move(from, to);
+                    s.notify();
+                }).catch(function (err) {
+                    prq.terminate();
+                    done(err);
+                });
             });
         });
 

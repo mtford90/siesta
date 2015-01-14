@@ -388,7 +388,7 @@ _.extend(Model.prototype, {
             if (err) {
                 if (callback) callback(err);
             } else {
-                callback(null, objects);
+                callback(null, objects || []);
             }
         });
     },
