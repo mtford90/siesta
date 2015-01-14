@@ -62,6 +62,18 @@ _.extend(ModelInstance.prototype, {
         callback(null, this);
         return deferred.promise;
     },
+    emit: function (type, opts) {
+        if (typeof type == 'object') opts = type;
+        else opts.type = type;
+        opts = opts || {};
+        _.extend(opts, {
+            collection: this.collectionName,
+            model: this.model.name,
+            _id: this._id,
+            obj: this
+        });
+        modelEvents.emit(opts);
+    },
     remove: function (callback, notification) {
         notification = notification == null ? true : notification;
         var deferred = util.defer(callback);

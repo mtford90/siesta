@@ -20,8 +20,7 @@ var ModelEventType = {
         Splice: 'Splice',
         New: 'New',
         Remove: 'Remove'
-    },
-    ModelEventFields = ['collection', 'model', '_id', 'field', 'type', 'index', 'added', 'removed', 'new', 'old', 'obj'];
+    };
 
 /**
  * Represents an individual change.
@@ -30,8 +29,8 @@ var ModelEventType = {
  */
 function ModelEvent(opts) {
     this._opts = opts || {};
-    ModelEventFields.forEach(function (f) {
-        if (this._opts[f] !== undefined) this[f] = this._opts[f];
+    Object.keys(opts).forEach(function (k) {
+        this[k] = opts[k];
     }.bind(this));
 }
 

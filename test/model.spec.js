@@ -166,5 +166,59 @@ describe('Models', function () {
 
     });
 
+    describe('custom emissions', function () {
+        it('string format', function (done) {
+            s.reset(function () {
+                Collection = s.collection('myCollection');
+                Model = Collection.model('Model', {
+                    attributes: ['colour'],
+                    methods: {
+                        foo: function () {
+                            this.emit('x', {
+                                y: 1
+                            });
+                        }
+                    }
+                });
+                Model.map({colour: 'red'})
+                    .then(function (m) {
+                        m.listenOnce(function (e) {
+                            console.log('e', e);
+                            assert.equal(e.type, 'x');
+                            assert.equal(e.y, 1);
+                            done();
+                        });
+                        m.foo();
+                    }).catch(done);
+            });
+        });
+        it('obj format', function (done) {
+            s.reset(function () {
+                Collection = s.collection('myCollection');
+                Model = Collection.model('Model', {
+                    attributes: ['colour'],
+                    methods: {
+                        foo: function () {
+                            this.emit({
+                                y: 1,
+                                type: 'x'
+                            });
+                        }
+                    }
+                });
+                Model.map({colour: 'red'})
+                    .then(function (m) {
+                        m.listenOnce(function (e) {
+                            console.log('e', e);
+                            assert.equal(e.type, 'x');
+                            assert.equal(e.y, 1);
+                            done();
+                        });
+                        m.foo();
+                    }).catch(done);
+            });
+        });
+    });
+
 
 });
