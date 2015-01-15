@@ -64,6 +64,10 @@ _.extend(Query, {
         gte: function (opts) {
             if (!opts.invalid) return opts.object[opts.field] >= opts.value;
             return false;
+        },
+        contains: function (opts) {
+            if (!opts.invalid) return opts.object[opts.field].indexOf(opts.value) > -1;
+            return false;
         }
     },
     registerComparator: function (symbol, fn) {
@@ -97,11 +101,15 @@ _.extend(Query.prototype, {
     sortFunc: function (fields) {
         var sortFunc = function (ascending, field) {
             return function (v1, v2) {
+                var d1 = v1[field];
+                var d2 = v2[field];
+                if (d1 instanceof Date) d1 = d1.getTime();
+                if (d2 instanceof Date) d2 = d2.getTime();
                 if (ascending) {
-                    return v1[field] - v2[field];
+                    return d1 - d2;
                 }
                 else {
-                    return v2[field] - v1[field];
+                    return d2 - d1;
                 }
             }
         };

@@ -640,6 +640,51 @@ describe('query...', function () {
             });
         });
 
+        describe('contains', function () {
+            var Collection, Model;
+            // TODO
+            beforeEach(function (done) {
+                s.reset(function () {
+                    Collection = s.collection('myCollection');
+                    Model = Collection.model('Person', {
+                        attributes: ['name']
+                    });
+                    done();
+                });
+            });
+            it('string contains', function (done) {
+                 Model.map([
+                     {name: 'aaaabb'},
+                     {name: '111122'},
+                     {name: '4343bb'}
+                 ]).then(function () {
+                     Model.query({name__contains: 'bb'}).then(function (res) {
+                         assert.equal(res.length, 2);
+                         res.forEach(function (m) {
+                             assert(m.name.indexOf('bb') > -1, 'All contain');
+                         });
+                         done();
+                     }).catch(done);
+                 }).catch(done);
+            });
+            it('array contains', function (done) {
+                Model.map([
+                    {name: [1, 2, 3]},
+                    {name: [4, 5, 6]},
+                    {name: [3, 4, 5]}
+                ]).then(function () {
+                    Model.query({name__contains: 3}).then(function (res) {
+                        assert.equal(res.length, 2);
+                        res.forEach(function (m) {
+                            assert(m.name.indexOf(3) > -1, 'All contain');
+                        });
+                        done();
+                    }).catch(done);
+                }).catch(done);
+            });
+
+        });
+
         describe('errors', function () {
             var Collection, Person, Car;
             beforeEach(function () {
@@ -690,13 +735,13 @@ describe('query...', function () {
 
     });
 
-    describe('order', function () {
+    describe.only('order', function () {
         var Collection, Person;
         beforeEach(function () {
             Collection = s.collection('myCollection');
             Person = Collection.model('Person', {
                 id: 'id',
-                attributes: ['name', 'age']
+                attributes: ['name', 'age', 'dob']
             });
         });
 
@@ -749,13 +794,33 @@ describe('query...', function () {
                         var lastAge = orderedPeople[0].age;
                         for (var i = 1; i < orderedPeople.length; i++) {
                             var person = orderedPeople[i];
-                            assert(person.age >= lastAge, 'Should be descending');
+                            assert(person.age >= lastAge, 'Should be ascending');
                             lastAge = person.age;
                         }
                         done();
                     }).catch(done).done();
             }).catch(done).done();
-        })
+        });
+
+        it('date order', function (done) {
+            Person.map([
+                {name: 'Mike', dob: new Date(1990, 9, 10)},
+                {name: 'Bob', dob: new Date(1993, 1, 12)},
+                {name: 'John', dob: new Date(1984, 3, 5)}
+            ]).then(function () {
+                Person.query({__order: 'dob'})
+                    .then(function (orderedPeople) {
+                        console.log(_.pluck(orderedPeople, 'dob'));
+                        var lastDob = orderedPeople[0].dob;
+                        for (var i = 1; i < orderedPeople.length; i++) {
+                            var person = orderedPeople[i];
+                            assert(person.dob >= lastDob, 'Should be ascending');
+                            lastDob = person.dob;
+                        }
+                        done();
+                    }).catch(done).done();
+            }).catch(done).done();
+        });
     });
 
     describe('$or', function () {
