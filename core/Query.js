@@ -101,16 +101,12 @@ _.extend(Query.prototype, {
     sortFunc: function (fields) {
         var sortFunc = function (ascending, field) {
             return function (v1, v2) {
-                var d1 = v1[field];
-                var d2 = v2[field];
+                var d1 = v1[field],
+                    d2 = v2[field];
                 if (d1 instanceof Date) d1 = d1.getTime();
                 if (d2 instanceof Date) d2 = d2.getTime();
-                if (ascending) {
-                    return d1 - d2;
-                }
-                else {
-                    return d2 - d1;
-                }
+                if (ascending) return d1 - d2;
+                else return d2 - d1;
             }
         };
         var s = util;

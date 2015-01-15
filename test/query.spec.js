@@ -810,13 +810,30 @@ describe('query...', function () {
             ]).then(function () {
                 Person.query({__order: 'dob'})
                     .then(function (orderedPeople) {
-                        console.log(_.pluck(orderedPeople, 'dob'));
                         var lastDob = orderedPeople[0].dob;
                         for (var i = 1; i < orderedPeople.length; i++) {
                             var person = orderedPeople[i];
                             assert(person.dob >= lastDob, 'Should be ascending');
                             lastDob = person.dob;
                         }
+                        done();
+                    }).catch(done).done();
+            }).catch(done).done();
+        });
+
+
+        it('alphabetical order', function (done) {
+            Person.map([
+                {name: 'Mike'},
+                {name: 'Bob'},
+                {name: 'John'}
+            ]).then(function (people) {
+                Person.query({__order: 'name'})
+                    .then(function (orderedPeople) {
+                        console.log(_.pluck(orderedPeople, 'name'));
+                        assert.equal(orderedPeople[0], people[1]);
+                        assert.equal(orderedPeople[1], people[2]);
+                        assert.equal(orderedPeople[2], people[0]);
                         done();
                     }).catch(done).done();
             }).catch(done).done();
