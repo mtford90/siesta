@@ -102,11 +102,19 @@ _.extend(Query.prototype, {
         var sortFunc = function (ascending, field) {
             return function (v1, v2) {
                 var d1 = v1[field],
-                    d2 = v2[field];
-                if (d1 instanceof Date) d1 = d1.getTime();
-                if (d2 instanceof Date) d2 = d2.getTime();
-                if (ascending) return d1 - d2;
-                else return d2 - d1;
+                    d2 = v2[field],
+                    res;
+                if (typeof d1 == 'string' || d1 instanceof String &&
+                    typeof d2 == 'string' || d2 instanceof String) {
+                    res = ascending ? d1.localeCompare(d2) : d2.localeCompare(d1);
+                }
+                else {
+                    if (d1 instanceof Date) d1 = d1.getTime();
+                    if (d2 instanceof Date) d2 = d2.getTime();
+                    if (ascending) res = d1 - d2;
+                    else res = d2 - d1;
+                }
+                return res;
             }
         };
         var s = util;

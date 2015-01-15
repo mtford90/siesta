@@ -735,7 +735,7 @@ describe('query...', function () {
 
     });
 
-    describe.only('order', function () {
+    describe('order', function () {
         var Collection, Person;
         beforeEach(function () {
             Collection = s.collection('myCollection');
@@ -822,7 +822,7 @@ describe('query...', function () {
         });
 
 
-        it('alphabetical order', function (done) {
+        it('alphabetical order, ascending', function (done) {
             Person.map([
                 {name: 'Mike'},
                 {name: 'Bob'},
@@ -834,6 +834,25 @@ describe('query...', function () {
                         assert.equal(orderedPeople[0], people[1]);
                         assert.equal(orderedPeople[1], people[2]);
                         assert.equal(orderedPeople[2], people[0]);
+                        done();
+                    }).catch(done).done();
+            }).catch(done).done();
+        });
+
+
+
+        it('alphabetical order, descending', function (done) {
+            Person.map([
+                {name: 'Mike'},
+                {name: 'Bob'},
+                {name: 'John'}
+            ]).then(function (people) {
+                Person.query({__order: '-name'})
+                    .then(function (orderedPeople) {
+                        console.log(_.pluck(orderedPeople, 'name'));
+                        assert.equal(orderedPeople[2], people[1]);
+                        assert.equal(orderedPeople[1], people[2]);
+                        assert.equal(orderedPeople[0], people[0]);
                         done();
                     }).catch(done).done();
             }).catch(done).done();
