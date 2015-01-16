@@ -827,21 +827,34 @@ describe('storage', function () {
 
     it('init should not be called on load...', function (done) {
 
-        var Collection, Car;
-        var initCalled;
+        var Collection, Car, Person;
+        var carInitCalled, personInitCalled;
         Collection = s.collection('myCollection');
         Car = Collection.model('Car', {
-            attributes: ['colour', 'name'],
+            attributes: ['colour'],
             init: function () {
-                initCalled = true;
+                carInitCalled = true;
+            },
+            relationships: {
+                owner: {
+                    model: 'Person'
+                }
+            }
+        });
+        Person = Collection.model('Person', {
+            attributes: ['name'],
+            init: function () {
+                personInitCalled = true;
             }
         });
         s.install(function () {
             s.ext.storage._pouch.bulkDocs([
-                {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'}
+                {collection: 'myCollection', model: 'Car', colour: 'red'},
+                {collection: 'myCollection', model: 'Car', name: 'Mike'}
             ]).then(function () {
                 s.ext.storage._load().then(function () {
-                    assert.notOk(initCalled);
+                    assert.notOk(carInitCalled);
+                    assert.notOk(personInitCalled);
                     done();
                 }).catch(done).done();
             }).catch(done);

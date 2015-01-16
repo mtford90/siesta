@@ -94,7 +94,7 @@ function _loadModel(opts, callback) {
                 return _prepareDatum(datum, Model);
             });
             if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
-            Model.map(data, {disableevents: true, _ignoreInstalled: true}, function (err, instances) {
+            Model.map(data, {disableevents: true, _ignoreInstalled: true, callInit: false}, function (err, instances) {
                 if (!err) {
                     if (Logger.trace.isEnabled) {
                         Logger.trace('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);

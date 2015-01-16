@@ -39,7 +39,8 @@ function MappingOperation(opts) {
         data: null,
         objects: [],
         disableevents: false,
-        _ignoreInstalled: false
+        _ignoreInstalled: false,
+        callInit: true
     });
 
     _.extend(this, {
@@ -279,19 +280,25 @@ _.extend(MappingOperation.prototype, {
                     //
                     // Here we ensure the execution of all of them
 
-                    var initTasks = _.reduce(self._newObjects, function (m, o) {
-                        var init = o.model.init;
-                        if (init) {
-                            var paramNames = util.paramNames(init);
-                            if (paramNames.length) {
-                                m.push(_.bind(init, o, done));
+                    var initTasks;
+                    if (self.callInit) {
+                        initTasks = _.reduce(self._newObjects, function (m, o) {
+                            var init = o.model.init;
+                            if (init) {
+                                var paramNames = util.paramNames(init);
+                                if (paramNames.length) {
+                                    m.push(_.bind(init, o, done));
+                                }
+                                else {
+                                    init.call(o);
+                                }
                             }
-                            else {
-                                init.call(o);
-                            }
-                        }
-                        return m;
-                    }, []);
+                            return m;
+                        }, []);
+                    }
+                    else {
+                        initTasks = [];
+                    }
                     async.parallel(initTasks, function () {
                         done(self.errors.length ? self.errors : null, self.objects);
                     });
@@ -362,7 +369,8 @@ _.extend(MappingOperation.prototype, {
                         model: reverseModel,
                         data: flatRelatedData,
                         disableevents: self.disableevents,
-                        _ignoreInstalled: self._ignoreInstalled
+                        _ignoreInstalled: self._ignoreInstalled,
+                        callInit: this.callInit
                     });
                 }
 
