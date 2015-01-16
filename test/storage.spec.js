@@ -825,4 +825,30 @@ describe('storage', function () {
         });
     });
 
+    it('init should not be called on load...', function (done) {
+
+        var Collection, Car;
+        var initCalled;
+        Collection = s.collection('myCollection');
+        Car = Collection.model('Car', {
+            attributes: ['colour', 'name'],
+            init: function () {
+                initCalled = true;
+            }
+        });
+        s.install(function () {
+            s.ext.storage._pouch.bulkDocs([
+                {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'}
+            ]).then(function () {
+                s.ext.storage._load().then(function () {
+                    assert.notOk(initCalled);
+                    done();
+                }).catch(done).done();
+            }).catch(done);
+        });
+
+
+
+    });
+
 });

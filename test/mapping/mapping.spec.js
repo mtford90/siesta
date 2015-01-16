@@ -16,7 +16,8 @@ describe('mapping!', function () {
         var m = new Model({
             name: 'name',
             id: 'id',
-            attributes: ['field1', 'field2']
+            attributes: ['field1', 'field2'],
+            collection: {name: 'x'}
         });
         assert.include(m._attributeNames, 'id');
         assert.include(m._attributeNames, 'field1');
@@ -28,7 +29,8 @@ describe('mapping!', function () {
         var m = new Model({
             name: 'name',
             id: 'id',
-            attributes: ['field1', 'field2']
+            attributes: ['field1', 'field2'],
+            collection: {name: 'x'}
         });
         var attributes = _.pluck(m.attributes, 'name');
         assert.include(attributes, 'field1');
@@ -39,7 +41,8 @@ describe('mapping!', function () {
         var m = new Model({
             name: 'name',
             id: 'id',
-            attributes: ['field1', 'field2']
+            attributes: ['field1', 'field2'],
+            collection: {name: 'x'}
         });
         assert.equal(m.name, 'name');
     });
@@ -48,7 +51,8 @@ describe('mapping!', function () {
         var m = new Model({
             name: 'name',
             id: 'id',
-            attributes: ['field1', 'field2']
+            attributes: ['field1', 'field2'],
+            collection: {name: 'x'}
         });
         assert.equal(m.id, 'id');
     });

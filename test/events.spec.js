@@ -988,49 +988,173 @@ describe('events', function () {
         });
     });
 
-    describe.only('proxy event emission', function () {
-        var Car;
-        beforeEach(function () {
-            Collection = s.collection('myCollection');
-            Car = Collection.model('Car', {
-                id: 'id',
-                attributes: ['colour', 'name']
+    describe('proxy event emission', function () {
+        var ProxyEventEmitter = require('../core/events').ProxyEventEmitter,
+            EVENT = 'event';
+
+        it('listen works', function (done) {
+            var emitter = new ProxyEventEmitter(EVENT),
+                e = {};
+            var cancelListen = emitter.listen(function (_e) {
+                assert.equal(e, _e, 'payload is emitted');
+                cancelListen();
+                done();
+            });
+            emitter.emit(e);
+        });
+
+        it('listenOnce works', function (done) {
+            var emitter = new ProxyEventEmitter(EVENT),
+                e = {};
+            emitter.listenOnce(function (_e) {
+                assert.equal(e, _e, 'payload is emitted');
+                done();
+            });
+            emitter.emit(e);
+        });
+
+        it('listen == on', function () {
+            assert.equal(ProxyEventEmitter.prototype.listen, ProxyEventEmitter.prototype.on);
+        });
+
+        it('listenOnce to specific type', function (done) {
+            var emitter = new ProxyEventEmitter(EVENT);
+            var type = 'blah';
+            emitter.listenOnce(type, function (e) {
+                assert.equal(e.type, type);
+                done();
+            });
+            emitter.emit();
+            emitter.emit(type);
+        });
+
+        it('listen to specific type', function (done) {
+            var emitter = new ProxyEventEmitter(EVENT);
+            var type = 'blah';
+            var cancelListen = emitter.listen(type, function (e) {
+                assert.equal(e.type, type);
+                cancelListen();
+                assert.equal(emitter.listeners[type].length, 0);
+                done();
+            });
+            assert.equal(emitter.listeners[type].length, 1);
+            emitter.emit();
+            emitter.emit(type);
+        });
+
+        it('remove listeners of specific type', function () {
+            var emitter = new ProxyEventEmitter(EVENT);
+            var type1 = 'blah',
+                type2 = 'blah2';
+            emitter.listen(type1, function () {});
+            emitter.listen(type1, function () {});
+            emitter.listen(type1, function () {});
+            emitter.listen(type2, function () {});
+            assert.equal(emitter.listeners[type1].length, 3);
+            assert.equal(emitter.listeners[type2].length, 1);
+            emitter.removeAllListeners(type1);
+            assert.equal(emitter.listeners[type1].length, 0);
+            assert.equal(emitter.listeners[type2].length, 1);
+        });
+
+
+        it('remove all listeners', function () {
+            var emitter = new ProxyEventEmitter(EVENT);
+            var type1 = 'blah',
+                type2 = 'blah2';
+            emitter.listen(type1, function () {});
+            emitter.listen(type1, function () {});
+            emitter.listen(type1, function () {});
+            emitter.listen(type2, function () {});
+            assert.equal(emitter.listeners[type1].length, 3);
+            assert.equal(emitter.listeners[type2].length, 1);
+            emitter.removeAllListeners();
+            assert.equal(emitter.listeners[type1].length, 0);
+            assert.equal(emitter.listeners[type2].length, 0);
+        });
+
+
+        describe('implementations', function () {
+            var Car;
+            beforeEach(function () {
+                Collection = s.collection('myCollection');
+                Car = Collection.model('Car', {
+                    id: 'id',
+                    attributes: ['colour', 'name']
+                });
+            });
+
+            describe('collection', function () {
+                it('listen', function (done) {
+                    var listener;
+                    listener = function (n) {
+                        assert.ok(n);
+                        cancelListen();
+                        done();
+                    };
+                    var cancelListen = Collection.listen(listener);
+                    Car.map({colour: 'red', name: 'Aston Martin'});
+                });
+                it('listenOnce', function (done) {
+                    var listener;
+                    listener = function (n) {
+                        assert.ok(n);
+                        done();
+                    };
+                    Collection.listenOnce(listener);
+                    Car.map({colour: 'red', name: 'Aston Martin'});
+                });
+            });
+
+            describe('mapping', function () {
+                it('listen', function (done) {
+                    var listener;
+                    listener = function (n) {
+                        assert.ok(n);
+                        cancelListen();
+                        done();
+                    };
+                    var cancelListen = Car.listen(listener);
+                    Car.map({colour: 'red', name: 'Aston Martin'});
+                });
+                it('listenOnce', function (done) {
+                    var listener;
+                    listener = function (n) {
+                        assert.ok(n);
+                        done();
+                    };
+                    Car.listenOnce(listener);
+                    Car.map({colour: 'red', name: 'Aston Martin'});
+                });
+            });
+
+            describe('object', function () {
+                it('listen', function (done) {
+                    Car.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
+                        var listener;
+                        listener = function (n) {
+                            assert.ok(n);
+                            cancelListen();
+                            done();
+                        };
+                        var cancelListen = car.listen(listener);
+                        Car.map({id: 1, colour: 'blue'});
+                    }).catch(done).done();
+                });
+                it('listenOnce', function (done) {
+                    Car.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
+                        var listener;
+                        listener = function (n) {
+                            assert.ok(n);
+                            done();
+                        };
+                        car.listenOnce(listener);
+                        Car.map({id: 1, colour: 'blue'});
+                    }).catch(done).done();
+                });
             });
         });
-        it('collection', function (done) {
-            var listener;
-            listener = function (n) {
-                assert.ok(n);
-                cancelListen();
-                done();
-            };
-            var cancelListen = Collection.listen(listener);
-            Car.map({colour: 'red', name: 'Aston Martin'});
-        });
 
-        it('mapping', function (done) {
-            var listener;
-            listener = function (n) {
-                assert.ok(n);
-                cancelListen();
-                done();
-            };
-            var cancelListen = Car.listen(listener);
-            Car.map({colour: 'red', name: 'Aston Martin'});
-        });
-
-        it('object', function (done) {
-            Car.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
-                var listener;
-                listener = function (n) {
-                    assert.ok(n);
-                    cancelListen();
-                    done();
-                };
-                var cancelListen = car.listen(listener);
-                Car.map({id: 1, colour: 'blue'});
-            }).catch(done).done();
-        });
 
     })
 
