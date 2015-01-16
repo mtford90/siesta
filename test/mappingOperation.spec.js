@@ -390,7 +390,7 @@ describe('mapping operation', function () {
                     relationships: {
                         owner: {
                             model: 'User',
-                            type: RelationshipType.OneToMany,
+                            type: RelationshipType.OneToOne,
                             reverse: 'repositories'
                         }
                     }

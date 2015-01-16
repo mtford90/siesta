@@ -183,6 +183,9 @@ _.extend(Model.prototype, {
                                     relationship.type = RelationshipType.OneToMany;
                                 }
                             }
+                            if (self.singleton && relationship.type == RelationshipType.ManyToMany) {
+                                return 'Singleton model cannot use ManyToMany relationship.';
+                            }
                             if (relationship.type == RelationshipType.OneToMany ||
                                 relationship.type == RelationshipType.OneToOne ||
                                 relationship.type == RelationshipType.ManyToMany) {
@@ -247,8 +250,13 @@ _.extend(Model.prototype, {
                     var relationship = this.relationships[forwardName];
                     relationship = extend(true, {}, relationship);
                     relationship.isReverse = true;
-                    var reverseModel = relationship.reverseModel;
-                    var reverseName = relationship.reverseName;
+                    var reverseModel = relationship.reverseModel,
+                        reverseName = relationship.reverseName;
+                    console.log('reverse relationship', relationship);
+                    if (reverseModel.singleton) {
+                        if (relationship.type == RelationshipType.ManyToMany) return 'Singleton model cannot be related via reverse ManyToMany';
+                        if (relationship.type == RelationshipType.OneToMany) return 'Singleton model cannot be related via reverse OneToMany';
+                    }
                     if (Logger.debug.isEnabled)
                         Logger.debug(this.name + ': configuring  reverse relationship ' + reverseName);
                     reverseModel.relationships[reverseName] = relationship;
@@ -404,7 +412,7 @@ _.extend(Model.prototype, {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         var hash = this._countCache();
-        callback(null, Object.keys(hash).length)
+        callback(null, Object.keys(hash).length);
         return deferred.promise;
     },
     /**
@@ -473,7 +481,7 @@ _.extend(Model.prototype, {
                                 obj: newModel
                             });
                         }.bind(this));
-                        modelEvents.emit({
+                        var e = {
                             collection: self.collectionName,
                             model: self.name,
                             _id: newModel._id,
@@ -482,7 +490,10 @@ _.extend(Model.prototype, {
                             type: ModelEventType.Set,
                             field: field,
                             obj: newModel
-                        });
+                        };
+                        window.lastEmission = e;
+                        console.log('muthafukin emission', e);
+                        modelEvents.emit(e);
                         if (util.isArray(v)) {
                             wrapArray(v, field, newModel);
                         }

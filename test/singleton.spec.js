@@ -222,106 +222,175 @@ describe('singleton mapping', function () {
     describe('relationships', function () {
         var Person;
 
-        it('OneToOne', function (done) {
-            s.reset(function () {
-                Collection = s.collection('Collection');
-                Car = Collection.model('Car', {
-                    id: 'id',
-                    attributes: [
-                        'name'
-                    ],
-                    relationships: {
-                        owner: {
-                            type: 'OneToOne',
-                            model: 'Person',
-                            reverse: 'car'
-                        }
-                    },
-                    singleton: true
-                });
-                Person = Collection.model('Person', {
-                    id: 'id',
-                    attributes: ['name']
-                });
-                Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
-                    .then(function (car) {
-                        assert.ok(car);
-                        done();
-                    })
-                    .catch(done);
-            });
-        });
-
-        it('ManyToMany', function (done) {
-            s.reset(function () {
-                Collection = s.collection('Collection');
-                Car = Collection.model('Car', {
-                    id: 'id',
-                    attributes: [
-                        'name'
-                    ],
-                    relationships: {
-                        owners: {
-                            type: 'ManyToMany',
-                            model: 'Person',
-                            reverse: 'cars'
-                        }
-                    },
-                    singleton: true
-                });
-                Person = Collection.model('Person', {
-                    id: 'id',
-                    attributes: ['name']
-                });
-                Car.map({name: 'Blah', owners: [{name: 'Blah blah'}, {name: 'Michael'}]})
-                    .then(function (car) {
-                        assert.ok(car);
-                        assert.equal(car.owners.length, 2);
-                        done();
-                    })
-                    .catch(function (err) {
-                        console.error(err);
-                        done(err);
+        describe('OneToOne', function () {
+            it('with ordinary model', function (done) {
+                s.reset(function () {
+                    Collection = s.collection('Collection');
+                    Car = Collection.model('Car', {
+                        id: 'id',
+                        attributes: [
+                            'name'
+                        ],
+                        relationships: {
+                            owner: {
+                                type: 'OneToOne',
+                                model: 'Person',
+                                reverse: 'car'
+                            }
+                        },
+                        singleton: true
                     });
+                    Person = Collection.model('Person', {
+                        id: 'id',
+                        attributes: ['name']
+                    });
+                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                        .then(function (car) {
+                            assert.ok(car);
+                            done();
+                        })
+                        .catch(done);
+                });
+            });
 
+
+            it('with singleton model', function (done) {
+                s.reset(function () {
+                    Collection = s.collection('Collection');
+                    Car = Collection.model('Car', {
+                        id: 'id',
+                        attributes: [
+                            'name'
+                        ],
+                        relationships: {
+                            owner: {
+                                type: 'OneToOne',
+                                model: 'Person',
+                                reverse: 'car'
+                            }
+                        },
+                        singleton: true
+                    });
+                    Person = Collection.model('Person', {
+                        id: 'id',
+                        attributes: ['name'],
+                        singleton: true
+                    });
+                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                        .then(function (car) {
+                            assert.ok(car);
+                            done();
+                        })
+                        .catch(done);
+                });
             });
         });
 
-        it('OneToMany', function (done) {
-            s.reset(function () {
-                Collection = s.collection('Collection');
-                Car = Collection.model('Car', {
-                    id: 'id',
-                    attributes: [
-                        'name'
-                    ],
-                    relationships: {
-                        owner: {
-                            type: 'OneToMany',
-                            model: 'Person',
-                            reverse: 'cars'
-                        }
-                    },
-                    singleton: true
-                });
-                Person = Collection.model('Person', {
-                    id: 'id',
-                    attributes: ['name']
-                });
-                Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
-                    .then(function (car) {
-                        assert.ok(car);
-                        assert.ok(car.owner);
+        describe('ManyToMany', function () {
+          
+            it('should throw error with singleton model', function (done) {
+                s.reset(function () {
+                    Collection = s.collection('Collection');
+                    Car = Collection.model('Car', {
+                        id: 'id',
+                        attributes: [
+                            'name'
+                        ],
+                        relationships: {
+                            owners: {
+                                type: 'ManyToMany',
+                                model: 'Person',
+                                reverse: 'cars'
+                            }
+                        },
+                        singleton: true
+                    });
+                    Person = Collection.model('Person', {
+                        id: 'id',
+                        attributes: ['name'],
+                        singleton: true
+                    });
+                    s.install(function (err) {
+                        assert.ok(err);
                         done();
                     })
-                    .catch(function (err) {
-                        console.error(err);
-                        done(err);
-                    });
+                });
             });
+
         });
+
+        describe('OneToMany', function () {
+            it('with ordinary model', function (done) {
+                s.reset(function () {
+                    Collection = s.collection('Collection');
+                    Car = Collection.model('Car', {
+                        id: 'id',
+                        attributes: [
+                            'name'
+                        ],
+                        relationships: {
+                            owner: {
+                                type: 'OneToMany',
+                                model: 'Person',
+                                reverse: 'cars'
+                            }
+                        },
+                        singleton: true
+                    });
+                    Person = Collection.model('Person', {
+                        id: 'id',
+                        attributes: ['name']
+                    });
+                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                        .then(function (car) {
+                            assert.ok(car);
+                            assert.ok(car.owner);
+                            done();
+                        })
+                        .catch(function (err) {
+                            console.error(err);
+                            done(err);
+                        });
+                });
+            });
+
+            it('with singleton model', function (done) {
+                s.reset(function () {
+                    Collection = s.collection('Collection');
+                    Car = Collection.model('Car', {
+                        id: 'id',
+                        attributes: [
+                            'name'
+                        ],
+                        relationships: {
+                            owner: {
+                                type: 'OneToMany',
+                                model: 'Person',
+                                reverse: 'cars'
+                            }
+                        },
+                        singleton: true
+                    });
+                    Person = Collection.model('Person', {
+                        id: 'id',
+                        attributes: ['name'],
+                        singleton: true
+                    });
+                    s.install(function (err) {
+                        assert.ok(err);
+                        done();
+                    })
+                });
+            });
+
+        });
+
+
+
 
 
     });
+
+
 
 });

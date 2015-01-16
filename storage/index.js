@@ -95,9 +95,9 @@ function _loadModel(opts, callback) {
             });
             if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
             Model.map(data, {disableevents: true, _ignoreInstalled: true}, function (err, instances) {
-                if (!err && Logger.trace.isEnabled) {
-                    if (instances) {
-                        Logger.trace('Loaded ' + instances.length.toString() + ' instances for ' + fullyQualifiedName);
+                if (!err) {
+                    if (Logger.trace.isEnabled) {
+                        Logger.trace('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
                     }
                 }
                 else {
