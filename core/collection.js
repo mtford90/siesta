@@ -76,7 +76,10 @@ function Collection(name, opts) {
     });
 
     CollectionRegistry.register(this);
+    events.ProxyEventEmitter.call(this, this.name);
 }
+
+Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
 _.extend(Collection.prototype, {
     /**
@@ -288,21 +291,6 @@ _.extend(Collection.prototype, {
             deferred.finish(err, n);
         });
         return deferred.promise;
-    }
-});
-
-_.extend(Collection.prototype, {
-    listen: function (fn) {
-        events.on(this.name, fn);
-        return function () {
-            this.removeListener(fn);
-        }.bind(this);
-    },
-    listenOnce: function (fn) {
-        return events.once(this.name, fn);
-    },
-    removeListener: function (fn) {
-        return events.removeListener(this.name, fn);
     }
 });
 

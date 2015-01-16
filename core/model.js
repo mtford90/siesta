@@ -28,6 +28,7 @@ var log = require('./log'),
 
 var Logger = log.loggerWithName('Model');
 
+
 /**
  *
  * @param {Object} opts
@@ -55,6 +56,7 @@ function Model(opts) {
         init: null,
         remove: null
     });
+
 
     this.attributes = Model._processAttributes(this.attributes);
 
@@ -119,6 +121,7 @@ function Model(opts) {
             enumerable: true
         }
     });
+    events.ProxyEventEmitter.call(this, this.collectionName + ':' + this.name);
 
 
 }
@@ -144,6 +147,8 @@ _.extend(Model, {
         }, [])
     }
 });
+
+Model.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
 _.extend(Model.prototype, {
     installStatics: function (statics) {
@@ -606,20 +611,28 @@ _.extend(Model.prototype, {
 
 });
 
-_.extend(Model.prototype, {
-    listen: function (fn) {
-        events.on(this.collectionName + ':' + this.name, fn);
-        return function () {
-            this.removeListener(fn);
-        }.bind(this);
-    },
-    listenOnce: function (fn) {
-        return events.once(this.collectionName + ':' + this.name, fn);
-    },
-    removeListener: function (fn) {
-        return events.removeListener(this.collectionName + ':' + this.name, fn);
-    }
-});
+
+
+//
+//_.extend(Model.prototype, {
+//    listen: function (fn) {
+//        events.on(this.collectionName + ':' + this.name, fn);
+//        return function () {
+//            this.removeListener(fn);
+//        }.bind(this);
+//    },
+//    listenOnce: function (fn) {
+//        return events.once(this.collectionName + ':' + this.name, fn);
+//    },
+//    removeListener: function (fn) {
+//        return events.removeListener(this.collectionName + ':' + this.name, fn);
+//    }
+//});
+//
+//// Aliases
+//_.extend(Model.prototype, {
+//    on: Model.prototype.listen
+//});
 
 // Subclassing
 _.extend(Model.prototype, {

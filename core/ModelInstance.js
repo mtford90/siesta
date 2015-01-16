@@ -25,6 +25,8 @@ function ModelInstance(model) {
         }
     ]);
 
+    events.ProxyEventEmitter.call(this);
+
     Object.defineProperties(this, {
         _relationshipNames: {
             get: function () {
@@ -48,12 +50,17 @@ function ModelInstance(model) {
                 else return undefined;
             },
             enumerable: true
+        },
+        // This is for ProxyEventEmitter.
+        event: {
+            get: function () {return this._id}
         }
     });
 
     this.removed = false;
 }
 
+ModelInstance.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
 _.extend(ModelInstance.prototype, {
     get: function (callback) {
@@ -134,21 +141,6 @@ _.extend(ModelInstance.prototype, {
             }
         }
         return deferred.promise;
-    }
-});
-
-_.extend(ModelInstance.prototype, {
-    listen: function (fn) {
-        events.on(this._id, fn);
-        return function () {
-            this.removeListener(fn);
-        }.bind(this);
-    },
-    listenOnce: function (fn) {
-        return events.once(this._id, fn);
-    },
-    removeListener: function (fn) {
-        return events.removeListener(this._id, fn);
     }
 });
 

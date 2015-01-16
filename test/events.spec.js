@@ -988,7 +988,7 @@ describe('events', function () {
         });
     });
 
-    describe('convenience', function () {
+    describe.only('proxy event emission', function () {
         var Car;
         beforeEach(function () {
             Collection = s.collection('myCollection');
