@@ -573,12 +573,14 @@ User.map([
 
 When we map instances to the object graph, if an instance that matches `id` already exists, then this instance will be updated.
 
+```js
 User.map({login: 'mtford90', id: 1}, function (err, user) {
     User.map({login: 'mtford91', id: 1}, function (err, _user) {
         assert.equal(user, _user);
         assert.equal(user.login, 'mtford91');
     });
 })
+```
 
 ## Deleting Instances
 
@@ -708,7 +710,6 @@ var Collection = siesta.collection('Collection'),
         }
     });
 ```
-
 
 ### Events for Computed Properties
 
