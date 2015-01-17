@@ -829,9 +829,19 @@ Repo.query({
 
 ## Ordering
 
-We can also order instances using an `opts` object:
+We can also order instances using the `__order` option. 
 
 ```js
+// Descending order of age
+User.query({
+        age__gte: 18,
+        __order: '-age'
+    })
+    .then(function (results) {
+        console.log('results', results);
+    });
+
+// Descending order of age, with a secondary ordering (e.g. if ages are the same) by ascending name
 User.query({
         age__gte: 18,
         __order: ['-age', 'name']
@@ -845,11 +855,12 @@ User.query({
 
 Here are the current built-in comparators
 
-* `<attribute>` or `<attribute>__e` -  equality
-* `<attribute>__lt` - less than
-* `<attribute>__lte` - less than or equal to
-* `<attribute>__gt` - greater than
-* `<attribute>__gte` - greater than or equal to
+* `<field>` or `<field>__e` -  equality
+* `<field>__lt` - less than
+* `<field>__lte` - less than or equal to
+* `<field>__gt` - greater than
+* `<field>__gte` - greater than or equal to
+* `<field>__contains` - string contains or array contains
 
 You can register your own comparators.
 
@@ -1008,6 +1019,18 @@ rq.init()
            users.name = users.name.toUpperCase();
        });
   });
+```
+
+## Insertion Policy
+
+If no order is defined then by default Siesta will push any new instances in the Reactive Query to the back. You can change this by setting the insertion policy.
+
+```js
+var rq = User.reactiveQuery();
+// Insert at back (default)
+rq.insertionPolicy = s.InsertionPolicy.Back;
+// Insert at front
+rq.insertionPolicy = s.InsertionPolicy.Front;
 ```
 
 # Arranged Reactive Queries
@@ -1708,6 +1731,25 @@ siesta.resetData(function () {
 });
 ```
 
+e.g. if using bdd
+
+```js
+var Collection = siesta.collection('MyCollection'),
+    MyModel = Collection.model('MyModel', {
+        attributes: ['x', 'y']
+    });
+
+describe('something', function () {
+    beforeEach(siesta.resetData);
+    it('test', function (done) {
+        MyModel.map({x: 1}, function (err, instance) {
+            assert.equal(instance.x, 1);
+            done(err);
+        });
+    });    
+})
+```
+
 # ReactJS mixin
 
 The ReactJS mixin adds useful methods to React components in order to make integration with Siesta more concise.
@@ -1766,8 +1808,8 @@ var MyComponent = React.createClass({
         var listener = function(event) {
              this.setState(); // Rerender
         }.bind(this);
-
-        this.listen(MyCollection, listener).then(listener);
+        this.listen(MyCollection, listener)
+            .then(listener);
     }
 });
 ```
@@ -1782,7 +1824,8 @@ var MyComponent = React.createClass({
              this.setState(); // Rerender
         }.bind(this);
 
-        this.listen(MyModel, listener).then(listener);
+        this.listen(MyModel, listener)
+            .then(listener);
     }
 });
 ```
@@ -1798,7 +1841,8 @@ var MyComponent = React.createClass({
                  var listener = function(event) {
                       this.setState(); // Rerender
                  }.bind(this);
-                 this.listen(myModel, listener).then(listener);
+                 this.listen(myModel, listener)
+                     .then(listener);
             });
     }
 });
@@ -1887,6 +1931,27 @@ var MyComponent = React.createClass({
 ```
 
 Note: we can reduce this code even further by using [listenAndSetState](#reactjs-mixin-usage-listenandsetstate)
+
+#### Custom Events
+
+`listen` can also handle custom events.
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        MyModel.map({attr: 1})
+            .then(function (myInstance) {
+                 var listener = function(event) {
+                      this.setState(); // Rerender
+                 }.bind(this);
+                 this.listen('customEvent', myInstance, listener)
+                     .then(listener);
+                 myInstance.emit('customEvent', {key: 'value'});
+            });
+    }
+});
+```
 
 ### query
 
