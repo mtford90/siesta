@@ -22,13 +22,13 @@ function cb(callback, deferred) {
     };
 }
 
-var isArray = Array.isArray || function (obj) {
+var isArrayShim = function (obj) {
         return _.toString.call(obj) === '[object Array]';
-
+    },
+    isArray = Array.isArray || isArrayShim,
+    isString = function (o) {
+        return typeof o == 'string' || o instanceof String
     };
-var isString = function (o) {
-    return typeof o == 'string' || o instanceof String
-};
 _.extend(module.exports, {
     /**
      * Performs dirty check/Object.observe callbacks depending on the browser.
@@ -260,8 +260,8 @@ _.extend(module.exports, {
         fnText = fn.toString().replace(STRIP_COMMENTS, '');
         argDecl = fnText.match(FN_ARGS);
 
-        argDecl[1].split(FN_ARG_SPLIT).forEach(function(arg){
-            arg.replace(FN_ARG, function(all, underscore, name){
+        argDecl[1].split(FN_ARG_SPLIT).forEach(function (arg) {
+            arg.replace(FN_ARG, function (all, underscore, name) {
                 params.push(name);
             });
         });
