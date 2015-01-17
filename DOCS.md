@@ -1677,45 +1677,6 @@ The various loggers are listed below:
 * `Query`: Logs related to the querying of local data
 * `Storage`: Logs related to saving and loading of the object graph to storage.
 
-# Caveats
-
-## Object.observe shim
-
-Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for `Object.observe` which is currently only available in Chrome at the time of writing. It also comes with certain caveats.
-
-e.g. take the case whereby we are manipulating a user repositories.
-
-```js
-Repo.map({name: 'MyNewRepo'})
-	.then(function (repo) {
-		myUser.repositories.push(repo);
-		myUser.repositories.splice(0, 1); // Remove repo at index 0.
-	});
-```
-
-In browsers that implement `Object.observe`, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until `siesta.notify()` is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:
-
-```js
-Repo.map({name: 'MyNewRepo'})
-	.then(function (repo) {
-		myUser.repositories.push(repo);
-		myUser.repositories.splice(0, 1); // Remove repo at index 0.
-		siesta.notify(function () {
-			// Send out all notifications.
-		});
-	});
-```
-
-Promises can also be used.
-
-```js
-siesta.notify().then(function () {
-    // All notifications will have been sent.
-});
-```
-
-In browsers that implement `Object.observe`, `siesta.notify()` simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.
-
 # Testing
 
 Testing with Siesta is easy. There are two methods to aid in clearing and resetting Siesta's state.
@@ -1749,6 +1710,45 @@ describe('something', function () {
     });    
 })
 ```
+
+# Caveats
+
+## Object.observe shim
+
+Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to handle changes to arrays. ObserveJS is a (sort-of) shim for `Object.observe` which is currently only available in Chrome at the time of writing. It also comes with certain caveats.
+
+e.g. take the case whereby we are manipulating a user repositories.
+
+```js
+Repo.map({name: 'MyNewRepo'})
+    .then(function (repo) {
+        myUser.repositories.push(repo);
+        myUser.repositories.splice(0, 1); // Remove repo at index 0.
+    });
+```
+
+In browsers that implement `Object.observe`, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until `siesta.notify()` is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:
+
+```js
+Repo.map({name: 'MyNewRepo'})
+    .then(function (repo) {
+        myUser.repositories.push(repo);
+        myUser.repositories.splice(0, 1); // Remove repo at index 0.
+        siesta.notify(function () {
+            // Send out all notifications.
+        });
+    });
+```
+
+Promises can also be used.
+
+```js
+siesta.notify().then(function () {
+    // All notifications will have been sent.
+});
+```
+
+In browsers that implement `Object.observe`, `siesta.notify()` simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.
 
 # ReactJS mixin
 
