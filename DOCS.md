@@ -571,7 +571,14 @@ User.map([
 
 ## Updating Instances
 
+When we map instances to the object graph, if an instance that matches `id` already exists, then this instance will be updated.
 
+User.map({login: 'mtford90', id: 1}, function (err, user) {
+    User.map({login: 'mtford91', id: 1}, function (err, _user) {
+        assert.equal(user, _user);
+        assert.equal(user.login, 'mtford91');
+    });
+})
 
 ## Deleting Instances
 
@@ -666,6 +673,89 @@ Every event features the following fields.
 |field|name of the property that refers to the spliced array|
 
 `New` and `Delete` events do not have any additional fields.
+
+### Custom Events
+
+You can also emit custom events from your models.
+
+```js
+var Collection = siesta.collection('Collection'),
+    Model = Collection.model('Model', {
+        attributes: ['x', 'y']
+    });
+
+Model.map({x: 1}, function (err, instance) {
+    instance.listenOnce(function (e) {
+        assert.equal(e.type == 'customEvent');
+    });
+    instance.listen('customEvent', function (e) {
+        assert.equal(e.type == 'customEvent');
+    });
+    instance.emit('customEvent', {key: 'value'})
+});
+```
+
+Generally you would wrap custom event emissions up in methods.
+
+```js
+var Collection = siesta.collection('Collection'),
+    Model = Collection.model('Model', {
+        attributes: ['x', 'y'],
+        methods: {
+            foo: function () {
+                this.emit('customEvent', {key: 'value'})
+            }
+        }
+    });
+```
+
+
+### Events for Computed Properties
+
+Due to limitations with `Object.observe` events are not emitted automatically for changes in computed properties. In the below example, if `x` or `y` changes, `z` will also change however an event will **not** be emitted for `z`.
+
+```js
+var Collection = siesta.collection('Collection'),
+    Model = Collection.model('Model', {
+        attributes: ['x', 'y'],
+        properties: {
+            z: {
+                get: function () {
+                    return x + y;
+                }
+            }
+        },
+        singleton: true
+    });
+
+Model.one().then(function (instance) {
+    instance.x = 1;
+    instance.y = 1;
+    instance.listen(function (x) {
+        // This will never happen.
+        assert.equal(x.field, 'z');
+    });
+    console.log(instance.z); // 2
+});
+```
+
+You can get round this by defining attribute dependencies. Once defined, whenever `x` or `y` changes, Siesta will check to see if `z` has also changed. Note that dependencies can only be attributes for now. They cannot be other properties or relationships.
+
+```js
+var Collection = siesta.collection('Collection'),
+    Model = Collection.model('Model', {
+        attributes: ['x', 'y'],
+        properties: {
+            z: {
+                get: function () {
+                    return x + y;
+                },
+                dependencies: ['x', 'y']
+            }
+        },
+        singleton: true
+    });
+```
 
 # Queries
 
@@ -1602,6 +1692,21 @@ siesta.notify().then(function () {
 
 In browsers that implement `Object.observe`, `siesta.notify()` simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.
 
+# Testing
+
+Testing with Siesta is easy. There are two methods to aid in clearing and resetting Siesta's state.
+
+```js
+siesta.reset(function () {
+    // All collections, models, data & descriptors will now be removed.
+});
+
+siesta.resetData(function () {
+    // All model instances will now be removed. Collections, models & descriptors will remain intact.
+    // If storage extension is being used, PouchDB will also have been reset.
+});
+```
+
 # ReactJS mixin
 
 The ReactJS mixin adds useful methods to React components in order to make integration with Siesta more concise.
@@ -1780,7 +1885,7 @@ var MyComponent = React.createClass({
 });
 ```
 
-Note: we can reduce this code even further by using [listenAndSet](#reactjs-mixin-usage-listenandset)
+Note: we can reduce this code even further by using [listenAndSetState](#reactjs-mixin-usage-listenandsetstate)
 
 ### query
 
@@ -1844,22 +1949,19 @@ var MyComponent = React.createClass({
 });
 ```
 
-### listenAndSet
+### listenAndSetState
 
-The `listenAndSet` function will listen to a reactive query, arranged reactive query or singleton and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
+The `listenAndSetState` function will listen to a reactive query, arranged reactive query or singleton and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
 
 ```js
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        this.listenAndSet(MyModel.reactiveQuery({age__gt: 20}), 'users');
+        this.listenAndSetState(MyModel.reactiveQuery({age__gt: 20}), 'users');
     }
 });
-```
 
-which is equivalent to:
-
-```js
+// Which is equivalent to...
 var MyComponent = React.createClass({
     updateState: function (results) {
       this.setState({
@@ -1878,13 +1980,81 @@ var MyComponent = React.createClass({
 });
 ```
 
-In the case of a singleton:
+It's also possible to listen to specific fields on an instance and automatically update the components state with those fields.
 
 ```js
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        this.listenAndSet(MySingletonModel, 'singleton');
+        User.get({username: 'mike'})
+            .then(function (user) {
+                this.listenAndSetState(userInstance, {fields: ['username', 'email']});
+            }.bind(this));
+    },
+    render: function () {
+        return (
+            <div>
+                <span>{this.state.username}</span>
+                <span>{this.state.email}</span>
+            </div>
+        )
+    }
+});
+```
+
+We can also vary the keys:
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        User.get({username: 'mike'})
+            .then(function (user) {
+                this.listenAndSetState(userInstance, {fields: {username: 'login', email: 'e-mail'}});
+            }.bind(this));
+    },
+    render: function () {
+        return (
+            <div>
+                <span>{this.state.login}</span>
+                <span>{this.state['e-mail']}</span>
+            </div>
+        )
+    }
+});
+```
+
+Or mix and match:
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        User.get({username: 'mike'})
+            .then(function (user) {
+                this.listenAndSetState(userInstance, {fields: [{username: 'login'}, 'email'});
+            }.bind(this));
+    },
+    render: function () {
+        return (
+            <div>
+                <span>{this.state.login}</span>
+                <span>{this.state.email}</span>
+            </div>
+        )
+    }
+});
+```
+
+#### Singletons
+
+`listenAndSetState` also works with singleton models:
+
+```js
+var MyComponent = React.createClass({
+    mixins: [SiestaMixin],
+    componentDidMount: function () {
+        this.listenAndSetState(MySingletonModel, 'singleton');
     }
 });
 
@@ -1903,3 +2073,4 @@ var MyComponent = React.createClass({
     }
 });   
 ```
+
