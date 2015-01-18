@@ -18,28 +18,15 @@ bower install siesta --save
 You can include the full Siesta bundle or include individual components. If you decide to include individual components, ensure that other modules are included **after** core.
 
 ```html
-<!-- Include the entire bundle -->
-<script src="path/to/siesta/dist/siesta.min.js"></script>
-
-<!-- OR include individual components. Core must come before any extensions. -->
-<script src="path/to/siesta/siesta.core.min.js"></script>
-<script src="path/to/siesta/siesta.http.min.js"></script>
-<script src="path/to/siesta/siesta.storage.min.js"></script>
+<script src="path/to/siesta/dist/siesta.js"></script>
 ```
 
 ### CommonJS
 
-Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta and any extensions after running `npm install siesta-orm --save`.
+Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta.
 
 ```js
-// With no extensions.
 var siesta = require('siesta');
-
-// With extensions (this only needs to be done once)
-var siesta = require('siesta') ({
-    http: require('siesta/http')),
-    storage: require('siesta/storage'))
-});
 ```
 
 ### Promises
@@ -49,24 +36,25 @@ Promises can be used anywhere in Siesta where callbacks are used, provided that 
 ```html
 <!-- If using script tags -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.1.2/q.js"></script>
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
+<script src="siesta.min.js"></script>
 ```
 
+Or if using CommonJS
+
 ```js
-// If using CommonJS.
-window.Q = require('q');
+siesta.q = require('q');
 ```
 
 Once q.js is included in your project you can use promises anywhere in Siesta where you would normally use callbacks.
 
 ```js
-siesta.install()
-      .then(function () {
-           // ...
-       })
-      .catch(function (err) {
-           console.error('Handle error', err);
-       });
+Model.map({key: 'value')
+    .then(function () {
+       // ...
+    })
+    .catch(function (err) {
+       console.error('Handle error', err);
+    });
 ```
 
 ### Storage
@@ -355,7 +343,7 @@ var Repo = Github.model('Repo', {
 
 ### singleton
 
-A singleton model will only ever have one instance, and this instance will be created during the execution of `siesta.install`. 
+A singleton model will only ever have one instance.
 
 ```js
 // Maps loosely to https://api.github.com
