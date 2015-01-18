@@ -100,7 +100,7 @@ module.exports = function (grunt) {
      */
     grunt.registerTask('uglify', function () {
         grunt.file.mkdir('build');
-        sh.run('java -jar compiler.jar build/siesta.js --compilation_level ADVANCED_OPTIMIZATIONS > build/siesta.min.js');
+        sh.run('java -jar compiler.jar build/siesta.js > build/siesta.min.js');
     })
 
 };
