@@ -122,7 +122,7 @@ _.extend(Query.prototype, {
             var field = fields[i];
             s = s.thenBy(sortFunc(field.ascending, field.field));
         }
-        return s;
+        return s == util ? null : s;
     },
     _sortResults: function (res) {
         var order = this.opts.order;
@@ -140,9 +140,9 @@ _.extend(Query.prototype, {
                 }
                 return {field: field, ascending: ascending};
             }.bind(this));
-            var s = this.sortFunc(fields);
+            var sortFunc = this.sortFunc(fields);
             if (res.immutable) res = res.mutableCopy();
-            res.sort(s);
+            if (sortFunc) res.sort(sortFunc);
         }
         return res;
     },

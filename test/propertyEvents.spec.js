@@ -135,18 +135,20 @@ describe('property events', function () {
 
     describe('Object.observe', function () {
         it('xyz', function () {
-            var obj = {foo: 1};
-            Object.defineProperty(obj, 'blah', {
-                get: function () {
-                    return this.foo + 1;
-                }
-            });
-            Object.observe(obj, function (changes) {
-                changes.forEach(function (change) {
-                    console.log('change', change);
+            if (Object.observe) {
+                var obj = {foo: 1};
+                Object.defineProperty(obj, 'blah', {
+                    get: function () {
+                        return this.foo + 1;
+                    }
                 });
-            });
-            obj.foo = 2;
+                Object.observe(obj, function (changes) {
+                    changes.forEach(function (change) {
+                        console.log('change', change);
+                    });
+                });
+                obj.foo = 2;
+            }
         });
     });
 

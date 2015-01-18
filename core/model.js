@@ -257,7 +257,6 @@ _.extend(Model.prototype, {
                     relationship.isReverse = true;
                     var reverseModel = relationship.reverseModel,
                         reverseName = relationship.reverseName;
-                    console.log('reverse relationship', relationship);
                     if (reverseModel.singleton) {
                         if (relationship.type == RelationshipType.ManyToMany) return 'Singleton model cannot be related via reverse ManyToMany';
                         if (relationship.type == RelationshipType.OneToMany) return 'Singleton model cannot be related via reverse OneToMany';
@@ -473,7 +472,6 @@ _.extend(Model.prototype, {
                         newModel.__values[field] = v;
                         propertyDependencies.forEach(function (dep) {
                             var propertyName = dep.prop;
-                            console.log('propertyName', propertyName);
                             var new_ = this[propertyName];
                             modelEvents.emit({
                                 collection: self.collectionName,
