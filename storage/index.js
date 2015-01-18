@@ -19,8 +19,7 @@ var storage = {},
 
 if (typeof PouchDB == 'undefined') {
     siesta.ext.storageEnabled = false;
-    Logger.error('Storage extension is present but could not find PouchDB. ' +
-    'Have you included pouchdb.js in your project? It must be present at window.PouchDB!');
+    console.log('PouchDB is not present therefore storage is disabled.');
 }
 else {
     var DB_NAME = 'siesta',
