@@ -7,38 +7,10 @@ module.exports = function (grunt) {
         _ = require('underscore');
 
     var userConfig = require('./build.config.js');
-    var LIVERELOAD_PORT = 47835;
-    var CONNECT_PORT = 4001;
+    var LIVERELOAD_PORT = 47835,
+        CONNECT_PORT = 4001;
     var taskConfig = {
         pkg: grunt.file.readJSON("package.json"),
-
-        // https://github.com/vojtajina/grunt-bump
-        // grunt bump:patch e.g. 0.0.6 -> 0.0.7
-        // grunt bump:minor e.g. 0.0.6 -> 0.1.6
-        // grunt bump:major e.g. 0.0.6 -> 1.0.6
-        // grunt bump:prerelease e.g. 0.0.6 -> 0.0.6-1
-        bump: {
-            options: {
-                files: ['package.json', 'bower.json'],
-                updateConfigs: [],
-                commit: true,
-                commitMessage: 'Release v%VERSION%',
-                commitFiles: ['dist', 'core', 'test', 'package.json', 'bower.json', 'http', 'storage', 'performance'],
-                createTag: true,
-                tagName: '%VERSION%',
-                tagMessage: 'Version %VERSION%',
-                push: true,
-                pushTo: 'upstream',
-                gitDescribeOptions: '--tags --always --abbrev=1 --dirty=-d',
-                globalReplace: false
-            }
-        },
-
-        open: {
-            mocha: {
-                path: 'http://localhost:4001'
-            }
-        },
 
         browserify: {
             options: {
@@ -104,7 +76,6 @@ module.exports = function (grunt) {
             }
         },
 
-
         mochaconfig: {
             unit: {
                 dir: '<%= build_dir %>',
@@ -155,52 +126,10 @@ module.exports = function (grunt) {
                     '<%= test_dir %>/index.tpl.html'
                 ],
                 tasks: ['index']
-            },
-
-
-            less: {
-                files: ['./docs/static/less/**/*.less'],
-                tasks: ['build-jekyll']
-            },
-
-            jekyll: {
-                files: [
-                    'docs/**/*.md',
-                    'docs/_includes/*.html',
-                    'docs/_data/*.yml',
-                    'docs/_layouts/*.html',
-                    'docs/_posts/*.md',
-                    'docs/blog/*.html',
-                    'docs/_config.yml',
-                    'docs/static/**/*.js'
-                ],
-                tasks: [
-                    'build-jekyll'
-                ]
-            },
-
-            demo: {
-                options: {
-                    livereload: LIVERELOAD_PORT
-                },
-                files: [
-                    'docs/demo/**/*.js',
-                    'docs/demo/**/*.html',
-                    'docs/demo/**/*.css'
-                ]
             }
+
         },
 
-        less: {
-            dev: {
-                options: {
-                    paths: ['docs/static/less']
-                },
-                files: {
-                    'docs/static/css/main.css': 'docs/static/less/daux-blue.less'
-                }
-            }
-        },
         connect: {
             site: {
                 options: {
@@ -216,16 +145,6 @@ module.exports = function (grunt) {
             }
         },
 
-        mochaTest: {
-            test: {
-                options: {
-                    reporter: 'spec'
-                },
-                src: [
-                    '<%= test_dir %>/**/*.spec.js'
-                ]
-            }
-        },
 
         index: {
             build: {
@@ -249,28 +168,6 @@ module.exports = function (grunt) {
                 ],
                 dest: '<%= build_dir %>/siesta.js'
             }
-        },
-
-        compress: {
-            comp: {
-                files: [{
-                    src: ['<%= build_dir %>/siesta.http.min.js'],
-                    dest: '<%= build_dir %>/siesta.http.min.js.gz'
-                }, {
-                    src: ['<%= build_dir %>/siesta.core.min.js'],
-                    dest: '<%= build_dir %>/siesta.core.min.js.gz'
-                }, {
-                    src: ['<%= build_dir %>/siesta.min.js'],
-                    dest: '<%= build_dir %>/siesta.min.js.gz'
-                },
-                    {
-                        src: ['<%= build_dir %>/siesta.storage.min.js'],
-                        dest: '<%= build_dir %>/siesta.storage.min.js.gz'
-                    }
-
-
-                ]
-            }
         }
 
     };
@@ -282,8 +179,8 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['build', 'compile']);
 
     grunt.registerTask('dist', function () {
-        sh.run('cp -r build/* dist/');
-        sh.run('rm -f dist/*.gz dist/test-bundle.js');
+        sh.run('cp -r build/siesta.js dist/siesta.js');
+        sh.run('cp -r build/siesta.min.js dist/siesta.min.js');
     });
 
     grunt.registerTask('npmPublish', function () {
@@ -308,8 +205,7 @@ module.exports = function (grunt) {
     grunt.registerTask('watch', [
         'test',
         'connect:site',
-        'delta',
-        'open:mocha'
+        'delta'
     ]);
 
     grunt.registerTask('build', [
@@ -324,30 +220,12 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', [
         'build'
-        // TODO: Fix tests in PhantomJS.
-        //'mocha_phantomjs'
     ]);
 
     grunt.registerTask('compile', [
         'browserify:build',
         'concat:bundle',
-        'uglify',
-        'compress'
-    ]);
-
-    grunt.registerTask('build-jekyll', [
-        'less:dev',
-        'shell:jekyllBuild'
-    ]);
-
-    grunt.registerTask('compile-jekyll', [
-        'less:dev',
-        'shell:jekyllCompile'
-    ]);
-
-    grunt.registerTask('dist-jekyll', [
-        'compile-jekyll',
-        'shell:jekyllDist'
+        'uglify'
     ]);
 
     function filterForJS(files) {
