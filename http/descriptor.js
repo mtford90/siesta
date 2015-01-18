@@ -325,6 +325,7 @@ _.extend(Descriptor.prototype, {
         var matches = !!regexMatches;
         var extractedData = false;
         if (matches) {
+            console.log('matches!')
             extractedData = this._matchData(data);
         }
         return extractedData;

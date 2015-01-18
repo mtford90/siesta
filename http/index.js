@@ -77,13 +77,14 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         callback = args[1];
     }
     var deferred = util.defer();
-    opts.type = method;
+    opts.type = method; // jquery
+    opts.method = method; // $http
     if (!opts.url) { // Allow overrides.
         var baseURL = this.baseURL;
         opts.url = baseURL + path;
     }
     if (opts.parseResponse === undefined) opts.parseResponse = true;
-    opts.success = function (data, status, xhr) {
+    function success (data, status, xhr) {
         logHttpResponse(opts, xhr, data);
         var resp = {
             data: data,
@@ -119,11 +120,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                 }
             } else if (callback) {
                 if (name) {
-                    var err = {};
-                    var code = error.ErrorCode.NoDescriptorMatched;
-                    err[error.ErrorField.Code] = code;
-                    err[error.ErrorField.Message] = error.Message[code];
-                    callback(err, null, resp);
+                    callback('No descriptors matched', null, resp);
                 } else {
                     // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
                     throw new InternalSiestaError('Unnamed collection');
@@ -133,17 +130,28 @@ function _httpResponse(method, path, optsOrCallback, callback) {
             callback(null, null, resp);
         }
 
-    };
-    opts.error = function (xhr, status, error) {
+    }
+    function error (xhr, status, error) {
         var resp = {
             xhr: xhr,
             status: status,
             error: error
         };
         if (callback) callback(resp, null, resp);
-    };
+    }
     logHttpRequest(opts);
-    siesta.ext.http.ajax(opts);
+    var promise = siesta.ext.http.ajax(opts);
+    if (promise.success) { // $http and jquery <1.8
+        promise.success(success);
+        promise.error(error);
+    }
+    else if (promise.done) { // jquery >= 1.8
+        promise.done(success);
+        promise.fail(error);
+    }
+    else {
+        callback('Incompatible ajax function. Could not find success/fail methods on returned promise.');
+    }
     return deferred.promise;
 }
 

@@ -4,6 +4,7 @@ var EventEmitter = require('events').EventEmitter,
     modelEvents = require('./modelEvents');
 
 var events = new EventEmitter();
+events.setMaxListeners(100);
 
 /**
  * Listen to a particular event from the Siesta global EventEmitter.

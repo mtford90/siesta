@@ -224,6 +224,21 @@ _.extend(Collection.prototype, {
         var descriptors = [];
         if (siesta.ext.httpEnabled) {
             opts.collection = this;
+            var model = opts.model;
+            // TODO: Unit test if dont pass model.
+            // TODO: More descriptive error.
+            if (!model) {
+                throw Error('All descriptors must have a model');
+            }
+            // TODO: Unit test for passing strings.
+            if (typeof model == 'string' || model instanceof String) {
+                model = this._models[model];
+            }
+            // TODO: Unit test if collection doesnt match
+            // TODO: More descriptive error.
+            if (!model) {
+                throw Error('You are attempting to define a descriptor a model which is not part of this collection');
+            }
             var methods = siesta.ext.http._resolveMethod(opts.method);
             var unsafe = [];
             var safe = [];

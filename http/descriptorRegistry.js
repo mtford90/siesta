@@ -20,6 +20,9 @@ function DescriptorRegistry() {
 function _registerDescriptor(descriptors, descriptor) {
     var model = descriptor.model;
     var collectionName = model.collectionName;
+    if (Logger.trace.isEnabled) {
+        Logger.trace('_registerDescriptor', {model: model, collectionName: collectionName});
+    }
     if (!descriptors[collectionName]) {
         descriptors[collectionName] = [];
     }
@@ -34,6 +37,9 @@ function _descriptorsForCollection(descriptors, collection) {
     else {
         descriptorsForCollection = (descriptors[collection.name] || []);
     }
+    if (Logger.trace.isEnabled) {
+        Logger.trace('_descriptorsForCollection', {collection: collection, allDescriptors: descriptors, descriptors: descriptorsForCollection})
+    }
     return descriptorsForCollection;
 }
 
@@ -45,6 +51,7 @@ _.extend(DescriptorRegistry.prototype, {
     registerResponseDescriptor: function (responseDescriptor) {
         if (Logger.trace.isEnabled)
             Logger.trace('registerResponseDescriptor');
+        console.log('registerResponseDescriptor', responseDescriptor);
         _registerDescriptor(this.responseDescriptors, responseDescriptor);
     },
     requestDescriptorsForCollection: function (collection) {
@@ -54,7 +61,7 @@ _.extend(DescriptorRegistry.prototype, {
         var descriptorsForCollection = _descriptorsForCollection(this.responseDescriptors, collection);
         if (!descriptorsForCollection.length) {
             if (Logger.debug.isEnabled)
-                Logger.debug('No response descriptors for collection ', this.responseDescriptors);
+                Logger.debug('No response descriptors for collection ', {collection: collection});
         }
         return descriptorsForCollection;
     },
