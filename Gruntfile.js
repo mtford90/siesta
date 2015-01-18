@@ -90,11 +90,6 @@ module.exports = function (grunt) {
         'delta'
     ]);
 
-    grunt.registerTask('build', [
-        'clean',
-        'browserify:test'
-    ]);
-
     grunt.registerTask('compile', [
         'browserify:build',
         'uglify'
