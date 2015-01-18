@@ -12,7 +12,7 @@ var util = require('./util'),
     log = require('./log'),
     _ = util._;
 
-// Initialise siesta object. Strange format facilities using submodules with requireJS.
+// Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
 var siesta = function (ext) {
     if (!siesta.ext) siesta.ext = {};
     _.extend(siesta.ext, ext || {});
@@ -163,7 +163,7 @@ _.extend(siesta, {
                 }
                 else {
                     if (siesta.ext.storageEnabled) {
-                         siesta.ext.storage._load(function (err) {
+                        siesta.ext.storage._load(function (err) {
                             if (!err) {
                                 installed = true;
                                 if (self.queuedTasks) self.queuedTasks.execute();
@@ -176,7 +176,7 @@ _.extend(siesta, {
                         if (self.queuedTasks) self.queuedTasks.execute();
                         cb();
                     }
-                   
+
                 }
             });
 
@@ -184,7 +184,8 @@ _.extend(siesta, {
         }
         else {
             throw new error.InternalSiestaError('Already installing...');
-        }rese
+        }
+        rese
 
     },
     _pushTask: function (task) {
@@ -192,7 +193,9 @@ _.extend(siesta, {
             this.queuedTasks = new function Queue() {
                 this.tasks = [];
                 this.execute = function () {
-                    this.tasks.forEach(function (f) {f()});
+                    this.tasks.forEach(function (f) {
+                        f()
+                    });
                     this.tasks = [];
                 }.bind(this);
             };
@@ -236,3 +239,8 @@ if (typeof window != 'undefined') {
 }
 
 module.exports = siesta;
+
+(function loadExtensions() {
+    require('../http');
+    require('../storage');
+})();
