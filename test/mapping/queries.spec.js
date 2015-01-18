@@ -1,24 +1,21 @@
-var s = require('../../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    RelationshipType = siesta.RelationshipType,
+    ModelInstance = siesta._internal.ModelInstance;
 
 describe('mapping queries', function () {
 
-    var SiestaModel = require('../../core/modelInstance'),
-        RelationshipType = require('../../core/RelationshipType'),
-        cache = require('../../core/cache');
-
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('queries', function () {
         var Collection, Car;
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['color', 'name']
@@ -39,7 +36,7 @@ describe('mapping queries', function () {
                 if (err) done(err);
                 assert.equal(cars.length, 2);
                 _.each(cars, function (car) {
-                    assert.instanceOf(car, SiestaModel);
+                    assert.instanceOf(car, ModelInstance);
                 });
                 done();
             });
@@ -53,7 +50,7 @@ describe('mapping queries', function () {
                 if (err) done(err);
                 assert.equal(cars.length, 1);
                 _.each(cars, function (car) {
-                    assert.instanceOf(car, SiestaModel);
+                    assert.instanceOf(car, ModelInstance);
                 });
                 done();
             });
@@ -64,7 +61,7 @@ describe('mapping queries', function () {
                 Car.one({id: 4}, function (err, car) {
                     if (err) done(err);
                     assert.ok(car);
-                    assert.instanceOf(car, SiestaModel);
+                    assert.instanceOf(car, ModelInstance);
                     assert.equal(car.color, 'red');
                     done();
                 });
@@ -90,7 +87,7 @@ describe('mapping queries', function () {
         var Car, Person, Collection;
 
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],

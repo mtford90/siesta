@@ -1,5 +1,5 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    ArrayObserver = siesta._internal.observe.ArrayObserver;
 
 /**
  * Assertions against the observe-js library from polymer, modified to fit browserify.
@@ -7,10 +7,8 @@ var s = require('../core/index'),
 
 describe('observer', function () {
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
-
-    var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver;
 
     it('indexes', function (done) {
         var arr = [1, 2, 3];
@@ -30,7 +28,7 @@ describe('observer', function () {
         });
         arr[0] = 4;
         arr[1] = 5;
-        s.notify();
+        siesta.notify();
     });
 
     it('push', function (done) {
@@ -50,7 +48,7 @@ describe('observer', function () {
             });
         });
         arr.push(6);
-        s.notify();
+        siesta.notify();
     });
 
     it('sort', function (done) {
@@ -60,7 +58,7 @@ describe('observer', function () {
             done();
         });
         arr.sort();
-        s.notify();
+        siesta.notify();
     });
 
 });

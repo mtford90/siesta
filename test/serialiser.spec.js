@@ -1,23 +1,22 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    RelationshipType = siesta.RelationshipType;
 
 describe('serialisers', function () {
-
-    var RelationshipType = require('../core/RelationshipType');
 
     var Collection, Car, Person, VitalSigns;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('id serialiser', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 attributes: ['name', 'age']
             });
@@ -67,7 +66,7 @@ describe('serialisers', function () {
 
     describe('depth serialiser', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 attributes: ['name', 'age'],
                 id: 'id',
@@ -176,18 +175,18 @@ describe('serialisers', function () {
 
     describe('availibility on siesta', function () {
         it('id, anglophone', function () {
-            assert.equal(s.serialisers.id, siesta.ext.http.Serialiser.idSerialiser);
+            assert.equal(siesta.serialisers.id, siesta.ext.http.Serialiser.idSerialiser);
         });
 
         it('depth, anglophone', function () {
-            assert.equal(s.serialisers.depth, siesta.ext.http.Serialiser.depthSerializer);
+            assert.equal(siesta.serialisers.depth, siesta.ext.http.Serialiser.depthSerializer);
         });
         it('id, american', function () {
-            assert.equal(s.serializers.id, siesta.ext.http.Serialiser.idSerialiser);
+            assert.equal(siesta.serializers.id, siesta.ext.http.Serialiser.idSerialiser);
         });
 
         it('depth, american', function () {
-            assert.equal(s.serializers.depth, siesta.ext.http.Serialiser.depthSerializer);
+            assert.equal(siesta.serializers.depth, siesta.ext.http.Serialiser.depthSerializer);
         });
     });
 

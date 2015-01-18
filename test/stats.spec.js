@@ -1,16 +1,14 @@
-var s = require('../core/index');
 var assert = require('chai').assert;
 
 describe('statistics', function () {
     var Car, Person, Collection;
 
-    var cache = require('../core/cache');
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     beforeEach(function () {
-        s.reset(function () {
-            Collection = s.collection('myCollection');
+        siesta.reset(function () {
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
@@ -30,10 +28,10 @@ describe('statistics', function () {
     });
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     after(function () {
-        s.ext.storageEnabled = true;
+        siesta.ext.storageEnabled = true;
     });
     describe('collection level', function () {
         describe('single mapping', function () {

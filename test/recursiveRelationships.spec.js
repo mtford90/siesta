@@ -1,19 +1,16 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
 describe('recursive relationships', function () {
-
-    var cache = require('../core/cache');
 
     var Collection, Repo;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(function () {
-            Collection = s.collection('MyCollection');
+        siesta.reset(function () {
+            Collection = siesta.collection('MyCollection');
             Collection.baseURL = 'https://api.github.com';
             Repo = Collection.model('Repo', {
                 id: 'id',

@@ -1,24 +1,19 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
-
-var SiestaModel = require('../core/modelInstance'),
-    cache = require('../core/cache'),
-    Collection = require('../core/collection');
+var assert = require('chai').assert;
 
 describe('Subclass', function () {
     var Collection, Car, SportsCar;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('hierarchy', function () {
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
 
             Car = Collection.model('Car', {
                 id: 'id',
@@ -28,7 +23,7 @@ describe('Subclass', function () {
                 attributes: ['maxSpeed']
             });
 
-            s.install(done);
+            siesta.install(done);
         });
 
         it('children', function () {
@@ -43,7 +38,7 @@ describe('Subclass', function () {
 
     describe('attributes', function () {
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
 
             Car = Collection.model('Car', {
                 id: 'id',
@@ -53,7 +48,7 @@ describe('Subclass', function () {
                 attributes: ['maxSpeed']
             });
 
-            s.install(done);
+            siesta.install(done);
         });
 
         it('child attributes', function () {
@@ -76,7 +71,7 @@ describe('Subclass', function () {
 
         describe('names', function () {
             beforeEach(function (done) {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Car = Collection.model('Car', {
                     attributes: ['colour', 'name'],
                     relationships: {
@@ -94,7 +89,7 @@ describe('Subclass', function () {
                     attributes: ['age', 'name']
                 });
 
-                s.install(done);
+                siesta.install(done);
             });
             it('child attributes', function () {
                 assert.include(SportsCar._relationshipNames, 'owner');
@@ -110,8 +105,8 @@ describe('Subclass', function () {
 
             describe('OneToMany', function () {
                 beforeEach(function (done) {
-                    s.reset(function () {
-                        Collection = s.collection('myCollection');
+                    siesta.reset(function () {
+                        Collection = siesta.collection('myCollection');
                         Car = Collection.model('Car', {
                             attributes: ['colour', 'name'],
                             relationships: {
@@ -163,8 +158,8 @@ describe('Subclass', function () {
 
             describe('OneToOne', function () {
                 beforeEach(function (done) {
-                    s.reset(function () {
-                        Collection = s.collection('myCollection');
+                    siesta.reset(function () {
+                        Collection = siesta.collection('myCollection');
                         Car = Collection.model('Car', {
                             attributes: ['colour', 'name'],
                             relationships: {
@@ -219,8 +214,8 @@ describe('Subclass', function () {
 
             describe('ManyToMany', function () {
                 beforeEach(function (done) {
-                    s.reset(function () {
-                        Collection = s.collection('myCollection');
+                    siesta.reset(function () {
+                        Collection = siesta.collection('myCollection');
                         Car = Collection.model('Car', {
                             attributes: ['colour', 'name'],
                             relationships: {
@@ -278,8 +273,8 @@ describe('Subclass', function () {
     describe('methods', function () {
         var Collection, Car, SportsCar;
         beforeEach(function (done) {
-            s.reset(function () {
-                Collection = s.collection('myCollection');
+            siesta.reset(function () {
+                Collection = siesta.collection('myCollection');
                 Car = Collection.model('Car', {
                     attributes: ['x'],
                     methods: {
@@ -296,7 +291,7 @@ describe('Subclass', function () {
                         }
                     }
                 });
-                s.install(done);
+                siesta.install(done);
             });
         });
 
@@ -332,8 +327,8 @@ describe('Subclass', function () {
     describe('statics', function () {
         var Collection, Car, SportsCar;
         beforeEach(function (done) {
-            s.reset(function () {
-                Collection = s.collection('myCollection');
+            siesta.reset(function () {
+                Collection = siesta.collection('myCollection');
                 Car = Collection.model('Car', {
                     attributes: ['x'],
                     statics: {
@@ -350,7 +345,7 @@ describe('Subclass', function () {
                         }
                     }
                 });
-                s.install(done);
+                siesta.install(done);
             });
         });
 
@@ -376,12 +371,12 @@ describe('Subclass', function () {
     describe('id', function () {
 
         it('inherits', function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'blah'
             });
             SportsCar = Car.child('SportsCar', {});
-            s.install(function () {
+            siesta.install(function () {
                 assert.equal(Car.id, 'blah');
                 assert.equal(SportsCar.id, 'blah');
                 done();
@@ -389,14 +384,14 @@ describe('Subclass', function () {
         });
 
         it('overrides', function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'blah'
             });
             SportsCar = Car.child('SportsCar', {
                 id: 'blah2'
             });
-            s.install(function () {
+            siesta.install(function () {
                 assert.equal(Car.id, 'blah');
                 assert.equal(SportsCar.id, 'blah2');
                 done();
@@ -407,7 +402,7 @@ describe('Subclass', function () {
 
     describe('properties', function () {
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
 
             Car = Collection.model('Car', {
                 attributes: ['x'],
@@ -430,7 +425,7 @@ describe('Subclass', function () {
                 }
             });
 
-            s.install(done);
+            siesta.install(done);
         });
 
         it('parent property should be available on parent', function (done) {
@@ -474,7 +469,7 @@ describe('Subclass', function () {
         var Collection, Car, SportsCar;
 
         it('parent init inherited by child', function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 init: function () {
                     return 'a';
@@ -483,14 +478,14 @@ describe('Subclass', function () {
             SportsCar = Car.child('SportsCar', {
 
             });
-            s.install(function () {
+            siesta.install(function () {
                 assert.equal(Car.init(), 'a');
                 assert.equal(SportsCar.init(), 'a');
             });
         });
 
         it('parent init overriden by child', function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 init: function () {
                     return 'a';
@@ -501,7 +496,7 @@ describe('Subclass', function () {
                     return 'b';
                 }
             });
-            s.install(function () {
+            siesta.install(function () {
                 assert.equal(Car.init(), 'a');
                 assert.equal(SportsCar.init(), 'b');
             });
@@ -513,7 +508,7 @@ describe('Subclass', function () {
         var Collection, Car, SportsCar;
 
         it('parent remove inherited by child', function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 remove: function () {
                     return 'a';
@@ -522,14 +517,14 @@ describe('Subclass', function () {
             SportsCar = Car.child('SportsCar', {
 
             });
-            s.install(function () {
+            siesta.install(function () {
                 assert.equal(Car.remove(), 'a');
                 assert.equal(SportsCar.remove(), 'a');
             });
         });
 
         it('parent remove overriden by child', function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 remove: function () {
                     return 'a';
@@ -540,7 +535,7 @@ describe('Subclass', function () {
                     return 'b';
                 }
             });
-            s.install(function () {
+            siesta.install(function () {
                 assert.equal(Car.remove(), 'a');
                 assert.equal(SportsCar.remove(), 'b');
             });
@@ -553,8 +548,8 @@ describe('Subclass', function () {
         var collection, Car, SportsCar, SuperCar;
 
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('myCollection');
+            siesta.reset(function () {
+                collection = siesta.collection('myCollection');
 
                 Car = collection.model('Car', {
                     id: 'id',
@@ -623,8 +618,8 @@ describe('Subclass', function () {
         var collection, Car, SportsCar, Person, SuperCar;
 
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('myCollection');
+            siesta.reset(function () {
+                collection = siesta.collection('myCollection');
                 Car = collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
@@ -639,7 +634,7 @@ describe('Subclass', function () {
                     attributes: ['attr']
                 });
 
-                s.install(done);
+                siesta.install(done);
             });
         });
 

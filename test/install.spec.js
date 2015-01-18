@@ -2,23 +2,22 @@
  * This spec tests that removal of the old siesta.install() step that was required before use has been removed correctly
  */
 
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
 describe('install step', function () {
     var MyCollection, Person;
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('no storage', function () {
         before(function () {
-            s.ext.storageEnabled = false;
+            siesta.ext.storageEnabled = false;
         });
 
         beforeEach(function () {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'index']
@@ -65,7 +64,7 @@ describe('install step', function () {
         });
 
         it('should not be able to define a model after install', function (done) {
-            s.install().then(function () {
+            siesta.install().then(function () {
                 assert.throws(function () {
                     MyCollection.model('AnotherModel', {
                         id: 'id',
@@ -80,20 +79,20 @@ describe('install step', function () {
 
     describe('storage', function () {
         before(function () {
-            s.ext.storageEnabled = true;
+            siesta.ext.storageEnabled = true;
         });
 
         after(function (done) {
-            s.reset(function () {
-                s.ext.storageEnabled = false;
-                s.ext.storage._pouch.allDocs().then(function (resp) {
+            siesta.reset(function () {
+                siesta.ext.storageEnabled = false;
+                siesta.ext.storage._pouch.allDocs().then(function (resp) {
                     done();
                 });
             })
         });
 
         beforeEach(function () {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'index']
@@ -110,7 +109,7 @@ describe('install step', function () {
 
 
         it('query', function (done) {
-            s.ext.storage._pouch.bulkDocs([
+            siesta.ext.storage._pouch.bulkDocs([
                 {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
                 {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
             ]).then(function () {
@@ -125,7 +124,7 @@ describe('install step', function () {
 
 
         it('reactive query', function (done) {
-            s.ext.storage._pouch.bulkDocs([
+            siesta.ext.storage._pouch.bulkDocs([
                 {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
                 {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
             ]).then(function () {
@@ -141,7 +140,7 @@ describe('install step', function () {
         });
 
         it('arranged reactive query', function (done) {
-            s.ext.storage._pouch.bulkDocs([
+            siesta.ext.storage._pouch.bulkDocs([
                 {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
                 {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
             ]).then(function () {

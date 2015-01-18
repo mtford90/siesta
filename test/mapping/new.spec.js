@@ -1,34 +1,33 @@
 /*
- These tests deal with the creation of new SiestaModel objects.
+ These tests deal with the creation of new ModelInstance objects.
  */
 
-var s = require('../../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    OneToManyProxy = internal.OneToManyProxy,
+    RelationshipType = siesta.RelationshipType,
+    cache = internal.cache;
 
 describe('mapping new object', function () {
-    var Collection = require('../../core/collection');
-    var RelationshipType = require('../../core/RelationshipType');
-    var OneToManyProxy = require('../../core/OneToManyProxy');
-    var cache = require('../../core/cache');
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('fields', function () {
         var collection, Car;
 
         beforeEach(function (done) {
-            collection = s.collection('myCollection');
+            collection = siesta.collection('myCollection');
             Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            s.install(done);
+            siesta.install(done);
         });
 
         it('valid', function () {
@@ -75,10 +74,10 @@ describe('mapping new object', function () {
     });
 
     describe('relationships', function () {
-        var collection, carMapping, personMapping;
+        var collection, Car, Person;
 
         function configureAPI(type, reverseName, done) {
-            collection = s.collection('myCollection');
+            collection = siesta.collection('myCollection');
             Car = collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
@@ -94,7 +93,7 @@ describe('mapping new object', function () {
                 id: 'id',
                 attributes: ['age', 'name']
             });
-            s.install(done);
+            siesta.install(done);
         }
 
         beforeEach(function (done) {

@@ -1,15 +1,15 @@
-var s = require('../../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    Model = internal.Model;
 
 describe('mapping!', function () {
-    var Model = require('../../core/model');
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     it('_attributeNames', function () {
@@ -61,7 +61,7 @@ describe('mapping!', function () {
         describe('methods', function () {
             describe('init', function () {
                 it('sync', function (done) {
-                    var C = s.collection('C');
+                    var C = siesta.collection('C');
                     var M = C.model('M', {
                         init: function () {
                             assert.equal(this.attr, 1);
@@ -69,7 +69,7 @@ describe('mapping!', function () {
                         },
                         attributes: ['attr']
                     });
-                    s.install()
+                    siesta.install()
                         .then(function () {
                             M.map({
                                 attr: 1
@@ -78,7 +78,7 @@ describe('mapping!', function () {
                         .catch(done);
                 });
                 it('async', function (done) {
-                    var C = s.collection('C');
+                    var C = siesta.collection('C');
                     var initExecuted = false;
                     var M = C.model('M', {
                         init: function (cb) {
@@ -88,7 +88,7 @@ describe('mapping!', function () {
                         },
                         attributes: ['attr']
                     });
-                    s.install()
+                    siesta.install()
                         .then(function () {
                             M.map({
                                 attr: 1
@@ -102,7 +102,7 @@ describe('mapping!', function () {
                         .catch(done);
                 });
                 it('mixture of async and sync', function (done) {
-                    var C = s.collection('C');
+                    var C = siesta.collection('C');
                     var asyncInitExecuted = false,
                         syncInitExecuted = false;
                     var M = C.model('M', {
@@ -120,7 +120,7 @@ describe('mapping!', function () {
                             },
                             attributes: ['attr']
                         });
-                    s.install()
+                    siesta.install()
                         .then(function () {
                             M.map({
                                 attr: 1
@@ -141,7 +141,7 @@ describe('mapping!', function () {
                 });
 
                 it('use queries within', function (done) {
-                    var C = s.collection('C');
+                    var C = siesta.collection('C');
                     var asyncInitExecuted = false,
                         syncInitExecuted = false;
                     var M = C.model('M', {
@@ -174,7 +174,7 @@ describe('mapping!', function () {
                 });
 
                 it('use singleton within', function (done) {
-                    var C = s.collection('C');
+                    var C = siesta.collection('C');
                     var asyncInitExecuted = false;
                     var M = C.model('M', {
                             init: function (cb) {
@@ -198,7 +198,7 @@ describe('mapping!', function () {
                 });
 
                 it('use with singleton', function (done) {
-                    var C = s.collection('C');
+                    var C = siesta.collection('C');
                     var asyncInitExecuted = false;
                     var M = C.model('M', {
                             init: function (cb) {
@@ -223,7 +223,7 @@ describe('mapping!', function () {
             });
 
             it('valid', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var M = C.model('M', {
                     methods: {
                         f: function () {
@@ -232,7 +232,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install().then(function () {
+                siesta.install().then(function () {
                     M.map({
                         attr: 'xyz'
                     })
@@ -244,7 +244,7 @@ describe('mapping!', function () {
                 }).catch(done).done();
             });
             it('clash', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var M = C.model('M', {
                     methods: {
                         restore: function () {
@@ -253,7 +253,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install().then(function () {
+                siesta.install().then(function () {
                     M.map({
                         attr: 'xyz'
                     })
@@ -266,7 +266,7 @@ describe('mapping!', function () {
             });
 
             it('sync remove', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var m;
                 var M = C.model('M', {
                     remove: function () {
@@ -275,7 +275,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install()
+                siesta.install()
                     .then(function () {
                         M.map({
                             attr: 1
@@ -288,7 +288,7 @@ describe('mapping!', function () {
                     .catch(done);
             });
             it('async remove', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var m;
                 var removeCalled = false;
                 var M = C.model('M', {
@@ -299,7 +299,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install()
+                siesta.install()
                     .then(function () {
                         M.map({
                             attr: 1
@@ -317,7 +317,7 @@ describe('mapping!', function () {
                     .catch(done);
             });
             it('init on restore', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var m;
                 var initCalled = false;
                 var M = C.model('M', {
@@ -327,7 +327,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install()
+                siesta.install()
                     .then(function () {
                         M.map({
                             attr: 1
@@ -348,7 +348,7 @@ describe('mapping!', function () {
         });
         describe('statics', function () {
             it('valid', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var M = C.model('M', {
                     statics: {
                         f: function () {
@@ -357,13 +357,13 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install().then(function () {
+                siesta.install().then(function () {
                     assert.equal(M.f(), M);
                     done();
                 }).catch(done).done();
             });
             it('clash', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var staticMethod = function () {
                     return 'a';
                 };
@@ -373,7 +373,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install().then(function () {
+                siesta.install().then(function () {
                     assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
                     done();
                 }).catch(done).done();
@@ -382,7 +382,7 @@ describe('mapping!', function () {
         });
         describe('properties', function () {
             it('define properties', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var M = C.model('M', {
                     properties: {
                         prop: {
@@ -393,7 +393,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install()
+                siesta.install()
                     .then(function () {
                         M.map({
                             attr: 1
@@ -406,7 +406,7 @@ describe('mapping!', function () {
                     .catch(done);
             });
             it('clash', function (done) {
-                var C = s.collection('C');
+                var C = siesta.collection('C');
                 var M = C.model('M', {
                     properties: {
                         restore: {
@@ -417,7 +417,7 @@ describe('mapping!', function () {
                     },
                     attributes: ['attr']
                 });
-                s.install()
+                siesta.install()
                     .then(function () {
                         M.map({
                             attr: 1

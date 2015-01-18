@@ -1,14 +1,11 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    util = siesta._internal.util;
 
-require('source-map-support').install();
-
-var util = require('../core/util');
 var q = require('q');
 
 describe('cb', function () {
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     describe('no error or result', function () {
         function doSomethingWithNoErrorOrResult(callback) {

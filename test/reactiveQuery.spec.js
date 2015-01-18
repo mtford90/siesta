@@ -1,16 +1,15 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
-var Collection = s;
+var Collection = siesta;
 
 describe('reactive query', function () {
     var MyCollection, Person;
 
     beforeEach(function (done) {
         // Ensure that storage is wiped clean for each test.
-        s.ext.storageEnabled = true;
-        s.reset(function () {
-            s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = true;
+        siesta.reset(function () {
+            siesta.ext.storageEnabled = false;
             done();
         });
     });
@@ -35,7 +34,7 @@ describe('reactive query', function () {
             }
         ];
         beforeEach(function () {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -56,7 +55,7 @@ describe('reactive query', function () {
                             assert.ok(r.age < 30, 'All results should be younger than 30')
                         });
                         rq.terminate();
-                        s.notify(done);
+                        siesta.notify(done);
                     }
                 });
             }, done).catch(done).done();
@@ -84,7 +83,7 @@ describe('reactive query', function () {
                                     try {
                                         assertExpectedResults(rq.results, peter);
                                         rq.terminate();
-                                        s.notify(done);
+                                        siesta.notify(done);
                                     }
                                     catch (e) {
                                         done(e);
@@ -106,10 +105,10 @@ describe('reactive query', function () {
                                     var added = change.added;
                                     assert.equal(added.length, 1);
                                     var peter = added[0];
-                                    assert.equal(change.type, s.ModelEventType.Splice);
+                                    assert.equal(change.type, siesta.ModelEventType.Splice);
                                     assertExpectedResults(results, peter);
                                     rq.terminate();
-                                    s.notify(done);
+                                    siesta.notify(done);
                                 });
                                 Person.map({name: 'Peter', age: 21, id: 4}).then(function () {
                                 }).catch(done).done();
@@ -141,7 +140,7 @@ describe('reactive query', function () {
                                     try {
                                         matchResults(rq, peter);
                                         rq.terminate();
-                                        s.notify(done);
+                                        siesta.notify(done);
                                     }
                                     catch (e) {
                                         done(e);
@@ -170,11 +169,11 @@ describe('reactive query', function () {
                             if (err) done(err);
                             else {
                                 assert.equal(results, rq.results);
-                                s.notify(function () {
+                                siesta.notify(function () {
                                     try {
                                         assertResultsOk(rq.results, person);
                                         rq.terminate();
-                                        s.notify(done);
+                                        siesta.notify(done);
                                     }
                                     catch (e) {
                                         done(e);
@@ -198,14 +197,14 @@ describe('reactive query', function () {
                                     assertResultsOk(rq.results, person);
                                     var removed = change.removed;
                                     assert.include(removed, person);
-                                    assert.equal(change.type, s.ModelEventType.Splice);
+                                    assert.equal(change.type, siesta.ModelEventType.Splice);
                                     assert.equal(change.obj, rq);
                                     cancelListen();
                                     rq.terminate();
-                                    s.notify(done);
+                                    siesta.notify(done);
                                 });
                                 person.age = 40;
-                                s.notify();
+                                siesta.notify();
                             }
                         }).catch(done).done();
                     }).catch(done).done();
@@ -230,7 +229,7 @@ describe('reactive query', function () {
                                 done();
                             });
                             person.age = 29;
-                            s.notify();
+                            siesta.notify();
                         }
                     }).catch(done).done();
                 }).catch(done).done();
@@ -250,7 +249,7 @@ describe('reactive query', function () {
                             person.remove(function () {
                                 if (err) done(err);
                                 else {
-                                    s.notify(function () {
+                                    siesta.notify(function () {
                                         try {
                                             assertResultsCorrect(rq, person);
                                             rq.terminate();
@@ -279,18 +278,18 @@ describe('reactive query', function () {
                                         try {
                                             var removed = change.removed;
                                             assert.include(removed, person);
-                                            assert.equal(change.type, s.ModelEventType.Splice);
+                                            assert.equal(change.type, siesta.ModelEventType.Splice);
                                             assert.equal(change.obj, rq);
                                             assertResultsCorrect(rq, person);
                                             rq.terminate();
-                                            s.notify(done);
+                                            siesta.notify(done);
                                         }
                                         catch (e) {
                                             done(e);
                                         }
                                     });
                                     person.remove();
-                                    s.notify();
+                                    siesta.notify();
                                 }
                             });
                         }).catch(done).done();
@@ -306,11 +305,11 @@ describe('reactive query', function () {
                                 try {
                                     var removed = change.removed;
                                     assert.include(removed, person);
-                                    assert.equal(change.type, s.ModelEventType.Splice);
+                                    assert.equal(change.type, siesta.ModelEventType.Splice);
                                     assert.equal(change.obj, rq);
                                     assertResultsCorrect(rq, person);
                                     rq.terminate();
-                                    s.notify(done);
+                                    siesta.notify(done);
                                 }
                                 catch (e) {
                                     done(e);
@@ -320,7 +319,7 @@ describe('reactive query', function () {
                                 if (err) done(err);
                                 else {
                                     person.remove();
-                                    s.notify();
+                                    siesta.notify();
                                 }
                             });
                         }).catch(done).done();
@@ -358,8 +357,8 @@ describe('reactive query', function () {
         ];
 
         beforeEach(function (done) {
-            s.reset(function () {
-                MyCollection = s.collection('MyCollection');
+            siesta.reset(function () {
+                MyCollection = siesta.collection('MyCollection');
                 Person = MyCollection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -387,7 +386,7 @@ describe('reactive query', function () {
                             assert(age > lastAge, 'Should be ascending order ' + age.toString() + ' > ' + lastAge.toString());
                         }
                         rq.terminate();
-                        s.notify(done);
+                        siesta.notify(done);
                     }
                 });
             }, done).catch(done).done();
@@ -399,7 +398,7 @@ describe('reactive query', function () {
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init().then(function () {
                     Person.map({name: 'peter', age: 10}).then(function () {
-                        s.notify(function () {
+                        siesta.notify(function () {
                             assert.equal(rq.results.length, 4, 'Should be 4 results');
                             _.each(rq.results, function (r) {
                                 assert.ok(r.age < 30, 'All results should be younger than 30')
@@ -451,11 +450,11 @@ describe('reactive query', function () {
             }
         ];
         before(function () {
-            s.ext.storageEnabled = true;
+            siesta.ext.storageEnabled = true;
         });
         beforeEach(function (done) {
-            s.reset(function () {
-                MyCollection = s.collection('MyCollection');
+            siesta.reset(function () {
+                MyCollection = siesta.collection('MyCollection');
                 Person = MyCollection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -464,10 +463,10 @@ describe('reactive query', function () {
             });
         });
         it('before install', function (done) {
-            s.ext.storage._pouch.bulkDocs(initialData)
+            siesta.ext.storage._pouch.bulkDocs(initialData)
                 .then(function () {
                     var rq = Person.reactiveQuery({age__lt: 30, __order: 'age'});
-                    s.install(function () {
+                    siesta.install(function () {
                         rq.terminate();
                         done();
                     });

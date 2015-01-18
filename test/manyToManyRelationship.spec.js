@@ -1,27 +1,21 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    cache = internal.cache,
+    ModelInstance = internal.ModelInstance,
+    ManyToManyProxy = internal.ManyToManyProxy;
 
-describe('relationship proxy', function () {
+describe('many to many proxy', function () {
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
-
-    var RelationshipProxy = require('../core/RelationshipProxy'),
-        OneToOneProxy = require('../core/OneToOneProxy'),
-        OneToManyProxy = require('../core/OneToManyProxy'),
-        ManyToManyProxy = require('../core/manyToManyProxy'),
-        SiestaModel = require('../core/modelInstance'),
-        cache = require('../core/cache');
-
     var MyCollection, Car, Person;
     var carProxy, personProxy;
     var car, person;
 
-
     beforeEach(function (done) {
-        s.reset(function () {
-            MyCollection = s.collection('MyCollection');
+        siesta.reset(function () {
+            MyCollection = siesta.collection('MyCollection');
             Car = MyCollection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -51,10 +45,10 @@ describe('relationship proxy', function () {
                 forwardName: 'owners',
                 isReverse: true
             });
-            car = new SiestaModel(Car);
+            car = new ModelInstance(Car);
             car._id = 'car';
             carProxy.install(car);
-            person = new SiestaModel(Person);
+            person = new ModelInstance(Person);
             person._id = 'person';
             personProxy.install(person);
             cache.insert(person);
@@ -101,10 +95,10 @@ describe('relationship proxy', function () {
                 forwardName: 'owners',
                 isReverse: true
             });
-            car = new SiestaModel(Car);
+            car = new ModelInstance(Car);
             car._id = 'car';
             carProxy.install(car);
-            person = new SiestaModel(Person);
+            person = new ModelInstance(Person);
             person._id = 'person';
             personProxy.install(person);
         });
@@ -147,7 +141,7 @@ describe('relationship proxy', function () {
             var anotherPerson, anotherPersonProxy;
 
             beforeEach(function () {
-                anotherPerson = new SiestaModel(Person);
+                anotherPerson = new ModelInstance(Person);
                 anotherPerson._id = 'anotherPerson';
                 anotherPersonProxy = new ManyToManyProxy({
                     reverseModel: Person,
@@ -259,10 +253,10 @@ describe('relationship proxy', function () {
                 forwardName: 'owners',
                 isReverse: true
             });
-            car = new SiestaModel(Car);
+            car = new ModelInstance(Car);
             car._id = 'car';
             carProxy.install(car);
-            person = new SiestaModel(Person);
+            person = new ModelInstance(Person);
             person._id = 'person';
             personProxy.install(person);
             cache.insert(person);

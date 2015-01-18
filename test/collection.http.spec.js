@@ -1,19 +1,18 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    InternalSiestaError = internal.error.InternalSiestaError,
+    ModelInstance = internal.ModelInstance,
+    RelationshipType = siesta.RelationshipType;
 
 /*globals describe, it, beforeEach, before, after */
 describe('http!', function () {
-
-    var RelationshipType = require('../core/RelationshipType'),
-        SiestaModel = require('../core/modelInstance'),
-        InternalSiestaError = require('../core/error').InternalSiestaError;
 
     var collection, Car, Person, vitalSignsMapping;
 
     var server;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
@@ -32,7 +31,7 @@ describe('http!', function () {
 
 
     function constructCollection() {
-        collection = s.collection('myCollection');
+        collection = siesta.collection('myCollection');
         Person = collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -207,7 +206,7 @@ describe('http!', function () {
                     });
 
                     it('returns a car object', function () {
-                        assert.instanceOf(obj, SiestaModel);
+                        assert.instanceOf(obj, ModelInstance);
                         assert.equal(obj.colour, 'red');
                         assert.equal(obj.name, 'Aston Martin');
                         assert.equal(obj.id, '5');
@@ -251,7 +250,7 @@ describe('http!', function () {
                     it('returns 2 car objects', function () {
                         assert.equal(obj.length, 2);
                         _.each(obj, function (car) {
-                            assert.instanceOf(car, SiestaModel);
+                            assert.instanceOf(car, ModelInstance);
                         })
                     });
 
@@ -750,27 +749,27 @@ describe('http!', function () {
         });
 
         it('default', function () {
-            assert.equal(s.ext.http.ajax, fakeDollar.ajax);
+            assert.equal(siesta.ext.http.ajax, fakeDollar.ajax);
         });
 
         it('no $', function () {
             $ = undefined;
-            assert.equal(s.ext.http.ajax, fakeDollar.ajax);
+            assert.equal(siesta.ext.http.ajax, fakeDollar.ajax);
         });
 
         it('no ajax at all', function () {
             $ = undefined;
             jQuery = undefined;
             assert.throws(function () {
-                var a = s.ext.http.ajax;
+                var a = siesta.ext.http.ajax;
             }, InternalSiestaError);
         });
 
         it('set ajax', function () {
             var fakeAjax = function () {};
-            s.setAjax(fakeAjax);
-            assert.equal(s.ext.http.ajax, fakeAjax);
-            assert.equal(s.getAjax(), fakeAjax);
+            siesta.setAjax(fakeAjax);
+            assert.equal(siesta.ext.http.ajax, fakeAjax);
+            assert.equal(siesta.getAjax(), fakeAjax);
         });
 
     });
@@ -817,7 +816,7 @@ describe('http!', function () {
     // TODO: Why does sinon fuck up?
     //describe('no descriptor matches', function () {
     //    it('GET', function (done) {
-    //        collection = s.collection('myCollection');
+    //        collection = siesta.collection('myCollection');
     //        Person = collection.model('Person', {
     //            id: 'id',
     //            attributes: ['name', 'age']
@@ -850,7 +849,7 @@ describe('http!', function () {
     //            model: Car,
     //            path: '/cars/?$'
     //        });
-    //        s.install(function (err) {
+    //        siesta.install(function (err) {
     //            if (err) {
     //                done(err);
     //            }

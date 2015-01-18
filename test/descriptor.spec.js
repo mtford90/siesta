@@ -1,20 +1,19 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    InternalSiestaError = internal.error.InternalSiestaError,
+    RelationshipType = siesta.RelationshipType;
 
 describe('request descriptor', function () {
-
-    var InternalSiestaError = require('../core/error').InternalSiestaError,
-        RelationshipType = require('../core/RelationshipType');
 
     var Collection, Car, Person;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(function () {
-            Collection = s.collection('myCollection');
+        siesta.reset(function () {
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],

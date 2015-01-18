@@ -1,16 +1,17 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
+
+require('source-map-support').install();
 
 describe('arranged rquery', function () {
     var MyCollection, Person;
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
     it('no index field', function (done) {
-        MyCollection = s.collection('MyCollection');
+        MyCollection = siesta.collection('MyCollection');
         Person = MyCollection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -23,7 +24,7 @@ describe('arranged rquery', function () {
         })
     });
     it('default index field', function (done) {
-        MyCollection = s.collection('MyCollection');
+        MyCollection = siesta.collection('MyCollection');
         Person = MyCollection.model('Person', {
             id: 'id',
             attributes: ['name', 'age', 'index']
@@ -37,7 +38,7 @@ describe('arranged rquery', function () {
         }).catch(done);
     });
     it('custom index field', function (done) {
-        MyCollection = s.collection('MyCollection');
+        MyCollection = siesta.collection('MyCollection');
         Person = MyCollection.model('Person', {
             id: 'id',
             attributes: ['name', 'age', 'customIndexField']
@@ -54,7 +55,7 @@ describe('arranged rquery', function () {
 
     describe('ordering', function () {
         beforeEach(function (done) {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'index']
@@ -63,7 +64,9 @@ describe('arranged rquery', function () {
                 {name: 'Michael', age: 24},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26}
-            ]).then(function () {done()}).catch(done);
+            ]).then(function () {
+                done()
+            }).catch(done);
 
         });
         it('order before init', function (done) {
@@ -92,7 +95,7 @@ describe('arranged rquery', function () {
                             var mike = people[0];
                             assert.notEqual(prq.results[prq.results.length - 1], mike, 'should not already be arranged');
                             mike.age = 40;
-                            s.notify(function () {
+                            siesta.notify(function () {
                                 assert.notEqual(prq.results[prq.results.length - 1], mike, 'should not have rearranged');
                                 prq.terminate();
                                 done();
@@ -112,21 +115,20 @@ describe('arranged rquery', function () {
                             var mike = people[0];
                             assert.notEqual(prq.results[prq.results.length - 1], mike, 'should not already be arranged');
                             mike.age = 40;
-                            s.notify(function () {
+                            siesta.notify(function () {
                                 assert.notEqual(prq.results[prq.results.length - 1], mike, 'should not have rearranged');
                                 prq.terminate();
                                 done();
                             })
-                        }).catch(done).done();
+                        }).catch(done);
 
-                })
-                .catch(done).done();
+                }).catch(done);
         });
     });
 
     describe('reordering', function () {
         beforeEach(function (done) {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
@@ -135,7 +137,9 @@ describe('arranged rquery', function () {
                 {name: 'Michael', age: 24},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26}
-            ]).then(function () { done() }).catch(done);
+            ]).then(function () {
+                done()
+            }).catch(done);
         });
 
         it('swapObjectsAtIndexes', function (done) {
@@ -281,7 +285,7 @@ describe('arranged rquery', function () {
                         }
                     });
                     prq.move(from, to);
-                    s.notify();
+                    siesta.notify();
                 }).catch(function (err) {
                     prq.terminate();
                     done(err);
@@ -294,7 +298,7 @@ describe('arranged rquery', function () {
 
     describe('indices exist', function () {
         beforeEach(function () {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
@@ -478,7 +482,7 @@ describe('arranged rquery', function () {
 
     describe('insertion policy', function () {
         beforeEach(function (done) {
-            MyCollection = s.collection('MyCollection');
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
@@ -487,7 +491,9 @@ describe('arranged rquery', function () {
                 {name: 'Michael', age: 24},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26}
-            ]).then(function () {done()}).catch(done);
+            ]).then(function () {
+                done()
+            }).catch(done);
         });
         it('by default, insert at back', function (done) {
             var prq = Person.arrangedReactiveQuery({__order: 'age'});
@@ -512,7 +518,7 @@ describe('arranged rquery', function () {
         it('if Back, insert at back', function (done) {
             var prq = Person.arrangedReactiveQuery({__order: 'age'});
             prq.indexAttribute = 'customIndexField';
-            prq.insertionPolicy = s.InsertionPolicy.Back;
+            prq.insertionPolicy = siesta.InsertionPolicy.Back;
             prq.init()
                 .then(function () {
                     Person.map({name: 'Jane', age: 40})
@@ -533,7 +539,7 @@ describe('arranged rquery', function () {
         it('if Front, insert at front', function (done) {
             var prq = Person.arrangedReactiveQuery({__order: 'age'});
             prq.indexAttribute = 'customIndexField';
-            prq.insertionPolicy = s.InsertionPolicy.Front;
+            prq.insertionPolicy = siesta.InsertionPolicy.Front;
             prq.init()
                 .then(function () {
                     Person.map({name: 'Jane', age: 40})

@@ -7,8 +7,13 @@ var util = require('./util'),
     events = require('./events'),
     RelationshipType = require('./RelationshipType'),
     ReactiveQuery = require('./reactiveQuery'),
+    ManyToManyProxy = require('./manyToManyProxy'),
+    OneToOneProxy = require('./oneToOneProxy'),
+    OneToManyProxy = require('./oneToManyProxy'),
+    RelationshipProxy = require('./relationshipProxy'),
     modelEvents = require('./modelEvents'),
     Query = require('./Query'),
+    querySet = require('./querySet'),
     log = require('./log'),
     _ = util._;
 
@@ -49,13 +54,13 @@ _.extend(siesta, {
     _internal: {
         log: log,
         Model: Model,
-        model: require('./model'),
-        error: require('./error'),
+        error: error,
         ModelEventType: modelEvents.ModelEventType,
-        siestaModel: require('./modelInstance'),
+        ModelInstance: require('./modelInstance'),
         extend: require('extend'),
         MappingOperation: require('./mappingOperation'),
-        events: require('./events'),
+        events: events,
+        ProxyEventEmitter: events.ProxyEventEmitter,
         cache: require('./cache'),
         modelEvents: modelEvents,
         CollectionRegistry: require('./collectionRegistry').CollectionRegistry,
@@ -63,8 +68,14 @@ _.extend(siesta, {
         utils: util,
         util: util,
         _: util._,
-        query: require('./query'),
-        store: require('./store')
+        querySet: querySet,
+        observe: require('../vendor/observe-js/src/observe'),
+        Query: Query,
+        Store: require('./store'),
+        ManyToManyProxy: ManyToManyProxy,
+        OneToManyProxy: OneToManyProxy,
+        OneToOneProxy: OneToOneProxy,
+        RelationshipProxy: RelationshipProxy
     },
     _: util._,
     async: util.async,
@@ -235,7 +246,7 @@ Object.defineProperties(siesta, {
 });
 
 if (typeof window != 'undefined') {
-    window.siesta = siesta;
+    window['siesta'] = siesta;
 }
 
 module.exports = siesta;

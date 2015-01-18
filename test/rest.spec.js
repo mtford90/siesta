@@ -1,24 +1,22 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
-
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    CollectionRegistry = internal.CollectionRegistry;
 
 describe('rest', function () {
-    var Collection = require('../core/collection');
-    var CollectionRegistry = require('../core/collectionRegistry').CollectionRegistry;
-    var Collection;
+    var  Collection;
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('Create Basic Rest API', function () {
 
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
-            s.install(done);
+            Collection = siesta.collection('myCollection');
+            siesta.install(done);
         });
 
         it('global access', function () {
@@ -33,12 +31,12 @@ describe('rest', function () {
         describe('basic', function () {
 
             beforeEach(function (done) {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
                 });
-                s.install(done);
+                siesta.install(done);
             });
 
             describe('raw mapping to Model object', function () {

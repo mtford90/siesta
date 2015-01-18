@@ -1,19 +1,15 @@
-var s = require('../core/index'),
-    ObjectObserver = require('../vendor/observe-js/src/observe').ObjectObserver,
-    PathObserver = require('../vendor/observe-js/src/observe').PathObserver,
-    Platform = require('../vendor/observe-js/src/observe').Platform,
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
 describe('property events', function () {
     var Collection, Car;
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('attribute dependency', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour'],
@@ -45,14 +41,14 @@ describe('property events', function () {
                     }
                 });
                 car.colour = 'blue';
-                s.notify();
+                siesta.notify();
             }).catch(done);
         });
     });
 
     describe('error in property', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour'],

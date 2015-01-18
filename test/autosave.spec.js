@@ -1,21 +1,18 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
-
-var Collection = s;
+var assert = require('chai').assert;
 
 describe('auto save', function () {
     var MyCollection, Person;
     before(function () {
-        s.ext.storageEnabled = true;
+        siesta.ext.storageEnabled = true;
     });
 
     afterEach(function () {
-        s.autosave = false;
+        siesta.autosave = false;
     });
 
     beforeEach(function (done) {
-        s.reset(function () {
-            MyCollection = s.collection('MyCollection');
+        siesta.reset(function () {
+            MyCollection = siesta.collection('MyCollection');
             Person = MyCollection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -25,9 +22,9 @@ describe('auto save', function () {
     });
 
     it('autosaves on modelEvents if enabled', function (done) {
-        s.autosave = true;
-        s.once('saved', function () {
-            s.ext.storage._pouch.allDocs()
+        siesta.autosave = true;
+        siesta.once('saved', function () {
+            siesta.ext.storage._pouch.allDocs()
                 .then(function (resp) {
                     assert.ok(resp.rows.length, 'Should be a row');
                     var person = resp.rows[0];
@@ -41,10 +38,10 @@ describe('auto save', function () {
     });
 
     it('does not interval on modelEvents if disabled', function (done) {
-        s.autosave = false;
+        siesta.autosave = false;
         Person.map({name: 'Mike', age: 24})
             .then(function () {
-                s.ext.storage._pouch.allDocs()
+                siesta.ext.storage._pouch.allDocs()
                     .then(function (resp) {
                         assert.notOk(resp.rows.length, 'Should be no rows');
                         done();

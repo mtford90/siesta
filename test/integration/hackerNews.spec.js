@@ -10,8 +10,7 @@
 //    "url": "http://shorttermmemoryloss.com/nor/2014/11/07/all-cameras-are-police-cameras/"
 //};
 //
-//var siesta = require('../../core/index')
-//    , assert = require('chai').assert;
+//var assert = require('chai').assert;
 //describe.only('hacker news integration test', function () {
 //    // When @HiroAgustin tried to pass name of mapping to descriptor
 //    // an error was thrown :(

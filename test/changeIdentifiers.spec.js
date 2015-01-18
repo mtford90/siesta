@@ -1,19 +1,18 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    cache = siesta._internal.cache;
 
 describe('change identifiers', function () {
 
-    var cache = require('../core/cache');
     var Collection, Car;
 
     var car;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     beforeEach(function (done) {
-        s.reset(function () {
-            Collection = s.collection('myCollection');
+        siesta.reset(function () {
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']

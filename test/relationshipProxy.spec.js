@@ -1,25 +1,21 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    InternalSiestaError = internal.error.InternalSiestaError,
+    RelationshipProxy = internal.RelationshipProxy,
+    ModelInstance = internal.ModelInstance;
+
 
 describe('relationship proxy', function () {
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
-
-    var RelationshipProxy = require('../core/RelationshipProxy'),
-        OneToOneProxy = require('../core/OneToOneProxy'),
-        OneToManyProxy = require('../core/OneToManyProxy'),
-        ManyToManyProxy = require('../core/manyToManyProxy'),
-        SiestaModel = require('../core/modelInstance'),
-        InternalSiestaError = require('../core/error').InternalSiestaError,
-        cache = require('../core/cache');
 
     var MyCollection, Car, Person;
 
     beforeEach(function (done) {
-        s.reset(function () {
-            MyCollection = s.collection('MyCollection');
+        siesta.reset(function () {
+            MyCollection = siesta.collection('MyCollection');
             Car = MyCollection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -43,8 +39,8 @@ describe('relationship proxy', function () {
                 forwardName: 'owner',
                 isReverse: false
             });
-            car = new SiestaModel(Car);
-            person = new SiestaModel(Person);
+            car = new ModelInstance(Car);
+            person = new ModelInstance(Person);
         });
 
         it('throws an error if try to install twice', function () {
@@ -83,7 +79,7 @@ describe('relationship proxy', function () {
 
                 describe('relationship, faulted', function () {
                     beforeEach(function () {
-                        proxy.related = new SiestaModel(Person);
+                        proxy.related = new ModelInstance(Person);
                     });
 
                     it('is related', function () {
@@ -130,8 +126,8 @@ describe('relationship proxy', function () {
                 isReverse: false
 
             });
-            car = new SiestaModel(Car);
-            person = new SiestaModel(Person);
+            car = new ModelInstance(Car);
+            person = new ModelInstance(Person);
             proxy.install(car);
         });
 

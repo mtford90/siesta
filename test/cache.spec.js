@@ -1,26 +1,26 @@
-var s = require('../core/index');
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    ModelInstance = internal.ModelInstance,
+    cache = internal.cache,
+    RelationshipType = siesta.RelationshipType;
 
 describe('cache...', function () {
+
+
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     var Car;
 
-    var ModelInstance = require('../core/modelInstance');
-    var RelationshipType = require('../core/RelationshipType');
-    var cache = require('../core/cache');
-
-
     describe('insertion', function () {
         beforeEach(function (done) {
-            s.reset(function () {
-                var coll = s.collection('myCollection');
+            siesta.reset(function () {
+                var coll = siesta.collection('myCollection');
                 Car = coll.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
-                s.install(done);
+                siesta.install(done);
             });
         });
         it('by pouch id', function () {
@@ -54,13 +54,13 @@ describe('cache...', function () {
 
     describe('get', function () {
         beforeEach(function (done) {
-            s.reset(function () {
-                var Collection = s.collection('myCollection');
+            siesta.reset(function () {
+                var Collection = siesta.collection('myCollection');
                 Car = Collection.model('Car', {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
-                s.install(done);
+                siesta.install(done);
             });
         });
         it('by pouch id', function () {
@@ -90,8 +90,8 @@ describe('cache...', function () {
         var collection, Car, Person;
 
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('myCollection');
+            siesta.reset(function () {
+                collection = siesta.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -108,13 +108,13 @@ describe('cache...', function () {
                     }
                 });
                 collection.baseURL = 'http://mywebsite.co.uk/';
-                var desc = new s.ext.http.ResponseDescriptor({
+                var desc = new siesta.ext.http.ResponseDescriptor({
                     method: 'GET',
                     model: Car,
                     path: '/cars/[0-9]+'
                 });
-                s.ext.http.DescriptorRegistry.registerResponseDescriptor(desc);
-                s.install(done);
+                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(desc);
+                siesta.install(done);
             });
 
         });
@@ -142,7 +142,7 @@ describe('cache...', function () {
                 duplicateObject._id = person._id;
                 assert.throws(function () {
                     cache.insert(duplicateObject);
-                }, s.InternalsError);
+                }, siesta.InternalsError);
             });
 
             it('cant insert object with same id', function () {
@@ -159,7 +159,7 @@ describe('cache...', function () {
                         age: 23,
                         id: 'xyz'
                     }));
-                }, s.InternalsError);
+                }, siesta.InternalsError);
             });
         });
 

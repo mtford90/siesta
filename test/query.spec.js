@@ -1,20 +1,20 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    Query = internal.Query;
 
 describe('query...', function () {
-    var Query = require('../core/query');
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('basic', function () {
         var Collection, Mapping;
 
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Mapping = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -95,7 +95,7 @@ describe('query...', function () {
             var collection, Person, Car;
 
             beforeEach(function () {
-                collection = s.collection('myCollection');
+                collection = siesta.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -203,7 +203,7 @@ describe('query...', function () {
             var Collection, Person;
 
             beforeEach(function () {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -350,7 +350,7 @@ describe('query...', function () {
             var collection, Person;
 
             beforeEach(function () {
-                collection = s.collection('myCollection');
+                collection = siesta.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -448,7 +448,7 @@ describe('query...', function () {
             var collection, Person;
 
             beforeEach(function () {
-                collection = s.collection('myCollection');
+                collection = siesta.collection('myCollection');
                 Person = collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -546,7 +546,7 @@ describe('query...', function () {
             var Collection, Person;
 
             beforeEach(function () {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -644,8 +644,8 @@ describe('query...', function () {
             var Collection, Model;
             // TODO
             beforeEach(function (done) {
-                s.reset(function () {
-                    Collection = s.collection('myCollection');
+                siesta.reset(function () {
+                    Collection = siesta.collection('myCollection');
                     Model = Collection.model('Person', {
                         attributes: ['name']
                     });
@@ -688,7 +688,7 @@ describe('query...', function () {
         describe('errors', function () {
             var Collection, Person, Car;
             beforeEach(function () {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -738,7 +738,7 @@ describe('query...', function () {
     describe('order', function () {
         var Collection, Person;
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age', 'dob']
@@ -862,7 +862,7 @@ describe('query...', function () {
     describe('$or', function () {
         var Collection, Person;
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -941,7 +941,7 @@ describe('query...', function () {
     describe('$and', function () {
         var Collection, Person;
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
@@ -997,7 +997,7 @@ describe('query...', function () {
     describe('nested', function () {
         var Collection, Car, Person;
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['name', 'colour'],

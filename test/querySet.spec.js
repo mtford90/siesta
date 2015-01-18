@@ -1,28 +1,28 @@
-var s = require('../core/index'),
-    createQuerySet = require('../core/querySet'),
-    SiestaUserError = require('../core/error').SiestaUserError,
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    SiestaUserError = internal.error.SiestaUserError,
+    createQuerySet = internal.querySet;
 
 describe('query sets', function () {
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     describe('attributes', function () {
         var querySet, Collection, Person;
         var michael, bob;
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 id: 'id',
                 attributes: ['name', 'age']
             });
-            s.install(function () {
+            siesta.install(function () {
                 michael = Person._new({name: 'Michael', age: 24});
                 bob = Person._new({name: 'Bob', age: 21});
                 querySet = createQuerySet([michael, bob], Person);
@@ -87,7 +87,7 @@ describe('query sets', function () {
         var Collection, Person, Car;
         var michael, bob;
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Person = Collection.model('Person', {
                 attributes: ['name', 'age']
             });
@@ -100,7 +100,7 @@ describe('query sets', function () {
                     }
                 }
             });
-            s.install(function () {
+            siesta.install(function () {
                 michael = Person._new({name: 'Michael', age: 24});
                 bob = Person._new({name: 'Bob', age: 21});
                 michael.cars = [Car._new({colour: 'red'}), Car._new({colour: 'blue'})];
@@ -122,7 +122,7 @@ describe('query sets', function () {
                 querySet = createQuerySet(cars, Car);
 
             querySet.remove().then(function () {
-                s.notify(function () {
+                siesta.notify(function () {
                     cars.forEach(function (c) {
                         assert.ok(c.removed);
                     });

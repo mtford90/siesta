@@ -1,23 +1,22 @@
-var s = require('../../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    ModelInstance = internal.ModelInstance,
+    RelationshipType = siesta.RelationshipType;
 
 describe('intercoll relationships', function () {
 
-    var SiestaModel = require('../../core/modelInstance'),
-        RelationshipType = require('../../core/RelationshipType');
-
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     var Collection, Car, Person;
 
     function configureAPI(type, done) {
-        Collection = s.collection('myCollection');
+        Collection = siesta.collection('myCollection');
         Car = Collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
@@ -33,7 +32,7 @@ describe('intercoll relationships', function () {
             id: 'id',
             attributes: ['name', 'age']
         });
-        s.install(done);
+        siesta.install(done);
     }
 
     describe('Inter-collection', function () {
@@ -51,7 +50,7 @@ describe('intercoll relationships', function () {
 
         describe('foreign key', function () {
             beforeEach(function (done) {
-                anotherCollection = s.collection('anotherCollection');
+                anotherCollection = siesta.collection('anotherCollection');
 
                 anotherCollection.model('AnotherMapping', {
                     attributes: ['field'],
@@ -80,7 +79,7 @@ describe('intercoll relationships', function () {
 
             it('installs forward', function () {
                 var person = obj.person;
-                assert.instanceOf(person, SiestaModel);
+                assert.instanceOf(person, ModelInstance);
                 assert.equal(person.collectionName, 'myCollection');
                 assert.equal(person.collection, Collection);
                 assert.equal(person.name, 'Michael');

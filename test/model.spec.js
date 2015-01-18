@@ -1,20 +1,18 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
-
-var ModelInstance = require('../core/modelInstance'),
-    cache = require('../core/cache'),
-    Collection = require('../core/collection');
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    cache = internal.cache,
+    ModelInstance = internal.ModelInstance;
 
 describe('Models', function () {
     var Model, Collection;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(function () {
-            Collection = s.collection('myCollection');
+        siesta.reset(function () {
+            Collection = siesta.collection('myCollection');
             Model = Collection.model({
                 name: 'Car',
                 id: 'id',
@@ -39,8 +37,8 @@ describe('Models', function () {
     });
 
     it('define relationship with string', function (done) {
-        s.reset(function () {
-            var Collection = s.collection('myCollection'),
+        siesta.reset(function () {
+            var Collection = siesta.collection('myCollection'),
                 Person = Collection.model('Person', {
                     attributes: ['name']
                 }),
@@ -65,8 +63,8 @@ describe('Models', function () {
     });
 
     it('define relationship with model', function (done) {
-        s.reset(function () {
-            var Collection = s.collection('myCollection'),
+        siesta.reset(function () {
+            var Collection = siesta.collection('myCollection'),
                 Person = Collection.model('Person', {
                     attributes: ['name']
                 }),
@@ -168,8 +166,8 @@ describe('Models', function () {
 
     describe('custom emissions', function () {
         it('string format', function (done) {
-            s.reset(function () {
-                Collection = s.collection('myCollection');
+            siesta.reset(function () {
+                Collection = siesta.collection('myCollection');
                 Model = Collection.model('Model', {
                     attributes: ['colour'],
                     methods: {
@@ -193,8 +191,8 @@ describe('Models', function () {
             });
         });
         it('obj format', function (done) {
-            s.reset(function () {
-                Collection = s.collection('myCollection');
+            siesta.reset(function () {
+                Collection = siesta.collection('myCollection');
                 Model = Collection.model('Model', {
                     attributes: ['colour'],
                     methods: {

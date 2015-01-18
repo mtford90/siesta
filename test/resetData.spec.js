@@ -1,16 +1,15 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
 describe('Reset Data', function () {
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     var Collection, Model, SingletonModel;
 
 
     it('xyz', function (done) {
-        Collection = s.collection('myCollection');
+        Collection = siesta.collection('myCollection');
         Model = Collection.model('Person', {
             attributes: ['name', 'age']
         });
@@ -18,10 +17,10 @@ describe('Reset Data', function () {
             attributes: ['x', 'y'],
             singleton: true
         });
-        s.install(function () {
+        siesta.install(function () {
             SingletonModel.one().then(function (firstModel) {
                 assert.ok(firstModel);
-                s.resetData().then(function () {
+                siesta.resetData().then(function () {
                     SingletonModel.one().then(function (secondModel) {
                         assert.ok(secondModel);
                         assert.notEqual(firstModel, secondModel);

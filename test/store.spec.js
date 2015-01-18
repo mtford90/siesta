@@ -1,20 +1,19 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    cache = internal.cache,
+    Store = internal.Store,
+    ModelInstance = internal.ModelInstance;
 
 describe('store......', function () {
-    var Store = require('../core/store'),
-        ModelInstance = require('../core/modelInstance'),
-        cache = require('../core/cache');
-
     var Car, Collection;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(function () {
-            Collection = s.collection('myCollection');
+        siesta.reset(function () {
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -43,7 +42,7 @@ describe('store......', function () {
                 var cars;
 
                 beforeEach(function (done) {
-                    s.install(function () {
+                    siesta.install(function () {
                         var o = Car._new({
                             colour: 'red',
                             id: 'remoteId1'
@@ -84,7 +83,7 @@ describe('store......', function () {
                     var cars;
 
                     beforeEach(function (done) {
-                        s.install(function () {
+                        siesta.install(function () {
                             var o = Car._new({
                                 colour: 'red',
                                 id: 'remoteId1'

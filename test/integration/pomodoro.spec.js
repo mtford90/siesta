@@ -1,5 +1,4 @@
-var s = require('../../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
 /*globals describe, it, beforeEach, before, after */
 describe('pomodoro', function () {
@@ -16,7 +15,7 @@ describe('pomodoro', function () {
     describe('rq', function () {
         var Pomodoro, Task;
         beforeEach(function (done) {
-            s.reset(function () {
+            siesta.reset(function () {
                 Pomodoro = siesta.collection('Pomodoro');
                 Task = Pomodoro.model(Type.Task, {
                     attributes: [
@@ -47,8 +46,8 @@ describe('pomodoro', function () {
     describe('config', function () {
         var Pomodoro, Config, ColourConfig, PomodoroConfig;
         beforeEach(function (done) {
-            s.reset(function () {
-                s.ext.storageEnabled = true;
+            siesta.reset(function () {
+                siesta.ext.storageEnabled = true;
                 Pomodoro = siesta.collection('Pomodoro');
                 Config = Pomodoro.model('Config', {
                     relationships: {
@@ -101,7 +100,7 @@ describe('pomodoro', function () {
 
 
         it('load, ColourConfig', function (done) {
-            s.ext.storage._pouch.put({
+            siesta.ext.storage._pouch.put({
                 collection: 'Pomodoro',
                 model: 'ColourConfig',
                 primary: 'red',
@@ -123,7 +122,7 @@ describe('pomodoro', function () {
         });
 
         it('load, Config', function (done) {
-            s.ext.storage._pouch.put({
+            siesta.ext.storage._pouch.put({
                 collection: 'Pomodoro',
                 model: 'ColourConfig',
                 primary: 'red',
@@ -144,7 +143,7 @@ describe('pomodoro', function () {
         });
 
         it('repeated saves', function (done) {
-            s.ext.storage._pouch.put({
+            siesta.ext.storage._pouch.put({
                 collection: 'Pomodoro',
                 model: 'ColourConfig',
                 primary: 'red',
@@ -156,11 +155,11 @@ describe('pomodoro', function () {
                     .then(function (config) {
                         var colourConfig = config.colours;
                         colourConfig.primary = 'blue';
-                        s.save()
+                        siesta.save()
                             .then(function () {
                                 colourConfig.primary = 'orange';
-                                s.save().then(function () {
-                                    s.ext.storage._pouch.query(function (doc) {
+                                siesta.save().then(function () {
+                                    siesta.ext.storage._pouch.query(function (doc) {
                                         if (doc.model == 'ColourConfig') {
                                             emit(doc._id, doc);
                                         }

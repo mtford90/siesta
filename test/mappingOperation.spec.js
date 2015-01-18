@@ -1,16 +1,10 @@
-var chai = require('chai');
-var s = require('../core/index'),
-    assert = chai.assert;
+var assert = require('chai').assert,
+    util = siesta._internal.util,
+    RelationshipType = siesta.RelationshipType,
+    cache = siesta._internal.cache,
+    MappingOperation = siesta._internal.MappingOperation;
 
-var MappingOperation = require('../core/mappingOperation'),
-    util = require('../core/util'),
-    _ = util._,
-    RelationshipType = require('../core/RelationshipType'),
-    Collection = require('../core/collection'),
-    cache = require('../core/cache'),
-    collection;
-
-
+var collection;
 var Repo, User;
 
 assert.arrEqual = function (arr1, arr2) {
@@ -63,12 +57,12 @@ describe('array flattening', function () {
 
 describe('mapping operation', function () {
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
     describe('general', function () {
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('MyCollection');
+            siesta.reset(function () {
+                collection = siesta.collection('MyCollection');
                 collection.baseURL = 'https://api.github.com';
                 Repo = collection.model('Repo', {
                     id: 'id',
@@ -85,7 +79,7 @@ describe('mapping operation', function () {
                     id: 'id',
                     attributes: ['login']
                 });
-                s.install(done);
+                siesta.install(done);
             });
         });
 
@@ -381,8 +375,8 @@ describe('mapping operation', function () {
         var op;
 
         beforeEach(function (done) {
-            s.reset(function () {
-                collection = s.collection('MyCollection');
+            siesta.reset(function () {
+                collection = siesta.collection('MyCollection');
                 collection.baseURL = 'https://api.github.com';
                 Repo = collection.model('Repo', {
                     id: 'id',
@@ -400,7 +394,7 @@ describe('mapping operation', function () {
                     attributes: ['login'],
                     singleton: true
                 });
-                s.install(done);
+                siesta.install(done);
             });
         });
 
@@ -497,18 +491,18 @@ describe('bug', function () {
     var coll, Car;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
         siesta.reset(function () {
-            coll = s.collection('myCollection');
+            coll = siesta.collection('myCollection');
             Car = coll.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
 
             });
-            s.install(done);
+            siesta.install(done);
         });
 
     });

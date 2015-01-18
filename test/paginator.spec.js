@@ -1,4 +1,4 @@
-//var s = require('../core/index');
+//var siesta = require('../core/index');
 //var assert = require('chai').assert;
 //
 //describe.only('paginator', function () {
@@ -6,7 +6,7 @@
 //    var server;
 //
 //    before(function () {
-//        s.ext.storageEnabled = false;
+//        siesta.ext.storageEnabled = false;
 //    });
 //
 //    beforeEach(function (done) {
@@ -24,14 +24,14 @@
 //        this.server = sinon.fakeServer.create();
 //        this.server.autoRespond = true;
 //        server = this.server;
-//        s.reset(function () {
-//            MyCollection = s.collection('MyCollection');
+//        siesta.reset(function () {
+//            MyCollection = siesta.collection('MyCollection');
 //            MyCollection.baseURL = 'http://mywebsite.co.uk/';
 //            Car = MyCollection.model('Car', {
 //                id: 'id',
 //                attributes: ['colour', 'name']
 //            });
-//            s.install(done);
+//            siesta.install(done);
 //        });
 //    });
 //

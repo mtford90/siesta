@@ -4,18 +4,17 @@
  * TODO: All tests within this file need to be sorted and moved into appropriate specs.
  */
 
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert;
 
 describe('bugs', function () {
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
     describe('ensure that mapping relationships using various methods works', function () {
         describe('ModelInstance', function () {
             describe('OneToOne', function () {
                 it('forward', function (done) {
-                    var Collection = s.collection('Collection'),
+                    var Collection = siesta.collection('Collection'),
                         Person = Collection.model('Person', {
                             id: 'id',
                             attributes: ['name']
@@ -44,7 +43,7 @@ describe('bugs', function () {
                         .catch(done);
                 });
                 it('reverse', function (done) {
-                    var Collection = s.collection('Collection'),
+                    var Collection = siesta.collection('Collection'),
                         Person = Collection.model('Person', {
                             id: 'id',
                             attributes: ['name']
@@ -76,7 +75,7 @@ describe('bugs', function () {
             });
             describe('OneToMany', function () {
                 it('forward', function (done) {
-                    var Collection = s.collection('Collection'),
+                    var Collection = siesta.collection('Collection'),
                         Person = Collection.model('Person', {
                             id: 'id',
                             attributes: ['name']
@@ -104,7 +103,7 @@ describe('bugs', function () {
                         .catch(done);
                 });
                 it('reverse', function (done) {
-                    var Collection = s.collection('Collection'),
+                    var Collection = siesta.collection('Collection'),
                         Person = Collection.model('Person', {
                             id: 'id',
                             attributes: ['name']
@@ -137,7 +136,7 @@ describe('bugs', function () {
             });
             describe('ManyToMany', function () {
                 it('forward', function (done) {
-                    var Collection = s.collection('Collection'),
+                    var Collection = siesta.collection('Collection'),
                         Person = Collection.model('Person', {
                             id: 'id',
                             attributes: ['name']
@@ -165,7 +164,7 @@ describe('bugs', function () {
                         .catch(done);
                 });
                 it('reverse', function (done) {
-                    var Collection = s.collection('Collection'),
+                    var Collection = siesta.collection('Collection'),
                         Person = Collection.model('Person', {
                             id: 'id',
                             attributes: ['name']

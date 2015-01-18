@@ -5,26 +5,22 @@
  * We then proceed to test various aspects of the system.
  */
 
-var s = require('../core/index'),
-    assert = require('chai').assert;
-
-var Collection = require('../core/collection');
-var RelationshipType = require('../core/RelationshipType');
-var cache = require('../core/cache');
-
-var async = require('async');
+var assert = require('chai').assert,
+    async = require('async'),
+    internal = siesta._internal,
+    RelationshipType = siesta.RelationshipType;
 
 describe('intercollection relationships', function () {
     var MyOfflineCollection, MyOnlineCollection, OfflineUser, Photo, OnlineUser;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function () {
-        s.reset(function () {
-            MyOfflineCollection = s.collection('MyOfflineCollection');
-            MyOnlineCollection = s.collection('MyOnlineCollection');
+        siesta.reset(function () {
+            MyOfflineCollection = siesta.collection('MyOfflineCollection');
+            MyOnlineCollection = siesta.collection('MyOnlineCollection');
 
             MyOfflineCollection.model('Folder', {
                 attributes: ['name'],

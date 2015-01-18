@@ -1,31 +1,28 @@
-var s = require('../../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    RelationshipType = siesta.RelationshipType,
+    ModelInstance = internal.ModelInstance;
 
 describe('perform mapping', function () {
-
-
-    var RelationshipType = require('../../core/RelationshipType'),
-        SiestaModel = require('../../core/modelInstance'),
-        cache = require('../../core/cache');
 
     var Collection, Car, Person;
 
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
         Collection = null;
         Car = null;
         Person = null;
-        s.reset(done);
+        siesta.reset(done);
     });
 
 
     describe('attributes', function () {
         describe('default values', function () {
             it('simple', function (done) {
-                var MyCollection = s.collection('MyCollection'),
+                var MyCollection = siesta.collection('MyCollection'),
                     Mapping = MyCollection.model('Mapping', {
                         id: 'id',
                         attributes: [
@@ -51,7 +48,7 @@ describe('perform mapping', function () {
             });
 
             it('false', function (done) {
-                var MyCollection = s.collection('MyCollection'),
+                var MyCollection = siesta.collection('MyCollection'),
                     Mapping = MyCollection.model('Mapping', {
                         id: 'id',
                         attributes: [
@@ -72,7 +69,7 @@ describe('perform mapping', function () {
             });
 
             it('true', function (done) {
-                var MyCollection = s.collection('MyCollection'),
+                var MyCollection = siesta.collection('MyCollection'),
                     Mapping = MyCollection.model('Mapping', {
                         id: 'id',
                         attributes: [
@@ -93,7 +90,7 @@ describe('perform mapping', function () {
             });
 
             it('null', function (done) {
-                var MyCollection = s.collection('MyCollection'),
+                var MyCollection = siesta.collection('MyCollection'),
                     Mapping = MyCollection.model('Mapping', {
                         id: 'id',
                         attributes: [
@@ -115,7 +112,7 @@ describe('perform mapping', function () {
 
 
             it('empty string', function (done) {
-                var MyCollection = s.collection('MyCollection'),
+                var MyCollection = siesta.collection('MyCollection'),
                     Mapping = MyCollection.model('Mapping', {
                         id: 'id',
                         attributes: [
@@ -139,7 +136,7 @@ describe('perform mapping', function () {
 
     describe('empty', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -155,7 +152,7 @@ describe('perform mapping', function () {
 
     describe('no id', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -181,7 +178,7 @@ describe('perform mapping', function () {
         var obj;
 
         beforeEach(function (done) {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -202,7 +199,7 @@ describe('perform mapping', function () {
         describe('new', function () {
 
             it('returns a model', function () {
-                assert.instanceOf(obj, SiestaModel);
+                assert.instanceOf(obj, ModelInstance);
             });
 
             it('has the right fields', function () {
@@ -264,7 +261,7 @@ describe('perform mapping', function () {
     describe('with relationship', function () {
         describe('foreign key', function () {
             beforeEach(function (done) {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -280,7 +277,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                s.install(done);
+                siesta.install(done);
             });
 
 
@@ -919,7 +916,7 @@ describe('perform mapping', function () {
         describe('one-to-one', function () {
             var personMapping;
             beforeEach(function (done) {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -935,7 +932,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                s.install(done);
+                siesta.install(done);
 
 
             });
@@ -1414,7 +1411,7 @@ describe('perform mapping', function () {
 
     describe('caveats', function () {
         beforeEach(function () {
-            Collection = s.collection('myCollection');
+            Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name']
@@ -1438,7 +1435,7 @@ describe('perform mapping', function () {
     describe('errors', function () {
         describe('one-to-one', function () {
             beforeEach(function () {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -1486,7 +1483,7 @@ describe('perform mapping', function () {
         describe('foreign key', function () {
 
             beforeEach(function () {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -1537,12 +1534,12 @@ describe('perform mapping', function () {
         describe('new', function () {
             describe('no relationships', function () {
                 beforeEach(function (done) {
-                    Collection = s.collection('myCollection');
+                    Collection = siesta.collection('myCollection');
                     Car = Collection.model('Car', {
                         id: 'id',
                         attributes: ['colour', 'name']
                     });
-                    s.install(done);
+                    siesta.install(done);
                 });
 
                 it('all valid', function (done) {
@@ -1573,7 +1570,7 @@ describe('perform mapping', function () {
                 var personMapping;
 
                 beforeEach(function (done) {
-                    Collection = s.collection('myCollection');
+                    Collection = siesta.collection('myCollection');
                     Person = Collection.model('Person', {
                         id: 'id',
                         attributes: ['name', 'age']
@@ -1589,7 +1586,7 @@ describe('perform mapping', function () {
                             }
                         }
                     });
-                    s.install(done);
+                    siesta.install(done);
                 });
 
                 it('same owner using _mapBulk', function (done) {
@@ -1654,7 +1651,7 @@ describe('perform mapping', function () {
             var personMapping;
 
             beforeEach(function (done) {
-                Collection = s.collection('myCollection');
+                Collection = siesta.collection('myCollection');
                 Person = Collection.model('Person', {
                     id: 'id',
                     attributes: ['name', 'age']
@@ -1670,7 +1667,7 @@ describe('perform mapping', function () {
                         }
                     }
                 });
-                s.install(done);
+                siesta.install(done);
             });
 
 

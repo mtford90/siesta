@@ -1,23 +1,22 @@
-var s = require('../core/index'),
-    assert = require('chai').assert;
+var assert = require('chai').assert,
+    internal = siesta._internal,
+    RelationshipType = siesta.RelationshipType;
 
 describe('mapping relationships', function () {
 
 
-    var RelationshipType = require('../core/RelationshipType');
-
     before(function () {
-        s.ext.storageEnabled = false;
+        siesta.ext.storageEnabled = false;
     });
 
     beforeEach(function (done) {
-        s.reset(done);
+        siesta.reset(done);
     });
 
     var Collection, Car, Person;
 
     function configureAPI(type, done) {
-        Collection = s.collection('myCollection');
+        Collection = siesta.collection('myCollection');
         Car = Collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
@@ -33,7 +32,7 @@ describe('mapping relationships', function () {
             id: 'id',
             attributes: ['name', 'age']
         });
-        s.install(done);
+        siesta.install(done);
     }
 
     describe('valid', function () {
@@ -120,7 +119,7 @@ describe('mapping relationships', function () {
 
     describe('invalid', function () {
         it('No such mapping', function (done) {
-            var collection = s.collection('myCollection');
+            var collection = siesta.collection('myCollection');
             collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
@@ -132,14 +131,14 @@ describe('mapping relationships', function () {
                     }
                 }
             });
-            s.install(function (err) {
+            siesta.install(function (err) {
                 assert.ok(err);
                 done();
             });
         });
 
         it('No such relationship type', function (done) {
-            var collection = s.collection('myCollection');
+            var collection = siesta.collection('myCollection');
             collection.model('Car', {
                 id: 'id',
                 attributes: ['colour', 'name'],
@@ -157,7 +156,7 @@ describe('mapping relationships', function () {
                 attributes: ['name', 'age']
             });
 
-            s.install(function (err) {
+            siesta.install(function (err) {
                 assert.ok(err);
                 done();
             });
