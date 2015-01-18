@@ -5,6 +5,7 @@
 var RelationshipProxy = require('./RelationshipProxy'),
     Store = require('./store'),
     util = require('./util'),
+    _ = util._,
     InternalSiestaError = require('./error').InternalSiestaError,
     ModelEventType = require('./modelEvents').ModelEventType,
     SiestaModel = require('./modelInstance');

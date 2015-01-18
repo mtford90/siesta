@@ -3,7 +3,8 @@
  */
 
 
-var Descriptor = require('./descriptor').Descriptor;
+var Descriptor = require('./descriptor').Descriptor,
+    _ = siesta._internal.util._;
 
 /**
  * Describes what to do with a HTTP response.

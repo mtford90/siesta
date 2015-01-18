@@ -9,7 +9,6 @@ var _ = require('./underscore'),
 
 _.extend(module.exports, {
     _: _,
-    defer: require('./promise'),
     async: async
 });
 _.extend(module.exports, misc);
