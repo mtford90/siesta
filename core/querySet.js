@@ -83,7 +83,7 @@ function defineMethod(arr, prop) {
                 });
             var arePromises = false;
             if (res.length) arePromises = isPromise(res[0]);
-            return arePromises ? window.Q.all(res) : querySet(res);
+            return arePromises ? siesta.q.all(res) : querySet(res);
         };
     }
 }

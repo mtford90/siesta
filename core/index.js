@@ -12,16 +12,21 @@ var util = require('./util'),
     log = require('./log'),
     _ = util._;
 
-
-if (window.Q) window.q = window.Q;
-
-
 // Initialise siesta object. Strange format facilities using submodules with requireJS.
 var siesta = function (ext) {
     if (!siesta.ext) siesta.ext = {};
     _.extend(siesta.ext, ext || {});
     return siesta;
 };
+
+Object.defineProperty(siesta, 'q', {
+    get: function () {
+        return this._q || window.q || window.Q
+    },
+    set: function (q) {
+        this._q = q;
+    }
+});
 
 // Notifications
 _.extend(siesta, {
@@ -157,13 +162,21 @@ _.extend(siesta, {
                     cb(err);
                 }
                 else {
-                    siesta.ext.storage._load(function (err) {
-                        if (!err) {
-                            installed = true;
-                            if (self.queuedTasks) self.queuedTasks.execute();
-                        }
-                        cb(err);
-                    });
+                    if (siesta.ext.storageEnabled) {
+                         siesta.ext.storage._load(function (err) {
+                            if (!err) {
+                                installed = true;
+                                if (self.queuedTasks) self.queuedTasks.execute();
+                            }
+                            cb(err);
+                        });
+                    }
+                    else {
+                        installed = true;
+                        if (self.queuedTasks) self.queuedTasks.execute();
+                        cb();
+                    }
+                   
                 }
             });
 

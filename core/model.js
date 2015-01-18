@@ -497,7 +497,6 @@ _.extend(Model.prototype, {
                             obj: newModel
                         };
                         window.lastEmission = e;
-                        console.log('muthafukin emission', e);
                         modelEvents.emit(e);
                         if (util.isArray(v)) {
                             wrapArray(v, field, newModel);

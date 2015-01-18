@@ -88,8 +88,8 @@ _.extend(module.exports, {
     defer: function (cb) {
         var deferred;
         cb = cb || function () {};
-        if (window.q) {
-            deferred = window.q.defer();
+        if (siesta.q) {
+            deferred = siesta.q.defer();
             var reject = deferred.reject,
                 resolve = deferred.resolve;
             _.extend(deferred, {
