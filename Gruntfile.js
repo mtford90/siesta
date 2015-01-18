@@ -1,14 +1,11 @@
 module.exports = function (grunt) {
 
+    var sh = require('execSync'),
+        userConfig = require('./build.config.js');
+
     require('load-grunt-tasks')(grunt);
     require('time-grunt')(grunt);
-    var fs = require('fs'),
-        sh = require('execSync'),
-        _ = require('underscore');
 
-    var userConfig = require('./build.config.js');
-    var LIVERELOAD_PORT = 47835,
-        CONNECT_PORT = 4001;
     var taskConfig = {
         pkg: grunt.file.readJSON("package.json"),
 
@@ -54,7 +51,7 @@ module.exports = function (grunt) {
 
             jssrc: {
                 options: {
-                    livereload: LIVERELOAD_PORT
+                    livereload: '<%= livereload_port %>'
                 },
                 files: [
                     '<%= app_files.js %>'
@@ -64,7 +61,7 @@ module.exports = function (grunt) {
 
             testsrc: {
                 options: {
-                    livereload: LIVERELOAD_PORT
+                    livereload: '<%= livereload_port %>'
                 },
                 files: [
                     '<%= app_files.jsunit %>'
@@ -74,7 +71,7 @@ module.exports = function (grunt) {
 
             http: {
                 options: {
-                    livereload: LIVERELOAD_PORT
+                    livereload: '<%= livereload_port %>'
                 },
                 files: [
                     '<%= src_dir %>/http/**/*.js'
@@ -94,8 +91,8 @@ module.exports = function (grunt) {
         connect: {
             site: {
                 options: {
-                    livereload: LIVERELOAD_PORT,
-                    port: CONNECT_PORT,
+                    livereload: '<%= livereload_port %>',
+                    port: '<%= connect_port %>',
                     base: './'
                 }
             }

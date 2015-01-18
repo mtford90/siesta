@@ -7,6 +7,8 @@ module.exports = {
     compile_dir: 'bin',
     src_dir: 'src',
     test_dir: 'test',
+    dist_dir: 'dist',
+
 
     app_files: {
         js: ['core/**/*.js', 'http/**/*.js', 'index.js', 'storage/**/*.js', 'performance/**/*.js'],
@@ -27,5 +29,12 @@ module.exports = {
             'bower_components/underscore/underscore.js',
             'bower_components/xregexp/xregexp-all.js'
         ]
-    }
+    },
+
+
+    livereload_port: 47835,
+
+    connect_port: 4001
+
+
 };
