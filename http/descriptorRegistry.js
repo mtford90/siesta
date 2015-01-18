@@ -51,7 +51,6 @@ _.extend(DescriptorRegistry.prototype, {
     registerResponseDescriptor: function (responseDescriptor) {
         if (Logger.trace.isEnabled)
             Logger.trace('registerResponseDescriptor');
-        console.log('registerResponseDescriptor', responseDescriptor);
         _registerDescriptor(this.responseDescriptors, responseDescriptor);
     },
     requestDescriptorsForCollection: function (collection) {
