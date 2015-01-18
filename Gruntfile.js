@@ -24,8 +24,7 @@ module.exports = function (grunt) {
             },
             test: {
                 files: {
-                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js'],
-                    '<%= build_dir %>/siesta.js': ['core/index.js']
+                    '<%= build_dir %>/test-bundle.js': ['<%= test_dir %>/**/*.spec.js']
                 }
             }
         },
@@ -48,7 +47,7 @@ module.exports = function (grunt) {
                 files: [
                     '<%= app_files.js %>'
                 ],
-                tasks: ['test']
+                tasks: ['browserify:build']
             },
 
             testsrc: {
@@ -58,24 +57,7 @@ module.exports = function (grunt) {
                 files: [
                     '<%= app_files.jsunit %>'
                 ],
-                tasks: ['test']
-            },
-
-            http: {
-                options: {
-                    livereload: '<%= livereload_port %>'
-                },
-                files: [
-                    '<%= src_dir %>/http/**/*.js'
-                ],
-                tasks: ['browserify:build']
-            },
-
-            index: {
-                files: [
-                    '<%= test_dir %>/index.tpl.html'
-                ],
-                tasks: ['index']
+                tasks: ['browserify:test']
             }
 
         },
@@ -103,7 +85,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('watch', [
-        'test',
+        'browserify',
         'connect:site',
         'delta'
     ]);
@@ -111,11 +93,6 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean',
         'browserify:test'
-    ]);
-
-
-    grunt.registerTask('test', [
-        'build'
     ]);
 
     grunt.registerTask('compile', [
