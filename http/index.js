@@ -76,7 +76,8 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         opts = args[0];
         callback = args[1];
     }
-    var deferred = util.defer();
+    var deferred = util.defer(callback);
+    callback = deferred.finish.bind(deferred);
     siesta._afterInstall(function () {
         opts.type = method; // jquery
         opts.method = method; // $http
@@ -159,7 +160,6 @@ function _httpResponse(method, path, optsOrCallback, callback) {
             callback('Incompatible ajax function. Could not find success/fail methods on returned promise.');
         }
     }.bind(this));
-
     return deferred.promise;
 }
 
