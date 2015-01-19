@@ -161,6 +161,7 @@ _.extend(siesta, {
             installing = true;
             var deferred = util.defer(cb);
             cb = deferred.finish.bind(deferred);
+
             var collectionNames = CollectionRegistry.collectionNames,
                 collectionInstallTasks = _.map(collectionNames, function (n) {
                     return function (done) {
@@ -173,6 +174,31 @@ _.extend(siesta, {
                     cb(err);
                 }
                 else {
+                    if (siesta.ext.httpEnabled) {
+                        var errors = [];
+
+                        function setupDescriptors(descriptors) {
+                            Object.keys(descriptors).forEach(function (collectionName) {
+                                var descriptorsForCollection = descriptors[collectionName];
+                                descriptorsForCollection.forEach(function (d) {
+                                    var error = d._resolveCollectionAndModel();
+                                    console.log('error', error);
+                                    if (error) errors.push(error);
+                                });
+                            });
+                        }
+
+                        var descriptorRegistry = siesta.ext.http.DescriptorRegistry,
+                            requestDescriptors = descriptorRegistry.requestDescriptors,
+                            responseDescriptors = descriptorRegistry.responseDescriptors;
+                        setupDescriptors(requestDescriptors);
+                        setupDescriptors(responseDescriptors);
+                        console.log('errors', errors);
+                        if (errors.length) {
+                            cb(errors);
+                            return;
+                        }
+                    }
                     if (siesta.ext.storageEnabled) {
                         siesta.ext.storage._load(function (err) {
                             if (!err) {
@@ -196,8 +222,6 @@ _.extend(siesta, {
         else {
             throw new error.InternalSiestaError('Already installing...');
         }
-        rese
-
     },
     _pushTask: function (task) {
         if (!this.queuedTasks) {

@@ -73,58 +73,7 @@ function Descriptor(opts) {
 
     this._opts.method = resolveMethod(this._opts.method);
 
-    var collection;
-    var rawCollection = this._opts.collection,
-        rawModel = this._opts.model;
-    if (rawCollection) {
-        if (typeof rawCollection == 'string') {
-            collection = CollectionRegistry[rawCollection];
-        }
-        else {
-            collection = rawCollection;
-        }
-    }
-    else if (rawModel && !util.isString(rawModel)) {
-        collection = rawModel.collection;
-    }
-    else {
-        throw new Error('Must pass collection or a model object');
-    }
-
-
-
-    // Mappings can be passed as the actual mapping object or as a string (with API specified too)
-    if (rawModel) {
-        if (util.isString(rawModel)) {
-            if (rawCollection) {
-                var actualModel = collection._models[rawModel];
-                if (actualModel) {
-                    this._opts.model = actualModel;
-                } else {
-                    throw new Error('Model ' + rawModel + ' does not exist in collection', {
-                        opts: opts,
-                        descriptor: this
-                    });
-                }
-            } else {
-                throw new Error('Passed model as string, but did not specify the collection it belongs to', {
-                    opts: opts,
-                    descriptor: this
-                });
-            }
-        }
-        else {
-            if (rawModel.collection != collection) {
-                throw new Error('Passed model is not part of the passed collection');
-            }
-        }
-    }
-    else {
-        throw new Error('Descriptors must be initialised with a model', {
-            opts: opts,
-            descriptor: this
-        });
-    }
+    //this._resolveCollectionAndModel();
 
     // If key path, convert data key path into an object that we can then use to traverse the HTTP bodies.
     // otherwise leave as string or undefined.
@@ -161,13 +110,58 @@ function Descriptor(opts) {
      */
     defineSubProperty.call(this, 'path', this._opts);
     defineSubProperty.call(this, 'method', this._opts);
-    defineSubProperty.call(this, 'model', this._opts);
     defineSubProperty.call(this, 'data', this._opts);
     defineSubProperty.call(this, 'transforms', this._opts);
 }
 
 _.extend(Descriptor.prototype, {
     httpMethods: httpMethods,
+    _resolveCollectionAndModel: function () {
+        var collection;
+        var rawCollection = this._opts.collection,
+            rawModel = this._opts.model;
+        console.log('rawCollection', rawCollection);
+        console.log('rawModel', rawModel);
+        if (rawCollection) {
+            if (typeof rawCollection == 'string') {
+                collection = CollectionRegistry[rawCollection];
+            }
+            else {
+                collection = rawCollection;
+            }
+        }
+        else if (rawModel && !util.isString(rawModel)) {
+            collection = rawModel.collection;
+        }
+        else {
+            return 'Must pass collection or a model object';
+        }
+
+        var actualModel;
+        // Mappings can be passed as the actual mapping object or as a string (with API specified too)
+        if (rawModel) {
+            if (util.isString(rawModel)) {
+                actualModel = collection._models[rawModel];
+                if (actualModel) {
+                    this._opts.model = actualModel;
+                } else {
+                    return 'Model ' + rawModel + ' does not exist in collection';
+                }
+            }
+            else {
+                if (rawModel.collection != collection) {
+                    return 'Passed model is not part of the passed collection';
+                }
+                actualModel = rawModel;
+            }
+        }
+        else {
+            return 'Descriptors must be initialised with a model';
+        }
+
+        this.model = actualModel;
+        this.collection = collection;
+    },
     /**
      * Takes a regex path and returns true if matched
      *

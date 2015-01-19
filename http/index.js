@@ -77,81 +77,89 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         callback = args[1];
     }
     var deferred = util.defer();
-    opts.type = method; // jquery
-    opts.method = method; // $http
-    if (!opts.url) { // Allow overrides.
-        var baseURL = this.baseURL;
-        opts.url = baseURL + path;
-    }
-    if (opts.parseResponse === undefined) opts.parseResponse = true;
-    function success (data, status, xhr) {
-        logHttpResponse(opts, xhr, data);
-        var resp = {
-            data: data,
-            status: status,
-            xhr: xhr
-        };
-        if (opts.parseResponse) {
-            var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
-            var matchedDescriptor;
-            var extractedData;
-            for (var i = 0; i < descriptors.length; i++) {
-                var descriptor = descriptors[i];
-                extractedData = descriptor.match(opts, data);
-                if (extractedData) {
-                    matchedDescriptor = descriptor;
-                    break;
+    siesta._afterInstall(function () {
+        opts.type = method; // jquery
+        opts.method = method; // $http
+        if (!opts.url) { // Allow overrides.
+            var baseURL = this.baseURL;
+            opts.url = baseURL + path;
+        }
+        if (opts.parseResponse === undefined) opts.parseResponse = true;
+        function success(data, status, xhr) {
+            logHttpResponse(opts, xhr, data);
+            var resp = {
+                data: data,
+                status: status,
+                xhr: xhr
+            };
+            if (opts.parseResponse) {
+                var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
+                var matchedDescriptor;
+                var extractedData;
+                for (var i = 0; i < descriptors.length; i++) {
+                    var descriptor = descriptors[i];
+                    extractedData = descriptor.match(opts, data);
+                    if (extractedData) {
+                        matchedDescriptor = descriptor;
+                        break;
+                    }
                 }
-            }
-            if (matchedDescriptor) {
-                if (Logger.trace.isEnabled) {
-                    Logger.trace('Model _constructSubOperation data: ' + util.prettyPrint(extractedData));
-                }
-                if (typeof(extractedData) == 'object') {
-                    var mapping = matchedDescriptor.model;
-                    mapping.map(extractedData, {override: opts.obj}, function (err, obj) {
-                        if (callback) {
+                if (matchedDescriptor) {
+                    if (Logger.trace.isEnabled) {
+                        Logger.trace('Model _constructSubOperation data: ' + util.prettyPrint(extractedData));
+                    }
+                    if (typeof(extractedData) == 'object') {
+                        var mapping = matchedDescriptor.model;
+                        mapping.map(extractedData, {override: opts.obj}, function (err, obj) {
+                            if (callback) {
 
-                            callback(err, obj, resp);
-                        }
-                    });
-                } else { // Matched, but no data.
-                    callback(null, true, resp);
+                                callback(err, obj, resp);
+                            }
+                        });
+                    } else { // Matched, but no data.
+                        callback(null, true, resp);
+                    }
+                } else if (callback) {
+                    if (name) {
+                        callback('No descriptors matched', null, resp);
+                    } else {
+                        // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
+                        throw new InternalSiestaError('Unnamed collection');
+                    }
                 }
-            } else if (callback) {
-                if (name) {
-                    callback('No descriptors matched', null, resp);
-                } else {
-                    // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
-                    throw new InternalSiestaError('Unnamed collection');
-                }
+            } else {
+                callback(null, null, resp);
             }
-        } else {
-            callback(null, null, resp);
+
         }
 
-    }
-    function error (xhr, status, error) {
-        var resp = {
-            xhr: xhr,
-            status: status,
-            error: error
-        };
-        if (callback) callback(resp, null, resp);
-    }
-    logHttpRequest(opts);
-    var promise = siesta.ext.http.ajax(opts);
-    if (promise.success) { // $http and jquery <1.8
-        promise.success(success);
-        promise.error(error);
-    }
-    else if (promise.done) { // jquery >= 1.8
-        promise.done(success);
-        promise.fail(error);
-    }
-    else {
-        callback('Incompatible ajax function. Could not find success/fail methods on returned promise.');
-    }
+        function error(xhr, status, error) {
+            var resp = {
+                xhr: xhr,
+                status: status,
+                error: error
+            };
+            if (callback) callback(resp, null, resp);
+        }
+
+        console.log('opts', opts);
+        console.log('this', this);
+
+        logHttpRequest(opts);
+        var promise = siesta.ext.http.ajax(opts);
+        if (promise.success) { // $http and jquery <1.8
+            promise.success(success);
+            promise.error(error);
+        }
+        else if (promise.done) { // jquery >= 1.8
+            promise.done(success);
+            promise.fail(error);
+        }
+        else {
+            callback('Incompatible ajax function. Could not find success/fail methods on returned promise.');
+        }
+    }.bind(this));
+
     return deferred.promise;
 }
 
@@ -257,7 +265,7 @@ function DELETE(path, object) {
             object.remove();
         }
         callback(err, x, y, z);
-        deferred.finish(err, {x: x, y: y, z:z});
+        deferred.finish(err, {x: x, y: y, z: z});
     });
     if (deletionMode == 'now' || deletionMode == 'restore') {
         object.remove();

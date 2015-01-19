@@ -3,7 +3,7 @@ var assert = require('chai').assert,
     InternalSiestaError = internal.error.InternalSiestaError,
     RelationshipType = siesta.RelationshipType;
 
-describe('request descriptor', function () {
+describe('descriptors', function () {
 
     var Collection, Car, Person;
 
@@ -170,48 +170,68 @@ describe('request descriptor', function () {
         });
     });
 
-    describe('specify mapping', function () {
-        it('as object', function () {
-            var descriptor = new siesta.ext.http.Descriptor({
+    describe('specify model', function () {
+        it('as object', function (done) {
+            var descriptors = Collection.descriptor({
                 model: Car
             });
-            assert.equal(descriptor.model, Car);
+            assert.equal(descriptors.length, 1);
+            var descriptor = descriptors[0];
+            siesta.install().then(function () {
+                assert.equal(descriptor.model, Car);
+                done();
+            }).catch(done);
         });
-        it('as string', function () {
-            var r = new siesta.ext.http.Descriptor({
+        it('as string', function (done) {
+            var descriptors = Collection.descriptor({
                 model: 'Car',
                 collection: 'myCollection'
             });
-            assert.equal('Car', r.model.name);
+            assert.equal(descriptors.length, 1);
+            var descriptor = descriptors[0];
+            siesta.install().then(function () {
+                assert.equal('Car', descriptor.model.name);
+                done();
+            }).catch(done);
         });
-        it('as string, but collection as object', function () {
-            var r = new siesta.ext.http.Descriptor({
+        it('as string, but collection as object', function (done) {
+            var descriptors = Collection.descriptor({
                 model: 'Car',
                 collection: Collection
             });
-            assert.equal('Car', r.model.name);
-        });
-        it('should throw an exception if passed as string without collection', function () {
-            assert.throws(_.partial(siesta.ext.http.Descriptor, {
-                model: 'Car'
-            }), Error);
-        });
-
-        it('should throw an exception if no model passed', function () {
-            assert.throws(_.partial(siesta.ext.http.Descriptor, {
-                collection: Collection
-            }), Error);
+            assert.equal(descriptors.length, 1);
+            var descriptor = descriptors[0];
+            siesta.install().then(function () {
+                assert.equal('Car', descriptor.model.name);
+                done();
+            }).catch(done);
         });
 
-        it('should throw an exception if a model is passed that is not part of the collection', function () {
+        it('should throw an exception if no model passed', function (done) {
+            Collection.descriptor({});
+            siesta.install().then(function () {
+                done('Should have given an error');
+            }).catch(function (err) {
+                assert.ok(err);
+                done();
+            });
+        });
+
+        it('should throw an exception if a model is passed that is not part of the collection', function (done) {
             var AnotherCollection = siesta.collection('AnotherCollection'),
                 AnotherModel = AnotherCollection.model('AnotherModel', {
                     attributes: ['blah']
                 });
-            assert.throws(_.partial(siesta.ext.http.Descriptor, {
+            Collection.descriptor({
                 model: AnotherModel,
                 collection: Collection
-            }), Error);
+            });
+            siesta.install().then(function () {
+                done('Should have given an error');
+            }).catch(function (err) {
+                assert.ok(err);
+                done();
+            });
         });
     });
 
@@ -478,15 +498,6 @@ describe('request descriptor', function () {
         })
     });
 
-    describe('errors', function () {
-        it('no mapping', function () {
-            assert.throws(function () {
-                new siesta.ext.http.Descriptor({
-                    data: 'data'
-                })
-            }, Error);
-        });
-    });
 
     describe('RequestDescriptor', function () {
         describe('serialisation', function () {

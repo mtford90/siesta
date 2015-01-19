@@ -6,14 +6,18 @@ var assert = require('chai').assert,
 
 /*globals describe, it, beforeEach, before, after */
 describe('http!', function () {
-
-    var collection, Car, Person, vitalSignsMapping;
+    var Collection, Car, Person, vitalSignsMapping;
 
     var server;
 
     before(function () {
         siesta.ext.storageEnabled = false;
+        siesta.setLogLevel('HTTP', siesta.log.trace);
     });
+
+    after(function () {
+        siesta.setLogLevel('HTTP', siesta.log.warn);
+    })
 
     beforeEach(function (done) {
         this.sinon = sinon.sandbox.create();
@@ -31,12 +35,12 @@ describe('http!', function () {
 
 
     function constructCollection() {
-        collection = siesta.collection('myCollection');
-        Person = collection.model('Person', {
+        Collection = siesta.collection('myCollection');
+        Person = Collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
         });
-        Car = collection.model('Car', {
+        Car = Collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name'],
             relationships: {
@@ -47,7 +51,7 @@ describe('http!', function () {
                 }
             }
         });
-        vitalSignsMapping = collection.model('VitalSigns', {
+        vitalSignsMapping = Collection.model('VitalSigns', {
             id: 'id',
             attributes: ['heartRate', 'bloodPressure'],
             relationships: {
@@ -58,7 +62,7 @@ describe('http!', function () {
                 }
             }
         });
-        collection.baseURL = 'http://mywebsite.co.uk/';
+        Collection.baseURL = 'http://mywebsite.co.uk/';
     }
 
 
@@ -95,7 +99,7 @@ describe('http!', function () {
                     var method = "GET";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    collection.GET('cars/9/purple/', function (_err, _obj, _resp) {
+                    Collection.GET('cars/9/purple/', function (_err, _obj, _resp) {
                         err = _err;
                         obj = _obj;
                         resp = _resp;
@@ -133,7 +137,7 @@ describe('http!', function () {
                     var method = "GET";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    collection.GET('cars/purple/', function (_err, _objs, _resp) {
+                    Collection.GET('cars/purple/', function (_err, _objs, _resp) {
                         err = _err;
                         objs = _objs;
                         resp = _resp;
@@ -159,11 +163,11 @@ describe('http!', function () {
 
                 describe('single', function () {
                     beforeEach(function (done) {
-                        siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
+                        Collection.descriptor({
                             method: 'GET',
                             model: Car,
                             path: '/cars/[0-9]+'
-                        }));
+                        });
                         var raw = {
                             colour: 'red',
                             name: 'Aston Martin',
@@ -177,17 +181,15 @@ describe('http!', function () {
                         var method = "GET";
                         var status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                        assert.ok(collection.GET);
-                        collection.GET('cars/5/', function (_err, _obj, _resp) {
+                        assert.ok(Collection.GET);
+                        Collection.GET('cars/5/', function (_err, _obj, _resp) {
+                            if (_err) console.error(_err);
+                            assert.notOk(_err);
                             err = _err;
                             obj = _obj;
                             resp = _resp;
                             done();
                         });
-                    });
-
-                    it('no error', function () {
-                        assert.notOk(err);
                     });
 
                     it('returns data', function () {
@@ -238,7 +240,7 @@ describe('http!', function () {
                         var method = "GET";
                         var status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                        collection.GET('cars/', function (_err, _obj, _resp) {
+                        Collection.GET('cars/', function (_err, _obj, _resp) {
                             if (_err) done(_err);
                             obj = _obj;
                             resp = _resp;
@@ -290,7 +292,7 @@ describe('http!', function () {
                             var method = "DELETE";
                             var status = 200;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
-                            collection.DELETE('cars/5/', _objectToDelete, function (_err, _obj, _resp) {
+                            Collection.DELETE('cars/5/', _objectToDelete, function (_err, _obj, _resp) {
                                 err = _err;
                                 obj = _obj;
                                 resp = _resp;
@@ -343,7 +345,7 @@ describe('http!', function () {
                             var method = "DELETE";
                             var status = 200;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
-                            collection.DELETE('cars/5/', _objectToDelete, {
+                            Collection.DELETE('cars/5/', _objectToDelete, {
                                 deletionMode: 'now'
                             }, function (_err, _obj, _resp) {
                                 assert.ok(_objectToDelete.removed)
@@ -377,7 +379,7 @@ describe('http!', function () {
                             var method = "DELETE";
                             var status = 200;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
-                            collection.DELETE('cars/5/', _objectToDelete, {
+                            Collection.DELETE('cars/5/', _objectToDelete, {
                                 deletionMode: 'success'
                             }, function (_err, _obj, _resp) {
                                 assert.ok(_objectToDelete.removed)
@@ -411,7 +413,7 @@ describe('http!', function () {
                             var method = "DELETE";
                             var status = 500;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
-                            collection.DELETE('cars/5/', _objectToDelete, {
+                            Collection.DELETE('cars/5/', _objectToDelete, {
                                 deletionMode: 'restore'
                             }, function (_err, _obj, _resp) {
                                 assert.notOk(_objectToDelete.removed)
@@ -466,7 +468,7 @@ describe('http!', function () {
                         car = _car;
                         assert.equal(car.colour, 'red');
                         assert.equal(car.name, 'Aston Martin');
-                        collection.POST('cars/', car, function (_err, _obj, _resp) {
+                        Collection.POST('cars/', car, function (_err, _obj, _resp) {
                             err = _err;
                             obj = _obj;
                             resp = _resp;
@@ -533,7 +535,7 @@ describe('http!', function () {
                         assert.equal(car.colour, 'red');
                         assert.equal(car.name, 'Aston Martin');
                         assert.equal(car.id, '5');
-                        collection.PUT('cars/5/', car, function (_err, _obj, _resp) {
+                        Collection.PUT('cars/5/', car, function (_err, _obj, _resp) {
                             err = _err;
                             obj = _obj;
                             resp = _resp;
@@ -599,7 +601,7 @@ describe('http!', function () {
                         assert.equal(car.colour, 'red');
                         assert.equal(car.name, 'Aston Martin');
                         assert.equal(car.id, '5');
-                        collection.PATCH('cars/5/', car, function (_err, _obj, _resp) {
+                        Collection.PATCH('cars/5/', car, function (_err, _obj, _resp) {
                             err = _err;
                             obj = _obj;
                             resp = _resp;
@@ -650,7 +652,7 @@ describe('http!', function () {
                     var method = "OPTIONS";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    collection.OPTIONS('something/', function (_err, _obj, _resp) {
+                    Collection.OPTIONS('something/', function (_err, _obj, _resp) {
                         err = _err;
                         obj = _obj;
                         resp = _resp;
@@ -705,7 +707,7 @@ describe('http!', function () {
                         colour: 'red'
                     }, function (err, _car) {
                         car = _car;
-                        collection.TRACE('cars/', _car, function (_err, _obj, _resp) {
+                        Collection.TRACE('cars/', _car, function (_err, _obj, _resp) {
                             err = _err;
                             obj = _obj;
                             resp = _resp;
@@ -732,7 +734,8 @@ describe('http!', function () {
     describe('ajax', function () {
         var dollar;
         var fakeDollar = {
-            ajax: function () {}
+            ajax: function () {
+            }
         };
 
         before(function () {
@@ -766,7 +769,8 @@ describe('http!', function () {
         });
 
         it('set ajax', function () {
-            var fakeAjax = function () {};
+            var fakeAjax = function () {
+            };
             siesta.setAjax(fakeAjax);
             assert.equal(siesta.ext.http.ajax, fakeAjax);
             assert.equal(siesta.getAjax(), fakeAjax);
