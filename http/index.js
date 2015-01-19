@@ -442,6 +442,15 @@ _.extend(siesta, {
     serializers: serialisers
 });
 
+Object.defineProperty(siesta, 'ajax', {
+    get: function () {
+        return ajax;
+    },
+    set: function (_ajax) {
+        ajax = _ajax;
+    }
+});
+
 Object.defineProperties(serialisers, {
     id: {
         get: function () {

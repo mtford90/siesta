@@ -172,10 +172,10 @@ describe('request descriptor', function () {
 
     describe('specify mapping', function () {
         it('as object', function () {
-            var r = new siesta.ext.http.Descriptor({
+            var descriptor = new siesta.ext.http.Descriptor({
                 model: Car
             });
-            assert.equal(r.model, Car);
+            assert.equal(descriptor.model, Car);
         });
         it('as string', function () {
             var r = new siesta.ext.http.Descriptor({
@@ -194,6 +194,23 @@ describe('request descriptor', function () {
         it('should throw an exception if passed as string without collection', function () {
             assert.throws(_.partial(siesta.ext.http.Descriptor, {
                 model: 'Car'
+            }), Error);
+        });
+
+        it('should throw an exception if no model passed', function () {
+            assert.throws(_.partial(siesta.ext.http.Descriptor, {
+                collection: Collection
+            }), Error);
+        });
+
+        it('should throw an exception if a model is passed that is not part of the collection', function () {
+            var AnotherCollection = siesta.collection('AnotherCollection'),
+                AnotherModel = AnotherCollection.model('AnotherModel', {
+                    attributes: ['blah']
+                });
+            assert.throws(_.partial(siesta.ext.http.Descriptor, {
+                model: AnotherModel,
+                collection: Collection
             }), Error);
         });
     });
@@ -471,7 +488,7 @@ describe('request descriptor', function () {
         });
     });
 
-    describe('siesta.ext.http.RequestDescriptor', function () {
+    describe('RequestDescriptor', function () {
         describe('serialisation', function () {
             it('default', function () {
                 var requestDescriptor = new siesta.ext.http.RequestDescriptor({

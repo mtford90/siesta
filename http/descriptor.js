@@ -73,28 +73,35 @@ function Descriptor(opts) {
 
     this._opts.method = resolveMethod(this._opts.method);
 
+    var collection;
+    var rawCollection = this._opts.collection,
+        rawModel = this._opts.model;
+    if (rawCollection) {
+        if (typeof rawCollection == 'string') {
+            collection = CollectionRegistry[rawCollection];
+        }
+        else {
+            collection = rawCollection;
+        }
+    }
+    else if (rawModel && !util.isString(rawModel)) {
+        collection = rawModel.collection;
+    }
+    else {
+        throw new Error('Must pass collection or a model object');
+    }
+
+
+
     // Mappings can be passed as the actual mapping object or as a string (with API specified too)
-    if (this._opts.model) {
-        if (typeof(this._opts.model) == 'string') {
-            if (this._opts.collection) {
-                var collection;
-                if (typeof(this._opts.collection) == 'string') {
-                    collection = CollectionRegistry[this._opts.collection];
+    if (rawModel) {
+        if (util.isString(rawModel)) {
+            if (rawCollection) {
+                var actualModel = collection._models[rawModel];
+                if (actualModel) {
+                    this._opts.model = actualModel;
                 } else {
-                    collection = this._opts.collection;
-                }
-                if (collection) {
-                    var actualModel = collection[this._opts.model];
-                    if (actualModel) {
-                        this._opts.model = actualModel;
-                    } else {
-                        throw new Error('Model ' + this._opts.model + ' does not exist', {
-                            opts: opts,
-                            descriptor: this
-                        });
-                    }
-                } else {
-                    throw new Error('Collection ' + this._opts.collection + ' does not exist', {
+                    throw new Error('Model ' + rawModel + ' does not exist in collection', {
                         opts: opts,
                         descriptor: this
                     });
@@ -106,7 +113,13 @@ function Descriptor(opts) {
                 });
             }
         }
-    } else {
+        else {
+            if (rawModel.collection != collection) {
+                throw new Error('Passed model is not part of the passed collection');
+            }
+        }
+    }
+    else {
         throw new Error('Descriptors must be initialised with a model', {
             opts: opts,
             descriptor: this
