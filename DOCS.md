@@ -15,8 +15,6 @@ bower install siesta --save
 
 ### Script tag
 
-You can include the full Siesta bundle or include individual components. If you decide to include individual components, ensure that other modules are included **after** core.
-
 ```html
 <script src="path/to/siesta/dist/siesta.js"></script>
 ```
@@ -59,7 +57,7 @@ Model.map({key: 'value')
 
 ### Storage
 
-If you decide to use the storage module then you **must** include PouchDB. If the availability of PouchDB is not detected then storage will be disabled.
+To enable storage, include PouchDB. If the availability of PouchDB is not detected then storage will be disabled.
 
 ```html
 <!-- If using script tags -->
@@ -1092,7 +1090,7 @@ Events are exactly the same as for [Reactive Queries](#reactive-queries-events).
 
 # HTTP
 
-Before using the HTTP extension you first need to define a baseURL on your collection.
+Before using HTTP you first need to define a baseURL on your collection.
 
 ```
 var Github = siesta.collection('Github');
