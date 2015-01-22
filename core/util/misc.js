@@ -98,13 +98,20 @@ _.extend(module.exports, {
                     reject.call(this, err);
                 },
                 resolve: function (res) {
-                    cb(null, res);
-                    resolve.call(this, res);
+                    var thisArg = cb.__siesta_bound_object || cb;
+                    var args = Array.prototype.slice.call(arguments, 0);
+                    args.unshift(null);
+                    cb.apply(thisArg, args);
+                    resolve.apply(this, arguments);
                 },
                 finish: function (err, res) {
-                    cb(err, res);
-                    if (err) reject.call(this, err);
-                    else resolve.call(this, res);
+                    if (err) {
+                        this.reject(err);
+                    }
+                    else {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        this.resolve.apply(this, args);
+                    }
                 }
             });
         }
@@ -112,13 +119,18 @@ _.extend(module.exports, {
             deferred = {
                 promise: undefined,
                 reject: function (err) {
-                    cb(err);
+                    var thisArg = cb.__siesta_bound_object || cb;
+                    cb.apply(thisArg, arguments);
                 },
                 resolve: function (res) {
-                    cb(null, res)
+                    var thisArg = cb.__siesta_bound_object || cb;
+                    var args = Array.prototype.slice.call(arguments, 0);
+                    args.unshift(null);
+                    cb.apply(thisArg, args);
                 },
                 finish: function (err, res) {
-                    cb(err, res);
+                    var thisArg = cb.__siesta_bound_object || cb;
+                    cb.apply(thisArg, arguments)
                 }
             }
         }

@@ -57,7 +57,6 @@ function logHttpRequest(opts) {
     }
 }
 
-
 /**
  * Send a HTTP request to the given method and path parsing the response.
  * @param {String} method
@@ -88,11 +87,7 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         if (opts.parseResponse === undefined) opts.parseResponse = true;
         function success(data, status, xhr) {
             logHttpResponse(opts, xhr, data);
-            var resp = {
-                data: data,
-                status: status,
-                xhr: xhr
-            };
+
             if (opts.parseResponse) {
                 var descriptors = DescriptorRegistry.responseDescriptorsForCollection(self);
                 var matchedDescriptor;
@@ -112,39 +107,28 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                     if (typeof(extractedData) == 'object') {
                         var mapping = matchedDescriptor.model;
                         mapping.map(extractedData, {override: opts.obj}, function (err, obj) {
-                            if (callback) {
-
-                                callback(err, obj, resp);
-                            }
+                            callback(err, obj, data, xhr);
                         });
                     } else { // Matched, but no data.
-                        callback(null, true, resp);
+                        callback(null, null, null, xhr);
                     }
                 } else if (callback) {
                     if (name) {
-                        callback('No descriptors matched', null, resp);
+                        callback(null, null, data, xhr);
                     } else {
                         // There was a bug where collection name doesn't exist. If this occurs, then will never get hold of any descriptors.
                         throw new InternalSiestaError('Unnamed collection');
                     }
                 }
             } else {
-                callback(null, null, resp);
+                callback(null, null, data, xhr);
             }
 
         }
 
         function error(xhr, status, error) {
-            var resp = {
-                xhr: xhr,
-                status: status,
-                error: error
-            };
-            if (callback) callback(resp, null, resp);
+            if (callback) callback(error, null, null, xhr);
         }
-
-        console.log('opts', opts);
-        console.log('this', this);
 
         logHttpRequest(opts);
         var promise = siesta.ext.http.ajax(opts);

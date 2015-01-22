@@ -17,7 +17,7 @@ describe('http!', function () {
 
     after(function () {
         siesta.setLogLevel('HTTP', siesta.log.warn);
-    })
+    });
 
     beforeEach(function (done) {
         this.sinon = sinon.sandbox.create();
@@ -83,7 +83,7 @@ describe('http!', function () {
             });
 
             describe('singular', function () {
-                var err, obj, resp;
+                var err, obj, xhr, data;
 
                 beforeEach(function (done) {
                     var raw = {
@@ -99,19 +99,19 @@ describe('http!', function () {
                     var method = "GET";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    Collection.GET('cars/9/purple/', function (_err, _obj, _resp) {
+                    Collection.GET('cars/9/purple/', function (_err, _obj, _data, _xhr) {
                         err = _err;
                         obj = _obj;
-                        resp = _resp;
+                        xhr = _xhr;
+                        data = _data;
                         done();
                     });
-                    ;
                 });
 
             });
 
             describe('multiple', function () {
-                var err, objs, resp;
+                var err, objs, data, xhr;
 
                 beforeEach(function (done) {
                     var raw = [{
@@ -137,10 +137,11 @@ describe('http!', function () {
                     var method = "GET";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    Collection.GET('cars/purple/', function (_err, _objs, _resp) {
+                    Collection.GET('cars/purple/', function (_err, _objs, _data, _xhr) {
                         err = _err;
                         objs = _objs;
-                        resp = _resp;
+                        data = _data;
+                        xhr = _xhr;
                         done();
                     });
                 });
@@ -159,7 +160,7 @@ describe('http!', function () {
             beforeEach(constructCollection);
 
             describe('success', function () {
-                var err, obj, resp;
+                var err, obj, data, xhr;
 
                 describe('single', function () {
                     beforeEach(function (done) {
@@ -177,34 +178,32 @@ describe('http!', function () {
                         var headers = {
                             "Content-Type": "application/json"
                         };
-                        var path = "http://mywebsite.co.uk/cars/5/";
-                        var method = "GET";
-                        var status = 200;
+                        var path = "http://mywebsite.co.uk/cars/5/",
+                            method = "GET",
+                            status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
                         assert.ok(Collection.GET);
-                        Collection.GET('cars/5/', function (_err, _obj, _resp) {
+                        Collection.GET('cars/5/', function (_err, _obj, _data, _xhr) {
+                            console.log('_resp', _data);
                             if (_err) console.error(_err);
                             assert.notOk(_err);
                             err = _err;
                             obj = _obj;
-                            resp = _resp;
+                            data = _data;
+                            xhr = _xhr;
                             done();
                         });
                     });
 
                     it('returns data', function () {
-                        assert.equal(resp.data.colour, 'red');
-                        assert.equal(resp.data.name, 'Aston Martin');
-                        assert.equal(resp.data.owner, '093hodhfno');
-                        assert.equal(resp.data.id, '5');
-                    });
-
-                    it('returns text status', function () {
-                        assert.equal(resp.status, 'success');
+                        assert.equal(data.colour, 'red');
+                        assert.equal(data.name, 'Aston Martin');
+                        assert.equal(data.owner, '093hodhfno');
+                        assert.equal(data.id, '5');
                     });
 
                     it('returns jqxhr', function () {
-                        assert.ok(resp.xhr);
+                        assert.ok(xhr);
                     });
 
                     it('returns a car object', function () {
@@ -240,13 +239,11 @@ describe('http!', function () {
                         var method = "GET";
                         var status = 200;
                         server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                        Collection.GET('cars/', function (_err, _obj, _resp) {
+                        Collection.GET('cars/', function (_err, _obj) {
                             if (_err) done(_err);
                             obj = _obj;
-                            resp = _resp;
                             done();
                         });
-                        ;
                     });
 
                     it('returns 2 car objects', function () {
@@ -269,7 +266,7 @@ describe('http!', function () {
 
             describe('success', function () {
                 describe('default', function () {
-                    var err, obj, resp, objectToDelete;
+                    var err, obj, data, objectToDelete, xhr;
 
                     beforeEach(function (done) {
                         var data = {
@@ -292,13 +289,13 @@ describe('http!', function () {
                             var method = "DELETE";
                             var status = 200;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
-                            Collection.DELETE('cars/5/', _objectToDelete, function (_err, _obj, _resp) {
+                            Collection.DELETE('cars/5/', _objectToDelete, function (_err, _obj, _data, _xhr) {
                                 err = _err;
                                 obj = _obj;
-                                resp = _resp;
+                                data = _data;
+                                xhr = _xhr;
                                 done();
                             });
-                            ;
                         });
                     });
 
@@ -306,12 +303,8 @@ describe('http!', function () {
                         assert.notOk(err);
                     });
 
-                    it('returns text status', function () {
-                        assert.equal(resp.status, 'success');
-                    });
-
                     it('returns jqxhr', function () {
-                        assert.ok(resp.xhr);
+                        assert.ok(xhr);
                     });
 
                     it('returns no object', function () {
@@ -607,7 +600,6 @@ describe('http!', function () {
                             resp = _resp;
                             done();
                         });
-                        ;
                     });
                 });
 
@@ -663,67 +655,6 @@ describe('http!', function () {
                     assert.notOk(err);
                 });
                 it('resp', function () {
-                    assert.ok(resp);
-                })
-            });
-        });
-
-        /**
-         * http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
-         */
-        describe('TRACE', function () {
-            var err, obj, resp;
-            beforeEach(function (done) {
-                constructCollection();
-                done();
-                var responseDescriptor = new siesta.ext.http.ResponseDescriptor({
-                    method: 'TRACE',
-                    model: Car,
-                    path: 'cars/'
-                });
-                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                var requestDescriptor = new siesta.ext.http.RequestDescriptor({
-                    method: 'TRACE',
-                    model: Car,
-                    path: 'cars/'
-                });
-                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-            });
-
-            describe('success', function () {
-                var car;
-                beforeEach(function (done) {
-                    var raw = {
-                        colour: 'red'
-                    }; // Trace is supposed to be a reflection of the response body.
-                    var headers = {
-                        "Content-Type": "message/http"
-                    }; // http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html
-                    var path = "http://mywebsite.co.uk/cars/";
-                    var method = "TRACE";
-                    var status = 200;
-                    server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    Car.map({
-                        colour: 'red'
-                    }, function (err, _car) {
-                        car = _car;
-                        Collection.TRACE('cars/', _car, function (_err, _obj, _resp) {
-                            err = _err;
-                            obj = _obj;
-                            resp = _resp;
-                            done();
-                        });
-                        ;
-                    });
-                });
-                it('no err', function () {
-                    assert.notOk(err);
-                });
-                it('obj', function () {
-                    assert.ok(obj);
-                });
-                it('resp', function () {
-                    assert.equal(resp.xhr.responseText, '{"colour":"red"}');
                     assert.ok(resp);
                 })
             });
