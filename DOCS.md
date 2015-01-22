@@ -1610,7 +1610,7 @@ Settings.one().then(function (settings) {
 Following Node convention the first parameter of all callbacks in Siesta is the error parameter. e.g. if you attempted to map a string onto the object graph.
 
 ```js
-Model.map('sdfsdfsdf'), function (err) {
+Model.graph('sdfsdfsdf'), function (err) {
     assert.instanceOf(err, siesta.CustomSiestaError);
     assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
     console.log(err.message); // Cannot map strings onto the object graph.
@@ -1620,7 +1620,7 @@ Model.map('sdfsdfsdf'), function (err) {
 Similarly you can catch errors using the `then` function of promises
 
 ```js
-Model.map('sdfsdfsdf')
+Model.graph('sdfsdfsdf')
     .then(function (instance) {
         // This will never be called.
     }, function (err) {
@@ -1633,7 +1633,7 @@ Model.map('sdfsdfsdf')
 `catch` will be equivalent in this case. Note, however, that `catch` will also catch any errors thrown by Javascript e.g. type errors.
 
 ```js
-Model.map('sdfsdfsdf')
+Model.graph('sdfsdfsdf')
     .then(function (instance) {
         // This will never be called.
     })
@@ -1697,7 +1697,7 @@ var Collection = siesta.collection('MyCollection'),
 describe('something', function () {
     beforeEach(siesta.resetData);
     it('test', function (done) {
-        MyModel.map({x: 1}, function (err, instance) {
+        MyModel.graph({x: 1}, function (err, instance) {
             assert.equal(instance.x, 1);
             done(err);
         });
@@ -1714,7 +1714,7 @@ Siesta uses [observe-js](https://github.com/polymer/observe-js) from Polymer to 
 e.g. take the case whereby we are manipulating a user repositories.
 
 ```js
-Repo.map({name: 'MyNewRepo'})
+Repo.graph({name: 'MyNewRepo'})
     .then(function (repo) {
         myUser.repositories.push(repo);
         myUser.repositories.splice(0, 1); // Remove repo at index 0.
@@ -1724,7 +1724,7 @@ Repo.map({name: 'MyNewRepo'})
 In browsers that implement `Object.observe`, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until `siesta.notify()` is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:
 
 ```js
-Repo.map({name: 'MyNewRepo'})
+Repo.graph({name: 'MyNewRepo'})
     .then(function (repo) {
         myUser.repositories.push(repo);
         myUser.repositories.splice(0, 1); // Remove repo at index 0.
@@ -1830,7 +1830,7 @@ You can listen to instances of models.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        MyModel.map({attr: 1})
+        MyModel.graph({attr: 1})
             .then(function (myModel) {
                  var listener = function(event) {
                       this.setState(); // Rerender
@@ -1934,7 +1934,7 @@ Note: we can reduce this code even further by using [listenAndSetState](#reactjs
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        MyModel.map({attr: 1})
+        MyModel.graph({attr: 1})
             .then(function (myInstance) {
                  var listener = function(event) {
                       this.setState(); // Rerender
