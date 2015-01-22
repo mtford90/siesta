@@ -32,14 +32,14 @@ describe('auto save', function () {
                 })
                 .catch(done);
         });
-        Person.map({name: 'Mike', age: 24})
+        Person.graph({name: 'Mike', age: 24})
             .catch(done)
             .done();
     });
 
     it('does not interval on modelEvents if disabled', function (done) {
         siesta.autosave = false;
-        Person.map({name: 'Mike', age: 24})
+        Person.graph({name: 'Mike', age: 24})
             .then(function () {
                 siesta.ext.storage._pouch.allDocs()
                     .then(function (resp) {

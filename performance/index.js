@@ -38,12 +38,12 @@ installExtension('performance', performance);
 
 function timeMaps() {
     var Model = siesta._internal.Model,
-        oldMap = Model.prototype.map;
-    Model.prototype.map = function (data, opts, callback) {
+        oldGraph = Model.prototype.graph;
+    Model.prototype.graph = function (data, opts, callback) {
         var start = (new Date).getTime(),
             numDatums = util.isArray(data) ? data.length : 1,
             deferred = util.defer(callback);
-        oldMap.call(this, data, opts, function (err, res) {
+        oldGraph.call(this, data, opts, function (err, res) {
             var end = (new Date).getTime(),
                 timeTaken = end - start;
             console.info('[Performance: model.prototype.map] It took ' + timeTaken + 'ms to map ' + numDatums + ' datums to "' + this.name + '"');

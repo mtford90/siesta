@@ -31,9 +31,9 @@ describe('bugs', function () {
                             }
                         });
 
-                    Person.map({name: 'Michael', id: 1})
+                    Person.graph({name: 'Michael', id: 1})
                         .then(function (person) {
-                            Car.map({name: 'car', owner: person})
+                            Car.graph({name: 'car', owner: person})
                                 .then(function (car) {
                                     assert.equal(car.owner, person);
                                     done();
@@ -60,9 +60,9 @@ describe('bugs', function () {
                             }
                         });
 
-                    Car.map({name: 'car'})
+                    Car.graph({name: 'car'})
                         .then(function (car) {
-                            Person.map({name: 'Michael', id: 1, car: car})
+                            Person.graph({name: 'Michael', id: 1, car: car})
                                 .then(function (person) {
                                     assert.equal(person.car, car);
                                 })
@@ -91,9 +91,9 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    Person.map({name: 'Michael', id: 1})
+                    Person.graph({name: 'Michael', id: 1})
                         .then(function (person) {
-                            Car.map({name: 'car', owner: person})
+                            Car.graph({name: 'car', owner: person})
                                 .then(function (car) {
                                     assert.equal(car.owner, person);
                                     done();
@@ -120,9 +120,9 @@ describe('bugs', function () {
                             }
                         });
 
-                    Car.map([{name: 'car'}, {name: 'anotherCar'}])
+                    Car.graph([{name: 'car'}, {name: 'anotherCar'}])
                         .then(function (cars) {
-                            Person.map({name: 'Michael', id: 1, cars: cars})
+                            Person.graph({name: 'Michael', id: 1, cars: cars})
                                 .then(function (person) {
                                     assert.include(person.cars, cars[0]);
                                     assert.include(person.cars, cars[1]);
@@ -152,9 +152,9 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    Person.map([{name: 'Michael', id: 1}])
+                    Person.graph([{name: 'Michael', id: 1}])
                         .then(function (people) {
-                            Car.map({name: 'car', owners: people})
+                            Car.graph({name: 'car', owners: people})
                                 .then(function (car) {
                                     assert.include(car.owners, people[0]);
                                     done();
@@ -180,9 +180,9 @@ describe('bugs', function () {
                                 }
                             }
                         });
-                    Car.map([{name: 'car'}, {name: 'anotherCar'}])
+                    Car.graph([{name: 'car'}, {name: 'anotherCar'}])
                         .then(function (cars) {
-                            Person.map({name: 'Michael', id: 1, cars: cars})
+                            Person.graph({name: 'Michael', id: 1, cars: cars})
                                 .then(function (person) {
                                     assert.include(person.cars, cars[0]);
                                     assert.include(person.cars, cars[1]);

@@ -526,7 +526,7 @@ describe('descriptors', function () {
                         assert.equal(requestDescriptor.serialiser, siesta.ext.http.Serialiser.idSerialiser);
                     });
                     it('serialises', function (done) {
-                        Car.map({
+                        Car.graph({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz'
@@ -557,7 +557,7 @@ describe('descriptors', function () {
                     });
 
                     it('serialises at depth', function (done) {
-                        Car.map({
+                        Car.graph({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -684,7 +684,7 @@ describe('descriptors', function () {
                         });
 
                         it('performs transform', function (done) {
-                            Car.map({
+                            Car.graph({
                                 colour: 'red',
                                 name: 'Aston Martin',
                                 id: 'xyz',
@@ -726,7 +726,7 @@ describe('descriptors', function () {
                     });
 
                     it('serialises at depth', function (done) {
-                        Car.map({
+                        Car.graph({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -758,7 +758,7 @@ describe('descriptors', function () {
 
 
                     it('serialises at depth', function (done) {
-                        Car.map({
+                        Car.graph({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -793,7 +793,7 @@ describe('descriptors', function () {
 
 
                     it('serialises', function (done) {
-                        Car.map({
+                        Car.graph({
                             colour: 'red',
                             name: 'Aston Martin',
                             id: 'xyz',
@@ -854,7 +854,7 @@ describe('descriptors', function () {
                 });
 
                 it('serialises', function (done) {
-                    Car.map({
+                    Car.graph({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: 'xyz',

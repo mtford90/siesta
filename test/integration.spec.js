@@ -79,7 +79,7 @@ describe('intercollection relationships', function () {
     });
 
     function mapRemoteUsers(callback) {
-        MyOnlineCollection.User.map([{
+        MyOnlineCollection.User.graph([{
             username: 'mtford',
             name: 'Michael Ford',
             userId: '1'
@@ -95,7 +95,7 @@ describe('intercollection relationships', function () {
     }
 
     function mapRemotePhotos(callback) {
-        MyOnlineCollection.Photo.map([{
+        MyOnlineCollection.Photo.graph([{
             height: 500,
             width: 500,
             url: 'http://somewhere/image.jpeg',
@@ -117,7 +117,7 @@ describe('intercollection relationships', function () {
     }
 
     function mapOfflineUsers(callback) {
-        MyOfflineCollection.User.map([{
+        MyOfflineCollection.User.graph([{
             username: 'mike'
         }, {
             username: 'gaz'

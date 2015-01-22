@@ -44,7 +44,7 @@ describe('statistics', function () {
             });
 
             it('one object', function (done) {
-                Car.map({
+                Car.graph({
                     colour: 'red',
                     name: 'Aston Martin'
                 }, function (err, obj) {
@@ -58,7 +58,7 @@ describe('statistics', function () {
             });
 
             it('multiple objects', function (done) {
-                Car.map([{
+                Car.graph([{
                     colour: 'red',
                     name: 'Aston Martin'
                 }, {
@@ -79,7 +79,7 @@ describe('statistics', function () {
         });
         describe('multiple mappings', function () {
             it('multiple objects', function (done) {
-                Car.map([{
+                Car.graph([{
                     colour: 'red',
                     name: 'Aston Martin'
                 }, {
@@ -90,7 +90,7 @@ describe('statistics', function () {
                     name: 'Lambo'
                 }], function (err) {
                     if (err) done(err);
-                    Person.map([{
+                    Person.graph([{
                         age: 24,
                         name: 'Michael Ford'
                     }, {

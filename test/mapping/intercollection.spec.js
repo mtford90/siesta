@@ -65,7 +65,7 @@ describe('intercoll relationships', function () {
 
                 anotherCollection.install(function (err) {
                     if (err) done(err);
-                    anotherCollection['AnotherMapping'].map({
+                    anotherCollection['AnotherMapping'].graph({
                         field: 5,
                         person: {name: 'Michael', age: 23, id: 'xyz'}
                     }, function (err, _obj) {

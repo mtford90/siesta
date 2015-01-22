@@ -124,10 +124,10 @@ describe('Subclass', function () {
                             attributes: ['age', 'name']
                         });
 
-                        Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                        Person.graph({age: 24, name: 'Mike'}).then(function (_mike) {
                             mike = _mike;
-                            Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
-                                .then(SportsCar.map({
+                            Car.graph({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                                .then(SportsCar.graph({
                                     colour: 'yellow',
                                     name: 'Lamborghini',
                                     maxSpeed: 160,
@@ -177,10 +177,10 @@ describe('Subclass', function () {
                             attributes: ['age', 'name']
                         });
 
-                        Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                        Person.graph({age: 24, name: 'Mike'}).then(function (_mike) {
                             mike = _mike;
-                            Car.map({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
-                                .then(SportsCar.map({
+                            Car.graph({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                                .then(SportsCar.graph({
                                     colour: 'yellow',
                                     name: 'Lamborghini',
                                     maxSpeed: 160,
@@ -233,10 +233,10 @@ describe('Subclass', function () {
                             attributes: ['age', 'name']
                         });
 
-                        Person.map({age: 24, name: 'Mike'}).then(function (_mike) {
+                        Person.graph({age: 24, name: 'Mike'}).then(function (_mike) {
                             mike = _mike;
-                            Car.map({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
-                                .then(SportsCar.map({
+                            Car.graph({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
+                                .then(SportsCar.graph({
                                     colour: 'yellow',
                                     name: 'Lamborghini',
                                     maxSpeed: 160,
@@ -296,28 +296,28 @@ describe('Subclass', function () {
         });
 
         it('parent method available on parent', function (done) {
-            Car.map({x: 1}).then(function (c) {
+            Car.graph({x: 1}).then(function (c) {
                 assert.equal(c.aMethod(), 'a');
                 done();
             }).catch(done);
         });
 
         it('child method not available on parent', function (done) {
-            Car.map({x: 1}).then(function (c) {
+            Car.graph({x: 1}).then(function (c) {
                 assert.notOk(c.anotherMethod);
                 done();
             }).catch(done);
         });
 
         it('parent method available on child', function (done) {
-            SportsCar.map({x: 1, y: 2}).then(function (c) {
+            SportsCar.graph({x: 1, y: 2}).then(function (c) {
                 assert.equal(c.aMethod(), 'a');
                 done();
             }).catch(done);
         });
 
         it('the childs other method is available', function (done) {
-            SportsCar.map({x: 1, y: 2}).then(function (c) {
+            SportsCar.graph({x: 1, y: 2}).then(function (c) {
                 assert.equal(c.anotherMethod(), 'b');
                 done();
             }).catch(done);
@@ -429,7 +429,7 @@ describe('Subclass', function () {
         });
 
         it('parent property should be available on parent', function (done) {
-            Car.map({x: 1})
+            Car.graph({x: 1})
                 .then(function (c) {
                     assert.equal(c.parent, 'a');
                     done();
@@ -438,7 +438,7 @@ describe('Subclass', function () {
         });
 
         it('child property should not be available on parent', function (done) {
-            Car.map({x: 1})
+            Car.graph({x: 1})
                 .then(function (c) {
                     assert.notOk(c.child);
                     done();
@@ -447,7 +447,7 @@ describe('Subclass', function () {
         });
 
         it('parent property should be available on child', function (done) {
-            SportsCar.map({x: 1})
+            SportsCar.graph({x: 1})
                 .then(function (c) {
                     assert.equal(c.parent, 'a');
                     done();
@@ -456,7 +456,7 @@ describe('Subclass', function () {
         });
 
         it('child property should be available on child', function (done) {
-            SportsCar.map({x: 1})
+            SportsCar.graph({x: 1})
                 .then(function (c) {
                     assert.equal(c.child, 'b');
                     done();
@@ -562,11 +562,11 @@ describe('Subclass', function () {
                     attributes: ['attr']
                 });
 
-                Car.map({colour: 'red', name: 'Aston Martin'})
+                Car.graph({colour: 'red', name: 'Aston Martin'})
                     .then(function () {
-                        SportsCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini'})
+                        SportsCar.graph({colour: 'blue', maxSpeed: 160, name: 'Lamborghini'})
                             .then(function () {
-                                SuperCar.map({colour: 'blue', maxSpeed: 160, name: 'Lamborghini', attr: 5})
+                                SuperCar.graph({colour: 'blue', maxSpeed: 160, name: 'Lamborghini', attr: 5})
                                     .then(function () {
                                         done();
                                     })
@@ -672,7 +672,7 @@ describe('Subclass', function () {
         });
 
         it('isInstanceOf', function (done) {
-            SuperCar.map({colour: 'red', name: 'lamborghini', attr: 1})
+            SuperCar.graph({colour: 'red', name: 'lamborghini', attr: 1})
                 .then(function (car) {
                     assert.ok(car.isInstanceOf(SuperCar));
                     assert.notOk(car.isInstanceOf(SportsCar));
@@ -685,7 +685,7 @@ describe('Subclass', function () {
         });
 
         it('isA', function (done) {
-            SuperCar.map({colour: 'red', name: 'lamborghini', attr: 1})
+            SuperCar.graph({colour: 'red', name: 'lamborghini', attr: 1})
                 .then(function (car) {
                     assert.ok(car.isA(SuperCar));
                     assert.ok(car.isA(SportsCar));

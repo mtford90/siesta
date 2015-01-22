@@ -20,7 +20,7 @@ describe('mapping queries', function () {
                 id: 'id',
                 attributes: ['color', 'name']
             });
-            Car.map([{
+            Car.graph([{
                 id: 4,
                 color: 'red',
                 name: 'Aston Martin'
@@ -106,7 +106,7 @@ describe('mapping queries', function () {
         });
 
         it('cached', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 owner: {

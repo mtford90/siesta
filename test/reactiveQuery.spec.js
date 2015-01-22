@@ -41,7 +41,7 @@ describe('reactive query', function () {
             });
         });
         it('initial results', function (done) {
-            Person.map(initialData).then(function () {
+            Person.graph(initialData).then(function () {
                 var rq = Person.reactiveQuery({age__lt: 30});
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init(function (err, results) {
@@ -73,13 +73,13 @@ describe('reactive query', function () {
                 }
 
                 it('results are as expected', function (done) {
-                    Person.map(initialData).then(function () {
+                    Person.graph(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err, results) {
                             if (err) done(err);
                             else {
                                 assert.equal(results, rq.results);
-                                Person.map({name: 'Peter', age: 21, id: 4}).then(function (peter) {
+                                Person.graph({name: 'Peter', age: 21, id: 4}).then(function (peter) {
                                     try {
                                         assertExpectedResults(rq.results, peter);
                                         rq.terminate();
@@ -95,7 +95,7 @@ describe('reactive query', function () {
                 });
 
                 it('emission', function (done) {
-                    Person.map(initialData).then(function () {
+                    Person.graph(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err, results) {
                             if (err) done(err);
@@ -110,7 +110,7 @@ describe('reactive query', function () {
                                     rq.terminate();
                                     siesta.notify(done);
                                 });
-                                Person.map({name: 'Peter', age: 21, id: 4}).then(function () {
+                                Person.graph({name: 'Peter', age: 21, id: 4}).then(function () {
                                 }).catch(done).done();
 
                             }
@@ -130,13 +130,13 @@ describe('reactive query', function () {
                 }
 
                 it('results match', function (done) {
-                    Person.map(initialData).then(function () {
+                    Person.graph(initialData).then(function () {
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err, results) {
                             if (err) done(err);
                             else {
                                 assert.equal(results, rq.results);
-                                Person.map({name: 'Peter', age: 33, id: 4}).then(function (peter) {
+                                Person.graph({name: 'Peter', age: 33, id: 4}).then(function (peter) {
                                     try {
                                         matchResults(rq, peter);
                                         rq.terminate();
@@ -161,7 +161,7 @@ describe('reactive query', function () {
                 }
 
                 it('results match', function (done) {
-                    Person.map(initialData).then(function (res) {
+                    Person.graph(initialData).then(function (res) {
                         var person = res[0];
                         person.age = 40;
                         var rq = Person.reactiveQuery({age__lt: 30});
@@ -185,7 +185,7 @@ describe('reactive query', function () {
                 });
 
                 it('emission', function (done) {
-                    Person.map(initialData).then(function (res) {
+                    Person.graph(initialData).then(function (res) {
                         var person = res[0];
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
@@ -213,7 +213,7 @@ describe('reactive query', function () {
             });
 
             it('update, still matching, should emit the notification', function (done) {
-                Person.map(initialData).then(function (res) {
+                Person.graph(initialData).then(function (res) {
                     var person = res[0];
                     var rq = Person.reactiveQuery({age__lt: 30});
                     rq.init(function (err) {
@@ -242,7 +242,7 @@ describe('reactive query', function () {
                 }
 
                 it('results correct', function (done) {
-                    Person.map(initialData).then(function (res) {
+                    Person.graph(initialData).then(function (res) {
                         var person = res[0];
                         var rq = Person.reactiveQuery({age__lt: 30});
                         rq.init(function (err) {
@@ -267,7 +267,7 @@ describe('reactive query', function () {
                 });
 
                 it('emission', function (done) {
-                    Person.map(initialData)
+                    Person.graph(initialData)
                         .then(function (res) {
                             var person = res[0];
                             var rq = Person.reactiveQuery({age__lt: 30});
@@ -297,7 +297,7 @@ describe('reactive query', function () {
 
 
                 it('emission, having listened before init', function (done) {
-                    Person.map(initialData)
+                    Person.graph(initialData)
                         .then(function (res) {
                             var person = res[0];
                             var rq = Person.reactiveQuery({age__lt: 30});
@@ -368,7 +368,7 @@ describe('reactive query', function () {
         });
 
         it('initial results', function (done) {
-            Person.map(initialData).then(function () {
+            Person.graph(initialData).then(function () {
                 var rq = Person.reactiveQuery({age__lt: 30, __order: 'age'});
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init(function (err, results) {
@@ -393,11 +393,11 @@ describe('reactive query', function () {
         });
 
         it('add new, matching', function (done) {
-            Person.map(initialData).then(function () {
+            Person.graph(initialData).then(function () {
                 var rq = Person.reactiveQuery({age__lt: 30, __order: 'age'});
                 assert.notOk(rq.initialised, 'Should not yet be initialised');
                 rq.init().then(function () {
-                    Person.map({name: 'peter', age: 10}).then(function () {
+                    Person.graph({name: 'peter', age: 10}).then(function () {
                         siesta.notify(function () {
                             assert.equal(rq.results.length, 4, 'Should be 4 results');
                             _.each(rq.results, function (r) {

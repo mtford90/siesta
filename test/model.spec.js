@@ -24,7 +24,7 @@ describe('Models', function () {
     });
 
     it('get attributes', function (done) {
-        Model.map({id: 1, colour: 'red', name: 'Aston martin'})
+        Model.graph({id: 1, colour: 'red', name: 'Aston martin'})
             .then(function (car) {
                 var attributes = car.getAttributes();
                 assert.equal(Object.keys(attributes).length, 3);
@@ -52,7 +52,7 @@ describe('Models', function () {
                     }
                 });
 
-            Car.map({colour: 'red', owner: {name: 'bob'}})
+            Car.graph({colour: 'red', owner: {name: 'bob'}})
                 .then(function (car) {
                     assert.ok(car);
                     assert.ok(car.owner);
@@ -78,7 +78,7 @@ describe('Models', function () {
                     }
                 });
 
-            Car.map({colour: 'red', owner: {name: 'bob'}})
+            Car.graph({colour: 'red', owner: {name: 'bob'}})
                 .then(function (car) {
                     assert.ok(car);
                     assert.ok(car.owner);
@@ -178,7 +178,7 @@ describe('Models', function () {
                         }
                     }
                 });
-                Model.map({colour: 'red'})
+                Model.graph({colour: 'red'})
                     .then(function (m) {
                         m.listenOnce(function (e) {
                             console.log('e', e);
@@ -204,7 +204,7 @@ describe('Models', function () {
                         }
                     }
                 });
-                Model.map({colour: 'red'})
+                Model.graph({colour: 'red'})
                     .then(function (m) {
                         m.listenOnce(function (e) {
                             console.log('e', e);

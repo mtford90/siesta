@@ -71,7 +71,7 @@ describe('mapping!', function () {
                     });
                     siesta.install()
                         .then(function () {
-                            M.map({
+                            M.graph({
                                 attr: 1
                             });
                         })
@@ -90,7 +90,7 @@ describe('mapping!', function () {
                     });
                     siesta.install()
                         .then(function () {
-                            M.map({
+                            M.graph({
                                 attr: 1
                             })
                                 .then(function () {
@@ -122,11 +122,11 @@ describe('mapping!', function () {
                         });
                     siesta.install()
                         .then(function () {
-                            M.map({
+                            M.graph({
                                 attr: 1
                             })
                                 .then(function () {
-                                    M_2.map({
+                                    M_2.graph({
                                         attr: 2
                                     })
                                         .then(function () {
@@ -160,10 +160,10 @@ describe('mapping!', function () {
                             },
                             attributes: ['attr']
                         });
-                    M.map({
+                    M.graph({
                         attr: 1
                     }).then(function () {
-                        M_2.map({
+                        M_2.graph({
                             attr: 2
                         }).then(function () {
                             assert.ok(asyncInitExecuted);
@@ -189,7 +189,7 @@ describe('mapping!', function () {
                             attributes: ['attr'],
                             singleton: true
                         });
-                    M.map({
+                    M.graph({
                         attr: 1
                     }).then(function () {
                         assert.ok(asyncInitExecuted);
@@ -213,7 +213,7 @@ describe('mapping!', function () {
                         M_2 = C.model('M_2', {
                             attributes: ['attr']
                         });
-                    M.map({
+                    M.graph({
                         attr: 1
                     }).then(function () {
                         assert.ok(asyncInitExecuted);
@@ -233,7 +233,7 @@ describe('mapping!', function () {
                     attributes: ['attr']
                 });
                 siesta.install().then(function () {
-                    M.map({
+                    M.graph({
                         attr: 'xyz'
                     })
                         .then(function (m) {
@@ -254,7 +254,7 @@ describe('mapping!', function () {
                     attributes: ['attr']
                 });
                 siesta.install().then(function () {
-                    M.map({
+                    M.graph({
                         attr: 'xyz'
                     })
                         .then(function (m) {
@@ -277,7 +277,7 @@ describe('mapping!', function () {
                 });
                 siesta.install()
                     .then(function () {
-                        M.map({
+                        M.graph({
                             attr: 1
                         })
                             .then(function (_m) {
@@ -301,7 +301,7 @@ describe('mapping!', function () {
                 });
                 siesta.install()
                     .then(function () {
-                        M.map({
+                        M.graph({
                             attr: 1
                         })
                             .then(function (_m) {
@@ -329,7 +329,7 @@ describe('mapping!', function () {
                 });
                 siesta.install()
                     .then(function () {
-                        M.map({
+                        M.graph({
                             attr: 1
                         })
                             .then(function (_m) {
@@ -395,7 +395,7 @@ describe('mapping!', function () {
                 });
                 siesta.install()
                     .then(function () {
-                        M.map({
+                        M.graph({
                             attr: 1
                         })
                             .then(function (_m) {
@@ -419,7 +419,7 @@ describe('mapping!', function () {
                 });
                 siesta.install()
                     .then(function () {
-                        M.map({
+                        M.graph({
                             attr: 1
                         })
                             .then(function (_m) {

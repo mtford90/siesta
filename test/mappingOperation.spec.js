@@ -521,9 +521,9 @@ describe('bug', function () {
             name: 'Lambo',
             id: '3'
         }];
-        Car.map(data, function (err) {
+        Car.graph(data, function (err) {
             if (err) done(err);
-            Car.map(data, function (err) {
+            Car.graph(data, function (err) {
                 if (err) done(err);
                 // TODO
                 done();

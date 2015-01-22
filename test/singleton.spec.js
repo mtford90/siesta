@@ -26,12 +26,12 @@ describe('singleton mapping', function () {
     });
 
     it('should map onto the same singleton object, even if a different identifier', function (done) {
-        Car.map({
+        Car.graph({
             colour: 'red',
             id: 5
         }).then(function (car) {
             assert.ok(car, 'Map should return a car...');
-            Car.map({
+            Car.graph({
                 colour: 'blue',
                 id: 10
             }).then(function (car2) {
@@ -44,11 +44,11 @@ describe('singleton mapping', function () {
     });
 
     it('should map onto the same singleton object', function (done) {
-        Car.map({
+        Car.graph({
             colour: 'red'
         }, function (err, car) {
             if (err) done(err);
-            Car.map({
+            Car.graph({
                 colour: 'blue'
             }, function (err, car2) {
                 if (err) done(err);
@@ -60,7 +60,7 @@ describe('singleton mapping', function () {
     });
 
     it('cache should return singleton', function (done) {
-        Car.map({
+        Car.graph({
             colour: 'red',
             id: 5
         }, function (err, car) {
@@ -74,7 +74,7 @@ describe('singleton mapping', function () {
     });
 
     it('one should simply return the car', function (done) {
-        Car.map({
+        Car.graph({
             colour: 'red',
             id: 5
         }, function (err, car) {
@@ -149,7 +149,7 @@ describe('singleton mapping', function () {
 
         describe('relationships are automatically setup', function () {
             it('when mapped', function (done) {
-                ParentConfig.map({}).then(function (parent) {
+                ParentConfig.graph({}).then(function (parent) {
                     assert.ok(parent);
                     assert.ok(parent.settings, 'should have created an instance for the first singleton child');
                     assert.ok(parent.otherSettings, 'should have created an instance for the second singleton child');
@@ -243,7 +243,7 @@ describe('singleton mapping', function () {
                         id: 'id',
                         attributes: ['name']
                     });
-                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                    Car.graph({name: 'Blah', owner: {name: 'Blah blah'}})
                         .then(function (car) {
                             assert.ok(car);
                             done();
@@ -275,7 +275,7 @@ describe('singleton mapping', function () {
                         attributes: ['name'],
                         singleton: true
                     });
-                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                    Car.graph({name: 'Blah', owner: {name: 'Blah blah'}})
                         .then(function (car) {
                             assert.ok(car);
                             done();
@@ -340,7 +340,7 @@ describe('singleton mapping', function () {
                         id: 'id',
                         attributes: ['name']
                     });
-                    Car.map({name: 'Blah', owner: {name: 'Blah blah'}})
+                    Car.graph({name: 'Blah', owner: {name: 'Blah blah'}})
                         .then(function (car) {
                             assert.ok(car);
                             assert.ok(car.owner);

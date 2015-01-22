@@ -25,7 +25,7 @@ describe('install step', function () {
         });
 
         it('map', function (done) {
-            Person.map({name: 'Mike', age: 24})
+            Person.graph({name: 'Mike', age: 24})
                 .then(function () {
                     done();
                 })
@@ -100,7 +100,7 @@ describe('install step', function () {
         });
 
         it('map', function (done) {
-            Person.map({name: 'Mike', age: 24})
+            Person.graph({name: 'Mike', age: 24})
                 .then(function () {
                     done();
                 })

@@ -99,7 +99,7 @@ else {
                     return _prepareDatum(datum, Model);
                 });
                 if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
-                Model.map(data, {
+                Model.graph(data, {
                     disableevents: true,
                     _ignoreInstalled: true,
                     callInit: false

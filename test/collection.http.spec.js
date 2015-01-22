@@ -274,7 +274,7 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        Car.map(data, function (err, _objectToDelete) {
+                        Car.graph(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
@@ -323,7 +323,7 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        Car.map(data, function (err, _objectToDelete) {
+                        Car.graph(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
@@ -357,7 +357,7 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        Car.map(data, function (err, _objectToDelete) {
+                        Car.graph(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
@@ -391,7 +391,7 @@ describe('http!', function () {
                             colour: 'red',
                             name: 'Aston Martin'
                         };
-                        Car.map(data, function (err, _objectToDelete) {
+                        Car.graph(data, function (err, _objectToDelete) {
                             if (err) done(err);
                             objectToDelete = _objectToDelete;
                             siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(new siesta.ext.http.ResponseDescriptor({
@@ -453,7 +453,7 @@ describe('http!', function () {
                     var method = "POST";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    Car.map({
+                    Car.graph({
                         colour: 'red',
                         name: 'Aston Martin'
                     }, function (err, _car) {
@@ -518,7 +518,7 @@ describe('http!', function () {
                     var method = "PUT";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    Car.map({
+                    Car.graph({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: '5'
@@ -584,7 +584,7 @@ describe('http!', function () {
                     var method = "PATCH";
                     var status = 200;
                     server.respondWith(method, path, [status, headers, JSON.stringify(raw)]);
-                    Car.map({
+                    Car.graph({
                         colour: 'red',
                         name: 'Aston Martin',
                         id: '5'
@@ -724,7 +724,7 @@ describe('http!', function () {
                 path: '/cars/[0-9]+'
             });
             siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: '5'

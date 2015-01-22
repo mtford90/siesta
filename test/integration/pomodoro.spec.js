@@ -36,7 +36,7 @@ describe('pomodoro', function () {
                 incompleteTasks.once('change', function () {
                     done();
                 });
-                Task.map({title: 'title', description: 'an awesome description', completed: false})
+                Task.graph({title: 'title', description: 'an awesome description', completed: false})
                     .catch(done)
                     .done();
             }).catch(done).done();

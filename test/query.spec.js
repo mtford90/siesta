@@ -21,7 +21,7 @@ describe('query...', function () {
             });
         });
         it('object exists', function (done) {
-            Mapping.map({
+            Mapping.graph({
                 name: 'Michael',
                 age: 15
             }, function (err, obj) {
@@ -42,7 +42,7 @@ describe('query...', function () {
         });
 
         it('object does not exist', function (done) {
-            Mapping.map({
+            Mapping.graph({
                 name: 'Michael',
                 age: 21
             }, function (err, obj) {
@@ -62,7 +62,7 @@ describe('query...', function () {
         });
 
         it('multiple matches', function (done) {
-            Mapping.map([
+            Mapping.graph([
                 {
                     name: 'Michael',
                     age: 21
@@ -115,7 +115,7 @@ describe('query...', function () {
 
             describe('attributes', function () {
                 it('matches', function (done) {
-                    Person.map([
+                    Person.graph([
                         {
                             name: 'Michael',
                             age: 21
@@ -143,7 +143,7 @@ describe('query...', function () {
                 });
 
                 it('no matches', function (done) {
-                    Person.map([
+                    Person.graph([
                         {
                             name: 'Michael',
                             age: 21
@@ -171,13 +171,13 @@ describe('query...', function () {
 
             describe('relationships', function () {
                 it('model', function (done) {
-                    Person.map({
+                    Person.graph({
                         name: 'Michael',
                         age: 21
                     }, function (err, person) {
                         assert.ok(person, 'should return a person');
                         if (err) done(err);
-                        Car.map({
+                        Car.graph({
                             colour: 'red',
                             name: 'Aston Martin',
                             owner: person
@@ -211,7 +211,7 @@ describe('query...', function () {
             });
 
             it('null shouldnt match', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: null
@@ -238,7 +238,7 @@ describe('query...', function () {
             });
 
             it('undefined shouldnt match', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: undefined
@@ -265,7 +265,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -293,7 +293,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -320,7 +320,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -358,7 +358,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -386,7 +386,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -418,7 +418,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -456,7 +456,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -484,7 +484,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -516,7 +516,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -554,7 +554,7 @@ describe('query...', function () {
             });
 
             it('matches all', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -582,7 +582,7 @@ describe('query...', function () {
             });
 
             it('matches some', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -614,7 +614,7 @@ describe('query...', function () {
             });
 
             it('no matches', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -653,7 +653,7 @@ describe('query...', function () {
                 });
             });
             it('string contains', function (done) {
-                 Model.map([
+                 Model.graph([
                      {name: 'aaaabb'},
                      {name: '111122'},
                      {name: '4343bb'}
@@ -668,7 +668,7 @@ describe('query...', function () {
                  }).catch(done);
             });
             it('array contains', function (done) {
-                Model.map([
+                Model.graph([
                     {name: [1, 2, 3]},
                     {name: [4, 5, 6]},
                     {name: [3, 4, 5]}
@@ -707,7 +707,7 @@ describe('query...', function () {
             });
 
             it('invalid op', function (done) {
-                Person.map([
+                Person.graph([
                     {
                         name: 'Michael',
                         age: 21
@@ -746,7 +746,7 @@ describe('query...', function () {
         });
 
         it('descending order', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 40},
                 {name: 'John', age: 12}
@@ -765,7 +765,7 @@ describe('query...', function () {
         });
 
         it('ascending order', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 40},
                 {name: 'John', age: 12}
@@ -784,7 +784,7 @@ describe('query...', function () {
         });
 
         it('multiple order, array', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 24},
                 {name: 'John', age: 12}
@@ -803,7 +803,7 @@ describe('query...', function () {
         });
 
         it('date order', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', dob: new Date(1990, 9, 10)},
                 {name: 'Bob', dob: new Date(1993, 1, 12)},
                 {name: 'John', dob: new Date(1984, 3, 5)}
@@ -823,7 +823,7 @@ describe('query...', function () {
 
 
         it('alphabetical order, ascending', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike'},
                 {name: 'Bob'},
                 {name: 'John'}
@@ -842,7 +842,7 @@ describe('query...', function () {
 
 
         it('alphabetical order, descending', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike'},
                 {name: 'Bob'},
                 {name: 'John'}
@@ -869,7 +869,7 @@ describe('query...', function () {
             });
         });
         it('simple', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 22},
                 {name: 'Peter', age: 29}
@@ -892,7 +892,7 @@ describe('query...', function () {
                 .done();
         });
         it('still simple', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 22},
                 {name: 'Peter', age: 24}
@@ -916,7 +916,7 @@ describe('query...', function () {
         });
 
         it('nested', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 22},
                 {name: 'Peter', age: 24},
@@ -948,7 +948,7 @@ describe('query...', function () {
             });
         });
         it('simple', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 24},
                 {name: 'Peter', age: 24}
@@ -972,7 +972,7 @@ describe('query...', function () {
         });
 
         it('mixture', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Mike', age: 24},
                 {name: 'Bob', age: 22},
                 {name: 'Peter', age: 24},
@@ -1016,7 +1016,7 @@ describe('query...', function () {
         });
 
         it('nested equals', function (done) {
-            Car.map([
+            Car.graph([
                 {name: 'Aston Martin', colour: 'black', owner: {id: 1, name: 'Mike', age: 23}},
                 {name: 'Aston Martin', colour: 'blue', owner: {id: 1}},
                 {name: 'Bentley', colour: 'green', owner: {id: 2, name: 'Bob', age: 22}}
@@ -1035,7 +1035,7 @@ describe('query...', function () {
         });
 
         it('nested op', function (done) {
-            Car.map([
+            Car.graph([
                 {name: 'Aston Martin', colour: 'black', owner: {id: 1, name: 'Mike', age: 23}},
                 {name: 'Aston Martin', colour: 'blue', owner: {id: 2, name: 'John', age: 24}},
                 {name: 'Bentley', colour: 'green', owner: {id: 3, name: 'Bob', age: 25}}

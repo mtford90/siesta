@@ -17,7 +17,7 @@ describe('change identifiers', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            Car.map({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
+            Car.graph({id: 'xyz', colour: 'red', name: 'ford'}, function (err, _car) {
                 if (err) done(err);
                 car = _car;
                 done();

@@ -287,7 +287,7 @@ _.extend(Model.prototype, {
                     query = _.extend({}, query);
                     query.__ignoreInstalled = true;
                     if (!objs.length) {
-                        this.map({}, function (err) {
+                        this.graph({}, function (err) {
                             if (!err) {
                                 (this._query(query)).execute(callback);
                             }
@@ -362,7 +362,7 @@ _.extend(Model.prototype, {
      * @param {boolean} opts._ignoreInstalled - An escape clause that allows mapping onto Models even if install process has not finished.
      * @param {function} [callback] Called once pouch persistence returns.
      */
-    map: function (data, opts, callback) {
+    graph: function (data, opts, callback) {
         if (typeof opts == 'function') callback = opts;
         opts = opts || {};
         var deferred = util.defer(callback);

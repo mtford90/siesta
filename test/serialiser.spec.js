@@ -33,7 +33,7 @@ describe('serialisers', function () {
             });
         });
         it('should return the id if has one', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5
@@ -44,7 +44,7 @@ describe('serialisers', function () {
             });
         });
         it('should return null if doesnt have an id', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin'
             }, function (err, car) {
@@ -54,7 +54,7 @@ describe('serialisers', function () {
             });
         });
         it('should return null if no id field', function (done) {
-            Person.map({
+            Person.graph({
                 name: 'Michael Ford'
             }, function (err, car) {
                 if (err) done(err);
@@ -96,7 +96,7 @@ describe('serialisers', function () {
         });
 
         it('depth 0', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5,
@@ -118,7 +118,7 @@ describe('serialisers', function () {
         });
 
         it('depth 1', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5,
@@ -145,7 +145,7 @@ describe('serialisers', function () {
         });
 
         it('depth 2', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 5,

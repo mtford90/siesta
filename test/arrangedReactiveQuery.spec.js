@@ -60,7 +60,7 @@ describe('arranged rquery', function () {
                 id: 'id',
                 attributes: ['name', 'age', 'index']
             });
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26}
@@ -133,7 +133,7 @@ describe('arranged rquery', function () {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
             });
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26}
@@ -306,7 +306,7 @@ describe('arranged rquery', function () {
         });
         describe('full range of indexes exists', function () {
             beforeEach(function (done) {
-                Person.map([
+                Person.graph([
                     {name: 'Michael', age: 24, customIndexField: 0},
                     {name: 'Bob', age: 30, customIndexField: 1},
                     {name: 'John', age: 26, customIndexField: 2}
@@ -337,7 +337,7 @@ describe('arranged rquery', function () {
 
         });
         it('some indexes exists, nicely ordered', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24, customIndexField: 0},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26, customIndexField: 1}
@@ -363,7 +363,7 @@ describe('arranged rquery', function () {
         });
 
         it('some indexes exists, sparse', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24, customIndexField: 0},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26, customIndexField: 2}
@@ -389,7 +389,7 @@ describe('arranged rquery', function () {
         });
 
         it('some indexes exists, very sparse', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24, customIndexField: 2},
                 {name: 'Bob', age: 30},
                 {name: 'Peter', age: 21},
@@ -417,7 +417,7 @@ describe('arranged rquery', function () {
         });
 
         it('out of range index should rejig the indexes', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24, customIndexField: 6},
                 {name: 'Jane', age: 41, customIndexField: 10},
                 {name: 'Bob', age: 30},
@@ -446,7 +446,7 @@ describe('arranged rquery', function () {
                 .done();
         });
         it('duplicate indexes', function (done) {
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24, customIndexField: 1},
                 {name: 'Jane', age: 41, customIndexField: 1},
                 {name: 'Bob', age: 30},
@@ -487,7 +487,7 @@ describe('arranged rquery', function () {
                 id: 'id',
                 attributes: ['name', 'age', 'customIndexField']
             });
-            Person.map([
+            Person.graph([
                 {name: 'Michael', age: 24},
                 {name: 'Bob', age: 30},
                 {name: 'John', age: 26}
@@ -500,7 +500,7 @@ describe('arranged rquery', function () {
             prq.indexAttribute = 'customIndexField';
             prq.init()
                 .then(function () {
-                    Person.map({name: 'Jane', age: 40})
+                    Person.graph({name: 'Jane', age: 40})
                         .then(function (jane) {
                             var people = prq.results;
                             assert.equal(people.length, 4);
@@ -521,7 +521,7 @@ describe('arranged rquery', function () {
             prq.insertionPolicy = siesta.InsertionPolicy.Back;
             prq.init()
                 .then(function () {
-                    Person.map({name: 'Jane', age: 40})
+                    Person.graph({name: 'Jane', age: 40})
                         .then(function (jane) {
                             var people = prq.results;
                             assert.equal(people.length, 4);
@@ -542,7 +542,7 @@ describe('arranged rquery', function () {
             prq.insertionPolicy = siesta.InsertionPolicy.Front;
             prq.init()
                 .then(function () {
-                    Person.map({name: 'Jane', age: 40})
+                    Person.graph({name: 'Jane', age: 40})
                         .then(function (jane) {
                             var people = prq.results;
                             assert.equal(people.length, 4);

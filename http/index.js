@@ -105,8 +105,8 @@ function _httpResponse(method, path, optsOrCallback, callback) {
                         Logger.trace('Model _constructSubOperation data: ' + util.prettyPrint(extractedData));
                     }
                     if (typeof(extractedData) == 'object') {
-                        var mapping = matchedDescriptor.model;
-                        mapping.map(extractedData, {override: opts.obj}, function (err, obj) {
+                        var Model = matchedDescriptor.model;
+                        Model.graph(extractedData, {override: opts.obj}, function (err, obj) {
                             callback(err, obj, data, xhr);
                         });
                     } else { // Matched, but no data.

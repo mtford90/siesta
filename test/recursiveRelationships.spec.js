@@ -29,13 +29,13 @@ describe('recursive relationships', function () {
 
     it('map', function (done) {
         var masterRepoData = {id: '5', name: 'Master Repo'};
-        Repo.map(masterRepoData, function (err, repo) {
+        Repo.graph(masterRepoData, function (err, repo) {
             if (err) {
                 done(err);
             }
             else {
                 var childRepoData = {id: '6', name: 'Child Repo', forkedFrom: {_id: repo._id}};
-                Repo.map(childRepoData, function (err, childRepo) {
+                Repo.graph(childRepoData, function (err, childRepo) {
                     if (err) {
                         done(err);
                     }

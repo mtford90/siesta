@@ -37,7 +37,7 @@ describe('perform mapping', function () {
                             'field3'
                         ]
                     });
-                Mapping.map({field1: 5, field3: 'abc'})
+                Mapping.graph({field1: 5, field3: 'abc'})
                     .then(function (p) {
                         assert.equal(p.field1, 5);
                         assert.equal(p.field2, 'xyz');
@@ -59,7 +59,7 @@ describe('perform mapping', function () {
                             'field2'
                         ]
                     });
-                Mapping.map({field2: 'abc'})
+                Mapping.graph({field2: 'abc'})
                     .then(function (p) {
                         assert(p.field1 === false, 'should be false');
                         assert.equal(p.field2, 'abc');
@@ -80,7 +80,7 @@ describe('perform mapping', function () {
                             'field2'
                         ]
                     });
-                Mapping.map({field2: 'abc'})
+                Mapping.graph({field2: 'abc'})
                     .then(function (p) {
                         assert(p.field1 === true, 'should be true');
                         assert.equal(p.field2, 'abc');
@@ -101,7 +101,7 @@ describe('perform mapping', function () {
                             'field2'
                         ]
                     });
-                Mapping.map({field2: 'abc'})
+                Mapping.graph({field2: 'abc'})
                     .then(function (p) {
                         assert(p.field1 === null);
                         assert.equal(p.field2, 'abc');
@@ -123,7 +123,7 @@ describe('perform mapping', function () {
                             'field2'
                         ]
                     });
-                Mapping.map({field2: 'abc'})
+                Mapping.graph({field2: 'abc'})
                     .then(function (p) {
                         assert(p.field1 == '');
                         assert.equal(p.field2, 'abc');
@@ -143,7 +143,7 @@ describe('perform mapping', function () {
             });
         });
         it('empty', function (done) {
-            Car.map({}).then(function (_obj) {
+            Car.graph({}).then(function (_obj) {
                 assert.ok(_obj);
                 done();
             }).catch(done);
@@ -160,7 +160,7 @@ describe('perform mapping', function () {
         });
         it('xyz', function (done) {
             var obj;
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin'
             }, function (err, _obj) {
@@ -183,7 +183,7 @@ describe('perform mapping', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 'dfadf'
@@ -215,7 +215,7 @@ describe('perform mapping', function () {
             describe('via id', function () {
                 var newObj;
                 beforeEach(function (done) {
-                    Car.map({
+                    Car.graph({
                         colour: 'blue',
                         id: 'dfadf'
                     }, function (err, obj) {
@@ -237,7 +237,7 @@ describe('perform mapping', function () {
             describe('via _id', function () {
                 var newObj;
                 beforeEach(function (done) {
-                    Car.map({
+                    Car.graph({
                         colour: 'blue',
                         _id: obj._id
                     }, function (err, obj) {
@@ -287,14 +287,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                Car.map({
+                                Car.graph({
                                     name: 'Bentley',
                                     colour: 'black',
                                     owner: 'personRemoteId',
@@ -330,7 +330,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: 'personRemoteId',
@@ -380,7 +380,7 @@ describe('perform mapping', function () {
                                     done(err);
                                 } else {
                                     cars = objs;
-                                    Person.map({
+                                    Person.graph({
                                         name: 'Michael Ford',
                                         age: 23,
                                         id: 'personRemoteId',
@@ -415,7 +415,7 @@ describe('perform mapping', function () {
                     describe('remoteids of objects that dont exist', function () {
                         var person;
                         beforeEach(function (done) {
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -453,7 +453,7 @@ describe('perform mapping', function () {
                             Car._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) done(err);
                                 cars = objs;
-                                Person.map({
+                                Person.graph({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
@@ -498,14 +498,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        Person.map({
+                        Person.graph({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: person,
@@ -552,7 +552,7 @@ describe('perform mapping', function () {
                         Car._mapBulk(raw, {}, function (err, objs, res) {
                             if (err) done(err);
                             cars = objs;
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -584,14 +584,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        Person.map({
+                        Person.graph({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -645,7 +645,7 @@ describe('perform mapping', function () {
                                 done(err);
                             } else {}
                             cars = objs;
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -684,14 +684,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId123'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                Car.map({
+                                Car.graph({
                                     name: 'Bentley',
                                     colour: 'black',
                                     owner: {
@@ -726,7 +726,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -781,7 +781,7 @@ describe('perform mapping', function () {
                                 }
                                 cars = objs;
 
-                                Person.map({
+                                Person.graph({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
@@ -821,7 +821,7 @@ describe('perform mapping', function () {
                     describe('remoteids of objects that dont exist', function () {
                         var person;
                         beforeEach(function (done) {
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId',
@@ -865,7 +865,7 @@ describe('perform mapping', function () {
                             Car._mapBulk(raw, {}, function (err, objs, res) {
                                 if (err) done(err);
                                 cars = objs;
-                                Person.map({
+                                Person.graph({
                                     name: 'Michael Ford',
                                     age: 23,
                                     id: 'personRemoteId',
@@ -943,14 +943,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                Car.map({
+                                Car.graph({
                                     name: 'Bentley',
                                     colour: 'black',
                                     id: 'carRemoteId',
@@ -985,7 +985,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: 'personRemoteId',
@@ -1014,7 +1014,7 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId'
@@ -1024,7 +1024,7 @@ describe('perform mapping', function () {
                                     done(err);
                                 }
                                 car = _car;
-                                Person.map({
+                                Person.graph({
                                     name: 'Michael Ford',
                                     age: 23,
                                     car: 'carRemoteId',
@@ -1055,7 +1055,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: 'personRemoteId',
@@ -1087,14 +1087,14 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 id: 'personRemoteId'
                             }, function (err, _person) {
                                 if (err) done(err);
                                 person = _person;
-                                Car.map({
+                                Car.graph({
                                     name: 'Bentley',
                                     colour: 'black',
                                     id: 'carRemoteId',
@@ -1131,7 +1131,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -1162,7 +1162,7 @@ describe('perform mapping', function () {
                     describe('object that already exists', function () {
                         var person, car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId'
@@ -1172,7 +1172,7 @@ describe('perform mapping', function () {
                                     done(err);
                                 }
                                 car = _car;
-                                Person.map({
+                                Person.graph({
                                     name: 'Michael Ford',
                                     age: 23,
                                     car: {
@@ -1205,7 +1205,7 @@ describe('perform mapping', function () {
                     describe('remote id of an object that doesnt exist', function () {
                         var car;
                         beforeEach(function (done) {
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
@@ -1238,14 +1238,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        Person.map({
+                        Person.graph({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId',
@@ -1281,7 +1281,7 @@ describe('perform mapping', function () {
                 describe('reverse', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        Car.map({
+                        Car.graph({
                             name: 'Bentley',
                             colour: 'black',
                             id: 'carRemoteId'
@@ -1291,7 +1291,7 @@ describe('perform mapping', function () {
                                 done(err);
                             }
                             car = _car;
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 car: {
@@ -1327,14 +1327,14 @@ describe('perform mapping', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        Person.map({
+                        Person.graph({
                             name: 'Michael Ford',
                             age: 23,
                             id: 'personRemoteId'
                         }, function (err, _person) {
                             if (err) done(err);
                             person = _person;
-                            Car.map({
+                            Car.graph({
                                 name: 'Bentley',
                                 colour: 'black',
                                 id: 'carRemoteId',
@@ -1367,7 +1367,7 @@ describe('perform mapping', function () {
                 describe('reverse', function () {
                     var person, car;
                     beforeEach(function (done) {
-                        Car.map({
+                        Car.graph({
                             name: 'Bentley',
                             colour: 'black',
                             id: 'carRemoteId'
@@ -1377,7 +1377,7 @@ describe('perform mapping', function () {
                                 done(err);
                             }
                             car = _car;
-                            Person.map({
+                            Person.graph({
                                 name: 'Michael Ford',
                                 age: 23,
                                 car: car,
@@ -1419,7 +1419,7 @@ describe('perform mapping', function () {
         });
 
         it('mapping an attribute that doesnt exist', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'aston martin',
                 extraneous: 'blah'
@@ -1454,7 +1454,7 @@ describe('perform mapping', function () {
             });
 
             it('assign array to scalar relationship', function (done) {
-                Car.map({
+                Car.graph({
                     colour: 'red',
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
@@ -1467,7 +1467,7 @@ describe('perform mapping', function () {
             });
 
             it('assign array to scalar relationship reverse', function (done) {
-                Person.map({
+                Person.graph({
                     name: 'Michael Ford',
                     car: ['remoteId1', 'remoteId2'],
                     age: 23,
@@ -1502,7 +1502,7 @@ describe('perform mapping', function () {
             });
 
             it('assign array to scalar relationship', function (done) {
-                Car.map({
+                Car.graph({
                     colour: 'red',
                     name: 'Aston Martin',
                     owner: ['remoteId1', 'remoteId2'],
@@ -1515,7 +1515,7 @@ describe('perform mapping', function () {
             });
 
             it('assign scalar to vector relationship reverse', function (done) {
-                Person.map({
+                Person.graph({
                     name: 'Michael Ford',
                     cars: 'remoteId1',
                     age: 23,
@@ -1630,11 +1630,11 @@ describe('perform mapping', function () {
                         id: "remoteId2",
                         owner: ownerId
                     };
-                    Car.map(carRaw1, function (err, car1) {
+                    Car.graph(carRaw1, function (err, car1) {
                         if (err) {
                             done(err);
                         } else {
-                            Car.map(carRaw2, function (err, car2) {
+                            Car.graph(carRaw2, function (err, car2) {
                                 if (err) done(err);
                                 assert.equal(car1.owner, car2.owner);
                                 done();
@@ -1673,7 +1673,7 @@ describe('perform mapping', function () {
 
             describe('via remote id', function () {
                 beforeEach(function (done) {
-                    Person.map({
+                    Person.graph({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1718,7 +1718,7 @@ describe('perform mapping', function () {
             describe('bulk bulk', function () {
                 beforeEach(function (done) {
                     cars = [];
-                    Person.map({
+                    Person.graph({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1820,7 +1820,7 @@ describe('perform mapping', function () {
 
             describe('via nested remote id', function () {
                 beforeEach(function (done) {
-                    Person.map({
+                    Person.graph({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'
@@ -1870,7 +1870,7 @@ describe('perform mapping', function () {
             describe('via nested remote id with unmergedChanges', function () {
                 this.timeout(5000);
                 beforeEach(function (done) {
-                    Person.map({
+                    Person.graph({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'personRemoteId'

@@ -27,7 +27,7 @@ describe('property events', function () {
         });
 
         it('triggers', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red'
             }).then(function (car) {
                 assert.equal(car.blah, 'RED');
@@ -66,7 +66,7 @@ describe('property events', function () {
         });
 
         it('error should be thrown', function (done) {
-            Car.map({
+            Car.graph({
                 colour: 'red'
             }).then(function () {
                 done('Should have thrown an error!');

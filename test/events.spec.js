@@ -55,7 +55,7 @@ describe('events', function () {
                     id: 'id',
                     attributes: ['colour', 'name']
                 });
-                Car.map({
+                Car.graph({
                     colour: 'red',
                     name: 'Aston Martin',
                     id: 'xyz'
@@ -149,7 +149,7 @@ describe('events', function () {
 
             it('sends events for all levels', function (done) {
                 var notifs = [];
-                Car.map({
+                Car.graph({
                     colours: ['red', 'blue'],
                     name: 'Aston Martin',
                     id: 'xyz'
@@ -174,7 +174,7 @@ describe('events', function () {
 
             describe('push', function () {
                 beforeEach(function (done) {
-                    Car.map({
+                    Car.graph({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -214,7 +214,7 @@ describe('events', function () {
 
             describe('pop', function () {
                 beforeEach(function (done) {
-                    Car.map({
+                    Car.graph({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -254,7 +254,7 @@ describe('events', function () {
 
             describe('shift', function () {
                 beforeEach(function (done) {
-                    Car.map({
+                    Car.graph({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -297,7 +297,7 @@ describe('events', function () {
 
             describe('unshift', function () {
                 beforeEach(function (done) {
-                    Car.map({
+                    Car.graph({
                         colours: ['red', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -341,7 +341,7 @@ describe('events', function () {
 
                 beforeEach(function (done) {
                     notifs = [];
-                    Car.map({
+                    Car.graph({
                         colours: ['red', 'green', 'blue'],
                         name: 'Aston Martin',
                         id: 'xyz'
@@ -794,7 +794,7 @@ describe('events', function () {
                     genericEvent = n;
                 }
             });
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 'xyz'
@@ -852,7 +852,7 @@ describe('events', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 'xyz'
@@ -925,7 +925,7 @@ describe('events', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            Car.map({
+            Car.graph({
                 colour: 'red',
                 name: 'Aston Martin',
                 id: 'xyz'
@@ -1092,7 +1092,7 @@ describe('events', function () {
                         done();
                     };
                     var cancelListen = Collection.listen(listener);
-                    Car.map({colour: 'red', name: 'Aston Martin'});
+                    Car.graph({colour: 'red', name: 'Aston Martin'});
                 });
                 it('listenOnce', function (done) {
                     var listener;
@@ -1101,7 +1101,7 @@ describe('events', function () {
                         done();
                     };
                     Collection.listenOnce(listener);
-                    Car.map({colour: 'red', name: 'Aston Martin'});
+                    Car.graph({colour: 'red', name: 'Aston Martin'});
                 });
             });
 
@@ -1114,7 +1114,7 @@ describe('events', function () {
                         done();
                     };
                     var cancelListen = Car.listen(listener);
-                    Car.map({colour: 'red', name: 'Aston Martin'});
+                    Car.graph({colour: 'red', name: 'Aston Martin'});
                 });
                 it('listenOnce', function (done) {
                     var listener;
@@ -1123,13 +1123,13 @@ describe('events', function () {
                         done();
                     };
                     Car.listenOnce(listener);
-                    Car.map({colour: 'red', name: 'Aston Martin'});
+                    Car.graph({colour: 'red', name: 'Aston Martin'});
                 });
             });
 
             describe('object', function () {
                 it('listen', function (done) {
-                    Car.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
+                    Car.graph({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
                         var listener;
                         listener = function (n) {
                             assert.ok(n);
@@ -1137,18 +1137,18 @@ describe('events', function () {
                             done();
                         };
                         var cancelListen = car.listen(listener);
-                        Car.map({id: 1, colour: 'blue'});
+                        Car.graph({id: 1, colour: 'blue'});
                     }).catch(done).done();
                 });
                 it('listenOnce', function (done) {
-                    Car.map({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
+                    Car.graph({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
                         var listener;
                         listener = function (n) {
                             assert.ok(n);
                             done();
                         };
                         car.listenOnce(listener);
-                        Car.map({id: 1, colour: 'blue'});
+                        Car.graph({id: 1, colour: 'blue'});
                     }).catch(done).done();
                 });
             });

@@ -23,7 +23,7 @@ describe('storage', function () {
             });
 
             it('storage', function (done) {
-                Car.map({colour: 'black', name: 'bentley', id: 2})
+                Car.graph({colour: 'black', name: 'bentley', id: 2})
                     .then(function (car) {
                         car._rev = '123'; //Fake pouchdb revision.
                         var serialised = siesta.ext.storage._serialise(car);
@@ -62,8 +62,8 @@ describe('storage', function () {
             });
 
             it('onetomany', function (done) {
-                Person.map({name: 'Michael', age: 24}).then(function (person) {
-                    Car.map({colour: 'black', name: 'bentley', id: 2, owner: {_id: person._id}})
+                Person.graph({name: 'Michael', age: 24}).then(function (person) {
+                    Car.graph({colour: 'black', name: 'bentley', id: 2, owner: {_id: person._id}})
                         .then(function (car) {
                             var serialisedCar = siesta.ext.storage._serialise(car);
                             assert.equal(serialisedCar.colour, 'black');
@@ -98,7 +98,7 @@ describe('storage', function () {
             Car = Collection.model('Car', {
                 attributes: ['colour', 'name']
             });
-            Car.map({colour: 'black', name: 'bentley', id: 2}).then(function () {done()}).catch(done);
+            Car.graph({colour: 'black', name: 'bentley', id: 2}).then(function () {done()}).catch(done);
         });
 
         it('new object', function (done) {
@@ -528,10 +528,10 @@ describe('storage', function () {
             MyOtherModel = MyOtherCollection.model('MyOtherModel', {
                 attributes: ['attr']
             });
-            Car.map({colour: 'black', name: 'bentley', id: 2})
+            Car.graph({colour: 'black', name: 'bentley', id: 2})
                 .then(function (_car) {
                     car = _car;
-                    Person.map({name: 'Michael', age: 24})
+                    Person.graph({name: 'Michael', age: 24})
                         .then(function (_person) {
                             person = _person;
                             done();
@@ -551,7 +551,7 @@ describe('storage', function () {
             assert.ok(MyCollection.dirty);
             siesta.save().then(function () {
                 assert.notOk(MyCollection.dirty);
-                MyOtherModel.map({attr: 'xyz'})
+                MyOtherModel.graph({attr: 'xyz'})
                     .then(function () {
                         assert.notOk(MyCollection.dirty);
                         assert.ok(MyOtherCollection.dirty);

@@ -123,7 +123,7 @@ _.extend(Paginator.prototype, {
                     count = self._extractCount(data, jqXHR),
                     numPages = self._extractNumPages(data, jqXHR);
 
-                self.opts.model.map(modelData, function (err, modelInstances) {
+                self.opts.model.graph(modelData, function (err, modelInstances) {
                     if (!err) {
                         self.count = count;
                         self.numPages = numPages;
