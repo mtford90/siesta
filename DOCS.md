@@ -1097,7 +1097,9 @@ var Github = siesta.collection('Github');
 Github.baseURL = 'https://api.github.com/';
 ```
 
-From that point forward, it is then possible to send HTTP requests. If you have defined descriptors, the `instances` array will consist of Siesta model instances that have been created or updated. `data` refers to the raw data returned from the request and `xhr` is the object representing the HTTP request e.g. `jqxhr` if using jQuery.
+From that point forward, it is then possible to send HTTP requests. If you have defined descriptors, the `instances` array will consist of Siesta model instances that have been created or updated as a result of the HTTP request.
+`data` refers to the raw data returned from the request.
+`xhr` is the object representing the HTTP request e.g. `jqxhr` if using jQuery.
 
 ```js
 Github.GET('/users/mtford90/repos', function (err, instances, data, xhr) {
