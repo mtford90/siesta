@@ -1090,18 +1090,26 @@ Events are exactly the same as for [Reactive Queries](#reactive-queries-events).
 
 # HTTP
 
-Before using HTTP you first need to define a baseURL on your collection.
+Before using HTTP you first need to define a baseURL on your *collection*.
 
-```
+```js
 var Github = siesta.collection('Github');
 Github.baseURL = 'https://api.github.com/';
 ```
 
+From that point forward, it is then possible to send HTTP requests. If you have defined descriptors, the `instances` array will consist of Siesta model instances that have been created or updated. `data` refers to the raw data returned from the request and `xhr` is the object representing the HTTP request e.g. `jqxhr` if using jQuery.
+
+```js
+Github.GET('/users/mtford90/repos', function (err, instances, data, xhr) {
+    if (!err) {
+        // ...
+    }
+});
+```
+
 ## Descriptors
 
-Descriptors describe interactions with web services and are used by Siesta to decide what changes to make to the object graph once these interactions are initiated and/or completed.
-
-The following descriptor describes the github endpoint for obtaining a users list repositories.
+Descriptors *describe* HTTP requests and API endpoints. The following descriptor describes the Github endpoint for obtaining a users list repositories.
 
 ```js
 Github.descriptor({
@@ -1347,7 +1355,7 @@ Github.DELETE('/users/mtford90/repos/' + myRepo.id, myRepo)
 Siesta currently supports jQuery style ajax functions. This can be configured as follows:
 
 ```js
-siesta.setAjax(zepto.ajax);
+siesta.ajax = zepto.ajax;
 ```
 
 ## Paginator
