@@ -341,11 +341,10 @@ describe('http!', function () {
                             Collection.DELETE('cars/5/', _objectToDelete, {
                                 deletionMode: 'now'
                             }, function (_err, _obj, _resp) {
-                                assert.ok(_objectToDelete.removed)
+                                assert.ok(_objectToDelete.removed);
                                 done();
                             });
                             assert.ok(_objectToDelete.removed);
-                            ;
                         });
                     });
                 });
@@ -401,9 +400,9 @@ describe('http!', function () {
                             var headers = {
                                 "Content-Type": "application/json"
                             };
-                            var path = "http://mywebsite.co.uk/cars/5/";
-                            var method = "DELETE";
-                            var status = 500;
+                            var path = "http://mywebsite.co.uk/cars/5/",
+                                method = "DELETE",
+                                status = 500;
                             server.respondWith(method, path, [status, headers, '{"status": "ok"}']);
                             Collection.DELETE('cars/5/', _objectToDelete, {
                                 deletionMode: 'restore'
@@ -694,6 +693,14 @@ describe('http!', function () {
             var fakeAjax = function () {
             };
             siesta.setAjax(fakeAjax);
+            assert.equal(siesta.ext.http.ajax, fakeAjax);
+            assert.equal(siesta.getAjax(), fakeAjax);
+        });
+
+        it('set ajax via property', function () {
+            var fakeAjax = function () {
+            };
+            siesta.ajax = fakeAjax;
             assert.equal(siesta.ext.http.ajax, fakeAjax);
             assert.equal(siesta.getAjax(), fakeAjax);
         });
