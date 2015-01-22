@@ -190,7 +190,7 @@ _.extend(Collection.prototype, {
      * @return {Model}
      * @class Collection
      */
-    model: function () {
+    model: function (op) {
         var acceptModels = !this.installed;
         if (acceptModels) {
             var self = this;
@@ -201,7 +201,16 @@ _.extend(Collection.prototype, {
                             return self._model(m.name, m);
                         });
                     } else {
-                        return this._model(arguments[0].name, arguments[0]);
+                        var name, opts;
+                        if (util.isString(arguments[0])) {
+                            name = arguments[0];
+                            opts = {};
+                        }
+                        else {
+                            opts = arguments[0];
+                            name = opts.name;
+                        }
+                        return this._model(name, opts);
                     }
                 } else {
                     if (typeof arguments[0] == 'string') {

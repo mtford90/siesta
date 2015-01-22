@@ -379,7 +379,6 @@ describe('http!', function () {
                                 done();
                             });
                             assert.notOk(_objectToDelete.removed);
-                            ;
                         });
                     });
                 });
@@ -409,11 +408,10 @@ describe('http!', function () {
                             Collection.DELETE('cars/5/', _objectToDelete, {
                                 deletionMode: 'restore'
                             }, function (_err, _obj, _resp) {
-                                assert.notOk(_objectToDelete.removed)
+                                assert.notOk(_objectToDelete.removed);
                                 done();
                             });
                             assert.ok(_objectToDelete.removed);
-                            ;
                         });
                     });
                 });
@@ -686,17 +684,10 @@ describe('http!', function () {
             assert.equal(siesta.ext.http.ajax, fakeDollar.ajax);
         });
 
-        it('no $', function () {
-            $ = undefined;
-            assert.equal(siesta.ext.http.ajax, fakeDollar.ajax);
-        });
-
         it('no ajax at all', function () {
             $ = undefined;
             jQuery = undefined;
-            assert.throws(function () {
-                var a = siesta.ext.http.ajax;
-            }, InternalSiestaError);
+            assert.notOk(siesta.ext.http.ajax);
         });
 
         it('set ajax', function () {

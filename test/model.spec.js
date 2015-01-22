@@ -23,6 +23,7 @@ describe('Models', function () {
         });
     });
 
+
     it('get attributes', function (done) {
         Model.graph({id: 1, colour: 'red', name: 'Aston martin'})
             .then(function (car) {

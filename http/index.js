@@ -131,17 +131,23 @@ function _httpResponse(method, path, optsOrCallback, callback) {
         }
 
         logHttpRequest(opts);
-        var promise = siesta.ext.http.ajax(opts);
-        if (promise.success) { // $http and jquery <1.8
-            promise.success(success);
-            promise.error(error);
-        }
-        else if (promise.done) { // jquery >= 1.8
-            promise.done(success);
-            promise.fail(error);
+        var ajax = siesta.ext.http.ajax;
+        if (ajax) {
+            var promise = ajax(opts);
+            if (promise.success) { // $http and jquery <1.8
+                promise.success(success);
+                promise.error(error);
+            }
+            else if (promise.done) { // jquery >= 1.8
+                promise.done(success);
+                promise.fail(error);
+            }
+            else {
+                callback('Incompatible ajax function. Could not find success/fail methods on returned promise.');
+            }
         }
         else {
-            callback('Incompatible ajax function. Could not find success/fail methods on returned promise.');
+            callback('No ajax function. Ensure that either $.ajax is available, or call siesta.setAjax(ajax) with a compatible ajax function e.g. zepto, jquery, $http')
         }
     }.bind(this));
     return deferred.promise;
@@ -381,11 +387,7 @@ var http = {
 
 Object.defineProperty(http, 'ajax', {
     get: function () {
-        var a = ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
-        if (!a) {
-            throw new InternalSiestaError('ajax has not been defined and could not find $.ajax or jQuery.ajax');
-        }
-        return a;
+        return ajax || ($ ? $.ajax : null) || (jQuery ? jQuery.ajax : null);
     },
     set: function (v) {
         ajax = v;

@@ -10,6 +10,23 @@ describe('bugs', function () {
     beforeEach(function (done) {
         siesta.reset(done);
     });
+
+    describe('no name specified when creating mapping', function () {
+        it('No obj', function (done) {
+            var Collection = siesta.collection('Collection'),
+                Model = Collection.model('Model');
+            siesta.install(done);
+        });
+
+        it('obj', function (done) {
+            var Collection = siesta.collection('Collection'),
+                Model = Collection.model('Model', {});
+            siesta.install(done);
+        });
+
+    });
+
+
     describe('ensure that mapping relationships using various methods works', function () {
         describe('ModelInstance', function () {
             describe('OneToOne', function () {
