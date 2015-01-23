@@ -1,5 +1,3 @@
-*<span style="color: red">**Warning**: Siesta is a work-in-progress and undergoing heavy development. The codebase is currently catching up with the docs and a new version is expected within the next few weeks. Please read through the docs and get involved via the [gitter chat](https://gitter.im/mtford90/siesta). All feedback is appreciated!</span>*
-
 # Getting Started
 
 You can get started with Siesta by manually including it within your project or by forking one of the boilerplate projects.
@@ -46,8 +44,8 @@ siesta.q = require('q');
 Once q.js is included in your project you can use promises anywhere in Siesta where you would normally use callbacks.
 
 ```js
-Model.map({key: 'value')
-    .then(function () {
+Model.graph({key: 'value')
+    .then(function () {.graph
        // ...
     })
     .catch(function (err) {
@@ -160,7 +158,7 @@ Siesta determines which objects to create and which objects to update by using t
 For example, to create the Github object graph from earlier we could map the following data.
 
 ```js
-Repo.map([
+Repo.graph([
     {
         name: 'siesta',
         id: 23079554,
@@ -294,9 +292,9 @@ var Repo = Github.model('Repo', {
 Once a relationship is defined, Siesta will automatically manage the reverse of that relationship, the name of which is defined by the `reverse` key when defining your models. e.g.
 
 ```js
-User.map({username: 'bob', id: 5})
+User.graph({username: 'bob', id: 5})
     .then(function (bob) {
-        Repo.map({name:'A repo', user: 5})
+        Repo.graph({name:'A repo', user: 5})
             .then(function (repo) {
                 assert.equal(repo.owner, bob);
             });
@@ -355,7 +353,7 @@ var RateLimit = Github.model({
 Anything mapped onto a singleton model will be mapped onto that unique instance.
 
 ```js
-RateLimit.map([
+RateLimit.graph([
     {limit: 60},
     {limit: 40}
 ]).then(function (rateLimits) {
@@ -385,7 +383,7 @@ var Collection = siesta.collection('Collection'),
 Any mapped instances will now have that method.
 
 ```js
-Account.map({transactions: [5, 3, -2]})
+Account.graph({transactions: [5, 3, -2]})
        .then(function (acc) {
            assert.equal(acc.getBalance(), 6);
        });
@@ -414,7 +412,7 @@ var Collection = siesta.collection('Collection'),
 Any mapped instances will now have that property.
 
 ```js
-Account.map({transactions: [5, 3, -2]})
+Account.graph({transactions: [5, 3, -2]})
     .then(function (acc) {
         assert.equal(acc.balance, 6);
     });
@@ -509,7 +507,7 @@ We can do the same on the instance level.
 
 ```js
 JavascriptEngineer
-	.map({
+	.graph({
         name: 'Michael',
         programmingLanguages: ['python', 'javascript', 'objective-c'],
         knowsNodeJS: true
@@ -530,7 +528,7 @@ When data is mapped onto the object graph a new model instance will be created i
 
 ```js
 // Map a single object.
-User.map({
+User.graph({
 	login: 'mtford90',
 	avatar_url: 'http://domain.com/path/to/avatar.png',
 	id: 123
@@ -539,7 +537,7 @@ User.map({
 });
 
 // Map multiple objects
-User.map([
+User.graph([
 	 {
 		 login: 'mtford90',
 		 id: 123
@@ -560,8 +558,8 @@ User.map([
 When we map instances to the object graph, if an instance that matches `id` already exists, then this instance will be updated.
 
 ```js
-User.map({login: 'mtford90', id: 1}, function (err, user) {
-    User.map({login: 'mtford91', id: 1}, function (err, _user) {
+User.graph({login: 'mtford90', id: 1}, function (err, user) {
+    User.graph({login: 'mtford91', id: 1}, function (err, _user) {
         assert.equal(user, _user);
         assert.equal(user.login, 'mtford91');
     });
@@ -600,7 +598,7 @@ Model.listen(function (e) {
 });
 
 // Listen to events related to particular instances
-Model.map({attr: 'something'})
+Model.graph({attr: 'something'})
     .then(function (instance) {
         instance.listen(function (e) {
 
@@ -628,7 +626,7 @@ There are four different event types.
 | ----- | ----------- | ------- |
 |   Set   | Set events are     | ```modelInstance.attr = 1;``` |
 |   Splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
-|   New   |  Emitted when new model instances are created              | `Model.map({id: 2, desc: 'A new model instance!'});` |
+|   New   |  Emitted when new model instances are created              | `Model.graph({id: 2, desc: 'A new model instance!'});` |
 |   Remove   |  Emitted when model instances are removed from the object graph              | `myInstance.remove()` |
 
 ### The Event Object
@@ -672,7 +670,7 @@ var Collection = siesta.collection('Collection'),
         attributes: ['x', 'y']
     });
 
-Model.map({x: 1}, function (err, instance) {
+Model.graph({x: 1}, function (err, instance) {
     instance.listenOnce(function (e) {
         assert.equal(e.type == 'customEvent');
     });
@@ -1028,7 +1026,7 @@ var arq = Todo.arrangedReactQuery();
 // Model attribute in which to store the position.
 arq.indexAttribute = 'index';
 
-Todo.map([
+Todo.graph([
 	{title: 'Do homework'},
 	{title: 'Do laundry'},
 	{title: 'Order food'}
@@ -1057,7 +1055,7 @@ var cancelListen = arq.listen(function (results, e) {
     // ...
 });
 
-User.map([
+User.graph([
 	{age: 55},
 	{age: 25},
 	{age: 70}
