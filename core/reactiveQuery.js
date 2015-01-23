@@ -98,7 +98,7 @@ _.extend(ReactiveQuery.prototype, {
             if (this._query.objectMatchesQuery(newObj)) {
                 if (Logger.trace) Logger.trace('New object matches', newObj._dumpString());
                 var idx = this.insert(newObj);
-                this.emit('change', this.results, {
+                this.emit('change', {
                     index: idx,
                     added: [newObj],
                     type: modelEvents.ModelEventType.Splice,
@@ -117,7 +117,7 @@ _.extend(ReactiveQuery.prototype, {
             if (matches && !alreadyContains) {
                 if (Logger.trace) Logger.trace('Updated object now matches!', newObj._dumpString());
                 idx = this.insert(newObj);
-                this.emit('change', this.results, {
+                this.emit('change', {
                     index: idx,
                     added: [newObj],
                     type: modelEvents.ModelEventType.Splice,
@@ -129,7 +129,7 @@ _.extend(ReactiveQuery.prototype, {
                 results = this.results.mutableCopy();
                 var removed = results.splice(index, 1);
                 this.results = results.asModelQuerySet(this.model);
-                this.emit('change', this.results, {
+                this.emit('change', {
                     index: index,
                     obj: this,
                     new: newObj,
@@ -143,7 +143,7 @@ _.extend(ReactiveQuery.prototype, {
             else if (matches && alreadyContains) {
                 if (Logger.trace) Logger.trace('Matches but already contains', newObj._dumpString());
                 // Send the notification over. 
-                this.emit('change', this.results, n);
+                this.emit('change', n);
             }
         }
         else if (n.type == modelEvents.ModelEventType.Remove) {
@@ -154,7 +154,7 @@ _.extend(ReactiveQuery.prototype, {
                 if (Logger.trace) Logger.trace('Removing object', newObj._dumpString());
                 removed = results.splice(index, 1);
                 this.results = constructQuerySet(results, this.model);
-                this.emit('change', this.results, {
+                this.emit('change', {
                     index: index,
                     obj: this,
                     type: modelEvents.ModelEventType.Splice,

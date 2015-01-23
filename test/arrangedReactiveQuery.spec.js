@@ -262,10 +262,11 @@ describe('arranged rquery', function () {
                         removalNotifReceived,
                         addNotifReceived;
                     var movedUser = prq.results[2];
-                    cancelListen = prq.listen(function (results, n) {
+                    cancelListen = prq.listen(function (n) {
                         var type = n.type,
                             removed = n.removed,
-                            added = n.added;
+                            added = n.added,
+                            results = prq.results;
                         assert.equal(n.field, 'results');
                         assert.equal(n.obj, prq);
                         if (type == 'Splice' && removed) {

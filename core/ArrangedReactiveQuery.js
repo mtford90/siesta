@@ -146,7 +146,8 @@ _.extend(ArrangedReactiveQuery.prototype, {
             }
         }).call(results, from, to);
         var removed = results.splice(from, 1)[0];
-        this.emit('change', this.results = results.asModelQuerySet(this.model), {
+        this.results = results.asModelQuerySet(this.model);
+        this.emit('change', {
             index: from,
             removed: [removed],
             type: modelEvents.ModelEventType.Splice,
@@ -154,7 +155,8 @@ _.extend(ArrangedReactiveQuery.prototype, {
             field: 'results'
         });
         results.splice(to, 0, removed);
-        this.emit('change', this.results = results.asModelQuerySet(this.model), {
+        this.results = results.asModelQuerySet(this.model);
+        this.emit('change', {
             index: to,
             added: [removed],
             type: modelEvents.ModelEventType.Splice,

@@ -101,12 +101,12 @@ describe('reactive query', function () {
                             if (err) done(err);
                             else {
                                 assert.equal(results, rq.results);
-                                rq.listenOnce(function (results, change) {
+                                rq.listenOnce(function (change) {
                                     var added = change.added;
                                     assert.equal(added.length, 1);
                                     var peter = added[0];
                                     assert.equal(change.type, siesta.ModelEventType.Splice);
-                                    assertExpectedResults(results, peter);
+                                    assertExpectedResults(rq.results, peter);
                                     rq.terminate();
                                     siesta.notify(done);
                                 });
@@ -192,9 +192,9 @@ describe('reactive query', function () {
                             if (err) done(err);
                             else {
                                 var cancelListen;
-                                cancelListen = rq.listen(function (results, change) {
-                                    assert.equal(results, rq.results)
-                                    assertResultsOk(rq.results, person);
+                                cancelListen = rq.listen(function (change) {
+                                    var results = rq.results;
+                                    assertResultsOk(results, person);
                                     var removed = change.removed;
                                     assert.include(removed, person);
                                     assert.equal(change.type, siesta.ModelEventType.Splice);
@@ -219,8 +219,7 @@ describe('reactive query', function () {
                     rq.init(function (err) {
                         if (err) done(err);
                         else {
-                            rq.listenOnce(function (results, n) {
-                                assert.equal(results, rq.results);
+                            rq.listenOnce(function (n) {
                                 assert.equal(rq.results.length, 2, 'Should still be 2 results');
                                 assert.equal(n.obj, person);
                                 assert.equal(n.field, 'age');
@@ -274,7 +273,7 @@ describe('reactive query', function () {
                             rq.init(function (err) {
                                 if (err) done(err);
                                 else {
-                                    rq.listenOnce(function (results, change) {
+                                    rq.listenOnce(function (change) {
                                         try {
                                             var removed = change.removed;
                                             assert.include(removed, person);
@@ -301,7 +300,7 @@ describe('reactive query', function () {
                         .then(function (res) {
                             var person = res[0];
                             var rq = Person.reactiveQuery({age__lt: 30});
-                            rq.listenOnce(function (results, change) {
+                            rq.listenOnce(function (change) {
                                 try {
                                     var removed = change.removed;
                                     assert.include(removed, person);
