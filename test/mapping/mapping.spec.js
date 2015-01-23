@@ -63,7 +63,8 @@ describe('mapping!', function () {
                 it('sync', function (done) {
                     var C = siesta.collection('C');
                     var M = C.model('M', {
-                        init: function () {
+                        init: function (fromStorage) {
+                            assert.notOk(fromStorage);
                             assert.equal(this.attr, 1);
                             done();
                         },
@@ -81,7 +82,8 @@ describe('mapping!', function () {
                     var C = siesta.collection('C');
                     var initExecuted = false;
                     var M = C.model('M', {
-                        init: function (cb) {
+                        init: function (fromStorage, cb) {
+                            assert.notOk(fromStorage);
                             assert.equal(this.attr, 1);
                             initExecuted = true;
                             cb();
@@ -106,7 +108,8 @@ describe('mapping!', function () {
                     var asyncInitExecuted = false,
                         syncInitExecuted = false;
                     var M = C.model('M', {
-                            init: function (cb) {
+                            init: function (fromStorage, cb) {
+                                assert.notOk(fromStorage);
                                 assert.equal(this.attr, 1);
                                 asyncInitExecuted = true;
                                 cb();
@@ -114,7 +117,8 @@ describe('mapping!', function () {
                             attributes: ['attr']
                         }),
                         M_2 = C.model('M_2', {
-                            init: function () {
+                            init: function (fromStorage) {
+                                assert.notOk(fromStorage);
                                 assert.equal(this.attr, 2);
                                 syncInitExecuted = true;
                             },
@@ -141,11 +145,12 @@ describe('mapping!', function () {
                 });
 
                 it('use queries within', function (done) {
-                    var C = siesta.collection('C');
-                    var asyncInitExecuted = false,
+                    var C = siesta.collection('C'),
+                        asyncInitExecuted = false,
                         syncInitExecuted = false;
                     var M = C.model('M', {
-                            init: function (cb) {
+                            init: function (fromStorage, cb) {
+                                assert.notOk(fromStorage);
                                 M_2.query({}).then(function () {
                                     asyncInitExecuted = true;
                                     cb();
@@ -154,7 +159,8 @@ describe('mapping!', function () {
                             attributes: ['attr']
                         }),
                         M_2 = C.model('M_2', {
-                            init: function () {
+                            init: function (fromStorage) {
+                                assert.notOk(fromStorage);
                                 assert.equal(this.attr, 2);
                                 syncInitExecuted = true;
                             },
@@ -177,7 +183,8 @@ describe('mapping!', function () {
                     var C = siesta.collection('C');
                     var asyncInitExecuted = false;
                     var M = C.model('M', {
-                            init: function (cb) {
+                            init: function (fromStorage, cb) {
+                                assert.notOk(fromStorage);
                                 M_2.one().then(function () {
                                     asyncInitExecuted = true;
                                     cb();
@@ -201,7 +208,8 @@ describe('mapping!', function () {
                     var C = siesta.collection('C');
                     var asyncInitExecuted = false;
                     var M = C.model('M', {
-                            init: function (cb) {
+                            init: function (fromStorage, cb) {
+                                assert.notOk(fromStorage);
                                 M_2.one().then(function () {
                                     asyncInitExecuted = true;
                                     cb();
@@ -321,7 +329,8 @@ describe('mapping!', function () {
                 var m;
                 var initCalled = false;
                 var M = C.model('M', {
-                    init: function () {
+                    init: function (restored) {
+                        assert.notOk(restored);
                         assert.equal(this.attr, 1);
                         initCalled = true;
                     },
@@ -331,17 +340,21 @@ describe('mapping!', function () {
                     .then(function () {
                         M.graph({
                             attr: 1
-                        })
-                            .then(function (_m) {
-                                m = _m;
-                                _m.remove()
-                                    .then(function () {
-                                        initCalled = false;
-                                        _m.restore();
-                                        assert.ok(initCalled);
-                                        done();
-                                    }).catch(done);
-                            }).catch(done);
+                        }).then(function (_m) {
+                            m = _m;
+                            _m.remove()
+                                .then(function () {
+                                    initCalled = false;
+                                    M.init = function (restored) {
+                                        assert.ok(restored);
+                                        assert.equal(this.attr, 1);
+                                        initCalled = true;
+                                    };
+                                    _m.restore();
+                                    assert.ok(initCalled);
+                                    done();
+                                }).catch(done);
+                        }).catch(done);
                     })
                     .catch(done);
             });

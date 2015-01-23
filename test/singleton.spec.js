@@ -196,7 +196,8 @@ describe('singleton mapping', function () {
                             default: 1
                         }
                     ],
-                    init: function (cb) {
+                    init: function (fromStorage, cb) {
+                        assert.notOk(fromStorage);
                         initialised = true;
                         this.poop = true;
                         cb();

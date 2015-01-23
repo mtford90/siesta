@@ -102,7 +102,7 @@ else {
                 Model.graph(data, {
                     disableevents: true,
                     _ignoreInstalled: true,
-                    callInit: false
+                    fromStorage: true
                 }, function (err, instances) {
                     if (!err) {
                         if (Logger.trace.isEnabled) {

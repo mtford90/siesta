@@ -98,7 +98,9 @@ describe('storage', function () {
             Car = Collection.model('Car', {
                 attributes: ['colour', 'name']
             });
-            Car.graph({colour: 'black', name: 'bentley', id: 2}).then(function () {done()}).catch(done);
+            Car.graph({colour: 'black', name: 'bentley', id: 2}).then(function () {
+                done()
+            }).catch(done);
         });
 
         it('new object', function (done) {
@@ -187,8 +189,12 @@ describe('storage', function () {
                         assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                         Car.all().then(function (cars) {
                             assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                            var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
-                                blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                            var redCar = _.filter(cars, function (x) {
+                                    return x.colour == 'red'
+                                })[0],
+                                blackCar = _.filter(cars, function (x) {
+                                    return x.colour == 'black'
+                                })[0];
                             assert.equal(redCar.colour, 'red');
                             assert.equal(redCar.name, 'Aston Martin');
                             assert.ok(redCar._rev);
@@ -265,8 +271,12 @@ describe('storage', function () {
                 it('cars', function (done) {
                     Car.all().then(function (cars) {
                         assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                        var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
-                            blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                        var redCar = _.filter(cars, function (x) {
+                                return x.colour == 'red'
+                            })[0],
+                            blackCar = _.filter(cars, function (x) {
+                                return x.colour == 'black'
+                            })[0];
                         assert.equal(redCar.colour, 'red');
                         assert.equal(redCar.name, 'Aston Martin');
                         assert.ok(redCar._rev);
@@ -354,8 +364,12 @@ describe('storage', function () {
                                 assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                                 Car.all().then(function (cars) {
                                     assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                                    var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
-                                        blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                                    var redCar = _.filter(cars, function (x) {
+                                            return x.colour == 'red'
+                                        })[0],
+                                        blackCar = _.filter(cars, function (x) {
+                                            return x.colour == 'black'
+                                        })[0];
                                     assert.equal(redCar.colour, 'red');
                                     assert.equal(redCar.name, 'Aston Martin');
                                     assert.ok(redCar._rev);
@@ -423,8 +437,12 @@ describe('storage', function () {
                                 assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                                 Car.all().then(function (cars) {
                                     assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                                    var redCar = _.filter(cars, function (x) {return x.colour == 'red'})[0],
-                                        blackCar = _.filter(cars, function (x) {return x.colour == 'black'})[0];
+                                    var redCar = _.filter(cars, function (x) {
+                                            return x.colour == 'red'
+                                        })[0],
+                                        blackCar = _.filter(cars, function (x) {
+                                            return x.colour == 'black'
+                                        })[0];
                                     assert.equal(redCar.colour, 'red');
                                     assert.equal(redCar.name, 'Aston Martin');
                                     assert.ok(redCar._rev);
@@ -491,7 +509,9 @@ describe('storage', function () {
                         _id: 'xyz',
                         cars: ['abc', 'def']
                     }
-                ]).then(function () { done(); }).catch(done);
+                ]).then(function () {
+                    done();
+                }).catch(done);
 
             });
 
@@ -718,7 +738,7 @@ describe('storage', function () {
                             default: 1
                         }
                     ],
-                    init: function (done) {
+                    init: function (fromStorage, done) {
                         // Setup listeners.
                         // Note: The reason why we listen to self rather than simply execute logic when we decrement seconds in
                         // the interval is that this options leaves open the possibility of modifying seconds outside of the model
@@ -819,14 +839,15 @@ describe('storage', function () {
         });
     });
 
-    it('init should not be called on load...', function (done) {
+    it('init should  be called on load with storage == true', function (done) {
 
         var Collection, Car, Person;
-        var carInitCalled, personInitCalled;
+        var carInitCalled = false, personInitCalled = false;
         Collection = siesta.collection('myCollection');
         Car = Collection.model('Car', {
             attributes: ['colour'],
-            init: function () {
+            init: function (fromStorage) {
+                assert.ok(fromStorage);
                 carInitCalled = true;
             },
             relationships: {
@@ -837,7 +858,8 @@ describe('storage', function () {
         });
         Person = Collection.model('Person', {
             attributes: ['name'],
-            init: function () {
+            init: function (fromStorage) {
+                assert.ok(fromStorage);
                 personInitCalled = true;
             }
         });
@@ -847,13 +869,12 @@ describe('storage', function () {
                 {collection: 'myCollection', model: 'Car', name: 'Mike'}
             ]).then(function () {
                 siesta.ext.storage._load().then(function () {
-                    assert.notOk(carInitCalled);
-                    assert.notOk(personInitCalled);
+                    assert.ok(carInitCalled);
+                    assert.ok(personInitCalled);
                     done();
                 }).catch(done).done();
             }).catch(done);
         });
-
 
 
     });

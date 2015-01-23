@@ -471,7 +471,8 @@ describe('Subclass', function () {
         it('parent init inherited by child', function () {
             Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
-                init: function () {
+                init: function (fromStorage) {
+                    assert.notOk(fromStorage);
                     return 'a';
                 }
             });
@@ -487,12 +488,14 @@ describe('Subclass', function () {
         it('parent init overriden by child', function () {
             Collection = siesta.collection('myCollection');
             Car = Collection.model('Car', {
-                init: function () {
+                init: function (fromStorage) {
+                    assert.notOk(fromStorage);
                     return 'a';
                 }
             });
             SportsCar = Car.child('SportsCar', {
-                init: function () {
+                init: function (fromStorage) {
+                    assert.notOk(fromStorage);
                     return 'b';
                 }
             });

@@ -40,7 +40,7 @@ function MappingOperation(opts) {
         objects: [],
         disableevents: false,
         _ignoreInstalled: false,
-        callInit: true
+        fromStorage: false
     });
 
     _.extend(this, {
@@ -279,26 +279,20 @@ _.extend(MappingOperation.prototype, {
                     // finish until all inits have executed.
                     //
                     // Here we ensure the execution of all of them
-
-                    var initTasks;
-                    if (self.callInit) {
-                        initTasks = _.reduce(self._newObjects, function (m, o) {
-                            var init = o.model.init;
-                            if (init) {
-                                var paramNames = util.paramNames(init);
-                                if (paramNames.length) {
-                                    m.push(_.bind(init, o, done));
-                                }
-                                else {
-                                    init.call(o);
-                                }
+                    var fromStorage = this.fromStorage;
+                    var initTasks = _.reduce(self._newObjects, function (m, o) {
+                        var init = o.model.init;
+                        if (init) {
+                            var paramNames = util.paramNames(init);
+                            if (paramNames.length > 1) {
+                                m.push(_.bind(init, o, fromStorage, done));
                             }
-                            return m;
-                        }, []);
-                    }
-                    else {
-                        initTasks = [];
-                    }
+                            else {
+                                init.call(o, fromStorage);
+                            }
+                        }
+                        return m;
+                    }, []);
                     async.parallel(initTasks, function () {
                         done(self.errors.length ? self.errors : null, self.objects);
                     });
@@ -307,7 +301,7 @@ _.extend(MappingOperation.prototype, {
                     console.error('caught error', e);
                     done(e);
                 }
-            });
+            }.bind(this));
         } else {
             done(null, []);
         }
@@ -370,7 +364,7 @@ _.extend(MappingOperation.prototype, {
                         data: flatRelatedData,
                         disableevents: self.disableevents,
                         _ignoreInstalled: self._ignoreInstalled,
-                        callInit: this.callInit
+                        fromStorage: this.fromStorage
                     });
                 }
 

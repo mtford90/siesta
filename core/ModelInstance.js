@@ -128,11 +128,12 @@ _.extend(ModelInstance.prototype, {
             var init = this.model.init;
             if (init) {
                 var paramNames = util.paramNames(init);
-                if (paramNames.length) {
-                    init.call(this, _finish);
+                var fromStorage = true;
+                if (paramNames.length > 1) {
+                    init.call(this, fromStorage, _finish);
                 }
                 else {
-                    init.call(this);
+                    init.call(this, fromStorage);
                     _finish();
                 }
             }
