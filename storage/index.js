@@ -25,6 +25,7 @@ function _initMeta() {
 function fullyQualifiedModelName(collectionName, modelName) {
     return collectionName + '.' + modelName;
 }
+
 if (typeof PouchDB == 'undefined') {
     siesta.ext.storageEnabled = false;
     console.log('PouchDB is not present therefore storage is disabled.');
@@ -93,13 +94,22 @@ else {
         return indexes;
     }
 
-    /**
-     * Lazily create indexes as objects are saved down.
-     */
-    function _ensureIndexes(cb) {
-        // TODO: Shouldn't be checking for existence of indexes EVERY SINGLE TIME. Can make note of which already exist.
-        console.log('_ensureIndexes');
-        var indexes = constructIndexes();
+    function constructIndexesForAll() {
+        var indexes = [];
+        var registry = siesta._internal.CollectionRegistry;
+        registry.collectionNames.forEach(function (collectionName) {
+            var models = registry[collectionName]._models;
+            for (var modelName in models) {
+                if (models.hasOwnProperty(modelName)) {
+                    var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
+                    indexes.push(constructIndexDesignDoc(fullyQualifiedName));
+                }
+            }
+        });
+        return indexes;
+    }
+
+    function __ensureIndexes(indexes, cb) {
         pouch.bulkDocs(indexes)
             .then(function (resp) {
                 var errors = [];
@@ -114,6 +124,21 @@ else {
                 cb(errors.length ? errors : null);
             })
             .catch(cb);
+    }
+
+    /**
+     * Lazily create indexes as objects are saved down.
+     */
+    function _ensureIndexes(cb) {
+        // TODO: Shouldn't be checking for existence of indexes EVERY SINGLE TIME. Can make note of which already exist.
+        var indexes = constructIndexes();
+        __ensureIndexes(indexes, cb);
+    }
+
+    function ensureIndexesForAll(cb) {
+        var indexes = constructIndexesForAll();
+        console.log('ensureIndexesForAll', indexes);
+        __ensureIndexes(indexes, cb);
     }
 
     /**
@@ -350,12 +375,12 @@ else {
     };
     siesta.on('Siesta', listener);
 
-
     _.extend(storage, {
         _load: _load,
         _loadModel: _loadModel,
         save: save,
         _serialise: _serialise,
+        ensureIndexesForAll: ensureIndexesForAll,
         _reset: function (cb) {
             siesta.removeListener('Siesta', listener);
             unsavedObjects = [];
@@ -369,6 +394,7 @@ else {
                 cb(err);
             })
         }
+
     });
 
     Object.defineProperties(storage, {

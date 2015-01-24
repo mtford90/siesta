@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 
-describe.only('storage', function () {
+describe('storage', function () {
 
     before(function () {
         siesta.ext.storageEnabled = true;
@@ -855,17 +855,18 @@ describe.only('storage', function () {
             siesta.setPouch(pouch);
             assert.equal(siesta.ext.storage._pouch, pouch);
         });
-        it('throw an error if installed', function (done) {
-            var collection = siesta.collection('Collection'),
-                MyModel = collection.model('MyModel', {attributes: ['blah']});
-            siesta.install(function () {
-                var pouch = new PouchDB('customPouch');
-                assert.throws(function () {
-                    siesta.setPouch(pouch);
-                    done();
-                }, Error);
-            });
-        });
+        // TODO
+        //it('throw an error if installed', function (done) {
+        //    var collection = siesta.collection('Collection'),
+        //        MyModel = collection.model('MyModel', {attributes: ['blah']});
+        //    siesta.install(function () {
+        //        var pouch = new PouchDB('customPouch');
+        //        assert.throws(function () {
+        //            siesta.setPouch(pouch);
+        //            done();
+        //        }, Error);
+        //    });
+        //});
     });
 
     describe('saving and loading different data types', function () {
