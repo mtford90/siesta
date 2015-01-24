@@ -120,8 +120,6 @@ _.extend(Descriptor.prototype, {
         var collection;
         var rawCollection = this._opts.collection,
             rawModel = this._opts.model;
-        console.log('rawCollection', rawCollection);
-        console.log('rawModel', rawModel);
         if (rawCollection) {
             if (typeof rawCollection == 'string') {
                 collection = CollectionRegistry[rawCollection];

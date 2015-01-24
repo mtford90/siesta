@@ -8,7 +8,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
     _ = util._,
     InternalSiestaError = require('./error').InternalSiestaError,
     ModelEventType = require('./modelEvents').ModelEventType,
-    SiestaModel = require('./modelInstance');
+    SiestaModel = require('./ModelInstance');
 
 /**
  * [OneToOneProxy description]

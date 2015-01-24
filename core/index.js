@@ -58,7 +58,7 @@ _.extend(siesta, {
         Model: Model,
         error: error,
         ModelEventType: modelEvents.ModelEventType,
-        ModelInstance: require('./modelInstance'),
+        ModelInstance: require('./ModelInstance'),
         extend: require('extend'),
         MappingOperation: require('./mappingOperation'),
         events: events,
@@ -184,7 +184,6 @@ _.extend(siesta, {
                                 var descriptorsForCollection = descriptors[collectionName];
                                 descriptorsForCollection.forEach(function (d) {
                                     var error = d._resolveCollectionAndModel();
-                                    console.log('error', error);
                                     if (error) errors.push(error);
                                 });
                             });
@@ -195,7 +194,6 @@ _.extend(siesta, {
                             responseDescriptors = descriptorRegistry.responseDescriptors;
                         setupDescriptors(requestDescriptors);
                         setupDescriptors(responseDescriptors);
-                        console.log('errors', errors);
                         if (errors.length) {
                             cb(errors);
                             return;

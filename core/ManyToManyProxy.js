@@ -10,7 +10,7 @@ var RelationshipProxy = require('./RelationshipProxy'),
     modelEvents = require('./modelEvents'),
     events = require('./events'),
     wrapArrayForAttributes = events.wrapArray,
-    SiestaModel = require('./modelInstance'),
+    SiestaModel = require('./ModelInstance'),
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
     ModelEventType = require('./modelEvents').ModelEventType;
 

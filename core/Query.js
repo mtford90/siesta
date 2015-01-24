@@ -69,8 +69,6 @@ var comparators = {
         return false;
     }
 };
-console.log('comparators', comparators);
-
 
 _.extend(Query, {
     comparators: comparators,
@@ -232,7 +230,6 @@ _.extend(Query.prototype, {
         });
         var val = obj[field];
         var invalid = val === null || val === undefined;
-        console.log('Query.comparators', Query.comparators);
         var comparator = Query.comparators[op],
             opts = {object: obj, field: field, value: value, invalid: invalid};
         if (!comparator) {

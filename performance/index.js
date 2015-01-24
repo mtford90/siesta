@@ -71,6 +71,27 @@ function timeQueries() {
     };
 }
 
+function timeStorage() {
+    var oldLoad = siesta.ext.storage._load;
+    siesta.ext.storage._load = function (callback) {
+        var deferred = util.defer(callback);
+        callback = deferred.finish.bind(deferred);
+        var start = (new Date).getTime();
+        oldLoad(function (err) {
+            if (!err) {
+                var end = (new Date).getTime(),
+                    timeTaken = end - start;
+                console.info('[Performance: Storage._load] It took ' + timeTaken + 'ms to load everything from storage.');
+            }
+            else {
+                console.error('Error loading when measuring performance of storage', err);
+            }
+            callback(err);
+        });
+        return deferred.promise;
+    }
+}
 //timeMaps();
-timeQueries();
+//timeQueries();
+timeStorage();
 module.exports = performance;

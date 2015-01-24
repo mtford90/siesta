@@ -132,13 +132,11 @@ else {
         if (Logger.trace.isEnabled) Logger.trace('Querying pouch');
         pouch.query({map: mapFunc})
             .then(function (resp) {
-                console.log('resp', resp);
                 if (Logger.trace.isEnabled) Logger.trace('Queried pouch successfully');
                 var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
                     return _prepareDatum(datum, Model);
                 });
                 if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
-                console.log('data', data);
                 Model.graph(data, {
                     disableevents: true,
                     _ignoreInstalled: true,

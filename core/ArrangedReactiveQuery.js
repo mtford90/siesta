@@ -4,7 +4,7 @@
  * The same as ReactiveQuery but enables manual reordering of models and maintains an index field.
  */
 
-var ReactiveQuery = require('./reactiveQuery'),
+var ReactiveQuery = require('./ReactiveQuery'),
     log = require('./log'),
     util = require('./util'),
     error = require('./error'),
