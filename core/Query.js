@@ -6,7 +6,7 @@ var log = require('./log'),
     cache = require('./cache'),
     util = require('./util'),
     error = require('./error'),
-    constructQuerySet = require('./querySet'),
+    constructQuerySet = require('./QuerySet'),
     constructError = error.errorFactory(error.Components.Query),
     _ = util._;
 
@@ -36,43 +36,48 @@ function Query(model, query) {
     if (!util.isArray(opts.order)) opts.order = [opts.order];
 }
 
-_.extend(Query, {
-    comparators: {
-        e: function (opts) {
-            var objectValue = opts.object[opts.field];
-            if (Logger.trace) {
-                var stringValue;
-                if (objectValue === null) stringValue = 'null';
-                else if (objectValue === undefined) stringValue = 'undefined';
-                else stringValue = objectValue.toString();
-                Logger.trace(opts.field + ': ' + stringValue + ' == ' + opts.value.toString());
-            }
-            return objectValue == opts.value;
-        },
-        lt: function (opts) {
-            if (!opts.invalid) return opts.object[opts.field] < opts.value;
-            return false;
-        },
-        gt: function (opts) {
-            if (!opts.invalid) return opts.object[opts.field] > opts.value;
-            return false;
-        },
-        lte: function (opts) {
-            if (!opts.invalid) return opts.object[opts.field] <= opts.value;
-            return false;
-        },
-        gte: function (opts) {
-            if (!opts.invalid) return opts.object[opts.field] >= opts.value;
-            return false;
-        },
-        contains: function (opts) {
-            if (!opts.invalid) return opts.object[opts.field].indexOf(opts.value) > -1;
-            return false;
+var comparators = {
+    e: function (opts) {
+        var objectValue = opts.object[opts.field];
+        if (Logger.trace) {
+            var stringValue;
+            if (objectValue === null) stringValue = 'null';
+            else if (objectValue === undefined) stringValue = 'undefined';
+            else stringValue = objectValue.toString();
+            Logger.trace(opts.field + ': ' + stringValue + ' == ' + opts.value.toString());
         }
+        return objectValue == opts.value;
     },
+    lt: function (opts) {
+        if (!opts.invalid) return opts.object[opts.field] < opts.value;
+        return false;
+    },
+    gt: function (opts) {
+        if (!opts.invalid) return opts.object[opts.field] > opts.value;
+        return false;
+    },
+    lte: function (opts) {
+        if (!opts.invalid) return opts.object[opts.field] <= opts.value;
+        return false;
+    },
+    gte: function (opts) {
+        if (!opts.invalid) return opts.object[opts.field] >= opts.value;
+        return false;
+    },
+    contains: function (opts) {
+        if (!opts.invalid) return opts.object[opts.field].indexOf(opts.value) > -1;
+        return false;
+    }
+};
+console.log('comparators', comparators);
+
+
+_.extend(Query, {
+    comparators: comparators,
     registerComparator: function (symbol, fn) {
-        if (!this.comparators[symbol])
-            this.comparators[symbol] = fn;
+        if (!comparators[symbol]) {
+            comparators[symbol] = fn;
+        }
     }
 });
 
@@ -174,6 +179,7 @@ _.extend(Query.prototype, {
                 }
             }
             res = this._sortResults(res);
+            if (err) Logger.error('Error executing query', err);
             callback(err, err ? null : constructQuerySet(res, this.model));
         }.bind(this);
         if (this.opts.ignoreInstalled) {
@@ -226,6 +232,7 @@ _.extend(Query.prototype, {
         });
         var val = obj[field];
         var invalid = val === null || val === undefined;
+        console.log('Query.comparators', Query.comparators);
         var comparator = Query.comparators[op],
             opts = {object: obj, field: field, value: value, invalid: invalid};
         if (!comparator) {

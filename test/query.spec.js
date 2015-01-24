@@ -653,19 +653,19 @@ describe('query...', function () {
                 });
             });
             it('string contains', function (done) {
-                 Model.graph([
-                     {name: 'aaaabb'},
-                     {name: '111122'},
-                     {name: '4343bb'}
-                 ]).then(function () {
-                     Model.query({name__contains: 'bb'}).then(function (res) {
-                         assert.equal(res.length, 2);
-                         res.forEach(function (m) {
-                             assert(m.name.indexOf('bb') > -1, 'All contain');
-                         });
-                         done();
-                     }).catch(done);
-                 }).catch(done);
+                Model.graph([
+                    {name: 'aaaabb'},
+                    {name: '111122'},
+                    {name: '4343bb'}
+                ]).then(function () {
+                    Model.query({name__contains: 'bb'}).then(function (res) {
+                        assert.equal(res.length, 2);
+                        res.forEach(function (m) {
+                            assert(m.name.indexOf('bb') > -1, 'All contain');
+                        });
+                        done();
+                    }).catch(done);
+                }).catch(done);
             });
             it('array contains', function (done) {
                 Model.graph([
@@ -733,6 +733,34 @@ describe('query...', function () {
             })
         });
 
+    });
+
+    describe.only('registering comparators', function () {
+
+        var Collection, Person;
+
+        beforeEach(function () {
+            Collection = siesta.collection('myCollection');
+            Person = Collection.model('Person', {
+                id: 'id',
+                attributes: ['age']
+            });
+        });
+
+        it('register', function (done) {
+            siesta.registerComparator('three', function (opts) {
+                var value = opts.object[opts.field];
+                return value == 3;
+            });
+            Person.graph([{age: 2}, {age: 3}])
+                .then(function () {
+                    Person.query({age__three: 'doesnt matter'})
+                        .then(function (res) {
+                            assert.equal(res.length, 1);
+                            done();
+                        }).catch(done);
+                }).catch(done);
+        });
     });
 
     describe('order', function () {
@@ -838,7 +866,6 @@ describe('query...', function () {
                     }).catch(done).done();
             }).catch(done).done();
         });
-
 
 
         it('alphabetical order, descending', function (done) {

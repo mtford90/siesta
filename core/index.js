@@ -6,14 +6,14 @@ var util = require('./util'),
     error = require('./error'),
     events = require('./events'),
     RelationshipType = require('./RelationshipType'),
-    ReactiveQuery = require('./reactiveQuery'),
-    ManyToManyProxy = require('./manyToManyProxy'),
-    OneToOneProxy = require('./oneToOneProxy'),
-    OneToManyProxy = require('./oneToManyProxy'),
-    RelationshipProxy = require('./relationshipProxy'),
+    ReactiveQuery = require('./ReactiveQuery'),
+    ManyToManyProxy = require('./ManyToManyProxy'),
+    OneToOneProxy = require('./OneToOneProxy'),
+    OneToManyProxy = require('./OneToManyProxy'),
+    RelationshipProxy = require('./RelationshipProxy'),
     modelEvents = require('./modelEvents'),
     Query = require('./Query'),
-    querySet = require('./querySet'),
+    querySet = require('./QuerySet'),
     log = require('./log'),
     _ = util._;
 
@@ -260,7 +260,7 @@ _.extend(siesta, {
         Logger.setLevel(level);
     },
     notify: util.next,
-    registerComparator: Query.bind(Query)
+    registerComparator: Query.registerComparator.bind(Query)
 });
 
 Object.defineProperties(siesta, {

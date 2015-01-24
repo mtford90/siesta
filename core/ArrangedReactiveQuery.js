@@ -10,7 +10,7 @@ var ReactiveQuery = require('./reactiveQuery'),
     error = require('./error'),
     modelEvents = require('./modelEvents'),
     InternalSiestaError = error.InternalSiestaError,
-    constructQuerySet = require('./querySet'),
+    constructQuerySet = require('./QuerySet'),
     constructError = error.errorFactory(error.Components.ArrangedReactiveQuery),
     _ = util._;
 

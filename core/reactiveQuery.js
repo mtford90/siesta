@@ -6,12 +6,12 @@
  */
 
 var log = require('./log'),
-    Query = require('./query'),
+    Query = require('./Query'),
     EventEmitter = require('events').EventEmitter,
     events = require('./events'),
     modelEvents = require('./modelEvents'),
     InternalSiestaError = require('./error').InternalSiestaError,
-    constructQuerySet = require('./querySet'),
+    constructQuerySet = require('./QuerySet'),
     util = require('./util'),
     _ = util._;
 
