@@ -735,7 +735,7 @@ describe('query...', function () {
 
     });
 
-    describe.only('registering comparators', function () {
+    describe('registering comparators', function () {
 
         var Collection, Person;
 

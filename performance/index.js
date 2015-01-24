@@ -77,11 +77,11 @@ function timeStorage() {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         var start = (new Date).getTime();
-        oldLoad(function (err) {
+        oldLoad(function (err, n) {
             if (!err) {
                 var end = (new Date).getTime(),
                     timeTaken = end - start;
-                console.info('[Performance: Storage._load] It took ' + timeTaken + 'ms to load everything from storage.');
+                console.info('[Performance: Storage._load] It took ' + timeTaken + 'ms to load ' + n.toString() + ' instances from storage.');
             }
             else {
                 console.error('Error loading when measuring performance of storage', err);
@@ -89,7 +89,28 @@ function timeStorage() {
             callback(err);
         });
         return deferred.promise;
-    }
+    };
+    var oldLoadModel = siesta.ext.storage._loadModel;
+    siesta.ext.storage._loadModel = function (opts, callback) {
+        var deferred = util.defer(callback);
+        callback = deferred.finish.bind(deferred);
+        var start = (new Date).getTime();
+        oldLoadModel(opts, function (err, instances) {
+            var collectionName = opts.collectionName,
+                modelName = opts.modelName,
+                fullyQualifiedName = collectionName + '.' + modelName,
+                end = (new Date).getTime(),
+                timeTaken = end - start;
+            if (!err) {
+                console.info('[Performance: Storage._loadModel] It took ' + timeTaken + 'ms to load ' + instances.length.toString() + ' instances of "' + fullyQualifiedName + '"');
+            }
+            else {
+                console.error('Error loading when measuring performance of storage', err);
+            }
+            callback(err, instances);
+        });
+        return deferred.promise;
+    };
 }
 //timeMaps();
 //timeQueries();

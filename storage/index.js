@@ -22,6 +22,9 @@ function _initMeta() {
     return {dateFields: []};
 }
 
+function fullyQualifiedModelName(collectionName, modelName) {
+    return collectionName + '.' + modelName;
+}
 if (typeof PouchDB == 'undefined') {
     siesta.ext.storageEnabled = false;
     console.log('PouchDB is not present therefore storage is disabled.');
@@ -61,6 +64,55 @@ else {
         delete datum.siesta_meta;
     }
 
+    function constructIndexDesignDoc(name) {
+        var views = {};
+        views[name] = {
+            map: function (doc) {
+                emit(doc.collection + '.' + doc.model);
+            }.toString()
+        };
+        return {
+            _id: '_design/' + name,
+            views: views
+        };
+    }
+
+    function constructIndexes() {
+        var indexes = [];
+        for (var collectionName in unsavedObjectsByCollection) {
+            if (unsavedObjectsByCollection.hasOwnProperty(collectionName)) {
+                var unsavedObjectsByModel = unsavedObjectsByCollection[collectionName];
+                for (var modelName in unsavedObjectsByModel) {
+                    if (unsavedObjectsByModel.hasOwnProperty(modelName)) {
+                        indexes.push(constructIndexDesignDoc(fullyQualifiedModelName(collectionName, modelName)));
+                    }
+                }
+            }
+        }
+        return indexes;
+    }
+
+    /**
+     * Lazily create indexes as objects are saved down.
+     */
+    function _ensureIndexes(cb) {
+        // TODO: Shouldn't be checking for existence of indexes EVERY SINGLE TIME. Can make note of which already exist.
+        console.log('_ensureIndexes');
+        pouch.bulkDocs(constructIndexes())
+            .then(function (resp) {
+                var errors = [];
+                for (var i = 0; i < resp.length; i++) {
+                    var response = resp[i];
+                    if (!response.ok) {
+                        // Conflict means already exists, and this is fine!
+                        var isConflict = response.status == 409;
+                        if (!isConflict) errors.push(response);
+                    }
+                }
+                cb(errors.length ? errors : null);
+            })
+            .catch(cb);
+    }
 
     /**
      * Serialise a model into a format that PouchDB bulkDocs API can process
@@ -119,7 +171,7 @@ else {
         var collectionName = opts.collectionName,
             modelName = opts.modelName;
         if (Logger.trace) {
-            var fullyQualifiedName = collectionName + '.' + modelName;
+            var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
             Logger.trace('Loading instances for ' + fullyQualifiedName);
         }
         var Model = CollectionRegistry[collectionName][modelName];
@@ -172,22 +224,27 @@ else {
                     modelNames = Object.keys(collection._models);
                 _.each(modelNames, function (modelName) {
                     tasks.push(function (cb) {
-                        _loadModel({
+                        // We call from storage to allow for replacement of _loadModel for performance extension.
+                        storage._loadModel({
                             collectionName: collectionName,
                             modelName: modelName
                         }, cb);
                     });
                 });
             });
-            siesta.async.parallel(tasks, function (err, results) {
+            siesta.async.series(tasks, function (err, results) {
+                var n;
                 if (!err) {
                     var instances = [];
                     siesta._.each(results, function (r) {
-                        instances.concat(r)
+                        instances = instances.concat(r)
                     });
-                    if (Logger.trace) Logger.trace('Loaded ' + instances.length.toString() + ' instances');
+                    n = instances.length;
+                    if (Logger.trace) {
+                        Logger.trace('Loaded ' + n.toString() + ' instances');
+                    }
                 }
-                deferred.finish(err);
+                deferred.finish(err, n);
             });
         }
         else {
@@ -238,24 +295,32 @@ else {
         });
     }
 
+
     /**
      * Save all modelEvents down to PouchDB.
      */
     function save(callback) {
         var deferred = util.defer(callback);
-        siesta._afterInstall(function () {
-            callback = callback || function () {
-            };
-            var objects = unsavedObjects;
-            unsavedObjects = [];
-            unsavedObjectsHash = {};
-            unsavedObjectsByCollection = {};
-            if (Logger.trace) {
-                Logger.trace('Saving objects', _.map(objects, function (x) {
-                    return x._dump()
-                }))
+        callback = deferred.finish.bind(deferred);
+        _ensureIndexes(function (err) {
+            if (err) {
+                console.error('Error ensuring indexes', err);
+                callback(err);
             }
-            saveToPouch(objects, callback, deferred);
+            else {
+                siesta._afterInstall(function () {
+                    var objects = unsavedObjects;
+                    unsavedObjects = [];
+                    unsavedObjectsHash = {};
+                    unsavedObjectsByCollection = {};
+                    if (Logger.trace) {
+                        Logger.trace('Saving objects', _.map(objects, function (x) {
+                            return x._dump()
+                        }))
+                    }
+                    saveToPouch(objects, callback, deferred);
+                });
+            }
         });
         return deferred.promise;
     }
@@ -285,6 +350,7 @@ else {
 
     _.extend(storage, {
         _load: _load,
+        _loadModel: _loadModel,
         save: save,
         _serialise: _serialise,
         _reset: function (cb) {
