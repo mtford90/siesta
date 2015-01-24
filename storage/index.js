@@ -84,7 +84,8 @@ else {
                 var unsavedObjectsByModel = unsavedObjectsByCollection[collectionName];
                 for (var modelName in unsavedObjectsByModel) {
                     if (unsavedObjectsByModel.hasOwnProperty(modelName)) {
-                        indexes.push(constructIndexDesignDoc(fullyQualifiedModelName(collectionName, modelName)));
+                        var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
+                        indexes.push(constructIndexDesignDoc(fullyQualifiedName));
                     }
                 }
             }
@@ -98,7 +99,8 @@ else {
     function _ensureIndexes(cb) {
         // TODO: Shouldn't be checking for existence of indexes EVERY SINGLE TIME. Can make note of which already exist.
         console.log('_ensureIndexes');
-        pouch.bulkDocs(constructIndexes())
+        var indexes = constructIndexes();
+        pouch.bulkDocs(indexes)
             .then(function (resp) {
                 var errors = [];
                 for (var i = 0; i < resp.length; i++) {
@@ -170,8 +172,8 @@ else {
     function _loadModel(opts, callback) {
         var collectionName = opts.collectionName,
             modelName = opts.modelName;
+        var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
         if (Logger.trace) {
-            var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
             Logger.trace('Loading instances for ' + fullyQualifiedName);
         }
         var Model = CollectionRegistry[collectionName][modelName];
@@ -208,6 +210,7 @@ else {
             .catch(function (err) {
                 callback(err);
             });
+
     }
 
     /**

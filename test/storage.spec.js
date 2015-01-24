@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 
-describe('storage', function () {
+describe.only('storage', function () {
 
     before(function () {
         siesta.ext.storageEnabled = true;
@@ -839,7 +839,7 @@ describe('storage', function () {
 
             });
 
-            it('install', function () {
+            it('install', function (done) {
                 siesta.install(function (err) {
                     done(err);
                 });
@@ -855,13 +855,14 @@ describe('storage', function () {
             siesta.setPouch(pouch);
             assert.equal(siesta.ext.storage._pouch, pouch);
         });
-        it('throw an error if installed', function () {
+        it('throw an error if installed', function (done) {
             var collection = siesta.collection('Collection'),
                 MyModel = collection.model('MyModel', {attributes: ['blah']});
             siesta.install(function () {
                 var pouch = new PouchDB('customPouch');
                 assert.throws(function () {
                     siesta.setPouch(pouch);
+                    done();
                 }, Error);
             });
         });
