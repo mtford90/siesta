@@ -330,25 +330,17 @@ else {
     function save(callback) {
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
-        _ensureIndexes(function (err) {
-            if (err) {
-                console.error('Error ensuring indexes', err);
-                callback(err);
+        siesta._afterInstall(function () {
+            var objects = unsavedObjects;
+            unsavedObjects = [];
+            unsavedObjectsHash = {};
+            unsavedObjectsByCollection = {};
+            if (Logger.trace) {
+                Logger.trace('Saving objects', _.map(objects, function (x) {
+                    return x._dump()
+                }))
             }
-            else {
-                siesta._afterInstall(function () {
-                    var objects = unsavedObjects;
-                    unsavedObjects = [];
-                    unsavedObjectsHash = {};
-                    unsavedObjectsByCollection = {};
-                    if (Logger.trace) {
-                        Logger.trace('Saving objects', _.map(objects, function (x) {
-                            return x._dump()
-                        }))
-                    }
-                    saveToPouch(objects, callback, deferred);
-                });
-            }
+            saveToPouch(objects, callback, deferred);
         });
         return deferred.promise;
     }

@@ -18,7 +18,6 @@ var util = require('./util'),
     _ = util._;
 
 
-
 // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
 var siesta = function (ext) {
     if (!siesta.ext) siesta.ext = {};
@@ -170,6 +169,9 @@ _.extend(siesta, {
                         CollectionRegistry[n].install(done);
                     }
                 });
+            if (siesta.ext.storageEnabled) {
+                collectionInstallTasks.unshift(siesta.ext.storage.ensureIndexesForAll);
+            }
             var self = this;
             siesta.async.series(collectionInstallTasks, function (err) {
                 if (err) {
@@ -282,7 +284,7 @@ module.exports = siesta;
  */
 var _bind = Function.prototype.apply.bind(Function.prototype.bind);
 Object.defineProperty(Function.prototype, 'bind', {
-    value: function(obj) {
+    value: function (obj) {
         var boundFunction = _bind(this, arguments);
         Object.defineProperty(boundFunction, '__siesta_bound_object', {
             value: obj,

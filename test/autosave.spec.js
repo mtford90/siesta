@@ -43,7 +43,7 @@ describe('auto save', function () {
             .then(function () {
                 siesta.ext.storage._pouch.allDocs()
                     .then(function (resp) {
-                        assert.notOk(resp.rows.length, 'Should be no rows');
+                        assert.equal(resp.rows.length,1, 'Only row should be a design doc');
                         done();
                     })
                     .catch(done);
