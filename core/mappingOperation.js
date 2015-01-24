@@ -298,7 +298,7 @@ _.extend(MappingOperation.prototype, {
                     });
                 }
                 catch (e) {
-                    console.error('caught error', e);
+                    console.error('Uncaught error when executing init funcitons on models.', e);
                     done(e);
                 }
             }.bind(this));

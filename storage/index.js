@@ -17,6 +17,11 @@ var unsavedObjects = [],
 var storage = {},
     Logger = log.loggerWithName('Storage');
 
+
+function _initMeta() {
+    return {dateFields: []};
+}
+
 if (typeof PouchDB == 'undefined') {
     siesta.ext.storageEnabled = false;
     console.log('PouchDB is not present therefore storage is disabled.');
@@ -26,11 +31,44 @@ else {
         pouch = new PouchDB(DB_NAME);
 
     /**
+     * Sometimes siesta needs to store some extra information about the model instance.
+     * @param serialised
+     * @private
+     */
+    function _addMeta(serialised) {
+        // PouchDB <= 3.2.1 has a bug whereby date fields are not deserialised properly if you use db.query
+        // therefore we need to add extra info to the object for deserialising dates manually.
+        serialised.siesta_meta = _initMeta();
+        for (var prop in serialised) {
+            if (serialised.hasOwnProperty(prop)) {
+                if (serialised[prop] instanceof Date) {
+                    serialised.siesta_meta.dateFields.push(prop);
+                }
+            }
+        }
+    }
+
+    function _processMeta(datum) {
+        var meta = datum.siesta_meta || _initMeta();
+        // PouchDB <= 3.2.1 has a bug whereby date fields are not deserialised properly if you use db.query
+        // therefore we need to add extra info to the object for deserialising dates manually.
+        meta.dateFields.forEach(function (dateField) {
+            var value = datum[dateField];
+            if (!(value instanceof Date)) {
+                datum[dateField] = new Date(Date.parse(value));
+            }
+        });
+        delete datum.siesta_meta;
+    }
+
+
+    /**
      * Serialise a model into a format that PouchDB bulkDocs API can process
      * @param {ModelInstance} modelInstance
      */
     function _serialise(modelInstance) {
         var serialised = siesta._.extend({}, modelInstance.__values);
+        _addMeta(serialised);
         serialised['collection'] = modelInstance.collectionName;
         serialised['model'] = modelInstance.modelName;
         serialised['_id'] = modelInstance._id;
@@ -51,7 +89,7 @@ else {
     }
 
     function _prepareDatum(datum, model) {
-        // Add blank object with correct _id to the cache so that can map data onto it.
+        _processMeta(datum);
         delete datum.collection;
         delete datum.model;
         var relationshipNames = model._relationshipNames;
@@ -94,11 +132,13 @@ else {
         if (Logger.trace.isEnabled) Logger.trace('Querying pouch');
         pouch.query({map: mapFunc})
             .then(function (resp) {
-                if (Logger.trace.isEnabled) Logger.trace('Queried pouch succesffully');
+                console.log('resp', resp);
+                if (Logger.trace.isEnabled) Logger.trace('Queried pouch successfully');
                 var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
                     return _prepareDatum(datum, Model);
                 });
                 if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
+                console.log('data', data);
                 Model.graph(data, {
                     disableevents: true,
                     _ignoreInstalled: true,

@@ -11,6 +11,7 @@ describe('bugs', function () {
         siesta.reset(done);
     });
 
+
     describe('no name specified when creating mapping', function () {
         it('No obj', function (done) {
             var Collection = siesta.collection('Collection'),

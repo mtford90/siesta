@@ -88,6 +88,34 @@ describe('storage', function () {
             });
         });
 
+        describe('dates', function () {
+            var Model, Collection;
+            beforeEach(function () {
+                Collection = siesta.collection('myCollection');
+                Model = Collection.model('Model', {
+                    attributes: ['date', 'x']
+                });
+            });
+            it('meta', function (done) {
+                Model.graph({x: 1, date: new Date()})
+                    .then(function (car) {
+                        var serialised = siesta.ext.storage._serialise(car);
+                        console.log('serialised', serialised);
+                        var meta = serialised.siesta_meta;
+                        assert.ok(meta, 'should have a meta object');
+                        assert.equal(meta.dateFields.length, 1);
+                        assert.include(meta.dateFields, 'date');
+                        car.date = 2;
+                        serialised = siesta.ext.storage._serialise(car);
+                        meta = serialised.siesta_meta;
+                        assert.ok(meta, 'should  have a meta object');
+                        assert.equal(meta.dateFields.length, 0);
+                        done();
+                    }).catch(done);
+            })
+
+        });
+
     });
 
     describe('save', function () {
@@ -839,6 +867,54 @@ describe('storage', function () {
         });
     });
 
+    describe('saving and loading different data types', function () {
+        var db;
+
+        beforeEach(function () {
+            db = siesta.ext.storage._pouch;
+        });
+
+        describe('date', function () {
+            it('save', function (done) {
+                var Collection = siesta.collection('MyCollection'),
+                    Model = Collection.model('myModel', {
+                        attributes: ['date']
+                    });
+                Model.graph({date: new Date()})
+                    .then(function (m) {
+                        siesta.save().then(function () {
+                            db.get(m._id).then(function (data) {
+                                assert.ok(data.date instanceof Date);
+                                done();
+                            });
+                        }).catch(done);
+                    }).catch(done);
+            });
+
+            it('load', function (done) {
+                db.bulkDocs([
+                    {collection: 'MyCollection', model: 'myModel', date: new Date(), siesta_meta: {dateFields: ['date']}}
+                ], {include_docs: true}).then(function (objs) {
+                    db.get(objs[0].id).then(function (obj) {
+                        assert.ok(obj.date instanceof Date, 'pouchdb should reload date objects');
+                        var Collection = siesta.collection('MyCollection'),
+                            Model = Collection.model('myModel', {
+                                attributes: ['date']
+                            });
+                        Model.one().then(function (m) {
+                            console.log('date', m.date);
+                            assert.ok(m.date instanceof Date, 'siesta should reload date objects correctly');
+                            done();
+                        }).catch(done);
+                    }).catch(done);
+                }).catch(done);
+
+            });
+
+        });
+
+    });
+
     it('init should  be called on load with storage == true', function (done) {
 
         var Collection, Car, Person;
@@ -878,5 +954,6 @@ describe('storage', function () {
 
 
     });
+
 
 });
