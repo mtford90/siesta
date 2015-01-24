@@ -208,7 +208,7 @@ describe('storage', function () {
                 });
                 siesta.install(done);
             });
-            it('abc', function (done) {
+            it('load attributes', function (done) {
                 siesta.ext.storage._pouch.bulkDocs([
                     {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
                     {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
@@ -918,7 +918,6 @@ describe('storage', function () {
     });
 
     it('init should  be called on load with storage == true', function (done) {
-
         var Collection, Car, Person;
         var carInitCalled = false, personInitCalled = false;
         Collection = siesta.collection('myCollection');

@@ -65,33 +65,18 @@ else {
         delete datum.siesta_meta;
     }
 
-    function constructIndexDesignDoc(name) {
+    function constructIndexDesignDoc(collectionName, modelName) {
+        var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
         var views = {};
-        views[name] = {
+        views[fullyQualifiedName] = {
             map: function (doc) {
-                emit(doc.collection + '.' + doc.model);
-            }.toString()
+                if (doc.collection == '$1' && doc.model == '$2') emit(doc.collection + '.' + doc.model, doc);
+            }.toString().replace('$1', collectionName).replace('$2', modelName)
         };
         return {
-            _id: '_design/' + name,
+            _id: '_design/' + fullyQualifiedName,
             views: views
         };
-    }
-
-    function constructIndexes() {
-        var indexes = [];
-        for (var collectionName in unsavedObjectsByCollection) {
-            if (unsavedObjectsByCollection.hasOwnProperty(collectionName)) {
-                var unsavedObjectsByModel = unsavedObjectsByCollection[collectionName];
-                for (var modelName in unsavedObjectsByModel) {
-                    if (unsavedObjectsByModel.hasOwnProperty(modelName)) {
-                        var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
-                        indexes.push(constructIndexDesignDoc(fullyQualifiedName));
-                    }
-                }
-            }
-        }
-        return indexes;
     }
 
     function constructIndexesForAll() {
@@ -101,8 +86,7 @@ else {
             var models = registry[collectionName]._models;
             for (var modelName in models) {
                 if (models.hasOwnProperty(modelName)) {
-                    var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
-                    indexes.push(constructIndexDesignDoc(fullyQualifiedName));
+                    indexes.push(constructIndexDesignDoc(collectionName, modelName));
                 }
             }
         });
@@ -124,15 +108,6 @@ else {
                 cb(errors.length ? errors : null);
             })
             .catch(cb);
-    }
-
-    /**
-     * Lazily create indexes as objects are saved down.
-     */
-    function _ensureIndexes(cb) {
-        // TODO: Shouldn't be checking for existence of indexes EVERY SINGLE TIME. Can make note of which already exist.
-        var indexes = constructIndexes();
-        __ensureIndexes(indexes, cb);
     }
 
     function ensureIndexesForAll(cb) {
@@ -209,8 +184,10 @@ else {
             }
         }.toString().replace('$1', modelName).replace('$2', collectionName);
         if (Logger.trace.isEnabled) Logger.trace('Querying pouch');
-        pouch.query({map: mapFunc})
+        pouch.query(fullyQualifiedName)
+            //pouch.query({map: mapFunc})
             .then(function (resp) {
+                console.log('resp', resp);
                 if (Logger.trace.isEnabled) Logger.trace('Queried pouch successfully');
                 var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
                     return _prepareDatum(datum, Model);
