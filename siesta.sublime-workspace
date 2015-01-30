@@ -394,7 +394,7 @@
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/lib/deps/collections.js",
 		"/Users/mtford/Playground/rest/test/collection.setup.spec.js",
 		"/Users/mtford/Playground/rest/src/collectionRegistry.js",
-		"/Users/mtford/Playground/rest/bower_components/pouchdb/bin/dev-server.js",
+		"/Users/mtford/Playground/rest/bower_components/pouchdb/bin/dev-start.js",
 		"/Users/mtford/Playground/rest/node_modules/pouchdb/node_modules/level-js/node_modules/tape/test/double_end.js",
 		"/Users/mtford/Playground/rest/node_modules/grunt/node_modules/hooker/test/hooker_test.js",
 		"/Users/mtford/Playground/rest/node_modules/chai/History.md",
