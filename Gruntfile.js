@@ -71,6 +71,14 @@ module.exports = function (grunt) {
                     base: './'
                 }
             }
+        },
+
+        uglify: {
+            compile: {
+                files: {
+                    '<%= build_dir %>/siesta.min.js': ['<%= build_dir %>/siesta.js']
+                }
+            }
         }
 
     };
@@ -95,13 +103,5 @@ module.exports = function (grunt) {
         'browserify:build',
         'uglify'
     ]);
-
-    /**
-     * Use google closure compiler instead.
-     */
-    grunt.registerTask('uglify', function () {
-        grunt.file.mkdir('build');
-        sh.run('java -jar compiler.jar build/siesta.js > build/siesta.min.js');
-    })
 
 };
