@@ -18,6 +18,8 @@ var util = require('./util'),
     _ = util._;
 
 
+util._patchBind();
+
 // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
 var siesta = function (ext) {
     if (!siesta.ext) siesta.ext = {};
@@ -251,24 +253,6 @@ if (typeof window != 'undefined') {
 
 module.exports = siesta;
 
-/**
- * TODO: This could be dangerous?
- * Pretty damn useful to be able to access the bound object on a function tho.
- * See: http://stackoverflow.com/questions/14307264/what-object-javascript-function-is-bound-to-what-is-its-this
- */
-var _bind = Function.prototype.apply.bind(Function.prototype.bind);
-Object.defineProperty(Function.prototype, 'bind', {
-    value: function (obj) {
-        var boundFunction = _bind(this, arguments);
-        Object.defineProperty(boundFunction, '__siesta_bound_object', {
-            value: obj,
-            writable: true,
-            configurable: true,
-            enumerable: false
-        });
-        return boundFunction;
-    }
-});
 
 (function loadExtensions() {
     require('../storage');

@@ -1,5 +1,6 @@
 var observe = require('../../vendor/observe-js/src/observe').Platform,
     _ = require('./underscore'),
+    Promise = require('lie'),
     InternalSiestaError = require('./../error').InternalSiestaError;
 
 // Used by paramNames function.
@@ -87,7 +88,8 @@ _.extend(module.exports, {
     })(),
     defer: function (cb) {
         var deferred;
-        cb = cb || function () {};
+        cb = cb || function () {
+        };
         if (siesta.q) {
             deferred = siesta.q.defer();
             var reject = deferred.reject,
@@ -171,6 +173,41 @@ _.extend(module.exports, {
             enumerable: true,
             configurable: true
         });
+    },
+    /**
+     * TODO: This is bloody ugly.
+     * Pretty damn useful to be able to access the bound object on a function tho.
+     * See: http://stackoverflow.com/questions/14307264/what-object-javascript-function-is-bound-to-what-is-its-this
+     */
+    _patchBind: function () {
+        var _bind = Function.prototype.apply.bind(Function.prototype.bind);
+        Object.defineProperty(Function.prototype, 'bind', {
+            value: function (obj) {
+                var boundFunction = _bind(this, arguments);
+                Object.defineProperty(boundFunction, '__siesta_bound_object', {
+                    value: obj,
+                    writable: true,
+                    configurable: true,
+                    enumerable: false
+                });
+                return boundFunction;
+            }
+        });
+    },
+    promise: function (cb, fn) {
+        cb = cb || function () {
+        };
+        return new Promise(function (resolve, reject) {
+            var _cb = argsarray(function (args) {
+                var err = args[0],
+                    rest = args.slice(1);
+                if (err) reject(err);
+                else resolve(rest[0]);
+                var bound = cb['__siesta_bound_object'] || cb; // Preserve bound object.
+                cb.apply(bound, args);
+            });
+            fn(_cb);
+        })
     },
     subProperties: function (obj, subObj, properties) {
         if (!isArray(properties)) {
