@@ -142,7 +142,7 @@
                                     datum: datum
                                 });
                             } else {
-                                this.objects[i] = self._new();
+                                this.objects[i] = self._instance();
                             }
                         } else {
                             this.objects[i] = null;
@@ -163,7 +163,7 @@
                                                 // If there are multiple mapping operations going on, there may be
                                                 obj = cache.get({_id: _id});
                                                 if (!obj)
-                                                    obj = self._new({_id: _id}, !self.disableevents);
+                                                    obj = self._instance({_id: _id}, !self.disableevents);
                                                 self.objects[lookup.index] = obj;
                                             } else {
                                                 self.objects[lookup.index] = obj;
@@ -206,7 +206,7 @@
                                                 if (cached) {
                                                     self.objects[lookup.index] = cached;
                                                 } else {
-                                                    self.objects[lookup.index] = self._new();
+                                                    self.objects[lookup.index] = self._instance();
                                                     // It's important that we map the remote identifier here to ensure that it ends
                                                     // up in the cache.
                                                     self.objects[lookup.index][self.model.id] = remoteId;
@@ -238,16 +238,16 @@
                     }
                 }
                 // The mapping operation is responsible for creating singleton instances if they do not already exist.
-                var singleton = cache.getSingleton(this.model) || this._new(_id);
+                var singleton = cache.getSingleton(this.model) || this._instance(_id);
                 for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = singleton;
                 }
                 cb();
             }.bind(this));
         },
-        _new: function () {
+        _instance: function () {
             var model = this.model,
-                modelInstance = model._new.apply(model, arguments);
+                modelInstance = model._instance.apply(model, arguments);
             this._newObjects.push(modelInstance);
             return modelInstance;
         },

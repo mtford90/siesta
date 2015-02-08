@@ -50,7 +50,7 @@
 
         this.attributes = Model._processAttributes(this.attributes);
 
-        this._new = new instanceFactory(this);
+        this._instance = new instanceFactory(this);
 
         _.extend(this, {
             _installed: false,

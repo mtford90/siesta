@@ -808,16 +808,16 @@ describe('storage', function () {
                                     break;
                             }
                         },
-                        onPomodoroLengthChange: function (old, _new) {
+                        onPomodoroLengthChange: function (old, _instance) {
 
                         },
-                        onLongBreakLengthChange: function (old, _new) {
+                        onLongBreakLengthChange: function (old, _instance) {
 
                         },
-                        onShortBreakLengthChange: function (old, _new) {
+                        onShortBreakLengthChange: function (old, _instance) {
 
                         },
-                        onRoundLengthChange: function (old, _new) {
+                        onRoundLengthChange: function (old, _instance) {
 
                         },
                         start: function () {

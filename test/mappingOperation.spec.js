@@ -272,7 +272,7 @@ describe('mapping operation', function () {
                     });
 
                     it('existing', function (done) {
-                        var repo = Repo._new({
+                        var repo = Repo._instance({
                             id: '5',
                             name: 'Old Name',
                             full_name: 'Old Full Name'

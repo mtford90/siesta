@@ -23,8 +23,8 @@ describe('query sets', function () {
                 attributes: ['name', 'age']
             });
             siesta.install(function () {
-                michael = Person._new({name: 'Michael', age: 24});
-                bob = Person._new({name: 'Bob', age: 21});
+                michael = Person._instance({name: 'Michael', age: 24});
+                bob = Person._instance({name: 'Bob', age: 21});
                 querySet = createQuerySet([michael, bob], Person);
                 done();
             });
@@ -101,9 +101,9 @@ describe('query sets', function () {
                 }
             });
             siesta.install(function () {
-                michael = Person._new({name: 'Michael', age: 24});
-                bob = Person._new({name: 'Bob', age: 21});
-                michael.cars = [Car._new({colour: 'red'}), Car._new({colour: 'blue'})];
+                michael = Person._instance({name: 'Michael', age: 24});
+                bob = Person._instance({name: 'Bob', age: 21});
+                michael.cars = [Car._instance({colour: 'red'}), Car._instance({colour: 'blue'})];
 
                 done();
             });

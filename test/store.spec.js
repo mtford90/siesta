@@ -43,15 +43,15 @@ describe('store......', function () {
 
                 beforeEach(function (done) {
                     siesta.install(function () {
-                        var o = Car._new({
+                        var o = Car._instance({
                             colour: 'red',
                             id: 'remoteId1'
                         });
-                        var o1 = Car._new({
+                        var o1 = Car._instance({
                             colour: 'blue',
                             id: 'remoteId2'
                         });
-                        var o2 = Car._new({
+                        var o2 = Car._instance({
                             colour: 'green',
                             id: 'remoteId3'
                         });
@@ -84,15 +84,15 @@ describe('store......', function () {
 
                     beforeEach(function (done) {
                         siesta.install(function () {
-                            var o = Car._new({
+                            var o = Car._instance({
                                 colour: 'red',
                                 id: 'remoteId1'
                             });
-                            var o1 = Car._new({
+                            var o1 = Car._instance({
                                 colour: 'blue',
                                 id: 'remoteId2'
                             });
-                            var o2 = Car._new({
+                            var o2 = Car._instance({
                                 colour: 'green',
                                 id: 'remoteId3'
                             });

@@ -439,9 +439,9 @@ describe('events', function () {
                     beforeEach(function (done) {
                         siesta.install()
                             .then(function () {
-                                car = Car._new();
-                                anotherCar = Car._new();
-                                person = Person._new();
+                                car = Car._instance();
+                                anotherCar = Car._instance();
+                                person = Person._instance();
 
                                 person.cars = [car];
                                 siesta.on('myCollection:Person', function (n) {
@@ -518,8 +518,8 @@ describe('events', function () {
                     beforeEach(function (done) {
                         siesta.install()
                             .then(function () {
-                                car = Car._new();
-                                person = Person._new();
+                                car = Car._instance();
+                                person = Person._instance();
                                 person.cars = [car];
                                 siesta.on('myCollection:Person', function (n) {
                                     if (n.type == ModelEventType.Splice) {
@@ -627,9 +627,9 @@ describe('events', function () {
                     describe('push', function () {
                         beforeEach(function (done) {
                             siesta.install(function () {
-                                car = Car._new();
-                                anotherCar = Car._new();
-                                person = Person._new();
+                                car = Car._instance();
+                                anotherCar = Car._instance();
+                                person = Person._instance();
                                 person.cars = [car];
                                 siesta.on('myCollection:Person', function (n) {
                                     if (n.type == ModelEventType.Splice && n.model == 'Person') {
@@ -707,8 +707,8 @@ describe('events', function () {
                         beforeEach(function (done) {
                             siesta.install()
                                 .then(function () {
-                                    car = Car._new();
-                                    person = Person._new();
+                                    car = Car._instance();
+                                    person = Person._instance();
                                     person.cars = [car];
                                     siesta.on('myCollection:Person', function (n) {
                                         if (n.type == ModelEventType.Splice && n.model == 'Person') {

@@ -31,7 +31,7 @@ describe('mapping new object', function () {
         });
 
         it('valid', function () {
-            var car = Car._new();
+            var car = Car._instance();
             _.each(Car._attributeNames, function (f) {
                 assert(car[f] !== undefined);
             });
@@ -40,7 +40,7 @@ describe('mapping new object', function () {
         describe('id field', function () {
             var car;
             beforeEach(function () {
-                car = Car._new();
+                car = Car._instance();
             });
 
             it('should be present', function () {
@@ -103,12 +103,12 @@ describe('mapping new object', function () {
         describe('installation of proxies', function () {
 
             it('installs forward related object proxy', function () {
-                var carObject = Car._new();
+                var carObject = Car._instance();
                 assert.instanceOf(carObject.__proxies['owner'], OneToManyProxy);
             });
 
             it('installs reverse related object proxy', function () {
-                var personObject = Person._new();
+                var personObject = Person._instance();
                 assert.instanceOf(personObject.__proxies['cars'], OneToManyProxy);
             });
 

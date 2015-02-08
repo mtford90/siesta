@@ -201,7 +201,7 @@
          * Convert raw data into a ModelInstance
          * @returns {ModelInstance}
          */
-        _new: function (data, shouldRegisterChange) {
+        _instance: function (data, shouldRegisterChange) {
             if (this.model.installed) {
                 var modelInstance = new ModelInstance(this.model);
                 this._installLocalId(modelInstance, data);
@@ -220,6 +220,6 @@
 
     module.exports = function (model) {
         var factory = new ModelInstanceFactory(model);
-        return factory._new.bind(factory);
+        return factory._instance.bind(factory);
     }
 })();

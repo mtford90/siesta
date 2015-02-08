@@ -115,7 +115,7 @@ describe('cache...', function () {
         describe('errors', function () {
 
             it('ignore duplicate inserts if is the same object', function () {
-                var person = Person._new({
+                var person = Person._instance({
                     name: 'Michael Ford',
                     age: 23,
                     id: 'xyz'
@@ -125,7 +125,7 @@ describe('cache...', function () {
             });
 
             it('cant insert object with same _id', function () {
-                var person = Person._new({
+                var person = Person._instance({
                     name: 'Michael Ford',
                     age: 23,
                     id: 'xyz'
@@ -139,7 +139,7 @@ describe('cache...', function () {
             });
 
             it('cant insert object with same id', function () {
-                var person = Person._new({
+                var person = Person._instance({
                     name: 'Michael Ford',
                     age: 23,
                     id: 'xyz'
@@ -147,7 +147,7 @@ describe('cache...', function () {
                 cache.insert(person);
 
                 assert.throws(function () {
-                    cache.insert(Person._new({
+                    cache.insert(Person._instance({
                         name: 'Michael Ford',
                         age: 23,
                         id: 'xyz'
