@@ -202,21 +202,16 @@ _.extend(Model.prototype, {
                                     log('reverseModelName', modelName);
                                     if (!self.collection) throw new InternalSiestaError('Model must have collection');
                                     var collection = self.collection;
-                                    if (!collection) {
-                                        throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
-                                    }
+                                    if (!collection)    throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
                                     reverseModel = collection[modelName];
                                 }
-
                                 if (!reverseModel) {
                                     var arr = modelName.split('.');
                                     if (arr.length == 2) {
                                         var collectionName = arr[0];
                                         modelName = arr[1];
                                         var otherCollection = CollectionRegistry[collectionName];
-                                        if (!otherCollection) {
-                                            return 'Collection with name "' + collectionName + '" does not exist.';
-                                        }
+                                        if (!otherCollection) return 'Collection with name "' + collectionName + '" does not exist.';
                                         reverseModel = otherCollection[modelName];
                                     }
                                 }
@@ -230,9 +225,7 @@ _.extend(Model.prototype, {
                                         isReverse: false
                                     });
                                     delete relationship.reverse;
-                                } else {
-                                    return 'Model with name "' + modelName.toString() + '" does not exist';
-                                }
+                                } else return 'Model with name "' + modelName.toString() + '" does not exist';
                             }
                         }
                     }
