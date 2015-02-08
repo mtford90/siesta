@@ -4,16 +4,13 @@
 
 var Store = require('./store'),
     SiestaModel = require('./ModelInstance'),
-    log = require('./log'),
+    log = require('./log')('Mapping'),
     InternalSiestaError = require('./error').InternalSiestaError,
     cache = require('./cache'),
     util = require('./util'),
     _ = util._,
     async = util.async,
     ModelEventType = require('./modelEvents').ModelEventType;
-
-var Logger = log.loggerWithName('Mapping');
-Logger.setLevel(log.Level.trace);
 
 function SiestaError(opts) {
     this.opts = opts;
@@ -27,7 +24,7 @@ SiestaError.prototype.toString = function () {
  * Encapsulates the idea of mapping arrays of data onto the object graph or arrays of objects.
  * @param {Object} opts
  * @param opts.model
- * @param opts.data
+ * @param opts.data#
  * @param opts.objects
  * @param opts.disableNotifications
  */
@@ -182,16 +179,15 @@ _.extend(MappingOperation.prototype, {
                 function (done) {
                     var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
                     if (remoteIdentifiers.length) {
-                        if (Logger.trace.isEnabled)
-                            Logger.trace('Looking up remoteIdentifiers: ' + util.prettyPrint(remoteIdentifiers));
+                        log('Looking up remoteIdentifiers: ' + util.prettyPrint(remoteIdentifiers));
                         Store.getMultipleRemote(remoteIdentifiers, self.model, function (err, objects) {
                             if (!err) {
-                                if (Logger.trace.isEnabled) {
+                                if (log.enabled) {
                                     var results = {};
                                     for (i = 0; i < objects.length; i++) {
                                         results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
                                     }
-                                    Logger.trace('Results for remoteIdentifiers: ' + util.prettyPrint(results));
+                                    log('Results for remoteIdentifiers: ' + util.prettyPrint(results));
                                 }
                                 for (i = 0; i < objects.length; i++) {
                                     var obj = objects[i];

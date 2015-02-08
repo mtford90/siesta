@@ -2,15 +2,13 @@
  * @module query
  */
 
-var log = require('./log'),
+var log = require('./log')('Query'),
     cache = require('./cache'),
     util = require('./util'),
     error = require('./error'),
     constructQuerySet = require('./QuerySet'),
     constructError = error.errorFactory(error.Components.Query),
     _ = util._;
-
-var Logger = log.loggerWithName('Query');
 
 /**
  * @class [Query description]
@@ -39,12 +37,12 @@ function Query(model, query) {
 var comparators = {
     e: function (opts) {
         var objectValue = opts.object[opts.field];
-        if (Logger.trace) {
+        if (log.enabled) {
             var stringValue;
             if (objectValue === null) stringValue = 'null';
             else if (objectValue === undefined) stringValue = 'undefined';
             else stringValue = objectValue.toString();
-            Logger.trace(opts.field + ': ' + stringValue + ' == ' + opts.value.toString());
+            log(opts.field + ': ' + stringValue + ' == ' + opts.value.toString());
         }
         return objectValue == opts.value;
     },
@@ -177,7 +175,7 @@ _.extend(Query.prototype, {
                 }
             }
             res = this._sortResults(res);
-            if (err) Logger.error('Error executing query', err);
+            if (err) log('Error executing query', err);
             callback(err, err ? null : constructQuerySet(res, this.model));
         }.bind(this);
         if (this.opts.ignoreInstalled) {

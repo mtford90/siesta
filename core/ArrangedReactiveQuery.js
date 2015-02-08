@@ -15,7 +15,7 @@ var ReactiveQuery = require('./ReactiveQuery'),
     _ = util._;
 
 
-var Logger = log.loggerWithName('Query');
+var Logger = log('Query');
 
 function ArrangedReactiveQuery(query) {
     ReactiveQuery.call(this, query);

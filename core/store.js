@@ -6,13 +6,11 @@
  */
 
 var InternalSiestaError = require('./error').InternalSiestaError,
-    log = require('./log'),
+    log = require('./log')('Store'),
     util = require('./util'),
     _ = util._,
     cache = require('./cache');
 
-
-var Logger = log.loggerWithName('Store');
 
 /**
  * [get description]
@@ -31,8 +29,7 @@ var Logger = log.loggerWithName('Store');
 function get(opts, callback) {
     var deferred = util.defer(callback);
     callback = deferred.finish.bind(deferred);
-    if (Logger.debug.isEnabled)
-        Logger.debug('get', opts);
+    log('get', opts);
     var siestaModel;
     if (opts._id) {
         if (util.isArray(opts._id)) {
@@ -45,8 +42,8 @@ function get(opts, callback) {
         } else {
             siestaModel = cache.get(opts);
             if (siestaModel) {
-                if (Logger.debug.isEnabled)
-                    Logger.debug('Had cached object', {
+                if (log.enabled)
+                    log('Had cached object', {
                         opts: opts,
                         obj: siestaModel
                     });
@@ -81,8 +78,8 @@ function get(opts, callback) {
         } else {
             siestaModel = cache.get(opts);
             if (siestaModel) {
-                if (Logger.debug.isEnabled)
-                    Logger.debug('Had cached object', {
+                if (log.enabled)
+                    log('Had cached object', {
                         opts: opts,
                         obj: siestaModel
                     });

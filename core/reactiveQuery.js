@@ -5,7 +5,7 @@
  * @module reactiveQuery
  */
 
-var log = require('./log'),
+var log = require('./log')('Query'),
     Query = require('./Query'),
     EventEmitter = require('events').EventEmitter,
     events = require('./events'),
@@ -14,8 +14,6 @@ var log = require('./log'),
     constructQuerySet = require('./QuerySet'),
     util = require('./util'),
     _ = util._;
-
-var Logger = log.loggerWithName('Query');
 
 /**
  *
@@ -51,7 +49,7 @@ _.extend(ReactiveQuery, {
 
 _.extend(ReactiveQuery.prototype, {
     init: function (cb) {
-        if (Logger.trace) Logger.trace('init');
+        if (log) log('init');
         var deferred = util.defer(cb);
         cb = deferred.finish.bind(deferred);
         if (!this.initialised) {
@@ -66,10 +64,10 @@ _.extend(ReactiveQuery.prototype, {
                         this.handler = handler;
                         events.on(name, handler);
                     }
-                    if (Logger.trace) Logger.trace('Listening to ' + name);
+                    if (log) log('Listening to ' + name);
                     this.initialised = true;
                     cb(null, this.results);
-                }
+                }®
                 else {
                     cb(err);
                 }
@@ -92,11 +90,11 @@ _.extend(ReactiveQuery.prototype, {
         return idx;
     },
     _handleNotif: function (n) {
-        if (Logger.trace) Logger.trace('_handleNotif', n);
+        log('_handleNotif', n);
         if (n.type == modelEvents.ModelEventType.New) {
             var newObj = n.new;
             if (this._query.objectMatchesQuery(newObj)) {
-                if (Logger.trace) Logger.trace('New object matches', newObj._dumpString());
+                log('New object matches', newObj._dumpString());
                 var idx = this.insert(newObj);
                 this.emit('change', {
                     index: idx,
@@ -106,7 +104,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else {
-                if (Logger.trace) Logger.trace('New object does not match', newObj._dumpString());
+                log('New object does not match', newObj._dumpString());
             }
         }
         else if (n.type == modelEvents.ModelEventType.Set) {
@@ -115,7 +113,7 @@ _.extend(ReactiveQuery.prototype, {
                 alreadyContains = index > -1,
                 matches = this._query.objectMatchesQuery(newObj);
             if (matches && !alreadyContains) {
-                if (Logger.trace) Logger.trace('Updated object now matches!', newObj._dumpString());
+                log('Updated object now matches!', newObj._dumpString());
                 idx = this.insert(newObj);
                 this.emit('change', {
                     index: idx,
@@ -125,7 +123,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else if (!matches && alreadyContains) {
-                if (Logger.trace) Logger.trace('Updated object no longer matches!', newObj._dumpString());
+                log('Updated object no longer matches!', newObj._dumpString());
                 results = this.results.mutableCopy();
                 var removed = results.splice(index, 1);
                 this.results = results.asModelQuerySet(this.model);
@@ -138,11 +136,11 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else if (!matches && !alreadyContains) {
-                if (Logger.trace) Logger.trace('Does not contain, but doesnt match so not inserting', newObj._dumpString());
+                log('Does not contain, but doesnt match so not inserting', newObj._dumpString());
             }
             else if (matches && alreadyContains) {
-                if (Logger.trace) Logger.trace('Matches but already contains', newObj._dumpString());
-                // Send the notification over. 
+                log('Matches but already contains', newObj._dumpString());
+                // Send the notification over.
                 this.emit('change', n);
             }
         }
@@ -151,7 +149,7 @@ _.extend(ReactiveQuery.prototype, {
             var results = this.results.mutableCopy();
             index = results.indexOf(newObj);
             if (index > -1) {
-                if (Logger.trace) Logger.trace('Removing object', newObj._dumpString());
+                log('Removing object', newObj._dumpString());
                 removed = results.splice(index, 1);
                 this.results = constructQuerySet(results, this.model);
                 this.emit('change', {
@@ -162,7 +160,7 @@ _.extend(ReactiveQuery.prototype, {
                 });
             }
             else {
-                if (Logger.trace) Logger.trace('No modelEvents neccessary.', newObj._dumpString());
+                log('No modelEvents neccessary.', newObj._dumpString());
             }
         }
         else {

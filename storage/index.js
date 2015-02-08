@@ -5,7 +5,7 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
 var _i = siesta._internal,
     cache = _i.cache,
     CollectionRegistry = _i.CollectionRegistry,
-    log = _i.log,
+    log = _i.log('Storage'),
     util = _i.util,
     _ = util._,
     events = _i.events;
@@ -14,8 +14,7 @@ var unsavedObjects = [],
     unsavedObjectsHash = {},
     unsavedObjectsByCollection = {};
 
-var storage = {},
-    Logger = log.loggerWithName('Storage');
+var storage = {};
 
 
 function _initMeta() {
@@ -173,38 +172,29 @@ else {
         var collectionName = opts.collectionName,
             modelName = opts.modelName;
         var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
-        if (Logger.trace) {
-            Logger.trace('Loading instances for ' + fullyQualifiedName);
-        }
+        log('Loading instances for ' + fullyQualifiedName);
         var Model = CollectionRegistry[collectionName][modelName];
-        var mapFunc = function (doc) {
-            if (doc.model == '$1' && doc.collection == '$2') {
-                //noinspection JSUnresolvedFunction
-                emit(doc._id, doc);
-            }
-        }.toString().replace('$1', modelName).replace('$2', collectionName);
-        if (Logger.trace.isEnabled) Logger.trace('Querying pouch');
+        log('Querying pouch');
         pouch.query(fullyQualifiedName)
             //pouch.query({map: mapFunc})
             .then(function (resp) {
                 console.log('resp', resp);
-                if (Logger.trace.isEnabled) Logger.trace('Queried pouch successfully');
+                log('Queried pouch successfully');
                 var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
                     return _prepareDatum(datum, Model);
                 });
-                if (Logger.trace.isEnabled) Logger.trace('Mapping data', data);
+                log('Mapping data', data);
                 Model.graph(data, {
                     disableevents: true,
                     _ignoreInstalled: true,
                     fromStorage: true
                 }, function (err, instances) {
                     if (!err) {
-                        if (Logger.trace.isEnabled) {
-                            Logger.trace('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
-                        }
+                        if (log.enabled)
+                            log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
                     }
                     else {
-                        Logger.error('Error loading models', err);
+                        log('Error loading models', err);
                     }
                     callback(err, instances);
                 });
@@ -245,8 +235,8 @@ else {
                         instances = instances.concat(r)
                     });
                     n = instances.length;
-                    if (Logger.trace) {
-                        Logger.trace('Loaded ' + n.toString() + ' instances');
+                    if (log) {
+                        log('Loaded ' + n.toString() + ' instances');
                     }
                 }
                 deferred.finish(err, n);
@@ -284,7 +274,7 @@ else {
                     conflicts.push(obj);
                 }
                 else {
-                    Logger.error('Error saving object with _id="' + obj._id + '"', response);
+                    log('Error saving object with _id="' + obj._id + '"', response);
                 }
             }
             if (conflicts.length) {
@@ -312,8 +302,8 @@ else {
             unsavedObjects = [];
             unsavedObjectsHash = {};
             unsavedObjectsByCollection = {};
-            if (Logger.trace) {
-                Logger.trace('Saving objects', _.map(objects, function (x) {
+            if (log) {
+                log('Saving objects', _.map(objects, function (x) {
                     return x._dump()
                 }))
             }
@@ -359,7 +349,7 @@ else {
                     pouch = new PouchDB(DB_NAME);
                 }
                 siesta.on('Siesta', listener);
-                Logger.warn('Reset complete');
+                log('Reset complete');
                 cb(err);
             })
         }

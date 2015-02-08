@@ -2,7 +2,7 @@
  * @module collection
  */
 
-var log = require('./log'),
+var log = require('./log')('Collection'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     InternalSiestaError = require('./error').InternalSiestaError,
     Model = require('./model'),
@@ -15,8 +15,6 @@ var log = require('./log'),
     constructError = error.errorFactory(error.Components.Collection),
     cache = require('./cache');
 
-var UNSAFE_METHODS = ['PUT', 'PATCH', 'POST', 'DELETE'],
-    Logger = log.loggerWithName('Collection');
 
 /**
  * A collection describes a set of models and optionally a REST API which we would
@@ -98,30 +96,27 @@ _.extend(Collection.prototype, {
                     modelsToInstall.push(model);
                 }
             }
-            if (Logger.info.isEnabled)
-                Logger.info('There are ' + modelsToInstall.length.toString() + ' mappings to install');
+            log('There are ' + modelsToInstall.length.toString() + ' mappings to install');
             if (modelsToInstall.length) {
                 var tasks = _.map(modelsToInstall, function (m) {
                     return _.bind(m.install, m);
                 });
                 util.async.parallel(tasks, function (err) {
                     if (err) {
-                        Logger.error('Failed to install collection', err);
+                        log('Failed to install collection', err);
                         self._finaliseInstallation(err, deferred.finish.bind(deferred));
                     }
                     else {
                         self.installed = true;
                         var errors = [];
                         _.each(modelsToInstall, function (m) {
-                            if (Logger.info.isEnabled)
-                                Logger.info('Installing relationships for mapping with name "' + m.name + '"');
+                            log('Installing relationships for mapping with name "' + m.name + '"');
                             var err = m.installRelationships();
                             if (err) errors.push(err);
                         });
                         if (!errors.length) {
                             _.each(modelsToInstall, function (m) {
-                                if (Logger.info.isEnabled)
-                                    Logger.info('Installing reverse relationships for mapping with name "' + m.name + '"');
+                                log('Installing reverse relationships for mapping with name "' + m.name + '"');
                                 var err = m.installReverseRelationships();
                                 if (err) errors.push(err);
                             });

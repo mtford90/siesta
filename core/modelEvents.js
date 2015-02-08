@@ -1,10 +1,9 @@
 var events = require('./events'),
     InternalSiestaError = require('./error').InternalSiestaError,
-    log = require('./log'),
+    log = require('./log')('ModelEvents'),
     extend = require('./util')._.extend,
     collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
-var Logger = log.loggerWithName('ModelEvents');
 
 /**
  * Constants that describe change events.
@@ -57,33 +56,33 @@ ModelEvent.prototype._dump = function (pretty) {
  * @return {[type]}
  */
 function broadcastEvent(collectionName, modelName, c) {
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + collectionName + '" of type ' + c.type);
+    log('Sending notification "' + collectionName + '" of type ' + c.type);
     events.emit(collectionName, c);
     var modelNotif = collectionName + ':' + modelName;
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + modelNotif + '" of type ' + c.type);
+    log('Sending notification "' + modelNotif + '" of type ' + c.type);
     events.emit(modelNotif, c);
     var genericNotif = 'Siesta';
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + genericNotif + '" of type ' + c.type);
+    log('Sending notification "' + genericNotif + '" of type ' + c.type);
     events.emit(genericNotif, c);
     var localIdNotif = c._id;
-    if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + localIdNotif + '" of type ' + c.type);
+    log('Sending notification "' + localIdNotif + '" of type ' + c.type);
     events.emit(localIdNotif, c);
     var collection = collectionRegistry[collectionName];
     var err;
     if (!collection) {
         err = 'No such collection "' + collectionName + '"';
-        Logger.error(err, collectionRegistry);
+        log(err, collectionRegistry);
         throw new InternalSiestaError(err);
     }
     var model = collection[modelName];
     if (!model) {
         err = 'No such model "' + modelName + '"';
-        Logger.error(err, collectionRegistry);
+        log(err, collectionRegistry);
         throw new InternalSiestaError(err);
     }
     if (model.id && c.obj[model.id]) {
         var remoteIdNotif = collectionName + ':' + modelName + ':' + c.obj[model.id];
-        if (Logger.trace.isEnabled) Logger.trace('Sending notification "' + remoteIdNotif + '" of type ' + c.type);
+        log('Sending notification "' + remoteIdNotif + '" of type ' + c.type);
         events.emit(remoteIdNotif, c);
     }
 }

@@ -2,7 +2,7 @@
  * @module mapping
  */
 
-var log = require('./log'),
+var log = require('./log')('Model'),
     CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
     InternalSiestaError = require('./error').InternalSiestaError,
     RelationshipType = require('./RelationshipType'),
@@ -25,8 +25,6 @@ var log = require('./log'),
     _ = util._,
     guid = util.guid,
     ModelEventType = modelEvents.ModelEventType;
-
-var Logger = log.loggerWithName('Model');
 
 
 /**
@@ -155,7 +153,7 @@ _.extend(Model.prototype, {
         if (statics) {
             _.each(Object.keys(statics), function (staticName) {
                 if (this[staticName]) {
-                    Logger.error('Static method with name "' + staticName + '" already exists. Ignoring it.');
+                    log('Static method with name "' + staticName + '" already exists. Ignoring it.');
                 }
                 else {
                     this[staticName] = statics[staticName].bind(this);
@@ -178,8 +176,7 @@ _.extend(Model.prototype, {
                         var relationship = self._opts.relationships[name];
                         // If a reverse relationship is installed beforehand, we do not want to process them.
                         if (!relationship.isReverse) {
-                            if (Logger.debug.isEnabled)
-                                Logger.debug(self.name + ': configuring relationship ' + name, relationship);
+                            log(self.name + ': configuring relationship ' + name, relationship);
                             if (!relationship.type) {
                                 if (self.singleton) {
                                     relationship.type = RelationshipType.OneToOne;
@@ -201,8 +198,7 @@ _.extend(Model.prototype, {
                                     reverseModel = modelName;
                                 }
                                 else {
-                                    if (Logger.debug.isEnabled)
-                                        Logger.debug('reverseModelName', modelName);
+                                    log('reverseModelName', modelName);
                                     if (!self.collection) throw new InternalSiestaError('Model must have collection');
                                     var collection = self.collection;
                                     if (!collection) {
@@ -223,8 +219,7 @@ _.extend(Model.prototype, {
                                         reverseModel = otherCollection[modelName];
                                     }
                                 }
-                                if (Logger.debug.isEnabled)
-                                    Logger.debug('reverseModel', reverseModel);
+                                log('reverseModel', reverseModel);
                                 if (reverseModel) {
                                     relationship.reverseModel = reverseModel;
                                     relationship.forwardModel = this;
@@ -261,8 +256,7 @@ _.extend(Model.prototype, {
                         if (relationship.type == RelationshipType.ManyToMany) return 'Singleton model cannot be related via reverse ManyToMany';
                         if (relationship.type == RelationshipType.OneToMany) return 'Singleton model cannot be related via reverse OneToMany';
                     }
-                    if (Logger.debug.isEnabled)
-                        Logger.debug(this.name + ': configuring  reverse relationship ' + reverseName);
+                    log(this.name + ': configuring  reverse relationship ' + reverseName);
                     reverseModel.relationships[reverseName] = relationship;
                 }
             }
@@ -272,8 +266,7 @@ _.extend(Model.prototype, {
         }
     },
     _query: function (query) {
-        var query = new Query(this, query || {});
-        return query;
+        return new Query(this, query || {});
     },
     query: function (query, callback) {
         if (!this.singleton) return (this._query(query)).execute(callback);
@@ -342,7 +335,7 @@ _.extend(Model.prototype, {
         return this.query(q, cb);
     },
     install: function (callback) {
-        if (Logger.info.isEnabled) Logger.info('Installing mapping ' + this.name);
+        log('Installing mapping ' + this.name);
         var deferred = util.defer(callback);
         callback = deferred.finish.bind(deferred);
         if (!this._installed) {
@@ -435,8 +428,7 @@ _.extend(Model.prototype, {
                 _id = guid();
             }
             var newModel = new ModelInstance(this);
-            if (Logger.info.isEnabled)
-                Logger.info('New object created _id="' + _id.toString() + '", type=' + this.name, data);
+            log('New object created _id="' + _id.toString() + '", type=' + this.name, data);
             newModel._id = _id;
             // Place attributes on the object.
             var values = {};
@@ -510,7 +502,7 @@ _.extend(Model.prototype, {
                     newModel[methodName] = this.methods[methodName].bind(newModel);
                 }
                 else {
-                    Logger.error('A method with name "' + methodName + '" already exists. Ignoring it.');
+                    log('A method with name "' + methodName + '" already exists. Ignoring it.');
                 }
             }.bind(this));
 
@@ -528,7 +520,7 @@ _.extend(Model.prototype, {
                     Object.defineProperty(newModel, propName, propDef);
                 }
                 else {
-                    Logger.error('A property/method with name "' + propName + '" already exists. Ignoring it.');
+                    log('A property/method with name "' + propName + '" already exists. Ignoring it.');
                 }
             }.bind(this));
 
@@ -607,7 +599,6 @@ _.extend(Model.prototype, {
     }
 
 });
-
 
 
 //
