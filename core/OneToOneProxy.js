@@ -54,11 +54,10 @@ _.extend(OneToOneProxy.prototype, {
             this.setIdAndRelated(obj, opts);
         }
     },
-    get: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        callback(null, this.related);
-        return deferred.promise;
+    get: function (cb) {
+        return util.promise(cb, function (cb) {
+            cb(null, this.related);
+        }.bind(this));
     }
 });
 

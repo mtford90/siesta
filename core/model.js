@@ -268,34 +268,34 @@ _.extend(Model.prototype, {
     _query: function (query) {
         return new Query(this, query || {});
     },
-    query: function (query, callback) {
-        if (!this.singleton) return (this._query(query)).execute(callback);
-        else {
-            var deferred = util.defer(callback);
-            callback = deferred.finish.bind(deferred);
-            (this._query({__ignoreInstalled: true})).execute(function (err, objs) {
-                if (err) callback(err);
-                else {
-                    // Cache a new singleton and then reexecute the query
-                    query = _.extend({}, query);
-                    query.__ignoreInstalled = true;
-                    if (!objs.length) {
-                        this.graph({}, function (err) {
-                            if (!err) {
-                                (this._query(query)).execute(callback);
-                            }
-                            else {
-                                callback(err);
-                            }
-                        }.bind(this));
-                    }
+    query: function (query, cb) {
+        return util.promise(cb, function (cb) {
+            if (!this.singleton) return (this._query(query)).execute(cb);
+            else {
+                (this._query({__ignoreInstalled: true})).execute(function (err, objs) {
+                    if (err) cb(err);
                     else {
-                        (this._query(query)).execute(callback);
+                        // Cache a new singleton and then reexecute the query
+                        query = _.extend({}, query);
+                        query.__ignoreInstalled = true;
+                        if (!objs.length) {
+                            this.graph({}, function (err) {
+                                if (!err) {
+                                    (this._query(query)).execute(cb);
+                                }
+                                else {
+                                    cb(err);
+                                }
+                            }.bind(this));
+                        }
+                        else {
+                            (this._query(query)).execute(cb);
+                        }
                     }
-                }
-            }.bind(this));
-            return deferred.promise;
-        }
+                }.bind(this));
+            }
+        }.bind(this));
+
     },
     reactiveQuery: function (query) {
         return new ReactiveQuery(new Query(this, query || {}));
@@ -308,21 +308,20 @@ _.extend(Model.prototype, {
             cb = opts;
             opts = {};
         }
-        var deferred = util.defer(cb);
-        cb = deferred.finish.bind(deferred);
-        this.query(opts, function (err, res) {
-            if (err) cb(err);
-            else {
-                if (res.length > 1) {
-                    cb('More than one instance returned when executing get query!');
-                }
+        return util.promise(cb, function (cb) {
+            this.query(opts, function (err, res) {
+                if (err) cb(err);
                 else {
-                    res = res.length ? res[0] : null;
-                    cb(null, res);
+                    if (res.length > 1) {
+                        cb('More than one instance returned when executing get query!');
+                    }
+                    else {
+                        res = res.length ? res[0] : null;
+                        cb(null, res);
+                    }
                 }
-            }
-        });
-        return deferred.promise;
+            });
+        }.bind(this));
     },
     all: function (q, cb) {
         if (typeof q == 'function') {
@@ -334,17 +333,16 @@ _.extend(Model.prototype, {
         if (q.__order) query.__order = q.__order;
         return this.query(q, cb);
     },
-    install: function (callback) {
+    install: function (cb) {
         log('Installing mapping ' + this.name);
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        if (!this._installed) {
-            this._installed = true;
-            callback();
-        } else {
-            throw new InternalSiestaError('Model "' + this.name + '" has already been installed');
-        }
-        return deferred.promise;
+        return util.promise(cb, function (cb) {
+            if (!this._installed) {
+                this._installed = true;
+                cb();
+            } else {
+                throw new InternalSiestaError('Model "' + this.name + '" has already been installed');
+            }
+        }.bind(this));
     },
     /**
      * Map data into Siesta.
@@ -353,38 +351,38 @@ _.extend(Model.prototype, {
      * @param {function|object} [opts]
      * @param {boolean} opts.override
      * @param {boolean} opts._ignoreInstalled - An escape clause that allows mapping onto Models even if install process has not finished.
-     * @param {function} [callback] Called once pouch persistence returns.
+     * @param {function} [cb] Called once pouch persistence returns.
      */
-    graph: function (data, opts, callback) {
-        if (typeof opts == 'function') callback = opts;
+    graph: function (data, opts, cb) {
+        if (typeof opts == 'function') cb = opts;
         opts = opts || {};
-        var deferred = util.defer(callback);
-        var _map = function () {
-            var overrides = opts.override;
-            if (overrides) {
-                if (util.isArray(overrides)) opts.objects = overrides;
-                else opts.objects = [overrides];
-            }
-            delete opts.override;
-            if (util.isArray(data)) {
-                this._mapBulk(data, opts, deferred.finish.bind(deferred));
-            } else {
-                this._mapBulk([data], opts, function (err, objects) {
-                    var obj;
-                    if (objects) {
-                        if (objects.length) {
-                            obj = objects[0];
+        return util.promise(cb, function (cb) {
+            var _map = function () {
+                var overrides = opts.override;
+                if (overrides) {
+                    if (util.isArray(overrides)) opts.objects = overrides;
+                    else opts.objects = [overrides];
+                }
+                delete opts.override;
+                if (util.isArray(data)) {
+                    this._mapBulk(data, opts, cb);
+                } else {
+                    this._mapBulk([data], opts, function (err, objects) {
+                        var obj;
+                        if (objects) {
+                            if (objects.length) {
+                                obj = objects[0];
+                            }
                         }
-                    }
-                    deferred.finish(err ? (util.isArray(err) ? err[0] : err) : null, obj);
-                });
+                        cb(err ? (util.isArray(err) ? err[0] : err) : null, obj);
+                    });
+                }
+            }.bind(this);
+            if (opts._ignoreInstalled) {
+                _map();
             }
-        }.bind(this);
-        if (opts._ignoreInstalled) {
-            _map();
-        }
-        else siesta._afterInstall(_map);
-        return deferred.promise;
+            else siesta._afterInstall(_map);
+        }.bind(this));
     },
     _mapBulk: function (data, opts, callback) {
         _.extend(opts, {model: this, data: data});
@@ -405,12 +403,10 @@ _.extend(Model.prototype, {
             return m;
         }, {});
     },
-    count: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        var hash = this._countCache();
-        callback(null, Object.keys(hash).length);
-        return deferred.promise;
+    count: function (cb) {
+        return util.promise(cb, function (cb) {
+            cb(null, Object.keys(this._countCache()).length);
+        }.bind(this));
     },
     /**
      * Convert raw data into a ModelInstance

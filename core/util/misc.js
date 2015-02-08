@@ -87,58 +87,6 @@ _.extend(module.exports, {
 
         return extend;
     })(),
-    defer: function (cb) {
-        var deferred;
-        cb = cb || function () {
-        };
-        if (siesta.q) {
-            deferred = siesta.q.defer();
-            var reject = deferred.reject,
-                resolve = deferred.resolve;
-            _.extend(deferred, {
-                reject: function (err) {
-                    cb(err);
-                    reject.call(this, err);
-                },
-                resolve: function (res) {
-                    var thisArg = cb.__siesta_bound_object || cb;
-                    var args = Array.prototype.slice.call(arguments, 0);
-                    args.unshift(null);
-                    cb.apply(thisArg, args);
-                    resolve.apply(this, arguments);
-                },
-                finish: function (err, res) {
-                    if (err) {
-                        this.reject(err);
-                    }
-                    else {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        this.resolve.apply(this, args);
-                    }
-                }
-            });
-        }
-        else {
-            deferred = {
-                promise: undefined,
-                reject: function (err) {
-                    var thisArg = cb.__siesta_bound_object || cb;
-                    cb.apply(thisArg, arguments);
-                },
-                resolve: function (res) {
-                    var thisArg = cb.__siesta_bound_object || cb;
-                    var args = Array.prototype.slice.call(arguments, 0);
-                    args.unshift(null);
-                    cb.apply(thisArg, args);
-                },
-                finish: function (err, res) {
-                    var thisArg = cb.__siesta_bound_object || cb;
-                    cb.apply(thisArg, arguments)
-                }
-            }
-        }
-        return deferred;
-    },
     defineSubProperty: function (property, subObj, innerProperty) {
         return Object.defineProperty(this, property, {
             get: function () {

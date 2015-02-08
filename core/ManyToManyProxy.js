@@ -74,11 +74,10 @@ _.extend(ManyToManyProxy.prototype, {
             arr.arrayObserver.open(observerFunction);
         }
     },
-    get: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        callback(null, this.related);
-        return deferred.promise;
+    get: function (cb) {
+        return util.promise(cb, function (cb) {
+            cb(null, this.related);
+        }.bind(this));
     },
     validate: function (obj) {
         if (Object.prototype.toString.call(obj) != '[object Array]') {

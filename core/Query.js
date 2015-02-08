@@ -90,11 +90,10 @@ function cacheForModel(model) {
 }
 
 _.extend(Query.prototype, {
-    execute: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        this._executeInMemory(callback);
-        return deferred.promise;
+    execute: function (cb) {
+        return util.promise(cb, function (cb) {
+            this._executeInMemory(cb);
+        }.bind(this));
     },
     _dump: function (asJson) {
         return asJson ? '{}' : {};

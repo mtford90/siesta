@@ -126,43 +126,39 @@ _.extend(siesta, {
     install: function (cb) {
         if (!(installing || installed)) {
             installing = true;
-            var deferred = util.defer(cb);
-            cb = deferred.finish.bind(deferred);
-
-            var collectionNames = CollectionRegistry.collectionNames,
-                collectionInstallTasks = _.map(collectionNames, function (n) {
-                    return function (done) {
-                        CollectionRegistry[n].install(done);
-                    }
-                });
-            if (siesta.ext.storageEnabled) {
-                collectionInstallTasks.unshift(siesta.ext.storage.ensureIndexesForAll);
-            }
-            var self = this;
-            siesta.async.series(collectionInstallTasks, function (err) {
-                if (err) {
-                    cb(err);
+            return util.promise(cb, function (cb) {
+                var collectionNames = CollectionRegistry.collectionNames,
+                    collectionInstallTasks = _.map(collectionNames, function (n) {
+                        return function (done) {
+                            CollectionRegistry[n].install(done);
+                        }
+                    });
+                if (siesta.ext.storageEnabled) {
+                    collectionInstallTasks.unshift(siesta.ext.storage.ensureIndexesForAll);
                 }
-                else {
-                    if (siesta.ext.storageEnabled) {
-                        siesta.ext.storage._load(function (err) {
-                            if (!err) {
-                                installed = true;
-                                if (self.queuedTasks) self.queuedTasks.execute();
-                            }
-                            cb(err);
-                        });
+                var self = this;
+                siesta.async.series(collectionInstallTasks, function (err) {
+                    if (err) {
+                        cb(err);
                     }
                     else {
-                        installed = true;
-                        if (self.queuedTasks) self.queuedTasks.execute();
-                        cb();
+                        if (siesta.ext.storageEnabled) {
+                            siesta.ext.storage._load(function (err) {
+                                if (!err) {
+                                    installed = true;
+                                    if (self.queuedTasks) self.queuedTasks.execute();
+                                }
+                                cb(err);
+                            });
+                        }
+                        else {
+                            installed = true;
+                            if (self.queuedTasks) self.queuedTasks.execute();
+                            cb();
+                        }
                     }
-
-                }
-            });
-
-            return deferred.promise;
+                });
+            }.bind(this));
         }
         else {
             throw new error.InternalSiestaError('Already installing...');

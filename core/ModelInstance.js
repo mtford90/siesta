@@ -30,7 +30,9 @@ function ModelInstance(model) {
     Object.defineProperties(this, {
         _relationshipNames: {
             get: function () {
-                var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {return self.__proxies[x]});
+                var proxies = _.map(Object.keys(self.__proxies || {}), function (x) {
+                    return self.__proxies[x]
+                });
                 return _.map(proxies, function (p) {
                     if (p.isForward) {
                         return p.forwardName;
@@ -53,7 +55,9 @@ function ModelInstance(model) {
         },
         // This is for ProxyEventEmitter.
         event: {
-            get: function () {return this._id}
+            get: function () {
+                return this._id
+            }
         }
     });
 
@@ -63,11 +67,10 @@ function ModelInstance(model) {
 ModelInstance.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
 _.extend(ModelInstance.prototype, {
-    get: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        callback(null, this);
-        return deferred.promise;
+    get: function (cb) {
+        return util.promise(cb, function (cb) {
+            cb(null, this);
+        }.bind(this));
     },
     emit: function (type, opts) {
         if (typeof type == 'object') opts = type;
@@ -81,67 +84,65 @@ _.extend(ModelInstance.prototype, {
         });
         modelEvents.emit(opts);
     },
-    remove: function (callback, notification) {
+    remove: function (cb, notification) {
         notification = notification == null ? true : notification;
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        cache.remove(this);
-        this.removed = true;
-        if (notification) {
-            this.emit(modelEvents.ModelEventType.Remove, {
-                old: this
-            });
-        }
-        var remove = this.model.remove;
-        if (remove) {
-            var paramNames = util.paramNames(remove);
-            if (paramNames.length) {
-                var self = this;
-                remove.call(this, function (err) {
-                    callback(err, self);
+        return util.promise(cb, function (cb) {
+            cache.remove(this);
+            this.removed = true;
+            if (notification) {
+                this.emit(modelEvents.ModelEventType.Remove, {
+                    old: this
                 });
             }
-            else {
-                remove.call(this);
-                callback(null, this);
-            }
-        }
-        else {
-            callback(null, this);
-        }
-        return deferred.promise;
-    },
-    restore: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        var _finish = function (err) {
-            if (!err) {
-                this.emit(modelEvents.ModelEventType.New, {
-                    new: this
-                });
-            }
-            callback(err, this);
-        }.bind(this);
-        if (this.removed) {
-            cache.insert(this);
-            this.removed = false;
-            var init = this.model.init;
-            if (init) {
-                var paramNames = util.paramNames(init);
-                var fromStorage = true;
-                if (paramNames.length > 1) {
-                    init.call(this, fromStorage, _finish);
+            var remove = this.model.remove;
+            if (remove) {
+                var paramNames = util.paramNames(remove);
+                if (paramNames.length) {
+                    var self = this;
+                    remove.call(this, function (err) {
+                        cb(err, self);
+                    });
                 }
                 else {
-                    init.call(this, fromStorage);
+                    remove.call(this);
+                    cb(null, this);
+                }
+            }
+            else {
+                cb(null, this);
+            }
+        }.bind(this));
+    },
+    restore: function (cb) {
+        return util.promise(cb, function (cb) {
+            var _finish = function (err) {
+                if (!err) {
+                    this.emit(modelEvents.ModelEventType.New, {
+                        new: this
+                    });
+                }
+                cb(err, this);
+            }.bind(this);
+            if (this.removed) {
+                cache.insert(this);
+                this.removed = false;
+                var init = this.model.init;
+                if (init) {
+                    var paramNames = util.paramNames(init);
+                    var fromStorage = true;
+                    if (paramNames.length > 1) {
+                        init.call(this, fromStorage, _finish);
+                    }
+                    else {
+                        init.call(this, fromStorage);
+                        _finish();
+                    }
+                }
+                else {
                     _finish();
                 }
             }
-            else {
-                _finish();
-            }
-        }
-        return deferred.promise;
+        }.bind(this));
     }
 });
 

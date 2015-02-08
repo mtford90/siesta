@@ -69,11 +69,10 @@ _.extend(OneToManyProxy.prototype, {
             arr.arrayObserver.open(observerFunction);
         }
     },
-    get: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        callback(null, this.related);
-        return deferred.promise;
+    get: function (cb) {
+        return util.promise(cb, function (cb) {
+            cb(null, this.related);
+        }.bind(this));
     },
     /**
      * Validate the object that we're setting

@@ -208,60 +208,60 @@ else {
     /**
      * Load all data from PouchDB.
      */
-    function _load(callback) {
+    function _load(cb) {
         if (saving) throw new Error('not loaded yet how can i save');
-        var deferred = util.defer(callback);
-        if (siesta.ext.storageEnabled) {
-            var collectionNames = CollectionRegistry.collectionNames;
-            var tasks = [];
-            _.each(collectionNames, function (collectionName) {
-                var collection = CollectionRegistry[collectionName],
-                    modelNames = Object.keys(collection._models);
-                _.each(modelNames, function (modelName) {
-                    tasks.push(function (cb) {
-                        // We call from storage to allow for replacement of _loadModel for performance extension.
-                        storage._loadModel({
-                            collectionName: collectionName,
-                            modelName: modelName
-                        }, cb);
+        return util.promise(cb, function (cb) {
+            if (siesta.ext.storageEnabled) {
+                var collectionNames = CollectionRegistry.collectionNames;
+                var tasks = [];
+                _.each(collectionNames, function (collectionName) {
+                    var collection = CollectionRegistry[collectionName],
+                        modelNames = Object.keys(collection._models);
+                    _.each(modelNames, function (modelName) {
+                        tasks.push(function (cb) {
+                            // We call from storage to allow for replacement of _loadModel for performance extension.
+                            storage._loadModel({
+                                collectionName: collectionName,
+                                modelName: modelName
+                            }, cb);
+                        });
                     });
                 });
-            });
-            siesta.async.series(tasks, function (err, results) {
-                var n;
-                if (!err) {
-                    var instances = [];
-                    siesta._.each(results, function (r) {
-                        instances = instances.concat(r)
-                    });
-                    n = instances.length;
-                    if (log) {
-                        log('Loaded ' + n.toString() + ' instances');
+                siesta.async.series(tasks, function (err, results) {
+                    var n;
+                    if (!err) {
+                        var instances = [];
+                        siesta._.each(results, function (r) {
+                            instances = instances.concat(r)
+                        });
+                        n = instances.length;
+                        if (log) {
+                            log('Loaded ' + n.toString() + ' instances');
+                        }
                     }
-                }
-                deferred.finish(err, n);
-            });
-        }
-        else {
-            deferred.finish();
-        }
-        return deferred.promise;
+                    cb(err, n);
+                });
+            }
+            else {
+                cb();
+            }
+        }.bind(this));
     }
 
-    function saveConflicts(objects, callback, deferred) {
+    function saveConflicts(objects, cb) {
         pouch.allDocs({keys: _.pluck(objects, '_id')})
             .then(function (resp) {
                 for (var i = 0; i < resp.rows.length; i++) {
                     objects[i]._rev = resp.rows[i].value.rev;
                 }
-                saveToPouch(objects, callback, deferred);
+                saveToPouch(objects, cb);
             })
             .catch(function (err) {
-                deferred.reject(err);
+                cb(err);
             })
     }
 
-    function saveToPouch(objects, callback, deferred) {
+    function saveToPouch(objects, cb) {
         var conflicts = [];
         pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
             for (var i = 0; i < resp.length; i++) {
@@ -278,15 +278,13 @@ else {
                 }
             }
             if (conflicts.length) {
-                saveConflicts(conflicts, callback, deferred);
+                saveConflicts(conflicts, cb);
             }
             else {
-                callback();
-                if (deferred) deferred.resolve();
+                cb();
             }
         }, function (err) {
-            callback(err);
-            if (deferred) deferred.reject(err);
+            cb(err);
         });
     }
 
@@ -294,22 +292,22 @@ else {
     /**
      * Save all modelEvents down to PouchDB.
      */
-    function save(callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        siesta._afterInstall(function () {
-            var objects = unsavedObjects;
-            unsavedObjects = [];
-            unsavedObjectsHash = {};
-            unsavedObjectsByCollection = {};
-            if (log) {
-                log('Saving objects', _.map(objects, function (x) {
-                    return x._dump()
-                }))
-            }
-            saveToPouch(objects, callback, deferred);
-        });
-        return deferred.promise;
+    function save(cb) {
+        return util.promise(cb, function (cb) {
+            siesta._afterInstall(function () {
+                var objects = unsavedObjects;
+                unsavedObjects = [];
+                unsavedObjectsHash = {};
+                unsavedObjectsByCollection = {};
+                if (log) {
+                    log('Saving objects', _.map(objects, function (x) {
+                        return x._dump()
+                    }))
+                }
+                saveToPouch(objects, cb);
+            });
+        }.bind(this));
+
     }
 
     var listener = function (n) {

@@ -32,9 +32,21 @@ function ReactiveQuery(query) {
     });
 
     Object.defineProperties(this, {
-        initialized: {get: function () {return this.initialised}},
-        model: {get: function () { return self._query.model }},
-        collection: {get: function () { return self.model.collectionName }}
+        initialized: {
+            get: function () {
+                return this.initialised
+            }
+        },
+        model: {
+            get: function () {
+                return self._query.model
+            }
+        },
+        collection: {
+            get: function () {
+                return self.model.collectionName
+            }
+        }
     });
 }
 
@@ -50,33 +62,32 @@ _.extend(ReactiveQuery, {
 _.extend(ReactiveQuery.prototype, {
     init: function (cb) {
         if (log) log('init');
-        var deferred = util.defer(cb);
-        cb = deferred.finish.bind(deferred);
-        if (!this.initialised) {
-            this._query.execute(function (err, results) {
-                if (!err) {
-                    this.results = results;
-                    if (!this.handler) {
-                        var name = this._constructNotificationName();
-                        var handler = function (n) {
-                            this._handleNotif(n);
-                        }.bind(this);
-                        this.handler = handler;
-                        events.on(name, handler);
+        return util.promise(cb, function (cb) {
+            if (!this.initialised) {
+                this._query.execute(function (err, results) {
+                    if (!err) {
+                        this.results = results;
+                        if (!this.handler) {
+                            var name = this._constructNotificationName();
+                            var handler = function (n) {
+                                this._handleNotif(n);
+                            }.bind(this);
+                            this.handler = handler;
+                            events.on(name, handler);
+                        }
+                        if (log) log('Listening to ' + name);
+                        this.initialised = true;
+                        cb(null, this.results);
                     }
-                    if (log) log('Listening to ' + name);
-                    this.initialised = true;
-                    cb(null, this.results);
-                }
-                else {
-                    cb(err);
-                }
-            }.bind(this));
-        }
-        else {
-            cb(null, this.results);
-        }
-        return deferred.promise;
+                    else {
+                        cb(err);
+                    }
+                }.bind(this));
+            }
+            else {
+                cb(null, this.results);
+            }
+        }.bind(this));
     },
     insert: function (newObj) {
         var results = this.results.mutableCopy();

@@ -110,141 +110,139 @@ _.extend(MappingOperation.prototype, {
      * For indices where no object is present, perform lookups, creating a new object if necessary.
      * @private
      */
-    _lookup: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        var self = this;
-        var remoteLookups = [];
-        var localLookups = [];
-        for (var i = 0; i < this.data.length; i++) {
-            if (!this.objects[i]) {
-                var lookup;
-                var datum = this.data[i];
-                var isScalar = typeof datum == 'string' || typeof datum == 'number' || datum instanceof String;
-                if (datum) {
-                    if (isScalar) {
-                        lookup = {
-                            index: i,
-                            datum: {}
-                        };
-                        lookup.datum[self.model.id] = datum;
-                        remoteLookups.push(lookup);
-                    } else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
-                        this.objects[i] = datum;
-                    } else if (datum._id) {
-                        localLookups.push({
-                            index: i,
-                            datum: datum
-                        });
-                    } else if (datum[self.model.id]) {
-                        remoteLookups.push({
-                            index: i,
-                            datum: datum
-                        });
+    _lookup: function (cb) {
+        return util.promise(cb, function (cb) {
+            var self = this;
+            var remoteLookups = [];
+            var localLookups = [];
+            for (var i = 0; i < this.data.length; i++) {
+                if (!this.objects[i]) {
+                    var lookup;
+                    var datum = this.data[i];
+                    var isScalar = typeof datum == 'string' || typeof datum == 'number' || datum instanceof String;
+                    if (datum) {
+                        if (isScalar) {
+                            lookup = {
+                                index: i,
+                                datum: {}
+                            };
+                            lookup.datum[self.model.id] = datum;
+                            remoteLookups.push(lookup);
+                        } else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
+                            this.objects[i] = datum;
+                        } else if (datum._id) {
+                            localLookups.push({
+                                index: i,
+                                datum: datum
+                            });
+                        } else if (datum[self.model.id]) {
+                            remoteLookups.push({
+                                index: i,
+                                datum: datum
+                            });
+                        } else {
+                            this.objects[i] = self._new();
+                        }
                     } else {
-                        this.objects[i] = self._new();
+                        this.objects[i] = null;
                     }
-                } else {
-                    this.objects[i] = null;
                 }
             }
-        }
-        util.async.parallel([
-                function (done) {
-                    var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
-                    if (localIdentifiers.length) {
-                        Store.getMultipleLocal(localIdentifiers, function (err, objects) {
-                            if (!err) {
-                                for (var i = 0; i < localIdentifiers.length; i++) {
-                                    var obj = objects[i];
-                                    var _id = localIdentifiers[i];
-                                    var lookup = localLookups[i];
-                                    if (!obj) {
-                                        // If there are multiple mapping operations going on, there may be
-                                        obj = cache.get({_id: _id});
-                                        if (!obj)
-                                            obj = self._new({_id: _id}, !self.disableevents);
-                                        self.objects[lookup.index] = obj;
-                                    } else {
-                                        self.objects[lookup.index] = obj;
-                                    }
-                                }
-                            }
-                            done(err);
-                        });
-                    } else {
-                        done();
-                    }
-                },
-                function (done) {
-                    var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
-                    if (remoteIdentifiers.length) {
-                        log('Looking up remoteIdentifiers: ' + util.prettyPrint(remoteIdentifiers));
-                        Store.getMultipleRemote(remoteIdentifiers, self.model, function (err, objects) {
-                            if (!err) {
-                                if (log.enabled) {
-                                    var results = {};
-                                    for (i = 0; i < objects.length; i++) {
-                                        results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
-                                    }
-                                    log('Results for remoteIdentifiers: ' + util.prettyPrint(results));
-                                }
-                                for (i = 0; i < objects.length; i++) {
-                                    var obj = objects[i];
-                                    var lookup = remoteLookups[i];
-                                    if (obj) {
-                                        self.objects[lookup.index] = obj;
-                                    } else {
-                                        var data = {};
-                                        var remoteId = remoteIdentifiers[i];
-                                        data[self.model.id] = remoteId;
-                                        var cacheQuery = {
-                                            model: self.model
-                                        };
-                                        cacheQuery[self.model.id] = remoteId;
-                                        var cached = cache.get(cacheQuery);
-                                        if (cached) {
-                                            self.objects[lookup.index] = cached;
+            util.async.parallel([
+                    function (done) {
+                        var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
+                        if (localIdentifiers.length) {
+                            Store.getMultipleLocal(localIdentifiers, function (err, objects) {
+                                if (!err) {
+                                    for (var i = 0; i < localIdentifiers.length; i++) {
+                                        var obj = objects[i];
+                                        var _id = localIdentifiers[i];
+                                        var lookup = localLookups[i];
+                                        if (!obj) {
+                                            // If there are multiple mapping operations going on, there may be
+                                            obj = cache.get({_id: _id});
+                                            if (!obj)
+                                                obj = self._new({_id: _id}, !self.disableevents);
+                                            self.objects[lookup.index] = obj;
                                         } else {
-                                            self.objects[lookup.index] = self._new();
-                                            // It's important that we map the remote identifier here to ensure that it ends
-                                            // up in the cache.
-                                            self.objects[lookup.index][self.model.id] = remoteId;
+                                            self.objects[lookup.index] = obj;
                                         }
                                     }
                                 }
-                            }
-                            done(err);
-                        });
-                    } else {
-                        done();
+                                done(err);
+                            });
+                        } else {
+                            done();
+                        }
+                    },
+                    function (done) {
+                        var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
+                        if (remoteIdentifiers.length) {
+                            log('Looking up remoteIdentifiers: ' + util.prettyPrint(remoteIdentifiers));
+                            Store.getMultipleRemote(remoteIdentifiers, self.model, function (err, objects) {
+                                if (!err) {
+                                    if (log.enabled) {
+                                        var results = {};
+                                        for (i = 0; i < objects.length; i++) {
+                                            results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
+                                        }
+                                        log('Results for remoteIdentifiers: ' + util.prettyPrint(results));
+                                    }
+                                    for (i = 0; i < objects.length; i++) {
+                                        var obj = objects[i];
+                                        var lookup = remoteLookups[i];
+                                        if (obj) {
+                                            self.objects[lookup.index] = obj;
+                                        } else {
+                                            var data = {};
+                                            var remoteId = remoteIdentifiers[i];
+                                            data[self.model.id] = remoteId;
+                                            var cacheQuery = {
+                                                model: self.model
+                                            };
+                                            cacheQuery[self.model.id] = remoteId;
+                                            var cached = cache.get(cacheQuery);
+                                            if (cached) {
+                                                self.objects[lookup.index] = cached;
+                                            } else {
+                                                self.objects[lookup.index] = self._new();
+                                                // It's important that we map the remote identifier here to ensure that it ends
+                                                // up in the cache.
+                                                self.objects[lookup.index][self.model.id] = remoteId;
+                                            }
+                                        }
+                                    }
+                                }
+                                done(err);
+                            });
+                        } else {
+                            done();
+                        }
                     }
-                }
-            ],
-            callback);
-        return deferred.promise;
+                ],
+                cb);
+        }.bind(this));
     },
-    _lookupSingleton: function (callback) {
-        var deferred = util.defer(callback);
-        callback = deferred.finish.bind(deferred);
-        var self = this;
-        // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
-        // always be the same. This is just a precaution.
-        var _ids = _.pluck(self.data, '_id'),
-            _id;
-        for (i = 0; i < _ids.length; i++) {
-            if (_ids[i]) {
-                _id = {_id: _ids[i]};
-                break;
+    _lookupSingleton: function (cb) {
+        return util.promise(cb, function (cb) {
+            var self = this;
+            // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
+            // always be the same. This is just a precaution.
+            var _ids = _.pluck(self.data, '_id'),
+                _id;
+            for (i = 0; i < _ids.length; i++) {
+                if (_ids[i]) {
+                    _id = {_id: _ids[i]};
+                    break;
+                }
             }
-        }
-        // The mapping operation is responsible for creating singleton instances if they do not already exist.
-        var singleton = cache.getSingleton(this.model) || this._new(_id);
-        for (var i = 0; i < self.data.length; i++) {
-            self.objects[i] = singleton;
-        }
-        callback();
-        return deferred.promise;
+            // The mapping operation is responsible for creating singleton instances if they do not already exist.
+            var singleton = cache.getSingleton(this.model) || this._new(_id);
+            for (var i = 0; i < self.data.length; i++) {
+                self.objects[i] = singleton;
+            }
+            cb();
+        }.bind(this));
     },
     _new: function () {
         var model = this.model,
