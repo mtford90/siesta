@@ -124,48 +124,24 @@ _.extend(siesta, {
      * @returns {q.Promise}
      */
     install: function (cb) {
-        if (!(installing || installed)) {
-            installing = true;
+        if (!installing && !installed) {
             return util.promise(cb, function (cb) {
+                installing = true;
                 var collectionNames = CollectionRegistry.collectionNames,
-                    collectionInstallTasks = _.map(collectionNames, function (n) {
-                        return function (done) {
-                            CollectionRegistry[n].install(done);
-                        }
-                    });
-                if (siesta.ext.storageEnabled) {
-                    collectionInstallTasks.unshift(siesta.ext.storage.ensureIndexesForAll);
-                }
-                var self = this;
-                siesta.async.series(collectionInstallTasks, function (err) {
-                    if (err) {
-                        cb(err);
-                    }
-                    else {
-                        var tasks = [];
-
-                        if (siesta.ext.storageEnabled) {
-                            tasks.push(function (done) {
-                                siesta.ext.storage._load(done);
-                            });
-                        }
-                        tasks.push(function (done) {
-                            installed = true;
-                            if (self.queuedTasks) self.queuedTasks.execute();
-                            done();
-                        });
-
-                        siesta.async.series(tasks, cb);
-
-
-                    }
+                    tasks = _.map(collectionNames, function (n) {
+                        return CollectionRegistry[n].install.bind(CollectionRegistry[n]);
+                    }),
+                    storageEnabled = siesta.ext.storageEnabled;
+                if (storageEnabled) tasks = tasks.concat([siesta.ext.storage.ensureIndexesForAll, siesta.ext.storage._load]);
+                tasks.push(function (done) {
+                    installed = true;
+                    if (this.queuedTasks) this.queuedTasks.execute();
+                    done();
                 }.bind(this));
+                siesta.async.series(tasks, cb);
             }.bind(this));
-
         }
-        else {
-            throw new error.InternalSiestaError('Already installing...');
-        }
+        else cb(new error.InternalSiestaError('Already installing...'));
     },
     _pushTask: function (task) {
         if (!this.queuedTasks) {
