@@ -1083,7 +1083,7 @@ describe('query...', function () {
 
     });
 
-    describe('querying non-relationship objects & arrays', function () {
+    describe('querying non-relationship objects', function () {
 
         it('object', function (done) {
             var Collection = siesta.collection('myCollection'),
@@ -1143,5 +1143,42 @@ describe('query...', function () {
 
     });
 
+    describe('querying non-relationship arrays', function () {
+        it('should be able to match against arrays', function (done) {
+            var Collection = siesta.collection('myCollection'),
+                Model = Collection.model('Model', {
+                    id: 'id',
+                    attributes: ['x']
+                });
+            var data = [{x: {y: [1, 2, 3]}}, {x: {y: [4, 5, 6]}}];
+            Model.graph(data)
+                .then(function () {
+                    Model.query({'x.y__contains': 2})
+                        .then(function (res) {
+                            assert.equal(res.length, 1);
+                            assert.include(res[0].x.y, 2);
+                            done();
+                        }).catch(done);
+                }).catch(done);
+        });
+
+        it('should be able to match against arrays, even if data not always an arrayan array.', function (done) {
+            var Collection = siesta.collection('myCollection'),
+                Model = Collection.model('Model', {
+                    id: 'id',
+                    attributes: ['x']
+                });
+            var data = [{x: {y: [1, 2, 3]}}, {x: {y: 1}}, {x: {y: {}}}, {x: {y: undefined}}, {x: {y: null}}, {x: 1}];
+            Model.graph(data)
+                .then(function () {
+                    Model.query({'x.y__contains': 2})
+                        .then(function (res) {
+                            assert.equal(res.length, 1);
+                            assert.include(res[0].x.y, 2);
+                            done();
+                        }).catch(done);
+                }).catch(done);
+        });
+    });
 
 });

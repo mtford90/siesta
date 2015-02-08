@@ -59,7 +59,12 @@
             return false;
         },
         contains: function (opts) {
-            if (!opts.invalid) return opts.object[opts.field].indexOf(opts.value) > -1;
+            if (!opts.invalid) {
+                var arr = opts.object[opts.field];
+                if (util.isArray(arr) || util.isString(arr)) {
+                    return arr.indexOf(opts.value) > -1;
+                }
+            }
             return false;
         }
     };
