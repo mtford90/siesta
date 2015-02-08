@@ -142,23 +142,26 @@ _.extend(siesta, {
                         cb(err);
                     }
                     else {
+                        var tasks = [];
+
                         if (siesta.ext.storageEnabled) {
-                            siesta.ext.storage._load(function (err) {
-                                if (!err) {
-                                    installed = true;
-                                    if (self.queuedTasks) self.queuedTasks.execute();
-                                }
-                                cb(err);
+                            tasks.push(function (done) {
+                                siesta.ext.storage._load(done);
                             });
                         }
-                        else {
+                        tasks.push(function (done) {
                             installed = true;
                             if (self.queuedTasks) self.queuedTasks.execute();
-                            cb();
-                        }
+                            done();
+                        });
+
+                        siesta.async.series(tasks, cb);
+
+
                     }
-                });
+                }.bind(this));
             }.bind(this));
+
         }
         else {
             throw new error.InternalSiestaError('Already installing...');
