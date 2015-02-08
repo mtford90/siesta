@@ -43,6 +43,9 @@
         for (var prop in extra || {}) {
             if (extra.hasOwnProperty(prop)) err[prop] = extra[prop];
         }
+        err.toString = function () {
+            return JSON.stringify(this);
+        };
         return err;
     };
 

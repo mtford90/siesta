@@ -221,14 +221,20 @@
             _.each(fields.slice(0, fields.length - 1), function (f) {
                 obj = obj[f];
             });
-            var val = obj[field];
-            var invalid = val === null || val === undefined;
-            var comparator = Query.comparators[op],
-                opts = {object: obj, field: field, value: value, invalid: invalid};
-            if (!comparator) {
-                return 'No comparator registered for query operation "' + op + '"';
+            // If we get to the point where we're about to index null or undefined we stop - obviously this object does
+            // not match the query.
+            var notNullOrUndefined = obj != undefined;
+            if (notNullOrUndefined) {
+                var val = obj[field]; // Breaks here.
+                var invalid = val === null || val === undefined;
+                var comparator = Query.comparators[op],
+                    opts = {object: obj, field: field, value: value, invalid: invalid};
+                if (!comparator) {
+                    return 'No comparator registered for query operation "' + op + '"';
+                }
+                return comparator(opts);
             }
-            return comparator(opts);
+            return false;
         },
         objectMatches: function (obj, unprocessedField, value, query) {
             if (unprocessedField == '$or') {

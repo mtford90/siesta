@@ -916,7 +916,7 @@ describe('query...', function () {
                     }).catch(done);
                 })
                 .catch(done)
-                ;
+            ;
         });
         it('still simple', function (done) {
             Person.graph([
@@ -939,7 +939,7 @@ describe('query...', function () {
                     }).catch(done);
                 })
                 .catch(done)
-                ;
+            ;
         });
 
         it('nested', function (done) {
@@ -961,7 +961,7 @@ describe('query...', function () {
                     }).catch(done);
                 })
                 .catch(done)
-                ;
+            ;
         });
     });
 
@@ -995,7 +995,7 @@ describe('query...', function () {
                     }).catch(done);
                 })
                 .catch(done)
-                ;
+            ;
         });
 
         it('mixture', function (done) {
@@ -1017,7 +1017,7 @@ describe('query...', function () {
                     }).catch(done);
                 })
                 .catch(done)
-                ;
+            ;
         });
     });
 
@@ -1055,10 +1055,10 @@ describe('query...', function () {
                             done();
                         })
                         .catch(done)
-                        ;
+                    ;
                 })
                 .catch(done)
-                ;
+            ;
         });
 
         it('nested op', function (done) {
@@ -1074,10 +1074,70 @@ describe('query...', function () {
                             done();
                         })
                         .catch(done)
-                        ;
+                    ;
                 })
                 .catch(done)
-                ;
+            ;
+        });
+
+
+    });
+
+    describe('querying non-relationship objects & arrays', function () {
+
+        it('object', function (done) {
+            var Collection = siesta.collection('myCollection'),
+                Model = Collection.model('Model', {
+                    id: 'id',
+                    attributes: ['x']
+                });
+            var data = [{x: {y: 1}}, {x: {y: 2}}];
+            Model.graph(data)
+                .then(function () {
+                    Model.query({'x.y': 1})
+                        .then(function (res) {
+                            assert.equal(res.length, 1);
+                            assert.equal(res[0].x.y, 1);
+                            done();
+                        }).catch(done);
+                }).catch(done);
+        });
+
+
+        it('should be able to deal with bad attribute accesses', function (done) {
+            var Collection = siesta.collection('myCollection'),
+                Model = Collection.model('Model', {
+                    id: 'id',
+                    attributes: ['x']
+                });
+            var data = [{x: {y: 1}}, {}];
+            Model.graph(data)
+                .then(function () {
+                    Model.query({'x.y': 1})
+                        .then(function (res) {
+                            assert.equal(res.length, 1);
+                            assert.equal(res[0].x.y, 1);
+                            done();
+                        }).catch(done);
+                }).catch(done);
+        });
+
+        it('should be able to deal with different value types', function (done) {
+            var Collection = siesta.collection('myCollection'),
+                Model = Collection.model('Model', {
+                    id: 'id',
+                    attributes: ['x']
+                });
+            var data = [{x: {y: 1}}, {x: {y: {z: 1}}}, {x: {y: undefined}}, {x: {y: null}}, {x: {y: [1, 2, 3]}}];
+            Model.graph(data)
+                .then(function () {
+                    Model.query({'x.y': 1})
+                        .then(function (res) {
+                            assert.equal(res.length, 1);
+                            assert.equal(res[0].x.y, 1);
+                            done();
+                        }).catch(done);
+                }).catch(done);
         });
 
 
