@@ -17,29 +17,28 @@ The below is the current roadmap for Siesta features & improvements. Feedback an
 
 ## 0.1
 * Stability
+* ReactJS siesta integration
+* AngularJS siesta integration
 
 ## 0.2
 * Store binary data
-* Save changes to model instances rather than entire model instances when dirty
-* Database compaction
 
 ## 0.3
-* Faulting Mechanism (i.e. don't load all data from storage at once...)
-* PouchDB indexing
+* Visualisation tool
+* Performance tool
 
 ## 0.4
-* Undo/Redo changes to models
-* Global error handling mechanism
+* Save changes to model instances rather than entire model instances when dirty
+* Faulting Mechanism (i.e. don't load all data from storage at once...). Much like core data faulting mechanism.
+* Toggle faulting mechanism
 
 ## 0.5
-* Performance extension
-    * Built using Siesta itself
-* Visualisation extension (Already half done due to a siesta demo at Hacker School)
-    * Built using Siesta itself.
+* Key-Value/Key-Path observation
 
-## 1.0
-* API freeze
-* NodeJS support.
+## 0.6 
+* HTTP
+* Serialisation
+* API descriptors? (maybe)
 
 # Contributing
 
