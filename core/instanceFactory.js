@@ -60,12 +60,13 @@
                     set: function (v) {
                         var old = modelInstance.__values[attributeName];
                         var propertyDependencies = this._propertyDependencies[attributeName];
-                        propertyDependencies = _.map(propertyDependencies, function (dependant) {
-                            return {
-                                prop: dependant,
-                                old: this[dependant]
-                            }
-                        }.bind(this));
+                            propertyDependencies = _.map(propertyDependencies, function (dependant) {
+                                return {
+                                    prop: dependant,
+                                    old: this[dependant]
+                                }
+                            }.bind(this));
+
                         modelInstance.__values[attributeName] = v;
                         propertyDependencies.forEach(function (dep) {
                             var propertyName = dep.prop;

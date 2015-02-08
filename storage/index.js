@@ -7,6 +7,7 @@
         cache = _i.cache,
         CollectionRegistry = _i.CollectionRegistry,
         log = _i.log('Storage'),
+        error = _i.error,
         util = _i.util,
         _ = util._,
         events = _i.events;
@@ -105,14 +106,13 @@
                             if (!isConflict) errors.push(response);
                         }
                     }
-                    cb(errors.length ? errors : null);
+                    cb(errors.length ? error('multiple errors', {errors: errors}) : null);
                 })
                 .catch(cb);
         }
 
         function ensureIndexesForAll(cb) {
             var indexes = constructIndexesForAll();
-            console.log('ensureIndexesForAll', indexes);
             __ensureIndexes(indexes, cb);
         }
 
@@ -179,7 +179,6 @@
             pouch.query(fullyQualifiedName)
                 //pouch.query({map: mapFunc})
                 .then(function (resp) {
-                    console.log('resp', resp);
                     log('Queried pouch successfully');
                     var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
                         return _prepareDatum(datum, Model);

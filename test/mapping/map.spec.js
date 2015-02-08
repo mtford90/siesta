@@ -1460,6 +1460,7 @@ describe('perform mapping', function () {
                     owner: ['remoteId1', 'remoteId2'],
                     id: 'carRemoteId'
                 }, function (err, obj) {
+                    console.log('err', err);
                     var ownerError = err.owner;
                     assert.ok(ownerError);
                     done();

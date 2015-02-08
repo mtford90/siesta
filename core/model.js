@@ -10,6 +10,7 @@
         util = require('./util'),
         cache = require('./cache'),
         store = require('./store'),
+        error = require('./error'),
         extend = require('extend'),
         modelEvents = require('./modelEvents'),
         events = require('./events'),
@@ -299,7 +300,7 @@
                     if (err) cb(err);
                     else {
                         if (res.length > 1) {
-                            cb('More than one instance returned when executing get query!');
+                            cb(error('More than one instance returned when executing get query!'));
                         }
                         else {
                             res = res.length ? res[0] : null;
@@ -360,7 +361,8 @@
                                     obj = objects[0];
                                 }
                             }
-                            cb(err ? (util.isArray(err) ? err[0] : err) : null, obj);
+                            err = err ? (util.isArray(data) ? err : (util.isArray(err) ? err[0] : err)) : null;
+                            cb(err, obj);
                         });
                     }
                 }.bind(this);

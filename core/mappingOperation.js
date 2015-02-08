@@ -1,17 +1,11 @@
 (function () {
-    /**
-     * @module mapping
-     */
-
     var Store = require('./store'),
         SiestaModel = require('./ModelInstance'),
         log = require('./log')('Mapping'),
-        InternalSiestaError = require('./error').InternalSiestaError,
         cache = require('./cache'),
         util = require('./util'),
         _ = util._,
-        async = util.async,
-        ModelEventType = require('./modelEvents').ModelEventType;
+        async = util.async;
 
     function SiestaError(opts) {
         this.opts = opts;

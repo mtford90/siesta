@@ -4,7 +4,6 @@
         util = require('./util'),
         error = require('./error'),
         constructQuerySet = require('./QuerySet'),
-        constructError = error.errorFactory(error.Components.Query),
         _ = util._;
 
     /**
@@ -164,7 +163,7 @@
                     var obj = cacheByLocalId[k];
                     var matches = self.objectMatchesQuery(obj);
                     if (typeof(matches) == 'string') {
-                        err = constructError(matches);
+                        err = error(matches);
                         break;
                     } else {
                         if (matches) res.push(obj);

@@ -3,6 +3,7 @@
  *
  * The same as ReactiveQuery but enables manual reordering of models and maintains an index field.
  */
+
 (function () {
 
     var ReactiveQuery = require('./ReactiveQuery'),
@@ -12,7 +13,6 @@
         modelEvents = require('./modelEvents'),
         InternalSiestaError = error.InternalSiestaError,
         constructQuerySet = require('./QuerySet'),
-        constructError = error.errorFactory(error.Components.ArrangedReactiveQuery),
         _ = util._;
 
 
@@ -87,7 +87,7 @@
                 ReactiveQuery.prototype.init.call(this, function (err) {
                     if (!err) {
                         if (!this.model.hasAttributeNamed(this.indexAttribute)) {
-                            err = constructError('Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"')
+                            err = error('Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"');
                         }
                         else {
                             this._mergeIndexes();

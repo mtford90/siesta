@@ -67,6 +67,7 @@ describe('arranged rquery', function () {
             ]).then(function () {
                 done()
             }).catch(done);
+
         });
         it('order before init', function (done) {
             var prq = Person.arrangedReactiveQuery({__order: 'age'});

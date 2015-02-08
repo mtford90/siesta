@@ -12,7 +12,6 @@
         util = require('./util'),
         _ = util._,
         error = require('./error'),
-        constructError = error.errorFactory(error.Components.Collection),
         cache = require('./cache');
 
 
@@ -146,7 +145,7 @@
          * @class Collection
          */
         _finaliseInstallation: function (err, callback) {
-            if (err) err = constructError('Errors were encountered whilst setting up the collection', {errors: err});
+            if (err) err = error('Errors were encountered whilst setting up the collection', {errors: err});
             if (!err) {
                 this.installed = true;
                 var index = require('./index');

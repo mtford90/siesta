@@ -142,7 +142,7 @@
                     siesta.async.series(tasks, cb);
                 }.bind(this));
             }
-            else cb(new error.InternalSiestaError('Already installing...'));
+            else cb(error('already installing'));
         },
         _pushTask: function (task) {
             if (!this.queuedTasks) {
