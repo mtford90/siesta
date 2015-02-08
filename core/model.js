@@ -162,15 +162,27 @@ _.extend(Model.prototype, {
         }
         return statics;
     },
-    _isValidRelationshipType: function (type) {
-        return Object.keys(RelationshipType).indexOf(type) > -1;
-    }, /**
+    _validateRelationshipType: function (relationship) {
+        if (!relationship.type) {
+            if (this.singleton) relationship.type = RelationshipType.OneToOne;
+            else relationship.type = RelationshipType.OneToMany;
+        }
+        if (this.singleton && relationship.type == RelationshipType.ManyToMany) {
+            return 'Singleton model cannot use ManyToMany relationship.';
+        }
+        if (Object.keys(RelationshipType).indexOf(relationship.type) < 0)
+            return 'Relationship type ' + relationship.type + ' does not exist';
+        return null;
+    },
+
+    /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
      */
     installRelationships: function () {
         if (!this._relationshipsInstalled) {
-            var self = this;
+            var self = this,
+                err = null;
             self._relationships = [];
             if (self._opts.relationships) {
                 for (var name in self._opts.relationships) {
@@ -178,15 +190,8 @@ _.extend(Model.prototype, {
                         var relationship = self._opts.relationships[name];
                         // If a reverse relationship is installed beforehand, we do not want to process them.
                         if (!relationship.isReverse) {
-                            log(self.name + ': configuring relationship ' + name, relationship);
-                            if (!relationship.type) {
-                                if (self.singleton) relationship.type = RelationshipType.OneToOne;
-                                else relationship.type = RelationshipType.OneToMany;
-                            }
-                            if (self.singleton && relationship.type == RelationshipType.ManyToMany) {
-                                return 'Singleton model cannot use ManyToMany relationship.';
-                            }
-                            if (this._isValidRelationshipType(relationship.type)) {
+                            log(this.name + ': configuring relationship ' + name, relationship);
+                            if (!(err = this._validateRelationshipType(relationship))) {
                                 var modelName = relationship.model;
                                 delete relationship.model;
                                 var reverseModel;
@@ -228,18 +233,16 @@ _.extend(Model.prototype, {
                                 } else {
                                     return 'Model with name "' + modelName.toString() + '" does not exist';
                                 }
-                            } else {
-                                return 'Relationship type ' + relationship.type + ' does not exist';
                             }
                         }
                     }
                 }
             }
-            this._relationshipsInstalled = true;
         } else {
             throw new InternalSiestaError('Relationships for "' + this.name + '" have already been installed');
         }
-        return null;
+        if (!err) this._relationshipsInstalled = true;
+        return err;
     },
     installReverseRelationships: function () {
         if (!this._reverseRelationshipsInstalled) {
