@@ -14,7 +14,6 @@ describe('reactive query', function () {
         });
     });
 
-
     describe('unordered', function () {
         var initialData = [
             {

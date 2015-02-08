@@ -10,8 +10,6 @@ describe('bugs', function () {
     beforeEach(function (done) {
         siesta.reset(done);
     });
-
-
     describe('no name specified when creating mapping', function () {
         it('No obj', function (done) {
             var Collection = siesta.collection('Collection'),
@@ -26,7 +24,6 @@ describe('bugs', function () {
         });
 
     });
-
 
     describe('ensure that mapping relationships using various methods works', function () {
         describe('ModelInstance', function () {
@@ -212,5 +209,22 @@ describe('bugs', function () {
                 });
             });
         });
+    });
+
+    it('custom ids dont work...?', function (done) {
+        var Collection = siesta.collection('Collection'),
+            Model = Collection.model('Model', {
+                id: 'customId',
+                attributes: ['name']
+            });
+        Model.graph({customId: 1, name: 'xyz'})
+            .then(function (instance) {
+                Model.graph({customId: 1, name: 'abc'})
+                    .then(function (_instance) {
+                        assert.equal(instance, _instance);
+                        assert.equal(instance.name, 'abc');
+                        done();
+                    }).catch(done);
+            }).catch(done);
     });
 });
