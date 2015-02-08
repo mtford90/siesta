@@ -27,15 +27,6 @@
         return siesta;
     };
 
-    Object.defineProperty(siesta, 'q', {
-        get: function () {
-            return this._q || window.q || window.Q
-        },
-        set: function (q) {
-            this._q = q;
-        }
-    });
-
     // Notifications
     _.extend(siesta, {
         on: events.on.bind(events),
