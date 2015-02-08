@@ -162,7 +162,11 @@ _.extend(Model.prototype, {
         }
         return statics;
     },
-    /**
+    _isValidRelationship: function (relationship) {
+        return relationship.type == RelationshipType.OneToMany ||
+            relationship.type == RelationshipType.OneToOne ||
+            relationship.type == RelationshipType.ManyToMany;
+    }, /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
      */
@@ -188,9 +192,7 @@ _.extend(Model.prototype, {
                             if (self.singleton && relationship.type == RelationshipType.ManyToMany) {
                                 return 'Singleton model cannot use ManyToMany relationship.';
                             }
-                            if (relationship.type == RelationshipType.OneToMany ||
-                                relationship.type == RelationshipType.OneToOne ||
-                                relationship.type == RelationshipType.ManyToMany) {
+                            if (this._isValidRelationship(relationship)) {
                                 var modelName = relationship.model;
                                 delete relationship.model;
                                 var reverseModel;
@@ -221,12 +223,14 @@ _.extend(Model.prototype, {
                                 }
                                 log('reverseModel', reverseModel);
                                 if (reverseModel) {
-                                    relationship.reverseModel = reverseModel;
-                                    relationship.forwardModel = this;
-                                    relationship.forwardName = name;
-                                    relationship.reverseName = relationship.reverse || 'reverse_' + name;
+                                    _.extend(relationship, {
+                                        reverseModel: reverseModel,
+                                        forwardModel: this,
+                                        forwardName: name,
+                                        reverseName: relationship.reverse || 'reverse_' + name,
+                                        isReverse: false
+                                    });
                                     delete relationship.reverse;
-                                    relationship.isReverse = false;
                                 } else {
                                     return 'Model with name "' + modelName.toString() + '" does not exist';
                                 }
@@ -595,28 +599,6 @@ _.extend(Model.prototype, {
     }
 
 });
-
-
-//
-//_.extend(Model.prototype, {
-//    listen: function (fn) {
-//        events.on(this.collectionName + ':' + this.name, fn);
-//        return function () {
-//            this.removeListener(fn);
-//        }.bind(this);
-//    },
-//    listenOnce: function (fn) {
-//        return events.once(this.collectionName + ':' + this.name, fn);
-//    },
-//    removeListener: function (fn) {
-//        return events.removeListener(this.collectionName + ':' + this.name, fn);
-//    }
-//});
-//
-//// Aliases
-//_.extend(Model.prototype, {
-//    on: Model.prototype.listen
-//});
 
 // Subclassing
 _.extend(Model.prototype, {
