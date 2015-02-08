@@ -1,7 +1,7 @@
 (function () {
     var Store = require('./store'),
         SiestaModel = require('./ModelInstance'),
-        log = require('./log')('Mapping'),
+        log = require('./log')('mapping'),
         cache = require('./cache'),
         util = require('./util'),
         _ = util._,

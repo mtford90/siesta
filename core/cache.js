@@ -5,7 +5,7 @@
  */
 (function () {
 
-    var log = require('./log')('Cache'),
+    var log = require('./log')('cache'),
         InternalSiestaError = require('./error').InternalSiestaError,
         util = require('./util');
 

@@ -8,7 +8,7 @@
         argsarray = require('argsarray');
 
     module.exports = function (name) {
-        var log = debug(name);
+        var log = debug('siesta:' + name);
         var fn = argsarray(function (args) {
             log.call(log, args);
         });

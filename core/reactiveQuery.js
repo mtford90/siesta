@@ -8,7 +8,7 @@
 
 (function () {
 
-    var log = require('./log')('Query'),
+    var log = require('./log')('query'),
         Query = require('./Query'),
         EventEmitter = require('events').EventEmitter,
         events = require('./events'),

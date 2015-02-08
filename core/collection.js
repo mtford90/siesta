@@ -2,7 +2,7 @@
  * @module collection
  */
 (function () {
-    var log = require('./log')('Collection'),
+    var log = require('./log')('collection'),
         CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
         InternalSiestaError = require('./error').InternalSiestaError,
         Model = require('./model'),

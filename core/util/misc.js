@@ -144,6 +144,7 @@
                 }
             });
         },
+        Promise: Promise,
         promise: function (cb, fn) {
             cb = cb || function () {
             };

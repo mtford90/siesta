@@ -8,7 +8,7 @@
 
 (function () {
     var InternalSiestaError = require('./error').InternalSiestaError,
-        log = require('./log')('Store'),
+        log = require('./log')('store'),
         util = require('./util'),
         _ = util._,
         cache = require('./cache');

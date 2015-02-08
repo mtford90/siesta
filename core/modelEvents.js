@@ -1,7 +1,7 @@
 (function () {
     var events = require('./events'),
         InternalSiestaError = require('./error').InternalSiestaError,
-        log = require('./log')('ModelEvents'),
+        log = require('./log')('events'),
         extend = require('./util')._.extend,
         collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 

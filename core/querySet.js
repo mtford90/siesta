@@ -1,4 +1,5 @@
 var util = require('./util'),
+    Promise = util.Promise,
     error = require('./error'),
     ModelInstance = require('./ModelInstance'),
     _ = require('./util')._;
@@ -83,7 +84,7 @@ function defineMethod(arr, prop) {
                 });
             var arePromises = false;
             if (res.length) arePromises = isPromise(res[0]);
-            return arePromises ? siesta.q.all(res) : querySet(res);
+            return arePromises ? Promise.all(res) : querySet(res);
         };
     }
 }

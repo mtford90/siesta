@@ -1,5 +1,5 @@
 (function () {
-    var log = require('./log')('Query'),
+    var log = require('./log')('query'),
         cache = require('./cache'),
         util = require('./util'),
         error = require('./error'),

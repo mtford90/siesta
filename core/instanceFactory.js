@@ -1,5 +1,5 @@
 (function () {
-    var log = require('./log')('Model'),
+    var log = require('./log')('model'),
         InternalSiestaError = require('./error').InternalSiestaError,
         RelationshipType = require('./RelationshipType'),
         Query = require('./Query'),

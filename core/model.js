@@ -1,6 +1,6 @@
 (function () {
 
-    var log = require('./log')('Model'),
+    var log = require('./log')('model'),
         CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
         InternalSiestaError = require('./error').InternalSiestaError,
         RelationshipType = require('./RelationshipType'),

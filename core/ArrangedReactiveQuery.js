@@ -7,16 +7,13 @@
 (function () {
 
     var ReactiveQuery = require('./ReactiveQuery'),
-        log = require('./log'),
+        log = require('./log')('query'),
         util = require('./util'),
         error = require('./error'),
         modelEvents = require('./modelEvents'),
         InternalSiestaError = error.InternalSiestaError,
         constructQuerySet = require('./QuerySet'),
         _ = util._;
-
-
-    var Logger = log('Query');
 
     function ArrangedReactiveQuery(query) {
         ReactiveQuery.call(this, query);
