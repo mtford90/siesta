@@ -63,6 +63,7 @@ describe('mapping operation', function () {
         beforeEach(function (done) {
             siesta.reset(function () {
                 collection = siesta.collection('MyCollection');
+                collection.baseURL = 'https://api.github.com';
                 Repo = collection.model('Repo', {
                     id: 'id',
                     attributes: ['name', 'full_name', 'description'],
@@ -376,6 +377,7 @@ describe('mapping operation', function () {
         beforeEach(function (done) {
             siesta.reset(function () {
                 collection = siesta.collection('MyCollection');
+                collection.baseURL = 'https://api.github.com';
                 Repo = collection.model('Repo', {
                     id: 'id',
                     attributes: ['name', 'full_name', 'description'],

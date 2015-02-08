@@ -101,6 +101,9 @@ _.extend(siesta, {
         cache.reset();
         CollectionRegistry.reset();
         events.removeAllListeners();
+        if (siesta.ext.httpEnabled) {
+            siesta.ext.http.DescriptorRegistry.reset();
+        }
         if (siesta.ext.storageEnabled) {
             siesta.ext.storage._reset(cb);
         }
@@ -175,6 +178,29 @@ _.extend(siesta, {
                     cb(err);
                 }
                 else {
+                    if (siesta.ext.httpEnabled) {
+                        var errors = [];
+
+                        function setupDescriptors(descriptors) {
+                            Object.keys(descriptors).forEach(function (collectionName) {
+                                var descriptorsForCollection = descriptors[collectionName];
+                                descriptorsForCollection.forEach(function (d) {
+                                    var error = d._resolveCollectionAndModel();
+                                    if (error) errors.push(error);
+                                });
+                            });
+                        }
+
+                        var descriptorRegistry = siesta.ext.http.DescriptorRegistry,
+                            requestDescriptors = descriptorRegistry.requestDescriptors,
+                            responseDescriptors = descriptorRegistry.responseDescriptors;
+                        setupDescriptors(requestDescriptors);
+                        setupDescriptors(responseDescriptors);
+                        if (errors.length) {
+                            cb(errors);
+                            return;
+                        }
+                    }
                     if (siesta.ext.storageEnabled) {
                         siesta.ext.storage._load(function (err) {
                             if (!err) {
@@ -271,5 +297,6 @@ Object.defineProperty(Function.prototype, 'bind', {
 });
 
 (function loadExtensions() {
+    require('../http');
     require('../storage');
 })();

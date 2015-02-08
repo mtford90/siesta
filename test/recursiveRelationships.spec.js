@@ -11,6 +11,7 @@ describe('recursive relationships', function () {
     beforeEach(function (done) {
         siesta.reset(function () {
             Collection = siesta.collection('MyCollection');
+            Collection.baseURL = 'https://api.github.com';
             Repo = Collection.model('Repo', {
                 id: 'id',
                 attributes: ['name'],
