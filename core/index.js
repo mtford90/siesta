@@ -194,7 +194,10 @@
         window['siesta'] = siesta;
     }
 
+    siesta.log = require('debug');
+
     module.exports = siesta;
+
 
 
     (function loadExtensions() {
