@@ -33,7 +33,7 @@
     }
     else {
         var DB_NAME = 'siesta',
-            pouch = new PouchDB(DB_NAME);
+            pouch = new PouchDB(DB_NAME, {auto_compaction: true});
 
         /**
          * Sometimes siesta needs to store some extra information about the model instance.
