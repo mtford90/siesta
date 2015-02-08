@@ -63,10 +63,16 @@
     });
 
     _.extend(ReactiveQuery.prototype, {
-        init: function (cb) {
+        /**
+         *
+         * @param cb
+         * @param {bool} _ignoreInit - execute query again, initialised or not.
+         * @returns {*}
+         */
+        init: function (cb, _ignoreInit) {
             if (log) log('init');
             return util.promise(cb, function (cb) {
-                if (!this.initialised) {
+                if ((!this.initialised) || _ignoreInit) {
                     this._query.execute(function (err, results) {
                         if (!err) {
                             this.results = results;
@@ -102,6 +108,13 @@
             }
             this.results = results.asModelQuerySet(this.model);
             return idx;
+        },
+        /**
+         * Execute the underlying query again.
+         * @param cb
+         */
+        update: function (cb) {
+            return this.init(cb, true)
         },
         _handleNotif: function (n) {
             log('_handleNotif', n);

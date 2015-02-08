@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 
 var Collection = siesta;
 
-describe('reactive query', function () {
+describe.only('reactive query', function () {
     var MyCollection, Person;
 
     beforeEach(function (done) {
@@ -152,7 +152,6 @@ describe('reactive query', function () {
                 });
 
             });
-
 
             describe('update, no longer matching', function () {
                 function assertResultsOk(results, person) {
@@ -327,7 +326,32 @@ describe('reactive query', function () {
 
             });
 
+            describe('manual', function () {
+                function assertResultsOk(results, person) {
+                    assert.equal(results.length, 1, 'Should now only be 1 result');
+                    assert.notInclude(results, person, 'The results should not include peter');
+                }
 
+                it('results are as expected', function (done) {
+                    Person.graph(initialData).then(function (res) {
+                        var person = res[0];
+                        var rq = Person.reactiveQuery({age__lt: 30});
+                        rq.init(function (err, results) {
+                            if (err) done(err);
+                            else {
+                                assert.equal(results, rq.results);
+                                person.__values.age = 40; // Assigning to values ensures we don't trigger any notifications!
+                                rq.update(function (err) {
+                                    assert.notOk(err);
+                                    assertResultsOk(rq.results, person);
+                                    rq.terminate();
+                                    done();
+                                });
+                            }
+                        });
+                    }).catch(done);
+                });
+            });
         });
     });
 
