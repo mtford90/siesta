@@ -1,11 +1,9 @@
 {
   "name": "siesta",
   "version": "0.1.16",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "async": "~0.9.0",
-    "jquery": "~2.1.1",
     "underscore": "~1.6.0",
     "observe-js": "~0.4.0"
   },
