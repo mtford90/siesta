@@ -402,7 +402,15 @@ _.extend(Model.prototype, {
             cb(null, Object.keys(this._countCache()).length);
         }.bind(this));
     },
-    /**
+    _getLocalId: function (data) {
+        var _id;
+        if (data) {
+            _id = data._id ? data._id : guid();
+        } else {
+            _id = guid();
+        }
+        return _id;
+    }, /**
      * Convert raw data into a ModelInstance
      * @returns {ModelInstance}
      * @private
@@ -410,40 +418,26 @@ _.extend(Model.prototype, {
     _new: function (data, shouldRegisterChange) {
         shouldRegisterChange = shouldRegisterChange === undefined ? true : shouldRegisterChange;
         if (this.installed) {
-            var self = this;
-            var _id;
-            if (data) {
-                _id = data._id ? data._id : guid();
-            } else {
-                _id = guid();
-            }
-            var newModel = new ModelInstance(this);
-            log('New object created _id="' + _id.toString() + '", type=' + this.name, data);
-            newModel._id = _id;
-            // Place attributes on the object.
-            var values = {};
-            newModel.__values = values;
-            var defaults = _.reduce(this.attributes, function (m, a) {
-                if (a.default !== undefined) {
-                    m[a.name] = a.default;
-                }
-                return m;
-            }, {});
-            _.extend(values, defaults);
-            if (data) _.extend(values, data);
-            var fields = this._attributeNames;
-            var idx = fields.indexOf(this.id);
-            if (idx > -1) {
-                fields.splice(idx, 1);
-            }
+            var self = this,
+                modelInstance = new ModelInstance(this);
+            _.extend(modelInstance, {
+                _id: this._getLocalId(data),
+                __values: _.extend(_.reduce(this.attributes, function (m, a) {
+                    if (a.default !== undefined) m[a.name] = a.default;
+                    return m;
+                }, {}), data || {})
+            });
+            var fields = this._attributeNames,
+                idx = fields.indexOf(this.id);
+            if (idx > -1) fields.splice(idx, 1);
             _.each(fields, function (field) {
-                Object.defineProperty(newModel, field, {
+                Object.defineProperty(modelInstance, field, {
                     get: function () {
-                        var value = newModel.__values[field];
+                        var value = modelInstance.__values[field];
                         return value === undefined ? null : value;
                     },
                     set: function (v) {
-                        var old = newModel.__values[field];
+                        var old = modelInstance.__values[field];
                         var propertyDependencies = this._propertyDependencies[field];
                         propertyDependencies = _.map(propertyDependencies, function (dependant) {
                             return {
@@ -451,35 +445,35 @@ _.extend(Model.prototype, {
                                 old: this[dependant]
                             }
                         }.bind(this));
-                        newModel.__values[field] = v;
+                        modelInstance.__values[field] = v;
                         propertyDependencies.forEach(function (dep) {
                             var propertyName = dep.prop;
                             var new_ = this[propertyName];
                             modelEvents.emit({
                                 collection: self.collectionName,
                                 model: self.name,
-                                _id: newModel._id,
+                                _id: modelInstance._id,
                                 new: new_,
                                 old: dep.old,
                                 type: ModelEventType.Set,
                                 field: propertyName,
-                                obj: newModel
+                                obj: modelInstance
                             });
                         }.bind(this));
                         var e = {
                             collection: self.collectionName,
                             model: self.name,
-                            _id: newModel._id,
+                            _id: modelInstance._id,
                             new: v,
                             old: old,
                             type: ModelEventType.Set,
                             field: field,
-                            obj: newModel
+                            obj: modelInstance
                         };
                         window.lastEmission = e;
                         modelEvents.emit(e);
                         if (util.isArray(v)) {
-                            wrapArray(v, field, newModel);
+                            wrapArray(v, field, modelInstance);
                         }
                     },
                     enumerable: true,
@@ -488,8 +482,8 @@ _.extend(Model.prototype, {
             });
 
             _.each(Object.keys(this.methods), function (methodName) {
-                if (newModel[methodName] === undefined) {
-                    newModel[methodName] = this.methods[methodName].bind(newModel);
+                if (modelInstance[methodName] === undefined) {
+                    modelInstance[methodName] = this.methods[methodName].bind(modelInstance);
                 }
                 else {
                     log('A method with name "' + methodName + '" already exists. Ignoring it.');
@@ -506,34 +500,34 @@ _.extend(Model.prototype, {
                     _propertyDependencies[attr].push(propName);
                 });
                 delete propDef.dependencies;
-                if (newModel[propName] === undefined) {
-                    Object.defineProperty(newModel, propName, propDef);
+                if (modelInstance[propName] === undefined) {
+                    Object.defineProperty(modelInstance, propName, propDef);
                 }
                 else {
                     log('A property/method with name "' + propName + '" already exists. Ignoring it.');
                 }
             }.bind(this));
 
-            newModel._propertyDependencies = _propertyDependencies;
+            modelInstance._propertyDependencies = _propertyDependencies;
 
-            Object.defineProperty(newModel, this.id, {
+            Object.defineProperty(modelInstance, this.id, {
                 get: function () {
-                    return newModel.__values[self.id] || null;
+                    return modelInstance.__values[self.id] || null;
                 },
                 set: function (v) {
-                    var old = newModel[self.id];
-                    newModel.__values[self.id] = v;
+                    var old = modelInstance[self.id];
+                    modelInstance.__values[self.id] = v;
                     modelEvents.emit({
                         collection: self.collectionName,
                         model: self.name,
-                        _id: newModel._id,
+                        _id: modelInstance._id,
                         new: v,
                         old: old,
                         type: ModelEventType.Set,
                         field: self.id,
-                        obj: newModel
+                        obj: modelInstance
                     });
-                    cache.remoteInsert(newModel, v, old);
+                    cache.remoteInsert(modelInstance, v, old);
                 },
                 enumerable: true,
                 configurable: true
@@ -554,20 +548,20 @@ _.extend(Model.prototype, {
                         throw new InternalSiestaError('No such relationship type: ' + type);
                     }
                 }
-                proxy.install(newModel);
+                proxy.install(modelInstance);
             }
-            cache.insert(newModel);
+            cache.insert(modelInstance);
             if (shouldRegisterChange) {
                 modelEvents.emit({
                     collection: this.collectionName,
                     model: this.name,
-                    _id: newModel._id,
-                    new: newModel,
+                    _id: modelInstance._id,
+                    new: modelInstance,
                     type: ModelEventType.New,
-                    obj: newModel
+                    obj: modelInstance
                 });
             }
-            return newModel;
+            return modelInstance;
         } else {
             throw new InternalSiestaError('Model must be fully installed before creating any models');
         }
