@@ -91,6 +91,7 @@ describe('query...', function () {
     });
 
     describe('built-in comparators', function () {
+
         describe('e', function () {
             var collection, Person, Car;
 
@@ -642,7 +643,6 @@ describe('query...', function () {
 
         describe('contains', function () {
             var Collection, Model;
-            // TODO
             beforeEach(function (done) {
                 siesta.reset(function () {
                     Collection = siesta.collection('myCollection');
