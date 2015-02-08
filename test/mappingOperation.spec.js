@@ -452,7 +452,7 @@ describe('mapping operation', function () {
                 User.one().then(function (user) {
                     obj = user;
                     done();
-                }).catch(done).done();
+                }).catch(done);
             });
 
             it('lookupSingleton', function (done) {

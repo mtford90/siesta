@@ -1138,7 +1138,7 @@ describe('events', function () {
                         };
                         var cancelListen = car.listen(listener);
                         Car.graph({id: 1, colour: 'blue'});
-                    }).catch(done).done();
+                    }).catch(done);
                 });
                 it('listenOnce', function (done) {
                     Car.graph({id: 1, colour: 'red', name: 'Aston Martin'}).then(function (car) {
@@ -1149,7 +1149,7 @@ describe('events', function () {
                         };
                         car.listenOnce(listener);
                         Car.graph({id: 1, colour: 'blue'});
-                    }).catch(done).done();
+                    }).catch(done);
                 });
             });
         });

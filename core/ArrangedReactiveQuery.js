@@ -82,20 +82,20 @@ _.extend(ArrangedReactiveQuery.prototype, {
         this.results = constructQuerySet(newResults, this.model);
     },
     init: function (cb) {
-        var deferred = util.defer(cb);
-        ReactiveQuery.prototype.init.call(this, function (err) {
-            if (!err) {
-                if (!this.model.hasAttributeNamed(this.indexAttribute)) {
-                    err = constructError('Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"')
+        return util.promise(cb, function (cb) {
+            ReactiveQuery.prototype.init.call(this, function (err) {
+                if (!err) {
+                    if (!this.model.hasAttributeNamed(this.indexAttribute)) {
+                        err = constructError('Model "' + this.model.name + '" does not have an attribute named "' + this.indexAttribute + '"')
+                    }
+                    else {
+                        this._mergeIndexes();
+                        this._query.clearOrdering();
+                    }
                 }
-                else {
-                    this._mergeIndexes();
-                    this._query.clearOrdering();
-                }
-            }
-            deferred.finish(err, err ? null : this.results);
+                cb(err, err ? null : this.results);
+            }.bind(this));
         }.bind(this));
-        return deferred.promise;
     },
     _handleNotif: function (n) {
         // We don't want to keep executing the query each time the index event fires as we're changing the index ourselves

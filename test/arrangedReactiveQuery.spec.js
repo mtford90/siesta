@@ -81,9 +81,8 @@ describe('arranged rquery', function () {
                             prq.terminate();
                             done();
                         })
-                        .catch(done).done();
-                })
-                .catch(done).done();
+                        .catch(done);
+                }).catch(done);
         });
         it('change order should not rearrange anything if ordered by before init', function (done) {
             var prq = Person.arrangedReactiveQuery({__order: 'age'});
@@ -100,10 +99,10 @@ describe('arranged rquery', function () {
                                 prq.terminate();
                                 done();
                             })
-                        }).catch(done).done();
+                        }).catch(done);
 
                 })
-                .catch(done).done();
+                .catch(done);
         });
         it('change order should not rearrange anything if ordered by after init', function (done) {
             var prq = Person.arrangedReactiveQuery({__order: 'age'});
@@ -315,7 +314,7 @@ describe('arranged rquery', function () {
                     done();
                 })
                     .catch(done)
-                    .done();
+                    ;
             });
 
             it('if order before init, should retain order from old indexes', function (done) {
@@ -333,7 +332,7 @@ describe('arranged rquery', function () {
                         prq.terminate();
                         done();
                     })
-                    .catch(done).done();
+                    .catch(done);
             });
 
         });
@@ -357,10 +356,10 @@ describe('arranged rquery', function () {
                         prq.terminate();
                         done();
                     })
-                    .catch(done).done();
+                    .catch(done);
             })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('some indexes exists, sparse', function (done) {
@@ -383,10 +382,10 @@ describe('arranged rquery', function () {
                         prq.terminate();
                         done();
                     })
-                    .catch(done).done();
+                    .catch(done);
             })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('some indexes exists, very sparse', function (done) {
@@ -411,10 +410,10 @@ describe('arranged rquery', function () {
                         prq.terminate();
                         done();
                     })
-                    .catch(done).done();
+                    .catch(done);
             })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('out of range index should rejig the indexes', function (done) {
@@ -441,10 +440,10 @@ describe('arranged rquery', function () {
                         prq.terminate();
                         done();
                     })
-                    .catch(done).done();
+                    .catch(done);
             })
                 .catch(done)
-                .done();
+                ;
         });
         it('duplicate indexes', function (done) {
             Person.graph([
@@ -473,10 +472,10 @@ describe('arranged rquery', function () {
                     .catch(function (err) {
                         prq.terminate();
                         done(err);
-                    }).done();
+                    });
             })
                 .catch(done)
-                .done();
+                ;
         });
 
     });

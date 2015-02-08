@@ -82,61 +82,61 @@ Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);
 _.extend(Collection.prototype, {
     /**
      * Ensure mappings are installed.
-     * @param [callback]
+     * @param [cb]
      * @class Collection
      */
-    install: function (callback) {
-        var deferred = util.defer(callback);
-        var self = this;
-        if (!this.installed) {
-            var modelsToInstall = [];
-            for (var name in this._models) {
-                if (this._models.hasOwnProperty(name)) {
-                    var model = this._models[name];
-                    modelsToInstall.push(model);
-                }
-            }
-            log('There are ' + modelsToInstall.length.toString() + ' mappings to install');
-            if (modelsToInstall.length) {
-                var tasks = _.map(modelsToInstall, function (m) {
-                    return _.bind(m.install, m);
-                });
-                util.async.parallel(tasks, function (err) {
-                    if (err) {
-                        log('Failed to install collection', err);
-                        self._finaliseInstallation(err, deferred.finish.bind(deferred));
+    install: function (cb) {
+        return util.promise(cb, function (cb) {
+            var self = this;
+            if (!this.installed) {
+                var modelsToInstall = [];
+                for (var name in this._models) {
+                    if (this._models.hasOwnProperty(name)) {
+                        var model = this._models[name];
+                        modelsToInstall.push(model);
                     }
-                    else {
-                        self.installed = true;
-                        var errors = [];
-                        _.each(modelsToInstall, function (m) {
-                            log('Installing relationships for mapping with name "' + m.name + '"');
-                            var err = m.installRelationships();
-                            if (err) errors.push(err);
-                        });
-                        if (!errors.length) {
+                }
+                log('There are ' + modelsToInstall.length.toString() + ' mappings to install');
+                if (modelsToInstall.length) {
+                    var tasks = _.map(modelsToInstall, function (m) {
+                        return _.bind(m.install, m);
+                    });
+                    util.async.parallel(tasks, function (err) {
+                        if (err) {
+                            log('Failed to install collection', err);
+                            self._finaliseInstallation(err, cb);
+                        }
+                        else {
+                            self.installed = true;
+                            var errors = [];
                             _.each(modelsToInstall, function (m) {
-                                log('Installing reverse relationships for mapping with name "' + m.name + '"');
-                                var err = m.installReverseRelationships();
+                                log('Installing relationships for mapping with name "' + m.name + '"');
+                                var err = m.installRelationships();
                                 if (err) errors.push(err);
                             });
+                            if (!errors.length) {
+                                _.each(modelsToInstall, function (m) {
+                                    log('Installing reverse relationships for mapping with name "' + m.name + '"');
+                                    var err = m.installReverseRelationships();
+                                    if (err) errors.push(err);
+                                });
+                            }
+                            if (errors.length == 1) {
+                                err = errors[0];
+                            } else if (errors.length) {
+                                err = errors;
+                            }
+                            self._finaliseInstallation(err, cb);
                         }
-                        if (errors.length == 1) {
-                            err = errors[0];
-                        } else if (errors.length) {
-                            err = errors;
-                        }
-                        self._finaliseInstallation(err, deferred.finish.bind(deferred));
-                    }
-                });
+                    });
 
+                } else {
+                    self._finaliseInstallation(null, cb);
+                }
             } else {
-                self._finaliseInstallation(null, deferred.finish.bind(deferred));
+                throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
             }
-        } else {
-            throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
-        }
-        return deferred.promise;
+        }.bind(this));
     },
 
     /**
@@ -242,24 +242,24 @@ _.extend(Collection.prototype, {
     /**
      * Returns the number of objects in this collection.
      *
-     * @param callback
+     * @param cb
      * @returns {Promise}
      */
-    count: function (callback) {
-        var deferred = util.defer(callback);
-        var tasks = _.map(this._models, function (m) {
-            return _.bind(m.count, m);
-        });
-        util.async.parallel(tasks, function (err, ns) {
-            var n;
-            if (!err) {
-                n = _.reduce(ns, function (m, r) {
-                    return m + r
-                }, 0);
-            }
-            deferred.finish(err, n);
-        });
-        return deferred.promise;
+    count: function (cb) {
+        return util.promise(cb, function (cb) {
+            var tasks = _.map(this._models, function (m) {
+                return _.bind(m.count, m);
+            });
+            util.async.parallel(tasks, function (err, ns) {
+                var n;
+                if (!err) {
+                    n = _.reduce(ns, function (m, r) {
+                        return m + r
+                    }, 0);
+                }
+                cb(err, n);
+            });
+        }.bind(this));
     }
 });
 

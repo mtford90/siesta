@@ -38,8 +38,8 @@ describe('pomodoro', function () {
                 });
                 Task.graph({title: 'title', description: 'an awesome description', completed: false})
                     .catch(done)
-                    .done();
-            }).catch(done).done();
+                    ;
+            }).catch(done);
         });
     });
 
@@ -116,7 +116,7 @@ describe('pomodoro', function () {
                         done();
                     })
                     .catch(done)
-                    .done();
+                    ;
             }).catch(done);
 
         });
@@ -175,7 +175,7 @@ describe('pomodoro', function () {
                             .catch(done);
                     })
                     .catch(done)
-                    .done();
+                    ;
             }).catch(done);
         });
     });

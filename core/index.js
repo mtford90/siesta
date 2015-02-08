@@ -17,7 +17,6 @@ var util = require('./util'),
     log = require('./log'),
     _ = util._;
 
-
 util._patchBind();
 
 // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
@@ -109,38 +108,6 @@ _.extend(siesta, {
         else {
             cb();
         }
-    },
-    /**
-     * Removes all data. Used during tests generally.
-     * @param [cb]
-     */
-    resetData: function (cb) {
-        var deferred = util.defer(cb);
-        cb = deferred.finish.bind(deferred);
-        siesta.ext.storage._reset(function () {
-            var collectionNames = [],
-                tasks = CollectionRegistry.collectionNames.reduce(function (memo, collectionName) {
-                    var collection = CollectionRegistry[collectionName],
-                        models = collection._models;
-                    collectionNames.push(collectionName);
-                    Object.keys(models).forEach(function (k) {
-                        var model = models[k];
-                        memo.push(function (done) {
-                            model.all(function (err, res) {
-                                if (!err) res.remove();
-                                done(err);
-                            });
-                        });
-                    });
-                    return memo;
-                }, []);
-            util.async.series(
-                [
-                    _.partial(util.async.parallel, tasks)
-                ],
-                cb);
-        });
-        return deferred.promise;
     },
     /**
      * Creates and registers a new Collection.

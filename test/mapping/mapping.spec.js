@@ -248,8 +248,8 @@ describe('mapping!', function () {
                             assert.equal(m.attr, m.f());
                             done();
                         })
-                        .catch(done).done();
-                }).catch(done).done();
+                        .catch(done);
+                }).catch(done);
             });
             it('clash', function (done) {
                 var C = siesta.collection('C');
@@ -269,8 +269,8 @@ describe('mapping!', function () {
                             assert.notEqual(m.restore(), 'a', 'Should not replace existing definitions')
                             done();
                         })
-                        .catch(done).done();
-                }).catch(done).done();
+                        .catch(done);
+                }).catch(done);
             });
 
             it('sync remove', function (done) {
@@ -373,7 +373,7 @@ describe('mapping!', function () {
                 siesta.install().then(function () {
                     assert.equal(M.f(), M);
                     done();
-                }).catch(done).done();
+                }).catch(done);
             });
             it('clash', function (done) {
                 var C = siesta.collection('C');
@@ -389,7 +389,7 @@ describe('mapping!', function () {
                 siesta.install().then(function () {
                     assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
                     done();
-                }).catch(done).done();
+                }).catch(done);
             });
 
         });

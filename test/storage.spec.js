@@ -37,7 +37,7 @@ describe('storage', function () {
                         done();
                     })
                     .catch(done)
-                    .done();
+                    ;
             });
         });
 
@@ -82,8 +82,8 @@ describe('storage', function () {
                             done();
                         })
                         .catch(done)
-                        .done();
-                }).catch(done).done();
+                        ;
+                }).catch(done);
 
             });
         });
@@ -147,7 +147,7 @@ describe('storage', function () {
                     assert.equal(carDoc.id, 2);
                     done();
                 }).catch(done);
-            }).catch(done).done();
+            }).catch(done);
         });
 
         it('update object', function (done) {
@@ -168,8 +168,8 @@ describe('storage', function () {
                         assert.equal(carDoc.id, 2);
                         done();
                     }).catch(done);
-                }).catch(done).done();
-            }).catch(done).done();
+                }).catch(done);
+            }).catch(done);
         });
 
 
@@ -232,8 +232,8 @@ describe('storage', function () {
                             assert.ok(blackCar._rev);
                             assert.ok(blackCar._id);
                             done();
-                        }).catch(done).done();
-                    }).catch(done).done();
+                        }).catch(done);
+                    }).catch(done);
                 }).catch(done);
             })
         });
@@ -290,7 +290,7 @@ describe('storage', function () {
                             siesta.ext.storage._load().then(function () {
                                 assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                                 done();
-                            }).catch(done).done();
+                            }).catch(done);
                         }).catch(done);
                     }).catch(done);
 
@@ -316,7 +316,7 @@ describe('storage', function () {
                         assert.equal(redCar.owner._id, 'xyz');
                         assert.equal(blackCar.owner._id, 'xyz');
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
 
                 });
 
@@ -330,7 +330,7 @@ describe('storage', function () {
                         assert.include(_.pluck(person.cars, '_id'), 'abc');
                         assert.include(_.pluck(person.cars, '_id'), 'def');
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
                 });
 
 
@@ -409,13 +409,13 @@ describe('storage', function () {
                                     assert.include(_.pluck(redCar.owners, '_id'), 'xyz');
                                     assert.include(_.pluck(blackCar.owners, '_id'), 'xyz');
                                     done();
-                                }).catch(done).done();
-                            }).catch(done).done();
+                                }).catch(done);
+                            }).catch(done);
                         }).catch(done);
 
                     })
                     .catch(done)
-                    .done();
+                    ;
             });
 
             it('onetoone', function (done) {
@@ -482,12 +482,12 @@ describe('storage', function () {
                                     assert.notOk(redCar.owner);
                                     assert.equal(blackCar.owner._id, 'xyz');
                                     done();
-                                }).catch(done).done();
-                            }).catch(done).done();
+                                }).catch(done);
+                            }).catch(done);
                         }).catch(done);
                     })
                     .catch(done)
-                    .done();
+                    ;
             });
 
         });
@@ -547,14 +547,14 @@ describe('storage', function () {
                 Car.all().then(function (cars) {
                     assert.equal(cars.length, 2);
                     done();
-                }).catch(done).done();
+                }).catch(done);
             });
 
             it('people', function (done) {
                 Person.all().then(function (people) {
                     assert.equal(people.length, 1);
                     done();
-                }).catch(done).done();
+                }).catch(done);
             });
 
         });
@@ -584,7 +584,7 @@ describe('storage', function () {
                             person = _person;
                             done();
                         });
-                }).catch(done).done();
+                }).catch(done);
         });
 
         it('global dirtyness', function (done) {
@@ -592,7 +592,7 @@ describe('storage', function () {
             siesta.save().then(function () {
                 assert.notOk(siesta.dirty);
                 done();
-            }).catch(done).done();
+            }).catch(done);
         });
 
         it('collection dirtyness', function (done) {
@@ -606,8 +606,8 @@ describe('storage', function () {
                         done();
                     })
                     .catch(done)
-                    .done();
-            }).catch(done).done();
+                    ;
+            }).catch(done);
         });
 
         it('model dirtyness', function (done) {
@@ -618,7 +618,7 @@ describe('storage', function () {
                 assert.ok(Person.dirty);
                 assert.notOk(Car.dirty);
                 done();
-            }).catch(done).done();
+            }).catch(done);
         });
 
         it('model instance dirtyness', function (done) {
@@ -629,7 +629,7 @@ describe('storage', function () {
                 assert.ok(person.dirty);
                 assert.notOk(car.dirty);
                 done();
-            }).catch(done).done();
+            }).catch(done);
         });
 
 
@@ -949,7 +949,7 @@ describe('storage', function () {
                     assert.ok(carInitCalled);
                     assert.ok(personInitCalled);
                     done();
-                }).catch(done).done();
+                }).catch(done);
             }).catch(done);
         });
 

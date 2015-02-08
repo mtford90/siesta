@@ -1,6 +1,7 @@
 var observe = require('../../vendor/observe-js/src/observe').Platform,
     _ = require('./underscore'),
     Promise = require('lie'),
+    argsarray = require('argsarray'),
     InternalSiestaError = require('./../error').InternalSiestaError;
 
 // Used by paramNames function.

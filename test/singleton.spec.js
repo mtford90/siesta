@@ -165,9 +165,9 @@ describe('singleton mapping', function () {
                             assert.equal(firstChild.parent, parent);
                             assert.equal(secondChild.parent, parent);
                             done();
-                        }).catch(done).done();
-                    }).catch(done).done();
-                }).catch(done).done();
+                        }).catch(done);
+                    }).catch(done);
+                }).catch(done);
             })
         });
 

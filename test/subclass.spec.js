@@ -137,7 +137,7 @@ describe('Subclass', function () {
                                     done();
                                 })
                                 .catch(done)
-                                .done();
+                                ;
                         });
                     });
 
@@ -190,7 +190,7 @@ describe('Subclass', function () {
                                     done();
                                 })
                                 .catch(done)
-                                .done();
+                                ;
                         });
                     });
 
@@ -246,7 +246,7 @@ describe('Subclass', function () {
                                     done();
                                 })
                                 .catch(done)
-                                .done();
+                                ;
                         })
                     });
 
@@ -590,7 +590,7 @@ describe('Subclass', function () {
                     done();
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('middle query', function (done) {
@@ -600,7 +600,7 @@ describe('Subclass', function () {
                     done();
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('child query', function (done) {
@@ -610,7 +610,7 @@ describe('Subclass', function () {
                     done();
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
 
@@ -684,7 +684,7 @@ describe('Subclass', function () {
                     done();
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('isA', function (done) {
@@ -697,7 +697,7 @@ describe('Subclass', function () {
                     done();
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
 

@@ -58,7 +58,7 @@ describe('reactive query', function () {
                         siesta.notify(done);
                     }
                 });
-            }, done).catch(done).done();
+            }, done).catch(done);
         });
 
         describe('updates', function () {
@@ -88,10 +88,10 @@ describe('reactive query', function () {
                                     catch (e) {
                                         done(e);
                                     }
-                                }).catch(done).done();
+                                }).catch(done);
                             }
                         });
-                    }).catch(done).done();
+                    }).catch(done);
                 });
 
                 it('emission', function (done) {
@@ -111,11 +111,11 @@ describe('reactive query', function () {
                                     siesta.notify(done);
                                 });
                                 Person.graph({name: 'Peter', age: 21, id: 4}).then(function () {
-                                }).catch(done).done();
+                                }).catch(done);
 
                             }
                         });
-                    }).catch(done).done();
+                    }).catch(done);
                 });
 
             });
@@ -145,10 +145,10 @@ describe('reactive query', function () {
                                     catch (e) {
                                         done(e);
                                     }
-                                }).catch(done).done();
+                                }).catch(done);
                             }
                         });
-                    }).catch(done).done();
+                    }).catch(done);
                 });
 
             });
@@ -181,7 +181,7 @@ describe('reactive query', function () {
                                 });
                             }
                         });
-                    }).catch(done).done();
+                    }).catch(done);
                 });
 
                 it('emission', function (done) {
@@ -206,8 +206,8 @@ describe('reactive query', function () {
                                 person.age = 40;
                                 siesta.notify();
                             }
-                        }).catch(done).done();
-                    }).catch(done).done();
+                        }).catch(done);
+                    }).catch(done);
                 });
 
             });
@@ -230,8 +230,8 @@ describe('reactive query', function () {
                             person.age = 29;
                             siesta.notify();
                         }
-                    }).catch(done).done();
-                }).catch(done).done();
+                    }).catch(done);
+                }).catch(done);
             });
 
             describe('removal', function () {
@@ -262,7 +262,7 @@ describe('reactive query', function () {
                             });
                         });
 
-                    }).catch(done).done();
+                    }).catch(done);
                 });
 
                 it('emission', function (done) {
@@ -291,7 +291,7 @@ describe('reactive query', function () {
                                     siesta.notify();
                                 }
                             });
-                        }).catch(done).done();
+                        }).catch(done);
                 });
 
 
@@ -321,7 +321,7 @@ describe('reactive query', function () {
                                     siesta.notify();
                                 }
                             });
-                        }).catch(done).done();
+                        }).catch(done);
                 });
 
 
@@ -388,7 +388,7 @@ describe('reactive query', function () {
                         siesta.notify(done);
                     }
                 });
-            }, done).catch(done).done();
+            }, done).catch(done);
         });
 
         it('add new, matching', function (done) {
@@ -411,8 +411,8 @@ describe('reactive query', function () {
                             done();
                         })
                     });
-                }).catch(done).done();
-            }, done).catch(done).done();
+                }).catch(done);
+            }, done).catch(done);
         });
 
     });

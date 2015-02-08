@@ -191,7 +191,7 @@ describe('query...', function () {
                                 q.execute().then(function (objs) {
                                     assert.ok(objs.length);
                                     done();
-                                }).catch(done).done();
+                                }).catch(done);
                             }
                         });
                     });
@@ -788,8 +788,8 @@ describe('query...', function () {
                             lastAge = person.age;
                         }
                         done();
-                    }).catch(done).done();
-            }).catch(done).done();
+                    }).catch(done);
+            }).catch(done);
         });
 
         it('ascending order', function (done) {
@@ -807,8 +807,8 @@ describe('query...', function () {
                             lastAge = person.age;
                         }
                         done();
-                    }).catch(done).done();
-            }).catch(done).done();
+                    }).catch(done);
+            }).catch(done);
         });
 
         it('multiple order, array', function (done) {
@@ -826,8 +826,8 @@ describe('query...', function () {
                             lastAge = person.age;
                         }
                         done();
-                    }).catch(done).done();
-            }).catch(done).done();
+                    }).catch(done);
+            }).catch(done);
         });
 
         it('date order', function (done) {
@@ -845,8 +845,8 @@ describe('query...', function () {
                             lastDob = person.dob;
                         }
                         done();
-                    }).catch(done).done();
-            }).catch(done).done();
+                    }).catch(done);
+            }).catch(done);
         });
 
 
@@ -863,8 +863,8 @@ describe('query...', function () {
                         assert.equal(orderedPeople[1], people[2]);
                         assert.equal(orderedPeople[2], people[0]);
                         done();
-                    }).catch(done).done();
-            }).catch(done).done();
+                    }).catch(done);
+            }).catch(done);
         });
 
 
@@ -881,8 +881,8 @@ describe('query...', function () {
                         assert.equal(orderedPeople[1], people[2]);
                         assert.equal(orderedPeople[0], people[0]);
                         done();
-                    }).catch(done).done();
-            }).catch(done).done();
+                    }).catch(done);
+            }).catch(done);
         });
     });
 
@@ -913,10 +913,10 @@ describe('query...', function () {
                             assert.ok(r.age == 24 || r.age == 22);
                         });
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
                 })
                 .catch(done)
-                .done();
+                ;
         });
         it('still simple', function (done) {
             Person.graph([
@@ -936,10 +936,10 @@ describe('query...', function () {
                             assert.ok(r.age == 24 || r.age == 22);
                         });
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('nested', function (done) {
@@ -958,10 +958,10 @@ describe('query...', function () {
                     }).then(function (res) {
                         assert.equal(res.length, 3);
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
                 })
                 .catch(done)
-                .done();
+                ;
         });
     });
 
@@ -992,10 +992,10 @@ describe('query...', function () {
                         assert.equal(r.age, 24);
                         assert.equal(r.name, 'Mike');
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('mixture', function (done) {
@@ -1014,10 +1014,10 @@ describe('query...', function () {
                     }).then(function (res) {
                         assert.equal(res.length, 2);
                         done();
-                    }).catch(done).done();
+                    }).catch(done);
                 })
                 .catch(done)
-                .done();
+                ;
         });
     });
 
@@ -1055,10 +1055,10 @@ describe('query...', function () {
                             done();
                         })
                         .catch(done)
-                        .done();
+                        ;
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
         it('nested op', function (done) {
@@ -1074,10 +1074,10 @@ describe('query...', function () {
                             done();
                         })
                         .catch(done)
-                        .done();
+                        ;
                 })
                 .catch(done)
-                .done();
+                ;
         });
 
 

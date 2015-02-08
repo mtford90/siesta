@@ -34,7 +34,6 @@ describe('auto save', function () {
         });
         Person.graph({name: 'Mike', age: 24})
             .catch(done)
-            .done();
     });
 
     it('does not interval on modelEvents if disabled', function (done) {
@@ -49,6 +48,5 @@ describe('auto save', function () {
                     .catch(done);
             })
             .catch(done)
-            .done();
     });
 });

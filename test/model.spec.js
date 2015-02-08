@@ -34,7 +34,7 @@ describe('Models', function () {
                 assert.equal(attributes.name, 'Aston martin');
                 done();
             })
-            .catch(done).done();
+            .catch(done);
     });
 
     it('define relationship with string', function (done) {
