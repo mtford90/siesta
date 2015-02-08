@@ -162,10 +162,8 @@ _.extend(Model.prototype, {
         }
         return statics;
     },
-    _isValidRelationship: function (relationship) {
-        return relationship.type == RelationshipType.OneToMany ||
-            relationship.type == RelationshipType.OneToOne ||
-            relationship.type == RelationshipType.ManyToMany;
+    _isValidRelationshipType: function (type) {
+        return Object.keys(RelationshipType).indexOf(type) > -1;
     }, /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
@@ -182,17 +180,13 @@ _.extend(Model.prototype, {
                         if (!relationship.isReverse) {
                             log(self.name + ': configuring relationship ' + name, relationship);
                             if (!relationship.type) {
-                                if (self.singleton) {
-                                    relationship.type = RelationshipType.OneToOne;
-                                }
-                                else {
-                                    relationship.type = RelationshipType.OneToMany;
-                                }
+                                if (self.singleton) relationship.type = RelationshipType.OneToOne;
+                                else relationship.type = RelationshipType.OneToMany;
                             }
                             if (self.singleton && relationship.type == RelationshipType.ManyToMany) {
                                 return 'Singleton model cannot use ManyToMany relationship.';
                             }
-                            if (this._isValidRelationship(relationship)) {
+                            if (this._isValidRelationshipType(relationship.type)) {
                                 var modelName = relationship.model;
                                 delete relationship.model;
                                 var reverseModel;
