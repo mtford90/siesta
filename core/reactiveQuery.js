@@ -67,7 +67,7 @@ _.extend(ReactiveQuery.prototype, {
                     if (log) log('Listening to ' + name);
                     this.initialised = true;
                     cb(null, this.results);
-                }®
+                }
                 else {
                     cb(err);
                 }
