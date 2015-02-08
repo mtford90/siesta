@@ -229,41 +229,6 @@ _.extend(Collection.prototype, {
         return null;
     },
 
-    descriptor: function (opts) {
-        var descriptors = [];
-        if (siesta.ext.httpEnabled) {
-            opts.collection = this;
-            var methods = siesta.ext.http._resolveMethod(opts.method);
-            var unsafe = [];
-            var safe = [];
-            for (var i = 0; i < methods.length; i++) {
-                var m = methods[i];
-                if (UNSAFE_METHODS.indexOf(m) > -1) {
-                    unsafe.push(m);
-                } else {
-                    safe.push(m);
-                }
-            }
-            if (unsafe.length) {
-                var requestDescriptor = extend({}, opts);
-                requestDescriptor.method = unsafe;
-                requestDescriptor = new siesta.ext.http.RequestDescriptor(requestDescriptor);
-                siesta.ext.http.DescriptorRegistry.registerRequestDescriptor(requestDescriptor);
-                descriptors.push(requestDescriptor);
-            }
-            if (safe.length) {
-                var responseDescriptor = extend({}, opts);
-                responseDescriptor.method = safe;
-                responseDescriptor = new siesta.ext.http.ResponseDescriptor(responseDescriptor);
-                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(responseDescriptor);
-                descriptors.push(responseDescriptor);
-            }
-        } else {
-            throw new Error('HTTP module not installed.');
-        }
-        return descriptors;
-    },
-
     /**
      * Dump this collection as JSON
      * @param  {Boolean} asJson Whether or not to apply JSON.stringify

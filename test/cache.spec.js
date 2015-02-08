@@ -107,13 +107,6 @@ describe('cache...', function () {
                         }
                     }
                 });
-                collection.baseURL = 'http://mywebsite.co.uk/';
-                var desc = new siesta.ext.http.ResponseDescriptor({
-                    method: 'GET',
-                    model: Car,
-                    path: '/cars/[0-9]+'
-                });
-                siesta.ext.http.DescriptorRegistry.registerResponseDescriptor(desc);
                 siesta.install(done);
             });
 

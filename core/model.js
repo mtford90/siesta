@@ -676,15 +676,4 @@ _.extend(Model.prototype, {
     }
 });
 
-_.extend(Model.prototype, {
-    paginator: function (opts) {
-        if (siesta.ext.httpEnabled) {
-            var Paginator = siesta.ext.http.Paginator;
-            opts = opts || {};
-            opts.model = this;
-            return new Paginator(opts);
-        }
-    }
-});
-
 module.exports = Model;
