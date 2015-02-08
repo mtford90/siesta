@@ -25,34 +25,6 @@ Alternatively if you're using a bundler based on CommonJS (browserify, webpack e
 var siesta = require('siesta');
 ```
 
-### Promises
-
-Promises can be used anywhere in Siesta where callbacks are used, provided that [q.js](https://github.com/kriskowal/q) is made available.
-
-```html
-<!-- If using script tags -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/q.js/1.1.2/q.js"></script>
-<script src="siesta.min.js"></script>
-```
-
-Or if using CommonJS
-
-```js
-siesta.q = require('q');
-```
-
-Once q.js is included in your project you can use promises anywhere in Siesta where you would normally use callbacks.
-
-```js
-Model.graph({key: 'value')
-    .then(function () {.graph
-       // ...
-    })
-    .catch(function (err) {
-       console.error('Handle error', err);
-    });
-```
-
 ### Storage
 
 To enable storage, include PouchDB. If the availability of PouchDB is not detected then storage will be disabled.
@@ -198,7 +170,6 @@ Siesta will automatically create and update model instances, hook up relationshi
 
 The rest of this documentation deals with the various ways in which you can interact with the object graph. For example:
 
-* Map resources to and from the object graph using HTTP.
 * Saving the object graph in client-side storage.
 * Various methods of querying the object graph.
 
@@ -439,12 +410,15 @@ var User = Collection.model('User', {
 
 ### init
 
-`init` is executed on creation of a model instance or if a deleted instance is restored via `ModelInstance.prototype.restore`
+`init` is executed on creation of a model instance or if a deleted instance is restored via `ModelInstance.prototype.restore`. The function is passed a boolean `restored ` which states whether or not the object is being loaded from storage or created for the first time. `restored` is `true` if the object is being loaded from PouchDB. This is useful for performing first time setup each model instance - setup that does not need to be executed when loaded from storage.
 
 ```js
 var Model = Collection.model('Model', {
-	init: function () {
+	init: function (restored) {
         doSomethingSynchronously(this);
+        if (!restored) {
+        	// First time setup.
+        }
     }
 });
 ```
@@ -453,7 +427,7 @@ var Model = Collection.model('Model', {
 
 ```js
 var Model = Collection.model('Model', {
-	init: function (done) {
+	init: function (restored, done) {
 		doSomethingAsynchronously(this, done);
 	}
 });
@@ -822,7 +796,7 @@ User.query({
         __order: '-age'
     })
     .then(function (results) {
-        console.log('results', results);
+        console.log('results');
     });
 
 // Descending order of age, with a secondary ordering (e.g. if ages are the same) by ascending name
@@ -935,7 +909,8 @@ A reactive query is a query that reacts to changes in the object graph, updating
 
 ```js
 var rq = User.reactiveQuery({age__gte: 18});
-rq.init().then(function (results) {
+rq.init().then(function () {
+    var results = rq.results;
   	// results are the same as User.query({age__gte: 18});
 });
 ```
@@ -943,7 +918,8 @@ rq.init().then(function (results) {
 To listen to events:
 
 ```js
-var cancelListen = rq.listen(function (results, e) {
+var cancelListen = rq.listen(function (e) {
+	var results = rq.results; // Updated result set.
     // ...
 });
 ```
@@ -963,6 +939,14 @@ Once initialised you can terminate a reactive query by calling `terminate`. This
 rq.terminate();
 ```
 
+You can update the reactive queries result set manually by calling `update`
+
+```js
+rq.update(function (err) {
+	// Result set will now be updated.
+});
+```
+
 ## Events
 
 Reactive Query events are emitted under 4 circumstances:
@@ -975,7 +959,8 @@ Reactive Query events are emitted under 4 circumstances:
 In a similar fashion to model events you can listen to reactive queries by calling `listen` with a handler.
 
 ```js
-var cancelListen = rq.listen(function (results, change) {
+var cancelListen = rq.listen(function (change) {
+	var results = rq.results;
 	// results is the complete result set
 	// change describes any changes to the result set
 });
@@ -983,26 +968,25 @@ var cancelListen = rq.listen(function (results, change) {
 
 ## Result Set
 
-In a similar fashion to ordinary queries, results presented by reactive queries are `QuerySet` instances and so can be used to manipulate all instances in the result set.
+In a similar fashion to ordinary queries, results presented by reactive queries are `ResultSet` instances and so can be used to manipulate all instances in the result set.
 
 ```js
 // Whenever a new user less than 18 years of age is created, remove it.
 var rq = User.reactiveQuery({age__lt: 18});
-rq.init()
-  .then(function (users) {
-       rq.listen(function (users) {
-            users.remove();
-       });
-  });
+rq.init(function () {
+   rq.listen(function () {
+       rq.results.remove();
+   });
+})
 
 // Convert the names of all users to uppercase as they are created.
 var rq = User.reactiveQuery();
-rq.init()
-  .then(function (users) {
-       rq.listen(function (users) {
-           users.name = users.name.toUpperCase();
-       });
-  });
+rq.init(function () {
+    rq.listen(function () {
+        var users = rq.results;
+        users.name = users.name.toUpperCase();
+    });
+})
 ```
 
 ## Insertion Policy
@@ -1059,7 +1043,8 @@ User.graph([
 	{age: 55},
 	{age: 25},
 	{age: 70}
-]).then(function (users) {
+]).then(function () {
+    var users = arq.results;
 	arq.init().then(function () {
 		assert.equal(users[0].index, 0);
 		assert.equal(users[1].index, 1);
@@ -1085,381 +1070,6 @@ prq.move(from, to);
 ## Events
 
 Events are exactly the same as for [Reactive Queries](#reactive-queries-events).
-
-# HTTP
-
-Before using HTTP you first need to define a baseURL on your *collection*.
-
-```js
-var Github = siesta.collection('Github');
-Github.baseURL = 'https://api.github.com/';
-```
-
-From that point forward, it is then possible to send HTTP requests. If you have defined descriptors, the `instances` array will consist of Siesta model instances that have been created or updated as a result of the HTTP request.
-`data` refers to the raw data returned from the request.
-`xhr` is the object representing the HTTP request e.g. `jqxhr` if using jQuery.
-
-```js
-Github.GET('/users/mtford90/repos', function (err, instances, data, xhr) {
-    if (!err) {
-        // ...
-    }
-});
-```
-
-## Descriptors
-
-Descriptors *describe* HTTP requests and API endpoints. The following descriptor describes the Github endpoint for obtaining a users list repositories.
-
-```js
-Github.descriptor({
-	// Paths are regular expressions.
-    path: '/users/([a-b0-9]+)/repos/',
-    // The model onto which we will map the received objects
-    model: Repo,
-    // HTTP method(s) to accept
-    method: 'GET'
-});
-```
-
-### path
-
-Paths take the form of Javascript regular expressions, strings and arrays.
-
-```js
-Model.descriptor({
-    path: '/path/to/([a-b0-9]+)/'
-});
-
-Model.descriptor({
-    path: ['/path/to/something', '/path/to/something/else']
-});
-```
-
-### model
-
-The model can either be a `Model` object or a string describing the collection and the model.
-
-```js
-Github.descriptor({
-    model: Repo
-});
-
-Github.descriptor({
-    model: 'Github.Repo'
-});
-```
-
-### method
-
-The wildcard method refers to all HTTP methods
-
-```js
-Github.descriptor({
-    method: '*'
-});
-```
-
-We can also provide arrays of methods
-
-
-```js
-Github.descriptor({
-    method: ['GET', 'POST']
-});
-```
-
-Or just a singular method
-
-
-```js
-Github.descriptor({
-    method: 'GET'
-});
-```
-
-### data
-
-Sometimes the data that represents the models is nested within the response from the web service. The `data` key is used to deal with this.
-
-```js
-Model.descriptor({
-	data: 'path.to.data'
-});
-
-// Use a function instead.
-Model.descriptor({
-	data: function (raw) {
-		return raw.path.to.data;
-	}
-});
-```
-
-For example, the Github search endpoint nests results in the `items` key.
-
-```js
-Github.descriptor({
-    path: '/search/repositories/',
-    model: Repo,
-    method: 'GET',
-    data: 'items'
-});
-```
-
-
-
-### transforms
-
-Transforms can be used to transform fields in the raw data before the data is mapped onto the object graph. Note that this step is performed after the [data](#http-descriptors-data) step described above.
-
-```js
-Github.descriptor({
-    path: '/users/([a-b0-9]+)/repos/',
-    model: Repo,
-    method: 'GET',
-    transforms: {
-        'stargazers_count': 'num_stars'
-    }
-});
-```
-
-We can use dot notation to transform nested data:
-
-```js
-Github.descriptor({
-    transforms: {
-        'stargazers_count': 'path.to.num_stars'
-    }
-});
-
-// Use a function instead
-Github.descriptor({
-    transforms: {
-        'stargazers_count': function (k) {
-            return 'path.to.num_stars'
-        }
-    }
-});
-```
-
-For more complicated transformations, you can define a top-level transformation function
-
-```js
-Github.descriptor({
-    path: '/users/[a-b0-9]+/repos/',
-    model: Repo,
-    method: 'GET',
-    transforms: function (data) {
-        var n = data.stargazers_count;
-        delete data.stargazers_count;
-        data.num_stars = n;
-        return data;
-    }
-});
-```
-
-### serialiser
-
-Serialisation is the process of transforming a model instance into raw data that can be sent to the web service. Siesta comes with two stock serialisers.
-
-```js
-// Serialise all repositories to the id
-Github.descriptor({
-    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-    model: Repo,
-    method: ['PATCH', 'POST'],
-    serialiser: siesta.serialisers.id
-});
-
-// Serialise all repositories and nested model instances to a depth of 2
-Github.descriptor({
-    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-    model: Repo,
-    method: ['PATCH', 'POST'],
-    serialiser: siesta.serialisers.depth(2)
-});
-```
-
-You can also define your own.
-
-```js
-Github.descriptor({
-    path: '/repos/[a-b0-9]+/[a-b0-9]+/',
-    model: Repo,
-    method: ['PATCH', 'POST'],
-    serialiser: function (obj) {
-    	return {name: obj.name};
-    }
-});
-```
-
-## Sending Requests
-
-Once descriptors are defined, we can then send HTTP requests and receive HTTP responses through Siesta. Siesta will match against descriptors when determining how to serialise/deserialise objects.
-
-### Safe Methods
-
-Safe methods refer to methods that do not generally change state on the server-side.
-
-
-```js
-Github.GET('/users/mtford90/repos')
-	.then(function (repos) {
-		repos.forEach(function (r) {
-			console.log(r.name);
-		});
-	});
-});
-
-// Query parameters
-Github.GET('/search/repositories', {data: 'siesta'})
-	.then(function (repos) {
-		repos.forEach(function (r) {
-			console.log(r.name);
-		});
-});
-```
-
-You can also use HEAD, OPTIONS or TRACE however these are uncommon.
-
-### Unsafe Methods
-
-Unsafe methods refer to methods that can change state on the server-side. Objects are serialised as specified in the matched descriptor.
-
-```js
-myRepo.name = 'A new name';
-
-Github.PUT('/users/mtford90/repos/' + myRepo.id, myRepo)
-	.then(function (repos) {
-		assert.equal(repo, myRepo);
-	});
-
-Github.PATCH('/users/mtford90/repos/' + myRepo.id, myRepo, {fields: ['name']})
-	.then(function (repo) {
-		assert.equal(repo, myRepo);
-	});
-
-Github.POST('/users/mtford90/repos/', myRepo)
-	.then(function (repo) {
-		assert.ok(repo.id);
-	});
-
-Github.DELETE('/users/mtford90/repos/' + myRepo.id, myRepo)
-	.then(function () {
-		assert.ok(myRepo.removed);
-	});
-```
-
-## Custom AJAX
-
-Siesta currently supports jQuery style ajax functions. This can be configured as follows:
-
-```js
-siesta.ajax = zepto.ajax;
-```
-
-## Paginator
-
-Siesta features a paginator for managing responses from paginated endpoints.
-
-### Configuration
-
-The default configuration is as follows. As well as the paginator options, the options object can take any option accepted by jQuery-like ajax functions.
-
-```js
-var paginator = Model.paginator({
-	page: 'page',
-	// Place params in URL as query params.
-	// If false will be placed in body instead e.g. POST body
-	queryParams: true,
-	pageSize: 'pageSize',
-	response: {
-		numPages: 'numPages',
-		data: 'data',
-		count: 'count'
-	},
-    type: 'GET',
-    dataType: 'json',
-    // This must be specified.
-    path: null
-});
-```
-
-Like with descriptors, if our models are nested we can specify a `data` option.
-
-```js
-paginator = Model.paginator({
-	dataPath: 'path.to.data'
-})
-
-paginator = Model.paginator({
-	dataPath: function (response, jqXHR) {
-		return responseData.path.to.data;
-	}
-});
-```
-
-`numPages` and `count` will also accept functions for flexibility.
-
-```js
-paginator = Model.paginator({
-	numPages: function (response, jqXHR) {
-		return jqXHR.getResponseHeader('X-Num-Pages');
-	},
-	count: function (response, jqXHR) {
-		return response.data.total_count;
-	}
-});
-```
-
-The below demonstrates the flexibility of the paginator against the Github API which makes use of the `Link` response header described [here](https://developer.github.com/guides/traversing-with-pagination/).
-
-```js
-paginator = Github.paginator({
-    path: 'search/code?q=addClass+user:mozilla'
-	pageSize: 'per_page',
-	count: 'total_count',
-	numPages: function (response, jqXHR) {
-		var links = parseLinkHeader(jqXHR.getResponseHeader('Link')),
-			lastURI = links['last'],
-			queryParams = parseQueryParams(lastURI);
-		return queryParams['page'];
-	},
-	dataPath: 'items'
-})
-```
-
-Note that any additional configuration items passed to the paginator will be passed to the ajax function.
-
-```js
-paginator = Github.paginator({
-    path: 'path/to/something'
-	dataPath: 'items',
-	// Will be sent as post data
-	data: {
-	    key: 'value'
-	},
-	type: 'POST'
-})
-```
-
-###  Usage
-
-Get the model instances on a particular page.
-
-```js
-paginator.page(4)
-    .then(function (objects) {
-        // objects is the list of objects returned from the endpoint
-    });
-```
-
-Once you have obtained at least one page, you can access the following information.
-
-```js
-paginator.numPages; // Number of pages.
-paginator.count; // Number of objects.
-```
 
 # Storage
 
@@ -1503,10 +1113,10 @@ console.log(instance.collection.dirty); // true
 
 ## PouchDB Configuration
 
-PouchDB has a rich set of configuration options which you can explore in their [docs](http://pouchdb.com/api.html). By default, Siesta will initialise with PouchDB's own defaults.
+PouchDB has a rich set of configuration options which you can explore in their [docs](http://pouchdb.com/api.html). By default, Siesta will initialise PouchDB using the following instantiation:
 
 ```js
-new PouchDB('siesta');
+new PouchDB('siesta', {auto_compaction: true});
 ```
 
 You can inject your own instance pouch by calling `siesta.setPouch`. Note that this will throw an error if an object graph has been initialised and therefore must be done before any map or query operations.
@@ -1515,60 +1125,25 @@ You can inject your own instance pouch by calling `siesta.setPouch`. Note that t
 siesta.setPouch(new PouchDB('custom'));
 ```
 
+# Misc
+
+## Promises
+
+Promises can be used anywhere in Siesta where callbacks are used. Promises are supplied by the excellent ES6 compliant [lie](https://github.com/calvinmetcalf/lie) module written by Calvin Metcalf and battle-tested in PouchDB.
+
+```js
+Model.graph({key: 'value')
+    .then(function () {.graph
+       // ...
+    })
+    .catch(function (err) {
+       console.error('Handle error', err);
+    });
+```
+
 # Recipes
 
 This section features various useful examples that demonstrate the power of Siesta and its dependencies.
-
-## HTTP Intercepts
-
-Siesta does not make available HTTP interception, but many ajax libraries that are compatible with Siesta do. e.g. if you're using jQuery (siesta will look for $.ajax by default) you can `ajaxSend` to intercept and modify HTTP requests before they are sent.
-
-```js
-$(document).ajaxSend(function (event, jqXHR, settings) {
-    jqXHR.setRequestHeader('X-My-Custom-Header', 'Something');
-});
-```
-
-## Authentication
-
-Authentication is best handled with the HTTP interceptors of whatever ajax library you're using. This can be integrated with your Siesta user model such as in the example.
-
-```js
-var User = Collection.model('User', {
-    attributes: ['username', 'token'],
-    properties: {
-        isAuthenticated: {
-            get: function() {
-                return !!this.token;
-            }
-        }
-    },
-    methods: {
-        _handleAjaxSend: function (e, jqXJR) {
-            jqXHR.setRequestHeader('Auth', token);
-        },
-        _handleAjaxError: function (e, jqXHR) {
-            if (jqXHR.status == 403) this._removeAjaxListeners();
-        },
-        _removeAjaxListeners: function () {
-            $(document).off('ajaxSend', this.sendListener);
-            $(document).off('ajaxError', this.errorListener);
-        },
-        login: function (password) {
-            $.post('https://myapi.com/login', {password: password})
-                .done(function (data) {
-                    this.token = data.token;
-                    $(document).ajaxSend(this.sendListener = this._handleAjaxSend.bind(this));
-                    $(document).ajaxError(this.errorListener = this._handleAjaxError.bind(this));
-                }.bind(this))
-                .fail(function () {
-                    this.token = null;
-                    handleFailedAuthentication();
-                }.bind(this));
-        }
-    }
-});
-```
 
 ## App Settings
 
@@ -1611,65 +1186,56 @@ Following Node convention the first parameter of all callbacks in Siesta is the 
 
 ```js
 Model.graph('sdfsdfsdf'), function (err) {
-    assert.instanceOf(err, siesta.CustomSiestaError);
-    assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
-    console.log(err.message); // Cannot map strings onto the object graph.
+    console.log(err.reason); // Cannot map strings onto the object graph.
+	assert.ok(err.error);
+	assert.notOk(err.ok);
 });
 ```
 
-Similarly you can catch errors using the `then` function of promises
+If using promises errors will be delivered to the second parameter of `then` as well as to the catch block which also captures thrown errors.
 
 ```js
 Model.graph('sdfsdfsdf')
-    .then(function (instance) {
-        // This will never be called.
-    }, function (err) {
-        assert.instanceOf(err, siesta.CustomSiestaError);
-        assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
-        console.log(err.message); // Cannot map strings onto the object graph.
-    });
-```
-
-`catch` will be equivalent in this case. Note, however, that `catch` will also catch any errors thrown by Javascript e.g. type errors.
-
-```js
-Model.graph('sdfsdfsdf')
-    .then(function (instance) {
-        // This will never be called.
-    })
-    .catch(function (err) {
-        assert.instanceOf(err, siesta.CustomSiestaError);
-        assert.equal(err.component, 'Mapping'); // Corresponds to logging component.
-        console.log(err.message); // Cannot map strings onto the object graph.
-    });
+	.then(function (instance) {
+		// success
+	}, function (err) {
+	    console.log(err.reason); // Cannot map strings onto the object graph.
+		assert.ok(err.error);
+		assert.notOk(err.ok);
+	})
+	.catch(function (err) {
+	    console.log(err.reason); // Cannot map strings onto the object graph.
+		assert.ok(err.error);
+		assert.notOk(err.ok);
+	});
 ```
 
 # Logging
 
-`siesta.setLogLevel(loggerName, logLevel)` is used for configuring logging in Siesta.
+Siesta uses the [debug](https://www.npmjs.org/package/debug) module for log output. You can enable all logs by executing the following:
 
 ```js
-siesta.setLogLevel('HTTP', siesta.log.trace);
+Siesta.log.enable('*');
 ```
 
-Logging for various Siesta subsystems can be configured using the following log levels:
+Or for more fine-grained logging:
 
-* `siesta.log.trace`
-* `siesta.log.debug`
-* `siesta.log.info`
-* `siesta.log.warn`
-* `siesta.log.error`
-* `siesta.log.fatal`
+```js
+Siesta.log.enable('siesta:storage');
+```
 
 The various loggers are listed below:
 
-* `HTTP`: Logs related to actual HTTP requests/responses.
-* `Descriptor`: Logs related to matching against descriptors.
-* `Serialisation`: Logs related to serialisation of instances during HTTP requests.
-* `Cache`: Logs related to the in-memory caching of model instances.
-* `Mapping`: Logs related to the mapping of data to the object graph.
-* `Query`: Logs related to the querying of local data
-* `Storage`: Logs related to saving and loading of the object graph to storage.
+* `siesta:cache` - logs related to the in-memory caching of model instances.
+* `siesta:mapping` - logs related to the mapping of data to the object graph.
+* `siesta:query` - logs related to the querying of local data
+* `siesta:storage` - logs related to saving and loading of the object graph to storage.
+
+Note that these settings are saved to the browsers local storage. To disable log output call:
+
+```js
+Siesta.log.disable();
+```
 
 # Testing
 

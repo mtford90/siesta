@@ -1,20 +1,16 @@
-*<span style="color: red">**Warning**: Siesta is a work-in-progress and undergoing heavy development. The codebase is currently catching up with the docs and a new version is expected within the next few weeks. Feel free to get involved via the [gitter chat](https://gitter.im/mtford90/siesta), all feedback is appreciated.</span>*
-
 # Siesta
 
 <p class='brief'>
-    Siesta is an Object Graph framework for Javascript. Siesta makes it easy to model, consume and interact with relational data in the browser.
+    Siesta is an object graph & life cycle management framework for Javascript. In english, Siesta makes it easy to model, consume and interact with relational data in the browser.
 </p>
 
 <img src="main.png">
 
 The [object graph](docs.html#concepts-object-graph) provides a robust mechanism through which we can represent (possibly remote) resources in the browser, ensuring that each resource has a **single source of truth** - that is - only one object should ever represent a resource.
 
-One way to think about Siesta is in the context of traditional **O**bject **R**elational **M**appers. A traditional ORM maps rows from a relational database to objects in an object oriented language. Siesta maps objects to and from data transport formats (e.g. JSON) where the traditional SQL queries are replaced with HTTP requests to web services.
+One way to think about Siesta is in the context of traditional **O**bject **R**elational **M**appers. A traditional ORM maps rows from a relational database to objects in an object oriented language. Siesta maps objects to and from data transport formats and other Javascript objects.
 
-As well as providing the ability to map arbitrary data onto the object graph, siesta features a [declarative API](#http-descriptors) through which we describe the web services that we'd like to interact with. When data is received from these web services each object is mapped onto its corresponding local representation *including* any nested related objects.
-
-Furthermore, backed by PouchDB Siesta can take advantage of various [client-side storage](docs.html#storage) solutions in the browser.
+Backed by PouchDB Siesta can take advantage of various [client-side storage](docs.html#storage) solutions in the browser.
 
 Inspired by concepts from Functional Reactive Programming and the Flux architecture Siesta makes it easy to *react* to changes in the object graph through a query and event based system. This works well with frameworks that support data binding and other reactive mechanisms.
 
@@ -116,7 +112,7 @@ User.map(userData, function (user) {
 });
 ```
 
-We now have one local representation for each remote representation! Note that when interacting with web services we rarely need to map data ourselves. Siesta provides an API for sending and receiving HTTP requests and performing the mapping automatically, regardless of `Content-Type` etc. You can read more about this in the <a href="{{site.baseurl}}/remote_queries.html">documentation</a>.
+We now have one local representation for each remote representation!
 
 # Similar Projects
 
