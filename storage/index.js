@@ -48,6 +48,7 @@
                 if (serialised.hasOwnProperty(prop)) {
                     if (serialised[prop] instanceof Date) {
                         serialised.siesta_meta.dateFields.push(prop);
+                        serialised[prop] = serialised[prop].getTime();
                     }
                 }
             }
@@ -55,12 +56,10 @@
 
         function _processMeta(datum) {
             var meta = datum.siesta_meta || _initMeta();
-            // PouchDB <= 3.2.1 has a bug whereby date fields are not deserialised properly if you use db.query
-            // therefore we need to add extra info to the object for deserialising dates manually.
             meta.dateFields.forEach(function (dateField) {
                 var value = datum[dateField];
                 if (!(value instanceof Date)) {
-                    datum[dateField] = new Date(Date.parse(value));
+                    datum[dateField] = new Date(value);
                 }
             });
             delete datum.siesta_meta;

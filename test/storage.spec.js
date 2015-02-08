@@ -886,19 +886,18 @@ describe('storage', function () {
                     .then(function (m) {
                         siesta.save().then(function () {
                             db.get(m._id).then(function (data) {
-                                assert.ok(data.date instanceof Date);
+                                assert.ok(typeof data.date == 'number');
                                 done();
-                            });
+                            }).catch(done);
                         }).catch(done);
                     }).catch(done);
             });
 
             it('load', function (done) {
                 db.bulkDocs([
-                    {collection: 'MyCollection', model: 'myModel', date: new Date(), siesta_meta: {dateFields: ['date']}}
+                    {collection: 'MyCollection', model: 'myModel', date: (new Date()).getTime(), siesta_meta: {dateFields: ['date']}}
                 ], {include_docs: true}).then(function (objs) {
                     db.get(objs[0].id).then(function (obj) {
-                        assert.ok(obj.date instanceof Date, 'pouchdb should reload date objects');
                         var Collection = siesta.collection('MyCollection'),
                             Model = Collection.model('myModel', {
                                 attributes: ['date']
