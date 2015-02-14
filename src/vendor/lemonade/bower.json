@@ -1,0 +1,11 @@
+{
+    "name": "lemonade",
+    "version": "2",
+    "main": "css/lemonade.min.css",
+    "author": "Joe Richardson",
+    "ignore": [
+        "README.md",
+        "bower.json",
+        "index.html"
+    ]
+}
