@@ -39,7 +39,12 @@ gulp.task('build:docs', function() {
     return buildJade('./src/docs.jade', 'md/docs.md', 'docs.html');
 });
 
-gulp.task('build:jade', ['build:docs', 'build:landing'], function() {
+
+gulp.task('build:quick-start', function() {
+    return buildJade('./src/quickStart.jade', 'md/quickStart.md', 'quickStart.html');
+});
+
+gulp.task('build:jade', ['build:docs', 'build:landing', 'build:quick-start'], function() {
     return gulp.src(config.glob.jade)
         .pipe(connect.reload());
 });

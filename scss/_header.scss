@@ -1,6 +1,6 @@
 @import "palette";
 
-$button-margin: 10px;
+$button-margin: 4px;
 
 .custom-title-area {
   h1, h2, h3, h4, h5, h6 {
@@ -34,24 +34,19 @@ $button-margin: 10px;
         font-size: 15px;
         cursor: pointer;
         transition: background-color 0.1s ease-in;
-        &.documentation {
-          background-color: $light-blue;
-          margin-left: $button-margin / 2;
-          &:hover {
-            background-color: $hover-light-blue;
-          }
-        }
+        background-color: $light-blue;
         &.get-started {
-          background-color: $red;
           margin-right: $button-margin / 2;
-          &:hover {
-            background-color: $hover-red;
-          }
+        }
+        &.documentation {
+          margin-left: $button-margin / 2;
+        }
+        &:hover {
+          background-color: $hover-light-blue;
         }
         &:focus {
           outline: none;
         }
-
       }
     }
   }
