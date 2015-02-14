@@ -12,7 +12,7 @@ var gulp = require('gulp'),
 var config = new function() {
     this.glob = {
         jade: './src/**/*.jade',
-        md: './src/**/*.md',
+        md: './md/**/*.md',
         scss: './scss/**/*.scss'
     };
 };
