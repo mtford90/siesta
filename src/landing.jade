@@ -74,10 +74,9 @@ html
             code.
               Users
                 .on('new', function (user) {
-                    // Called on new users
-                 })
-              Users
-                .react({$or: {age__gte: 20, age__lte: 30}})
+                    // Called on user creation
+                })
+                .query({$or: {age__gte: 20, age__lte: 30}})
                 .on('*', function (change) {
                     // Called whenever result set changes
                     // as well as when elements change
