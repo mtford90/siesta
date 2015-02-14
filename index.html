@@ -1,74 +1,37 @@
-<!doctype html>
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width">
-
-    <title>Siesta</title>
-
-    <!-- Flatdoc -->
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/legacy.js'></script>
-    <script src='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/flatdoc.js'></script>
-
-    <!-- Flatdoc theme -->
-    <link href='theme.css' rel='stylesheet'>
-    <script src='https://cdn.rawgit.com/rstacruz/flatdoc/v0.9.0/theme-white/script.js'></script>
-
-    <!-- Meta -->
-    <meta content="Siesta" property="og:title">
-    <meta content="Your Project description goes here." name="description">
-
-    <!-- Initializer -->
-    <script>
-        Flatdoc.run({
-            fetcher: Flatdoc.file('INTRO.md')
-        });
-    </script>
-</head>
-<body role='flatdoc' class='no-literate'>
-<!--<div class="custom-title-area custom-title-card">-->
-    <!--<div class="custom-headline">-->
-        <!--<h1>Siesta</h1>-->
-        <!--<img src="main.png">-->
-        <!--<h5>Object Mapping for Javascript</h5>-->
-    <!--</div>-->
-
-<!--</div>-->
-<div class='header'>
-    <div class='left'>
-        <h1><a href="index.html">Siesta</a></h1>
-        <ul>
-            <li><a href='https://github.com/mtford90/siesta'>Github</a></li>
-            <li><a href='docs.html'>Documentation</a></li>
-        </ul>
-    </div>
-
-    <div class='right'>
-        <a href="https://gitter.im/mtford90/siesta?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img
-                src="https://camo.githubusercontent.com/da2edb525cde1455a622c58c0effc3a90b9a181c/68747470733a2f2f6261646765732e6769747465722e696d2f4a6f696e253230436861742e737667"
-                alt="Gitter" data-canonical-src="https://badges.gitter.im/Join%20Chat.svg" style="max-width:100%;"></a>
-    </div>
-</div>
-
-<div class='content-root'>
-    <div class='menubar'>
-        <div class='section'>
-            <a class='big button' href='download.html'>Download</a>
-            <!-- <a href='https://github.com/rstacruz/flatdoc'>View in GitHub</a> -->
-        </div>
-        <div class='menu section' role='flatdoc-menu'></div>
-    </div>
-    <div>
-
-    <div role='flatdoc-content' class='content'>
-    </div>
-        <a href="https://github.com/mtford90/siesta"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
-    </div>
-
-</div>
-
-
-
-</body>
-</html>
+<!DOCTYPE html><html><head><title>Siesta</title><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><meta content="Siesta" property="og:title"><meta content="Object Mapping for Javascript" name="description"><script src="vendor/jquery/dist/jquery.min.js"></script><script src="vendor/flatdoc/legacy.js"></script><script src="vendor/flatdoc/flatdoc.js"></script><link href="vendor/lemonade/css/lemonade.css" rel="stylesheet"><link href="vendor/font-awesome/css/font-awesome.css" rel="stylesheet"><link href="css/theme.css" rel="stylesheet"><link href="css/main.css" rel="stylesheet"></head><body class="landing"><div class="custom-title-area"><div class="icons"><a href="http://github.com/mtford90/siesta" tooltip="Github" class="github"><i class="fa fa-github-square"></i></a><a href="#" tooltip="Gitter" class="gitter"><img src="img/gitter-icon.png" class="gitter"></a></div><div class="custom-headline"><h1>Ogre.js</h1><h2>An Object Graph for Javascript</h2><div class="buttons"><button class="get-started">Quick Start</button><button class="documentation">Documentation</button></div></div></div><div class="container"><h2><div class="span">Ogre is an object graph & life cycle management framework. In english - Ogre presents a robust and powerful mechanism for managing your models.</div></h2></div><div class="container"><div class="frame"><div class="bit-3"><h3>Expressive</h3><pre><code>var House = collection.model('House', {
+  id: 'houseId',
+  attributes: ['address'],
+  relationships: {
+    owner: {
+      model: 'User',
+      reverse: 'houses'
+    }
+  }
+});</code></pre><p>Express complex models and the relationships between them.</p></div><div class="bit-3"><h3>Simple</h3><pre><code>House.graph({
+  houseId: 1,
+  address:'10 Westminster Drive',
+  owner: 10
+}).then(function (house) {
+  // ...
+});</code></pre><p>One function for creating and updating object by mapping arbitrary data onto the object graph.</p></div><div class="bit-3"><h3>Robust</h3><pre><code>house.owner = mike;
+console.log(mike.houses[0] == house); // true</code></pre><p>One object per resource. Automatically hook up related objects.</p></div></div><div class="frame"><div class="bit-3"><h3>Powerful</h3><pre><code>// Get all users aged between 20 and 30
+Users
+  .query({$or: {age__gte: 20, age__lte: 30}})
+  .then(function (users) {
+     // ...
+  });f</code></pre><p>Query your app's object graph in interesting and powerful ways,</p></div><div class="bit-3"><h3>Events</h3><pre><code>Users
+  .on('new', function (user) {
+      // Called on new users
+   })
+Users
+  .react({$or: {age__gte: 20, age__lte: 30}})
+  .on('*', function (change) {
+      // Called whenever result set changes
+      // as well as when elements change
+   });</code></pre><p>React to changes in the object graph,</p></div><div class="bit-3"><h3>Storage</h3><pre><code>Users
+  .graph([
+      {id: 1, username: 'mike'},
+      {id: 2, username: 'bob'}
+   ]).then(function (users) {
+      Users.save();
+   });</code></pre><p>Backed by PouchDB allowing you to store the object graph in a multitude of browser-storage solutions.</p></div></div></div></body><script src="js/highlight.js"></script></html>

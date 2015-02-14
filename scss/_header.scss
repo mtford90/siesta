@@ -1,0 +1,77 @@
+@import "palette";
+
+$button-margin: 10px;
+
+.custom-title-area {
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0
+  }
+  border-bottom: 10px solid $light-blue;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background-color: $dark-blue;
+  .custom-headline {
+    color: $very-light-grey;
+    font-family: $font;
+    h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    h2 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 23px;
+    }
+    .buttons {
+      button {
+        color: $very-light-grey;
+        border-style: none;
+        padding: 15px;
+        border-radius: 5px;
+        width: 150px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background-color 0.1s ease-in;
+        &.documentation {
+          background-color: $light-blue;
+          margin-left: $button-margin / 2;
+          &:hover {
+            background-color: $hover-light-blue;
+          }
+        }
+        &.get-started {
+          background-color: $red;
+          margin-right: $button-margin / 2;
+          &:hover {
+            background-color: $hover-red;
+          }
+        }
+        &:focus {
+          outline: none;
+        }
+
+      }
+    }
+  }
+  .icons {
+    position: absolute;
+    right: 10px;
+    top: -5px;
+    a {
+      margin: 0;
+      padding: 0;
+    }
+    .github {
+      font-size: 40px;
+      color: $very-light-grey
+    }
+    .gitter {
+      width: 36px;
+      margin-left: 5px;
+      position: relative;
+      top: 2px;
+    }
+  }
+}

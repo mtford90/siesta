@@ -1070,20 +1070,7 @@ code .comment {
     line-height: 1.7;
 }
 
-.custom-title-card h1 {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 3.3em;
-    font-weight: 700;
-    line-height: 1.1;
-    color: rgb(37, 41, 52);
-}
 
-.custom-title-card h5 {
-    font-family: montserrat, sans-serif;
-    font-weight: bold;
-    color: rgb(37, 41, 52);
-    font-size: 1.8em;
-}
 
 .custom-title-card h5 span {
     display: inline-block;

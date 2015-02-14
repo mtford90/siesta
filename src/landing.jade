@@ -1,0 +1,98 @@
+doctype html
+html
+  head
+    title Siesta
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    meta(name='viewport', content='width=device-width')
+    meta(content='Siesta', property='og:title')
+    meta(content='Object Mapping for Javascript', name='description')
+    script(src='vendor/jquery/dist/jquery.min.js')
+    script(src='vendor/flatdoc/legacy.js')
+    script(src='vendor/flatdoc/flatdoc.js')
+    link(href='vendor/lemonade/css/lemonade.css', rel='stylesheet')
+    link(href='vendor/font-awesome/css/font-awesome.css', rel='stylesheet')
+    link(href='css/theme.css', rel='stylesheet')
+    link(href='css/main.css', rel='stylesheet')
+  body.landing
+    include header
+    .container
+      h2
+        .span Ogre is an object graph & life cycle management framework. In english - Ogre presents a robust and powerful mechanism for managing your models.
+    .container
+      .frame
+        .bit-3
+          h3 Expressive
+          pre
+            code.
+              var House = collection.model('House', {
+                id: 'houseId',
+                attributes: ['address'],
+                relationships: {
+                  owner: {
+                    model: 'User',
+                    reverse: 'houses'
+                  }
+                }
+              });
+          p.
+            Express complex models and the relationships between them.
+        .bit-3
+          h3 Simple
+          pre
+            code.
+              House.graph({
+                houseId: 1,
+                address:'10 Westminster Drive',
+                owner: 10
+              }).then(function (house) {
+                // ...
+              });
+          p One function for creating and updating object by mapping arbitrary data onto the object graph.
+        .bit-3
+          h3 Robust
+          pre
+            code.
+              house.owner = mike;
+              console.log(mike.houses[0] == house); // true
+          p One object per resource. Automatically hook up related objects.
+      .frame
+        .bit-3
+          h3 Powerful
+          pre
+            code.
+              // Get all users aged between 20 and 30
+              Users
+                .query({$or: {age__gte: 20, age__lte: 30}})
+                .then(function (users) {
+                   // ...
+                });f
+          p Query your app's object graph in interesting and powerful ways,
+        .bit-3
+          h3 Events
+          pre
+            code.
+              Users
+                .on('new', function (user) {
+                    // Called on new users
+                 })
+              Users
+                .react({$or: {age__gte: 20, age__lte: 30}})
+                .on('*', function (change) {
+                    // Called whenever result set changes
+                    // as well as when elements change
+                 });
+          p React to changes in the object graph,
+        .bit-3
+          h3 Storage
+          pre
+            code.
+              Users
+                .graph([
+                    {id: 1, username: 'mike'},
+                    {id: 2, username: 'bob'}
+                 ]).then(function (users) {
+                    Users.save();
+                 });
+          p Backed by PouchDB allowing you to store the object graph in a multitude of browser-storage solutions.
+  script(src='js/highlight.js')

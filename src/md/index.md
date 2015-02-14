@@ -4,7 +4,7 @@
     Siesta is an object graph & life cycle management framework for Javascript. In english, Siesta makes it easy to model, consume and interact with relational data in the browser.
 </p>
 
-<img src="main.png">
+<img src="img/main.png">
 
 The [object graph](docs.html#concepts-object-graph) provides a robust mechanism through which we can represent (possibly remote) resources in the browser, ensuring that each resource has a **single source of truth** - that is - only one object should ever represent a resource.
 

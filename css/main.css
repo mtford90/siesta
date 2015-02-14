@@ -1,0 +1,98 @@
+.landing h2 {
+  font-size: 16px; }
+.landing h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px; }
+.landing code, .landing pre {
+  height: 225px; }
+.landing p {
+  padding: 10px; }
+.landing .frame {
+  margin-bottom: 20px; }
+
+.container {
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-top: 30px; }
+
+.custom-title-area {
+  border-bottom: 10px solid #4a7db3;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background-color: #242a33; }
+  .custom-title-area h1, .custom-title-area h2, .custom-title-area h3, .custom-title-area h4, .custom-title-area h5, .custom-title-area h6 {
+    margin: 0;
+    padding: 0; }
+  .custom-title-area .custom-headline {
+    color: #d7dae3;
+    font-family: 'Open Sans', sans-serif; }
+    .custom-title-area .custom-headline h1 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 15px; }
+    .custom-title-area .custom-headline h2 {
+      font-size: 24px;
+      font-weight: 500;
+      margin-bottom: 23px; }
+    .custom-title-area .custom-headline .buttons button {
+      color: #d7dae3;
+      border-style: none;
+      padding: 15px;
+      border-radius: 5px;
+      width: 150px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background-color 0.1s ease-in; }
+      .custom-title-area .custom-headline .buttons button.documentation {
+        background-color: #4a7db3;
+        margin-left: 5px; }
+        .custom-title-area .custom-headline .buttons button.documentation:hover {
+          background-color: #416a99; }
+      .custom-title-area .custom-headline .buttons button.get-started {
+        background-color: #af4c58;
+        margin-right: 5px; }
+        .custom-title-area .custom-headline .buttons button.get-started:hover {
+          background-color: #99454c; }
+      .custom-title-area .custom-headline .buttons button:focus {
+        outline: none; }
+  .custom-title-area .icons {
+    position: absolute;
+    right: 10px;
+    top: -5px; }
+    .custom-title-area .icons a {
+      margin: 0;
+      padding: 0; }
+    .custom-title-area .icons .github {
+      font-size: 40px;
+      color: #d7dae3; }
+    .custom-title-area .icons .gitter {
+      width: 36px;
+      margin-left: 5px;
+      position: relative;
+      top: 2px; }
+
+pre > code {
+  background: #f3f6fb;
+  border: solid 1px #e7eaee;
+  border-top: solid 1px #dbdde2;
+  border-left: solid 1px #e2e5e9;
+  display: block;
+  padding: 10px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  overflow: auto;
+  font-family: 'Source Code Pro', monospace; }
+
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1;
+  font-kerning: normal;
+  font-family: 'Open Sans', sans-serif; }
+
+.bold {
+  font-weight: bold; }

@@ -3,3 +3,4 @@ Gemfile.lock
 node_modules
 npm-debug.log
 .idea
+vendor

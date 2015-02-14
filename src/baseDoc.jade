@@ -1,0 +1,23 @@
+doctype html
+html
+  head
+    title Siesta
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge,chrome=1')
+    meta(name='viewport', content='width=device-width')
+    meta(content='Siesta', property='og:title')
+    meta(content='Object Mapping for Javascript', name='description')
+    script(src='vendor/jquery/dist/jquery.min.js')
+    script(src='vendor/flatdoc/legacy.js')
+    script(src='vendor/flatdoc/flatdoc.js')
+    script(src='vendor/flatdoc/theme-white/script.js')
+    script(type='text/javascript').
+      Flatdoc.run({
+        fetcher: Flatdoc.file("!{markdown}")
+      });
+    link(href='css/theme.css', rel='stylesheet')
+    link(href='css/main.css', rel='stylesheet')
+  body.no-literate(role='flatdoc')
+    include header
+    .content-root
+      block content
