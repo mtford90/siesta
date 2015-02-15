@@ -1,3 +1,8 @@
+.landing .description {
+  margin-top: 20px;
+  margin-bottom: 20px; }
+.landing .container {
+  margin-bottom: 20px; }
 .landing h2 {
   font-size: 16px; }
 .landing h3 {
@@ -12,6 +17,7 @@
   margin-bottom: 20px; }
 .landing pre > code {
   background: #f3f6fb;
+  font-size: 11px;
   border: solid 1px #e7eaee;
   border-top: solid 1px #dbdde2;
   border-left: solid 1px #e2e5e9;
@@ -21,11 +27,6 @@
   border-radius: 2px;
   overflow: auto;
   font-family: 'Source Code Pro', monospace; }
-
-.container {
-  margin-left: 100px;
-  margin-right: 100px;
-  margin-top: 30px; }
 
 .custom-title-area {
   border-bottom: 10px solid #3ac;

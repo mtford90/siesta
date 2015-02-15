@@ -1,4 +1,11 @@
 .landing {
+  .description {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .container {
+    margin-bottom: 20px;
+  }
   h2 {
     font-size: 16px;
   }
@@ -18,6 +25,7 @@
   }
   pre > code {
     background: #f3f6fb;
+    font-size: 11px;
     border: solid 1px #e7eaee;
     border-top: solid 1px #dbdde2;
     border-left: solid 1px #e2e5e9;

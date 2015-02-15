@@ -19,8 +19,7 @@
     "bootstrap": "~3.3.2",
     "skeleton": "~2.0.4",
     "lemonade": "*",
-    "font-awesome": "~4.3.0",
-    "rainbow": "~1.1.9"
+    "font-awesome": "~4.3.0"
   },
   "devDependencies": {
     "bootstrap": "~3.3.2"
