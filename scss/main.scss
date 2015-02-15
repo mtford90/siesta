@@ -2,8 +2,6 @@
 @import "landing";
 @import "header";
 
-
-
 html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -13,10 +11,7 @@ html, body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   font-family: $font;
-
 }
-
-
 
 .bold {
   font-weight: bold;

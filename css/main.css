@@ -3,30 +3,37 @@
   margin-bottom: 20px; }
 .landing .container {
   margin-bottom: 20px; }
-.landing h2 {
-  font-size: 16px; }
+@media (max-width: 767px) {
+  .landing h2 {
+    font-size: 12px; } }
+@media (min-width: 480px) {
+  .landing h2 {
+    font-size: 16px; } }
 .landing h3 {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px; }
-.landing code, .landing pre {
-  height: 225px; }
-.landing p {
-  padding: 10px; }
-.landing .frame {
-  margin-bottom: 20px; }
-.landing pre > code {
+.landing pre code {
   background: #f3f6fb;
-  font-size: 11px;
   border: solid 1px #e7eaee;
-  border-top: solid 1px #dbdde2;
-  border-left: solid 1px #e2e5e9;
   display: block;
   padding: 10px;
   -webkit-border-radius: 2px;
   border-radius: 2px;
   overflow: auto;
   font-family: 'Source Code Pro', monospace; }
+  @media (max-width: 767px) {
+    .landing pre code {
+      font-size: 10px;
+      height: 180px; } }
+  @media (min-width: 480px) {
+    .landing pre code {
+      font-size: 11px;
+      height: 192px; } }
+.landing p {
+  padding: 10px; }
+.landing .frame {
+  margin-bottom: 20px; }
 
 .custom-title-area {
   border-bottom: 10px solid #3ac;
@@ -40,23 +47,40 @@
     color: #d7dae3;
     font-family: 'Open Sans', sans-serif; }
     .custom-title-area .custom-headline h1 {
-      font-size: 42px;
       font-weight: 700;
       margin-bottom: 15px; }
+      @media (max-width: 767px) {
+        .custom-title-area .custom-headline h1 {
+          font-size: 32px; } }
+      @media (min-width: 480px) {
+        .custom-title-area .custom-headline h1 {
+          font-size: 42px; } }
     .custom-title-area .custom-headline h2 {
-      font-size: 24px;
       font-weight: 500;
       margin-bottom: 23px; }
+      @media (max-width: 767px) {
+        .custom-title-area .custom-headline h2 {
+          font-size: 14px; } }
+      @media (min-width: 480px) {
+        .custom-title-area .custom-headline h2 {
+          font-size: 24px; } }
     .custom-title-area .custom-headline .buttons button {
       color: #d7dae3;
       border-style: none;
-      padding: 15px;
       border-radius: 5px;
-      width: 150px;
-      font-size: 15px;
       cursor: pointer;
       transition: background-color 0.1s ease-in;
       background-color: #3ac; }
+      @media (max-width: 767px) {
+        .custom-title-area .custom-headline .buttons button {
+          padding: 10px;
+          font-size: 13px;
+          width: 120px; } }
+      @media (min-width: 480px) {
+        .custom-title-area .custom-headline .buttons button {
+          padding: 15px;
+          font-size: 15px;
+          width: 150px; } }
       .custom-title-area .custom-headline .buttons button.get-started {
         margin-right: 2px; }
       .custom-title-area .custom-headline .buttons button.documentation {

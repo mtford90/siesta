@@ -1,3 +1,5 @@
+@import "responsive";
+
 .landing {
   .description {
     margin-top: 20px;
@@ -7,15 +9,37 @@
     margin-bottom: 20px;
   }
   h2 {
-    font-size: 16px;
+    @include atOrBelowMobileSize {
+      font-size: 12px;
+    }
+    @include aboveMobileSize {
+      font-size: 16px;
+    }
   }
   h3 {
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 10px;
   }
-  code, pre {
-    height: 225px;
+  pre {
+    code {
+      background: #f3f6fb;
+      @include atOrBelowMobileSize {
+        font-size: 10px;
+        height: 180px;
+      }
+      @include aboveMobileSize {
+        font-size: 11px;
+        height: 192px;
+      }
+      border: solid 1px #e7eaee;
+      display: block;
+      padding: 10px;
+      -webkit-border-radius: 2px;
+      border-radius: 2px;
+      overflow: auto;
+      font-family: 'Source Code Pro', monospace;
+    }
   }
   p {
     padding: 10px;
@@ -23,17 +47,5 @@
   .frame {
     margin-bottom: 20px;
   }
-  pre > code {
-    background: #f3f6fb;
-    font-size: 11px;
-    border: solid 1px #e7eaee;
-    border-top: solid 1px #dbdde2;
-    border-left: solid 1px #e2e5e9;
-    display: block;
-    padding: 10px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    overflow: auto;
-    font-family: 'Source Code Pro', monospace;
-  }
+
 }
