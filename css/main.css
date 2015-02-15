@@ -1,3 +1,6 @@
+@import url("//fonts.googleapis.com/css?family=Montserrat:700|Open+Sans:300");
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700);
 .landing {
   display: flex;
   min-height: 100vh;

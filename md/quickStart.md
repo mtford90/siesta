@@ -1,4 +1,4 @@
-# Getting Started
+# Quick Start
 
 You can get started with Siesta by manually including it within your project or by forking one of the boilerplate projects.
 
@@ -45,3 +45,10 @@ window.PouchDB = require('pouchdb');
 At the moment the only example project is the ReactJS/Siesta TodoMVC implementation, the demo of which is [here](http://mtford.co.uk/siesta-reactjs-todomvc/) and source [here](https://github.com/mtford90/siesta-reactjs-todomvc).
 
 Various web apps and hybrid mobile apps are currently under development using Siesta and will be listed here upon completion.
+
+## Boilerplates
+
+Coming soon for your favourite framework. In the works:
+
+* ReactJS
+* AngularJS

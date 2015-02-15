@@ -1,23 +1,94 @@
+# Why Siesta?
+
+## Single Source of Truth
+
+A resource has a single source of truth if and only if one object represents that resource.
+
+Having multiple objects representing the same thing leads to an entire class of errors that can wreak havoc on consistency across your app.
+
+These duplicates are common when your app interacts with APIs.
+
+For example if we downloaded a todo from `/todos/576`:
+
+```js
+var todo = {
+  id: 567
+  description: 'Go to the shop.',
+  user: {
+    username: 'mike',
+    id: 1
+  }
+};
+```
+
+And a user from `/user/23`:
+
+```js
+var user = {
+  username: 'mike',
+  id: 23
+};
+```
+
+We now have two objects representing the same user: `user` and `todo.user`.
+
+This is a trivial example but it illustrates the point. Using the Siesta object graph solves this issue:
+
+```js
+MyCollection.graph({
+  User: user,
+  Todo: todo
+}).then(function (models) {
+  assert(models.User[0] === models.Todo[0].user);
+});
+```
+
+## Storage
+
+Moving between objects stored on disk (e.g. browser storage) and those in memory should be entirely transparent.
+
+Siesta's faulting mechanism loads data from disk only as you need it. And what's more, backed by [PouchDB](http://pouchdb.com) Siesta supports a multitude of browser storage solutions.
+
+## Serialisation
+
+It should be easy to move between raw data e.g. data transfer formats like JSON and local objects that represent them. With siesta there is only way to create and update objects: the object mapping mechanism which  is made available by the `graph` function.
+
+```js
+var data = [{id: 5, username:'mike'}, {id: 6, username:'john'}];
+User.graph(data)
+  .then(function(users) {
+    // Data is mapped onto either new or existing users depending on the id field.
+  });
+```
+
+Going the other way is easy too.
+
+```js
+User.one({username: 'mike')
+  .then(function (user) {
+    var data = user.serialise();
+    // ...
+  });
+```
+
+And it's easy to define your own serialisation mechanisms.
+
+```js
+var User = myCollection.model('User', {
+  serialise: function (user) {
+    return {
+      username: user.username,
+      todos: user.todos.map(function (todos) {
+        return todo.id;
+      });
+    }
+  }
+});
+```
 
 # Concepts
 
 Before using this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
-
-## Why Siesta?
-
-This section is an attempt to explain the problems that Siesta is trying to solve.
-
-### Single Source of Truth
-
-A resource has a single source of truth if and only if one object represents that resource. For example if
-
-### Storage
-
-Moving between locally stored objects and those in memory should be entirely transparent.
-
-### Serialisation
-
-It should be easy to move between raw data e.g. data transfer formats like JSON and local objects that represent them. With siesta there is n
 
 ## Model
 
