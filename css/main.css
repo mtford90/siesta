@@ -32,7 +32,7 @@
       font-weight: bold; }
       @media (max-width: 767px) {
         .landing .site-content h3 {
-          font-size: 22px;
+          font-size: 21px;
           margin-bottom: 6px; } }
       @media (min-width: 480px) {
         .landing .site-content h3 {
@@ -49,7 +49,7 @@
       font-family: 'Source Code Pro', monospace; }
       @media (max-width: 767px) {
         .landing .site-content pre code {
-          font-size: 12.5px; } }
+          font-size: 11px; } }
       @media (min-width: 480px) {
         .landing .site-content pre code {
           font-size: 14px;
@@ -193,8 +193,13 @@ html, body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   font-family: 'Open Sans', sans-serif;
-  height: inherit;
-  font-size: 16px; }
+  height: inherit; }
+  @media (max-width: 767px) {
+    html, body {
+      font-size: 14px; } }
+  @media (min-width: 480px) {
+    html, body {
+      font-size: 16px; } }
 
 .bold {
   font-weight: bold; }

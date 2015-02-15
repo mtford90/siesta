@@ -2,6 +2,7 @@
 @import "landing";
 @import "header";
 @import "footer";
+@import "responsive";
 @import "docs";
 
 a {
@@ -25,7 +26,12 @@ html, body {
   font-kerning: normal;
   font-family: $font;
   height: inherit;
-  font-size: 16px;
+  @include atOrBelowMobileSize {
+    font-size: 14px;
+  }
+  @include aboveMobileSize {
+    font-size: 16px;
+  }
 }
 
 .bold {

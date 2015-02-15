@@ -49,7 +49,7 @@
     }
     h3 {
       @include atOrBelowMobileSize {
-        font-size: 22px;
+        font-size: 21px;
         margin-bottom: 6px;
       }
       @include aboveMobileSize {
@@ -62,7 +62,7 @@
       code {
         background: #f3f6fb;
         @include atOrBelowMobileSize {
-          font-size: 12.5px;
+          font-size: 11px;
         }
         @include aboveMobileSize {
           font-size: 14px;
