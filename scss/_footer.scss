@@ -1,0 +1,14 @@
+@import "palette";
+@import "responsive";
+
+footer {
+  padding-top: 20px;
+  border-top: 10px solid $light-blue;
+  background-color: $dark-blue;
+  z-index: 5;
+  color: $very-light-grey;
+  padding-bottom: 20px;
+  h2 {
+    font-size: 20px;
+  }
+}

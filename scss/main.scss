@@ -1,7 +1,19 @@
 @import "palette";
 @import "landing";
 @import "header";
+@import "footer";
 @import "docs";
+
+a {
+  color: $light-blue;
+  cursor: pointer;
+  &:visited {
+    color: $light-blue;
+  }
+  &:hover {
+    color: $hover-light-blue;
+  }
+}
 
 html, body {
   -webkit-font-smoothing: antialiased;
@@ -12,6 +24,7 @@ html, body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   font-family: $font;
+  height: inherit;
 }
 
 .bold {

@@ -16,98 +16,133 @@ html
     link(href='css/theme.css', rel='stylesheet')
     link(href='css/main.css', rel='stylesheet')
   body.landing
-    include header
-    .container.description
-      .row
-        .col-md-12
-          h2
-            p
-              span Siesta is an object graph & life cycle management framework.
-              span In english - Siesta presents a robust and powerful mechanism for managing your models in the browser taking inspiration from awesome frameworks such as Apple's
-              a(href='https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html') CoreData.
-            p
-              span Siesta is an attempt to address various
-              a(href='docs.html#concepts-problems') problems
-              span when handling data in the browser, the most important being the
-              a(href='docs.html#concepts-problems-single-source-of-truth') single source of truth.
-    .container
-      .row
-        .col-lg-4.col-md-6
-          h3 Expressive
-          pre
-            code.
-              var House = collection.model('House', {
-                id: 'houseId',
-                attributes: ['address'],
-                relationships: {
-                  owner: {
-                    model: 'User',
-                    reverse: 'houses'
+    header
+      include header
+    main.site-content
+      .container.description
+        .row
+          .col-md-12
+            h2
+              p
+                span Siesta is an object graph & life cycle management framework.
+                span In english - Siesta presents a robust and powerful mechanism for managing your models in the browser taking inspiration from awesome frameworks such as Apple's
+                a(href='https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html') CoreData.
+              p
+                span Siesta is an attempt to address various
+                a(href='docs.html#concepts-problems') problems
+                span when handling data in the browser, the most important being the
+                a(href='docs.html#concepts-problems-single-source-of-truth') single source of truth.
+      .container
+        .row
+          .col-lg-4.col-md-6
+            h3 Expressive
+            pre
+              code.
+                var House = collection.model('House', {
+                  id: 'houseId',
+                  attributes: ['address'],
+                  relationships: {
+                    owner: {
+                      model: 'User',
+                      reverse: 'houses'
+                    }
                   }
-                }
-              });
-          p.
-            Express complex models and the relationships between them.
-        .col-lg-4.col-md-6
-          h3 Simple
-          pre
-            code.
-              House.graph({
-                houseId: 1,
-                address:'10 Westminster Drive',
-                owner: 10
-              }).then(function (house) {
-                // ...
-              });
-          p One function for creating and updating object by mapping arbitrary data onto the object graph.
-        .col-lg-4.col-md-6
-          h3 Single Source of Truth
-          pre
-            code.
-              User.graph([
-                {id: 5, username: 'mike'},
-                {id: 5, email: 'mtford@gmail.com')
-              ]).then(function (users) {
-                console.log(users[0] === users[1]); // True
-                house.owner = mike;
-                console.log(mike.houses[0] === house); // true
-              });
-          p One object per resource. Automatically hook up related objects.
-        .col-lg-4.col-md-6
-          h3 Powerful Queries
-          pre
-            code.
-              // Get all users aged between 20 and 30
-              Users
-                .query({$or: {age__gte: 20, age__lte: 30}})
-                .then(function (users) {
-                   // ...
-                });f
-          p Query your app's object graph in interesting and powerful ways.
-        .col-lg-4.col-md-6
-          h3 Reactive Programming
-          pre
-            code.
-              Users
-                .on('new', function (user) {
-                    // Called on user creation
-                })
-                .query({$or: {age__gte: 20, age__lte: 30}})
-                .on('*', function (change) {
-                    // Called whenever result set changes
-                    // as well as when elements change
-                 });
-          p React to changes in the object graph.
-        .col-lg-4.col-md-6
-          h3 Local Persistence
-          pre
-            code.
-              Users
-                .graph([
-                    {id: 1, username: 'mike'},
-                    {id: 2, username: 'bob'}
-                 ]).then(function (users) {
-                    Users.save();
-                 });
-          p Backed by PouchDB allowing you to store the object graph in a multitude of browser-storage solutions.
+                });
+            p.
+              Express complex models and the relationships between them.
+          .col-lg-4.col-md-6
+            h3 Simple
+            pre
+              code.
+                House.graph({
+                  houseId: 1,
+                  address:'10 Westminster Drive',
+                  owner: 10
+                }).then(function (house) {
+                  // ...
+                });
+            p One function for creating and updating object by mapping arbitrary data onto the object graph.
+          .col-lg-4.col-md-6
+            h3 Single Source of Truth
+            pre
+              code.
+                User.graph([
+                  {id: 5, username: 'mike'},
+                  {id: 5, email: 'mtford@gmail.com')
+                ]).then(function (users) {
+                  console.log(users[0] === users[1]); // True
+                  house.owner = mike;
+                  console.log(mike.houses[0] === house); // true
+                });
+            p One object per resource. Automatically hook up related objects.
+          .col-lg-4.col-md-6
+            h3 Powerful Queries
+            pre
+              code.
+                // Get all users aged between 20 and 30
+                Users
+                  .query({$or: {age__gte: 20, age__lte: 30}})
+                  .then(function (users) {
+                     // ...
+                  });f
+            p Query your app's object graph in interesting and powerful ways.
+          .col-lg-4.col-md-6
+            h3 Reactive Programming
+            pre
+              code.
+                Users
+                  .on('new', function (user) {
+                      // Called on user creation
+                  })
+                  .query({$or: {age__gte: 20, age__lte: 30}})
+                  .on('*', function (change) {
+                      // Called whenever result set changes
+                      // as well as when elements change
+                   });
+            p React to changes in the object graph.
+          .col-lg-4.col-md-6
+            h3 Local Persistence
+            pre
+              code.
+                Users
+                  .graph([
+                      {id: 1, username: 'mike'},
+                      {id: 2, username: 'bob'}
+                   ]).then(function (users) {
+                      Users.save();
+                   });
+            p Backed by PouchDB allowing you to store the object graph in a multitude of browser-storage solutions.
+    footer
+      .container
+        .row
+          .col-lg-4
+            h2 Learn
+            ul
+              li
+                a Getting Started
+              li
+                a Concepts
+              li
+                a Documentation
+          .col-lg-4
+            h2 Discuss
+            ul
+              li
+                a Gitter
+              li
+                a IRC
+              li
+                a Twitter
+          .col-lg-4
+            h2 Contribute
+            ul
+              li
+                a Contributing Guide
+              li
+                a Issues
+              li
+                a Trello
+              li
+                a Github
+
   script(src='js/highlight.js')

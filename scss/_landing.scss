@@ -1,63 +1,70 @@
 @import "responsive";
 
 .landing {
-  .description {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    p {
-      span {
-        &::before {
-          content: ' ';
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+
+  .site-content {
+    flex: 1;
+    .description {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      p {
+        span {
+          &::before {
+            content: ' ';
+          }
+        }
+        a {
+          &::before {
+            content: ' ';
+          }
         }
       }
-      a {
-        &::before {
-          content: ' ';
-        }
-      }
     }
-  }
-  .container {
-    margin-bottom: 20px;
-  }
-  h2 {
-    @include atOrBelowMobileSize {
-      font-size: 12px;
+    .container {
+      margin-bottom: 20px;
     }
-    @include aboveMobileSize {
-      font-size: 16px;
-    }
-  }
-  h3 {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  pre {
-    code {
-      background: #f3f6fb;
+    h2 {
       @include atOrBelowMobileSize {
-        font-size: 10px;
-        height: 180px;
+        font-size: 12px;
       }
       @include aboveMobileSize {
-        font-size: 11px;
-        height: 192px;
+        font-size: 16px;
       }
-      border: solid 1px #e7eaee;
-      display: block;
-      padding: 10px;
-      -webkit-border-radius: 2px;
-      border-radius: 2px;
-      overflow: auto;
-      font-family: 'Source Code Pro', monospace;
     }
-  }
-  p {
-    padding: 10px;
-  }
-  .frame {
-    margin-bottom: 20px;
+    h3 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    pre {
+      code {
+        background: #f3f6fb;
+        @include atOrBelowMobileSize {
+          font-size: 10px;
+          height: 180px;
+        }
+        @include aboveMobileSize {
+          font-size: 11px;
+          height: 192px;
+        }
+        border: solid 1px #e7eaee;
+        display: block;
+        padding: 10px;
+        -webkit-border-radius: 2px;
+        border-radius: 2px;
+        overflow: auto;
+        font-family: 'Source Code Pro', monospace;
+      }
+    }
+    p {
+      padding: 10px;
+    }
+    .frame {
+      margin-bottom: 20px;
+    }
   }
 
 }
