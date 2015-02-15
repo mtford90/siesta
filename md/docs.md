@@ -497,6 +497,23 @@ var Model = Collection.model('Model', {
 });
 ```
 
+### serialise
+
+`serialise` allows overriding the default serialisation mechanism. By default `depth=1` serialisation is used whereby all related objects are serialised into their unique identifier.
+
+```js
+var Model = Collection.model('Model', {
+	serialise: function (instance) {
+      return {
+        instanceId: instance.id,
+        related: instance.related.map(function (r) {
+          return r.name;
+        });
+      }
+	}
+});
+```
+
 ## Inheritance
 
 Siesta supports model inheritance through which a child can inherit all attributes, relationships, methods etc.
@@ -538,7 +555,7 @@ JavascriptEngineer
 
 In siesta, model instances are created and updated during the process of [mapping](#concepts-object-mapping). This refers to mapping data onto the object graph and is explained [here](#concepts-object-mapping).
 
-When data is mapped onto the object graph a new model instance will be created if, and only if an instance does not exist with the `id` supplied in the mapped data.
+When data is mapped onto the object graph a new model instance will be created if and only if an instance does not exist with the `id` supplied in the mapped data.
 
 ```js
 // Map a single object.
@@ -564,6 +581,37 @@ User.graph([
     models.forEach(function (m) {
         console.log(m.login);
     });
+});
+```
+
+### Collection Level
+
+It's also possible to map data at the collection level.
+
+```js
+MyCollection.graph({
+    User: [{id: 5, username: 'mike'}, {id: 6, username: 'john'}],
+    Email: {subject: 'An email', body: 'An email body', user: 5}
+}).then(function (result) {
+    var mappedUsers = result.User,
+        mappedEmails = result.Email;
+});
+```
+
+### Siesta Level
+
+Similarly it's also possible to map at the `Siesta` level.
+
+```js
+Siesta.graph({
+    MyCollection: {
+        User: [{id: 5, username: 'mike'}, {id: 6, username: 'john'}],
+        Email: {subject: 'An email', body: 'An email body', user: 5}
+    },
+    // ...
+}).then(function (result) {
+    var mappedUsers = result.MyCollection.User,
+        mappedEmails = result.MyCollection.Email;
 });
 ```
 
@@ -602,34 +650,34 @@ You can listen to model change events on the `Collection`, `Model` and `ModelIns
 
 ```js
 // Listen to events related to model instances in a particular collection
-Collection.listen(function (e) {
+Collection.on('*', function (e) {
     // ...
 });
 
 // Listen to events related to instances of particular models
-Model.listen(function (e) {
+Model.on('*', function (e) {
     // ...
 });
 
 // Listen to events related to particular instances
 Model.graph({attr: 'something'})
     .then(function (instance) {
-        instance.listen(function (e) {
+        instance.on('*', function (e) {
 
         });
     });
 
 // Listen to just one event before canceling the listener automatically.
-something.listenOnce(function (e) {
+something.once(function (e) {
     // ...
 });
 ```
 
-`listen` returns a function which you can call to stop listening.
+`on` returns a function which you can call to stop listening.
 
 ```js
-var cancelListen = something.listen(function (e) { /* ... */ });
-cancelListen();
+var cancel = something.on(function (e) { /* ... */ });
+cancel();
 ```
 
 ### Types
@@ -638,10 +686,10 @@ There are four different event types.
 
 | Event | Description | Example |
 | ----- | ----------- | ------- |
-|   Set   | Set events are     | ```modelInstance.attr = 1;``` |
-|   Splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
-|   New   |  Emitted when new model instances are created              | `Model.graph({id: 2, desc: 'A new model instance!'});` |
-|   Remove   |  Emitted when model instances are removed from the object graph              | `myInstance.remove()` |
+|   set   | Set events are     | ```modelInstance.attr = 1;``` |
+|   splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
+|   new   |  Emitted when new model instances are created              | `Model.graph({id: 2, desc: 'A new model instance!'});` |
+|   remove |  Emitted when model instances are removed from the object graph              | `myInstance.remove()` |
 
 ### The Event Object
 
@@ -685,10 +733,10 @@ var Collection = siesta.collection('Collection'),
     });
 
 Model.graph({x: 1}, function (err, instance) {
-    instance.listenOnce(function (e) {
+    instance.once('customEvent', function (e) {
         assert.equal(e.type == 'customEvent');
     });
-    instance.listen('customEvent', function (e) {
+    instance.on('customEvent', function (e) {
         assert.equal(e.type == 'customEvent');
     });
     instance.emit('customEvent', {key: 'value'})
@@ -730,7 +778,7 @@ var Collection = siesta.collection('Collection'),
 Model.one().then(function (instance) {
     instance.x = 1;
     instance.y = 1;
-    instance.listen(function (x) {
+    instance.on('*', function (x) {
         // This will never happen.
         assert.equal(x.field, 'z');
     });
@@ -813,10 +861,10 @@ It's also possible to use boolean logic when querying local data.
 
 ```js
 Repo.query({
-	$or: [
-		{user.age__lt: 20},
-		{user.age__gt: 40}
-	],
+	$or: {
+	  'user.age__lt': 20,
+	  'user.age__gt': 40
+	},
 	{
 		name: 'michael'
 	}
@@ -934,182 +982,173 @@ query = Repo.query({stars__gte: 1000})
 Result sets are *immutable* and hence cannot be modified. To convert a result set into a regular array simply call `asArray`.
 
 ```js
-var query;
-query = Repo.query({stars__gte: 1000})
-            .then(function (repoResultSet) {
-                var mutableArrayOfRepos = repoResultSet.asArray();
-            });
+Repo.query({stars__gte: 1000})
+  .then(function (repoResultSet) {
+      var mutableArrayOfRepos = repoResultSet.asArray();
+  });
 ```
 
-# Reactive Queries
+## Bulk Queries
 
-Reactive queries exist to support functional reactive programming when using Siesta. For those familar with Apple's Cocoa library and CoreData these are similar to the `NSFetchedResultsController` class. 
-
-A reactive query is a query that reacts to changes in the object graph, updating its result set and emitting events related to these updates.
+You can execute multiple queries simultaneously by passing an array instead of an object.
 
 ```js
-var rq = User.reactiveQuery({age__gte: 18});
-rq.init().then(function () {
-    var results = rq.results;
-  	// results are the same as User.query({age__gte: 18});
-});
+Repo.query([{stars__gte: 1000})
+  .then(function (resultSets) {
+    // An array of result
+  });
 ```
 
-To listen to events:
+You can execute queries against multiple models at the collection level or globally.
 
 ```js
-var cancelListen = rq.listen(function (e) {
-	var results = rq.results; // Updated result set.
-    // ...
-});
+MyCollection.query({attribute: 'something'})
+  .then(function (results) {
+    // Instances in the result set could be any model that is part of MyCollection
+  });
+
+siesta.query({attribute: 'something'})
+  .then(function (results) {
+    // Instances in the result set could be any model that is part of any collection
+  });
 ```
 
-Reactive queries can be ordered in a similar fashion to ordinary queries.
+You can also execute bulk queries whilst specifying the model or collection
 
 ```js
-var rq = User.reactiveQuery({
-    age__gte: 18,
-    __order: ['-age', 'name']
-});
+MyCollection.query([
+    {username: 'mike', __model: 'User'},
+    {stars__gt: 1000, __model: Repo}
+ ]).then(function (resultSets) {
+    var userResultSet = resultSets[0],
+        repoResultSet = resultSets[1]
+  });
+
+siesta.query([
+    {username: 'mike', __model: 'User', __collection: MyCollection},
+    {stars__gt: 1000, __model: Repo, __collection: 'MyCollection'}
+  ]).then(function (results) {
+    // Instances in the result set could be any model that is part of any collection
+  });
 ```
 
-Once initialised you can terminate a reactive query by calling `terminate`. This will prevent it from responding to model events and hence updating its result set.
+# Reactive Programming
+
+As well as the various events documented so far Siesta features various other mechanisms to support Reactive Programming.
+
+## Reactive Queries
+
+Reactive queries allow us to listen to changes that match a particular query.
 
 ```js
-rq.terminate();
+var query = Repo
+  .query({
+      stars__gte: 1000,
+      __order: '-stars'
+  })
+  .then(function (results) {
+      // Called once with the initial results.
+  })
+  .on('new', function (e) {
+      // Fired whenever a new repo matching the query is created/modified.
+  })
+  .on('set', function (e) {
+      // Fired when a member of the result undergoes an attribute change that doesn't cause it to be removed/added
+      // from the result set.
+  });
 ```
 
-You can update the reactive queries result set manually by calling `update`
+Cancel all event handlers created in a particular chain by calling `cancel`.
 
 ```js
-rq.update(function (err) {
-	// Result set will now be updated.
-});
+query.cancel();
 ```
 
-## Events
+Force update the result set by calling `update`. (Should very rarely need to do this - only when something changes outside of Siesta's event loop).
+
+```js
+query.update();
+```
+
+### Events
 
 Reactive Query events are emitted under 4 circumstances:
 
-* An object has been removed from the result set due to no longer matching the query.
-* An object has been added to the result set due to now matching the query.
-* An object has been moved to a different position in the query due to ordering.
+* `remove`: An object has been removed from the result set due to no longer matching the query.
+* `new`: An object has been added to the result set due to now matching the query.
+* `splice`: An object has been moved to a different position in the query due to ordering.
 * An object in the result set has changed but not removed. In this instance, the change object will be an event described in the [model events section](#events).
 
-In a similar fashion to model events you can listen to reactive queries by calling `listen` with a handler.
-
-```js
-var cancelListen = rq.listen(function (change) {
-	var results = rq.results;
-	// results is the complete result set
-	// change describes any changes to the result set
-});
-```
-
-## Result Set
-
-In a similar fashion to ordinary queries, results presented by reactive queries are `ResultSet` instances and so can be used to manipulate all instances in the result set.
-
-```js
-// Whenever a new user less than 18 years of age is created, remove it.
-var rq = User.reactiveQuery({age__lt: 18});
-rq.init(function () {
-   rq.listen(function () {
-       rq.results.remove();
-   });
-})
-
-// Convert the names of all users to uppercase as they are created.
-var rq = User.reactiveQuery();
-rq.init(function () {
-    rq.listen(function () {
-        var users = rq.results;
-        users.name = users.name.toUpperCase();
-    });
-})
-```
-
-## Insertion Policy
+### Insertion Policy
 
 If no order is defined then by default Siesta will push any new instances in the Reactive Query to the back. You can change this by setting the insertion policy.
 
 ```js
-var rq = User.reactiveQuery();
-// Insert at back (default)
-rq.insertionPolicy = s.InsertionPolicy.Back;
-// Insert at front
-rq.insertionPolicy = s.InsertionPolicy.Front;
+var query = Repo
+  .query({
+      stars__gte: 1000,
+      __order: '-stars',
+      __insertion_policy: 'back' // Or 'front'
+  })
+  .on('new', function (e) {
+      // Fired whenever a new repo matching the query is created/modified.
+  });
 ```
 
-# Arranged Reactive Queries
+### Track
 
-Arranged Reactive Queries solve the common use case of allowing users to arrange instances e.g. drag and drop arrangements of todos in a todo list app. Once instances have a value in the index attribute they will remain in that position unless changed using the mutation methods described below. Arranged Reactive Queries are useful.
+You can track the indexes of the ordered elements by using the `__track` option.
 
 ```js
-var arq = Todo.arrangedReactQuery();
-// Model attribute in which to store the position.
-arq.indexAttribute = 'index';
-
-Todo.graph([
-	{title: 'Do homework'},
-	{title: 'Do laundry'},
-	{title: 'Order food'}
-]).then(function (todos) {
-	arq.init().then(function () {
-		assert.equal(todos[0].index, 0);
-		assert.equal(todos[1].index, 1);
-		assert.equal(todos[2].index, 2);
-		arq.swapObjects(todos[0], todos[1]);
-		assert.equal(todos[0].index, 1);
-		assert.equal(todos[1].index, 0);
-	});
-});
+var query = Repo
+  .query({
+      stars__gte: 1000,
+      __initial_order: '-stars',
+      __track: 'index'
+  })
+  .on('new', function (e) {
+      // Fired whenever a new repo matching the query is created/modified.
+     var repo = e.instance;
+     assert.hasAttribute('index');
+  });
 ```
 
-You can kick off the arranged reactive query with an initial ordering based on the usual query API described in the previous sections.
+All repositories will now have their position within that reactive query stored in the index attribute.
 
-```js
-var arq = User.arrangedReactiveQuery({
-    age__gt: 10
-});
-arq.indexAttribute = 'index'; // Default attribute to use is index
+Note if `__order` is defined, you cannot manipulate the order manually. Use `__initial_order` instead.
 
-// Listening is exactly the same as ordinary reactive queries.
-var cancelListen = arq.listen(function (results, e) {
-    // ...
-});
-
-User.graph([
-	{age: 55},
-	{age: 25},
-	{age: 70}
-]).then(function () {
-    var users = arq.results;
-	arq.init().then(function () {
-		assert.equal(users[0].index, 0);
-		assert.equal(users[1].index, 1);
-		assert.equal(users[2].index, 2);
-		arq.swapObjects(users[0], users[1]);
-		assert.equal(users[1].index, 0);
-		assert.equal(users[0].index, 1);
-	});
-});
-```
-
-There are several ways to mutate the arrangements of the objects.
+There are several ways to mutate the arrangements of the objects when using `__track`:
 
 ```js
 // Swap the objects at indexes `from` and `to` and update the index field.
-prq.swapObjectsAtIndexes(from, to);
+query.swapObjectsAtIndexes(from, to);
 // Swap the objects or throw an error if the objects are not within the result set.
-prq.swapObjects(obj1, obj2);
+query.swapObjects(obj1, obj2);
 // Move the object at index from index "from" to index "to"
-prq.move(from, to);
+query.move(from, to);
 ```
 
-## Events
+# Serialisation
 
-Events are exactly the same as for [Reactive Queries](#reactive-queries-events).
+`Serialisation` is the process of getting a model ready for conversion into a data transfer format like JSON e.g. eliminating circular references.
+
+To serialise a model instance call `serialise`.
+
+```js
+var data = user.serialise();
+```
+
+By default depth=1 serialisation is used whereby all related objects are serialised into their unique identifier e.g. in a Todo app a serialised todo may look like:
+
+```
+{
+  id: 53,
+  description: 'Go to the store',
+  user: 'mike'
+}
+```
+
+You can customise how models are serialised by setting the `serialise` attribute when defining your models. Details on this are [here](#models-defining-models-serialise)
 
 # Storage
 
@@ -1214,8 +1253,8 @@ And then update and listen to changes from anywhere in your app.
 Settings.one().then(function (settings) {
     settings.someSettings.setting1 = 'something';
     settings.someMoreSettings.setting4 = 'something else';
-    settings.someMoreSettings.listen(function (change) {
-        console.log('Some more settings changed!', change);
+    settings.someMoreSettings.on('*', function (e) {
+        console.log('Some more settings changed!', e);
     });
 });
 ```
@@ -1389,7 +1428,7 @@ var MyComponent = React.createClass({
 
 ### listen
 
-`this.listen` will listen to events from any of:
+`this.on` will listen to events from any of:
 
 * `Collection`
 * `Model`
@@ -1405,11 +1444,9 @@ You can listen to collections.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(event) {
+        this.listen(MyCollection, function(event) {
              this.setState(); // Rerender
-        }.bind(this);
-        this.listen(MyCollection, listener)
-            .then(listener);
+        })
     }
 });
 ```
@@ -1420,12 +1457,9 @@ You can listen to models.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(event) {
-             this.setState(); // Rerender
-        }.bind(this);
-
-        this.listen(MyModel, listener)
-            .then(listener);
+        this.listen(MyModel, function(event) {
+           this.setState(); // Rerender
+        });
     }
 });
 ```
@@ -1436,14 +1470,11 @@ You can listen to instances of models.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        MyModel.graph({attr: 1})
-            .then(function (myModel) {
-                 var listener = function(event) {
-                      this.setState(); // Rerender
-                 }.bind(this);
-                 this.listen(myModel, listener)
-                     .then(listener);
-            });
+        MyModel.graph({attr: 1}).then(function (instance) {
+           this.listen(instance, function(event) {
+                this.setState(); // Rerender
+           });
+        });
     }
 });
 ```
@@ -1451,40 +1482,17 @@ var MyComponent = React.createClass({
 You can listen to reactive queries.
 
 ```js
-var rq = User.reactiveQuery({
-    age__gt: 20,
-    __order: 'age'
-});
-
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        var listener = function(usersOlderThanTwenty) {
+        this.on('*', User.query({
+            age__gt: 20,
+            __order: 'age'
+        }), function(usersOlderThanTwenty) {
             this.setState({
                 usersOlderThanTwenty: usersOlderThanTwenty
             });
-        }.bind(this);
-        rq.init().then(listener);
-        this.listen(rq, listener);
-    }
-});
-```
-
-You can listen to arranged reactive queries.
-
-```js
-var arq = Todo.arrangedReactiveQuery();
-
-var MyComponent = React.createClass({
-    mixins: [SiestaMixin],
-    componentDidMount: function () {
-        var listener = function(todos) {
-            this.setState({
-                todos: todos
-            });
-        }.bind(this);
-        arq.init().then(listener);
-        this.listen(arq, listener);
+        });
     }
 });
 ```
@@ -1492,66 +1500,17 @@ var MyComponent = React.createClass({
 You can listen to singleton models.
 
 ```js
-// We can do this.
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        this.listen(MySingletonModel, function (e) {
-            if (e.type == 'Set') {
-                this.setState(); // Render
-            }
-        }.bind(this));
-        MySingletonModel.one().then(function (singleton) {
-            this.setState({
-                singleton: singleton
-            });
-        }.bind(this))
-    }
-});
-
-// Instead of this.
-var MyComponent = React.createClass({
-    mixins: [SiestaMixin],
-    componentDidMount: function () {
-        MySingletonModel.one().then(function (singleton) {
-            this.setState({
-                singleton: singleton
-            });
-            this.cancelListen = singleton.listen(function (e) {
-                if (e.type == 'Set') {
-                    this.setState(); // Render
-                }
-            });
-        }.bind(this))
-    },
-    componentWillUnmount: function () {
-        this.cancelListen();
+        this.on('Set', MySingletonModel, function (e) {
+            this.setState(); // Render
+        });
     }
 });
 ```
 
 Note: we can reduce this code even further by using [listenAndSetState](#reactjs-mixin-usage-listenandsetstate)
-
-#### Custom Events
-
-`listen` can also handle custom events.
-
-```js
-var MyComponent = React.createClass({
-    mixins: [SiestaMixin],
-    componentDidMount: function () {
-        MyModel.graph({attr: 1})
-            .then(function (myInstance) {
-                 var listener = function(event) {
-                      this.setState(); // Rerender
-                 }.bind(this);
-                 this.listen('customEvent', myInstance, listener)
-                     .then(listener);
-                 myInstance.emit('customEvent', {key: 'value'});
-            });
-    }
-});
-```
 
 ### query
 
@@ -1575,7 +1534,7 @@ var MyComponent = React.createClass({
             this.setState({
                 users: users
             });
-        }.bind(this));
+        });
     }
 });
 ```
@@ -1617,34 +1576,15 @@ var MyComponent = React.createClass({
 
 ### listenAndSetState
 
-The `listenAndSetState` function will listen to a reactive query, arranged reactive query or singleton and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
+The `listenAndSetState` function will listen to a reactive query or singleton and then update the state automatically with the passed key. It will also cancel any registered listeners when the component unmounts.
 
 ```js
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        this.listenAndSetState(MyModel.reactiveQuery({age__gt: 20}), 'users');
+        this.listenAndSetState(MyModel.query({age__gt: 20}), 'users');
     }
 });
-
-// Which is equivalent to...
-var MyComponent = React.createClass({
-    updateState: function (results) {
-      this.setState({
-          users: results
-      });
-    },
-    componentDidMount: function () {
-        var rq = MyModel.reactiveQuery({age__gt: 20}),
-            updateState = this.updateState.bind(this);
-        rq.init().then(updateState);
-        this.cancelListen = rq.listen(updateState);
-    },
-    componentWillUnmount: function () {
-        this.cancelListen();
-    }
-});
-```
 
 It's also possible to listen to specific fields on an instance and automatically update the components state with those fields.
 
@@ -1652,7 +1592,7 @@ It's also possible to listen to specific fields on an instance and automatically
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        User.get({username: 'mike'})
+        User.one({username: 'mike'})
             .then(function (user) {
                 this.listenAndSetState(userInstance, {fields: ['username', 'email']});
             }.bind(this));
@@ -1674,7 +1614,7 @@ We can also vary the keys:
 var MyComponent = React.createClass({
     mixins: [SiestaMixin],
     componentDidMount: function () {
-        User.get({username: 'mike'})
+        User.one({username: 'mike'})
             .then(function (user) {
                 this.listenAndSetState(userInstance, {fields: {username: 'login', email: 'e-mail'}});
             }.bind(this));
@@ -1684,28 +1624,6 @@ var MyComponent = React.createClass({
             <div>
                 <span>{this.state.login}</span>
                 <span>{this.state['e-mail']}</span>
-            </div>
-        )
-    }
-});
-```
-
-Or mix and match:
-
-```js
-var MyComponent = React.createClass({
-    mixins: [SiestaMixin],
-    componentDidMount: function () {
-        User.get({username: 'mike'})
-            .then(function (user) {
-                this.listenAndSetState(userInstance, {fields: [{username: 'login'}, 'email'});
-            }.bind(this));
-    },
-    render: function () {
-        return (
-            <div>
-                <span>{this.state.login}</span>
-                <span>{this.state.email}</span>
             </div>
         )
     }
