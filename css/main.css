@@ -105,6 +105,24 @@
       position: relative;
       top: 2px; }
 
+.docs .header {
+  background-color: #242a33;
+  border-bottom: solid 2px #3ac; }
+  .docs .header a {
+    color: #d7dae3 !important; }
+    .docs .header a:hover {
+      color: #3ac !important; }
+  .docs .header ul {
+    border-style: none; }
+    .docs .header ul li {
+      border-style: none; }
+.docs a {
+  color: #3ac; }
+  .docs a:visited {
+    color: #3ac; }
+  .docs a:hover {
+    color: #2b7a99; }
+
 html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

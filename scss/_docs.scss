@@ -1,0 +1,30 @@
+@import "palette";
+
+.docs {
+  .header {
+    background-color: $dark-blue;
+    a {
+      color: $very-light-grey !important;
+      &:hover {
+        color: $light-blue !important;;
+      }
+    }
+    ul {
+      border-style: none;
+      li {
+        border-style: none;
+      }
+    }
+
+    border-bottom: solid 2px $light-blue;
+  }
+    a {
+      color: $light-blue;
+      &:visited {
+        color: $light-blue;
+      }
+      &:hover {
+        color: $hover-light-blue;
+      }
+    }
+}
