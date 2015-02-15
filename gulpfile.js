@@ -40,11 +40,11 @@ gulp.task('build:docs', function() {
 });
 
 
-gulp.task('build:quick-start', function() {
-    return buildJade('./src/quickStart.jade', 'md/quickStart.md', 'quickStart.html');
+gulp.task('build:guide', function() {
+    return buildJade('./src/guide.jade', 'md/guide.md', 'guide.html');
 });
 
-gulp.task('build:jade', ['build:docs', 'build:landing', 'build:quick-start'], function() {
+gulp.task('build:jade', ['build:docs', 'build:landing', 'build:guide'], function() {
     return gulp.src(config.glob.jade)
         .pipe(connect.reload());
 });

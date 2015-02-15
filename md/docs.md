@@ -1,217 +1,57 @@
-# Why Siesta?
+# Install
 
-## Single Source of Truth
+You can get started with Siesta by manually including it within your project or by forking one of the boilerplate projects.
 
-A resource has a single source of truth if and only if one object represents that resource.
+## Manual Installation
 
-Having multiple objects representing the same thing leads to an entire class of errors that can wreak havoc on consistency across your app.
+Siesta is available on both bower and npm.
 
-These duplicates are common when your app interacts with APIs.
-
-For example if we downloaded a todo from `/todos/576`:
-
-```js
-var todo = {
-  id: 567
-  description: 'Go to the shop.',
-  user: {
-    username: 'mike',
-    id: 1
-  }
-};
+```bash
+npm install siesta-orm --save
+bower install siesta --save
 ```
 
-And a user from `/user/23`:
+### Script tag
 
-```js
-var user = {
-  username: 'mike',
-  id: 23
-};
+```html
+<script src="path/to/siesta/dist/siesta.js"></script>
 ```
 
-We now have two objects representing the same user: `user` and `todo.user`.
+### CommonJS
 
-This is a trivial example but it illustrates the point. Using the Siesta object graph solves this issue:
-
-```js
-MyCollection.graph({
-  User: user,
-  Todo: todo
-}).then(function (models) {
-  assert(models.User[0] === models.Todo[0].user);
-});
-```
-
-## Storage
-
-Moving between objects stored on disk (e.g. browser storage) and those in memory should be entirely transparent.
-
-Siesta's faulting mechanism loads data from disk only as you need it. And what's more, backed by [PouchDB](http://pouchdb.com) Siesta supports a multitude of browser storage solutions.
-
-## Serialisation
-
-It should be easy to move between raw data e.g. data transfer formats like JSON and local objects that represent them. With siesta there is only way to create and update objects: the object mapping mechanism which  is made available by the `graph` function.
+Alternatively if you're using a bundler based on CommonJS (browserify, webpack etc) you can `require` siesta once you've run `npm install siesta`.
 
 ```js
-var data = [{id: 5, username:'mike'}, {id: 6, username:'john'}];
-User.graph(data)
-  .then(function(users) {
-    // Data is mapped onto either new or existing users depending on the id field.
-  });
+var siesta = require('siesta');
 ```
 
-Going the other way is easy too.
+### Storage
+
+To enable storage you must include PouchDB. If the availability of PouchDB is not detected then storage will be disabled.
+
+```html
+<!-- If using script tags -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/pouchdb/3.2.0/pouchdb.min.js"></script>
+<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
+```
 
 ```js
-User.one({username: 'mike')
-  .then(function (user) {
-    var data = user.serialise();
-    // ...
-  });
+// If using CommonJS.
+window.PouchDB = require('pouchdb');
 ```
 
-And it's easy to define your own serialisation mechanisms.
+## Example Projects
 
-```js
-var User = myCollection.model('User', {
-  serialise: function (user) {
-    return {
-      username: user.username,
-      todos: user.todos.map(function (todos) {
-        return todo.id;
-      });
-    }
-  }
-});
-```
+At the moment the only example project is the ReactJS/Siesta TodoMVC implementation, the demo of which is [here](http://mtford.co.uk/siesta-reactjs-todomvc/) and source [here](https://github.com/mtford90/siesta-reactjs-todomvc).
 
-# Concepts
+Various web apps and hybrid mobile apps are currently under development using Siesta and will be listed here upon completion.
 
-Before using this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
+## Boilerplates
 
-## Model
+Coming soon for your favourite framework. In the works:
 
-A `Model` describes a (possibly remote) resource that you would like to represent in your app. For example if you were writing an app that downloaded information on repositories from the Github API an (admittedly simple) model could look like the following:
-
-```js
-{
-    attributes: ['name', 'stars', 'watchers', 'forks']
-}
-```
-
-## Relationship
-
-A `Relationship` describes a relation between two models. For example, all Github repositories have a user that owns that repository. We would define a relationship between our `Repo` and `User` model to describe this.
-
-```js
-var User = {
-    attributes: ['username']
-}
-
-var Repo = {
-    attributes: ['name', 'stars', 'watchers', 'forks'],
-    relationships: {
-        owner: {
-            model: User,
-            reverse: 'repositories'
-        }
-    }
-}
-```
-
-## Model Instance
-
-A `ModelInstance` is an instance of a `Model`. It can be used in the same fashion as a generic Javascript object.
-
-```js
-myRepo.name = 'an awesome repo';
-myUser.repositories.push(myRepo);
-```
-
-## Collection
-
-A `Collection` organises our model definitions. For example if we are communicating with the Github API and want to define various models with which to represent remote resources we would organise them under a collection.
-
-```js
-var Github = siesta.collection('Github', {
-        baseURL: 'https://api.github.com'
-    }),
-    User   = Github.model('User' , {
-        attributes: ['username']
-    }),
-    Repo   = Github.model('Repo', {
-        attributes: ['name', 'stars', 'watchers', 'forks'],
-        relationships: {
-            owner: {
-                model: User,
-                reverse: 'repositories'
-            }
-        }
-    });
-```
-
-## Object Graph
-
-When models and the relationships between those models are instantiated, what results is an **object graph** where the model instances (the nodes) are linked together by relationships (the edges).
-
-Carrying on the Github example, we could have two relationships, `owner` and `forkedFrom`. `owner` is a relationship between a `User` and a `Repo`. `forkedFrom` is a relationship between a `Repo` and itself. Once we have created instances of our models we could end up with an object graph that looks like the following:
-
-<pre><img src="objgraph.png" style="width: 460px"/></pre>
-
-Siesta is all about interacting with and manipulating this object graph and aims to present a robust solution for modelling data in the browser via this mechanism.
-
-## Object Mapping
-
-Object mapping refers to the process of taking raw data and placing this data onto the object graph. This process will create and update existing model instances and their relationships as per the data and the model definitions that you have provided.
-
-Siesta determines which objects to create and which objects to update by using the unique identifier, `id` that is supplied when you define your models.
-
-For example, to create the Github object graph from earlier we could map the following data.
-
-```js
-Repo.graph([
-    {
-        name: 'siesta',
-        id: 23079554,
-        owner: {
-            id: 1734057,
-            login: 'mtford90'
-        }
-    },
-    {
-        name: 'siesta',
-        id: 27406882,
-        owner: {
-            id: 2001903,
-            login: 'cmmartin'
-        },
-        forkedFrom: {
-            id: 23079554
-        }
-    },
-    {
-        name: 'siesta',
-        id: 25102369,
-        owner: {
-            id: 26195,
-            login: 'wallyqs'
-        },
-        forkedFrom: {
-            id: 23079554
-        }
-    }
-]);
-```
-
-Siesta will automatically create and update model instances, hook up relationships and reverse relationships before returning the objects. The robust representation ensures that we have no duplicate representations of the resources that we are representing.
-
-## What Next?
-
-The rest of this documentation deals with the various ways in which you can interact with the object graph. For example:
-
-* Saving the object graph in client-side storage.
-* Various methods of querying the object graph.
+* ReactJS
+* AngularJS
 
 # Collections
 
