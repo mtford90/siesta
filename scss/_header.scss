@@ -1,7 +1,7 @@
 @import "palette";
 @import "responsive";
 
-$button-margin: 4px;
+$button-margin: 12px;
 
 .custom-title-area {
   h1, h2, h3, h4, h5, h6 {
@@ -17,20 +17,20 @@ $button-margin: 4px;
     font-family: $font;
     h1 {
       @include atOrBelowMobileSize {
-        font-size: 32px;
+        font-size: 40px;
       }
       @include aboveMobileSize {
-        font-size: 42px;
+        font-size: 52.5px;
       }
       font-weight: 700;
       margin-bottom: 15px;
     }
     h2 {
       @include atOrBelowMobileSize {
-        font-size: 14px;
+        font-size: 17.5px;
       }
       @include aboveMobileSize {
-        font-size: 24px;
+        font-size: 30px;
       }
       font-weight: 500;
       margin-bottom: 23px;
@@ -42,13 +42,13 @@ $button-margin: 4px;
         border-radius: 5px;
         @include atOrBelowMobileSize {
           padding: 10px;
-          font-size: 13px;
-          width: 120px;
+          font-size: 16px;
+          width: 150px;
         }
         @include aboveMobileSize {
-          padding: 15px;
-          font-size: 15px;
-          width: 150px;
+          padding: 16px;
+          font-size: 21px;
+          width: 200px;
         }
         cursor: pointer;
         transition: background-color 0.1s ease-in;

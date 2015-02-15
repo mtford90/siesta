@@ -7,48 +7,66 @@
 
   .site-content {
     flex: 1;
-    .description {
-      margin-top: 20px;
-      margin-bottom: 20px;
-      p {
-        span {
-          &::before {
-            content: ' ';
-          }
+
+    .container {
+      &.description {
+        @include atOrBelowMobileSize {
+          margin-top: 10px;
+          margin-bottom: 4px;
         }
-        a {
-          &::before {
-            content: ' ';
+        @include aboveMobileSize {
+          margin-top: 20px;
+          margin-bottom: 20px;
+        }
+
+        p {
+          span {
+            &::before {
+              content: ' ';
+            }
+          }
+          a {
+            &::before {
+              content: ' ';
+            }
           }
         }
       }
-    }
-    .container {
-      margin-bottom: 20px;
+      @include atOrBelowMobileSize {
+        margin-bottom: 10px;
+      }
+      @include aboveMobileSize {
+        margin-bottom: 20px;
+      }
     }
     h2 {
       @include atOrBelowMobileSize {
-        font-size: 12px;
+        font-size: 15px;
       }
       @include aboveMobileSize {
-        font-size: 16px;
+        font-size: 20px;
       }
     }
     h3 {
-      font-size: 20px;
+      @include atOrBelowMobileSize {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      @include aboveMobileSize {
+        font-size: 26px;
+        margin-bottom: 10px;
+      }
       font-weight: bold;
-      margin-bottom: 10px;
     }
     pre {
       code {
         background: #f3f6fb;
         @include atOrBelowMobileSize {
-          font-size: 10px;
-          height: 180px;
+          font-size: 12.5px;
         }
         @include aboveMobileSize {
-          font-size: 11px;
-          height: 192px;
+          font-size: 14px;
+          height: 242px;
         }
         border: solid 1px #e7eaee;
         display: block;

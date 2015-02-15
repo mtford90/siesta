@@ -1,7 +1,16 @@
 @import "palette";
+@import "responsive";
 
 .docs {
   .header {
+    h1 {
+      @include atOrBelowMobileSize {
+        font-size: 16px;
+      }
+      @include aboveMobileSize {
+        font-size: 20px;
+      }
+    }
     text-shadow: none;
     background-color: $dark-blue;
     a {
@@ -17,18 +26,36 @@
       border-style: none;
       li {
         border-style: none;
+        @include atOrBelowMobileSize {
+          font-size: 14px;
+          margin-top: 4px;
+        }
+        @include aboveMobileSize {
+          font-size: 16px;
+        }
       }
     }
 
     border-bottom: solid 2px $light-blue;
   }
-    a {
+  a {
+    color: $light-blue;
+    &:visited {
       color: $light-blue;
-      &:visited {
-        color: $light-blue;
-      }
-      &:hover {
-        color: $hover-light-blue;
+    }
+    &:hover {
+      color: $hover-light-blue;
+    }
+  }
+  .content {
+    @include atOrBelowMobileSize {
+      padding-top: 20px;
+      h1 {
+
       }
     }
+    @include aboveMobileSize {
+
+    }
+  }
 }

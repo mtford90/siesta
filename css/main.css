@@ -4,25 +4,40 @@
   flex-direction: column; }
   .landing .site-content {
     flex: 1; }
-    .landing .site-content .description {
-      margin-top: 20px;
-      margin-bottom: 20px; }
-      .landing .site-content .description p span::before {
-        content: ' '; }
-      .landing .site-content .description p a::before {
-        content: ' '; }
-    .landing .site-content .container {
-      margin-bottom: 20px; }
+    @media (max-width: 767px) {
+      .landing .site-content .container.description {
+        margin-top: 10px;
+        margin-bottom: 4px; } }
+    @media (min-width: 480px) {
+      .landing .site-content .container.description {
+        margin-top: 20px;
+        margin-bottom: 20px; } }
+    .landing .site-content .container.description p span::before {
+      content: ' '; }
+    .landing .site-content .container.description p a::before {
+      content: ' '; }
+    @media (max-width: 767px) {
+      .landing .site-content .container {
+        margin-bottom: 10px; } }
+    @media (min-width: 480px) {
+      .landing .site-content .container {
+        margin-bottom: 20px; } }
     @media (max-width: 767px) {
       .landing .site-content h2 {
-        font-size: 12px; } }
+        font-size: 15px; } }
     @media (min-width: 480px) {
       .landing .site-content h2 {
-        font-size: 16px; } }
+        font-size: 20px; } }
     .landing .site-content h3 {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 10px; }
+      font-weight: bold; }
+      @media (max-width: 767px) {
+        .landing .site-content h3 {
+          font-size: 22px;
+          margin-bottom: 6px; } }
+      @media (min-width: 480px) {
+        .landing .site-content h3 {
+          font-size: 26px;
+          margin-bottom: 10px; } }
     .landing .site-content pre code {
       background: #f3f6fb;
       border: solid 1px #e7eaee;
@@ -34,12 +49,11 @@
       font-family: 'Source Code Pro', monospace; }
       @media (max-width: 767px) {
         .landing .site-content pre code {
-          font-size: 10px;
-          height: 180px; } }
+          font-size: 12.5px; } }
       @media (min-width: 480px) {
         .landing .site-content pre code {
-          font-size: 11px;
-          height: 192px; } }
+          font-size: 14px;
+          height: 242px; } }
     .landing .site-content p {
       padding: 10px; }
     .landing .site-content .frame {
@@ -61,19 +75,19 @@
       margin-bottom: 15px; }
       @media (max-width: 767px) {
         .custom-title-area .custom-headline h1 {
-          font-size: 32px; } }
+          font-size: 40px; } }
       @media (min-width: 480px) {
         .custom-title-area .custom-headline h1 {
-          font-size: 42px; } }
+          font-size: 52.5px; } }
     .custom-title-area .custom-headline h2 {
       font-weight: 500;
       margin-bottom: 23px; }
       @media (max-width: 767px) {
         .custom-title-area .custom-headline h2 {
-          font-size: 14px; } }
+          font-size: 17.5px; } }
       @media (min-width: 480px) {
         .custom-title-area .custom-headline h2 {
-          font-size: 24px; } }
+          font-size: 30px; } }
     .custom-title-area .custom-headline .buttons button {
       color: #d7dae3;
       border-style: none;
@@ -84,17 +98,17 @@
       @media (max-width: 767px) {
         .custom-title-area .custom-headline .buttons button {
           padding: 10px;
-          font-size: 13px;
-          width: 120px; } }
+          font-size: 16px;
+          width: 150px; } }
       @media (min-width: 480px) {
         .custom-title-area .custom-headline .buttons button {
-          padding: 15px;
-          font-size: 15px;
-          width: 150px; } }
+          padding: 16px;
+          font-size: 21px;
+          width: 200px; } }
       .custom-title-area .custom-headline .buttons button.get-started {
-        margin-right: 2px; }
+        margin-right: 6px; }
       .custom-title-area .custom-headline .buttons button.documentation {
-        margin-left: 2px; }
+        margin-left: 6px; }
       .custom-title-area .custom-headline .buttons button:hover {
         background-color: #2b7a99; }
       .custom-title-area .custom-headline .buttons button:focus {
@@ -123,12 +137,18 @@ footer {
   color: #d7dae3;
   padding-bottom: 20px; }
   footer h2 {
-    font-size: 20px; }
+    font-size: 25px; }
 
 .docs .header {
   text-shadow: none;
   background-color: #242a33;
   border-bottom: solid 2px #3ac; }
+  @media (max-width: 767px) {
+    .docs .header h1 {
+      font-size: 16px; } }
+  @media (min-width: 480px) {
+    .docs .header h1 {
+      font-size: 20px; } }
   .docs .header a {
     color: #d7dae3 !important; }
     .docs .header a:hover {
@@ -139,12 +159,22 @@ footer {
     border-style: none; }
     .docs .header ul li {
       border-style: none; }
+      @media (max-width: 767px) {
+        .docs .header ul li {
+          font-size: 14px;
+          margin-top: 4px; } }
+      @media (min-width: 480px) {
+        .docs .header ul li {
+          font-size: 16px; } }
 .docs a {
   color: #3ac; }
   .docs a:visited {
     color: #3ac; }
   .docs a:hover {
     color: #2b7a99; }
+@media (max-width: 767px) {
+  .docs .content {
+    padding-top: 20px; } }
 
 a {
   color: #3ac;
@@ -163,7 +193,8 @@ html, body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   font-family: 'Open Sans', sans-serif;
-  height: inherit; }
+  height: inherit;
+  font-size: 16px; }
 
 .bold {
   font-weight: bold; }
