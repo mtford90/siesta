@@ -3,6 +3,18 @@
 
 Before reading through this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
 
+## Problems
+
+It's import to understand the problems that Siesta is attempting to solve.
+
+### Single Source of Truth
+
+TODO
+
+### Local Storage
+
+TODO
+
 ## Model
 
 A `Model` describes a (possibly remote) resource that you would like to represent in your app. For example if you were writing an app that downloaded information on repositories from the Github API an (admittedly simple) model could look like the following:

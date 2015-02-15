@@ -4,6 +4,18 @@
   .description {
     margin-top: 20px;
     margin-bottom: 20px;
+    p {
+      span {
+        &::before {
+          content: ' ';
+        }
+      }
+      a {
+        &::before {
+          content: ' ';
+        }
+      }
+    }
   }
   .container {
     margin-bottom: 20px;

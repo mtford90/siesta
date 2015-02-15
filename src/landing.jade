@@ -21,7 +21,15 @@ html
       .row
         .col-md-12
           h2
-            .span Siesta is an object graph & life cycle management framework. In english - Siesta presents a robust and powerful mechanism for managing your models in the browser.
+            p
+              span Siesta is an object graph & life cycle management framework.
+              span In english - Siesta presents a robust and powerful mechanism for managing your models in the browser taking inspiration from awesome frameworks such as Apple's
+              a(href='https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreData/cdProgrammingGuide.html') CoreData.
+            p
+              span Siesta is an attempt to address various
+              a(href='docs.html#concepts-problems') problems
+              span when handling data in the browser, the most important being the
+              a(href='docs.html#concepts-problems-single-source-of-truth') single source of truth.
     .container
       .row
         .col-lg-4.col-md-6
@@ -91,7 +99,7 @@ html
                  });
           p React to changes in the object graph.
         .col-lg-4.col-md-6
-          h3 Browser Storage
+          h3 Local Persistence
           pre
             code.
               Users

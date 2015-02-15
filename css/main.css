@@ -1,6 +1,10 @@
 .landing .description {
   margin-top: 20px;
   margin-bottom: 20px; }
+  .landing .description p span::before {
+    content: ' '; }
+  .landing .description p a::before {
+    content: ' '; }
 .landing .container {
   margin-bottom: 20px; }
 @media (max-width: 767px) {
