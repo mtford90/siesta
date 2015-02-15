@@ -25,7 +25,7 @@ gulp.task('serve', function() {
 });
 
 gulp.task('build:landing', function() {
-    return buildJade('./src/landing.jade', 'md/index.md', 'index.html');
+    return buildJade('./src/landing.jade', 'md/siesta.md', 'index.html');
 });
 
 function buildJade(j, md, html) {

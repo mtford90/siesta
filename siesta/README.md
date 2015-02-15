@@ -1,0 +1,1 @@
+This directory is a hack to make the home link `/siesta` work in docs pages.

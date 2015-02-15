@@ -1,19 +1,23 @@
 
 # Concepts
 
-Before reading through this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
+Before using this documentation you should understand the concepts outlined in this section. If anything is less than clear please join us in [gitter](https://gitter.im/mtford90/siesta) where we can help clear things up and improve the documentation for the next person who has problems.
 
-## Problems
+## Why Siesta?
 
-It's import to understand the problems that Siesta is attempting to solve.
+This section is an attempt to explain the problems that Siesta is trying to solve.
 
 ### Single Source of Truth
 
-TODO
+A resource has a single source of truth if and only if one object represents that resource. For example if
 
-### Local Storage
+### Storage
 
-TODO
+Moving between locally stored objects and those in memory should be entirely transparent.
+
+### Serialisation
+
+It should be easy to move between raw data e.g. data transfer formats like JSON and local objects that represent them. With siesta there is n
 
 ## Model
 
