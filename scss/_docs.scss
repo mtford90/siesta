@@ -8,6 +8,9 @@
       &:hover {
         color: $light-blue !important;;
       }
+      &.active {
+        color: $light-blue !important;
+      }
     }
     ul {
       border-style: none;

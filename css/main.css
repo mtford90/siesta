@@ -112,6 +112,8 @@
     color: #d7dae3 !important; }
     .docs .header a:hover {
       color: #3ac !important; }
+    .docs .header a.active {
+      color: #3ac !important; }
   .docs .header ul {
     border-style: none; }
     .docs .header ul li {

@@ -11,6 +11,7 @@ html
     script(src='vendor/flatdoc/legacy.js')
     script(src='vendor/flatdoc/flatdoc.js')
     script(src='vendor/flatdoc/theme-white/script.js')
+    script(src='js/activeLinks.js')
     script(type='text/javascript').
       Flatdoc.run({
         fetcher: Flatdoc.file("!{markdown}")
@@ -24,8 +25,6 @@ html
           a(href='/').
             Siesta
         ul
-          li
-            a(href='https://github.com/mtford90/siesta') Github
           li
             a(href='quickStart.html') Quick Start
           li
