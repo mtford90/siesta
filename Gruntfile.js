@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
     var sh = require('execSync'),
         userConfig = require('./build.config.js');
@@ -15,7 +15,7 @@ module.exports = function (grunt) {
                     debug: true
                 },
                 debug: true,
-                transform: []
+                transform: [require('babelify')]
             },
             build: {
                 files: {
@@ -87,7 +87,7 @@ module.exports = function (grunt) {
 
     grunt.renameTask('watch', 'delta');
 
-    grunt.registerTask('dist', function () {
+    grunt.registerTask('dist', function() {
         grunt.file.mkdir('dist');
         sh.run('cp -r build/siesta.js dist/siesta.js');
         sh.run('cp -r build/siesta.min.js dist/siesta.min.js');

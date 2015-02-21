@@ -17,7 +17,6 @@
         querySet = require('./QuerySet'),
         log = require('./log'),
         _ = util._;
-
     util._patchBind();
 
     // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)

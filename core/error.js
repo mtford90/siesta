@@ -14,7 +14,6 @@
         this.message = message;
         this.context = context;
         // capture stack trace
-        ssf = ssf || arguments.callee;
         if (ssf && Error.captureStackTrace) {
             Error.captureStackTrace(this, ssf);
         }

@@ -23,15 +23,15 @@ var PATH = {
     CONNECT_PORT = 4001;
 
 
-gulp.task('watch:js', function () {
+gulp.task('watch:js', function() {
     gulp.watch(GLOB.js.concat(GLOB.spec), ['build:test']);
 });
 
-gulp.task('watch', function (done) {
+gulp.task('watch', function(done) {
     runSequence('serve', 'build:test', 'watch:js', 'open', done);
 });
 
-gulp.task('build:siesta', function (done) {
+gulp.task('build:siesta', function(done) {
     var b = browserify({debug: true});
     b.add('./core/index.js');
     b.bundle()
@@ -40,11 +40,11 @@ gulp.task('build:siesta', function (done) {
         .on('end', done);
 });
 
-gulp.task('build:test', function (done) {
-    glob(GLOB.spec, function (err, files) {
+gulp.task('build:test', ['build:siesta'], function(done) {
+    glob(GLOB.spec, function(err, files) {
         if (!err) {
             var b = browserify({debug: true});
-            files.forEach(function (file) {
+            files.forEach(function(file) {
                 b.add('./' + file);
             });
             b.bundle()
@@ -56,7 +56,7 @@ gulp.task('build:test', function (done) {
     })
 });
 
-gulp.task('compile', ['build:siesta'], function (done) {
+gulp.task('compile', ['build:siesta'], function(done) {
     gulp.src(PATH.build + '/' + BUNDLE)
         .pipe(uglify())
         .pipe(rename('siesta.min.js'))
@@ -64,15 +64,13 @@ gulp.task('compile', ['build:siesta'], function (done) {
         .on('end', done);
 });
 
-
-
-gulp.task('dist', ['build:siesta', 'compile'], function (done) {
+gulp.task('dist', ['build:siesta', 'compile'], function(done) {
     gulp.src(GLOB.compiled)
         .pipe(gulp.dest(PATH.dist))
         .on('end', done);
 });
 
-gulp.task('serve', function () {
+gulp.task('serve', function() {
     connect.server({
         port: CONNECT_PORT,
         livereload: {
@@ -81,6 +79,6 @@ gulp.task('serve', function () {
     });
 });
 
-gulp.task('open', function () {
+gulp.task('open', function() {
     open('http://localhost:' + CONNECT_PORT + '/test')
 });
