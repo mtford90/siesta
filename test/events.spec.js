@@ -1002,6 +1002,17 @@ describe('events', function () {
             emitter.emit(e);
         });
 
+        it('listen * works', function (done) {
+            var emitter = new ProxyEventEmitter(EVENT),
+                e = {};
+            var cancelListen = emitter.listen('*', function (_e) {
+                assert.equal(e, _e, 'payload is emitted');
+                cancelListen();
+                done();
+            });
+            emitter.emit(e);
+        });
+
         it('listenOnce works', function (done) {
             var emitter = new ProxyEventEmitter(EVENT),
                 e = {};

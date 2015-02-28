@@ -26,6 +26,7 @@
                 type = null;
             }
             else {
+                if (type.trim() == '*') type = null;
                 var _fn = fn;
                 fn = function (e) {
                     e = e || {};
