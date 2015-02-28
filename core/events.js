@@ -7,7 +7,6 @@
     var events = new EventEmitter();
     events.setMaxListeners(100);
 
-
     /**
      * Listen to a particular event from the Siesta global EventEmitter.
      * Manages its own set of listeners.
@@ -21,23 +20,21 @@
         this.proxyChainOpts = proxyChainOpts;
     }
 
-    /**
-     * @param opts
-     * @param opts.fn
-     * @param opts.emitter
-     * @param opts.type
-     * @param [opts.extend]
-     */
-    function constructProxyChain(opts) {
-        var extend = opts.extend || {};
-        var chain = function() {
-            this._removeListener(opts.fn, opts.type);
-        }.bind(opts.emitter);
-        _.extend(chain, extend);
-        return chain;
-    }
-
     _.extend(ProxyEventEmitter.prototype, {
+        /**
+         * @param opts
+         * @param opts.fn
+         * @param opts.type
+         * @param [opts.extend]
+         */
+        _constructProxyChain: function _constructProxyChain(opts) {
+            var extend = opts.extend || {};
+            var chain = function() {
+                this._removeListener(opts.fn, opts.type);
+            }.bind(this);
+            _.extend(chain, extend);
+            return chain;
+        },
         listen: function(type, fn) {
             if (typeof type == 'function') {
                 fn = type;
@@ -64,8 +61,7 @@
                 }
             }
             events.on(this.event, fn);
-            return constructProxyChain({
-                emitter: this,
+            return this._constructProxyChain({
                 fn: fn,
                 type: type,
                 extend: this.proxyChainOpts
@@ -140,7 +136,8 @@
 
     // Aliases
     _.extend(ProxyEventEmitter.prototype, {
-        on: ProxyEventEmitter.prototype.listen
+        on: ProxyEventEmitter.prototype.listen,
+        once: ProxyEventEmitter.prototype.listenOnce
     });
 
     _.extend(events, {

@@ -497,5 +497,4 @@ describe('reactive query', function () {
         })
     });
 
-
 });

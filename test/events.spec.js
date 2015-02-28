@@ -6,7 +6,7 @@ var assert = require('chai').assert,
     ProxyEventEmitter = internal.ProxyEventEmitter,
     RelationshipType = siesta.RelationshipType;
 
-describe.only('events', function () {
+describe('events', function () {
 
     before(function () {
         siesta.ext.storageEnabled = false;
