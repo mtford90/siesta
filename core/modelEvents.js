@@ -1,4 +1,4 @@
-(function () {
+(function() {
     var events = require('./events'),
         InternalSiestaError = require('./error').InternalSiestaError,
         log = require('./log')('events'),
@@ -16,11 +16,11 @@
      * @type {Object}
      */
     var ModelEventType = {
-            Set: 'Set',
-            Splice: 'Splice',
-            New: 'New',
-            Remove: 'Remove'
-        };
+        Set: 'set',
+        Splice: 'splice',
+        New: 'new',
+        Remove: 'remove'
+    };
 
     /**
      * Represents an individual change.
@@ -29,12 +29,12 @@
      */
     function ModelEvent(opts) {
         this._opts = opts || {};
-        Object.keys(opts).forEach(function (k) {
+        Object.keys(opts).forEach(function(k) {
             this[k] = opts[k];
         }.bind(this));
     }
 
-    ModelEvent.prototype._dump = function (pretty) {
+    ModelEvent.prototype._dump = function(pretty) {
         var dumped = {};
         dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();
         dumped.model = (typeof this.model) == 'string' ? this.model : this.model.name;
@@ -42,8 +42,8 @@
         dumped.field = this.field;
         dumped.type = this.type;
         if (this.index) dumped.index = this.index;
-        if (this.added) dumped.added = _.map(this.added, function (x) {return x._dump()});
-        if (this.removed) dumped.removed = _.map(this.removed, function (x) {return x._dump()});
+        if (this.added) dumped.added = _.map(this.added, function(x) {return x._dump()});
+        if (this.removed) dumped.removed = _.map(this.removed, function(x) {return x._dump()});
         if (this.old) dumped.old = this.old;
         if (this.new) dumped.new = this.new;
         return pretty ? util.prettyPrint(dumped) : dumped;

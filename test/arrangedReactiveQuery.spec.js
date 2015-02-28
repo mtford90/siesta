@@ -268,12 +268,12 @@ describe('arranged rquery', function () {
                             results = prq.results;
                         assert.equal(n.field, 'results');
                         assert.equal(n.obj, prq);
-                        if (type == 'Splice' && removed) {
+                        if (type == 'splice' && removed) {
                             assert.equal(removed.length, 1);
                             assert.include(removed, movedUser, 'Mike should have been removed');
                             removalNotifReceived = true;
                         }
-                        else if (type == 'Splice' && added) {
+                        else if (type == 'splice' && added) {
                             assert.equal(added.length, 1);
                             assert.include(added, movedUser);
                             addNotifReceived = true;
