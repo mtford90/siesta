@@ -251,7 +251,6 @@
                         return normalised;
                     });
                 }
-                console.log('$or', $or);
                 if (!this.objectMatchesOrQuery(obj, $or)) return false;
             }
             else if (unprocessedField == '$and') {
