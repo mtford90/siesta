@@ -159,7 +159,7 @@
 
     /**
      * Dump the remote id cache
-     * @param  {boolean} [asJson] Whether or not to apply JSON.stringify
+     * @param  {boolean} asJson Whether or not to apply JSON.stringify
      * @return {String|Object}
      */
     function remoteDump(asJson) {
@@ -185,7 +185,9 @@
                 }
             }
         }
-        return asJson ? util.prettyPrint(dumpedRestCache, null, 4) : dumpedRestCache;
+        return asJson ? util.prettyPrint((dumpedRestCache, null, 4
+    )) :
+        dumpedRestCache;
     }
 
     /**
@@ -200,7 +202,9 @@
                 dumpedIdCache[id] = localCacheById[id]._dump()
             }
         }
-        return asJson ? util.prettyPrint(dumpedIdCache, null, 4) : dumpedIdCache;
+        return asJson ? util.prettyPrint((dumpedIdCache, null, 4
+    )) :
+        dumpedIdCache;
     }
 
     /**
@@ -213,7 +217,9 @@
             localCache: localDump(),
             remoteCache: remoteDump()
         };
-        return asJson ? util.prettyPrint(dumped, null, 4) : dumped;
+        return asJson ? util.prettyPrint((dumped, null, 4
+    )) :
+        dumped;
     }
 
     function _remoteCache() {
