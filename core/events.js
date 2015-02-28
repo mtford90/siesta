@@ -146,12 +146,8 @@
           }
         }
       }
-      if (type) {
-        return events.on(event, fn);
-      }
-      else {
-        return events.once(event, fn);
-      }
+      if (type) return events.on(event, fn);
+      else return events.once(event, fn);
     },
     _removeListener: function(fn, type) {
       if (type) {

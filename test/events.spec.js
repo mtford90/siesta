@@ -1123,7 +1123,7 @@ describe('events', function() {
       });
 
       describe('model', function() {
-        describe.only('chain', function() {
+        describe('chain', function() {
           it('cancel, one link', function(done) {
             var cancelChain,
                 newCalled = 0;

@@ -291,7 +291,6 @@
         then: promise.then.bind(promise),
         catch: promise.catch.bind(promise)
       });
-      console.log('queryLink', link);
       return link;
     },
     reactiveQuery: function(query) {
