@@ -15,7 +15,7 @@ module.exports = function(grunt) {
                     debug: true
                 },
                 debug: true,
-                transform: [require('babelify')]
+                transform: []
             },
             build: {
                 files: {
