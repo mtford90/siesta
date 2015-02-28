@@ -1,4 +1,4 @@
-(function () {
+(function() {
     var log = require('./log')('query'),
         cache = require('./cache'),
         util = require('./util'),
@@ -31,7 +31,7 @@
     }
 
     var comparators = {
-        e: function (opts) {
+        e: function(opts) {
             var objectValue = opts.object[opts.field];
             if (log.enabled) {
                 var stringValue;
@@ -42,23 +42,23 @@
             }
             return objectValue == opts.value;
         },
-        lt: function (opts) {
+        lt: function(opts) {
             if (!opts.invalid) return opts.object[opts.field] < opts.value;
             return false;
         },
-        gt: function (opts) {
+        gt: function(opts) {
             if (!opts.invalid) return opts.object[opts.field] > opts.value;
             return false;
         },
-        lte: function (opts) {
+        lte: function(opts) {
             if (!opts.invalid) return opts.object[opts.field] <= opts.value;
             return false;
         },
-        gte: function (opts) {
+        gte: function(opts) {
             if (!opts.invalid) return opts.object[opts.field] >= opts.value;
             return false;
         },
-        contains: function (opts) {
+        contains: function(opts) {
             if (!opts.invalid) {
                 var arr = opts.object[opts.field];
                 if (util.isArray(arr) || util.isString(arr)) {
@@ -71,7 +71,7 @@
 
     _.extend(Query, {
         comparators: comparators,
-        registerComparator: function (symbol, fn) {
+        registerComparator: function(symbol, fn) {
             if (!comparators[symbol]) {
                 comparators[symbol] = fn;
             }
@@ -91,17 +91,17 @@
     }
 
     _.extend(Query.prototype, {
-        execute: function (cb) {
-            return util.promise(cb, function (cb) {
+        execute: function(cb) {
+            return util.promise(cb, function(cb) {
                 this._executeInMemory(cb);
             }.bind(this));
         },
-        _dump: function (asJson) {
+        _dump: function(asJson) {
             return asJson ? '{}' : {};
         },
-        sortFunc: function (fields) {
-            var sortFunc = function (ascending, field) {
-                return function (v1, v2) {
+        sortFunc: function(fields) {
+            var sortFunc = function(ascending, field) {
+                return function(v1, v2) {
                     var d1 = v1[field],
                         d2 = v2[field],
                         res;
@@ -125,10 +125,10 @@
             }
             return s == util ? null : s;
         },
-        _sortResults: function (res) {
+        _sortResults: function(res) {
             var order = this.opts.order;
             if (res && order) {
-                var fields = _.map(order, function (ordering) {
+                var fields = _.map(order, function(ordering) {
                     var splt = ordering.split('-'),
                         ascending = true,
                         field = null;
@@ -151,13 +151,13 @@
          * Return all model instances in the cache.
          * @private
          */
-        _getCacheByLocalId: function () {
-            return _.reduce(this.model.descendants, function (memo, childModel) {
+        _getCacheByLocalId: function() {
+            return _.reduce(this.model.descendants, function(memo, childModel) {
                 return _.extend(memo, cacheForModel(childModel));
             }, _.extend({}, cacheForModel(this.model)));
         },
-        _executeInMemory: function (callback) {
-            var _executeInMemory = function () {
+        _executeInMemory: function(callback) {
+            var _executeInMemory = function() {
                 var cacheByLocalId = this._getCacheByLocalId();
                 var keys = Object.keys(cacheByLocalId);
                 var self = this;
@@ -186,10 +186,10 @@
             }
 
         },
-        clearOrdering: function () {
+        clearOrdering: function() {
             this.opts.order = null;
         },
-        objectMatchesOrQuery: function (obj, orQuery) {
+        objectMatchesOrQuery: function(obj, orQuery) {
             for (var idx in orQuery) {
                 if (orQuery.hasOwnProperty(idx)) {
                     var query = orQuery[idx];
@@ -200,7 +200,7 @@
             }
             return false;
         },
-        objectMatchesAndQuery: function (obj, andQuery) {
+        objectMatchesAndQuery: function(obj, andQuery) {
             for (var idx in andQuery) {
                 if (andQuery.hasOwnProperty(idx)) {
                     var query = andQuery[idx];
@@ -211,7 +211,7 @@
             }
             return true;
         },
-        splitMatches: function (obj, unprocessedField, value) {
+        splitMatches: function(obj, unprocessedField, value) {
             var op = 'e';
             var fields = unprocessedField.split('.');
             var splt = fields[fields.length - 1].split('__');
@@ -223,7 +223,7 @@
                 field = splt[0];
             }
             fields[fields.length - 1] = field;
-            _.each(fields.slice(0, fields.length - 1), function (f) {
+            _.each(fields.slice(0, fields.length - 1), function(f) {
                 obj = obj[f];
             });
             // If we get to the point where we're about to index null or undefined we stop - obviously this object does
@@ -241,9 +241,18 @@
             }
             return false;
         },
-        objectMatches: function (obj, unprocessedField, value, query) {
+        objectMatches: function(obj, unprocessedField, value, query) {
             if (unprocessedField == '$or') {
-                if (!this.objectMatchesOrQuery(obj, query['$or'])) return false;
+                var $or = query['$or'];
+                if (!util.isArray($or)) {
+                    $or = Object.keys($or).map(function(k) {
+                        var normalised = {};
+                        normalised[k] = $or[k];
+                        return normalised;
+                    });
+                }
+                console.log('$or', $or);
+                if (!this.objectMatchesOrQuery(obj, $or)) return false;
             }
             else if (unprocessedField == '$and') {
                 if (!this.objectMatchesAndQuery(obj, query['$and'])) return false;
@@ -255,7 +264,7 @@
             }
             return true;
         },
-        objectMatchesBaseQuery: function (obj, query) {
+        objectMatchesBaseQuery: function(obj, query) {
             var fields = Object.keys(query);
             for (var i = 0; i < fields.length; i++) {
                 var unprocessedField = fields[i],
@@ -266,7 +275,7 @@
             }
             return true;
         },
-        objectMatchesQuery: function (obj) {
+        objectMatchesQuery: function(obj) {
             return this.objectMatchesBaseQuery(obj, this.query);
         }
     });
