@@ -1,4 +1,4 @@
-(function () {
+(function() {
 
     var log = require('./log')('model'),
         CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
@@ -32,7 +32,7 @@
         util.extendFromOpts(this, opts, {
             methods: {},
             attributes: [],
-            collection: function (c) {
+            collection: function(c) {
                 if (util.isString(c)) {
                     c = CollectionRegistry[c];
                 }
@@ -62,18 +62,18 @@
 
         Object.defineProperties(this, {
             _relationshipNames: {
-                get: function () {
+                get: function() {
                     return Object.keys(self.relationships);
                 },
                 enumerable: true
             },
             _attributeNames: {
-                get: function () {
+                get: function() {
                     var names = [];
                     if (self.id) {
                         names.push(self.id);
                     }
-                    _.each(self.attributes, function (x) {
+                    _.each(self.attributes, function(x) {
                         names.push(x.name)
                     });
                     return names;
@@ -82,22 +82,22 @@
                 configurable: true
             },
             installed: {
-                get: function () {
+                get: function() {
                     return self._installed && self._relationshipsInstalled && self._reverseRelationshipsInstalled;
                 },
                 enumerable: true,
                 configurable: true
             },
             descendants: {
-                get: function () {
-                    return _.reduce(self.children, function (memo, descendant) {
+                get: function() {
+                    return _.reduce(self.children, function(memo, descendant) {
                         return Array.prototype.concat.call(memo, descendant.descendants);
                     }.bind(self), _.extend([], self.children));
                 },
                 enumerable: true
             },
             dirty: {
-                get: function () {
+                get: function() {
                     if (siesta.ext.storageEnabled) {
                         var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
                             hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
@@ -108,13 +108,16 @@
                 enumerable: true
             },
             collectionName: {
-                get: function () {
+                get: function() {
                     return this.collection.name;
                 },
                 enumerable: true
             }
         });
-        events.ProxyEventEmitter.call(this, this.collectionName + ':' + this.name);
+        var globalEventName = this.collectionName + ':' + this.name,
+            proxied = {};
+
+        events.ProxyEventEmitter.call(this, globalEventName, proxied);
     }
 
     _.extend(Model, {
@@ -124,8 +127,8 @@
          * @returns {Array}
          * @private
          */
-        _processAttributes: function (attributes) {
-            return _.reduce(attributes, function (m, a) {
+        _processAttributes: function(attributes) {
+            return _.reduce(attributes, function(m, a) {
                 if (typeof a == 'string') {
                     m.push({
                         name: a
@@ -142,9 +145,9 @@
     Model.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
     _.extend(Model.prototype, {
-        installStatics: function (statics) {
+        installStatics: function(statics) {
             if (statics) {
-                _.each(Object.keys(statics), function (staticName) {
+                _.each(Object.keys(statics), function(staticName) {
                     if (this[staticName]) {
                         log('Static method with name "' + staticName + '" already exists. Ignoring it.');
                     }
@@ -155,7 +158,7 @@
             }
             return statics;
         },
-        _validateRelationshipType: function (relationship) {
+        _validateRelationshipType: function(relationship) {
             if (!relationship.type) {
                 if (this.singleton) relationship.type = RelationshipType.OneToOne;
                 else relationship.type = RelationshipType.OneToMany;
@@ -172,7 +175,7 @@
          * Install relationships. Returns error in form of string if fails.
          * @return {String|null}
          */
-        installRelationships: function () {
+        installRelationships: function() {
             if (!this._relationshipsInstalled) {
                 var self = this,
                     err = null;
@@ -230,7 +233,7 @@
             if (!err) this._relationshipsInstalled = true;
             return err;
         },
-        installReverseRelationships: function () {
+        installReverseRelationships: function() {
             if (!this._reverseRelationshipsInstalled) {
                 for (var forwardName in this.relationships) {
                     if (this.relationships.hasOwnProperty(forwardName)) {
@@ -252,21 +255,21 @@
                 throw new InternalSiestaError('Reverse relationships for "' + this.name + '" have already been installed.');
             }
         },
-        _query: function (query) {
+        _query: function(query) {
             return new Query(this, query || {});
         },
-        query: function (query, cb) {
-            return util.promise(cb, function (cb) {
+        query: function(query, cb) {
+            var promise = util.promise(cb, function(cb) {
                 if (!this.singleton) return (this._query(query)).execute(cb);
                 else {
-                    (this._query({__ignoreInstalled: true})).execute(function (err, objs) {
+                    (this._query({__ignoreInstalled: true})).execute(function(err, objs) {
                         if (err) cb(err);
                         else {
                             // Cache a new singleton and then reexecute the query
                             query = _.extend({}, query);
                             query.__ignoreInstalled = true;
                             if (!objs.length) {
-                                this.graph({}, function (err) {
+                                this.graph({}, function(err) {
                                     if (!err) {
                                         (this._query(query)).execute(cb);
                                     }
@@ -282,21 +285,21 @@
                     }.bind(this));
                 }
             }.bind(this));
-
+            return promise;
         },
-        reactiveQuery: function (query) {
+        reactiveQuery: function(query) {
             return new ReactiveQuery(new Query(this, query || {}));
         },
-        arrangedReactiveQuery: function (query) {
+        arrangedReactiveQuery: function(query) {
             return new ArrangedReactiveQuery(new Query(this, query || {}));
         },
-        one: function (opts, cb) {
+        one: function(opts, cb) {
             if (typeof opts == 'function') {
                 cb = opts;
                 opts = {};
             }
-            return util.promise(cb, function (cb) {
-                this.query(opts, function (err, res) {
+            return util.promise(cb, function(cb) {
+                this.query(opts, function(err, res) {
                     if (err) cb(err);
                     else {
                         if (res.length > 1) {
@@ -310,7 +313,7 @@
                 });
             }.bind(this));
         },
-        all: function (q, cb) {
+        all: function(q, cb) {
             if (typeof q == 'function') {
                 cb = q;
                 q = {};
@@ -320,9 +323,9 @@
             if (q.__order) query.__order = q.__order;
             return this.query(q, cb);
         },
-        install: function (cb) {
+        install: function(cb) {
             log('Installing mapping ' + this.name);
-            return util.promise(cb, function (cb) {
+            return util.promise(cb, function(cb) {
                 if (!this._installed) {
                     this._installed = true;
                     cb();
@@ -340,11 +343,11 @@
          * @param {boolean} opts._ignoreInstalled - A hack that allows mapping onto Models even if install process has not finished.
          * @param {function} [cb] Called once pouch persistence returns.
          */
-        graph: function (data, opts, cb) {
+        graph: function(data, opts, cb) {
             if (typeof opts == 'function') cb = opts;
             opts = opts || {};
-            return util.promise(cb, function (cb) {
-                var _map = function () {
+            return util.promise(cb, function(cb) {
+                var _map = function() {
                     var overrides = opts.override;
                     if (overrides) {
                         if (util.isArray(overrides)) opts.objects = overrides;
@@ -354,7 +357,7 @@
                     if (util.isArray(data)) {
                         this._mapBulk(data, opts, cb);
                     } else {
-                        this._mapBulk([data], opts, function (err, objects) {
+                        this._mapBulk([data], opts, function(err, objects) {
                             var obj;
                             if (objects) {
                                 if (objects.length) {
@@ -372,10 +375,10 @@
                 else siesta._afterInstall(_map);
             }.bind(this));
         },
-        _mapBulk: function (data, opts, callback) {
+        _mapBulk: function(data, opts, callback) {
             _.extend(opts, {model: this, data: data});
             var op = new MappingOperation(opts);
-            op.start(function (err, objects) {
+            op.start(function(err, objects) {
                 if (err) {
                     if (callback) callback(err);
                 } else {
@@ -383,31 +386,31 @@
                 }
             });
         },
-        _countCache: function () {
+        _countCache: function() {
             var collCache = cache._localCacheByType[this.collectionName] || {};
             var modelCache = collCache[this.name] || {};
-            return _.reduce(Object.keys(modelCache), function (m, _id) {
+            return _.reduce(Object.keys(modelCache), function(m, _id) {
                 m[_id] = {};
                 return m;
             }, {});
         },
-        count: function (cb) {
-            return util.promise(cb, function (cb) {
+        count: function(cb) {
+            return util.promise(cb, function(cb) {
                 cb(null, Object.keys(this._countCache()).length);
             }.bind(this));
         },
-        _dump: function (asJSON) {
+        _dump: function(asJSON) {
             var dumped = {};
             dumped.name = this.name;
             dumped.attributes = this.attributes;
             dumped.id = this.id;
             dumped.collection = this.collectionName;
-            dumped.relationships = _.map(this.relationships, function (r) {
+            dumped.relationships = _.map(this.relationships, function(r) {
                 return r.isForward ? r.forwardName : r.reverseName;
             });
             return asJSON ? util.prettyPrint(dumped) : dumped;
         },
-        toString: function () {
+        toString: function() {
             return 'Model[' + this.name + ']';
         }
 
@@ -415,7 +418,7 @@
 
     // Subclassing
     _.extend(Model.prototype, {
-        child: function (nameOrOpts, opts) {
+        child: function(nameOrOpts, opts) {
             if (typeof nameOrOpts == 'string') {
                 opts.name = nameOrOpts;
             } else {
@@ -436,13 +439,13 @@
             this.children.push(model);
             return model;
         },
-        isChildOf: function (parent) {
+        isChildOf: function(parent) {
             return this.parent == parent;
         },
-        isParentOf: function (child) {
+        isParentOf: function(child) {
             return this.children.indexOf(child) > -1;
         },
-        isDescendantOf: function (ancestor) {
+        isDescendantOf: function(ancestor) {
             var parent = this.parent;
             while (parent) {
                 if (parent == ancestor) return true;
@@ -450,10 +453,10 @@
             }
             return false;
         },
-        isAncestorOf: function (descendant) {
+        isAncestorOf: function(descendant) {
             return this.descendants.indexOf(descendant) > -1;
         },
-        hasAttributeNamed: function (attributeName) {
+        hasAttributeNamed: function(attributeName) {
             return this._attributeNames.indexOf(attributeName) > -1;
         }
     });

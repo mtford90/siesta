@@ -27,10 +27,21 @@
          * @param opts.type
          */
         _constructProxyChain: function _constructProxyChain(opts) {
-            var chain = function() {
+            var emitter = this;
+            var chain;
+            chain = function() {
                 this._removeListener(opts.fn, opts.type);
+                if (chain.parent) chain.parent(); // Cancel listeners all the way up the chain.
             }.bind(this);
             _.extend(chain, this.proxyChainOpts);
+            chain._parent = null;
+            chain._children = [];
+            chain.spawnChild = function(opts) {
+                var chain = emitter._constructProxyChain(opts);
+                emitter.parent = this;
+                this._children.push(chain);
+                return chain;
+            };
             return chain;
         },
         listen: function(type, fn) {
