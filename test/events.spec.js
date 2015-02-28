@@ -6,7 +6,7 @@ var assert = require('chai').assert,
     ProxyEventEmitter = internal.ProxyEventEmitter,
     RelationshipType = siesta.RelationshipType;
 
-describe('events', function () {
+describe.only('events', function () {
 
     before(function () {
         siesta.ext.storageEnabled = false;
@@ -1067,7 +1067,6 @@ describe('events', function () {
             assert.equal(emitter.listeners[type2].length, 1);
         });
 
-
         it('remove all listeners', function () {
             var emitter = new ProxyEventEmitter(EVENT);
             var type1 = 'blah',
@@ -1082,7 +1081,6 @@ describe('events', function () {
             assert.equal(emitter.listeners[type1].length, 0);
             assert.equal(emitter.listeners[type2].length, 0);
         });
-
 
         describe('implementations', function () {
             var Car;
@@ -1164,7 +1162,6 @@ describe('events', function () {
                 });
             });
         });
-
 
     })
 
