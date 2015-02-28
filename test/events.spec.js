@@ -1155,12 +1155,38 @@ describe('events', function() {
               cancelChain();
               Car.graph({colour: 'green'}, function(err, car2) {
                 car2.colour = 'red';
-                console.log('newCalled', newCalled);
-                console.log('setCalled', setCalled);
                 assert.equal(newCalled, 1, 'chain should be cancelled (new handler was called multiple times)');
                 assert.equal(setCalled, 1, 'chain should be cancelled (set handler was called multiple times)');
                 done();
               });
+            });
+          });
+          it('cancel, two on links, and query', function(done) {
+            var cancelChain,
+                newCalled = 0,
+                setCalled = 0;
+            Car.graph({colour: 'purple'}, function(err, purpleCar) {
+              assert.notOk(err);
+              cancelChain = Car.on('new', function() {
+                newCalled++;
+              }).on('set', function(e) {
+                if (e.new == 'red') {
+                  setCalled++;
+                }
+              }).query({})
+                  .then(function(allCars) {
+                    assert.include(allCars, purpleCar);
+                    Car.graph({colour: 'green'}, function(err, car) {
+                      car.colour = 'red';
+                      cancelChain();
+                      Car.graph({colour: 'green'}, function(err, car2) {
+                        car2.colour = 'red';
+                        assert.equal(newCalled, 1, 'chain should be cancelled (new handler was called multiple times)');
+                        assert.equal(setCalled, 1, 'chain should be cancelled (set handler was called multiple times)');
+                        done();
+                      });
+                    });
+                  });
             });
           });
         });
