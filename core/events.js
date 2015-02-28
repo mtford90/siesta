@@ -17,7 +17,7 @@
             event: event,
             listeners: {}
         });
-        this.proxyChainOpts = proxyChainOpts;
+        this.proxyChainOpts = proxyChainOpts || {};
     }
 
     _.extend(ProxyEventEmitter.prototype, {
@@ -25,14 +25,12 @@
          * @param opts
          * @param opts.fn
          * @param opts.type
-         * @param [opts.extend]
          */
         _constructProxyChain: function _constructProxyChain(opts) {
-            var extend = opts.extend || {};
             var chain = function() {
                 this._removeListener(opts.fn, opts.type);
             }.bind(this);
-            _.extend(chain, extend);
+            _.extend(chain, this.proxyChainOpts);
             return chain;
         },
         listen: function(type, fn) {
