@@ -1123,14 +1123,45 @@ describe('events', function() {
       });
 
       describe('model', function() {
-        describe('chain', function() {
-          it('cancel', function(done) {
-            var cancelChain;
-            cancelChain = Car.on('new', function(car) {
+        describe.only('chain', function() {
+          it('cancel, one link', function(done) {
+            var cancelChain,
+                newCalled = 0;
+            cancelChain = Car.on('new', function() {
               cancelChain();
-              done();
+              newCalled++;
+
             });
-            Car.graph({colour: 'green'})
+            Car.graph({colour: 'green'}, function() {
+              Car.graph({colour: 'green'}, function() {
+                assert.equal(newCalled, 1);
+                done();
+              })
+            })
+          });
+          it('cancel, two on links', function(done) {
+            var cancelChain,
+                newCalled = 0,
+                setCalled = 0;
+            cancelChain = Car.on('new', function() {
+              newCalled++;
+            }).on('set', function(e) {
+              if (e.new == 'red') {
+                setCalled++;
+              }
+            });
+            Car.graph({colour: 'green'}, function(err, car) {
+              car.colour = 'red';
+              cancelChain();
+              Car.graph({colour: 'green'}, function(err, car2) {
+                car2.colour = 'red';
+                console.log('newCalled', newCalled);
+                console.log('setCalled', setCalled);
+                assert.equal(newCalled, 1, 'chain should be cancelled (new handler was called multiple times)');
+                assert.equal(setCalled, 1, 'chain should be cancelled (set handler was called multiple times)');
+                done();
+              });
+            });
           });
         });
 

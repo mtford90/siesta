@@ -1,7 +1,9 @@
 (function() {
   var EventEmitter = require('events').EventEmitter,
       ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-      _ = require('./util')._,
+      util = require('./util'),
+      argsarray = require('argsarray'),
+      _ = util._,
       modelEvents = require('./modelEvents');
 
   var events = new EventEmitter();
@@ -17,7 +19,12 @@
       event: event,
       listeners: {}
     });
-    this.proxyChainOpts = proxyChainOpts || {};
+    var defaultProxyChainOpts = {};
+
+    defaultProxyChainOpts.on = defaultProxyChainOpts.listen = this.listen.bind(this);
+    defaultProxyChainOpts.once = defaultProxyChainOpts.listenOnce = this.listenOnce.bind(this);
+
+    this.proxyChainOpts = _.extend(defaultProxyChainOpts, proxyChainOpts || {});
   }
 
   _.extend(ProxyEventEmitter.prototype, {
@@ -27,22 +34,22 @@
      * @param opts.type
      */
     _constructProxyChain: function _constructProxyChain(opts) {
-      var emitter = this;
-      var chain;
-      chain = function() {
-        this._removeListener(opts.fn, opts.type);
-        if (chain.parent) chain.parent(); // Cancel listeners all the way up the chain.
+      var firstLink;
+      firstLink = function() {
+        var typ = opts.type;
+        this._removeListener(opts.fn, typ);
+        if (firstLink._parentLink) firstLink._parentLink(); // Cancel listeners all the way up the chain.
       }.bind(this);
-      _.extend(chain, this.proxyChainOpts);
-      chain._parent = null;
-      chain._children = [];
-      chain.spawnChild = function(opts) {
-        var chain = emitter._constructProxyChain(opts);
-        emitter._parent = this;
-        this._children.push(chain);
-        return chain;
-      };
-      return chain;
+      Object.keys(this.proxyChainOpts).forEach(function(prop) {
+        var func = this.proxyChainOpts[prop];
+        firstLink[prop] = argsarray(function(args) {
+          var link = func.apply(func.__siesta_bound_object, args);
+          link._parentLink = firstLink;
+          return link;
+        }.bind(this));
+      }.bind(this));
+      firstLink._parentLink = null;
+      return firstLink;
     },
     listen: function(type, fn) {
       if (typeof type == 'function') {
