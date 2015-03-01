@@ -27,7 +27,7 @@
   function ReactiveQuery(query) {
     var self = this;
     EventEmitter.call(this);
-
+    Chain.call(this);
     _.extend(this, {
       insertionPolicy: ReactiveQuery.InsertionPolicy.Back,
       initialised: false
@@ -78,9 +78,12 @@
         }
       }
     });
+
+
   }
 
   ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
+  _.extend(ReactiveQuery.prototype, Chain.prototype);
 
   _.extend(ReactiveQuery, {
     InsertionPolicy: {
@@ -242,6 +245,17 @@
     },
     listenOnce: function(fn) {
       this.once('change', fn);
+    },
+    on: function(name, fn) {
+      EventEmitter.prototype.on.call(this, name, fn);
+      return this._link({
+        on: this.on.bind(this),
+        listen: this.on.bind(this),
+        once: this.once.bind(this),
+        listenOnce: this.listenOnce.bind(this)
+      }, function() {
+        EventEmitter.prototype.removeListener.call(this, name, fn);
+      })
     }
   });
 

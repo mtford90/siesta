@@ -5,7 +5,7 @@
   /**
    * Class for facilitating "chained" behaviour e.g:
    *
-   * Users
+   * var cancel = Users
    *  .on('new', function (user) {
    *     // ...
    *   })
@@ -81,6 +81,12 @@
             var nextLink = possibleLink;
           }
           nextLink._parentLink = link;
+          // Inherit methods from the parent link if those methods don't already exist.
+          for (prop in link) {
+            if (link[prop] instanceof Function) {
+              nextLink[prop] = link[prop].bind(link);
+            }
+          }
           return nextLink;
         }.bind(this));
       }.bind(this));

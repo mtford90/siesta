@@ -535,7 +535,6 @@ describe('reactive query', function() {
       var numCalls = 0;
       cancel = Person.query({age__lt: 30})
           .then(function() {
-            console.log('graph!');
             Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
           })
           .on('change', function() {
@@ -553,6 +552,27 @@ describe('reactive query', function() {
             cancel();
             done();
           })
+
+    });
+    it('emission, multiple handlers, weird order', function(done) {
+      var cancel;
+      var numCalls = 0;
+      cancel = Person.query({age__lt: 30})
+          .on('change', function() {
+            numCalls++;
+          })
+          .then(function() {
+            Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
+          })
+          .on('change', function() {
+            numCalls++;
+          })
+          .on('change', function() {
+            numCalls++;
+            assert.equal(numCalls, 3);
+            cancel();
+            done();
+          });
 
     });
   });
