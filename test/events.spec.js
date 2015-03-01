@@ -994,7 +994,7 @@ describe('events', function() {
     it('listen works', function(done) {
       var emitter = new ProxyEventEmitter(EVENT),
           e = {};
-      var cancelListen = emitter.listen(function(_e) {
+      var cancelListen = emitter.on('*', function(_e) {
         assert.equal(e, _e, 'payload is emitted');
         cancelListen();
         done();
@@ -1005,7 +1005,7 @@ describe('events', function() {
     it('listen * works', function(done) {
       var emitter = new ProxyEventEmitter(EVENT),
           e = {};
-      var cancelListen = emitter.listen('*', function(_e) {
+      var cancelListen = emitter.on('*', function(_e) {
         assert.equal(e, _e, 'payload is emitted');
         cancelListen();
         done();
@@ -1013,24 +1013,21 @@ describe('events', function() {
       emitter.emit(e);
     });
 
-    it('listenOnce works', function(done) {
+    it('once works', function(done) {
       var emitter = new ProxyEventEmitter(EVENT),
           e = {};
-      emitter.listenOnce(function(_e) {
+      emitter.once(function(_e) {
         assert.equal(e, _e, 'payload is emitted');
         done();
       });
       emitter.emit(e);
     });
 
-    it('listen == on', function() {
-      assert.equal(ProxyEventEmitter.prototype.listen, ProxyEventEmitter.prototype.on);
-    });
 
-    it('listenOnce to specific type', function(done) {
+    it('once to specific type', function(done) {
       var emitter = new ProxyEventEmitter(EVENT);
       var type = 'blah';
-      emitter.listenOnce(type, function(e) {
+      emitter.once(type, function(e) {
         assert.equal(e.type, type);
         done();
       });
@@ -1041,7 +1038,7 @@ describe('events', function() {
     it('listen to specific type', function(done) {
       var emitter = new ProxyEventEmitter(EVENT);
       var type = 'blah';
-      var cancelListen = emitter.listen(type, function(e) {
+      var cancelListen = emitter.on(type, function(e) {
         assert.equal(e.type, type);
         cancelListen();
         assert.equal(emitter.listeners[type].length, 0);
@@ -1056,13 +1053,13 @@ describe('events', function() {
       var emitter = new ProxyEventEmitter(EVENT);
       var type1 = 'blah',
           type2 = 'blah2';
-      emitter.listen(type1, function() {
+      emitter.on(type1, function() {
       });
-      emitter.listen(type1, function() {
+      emitter.on(type1, function() {
       });
-      emitter.listen(type1, function() {
+      emitter.on(type1, function() {
       });
-      emitter.listen(type2, function() {
+      emitter.on(type2, function() {
       });
       assert.equal(emitter.listeners[type1].length, 3);
       assert.equal(emitter.listeners[type2].length, 1);
@@ -1075,13 +1072,13 @@ describe('events', function() {
       var emitter = new ProxyEventEmitter(EVENT);
       var type1 = 'blah',
           type2 = 'blah2';
-      emitter.listen(type1, function() {
+      emitter.on(type1, function() {
       });
-      emitter.listen(type1, function() {
+      emitter.on(type1, function() {
       });
-      emitter.listen(type1, function() {
+      emitter.on(type1, function() {
       });
-      emitter.listen(type2, function() {
+      emitter.on(type2, function() {
       });
       assert.equal(emitter.listeners[type1].length, 3);
       assert.equal(emitter.listeners[type2].length, 1);
@@ -1108,16 +1105,16 @@ describe('events', function() {
             cancelListen();
             done();
           };
-          var cancelListen = Collection.listen(listener);
+          var cancelListen = Collection.on('*', listener);
           Car.graph({colour: 'red', name: 'Aston Martin'});
         });
-        it('listenOnce', function(done) {
+        it('once', function(done) {
           var listener;
           listener = function(n) {
             assert.ok(n);
             done();
           };
-          Collection.listenOnce(listener);
+          Collection.once(listener);
           Car.graph({colour: 'red', name: 'Aston Martin'});
         });
       });
@@ -1198,16 +1195,16 @@ describe('events', function() {
             cancelListen();
             done();
           };
-          var cancelListen = Car.listen(listener);
+          var cancelListen = Car.on('*', listener);
           Car.graph({colour: 'red', name: 'Aston Martin'});
         });
-        it('listenOnce', function(done) {
+        it('once', function(done) {
           var listener;
           listener = function(n) {
             assert.ok(n);
             done();
           };
-          Car.listenOnce(listener);
+          Car.once(listener);
           Car.graph({colour: 'red', name: 'Aston Martin'});
         });
       });
@@ -1221,18 +1218,18 @@ describe('events', function() {
               cancelListen();
               done();
             };
-            var cancelListen = car.listen(listener);
+            var cancelListen = car.on('*', listener);
             Car.graph({id: 1, colour: 'blue'});
           }).catch(done);
         });
-        it('listenOnce', function(done) {
+        it('once', function(done) {
           Car.graph({id: 1, colour: 'red', name: 'Aston Martin'}).then(function(car) {
             var listener;
             listener = function(n) {
               assert.ok(n);
               done();
             };
-            car.listenOnce(listener);
+            car.once(listener);
             Car.graph({id: 1, colour: 'blue'});
           }).catch(done);
         });

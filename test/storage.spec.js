@@ -779,7 +779,7 @@ describe('storage', function () {
                             .then(function (config) {
                                 console.log('started');
 
-                                config.listen(this.onConfigChange.bind(this));
+                                config.on('*', this.onConfigChange.bind(this));
                                 done();
                             }.bind(this))
                             .catch(done);

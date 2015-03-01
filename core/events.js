@@ -22,8 +22,8 @@
     });
     var defaultChainOpts = {};
 
-    defaultChainOpts.on = defaultChainOpts.listen = this.listen.bind(this);
-    defaultChainOpts.once = defaultChainOpts.listenOnce = this.listenOnce.bind(this);
+    defaultChainOpts.on = this.on.bind(this);
+    defaultChainOpts.once = this.once.bind(this);
 
     Chain.call(this, _.extend(defaultChainOpts, chainOpts || {}));
   }
@@ -31,7 +31,7 @@
   ProxyEventEmitter.prototype = Object.create(Chain.prototype);
 
   _.extend(ProxyEventEmitter.prototype, {
-    listen: function(type, fn) {
+    on: function(type, fn) {
       if (typeof type == 'function') {
         fn = type;
         type = null;
@@ -63,13 +63,14 @@
         extend: this.proxyChainOpts
       });
     },
-    listenOnce: function(type, fn) {
+    once: function(type, fn) {
       var event = this.event;
       if (typeof type == 'function') {
         fn = type;
         type = null;
       }
       else {
+        if (type.trim() == '*') type = null;
         var _fn = fn;
         fn = function(e) {
           e = e || {};
@@ -124,12 +125,6 @@
         }
       }
     }
-  });
-
-  // Aliases
-  _.extend(ProxyEventEmitter.prototype, {
-    on: ProxyEventEmitter.prototype.listen,
-    once: ProxyEventEmitter.prototype.listenOnce
   });
 
   _.extend(events, {

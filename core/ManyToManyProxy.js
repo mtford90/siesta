@@ -112,7 +112,7 @@
             obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
         },
         registerRemovalListener: function (obj) {
-            this.relatedCancelListeners[obj._id] = obj.listen(function (e) {
+            this.relatedCancelListeners[obj._id] = obj.on('*', function (e) {
 
             }.bind(this));
         }

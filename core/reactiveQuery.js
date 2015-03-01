@@ -237,14 +237,15 @@
       this.results = null;
       this.handler = null;
     },
-    on: function(name, fn) {
+    _registerEventHandler: function(on, name, fn) {
+      var removeListener = EventEmitter.prototype.removeListener;
       if (name.trim() == '*') {
         Object.keys(modelEvents.ModelEventType).forEach(function(k) {
-          EventEmitter.prototype.on.call(this, modelEvents.ModelEventType[k], fn);
+          on.call(this, modelEvents.ModelEventType[k], fn);
         }.bind(this));
       }
       else {
-        EventEmitter.prototype.on.call(this, name, fn);
+        on.call(this, name, fn);
       }
       return this._link({
         on: this.on.bind(this),
@@ -252,13 +253,19 @@
       }, function() {
         if (name.trim() == '*') {
           Object.keys(modelEvents.ModelEventType).forEach(function(k) {
-            EventEmitter.prototype.removeListener.call(this, modelEvents.ModelEventType[k], fn);
+            removeListener.call(this, modelEvents.ModelEventType[k], fn);
           }.bind(this));
         }
         else {
-          EventEmitter.prototype.removeListener.call(this, name, fn);
+          removeListener.call(this, name, fn);
         }
       })
+    },
+    on: function(name, fn) {
+      return this._registerEventHandler(EventEmitter.prototype.on, name, fn);
+    },
+    once: function(name, fn) {
+      return this._registerEventHandler(EventEmitter.prototype.once, name, fn);
     }
   });
 

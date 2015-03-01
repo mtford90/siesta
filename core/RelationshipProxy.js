@@ -144,7 +144,7 @@
             }
         },
         listenForRemoval: function (obj) {
-            this.cancelListens[obj._id] = obj.listen(function (e) {
+            this.cancelListens[obj._id] = obj.on('*', function (e) {
                 if (e.type == ModelEventType.Remove) {
                     if (util.isArray(this.related)) {
                         var idx = this.related.indexOf(obj);
