@@ -42,7 +42,7 @@ describe('install step', function () {
         });
 
         it('reactive query', function (done) {
-            var rq = Person.reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveQuery({age__lt: 30});
             rq.init()
                 .then(function () {
                     assert.notOk(rq.results.length);
@@ -53,7 +53,7 @@ describe('install step', function () {
         });
 
         it('arranged reactive query', function (done) {
-            var rq = Person.arrangedReactiveQuery({age__lt: 30});
+            var rq = Person._arrangedReactiveQuery({age__lt: 30});
             rq.init()
                 .then(function () {
                     assert.notOk(rq.results.length);
@@ -128,7 +128,7 @@ describe('install step', function () {
                 {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
                 {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
             ]).then(function () {
-                var rq = Person.reactiveQuery({age__gt: 23});
+                var rq = Person._reactiveQuery({age__gt: 23});
                 rq.init()
                     .then(function () {
                         assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
@@ -144,7 +144,7 @@ describe('install step', function () {
                 {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
                 {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
             ]).then(function () {
-                var rq = Person.arrangedReactiveQuery({age__gt: 23});
+                var rq = Person._arrangedReactiveQuery({age__gt: 23});
                 rq.init()
                     .then(function () {
                         assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');

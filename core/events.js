@@ -4,7 +4,8 @@
       util = require('./util'),
       argsarray = require('argsarray'),
       _ = util._,
-      modelEvents = require('./modelEvents');
+      modelEvents = require('./modelEvents'),
+      Chain = require('./Chain');
 
   var events = new EventEmitter();
   events.setMaxListeners(100);
@@ -14,85 +15,17 @@
    * Manages its own set of listeners.
    * @constructor
    */
-  function ProxyEventEmitter(event, linkOpts) {
+  function ProxyEventEmitter(event, chainOpts) {
     _.extend(this, {
       event: event,
       listeners: {}
     });
-    var defaultProxyChainOpts = {};
-
-    defaultProxyChainOpts.on = defaultProxyChainOpts.listen = this.listen.bind(this);
-    defaultProxyChainOpts.once = defaultProxyChainOpts.listenOnce = this.listenOnce.bind(this);
-
-    this.proxyChainOpts = _.extend(defaultProxyChainOpts, linkOpts || {});
+    Chain.call(this, chainOpts);
   }
 
+  ProxyEventEmitter.prototype = Object.create(Chain.prototype);
+
   _.extend(ProxyEventEmitter.prototype, {
-    /**
-     * Construct a link in the chain of calls.
-     * @param opts
-     * @param opts.fn
-     * @param opts.type
-     */
-    _handlerLink: function(opts) {
-      var firstLink;
-      firstLink = function() {
-        var typ = opts.type;
-        if (opts.fn)
-          this._removeListener(opts.fn, typ);
-        if (firstLink._parentLink) firstLink._parentLink(); // Cancel listeners all the way up the chain.
-      }.bind(this);
-      Object.keys(this.proxyChainOpts).forEach(function(prop) {
-        var func = this.proxyChainOpts[prop];
-        firstLink[prop] = argsarray(function(args) {
-          var link = func.apply(func.__siesta_bound_object, args);
-          link._parentLink = firstLink;
-          return link;
-        }.bind(this));
-      }.bind(this));
-      firstLink._parentLink = null;
-      return firstLink;
-    },
-    /**
-     * Construct a link in the chain of calls.
-     * @param opts
-     * @param {Function} [clean]
-     */
-    _link: function(opts, clean) {
-      var emitter = this;
-      clean = clean || function() {};
-      var link;
-      link = function() {
-        clean();
-        if (link._parentLink) link._parentLink(); // Cancel listeners all the way up the chain.
-      }.bind(this);
-      link.__siesta_isLink = true;
-      link.opts = opts;
-      link.clean = clean;
-      Object.keys(opts).forEach(function(prop) {
-        var func = opts[prop];
-        link[prop] = argsarray(function(args) {
-          var possibleLink = func.apply(func.__siesta_bound_object, args);
-          if (!possibleLink.__siesta_isLink) { // Patch in a link in the chain to avoid it being broken, basing off the current link
-            nextLink = emitter._link(link.opts);
-            for (var prop in possibleLink) {
-              //noinspection JSUnfilteredForInLoop
-              if (possibleLink[prop] instanceof Function) {
-                //noinspection JSUnfilteredForInLoop
-                nextLink[prop] = possibleLink[prop];
-              }
-            }
-          }
-          else {
-            var nextLink = possibleLink;
-          }
-          nextLink._parentLink = link;
-          return nextLink;
-        }.bind(this));
-      }.bind(this));
-      link._parentLink = null;
-      return link;
-    },
     listen: function(type, fn) {
       if (typeof type == 'function') {
         fn = type;

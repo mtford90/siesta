@@ -10,6 +10,7 @@
       util = require('./util'),
       cache = require('./cache'),
       store = require('./store'),
+      argsarray = require('argsarray'),
       error = require('./error'),
       extend = require('extend'),
       modelEvents = require('./modelEvents'),
@@ -261,10 +262,15 @@
       return new Query(this, query || {});
     },
     query: function(query, cb) {
+      var queryInstance;
       var promise = util.promise(cb, function(cb) {
-        if (!this.singleton) return (this._query(query)).execute(cb);
+        if (!this.singleton) {
+          queryInstance = this._query(query);
+          return queryInstance.execute(cb);
+        }
         else {
-          (this._query({__ignoreInstalled: true})).execute(function(err, objs) {
+          queryInstance = this._query({__ignoreInstalled: true});
+          queryInstance.execute(function(err, objs) {
             if (err) cb(err);
             else {
               // Cache a new singleton and then reexecute the query
@@ -273,7 +279,8 @@
               if (!objs.length) {
                 this.graph({}, function(err) {
                   if (!err) {
-                    (this._query(query)).execute(cb);
+                    queryInstance = this._query(query);
+                    queryInstance.execute(cb);
                   }
                   else {
                     cb(err);
@@ -281,22 +288,58 @@
                 }.bind(this));
               }
               else {
-                (this._query(query)).execute(cb);
+                queryInstance = this._query(query);
+                queryInstance.execute(cb);
               }
             }
           }.bind(this));
         }
       }.bind(this));
-      var link = this._link({
-        then: promise.then.bind(promise),
-        catch: promise.catch.bind(promise)
+
+      // By wrapping the promise in another promise we can push the invocations to the bottom of the event loop so that
+      // any event handlers added to the chain are honoured straight away.
+      var linkPromise = new Promise(function(resolve, reject) {
+        promise.then(argsarray(function(args) {
+          setTimeout(function() {
+            resolve.apply(null, args);
+          });
+        }), argsarray(function(args) {
+          setTimeout(function() {
+            reject.apply(null, args);
+          })
+        }));
       });
-      return link;
+
+      return this._link({
+        then: linkPromise.then.bind(linkPromise),
+        catch: linkPromise.catch.bind(linkPromise),
+        on: argsarray(function(args) {
+          console.log('on');
+          var rq = new ReactiveQuery();
+          promise.then(function(results) {
+            console.log('constructing rq', results);
+            rq.query = queryInstance;
+            rq._applyResults(results);
+          });
+          console.log('registering handler');
+          return rq.on.apply(rq, args);
+        }.bind(this))
+      });
     },
-    reactiveQuery: function(query) {
+    /**
+     * Only used in testing at the moment.
+     * @param query
+     * @returns {ReactiveQuery}
+     */
+    _reactiveQuery: function(query) {
       return new ReactiveQuery(new Query(this, query || {}));
     },
-    arrangedReactiveQuery: function(query) {
+    /**
+     * Only used in the testing at the moment.
+     * @param query
+     * @returns {ArrangedReactiveQuery}
+     */
+    _arrangedReactiveQuery: function(query) {
       return new ArrangedReactiveQuery(new Query(this, query || {}));
     },
     one: function(opts, cb) {
