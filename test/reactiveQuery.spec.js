@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 
 var Collection = siesta;
 
-describe('reactive query', function() {
+describe.only('reactive query', function() {
   var MyCollection, Person;
 
   beforeEach(function(done) {
@@ -514,7 +514,7 @@ describe('reactive query', function() {
           .then(function() {
             Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
           })
-          .on('change', function() {
+          .on('*', function() {
             cancel();
             done();
           });
@@ -522,7 +522,7 @@ describe('reactive query', function() {
     it('emission, register handler first', function(done) {
       var cancel;
       cancel = Person.query({age__lt: 30})
-          .on('change', function() {
+          .on('*', function() {
             cancel();
             done();
           })
@@ -537,15 +537,15 @@ describe('reactive query', function() {
           .then(function() {
             Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
           })
-          .on('change', function() {
+          .on('*', function() {
             console.log(1);
             numCalls++;
           })
-          .on('change', function() {
+          .on('*', function() {
             console.log(2);
             numCalls++;
           })
-          .on('change', function() {
+          .on('*', function() {
             console.log(3);
             numCalls++;
             assert.equal(numCalls, 3);
@@ -558,16 +558,16 @@ describe('reactive query', function() {
       var cancel;
       var numCalls = 0;
       cancel = Person.query({age__lt: 30})
-          .on('change', function() {
+          .on('*', function() {
             numCalls++;
           })
           .then(function() {
             Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
           })
-          .on('change', function() {
+          .on('*', function() {
             numCalls++;
           })
-          .on('change', function() {
+          .on('*', function() {
             numCalls++;
             assert.equal(numCalls, 3);
             cancel();

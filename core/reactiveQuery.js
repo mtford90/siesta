@@ -155,7 +155,7 @@
         if (this._query.objectMatchesQuery(newObj)) {
           log('New object matches', newObj._dumpString());
           var idx = this.insert(newObj);
-          this.emit('change', {
+          this.emit(modelEvents.ModelEventType.Splice, {
             index: idx,
             added: [newObj],
             type: modelEvents.ModelEventType.Splice,
@@ -174,7 +174,7 @@
         if (matches && !alreadyContains) {
           log('Updated object now matches!', newObj._dumpString());
           idx = this.insert(newObj);
-          this.emit('change', {
+          this.emit(modelEvents.ModelEventType.Splice, {
             index: idx,
             added: [newObj],
             type: modelEvents.ModelEventType.Splice,
@@ -186,7 +186,7 @@
           results = this.results.mutableCopy();
           var removed = results.splice(index, 1);
           this.results = results.asModelQuerySet(this.model);
-          this.emit('change', {
+          this.emit(modelEvents.ModelEventType.Splice, {
             index: index,
             obj: this,
             new: newObj,
@@ -200,7 +200,7 @@
         else if (matches && alreadyContains) {
           log('Matches but already contains', newObj._dumpString());
           // Send the notification over.
-          this.emit('change', n);
+          this.emit(n.type, n);
         }
       }
       else if (n.type == modelEvents.ModelEventType.Remove) {
@@ -211,7 +211,7 @@
           log('Removing object', newObj._dumpString());
           removed = results.splice(index, 1);
           this.results = constructQuerySet(results, this.model);
-          this.emit('change', {
+          this.emit(modelEvents.ModelEventType.Splice, {
             index: index,
             obj: this,
             type: modelEvents.ModelEventType.Splice,
@@ -238,23 +238,34 @@
       this.handler = null;
     },
     listen: function(fn) {
-      this.on('change', fn);
-      return function() {
-        this.removeListener('change', fn);
-      }.bind(this);
+      return this.on('*', fn);
     },
     listenOnce: function(fn) {
-      this.once('change', fn);
+      return this.once('*', fn);
     },
     on: function(name, fn) {
-      EventEmitter.prototype.on.call(this, name, fn);
+      if (name.trim() == '*') {
+        Object.keys(modelEvents.ModelEventType).forEach(function(k) {
+          EventEmitter.prototype.on.call(this, modelEvents.ModelEventType[k], fn);
+        }.bind(this));
+      }
+      else {
+        EventEmitter.prototype.on.call(this, name, fn);
+      }
       return this._link({
         on: this.on.bind(this),
-        listen: this.on.bind(this),
+        listen: this.listen.bind(this),
         once: this.once.bind(this),
         listenOnce: this.listenOnce.bind(this)
       }, function() {
-        EventEmitter.prototype.removeListener.call(this, name, fn);
+        if (name.trim() == '*') {
+          Object.keys(modelEvents.ModelEventType).forEach(function(k) {
+            EventEmitter.prototype.removeListener.call(this, modelEvents.ModelEventType[k], fn);
+          }.bind(this));
+        }
+        else {
+          EventEmitter.prototype.removeListener.call(this, name, fn);
+        }
       })
     }
   });
