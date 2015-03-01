@@ -612,8 +612,9 @@ body.no-literate .content pre > code:hover::-webkit-scrollbar-thumb {
     body:not(.no-literate) .content {
         padding-left: 0;
         padding-right: 0;
-        width: 930px;
+        width: 100%;
         max-width: none;
+        overflow-wrap: break-word;
     }
 
     body:not(.no-literate) .content > p,
@@ -644,7 +645,7 @@ body.no-literate .content pre > code:hover::-webkit-scrollbar-thumb {
 
     body:not(.no-literate) .content > pre,
     body:not(.no-literate) .content > blockquote {
-        width: 380px;
+        width: calc(100% - 550px);
         padding-left: 20px;
         padding-right: 20px;
         float: right;
