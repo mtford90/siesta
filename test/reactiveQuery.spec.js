@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 
 var Collection = siesta;
 
-describe.only('reactive query', function() {
+describe('reactive query', function() {
   var MyCollection, Person;
 
   beforeEach(function(done) {
