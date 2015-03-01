@@ -828,50 +828,6 @@ Repo.query({stars__gte: 1000})
   });
 ```
 
-## Bulk Queries
-
-You can execute multiple queries simultaneously by passing an array instead of an object.
-
-```js
-Repo.query([{stars__gte: 1000})
-  .then(function (resultSets) {
-    // An array of result
-  });
-```
-
-You can execute queries against multiple models at the collection level or globally.
-
-```js
-MyCollection.query({attribute: 'something'})
-  .then(function (results) {
-    // Instances in the result set could be any model that is part of MyCollection
-  });
-
-siesta.query({attribute: 'something'})
-  .then(function (results) {
-    // Instances in the result set could be any model that is part of any collection
-  });
-```
-
-You can also execute bulk queries whilst specifying the model or collection
-
-```js
-MyCollection.query([
-    {username: 'mike', __model: 'User'},
-    {stars__gt: 1000, __model: Repo}
- ]).then(function (resultSets) {
-    var userResultSet = resultSets[0],
-        repoResultSet = resultSets[1]
-  });
-
-siesta.query([
-    {username: 'mike', __model: 'User', __collection: MyCollection},
-    {stars__gt: 1000, __model: Repo, __collection: 'MyCollection'}
-  ]).then(function (results) {
-    // Instances in the result set could be any model that is part of any collection
-  });
-```
-
 # Reactive Programming
 
 As well as the various events documented so far Siesta features various other mechanisms to support Reactive Programming.
