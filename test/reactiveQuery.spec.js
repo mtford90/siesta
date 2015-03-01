@@ -100,7 +100,7 @@ describe('reactive query', function() {
               if (err) done(err);
               else {
                 assert.equal(results, rq.results);
-                rq.listenOnce(function(change) {
+                rq.once('*', function(change) {
                   var added = change.added;
                   assert.equal(added.length, 1);
                   var peter = added[0];
@@ -190,7 +190,7 @@ describe('reactive query', function() {
               if (err) done(err);
               else {
                 var cancelListen;
-                cancelListen = rq.listen(function(change) {
+                cancelListen = rq.on('*', function(change) {
                   var results = rq.results;
                   assertResultsOk(results, person);
                   var removed = change.removed;
@@ -217,7 +217,7 @@ describe('reactive query', function() {
           rq.init(function(err) {
             if (err) done(err);
             else {
-              rq.listenOnce(function(n) {
+              rq.once('*', function(n) {
                 assert.equal(rq.results.length, 2, 'Should still be 2 results');
                 assert.equal(n.obj, person);
                 assert.equal(n.field, 'age');
@@ -271,7 +271,7 @@ describe('reactive query', function() {
                 rq.init(function(err) {
                   if (err) done(err);
                   else {
-                    rq.listenOnce(function(change) {
+                    rq.once('*', function(change) {
                       try {
                         var removed = change.removed;
                         assert.include(removed, person);
@@ -298,7 +298,7 @@ describe('reactive query', function() {
               .then(function(res) {
                 var person = res[0];
                 var rq = Person._reactiveQuery({age__lt: 30});
-                rq.listenOnce(function(change) {
+                rq.once('*', function(change) {
                   try {
                     var removed = change.removed;
                     assert.include(removed, person);

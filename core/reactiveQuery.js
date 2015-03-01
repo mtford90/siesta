@@ -237,12 +237,6 @@
       this.results = null;
       this.handler = null;
     },
-    listen: function(fn) {
-      return this.on('*', fn);
-    },
-    listenOnce: function(fn) {
-      return this.once('*', fn);
-    },
     on: function(name, fn) {
       if (name.trim() == '*') {
         Object.keys(modelEvents.ModelEventType).forEach(function(k) {
@@ -254,9 +248,7 @@
       }
       return this._link({
         on: this.on.bind(this),
-        listen: this.listen.bind(this),
-        once: this.once.bind(this),
-        listenOnce: this.listenOnce.bind(this)
+        once: this.once.bind(this)
       }, function() {
         if (name.trim() == '*') {
           Object.keys(modelEvents.ModelEventType).forEach(function(k) {
