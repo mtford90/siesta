@@ -1,5 +1,5 @@
 (function() {
-  
+
   var argsarray = require('argsarray');
 
   /**
@@ -18,12 +18,7 @@
    * @constructor
    */
   function Chain(opts) {
-    var defaults = {};
-
-    defaults.on = defaults.listen = this.listen.bind(this);
-    defaults.once = defaults.listenOnce = this.listenOnce.bind(this);
-
-    this.opts = _.extend(defaults, opts || {});
+    this.opts = opts;
   }
 
   Chain.prototype = {

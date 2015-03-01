@@ -20,7 +20,12 @@
       event: event,
       listeners: {}
     });
-    Chain.call(this, chainOpts);
+    var defaultChainOpts = {};
+
+    defaultChainOpts.on = defaultChainOpts.listen = this.listen.bind(this);
+    defaultChainOpts.once = defaultChainOpts.listenOnce = this.listenOnce.bind(this);
+
+    Chain.call(this, _.extend(defaultChainOpts, chainOpts || {}));
   }
 
   ProxyEventEmitter.prototype = Object.create(Chain.prototype);

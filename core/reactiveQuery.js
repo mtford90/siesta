@@ -12,6 +12,7 @@
       Query = require('./Query'),
       EventEmitter = require('events').EventEmitter,
       events = require('./events'),
+      Chain = require('./Chain'),
       modelEvents = require('./modelEvents'),
       InternalSiestaError = require('./error').InternalSiestaError,
       constructQuerySet = require('./QuerySet'),
