@@ -2,7 +2,7 @@ var assert = require('chai').assert,
     internal = siesta._internal,
     Model = internal.Model;
 
-describe('mapping!', function () {
+describe('models', function () {
 
     before(function () {
         siesta.ext.storageEnabled = false;

@@ -1023,7 +1023,6 @@ describe('events', function() {
       emitter.emit(e);
     });
 
-
     it('once to specific type', function(done) {
       var emitter = new ProxyEventEmitter(EVENT);
       var type = 'blah';
