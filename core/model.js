@@ -47,6 +47,7 @@
       statics: this.installStatics.bind(this),
       properties: {},
       init: null,
+      serialise: null,
       remove: null
     });
 
@@ -192,39 +193,42 @@
                 log(this.name + ': configuring relationship ' + name, relationship);
                 if (!(err = this._validateRelationshipType(relationship))) {
                   var modelName = relationship.model;
-                  delete relationship.model;
-                  var reverseModel;
-                  if (modelName instanceof Model) {
-                    reverseModel = modelName;
-                  }
-                  else {
-                    log('reverseModelName', modelName);
-                    if (!self.collection) throw new InternalSiestaError('Model must have collection');
-                    var collection = self.collection;
-                    if (!collection)    throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
-                    reverseModel = collection[modelName];
-                  }
-                  if (!reverseModel) {
-                    var arr = modelName.split('.');
-                    if (arr.length == 2) {
-                      var collectionName = arr[0];
-                      modelName = arr[1];
-                      var otherCollection = CollectionRegistry[collectionName];
-                      if (!otherCollection) return 'Collection with name "' + collectionName + '" does not exist.';
-                      reverseModel = otherCollection[modelName];
+                  if (modelName) {
+                    delete relationship.model;
+                    var reverseModel;
+                    if (modelName instanceof Model) {
+                      reverseModel = modelName;
                     }
+                    else {
+                      log('reverseModelName', modelName);
+                      if (!self.collection) throw new InternalSiestaError('Model must have collection');
+                      var collection = self.collection;
+                      if (!collection)    throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
+                      reverseModel = collection[modelName];
+                    }
+                    if (!reverseModel) {
+                      var arr = modelName.split('.');
+                      if (arr.length == 2) {
+                        var collectionName = arr[0];
+                        modelName = arr[1];
+                        var otherCollection = CollectionRegistry[collectionName];
+                        if (!otherCollection) return 'Collection with name "' + collectionName + '" does not exist.';
+                        reverseModel = otherCollection[modelName];
+                      }
+                    }
+                    log('reverseModel', reverseModel);
+                    if (reverseModel) {
+                      _.extend(relationship, {
+                        reverseModel: reverseModel,
+                        forwardModel: this,
+                        forwardName: name,
+                        reverseName: relationship.reverse || 'reverse_' + name,
+                        isReverse: false
+                      });
+                      delete relationship.reverse;
+                    } else return 'Model with name "' + modelName.toString() + '" does not exist';
                   }
-                  log('reverseModel', reverseModel);
-                  if (reverseModel) {
-                    _.extend(relationship, {
-                      reverseModel: reverseModel,
-                      forwardModel: this,
-                      forwardName: name,
-                      reverseName: relationship.reverse || 'reverse_' + name,
-                      isReverse: false
-                    });
-                    delete relationship.reverse;
-                  } else return 'Model with name "' + modelName.toString() + '" does not exist';
+                  else return 'Must pass model';
                 }
               }
             }
@@ -314,14 +318,11 @@
         then: linkPromise.then.bind(linkPromise),
         catch: linkPromise.catch.bind(linkPromise),
         on: argsarray(function(args) {
-          console.log('on');
           var rq = new ReactiveQuery();
           promise.then(function(results) {
-            console.log('constructing rq', results);
             rq.query = queryInstance;
             rq._applyResults(results);
           });
-          console.log('registering handler');
           return rq.on.apply(rq, args);
         }.bind(this))
       });
@@ -509,6 +510,8 @@
       return this._attributeNames.indexOf(attributeName) > -1;
     }
   });
+
+
 
   module.exports = Model;
 

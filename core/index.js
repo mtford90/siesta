@@ -129,6 +129,7 @@
             if (this.queuedTasks) this.queuedTasks.execute();
             done();
           }.bind(this));
+
           siesta.async.series(tasks, cb);
         }.bind(this));
       }
@@ -152,7 +153,9 @@
       if (!installed) {
         if (!installing) {
           this.install(function(err) {
-            if (err) console.error('Error setting up siesta', err);
+            if (err) {
+              console.error('Error setting up siesta', err);
+            }
             delete this.queuedTasks;
           }.bind(this));
         }
@@ -224,7 +227,6 @@
   siesta.log = require('debug');
 
   module.exports = siesta;
-
 
   (function loadExtensions() {
     require('../storage');

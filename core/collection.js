@@ -100,8 +100,10 @@
             var tasks = _.map(modelsToInstall, function(m) {
               return _.bind(m.install, m);
             });
+
             util.async.parallel(tasks, function(err) {
               if (err) {
+
                 log('Failed to install collection', err);
                 self._finaliseInstallation(err, cb);
               }
@@ -120,11 +122,13 @@
                     if (err) errors.push(err);
                   });
                 }
+
                 if (errors.length == 1) {
                   err = errors[0];
                 } else if (errors.length) {
                   err = errors;
                 }
+
                 self._finaliseInstallation(err, cb);
               }
             });
