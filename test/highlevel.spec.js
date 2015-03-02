@@ -1,7 +1,5 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    ModelInstance = internal.ModelInstance,
-    RelationshipType = siesta.RelationshipType;
+    internal = siesta._internal;
 
 describe('higher level mapping', function() {
 
