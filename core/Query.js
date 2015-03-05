@@ -3,6 +3,7 @@
         cache = require('./cache'),
         util = require('./util'),
         error = require('./error'),
+        ModelInstance = require('./ModelInstance'),
         constructQuerySet = require('./QuerySet'),
         _ = util._;
 
@@ -30,17 +31,22 @@
         if (!util.isArray(opts.order)) opts.order = [opts.order];
     }
 
+    function valueAsString(fieldValue) {
+        var fieldAsString;
+        if (fieldValue === null) fieldAsString = 'null';
+        else if (fieldValue === undefined) fieldAsString = 'undefined';
+        else if (fieldValue instanceof ModelInstance) fieldAsString = fieldValue.localId;
+        else fieldAsString = fieldValue.toString();
+        return fieldAsString;
+    }
+
     var comparators = {
         e: function(opts) {
-            var objectValue = opts.object[opts.field];
+            var fieldValue = opts.object[opts.field];
             if (log.enabled) {
-                var stringValue;
-                if (objectValue === null) stringValue = 'null';
-                else if (objectValue === undefined) stringValue = 'undefined';
-                else stringValue = objectValue.toString();
-                log(opts.field + ': ' + stringValue + ' == ' + opts.value.toString());
+                log(opts.field + ': ' + valueAsString(fieldValue) + ' == ' + valueAsString(opts.value));
             }
-            return objectValue == opts.value;
+            return fieldValue == opts.value;
         },
         lt: function(opts) {
             if (!opts.invalid) return opts.object[opts.field] < opts.value;

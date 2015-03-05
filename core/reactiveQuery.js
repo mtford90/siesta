@@ -8,7 +8,7 @@
 
 (function() {
 
-  var log = require('./log')('query'),
+  var log = require('./log')('query:reactive'),
       Query = require('./Query'),
       EventEmitter = require('events').EventEmitter,
       events = require('./events'),
@@ -153,7 +153,7 @@
       if (n.type == modelEvents.ModelEventType.New) {
         var newObj = n.new;
         if (this._query.objectMatchesQuery(newObj)) {
-          log('New object matches', newObj._dumpString());
+          log('New object matches', newObj);
           var idx = this.insert(newObj);
           this.emit(modelEvents.ModelEventType.Splice, {
             index: idx,
@@ -163,7 +163,7 @@
           });
         }
         else {
-          log('New object does not match', newObj._dumpString());
+          log('New object does not match', newObj);
         }
       }
       else if (n.type == modelEvents.ModelEventType.Set) {
@@ -172,7 +172,7 @@
             alreadyContains = index > -1,
             matches = this._query.objectMatchesQuery(newObj);
         if (matches && !alreadyContains) {
-          log('Updated object now matches!', newObj._dumpString());
+          log('Updated object now matches!', newObj);
           idx = this.insert(newObj);
           this.emit(modelEvents.ModelEventType.Splice, {
             index: idx,
@@ -182,7 +182,7 @@
           });
         }
         else if (!matches && alreadyContains) {
-          log('Updated object no longer matches!', newObj._dumpString());
+          log('Updated object no longer matches!', newObj);
           results = this.results.mutableCopy();
           var removed = results.splice(index, 1);
           this.results = results.asModelQuerySet(this.model);
@@ -195,10 +195,10 @@
           });
         }
         else if (!matches && !alreadyContains) {
-          log('Does not contain, but doesnt match so not inserting', newObj._dumpString());
+          log('Does not contain, but doesnt match so not inserting', newObj);
         }
         else if (matches && alreadyContains) {
-          log('Matches but already contains', newObj._dumpString());
+          log('Matches but already contains', newObj);
           // Send the notification over.
           this.emit(n.type, n);
         }
@@ -208,7 +208,7 @@
         var results = this.results.mutableCopy();
         index = results.indexOf(newObj);
         if (index > -1) {
-          log('Removing object', newObj._dumpString());
+          log('Removing object', newObj);
           removed = results.splice(index, 1);
           this.results = constructQuerySet(results, this.model);
           this.emit(modelEvents.ModelEventType.Splice, {
@@ -219,7 +219,7 @@
           });
         }
         else {
-          log('No modelEvents neccessary.', newObj._dumpString());
+          log('No modelEvents neccessary.', newObj);
         }
       }
       else {

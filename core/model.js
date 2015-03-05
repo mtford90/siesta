@@ -1,26 +1,26 @@
 (function() {
 
   var log = require('./log')('model'),
-      CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
-      InternalSiestaError = require('./error').InternalSiestaError,
-      RelationshipType = require('./RelationshipType'),
-      Query = require('./Query'),
-      MappingOperation = require('./mappingOperation'),
-      ModelInstance = require('./ModelInstance'),
-      util = require('./util'),
-      cache = require('./cache'),
-      store = require('./store'),
-      argsarray = require('argsarray'),
-      error = require('./error'),
-      extend = require('extend'),
-      modelEvents = require('./modelEvents'),
-      events = require('./events'),
-      OneToOneProxy = require('./OneToOneProxy'),
-      ManyToManyProxy = require('./ManyToManyProxy'),
-      ReactiveQuery = require('./ReactiveQuery'),
-      instanceFactory = require('./instanceFactory'),
-      ArrangedReactiveQuery = require('./ArrangedReactiveQuery'),
-      _ = util._;
+    CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    RelationshipType = require('./RelationshipType'),
+    Query = require('./Query'),
+    MappingOperation = require('./mappingOperation'),
+    ModelInstance = require('./ModelInstance'),
+    util = require('./util'),
+    cache = require('./cache'),
+    store = require('./store'),
+    argsarray = require('argsarray'),
+    error = require('./error'),
+    extend = require('extend'),
+    modelEvents = require('./modelEvents'),
+    events = require('./events'),
+    OneToOneProxy = require('./OneToOneProxy'),
+    ManyToManyProxy = require('./ManyToManyProxy'),
+    ReactiveQuery = require('./ReactiveQuery'),
+    instanceFactory = require('./instanceFactory'),
+    ArrangedReactiveQuery = require('./ArrangedReactiveQuery'),
+    _ = util._;
 
   /**
    *
@@ -48,8 +48,15 @@
       properties: {},
       init: null,
       serialise: null,
-      remove: null
+      remove: null,
+      parseAttribute: null
     });
+
+    if (!this.parseAttribute) {
+      this.parseAttribute = function (attrName, value) {
+        return value;
+      }
+    }
 
     this.attributes = Model._processAttributes(this.attributes);
 
@@ -102,7 +109,7 @@
         get: function() {
           if (siesta.ext.storageEnabled) {
             var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
+              hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
             return !!Object.keys(hash).length;
           }
           else return undefined;
@@ -117,9 +124,9 @@
       }
     });
     var globalEventName = this.collectionName + ':' + this.name,
-        proxied = {
-          query: this.query.bind(this)
-        };
+      proxied = {
+        query: this.query.bind(this)
+      };
 
     events.ProxyEventEmitter.call(this, globalEventName, proxied);
   }
@@ -182,7 +189,7 @@
     installRelationships: function() {
       if (!this._relationshipsInstalled) {
         var self = this,
-            err = null;
+          err = null;
         self._relationships = [];
         if (self._opts.relationships) {
           for (var name in self._opts.relationships) {
@@ -248,7 +255,7 @@
             relationship = extend(true, {}, relationship);
             relationship.isReverse = true;
             var reverseModel = relationship.reverseModel,
-                reverseName = relationship.reverseName;
+              reverseName = relationship.reverseName;
             if (reverseModel.singleton) {
               if (relationship.type == RelationshipType.ManyToMany) return 'Singleton model cannot be related via reverse ManyToMany';
               if (relationship.type == RelationshipType.OneToMany) return 'Singleton model cannot be related via reverse OneToMany';
@@ -372,6 +379,12 @@
       var query = {};
       if (q.__order) query.__order = q.__order;
       return this.query(q, cb);
+    },
+    _attributeDefinitionWithName: function(name) {
+      for (var i = 0; i < this.attributes.length; i++) {
+        var attributeDefinition = this.attributes[i];
+        if (attributeDefinition.name == name) return attributeDefinition;
+      }
     },
     install: function(cb) {
       log('Installing mapping ' + this.name);
@@ -510,7 +523,6 @@
       return this._attributeNames.indexOf(attributeName) > -1;
     }
   });
-
 
 
   module.exports = Model;
