@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 
-describe.only('to sort', function() {
+describe('to sort', function() {
   var Model, Collection;
 
   before(function() {

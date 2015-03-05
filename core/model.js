@@ -48,14 +48,21 @@
       properties: {},
       init: null,
       serialise: null,
+      serialiseField: null,
       remove: null,
       parseAttribute: null
     });
 
     if (!this.parseAttribute) {
-      this.parseAttribute = function (attrName, value) {
+      this.parseAttribute = function(attrName, value) {
         return value;
       }
+    }
+
+    if (!this.serialiseField) {
+      this.serialiseField = function(attrName, value) {
+        return value;
+      };
     }
 
     this.attributes = Model._processAttributes(this.attributes);

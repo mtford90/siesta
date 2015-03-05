@@ -1,12 +1,12 @@
 (function() {
   var log = require('./log'),
-      util = require('./util'),
-      _ = util._,
-      error = require('./error'),
-      InternalSiestaError = error.InternalSiestaError,
-      modelEvents = require('./modelEvents'),
-      events = require('./events'),
-      cache = require('./cache');
+    util = require('./util'),
+    _ = util._,
+    error = require('./error'),
+    InternalSiestaError = error.InternalSiestaError,
+    modelEvents = require('./modelEvents'),
+    events = require('./events'),
+    cache = require('./cache');
 
   function ModelInstance(model) {
     var self = this;
@@ -178,21 +178,21 @@
     _defaultSerialise: function(opts) {
       var serialised = {};
       var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
-          includeNullRelationships = opts.includeNullRelationships !== undefined ? opts.includeNullRelationships : true;
+        includeNullRelationships = opts.includeNullRelationships !== undefined ? opts.includeNullRelationships : true;
       _.each(this._attributeNames, function(attrName) {
         var val = this[attrName];
         if (val === null) {
           if (includeNullAttributes) {
-            serialised[attrName] = val;
+            serialised[attrName] = this.model.serialiseField(attrName, val);
           }
         }
         else if (val !== undefined) {
-          serialised[attrName] = val;
+          serialised[attrName] = this.model.serialiseField(attrName, val);
         }
       }.bind(this));
       _.each(this._relationshipNames, function(relName) {
         var val = this[relName],
-            rel = this.model.relationships[relName];
+          rel = this.model.relationships[relName];
         if (util.isArray(val)) {
           val = _.pluck(val, this.model.id);
         }
@@ -202,21 +202,22 @@
         if (rel && !rel.isReverse) {
           if (val === null) {
             if (includeNullRelationships) {
-              serialised[relName] = val;
+              serialised[relName] = this.model.serialiseField(relName, val);
             }
           }
           else if (util.isArray(val)) {
             if ((includeNullRelationships && !val.length) || val.length) {
-              serialised[relName] = val;
+              serialised[relName] = this.model.serialiseField(relName, val);
             }
           }
           else if (val !== undefined) {
-            serialised[relName] = val;
+            serialised[relName] = this.model.serialiseField(relName, val);
           }
         }
       }.bind(this));
       return serialised;
-    }, serialise: function(opts) {
+    },
+    serialise: function(opts) {
       opts = opts || {};
       if (!this.model.serialise) return this._defaultSerialise(opts);
       else return this.model.serialise(this, opts);
