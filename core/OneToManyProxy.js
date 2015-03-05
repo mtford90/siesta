@@ -52,7 +52,7 @@
                         modelEvents.emit({
                             collection: model.collectionName,
                             model: model.name,
-                            _id: self.object._id,
+                            localId: self.object.localId,
                             field: self.getForwardName(),
                             removed: removed,
                             added: added,

@@ -25,10 +25,10 @@ describe('cache...', function () {
         });
         it('by pouch id', function () {
             var car = new ModelInstance(Car);
-            car._id = 'dsfsd';
+            car.localId = 'dsfsd';
             cache.insert(car);
-            assert.equal(car, cache._localCache()[car._id]);
-            assert.equal(car, cache._localCacheByType[car.model.collectionName][car.modelName][car._id], car);
+            assert.equal(car, cache._localCache()[car.localId]);
+            assert.equal(car, cache._localCacheByType[car.model.collectionName][car.modelName][car.localId], car);
         });
 
         it('by default id', function () {
@@ -76,7 +76,7 @@ describe('cache...', function () {
         it('by rest id', function () {
             var model = new ModelInstance(Car);
             model.id = 'dsfsd';
-            model._id = 'xyz';
+            model.localId = 'xyz';
             cache.insert(model);
             var returned = cache.get({
                 model: Car,
@@ -124,7 +124,7 @@ describe('cache...', function () {
                 cache.insert(person); // Should be fine as is the exact same object.
             });
 
-            it('cant insert object with same _id', function () {
+            it('cant insert object with same localId', function () {
                 var person = Person._instance({
                     name: 'Michael Ford',
                     age: 23,
@@ -132,7 +132,7 @@ describe('cache...', function () {
                 });
                 cache.insert(person);
                 var duplicateObject = new ModelInstance();
-                duplicateObject._id = person._id;
+                duplicateObject.localId = person.localId;
                 assert.throws(function () {
                     cache.insert(duplicateObject);
                 }, siesta.InternalsError);

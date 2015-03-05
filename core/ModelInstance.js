@@ -48,7 +48,7 @@
       dirty: {
         get: function() {
           if (siesta.ext.storageEnabled) {
-            return self._id in siesta.ext.storage._unsavedObjectsHash;
+            return self.localId in siesta.ext.storage._unsavedObjectsHash;
           }
           else return undefined;
         },
@@ -57,7 +57,7 @@
       // This is for ProxyEventEmitter.
       event: {
         get: function() {
-          return this._id
+          return this.localId
         }
       }
     });
@@ -80,7 +80,7 @@
       _.extend(opts, {
         collection: this.collectionName,
         model: this.model.name,
-        _id: this._id,
+        localId: this.localId,
         obj: this
       });
       modelEvents.emit(opts);
@@ -168,7 +168,7 @@
     _dump: function(reverseRelationships) {
       var dumped = _.extend({}, this.__values);
       dumped._rev = this._rev;
-      dumped._id = this._id;
+      dumped.localId = this.localId;
       return dumped;
     }
   });

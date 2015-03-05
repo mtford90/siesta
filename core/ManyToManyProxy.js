@@ -62,7 +62,7 @@
                         modelEvents.emit({
                             collection: model.collectionName,
                             model: model.name,
-                            _id: self.object._id,
+                            localId: self.object.localId,
                             field: self.getForwardName(),
                             removed: removed,
                             added: added,
@@ -112,7 +112,7 @@
             obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
         },
         registerRemovalListener: function (obj) {
-            this.relatedCancelListeners[obj._id] = obj.on('*', function (e) {
+            this.relatedCancelListeners[obj.localId] = obj.on('*', function (e) {
 
             }.bind(this));
         }

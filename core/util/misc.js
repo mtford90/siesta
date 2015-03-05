@@ -33,6 +33,7 @@
             return typeof o == 'string' || o instanceof String
         };
     _.extend(module.exports, {
+        argsarray: argsarray,
         /**
          * Performs dirty check/Object.observe callbacks depending on the browser.
          *

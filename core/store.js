@@ -18,12 +18,12 @@
         log('get', opts);
         var siestaModel;
         return util.promise(cb, function (cb) {
-            if (opts._id) {
-                if (util.isArray(opts._id)) {
+            if (opts.localId) {
+                if (util.isArray(opts.localId)) {
                     // Proxy onto getMultiple instead.
-                    getMultiple(_.map(opts._id, function (id) {
+                    getMultiple(_.map(opts.localId, function (id) {
                         return {
-                            _id: id
+                            localId: id
                         }
                     }), cb);
                 } else {
@@ -36,11 +36,11 @@
                             });
                         if (cb) cb(null, siestaModel);
                     } else {
-                        if (util.isArray(opts._id)) {
+                        if (util.isArray(opts.localId)) {
                             // Proxy onto getMultiple instead.
-                            getMultiple(_.map(opts._id, function (id) {
+                            getMultiple(_.map(opts.localId, function (id) {
                                 return {
-                                    _id: id
+                                    localId: id
                                 }
                             }), cb);
                         } else if (cb) {
@@ -142,14 +142,14 @@
      */
     function getMultipleLocal(localIdentifiers, cb) {
         return util.promise(cb, function (cb) {
-            var results = _.reduce(localIdentifiers, function (memo, _id) {
+            var results = _.reduce(localIdentifiers, function (memo, localId) {
                 var obj = cache.get({
-                    _id: _id
+                    localId: localId
                 });
                 if (obj) {
-                    memo.cached[_id] = obj;
+                    memo.cached[localId] = obj;
                 } else {
-                    memo.notCached.push(_id);
+                    memo.notCached.push(localId);
                 }
                 return memo;
             }, {
@@ -162,8 +162,8 @@
                     if (err) {
                         cb(err);
                     } else {
-                        cb(null, _.map(localIdentifiers, function (_id) {
-                            return results.cached[_id];
+                        cb(null, _.map(localIdentifiers, function (localId) {
+                            return results.cached[localId];
                         }));
                     }
                 }

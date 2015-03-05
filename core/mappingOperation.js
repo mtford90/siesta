@@ -125,7 +125,7 @@
                                 remoteLookups.push(lookup);
                             } else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
                                 this.objects[i] = datum;
-                            } else if (datum._id) {
+                            } else if (datum.localId) {
                                 localLookups.push({
                                     index: i,
                                     datum: datum
@@ -145,19 +145,19 @@
                 }
                 util.async.parallel([
                         function (done) {
-                            var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), '_id');
+                            var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
                             if (localIdentifiers.length) {
                                 Store.getMultipleLocal(localIdentifiers, function (err, objects) {
                                     if (!err) {
                                         for (var i = 0; i < localIdentifiers.length; i++) {
                                             var obj = objects[i];
-                                            var _id = localIdentifiers[i];
+                                            var localId = localIdentifiers[i];
                                             var lookup = localLookups[i];
                                             if (!obj) {
                                                 // If there are multiple mapping operations going on, there may be
-                                                obj = cache.get({_id: _id});
+                                                obj = cache.get({localId: localId});
                                                 if (!obj)
-                                                    obj = self._instance({_id: _id}, !self.disableevents);
+                                                    obj = self._instance({localId: localId}, !self.disableevents);
                                                 self.objects[lookup.index] = obj;
                                             } else {
                                                 self.objects[lookup.index] = obj;
@@ -179,7 +179,7 @@
                                         if (log.enabled) {
                                             var results = {};
                                             for (i = 0; i < objects.length; i++) {
-                                                results[remoteIdentifiers[i]] = objects[i] ? objects[i]._id : null;
+                                                results[remoteIdentifiers[i]] = objects[i] ? objects[i].localId : null;
                                             }
                                             log('Results for remoteIdentifiers: ' + util.prettyPrint(results));
                                         }
@@ -223,16 +223,16 @@
                 var self = this;
                 // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
                 // always be the same. This is just a precaution.
-                var _ids = _.pluck(self.data, '_id'),
-                    _id;
+                var _ids = _.pluck(self.data, 'localId'),
+                    localId;
                 for (i = 0; i < _ids.length; i++) {
                     if (_ids[i]) {
-                        _id = {_id: _ids[i]};
+                        localId = {localId: _ids[i]};
                         break;
                     }
                 }
                 // The mapping operation is responsible for creating singleton instances if they do not already exist.
-                var singleton = cache.getSingleton(this.model) || this._instance(_id);
+                var singleton = cache.getSingleton(this.model) || this._instance(localId);
                 for (var i = 0; i < self.data.length; i++) {
                     self.objects[i] = singleton;
                 }

@@ -33,7 +33,7 @@ describe('recursive relationships', function () {
                 done(err);
             }
             else {
-                var childRepoData = {id: '6', name: 'Child Repo', forkedFrom: {_id: repo._id}};
+                var childRepoData = {id: '6', name: 'Child Repo', forkedFrom: {localId: repo.localId}};
                 Repo.graph(childRepoData, function (err, childRepo) {
                     if (err) {
                         done(err);

@@ -206,7 +206,7 @@ describe('perform mapping', function () {
                 assert.equal(obj.colour, 'red');
                 assert.equal(obj.name, 'Aston Martin');
                 assert.equal(obj.id, 'dfadf');
-                assert.ok(obj._id);
+                assert.ok(obj.localId);
             });
         });
 
@@ -234,12 +234,12 @@ describe('perform mapping', function () {
                 });
             });
 
-            describe('via _id', function () {
+            describe('via localId', function () {
                 var newObj;
                 beforeEach(function (done) {
                     Car.graph({
                         colour: 'blue',
-                        _id: obj._id
+                        localId: obj.localId
                     }, function (err, obj) {
                         if (err) done(err);
                         newObj = obj;
@@ -595,7 +595,7 @@ describe('perform mapping', function () {
                                 name: 'Bentley',
                                 colour: 'black',
                                 owner: {
-                                    _id: person._id
+                                    localId: person.localId
                                 },
                                 id: 'carRemoteId'
                             }, function (err, _car) {
@@ -651,7 +651,7 @@ describe('perform mapping', function () {
                                 id: 'personRemoteId',
                                 cars: _.map(cars, function (car) {
                                     return {
-                                        _id: car._id
+                                        localId: car.localId
                                     }
                                 })
                             }, function (err, _person) {
@@ -1234,7 +1234,7 @@ describe('perform mapping', function () {
                 });
             });
 
-            describe('_id within object', function () {
+            describe('localId within object', function () {
                 describe('forward', function () {
                     var person, car;
                     beforeEach(function (done) {
@@ -1250,7 +1250,7 @@ describe('perform mapping', function () {
                                 colour: 'black',
                                 id: 'carRemoteId',
                                 owner: {
-                                    _id: person._id
+                                    localId: person.localId
                                 }
                             }, function (err, _car) {
                                 if (err) {
@@ -1295,7 +1295,7 @@ describe('perform mapping', function () {
                                 name: 'Michael Ford',
                                 age: 23,
                                 car: {
-                                    _id: car._id
+                                    localId: car.localId
                                 },
                                 id: 'personRemoteId'
                             }, function (err, _person) {

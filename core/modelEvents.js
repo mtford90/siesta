@@ -38,7 +38,7 @@
         var dumped = {};
         dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();
         dumped.model = (typeof this.model) == 'string' ? this.model : this.model.name;
-        dumped._id = this._id;
+        dumped.localId = this.localId;
         dumped.field = this.field;
         dumped.type = this.type;
         if (this.index) dumped.index = this.index;
@@ -65,7 +65,7 @@
         var genericNotif = 'Siesta';
         log('Sending notification "' + genericNotif + '" of type ' + c.type);
         events.emit(genericNotif, c);
-        var localIdNotif = c._id;
+        var localIdNotif = c.localId;
         log('Sending notification "' + localIdNotif + '" of type ' + c.type);
         events.emit(localIdNotif, c);
         var collection = collectionRegistry[collectionName];
@@ -91,7 +91,7 @@
     function validateEventOpts(opts) {
         if (!opts.model) throw new InternalSiestaError('Must pass a model');
         if (!opts.collection) throw new InternalSiestaError('Must pass a collection');
-        if (!opts._id) throw new InternalSiestaError('Must pass a local identifier');
+        if (!opts.localId) throw new InternalSiestaError('Must pass a local identifier');
         if (!opts.obj) throw new InternalSiestaError('Must pass the object');
     }
 

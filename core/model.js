@@ -439,8 +439,8 @@
     _countCache: function() {
       var collCache = cache._localCacheByType[this.collectionName] || {};
       var modelCache = collCache[this.name] || {};
-      return _.reduce(Object.keys(modelCache), function(m, _id) {
-        m[_id] = {};
+      return _.reduce(Object.keys(modelCache), function(m, localId) {
+        m[localId] = {};
         return m;
       }, {});
     },

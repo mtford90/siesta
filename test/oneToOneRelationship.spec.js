@@ -46,10 +46,10 @@ describe('one to one relationship proxy', function () {
                 isReverse: true
             });
             car = new ModelInstance(Car);
-            car._id = 'car';
+            car.localId = 'car';
             carProxy.install(car);
             person = new ModelInstance(Person);
-            person._id = 'person';
+            person.localId = 'person';
             personProxy.install(person);
             cache.insert(person);
             cache.insert(car);
@@ -94,10 +94,10 @@ describe('one to one relationship proxy', function () {
                 isReverse: true
             });
             car = new ModelInstance(Car);
-            car._id = 'car';
+            car.localId = 'car';
             carProxy.install(car);
             person = new ModelInstance(Person);
-            person._id = 'person';
+            person.localId = 'person';
             personProxy.install(person);
         });
 
@@ -140,7 +140,7 @@ describe('one to one relationship proxy', function () {
 
             beforeEach(function () {
                 anotherPerson = new ModelInstance(Person);
-                anotherPerson._id = 'anotherPerson';
+                anotherPerson.localId = 'anotherPerson';
                 anotherPersonProxy = new OneToOneProxy({
                     reverseModel: Person,
                     forwardModel: Car,
@@ -174,7 +174,7 @@ describe('one to one relationship proxy', function () {
 
                     it('should clear the old', function () {
                         car.owner = person;
-                        assert.notOk(anotherPersonProxy._id);
+                        assert.notOk(anotherPersonProxy.localId);
                         assert.notOk(anotherPersonProxy.related);
                     });
                 });
@@ -194,7 +194,7 @@ describe('one to one relationship proxy', function () {
 
                     it('should clear the old', function () {
                         person.cars = car;
-                        assert.notOk(anotherPersonProxy._id);
+                        assert.notOk(anotherPersonProxy.localId);
                         assert.notOk(anotherPersonProxy.related);
                     });
 
@@ -222,10 +222,10 @@ describe('one to one relationship proxy', function () {
                 isReverse: true
             });
             car = new ModelInstance(Car);
-            car._id = 'car';
+            car.localId = 'car';
             carProxy.install(car);
             person = new ModelInstance(Person);
-            person._id = 'person';
+            person.localId = 'person';
             personProxy.install(person);
             cache.insert(car);
             cache.insert(person);

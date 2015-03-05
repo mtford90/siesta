@@ -25,13 +25,13 @@
 
     ModelInstanceFactory.prototype = {
         _getLocalId: function (data) {
-            var _id;
+            var localId;
             if (data) {
-                _id = data._id ? data._id : guid();
+                localId = data.localId ? data.localId : guid();
             } else {
-                _id = guid();
+                localId = guid();
             }
-            return _id;
+            return localId;
         },
         /**
          * Configure attributes
@@ -74,7 +74,7 @@
                             modelEvents.emit({
                                 collection: Model.collectionName,
                                 model: Model.name,
-                                _id: modelInstance._id,
+                                localId: modelInstance.localId,
                                 new: new_,
                                 old: dep.old,
                                 type: ModelEventType.Set,
@@ -85,7 +85,7 @@
                         var e = {
                             collection: Model.collectionName,
                             model: Model.name,
-                            _id: modelInstance._id,
+                            localId: modelInstance.localId,
                             new: v,
                             old: old,
                             type: ModelEventType.Set,
@@ -147,7 +147,7 @@
                     modelEvents.emit({
                         collection: Model.collectionName,
                         model: Model.name,
-                        _id: modelInstance._id,
+                        localId: modelInstance.localId,
                         new: v,
                         old: old,
                         type: ModelEventType.Set,
@@ -188,7 +188,7 @@
                 modelEvents.emit({
                     collection: this.model.collectionName,
                     model: this.model.name,
-                    _id: modelInstance._id,
+                    localId: modelInstance.localId,
                     new: modelInstance,
                     type: ModelEventType.New,
                     obj: modelInstance
@@ -196,7 +196,7 @@
             }
         },
         _installLocalId: function (modelInstance, data) {
-            modelInstance._id = this._getLocalId(data);
+            modelInstance.localId = this._getLocalId(data);
         },
         /**
          * Convert raw data into a ModelInstance

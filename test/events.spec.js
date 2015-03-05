@@ -87,7 +87,7 @@ describe('events', function() {
               genericEvent = n;
               checkDone();
             });
-            siesta.once(_car._id, function(n) {
+            siesta.once(_car.localId, function(n) {
               localIdEvent = n;
               checkDone();
             });
@@ -133,7 +133,7 @@ describe('events', function() {
       });
 
       it('changeDict contains new value', function() {
-        assert.equal(event._id, car._id);
+        assert.equal(event.localId, car.localId);
       });
 
     });
@@ -165,7 +165,7 @@ describe('events', function() {
           siesta.once('myCollection:Car', listener);
           siesta.once('myCollection', listener);
           siesta.once('Siesta', listener);
-          siesta.once(_car._id, listener);
+          siesta.once(_car.localId, listener);
           siesta.once('myCollection:Car:xyz', listener);
           car.colours.push('green');
           siesta.notify();
@@ -199,7 +199,7 @@ describe('events', function() {
         });
 
         it('notif contains object', function() {
-          assert.equal(event._id, car._id);
+          assert.equal(event.localId, car.localId);
         });
 
         it('changeDict contains change', function() {
@@ -238,8 +238,8 @@ describe('events', function() {
           assert.equal(event.model, 'Car');
         });
 
-        it('notif contains _id', function() {
-          assert.equal(event._id, car._id);
+        it('notif contains localId', function() {
+          assert.equal(event.localId, car.localId);
         });
 
         it('notif contains change', function() {
@@ -279,7 +279,7 @@ describe('events', function() {
         });
 
         it('notif contains id', function() {
-          assert.equal(event._id, car._id);
+          assert.equal(event.localId, car.localId);
         });
 
         it('notif contains change', function() {
@@ -323,7 +323,7 @@ describe('events', function() {
         });
 
         it('notif contains object', function() {
-          assert.equal(event._id, car._id);
+          assert.equal(event.localId, car.localId);
         });
 
         it('notif contains change', function() {
@@ -375,7 +375,7 @@ describe('events', function() {
 
         it('notif contains object', function() {
           _.each(notifs, function(notif) {
-            assert.equal(notif._id, car._id);
+            assert.equal(notif.localId, car.localId);
           });
         });
 
@@ -833,10 +833,10 @@ describe('events', function() {
       assert.equal(collectionEvent.new, car);
     });
 
-    it('_id', function() {
-      assert.equal(event._id, car._id);
-      assert.equal(genericEvent._id, car._id);
-      assert.equal(collectionEvent._id, car._id);
+    it('localId', function() {
+      assert.equal(event.localId, car.localId);
+      assert.equal(genericEvent.localId, car.localId);
+      assert.equal(collectionEvent.localId, car.localId);
     });
 
   });
@@ -907,10 +907,10 @@ describe('events', function() {
       assert.equal(collectionEvent.old, car);
     });
 
-    it('_id', function() {
-      assert.equal(event._id, car._id);
-      assert.equal(genericEvent._id, car._id);
-      assert.equal(collectionEvent._id, car._id);
+    it('localId', function() {
+      assert.equal(event.localId, car.localId);
+      assert.equal(genericEvent.localId, car.localId);
+      assert.equal(collectionEvent.localId, car.localId);
     });
 
   });
@@ -981,10 +981,10 @@ describe('events', function() {
       assert.equal(collectionEvent.new, car);
     });
 
-    it('_id', function() {
-      assert.equal(event._id, car._id);
-      assert.equal(genericEvent._id, car._id);
-      assert.equal(collectionEvent._id, car._id);
+    it('localId', function() {
+      assert.equal(event.localId, car.localId);
+      assert.equal(genericEvent.localId, car.localId);
+      assert.equal(collectionEvent.localId, car.localId);
     });
   });
 

@@ -50,7 +50,7 @@ describe('mapping new object', function () {
             describe('in cache', function () {
                 beforeEach(function () {
                     cache.insert(car);
-                    assert.equal(car, cache.get({_id: car._id}));
+                    assert.equal(car, cache.get({localId: car.localId}));
                     car.id = 'newRemoteId';
                 });
                 it('should update cache', function () {

@@ -135,16 +135,16 @@
             return this.isForward ? this.forwardModel : this.reverseModel;
         },
         clearRemovalListener: function (obj) {
-            var _id = obj._id;
-            var cancelListen = this.cancelListens[_id];
+            var localId = obj.localId;
+            var cancelListen = this.cancelListens[localId];
             // TODO: Remove this check. cancelListen should always exist
             if (cancelListen) {
                 cancelListen();
-                this.cancelListens[_id] = null;
+                this.cancelListens[localId] = null;
             }
         },
         listenForRemoval: function (obj) {
-            this.cancelListens[obj._id] = obj.on('*', function (e) {
+            this.cancelListens[obj.localId] = obj.on('*', function (e) {
                 if (e.type == ModelEventType.Remove) {
                     if (util.isArray(this.related)) {
                         var idx = this.related.indexOf(obj);
@@ -258,7 +258,7 @@
             modelEvents.emit({
                 collection: collectionName,
                 model: model,
-                _id: proxyObject._id,
+                localId: proxyObject.localId,
                 field: this.getForwardName(),
                 old: old,
                 new: obj,
@@ -274,7 +274,7 @@
             modelEvents.emit({
                 collection: coll,
                 model: model,
-                _id: this.object._id,
+                localId: this.object.localId,
                 field: this.getForwardName(),
                 index: idx,
                 removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
@@ -295,7 +295,7 @@
                         modelEvents.emit({
                             collection: model.collectionName,
                             model: model.name,
-                            _id: self.object._id,
+                            localId: self.object.localId,
                             field: self.getForwardName(),
                             removed: splice.removed,
                             added: added,

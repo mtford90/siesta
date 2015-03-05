@@ -26,10 +26,10 @@ describe('store......', function () {
         it('already cached', function (done) {
             var model = new ModelInstance(Car);
             var pouchId = 'pouchId';
-            model._id = pouchId;
+            model.localId = pouchId;
             cache.insert(model);
             Store.get({
-                _id: pouchId
+                localId: pouchId
             }, function (err, doc) {
                 if (err) done(err);
                 assert.equal(doc, model);
@@ -64,7 +64,7 @@ describe('store......', function () {
                 });
 
                 it('xyz', function (done) {
-                    Store.getMultipleLocal(_.pluck(cars, '_id'), function (err, docs) {
+                    Store.getMultipleLocal(_.pluck(cars, 'localId'), function (err, docs) {
                         if (err) done(err);
                         assert.equal(docs.length, 3);
                         _.each(docs, function (d) {

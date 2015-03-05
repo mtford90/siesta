@@ -1,4 +1,4 @@
-(function () {
+(function() {
     if (typeof siesta == 'undefined' && typeof module == 'undefined') {
         throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
     }
@@ -56,7 +56,7 @@
 
         function _processMeta(datum) {
             var meta = datum.siesta_meta || _initMeta();
-            meta.dateFields.forEach(function (dateField) {
+            meta.dateFields.forEach(function(dateField) {
                 var value = datum[dateField];
                 if (!(value instanceof Date)) {
                     datum[dateField] = new Date(value);
@@ -69,7 +69,7 @@
             var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
             var views = {};
             views[fullyQualifiedName] = {
-                map: function (doc) {
+                map: function(doc) {
                     if (doc.collection == '$1' && doc.model == '$2') emit(doc.collection + '.' + doc.model, doc);
                 }.toString().replace('$1', collectionName).replace('$2', modelName)
             };
@@ -82,7 +82,7 @@
         function constructIndexesForAll() {
             var indexes = [];
             var registry = siesta._internal.CollectionRegistry;
-            registry.collectionNames.forEach(function (collectionName) {
+            registry.collectionNames.forEach(function(collectionName) {
                 var models = registry[collectionName]._models;
                 for (var modelName in models) {
                     if (models.hasOwnProperty(modelName)) {
@@ -95,7 +95,7 @@
 
         function __ensureIndexes(indexes, cb) {
             pouch.bulkDocs(indexes)
-                .then(function (resp) {
+                .then(function(resp) {
                     var errors = [];
                     for (var i = 0; i < resp.length; i++) {
                         var response = resp[i];
@@ -124,17 +124,17 @@
             _addMeta(serialised);
             serialised['collection'] = modelInstance.collectionName;
             serialised['model'] = modelInstance.modelName;
-            serialised['_id'] = modelInstance._id;
+            serialised['_id'] = modelInstance.localId;
             if (modelInstance.removed) serialised['_deleted'] = true;
             var rev = modelInstance._rev;
             if (rev) serialised['_rev'] = rev;
-            serialised = _.reduce(modelInstance._relationshipNames, function (memo, n) {
+            serialised = _.reduce(modelInstance._relationshipNames, function(memo, n) {
                 var val = modelInstance[n];
                 if (siesta.isArray(val)) {
-                    memo[n] = _.pluck(val, '_id');
+                    memo[n] = _.pluck(val, 'localId');
                 }
                 else if (val) {
-                    memo[n] = val._id;
+                    memo[n] = val.localId;
                 }
                 return memo;
             }, serialised);
@@ -142,19 +142,22 @@
         }
 
         function _prepareDatum(datum, model) {
+            console.log('datum', datum);
             _processMeta(datum);
             delete datum.collection;
             delete datum.model;
+            datum.localId = datum._id;
+            delete datum._id;
             var relationshipNames = model._relationshipNames;
-            _.each(relationshipNames, function (r) {
-                var _id = datum[r];
-                if (siesta.isArray(_id)) {
-                    datum[r] = _.map(_id, function (x) {
-                        return {_id: x}
+            _.each(relationshipNames, function(r) {
+                var localId = datum[r];
+                if (siesta.isArray(localId)) {
+                    datum[r] = _.map(localId, function(x) {
+                        return {localId: x}
                     });
                 }
                 else {
-                    datum[r] = {_id: _id};
+                    datum[r] = {localId: localId};
                 }
             });
             return datum;
@@ -177,9 +180,9 @@
             log('Querying pouch');
             pouch.query(fullyQualifiedName)
                 //pouch.query({map: mapFunc})
-                .then(function (resp) {
+                .then(function(resp) {
                     log('Queried pouch successfully');
-                    var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function (datum) {
+                    var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function(datum) {
                         return _prepareDatum(datum, Model);
                     });
                     log('Mapping data', data);
@@ -187,7 +190,7 @@
                         disableevents: true,
                         _ignoreInstalled: true,
                         fromStorage: true
-                    }, function (err, instances) {
+                    }, function(err, instances) {
                         if (!err) {
                             if (log.enabled)
                                 log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
@@ -198,7 +201,7 @@
                         callback(err, instances);
                     });
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     callback(err);
                 });
 
@@ -209,15 +212,15 @@
          */
         function _load(cb) {
             if (saving) throw new Error('not loaded yet how can i save');
-            return util.promise(cb, function (cb) {
+            return util.promise(cb, function(cb) {
                 if (siesta.ext.storageEnabled) {
                     var collectionNames = CollectionRegistry.collectionNames;
                     var tasks = [];
-                    _.each(collectionNames, function (collectionName) {
+                    _.each(collectionNames, function(collectionName) {
                         var collection = CollectionRegistry[collectionName],
                             modelNames = Object.keys(collection._models);
-                        _.each(modelNames, function (modelName) {
-                            tasks.push(function (cb) {
+                        _.each(modelNames, function(modelName) {
+                            tasks.push(function(cb) {
                                 // We call from storage to allow for replacement of _loadModel for performance extension.
                                 storage._loadModel({
                                     collectionName: collectionName,
@@ -226,11 +229,11 @@
                             });
                         });
                     });
-                    siesta.async.series(tasks, function (err, results) {
+                    siesta.async.series(tasks, function(err, results) {
                         var n;
                         if (!err) {
                             var instances = [];
-                            siesta._.each(results, function (r) {
+                            siesta._.each(results, function(r) {
                                 instances = instances.concat(r)
                             });
                             n = instances.length;
@@ -248,21 +251,23 @@
         }
 
         function saveConflicts(objects, cb) {
-            pouch.allDocs({keys: _.pluck(objects, '_id')})
-                .then(function (resp) {
+            pouch.allDocs({keys: _.pluck(objects, 'localId')})
+                .then(function(resp) {
                     for (var i = 0; i < resp.rows.length; i++) {
                         objects[i]._rev = resp.rows[i].value.rev;
                     }
                     saveToPouch(objects, cb);
                 })
-                .catch(function (err) {
+                .catch(function(err) {
                     cb(err);
                 })
         }
 
         function saveToPouch(objects, cb) {
             var conflicts = [];
-            pouch.bulkDocs(_.map(objects, _serialise)).then(function (resp) {
+            var serialisedDocs = _.map(objects, _serialise);
+            console.log('serialisedDocs', serialisedDocs);
+            pouch.bulkDocs(serialisedDocs).then(function(resp) {
                 for (var i = 0; i < resp.length; i++) {
                     var response = resp[i];
                     var obj = objects[i];
@@ -273,7 +278,7 @@
                         conflicts.push(obj);
                     }
                     else {
-                        log('Error saving object with _id="' + obj._id + '"', response);
+                        log('Error saving object with localId="' + obj.localId + '"', response);
                     }
                 }
                 if (conflicts.length) {
@@ -282,7 +287,7 @@
                 else {
                     cb();
                 }
-            }, function (err) {
+            }, function(err) {
                 cb(err);
             });
         }
@@ -292,26 +297,24 @@
          * Save all modelEvents down to PouchDB.
          */
         function save(cb) {
-            return util.promise(cb, function (cb) {
-                siesta._afterInstall(function () {
+            return util.promise(cb, function(cb) {
+                siesta._afterInstall(function() {
                     var objects = unsavedObjects;
                     unsavedObjects = [];
                     unsavedObjectsHash = {};
                     unsavedObjectsByCollection = {};
-                    if (log) {
-                        log('Saving objects', _.map(objects, function (x) {
-                            return x._dump()
-                        }))
-                    }
+                    log('Saving objects', _.map(objects, function(x) {
+                        return x._dump()
+                    }))
                     saveToPouch(objects, cb);
                 });
             }.bind(this));
 
         }
 
-        var listener = function (n) {
+        var listener = function(n) {
             var changedObject = n.obj,
-                ident = changedObject._id;
+                ident = changedObject.localId;
             if (!changedObject) {
                 throw new _i.error.InternalSiestaError('No obj field in notification received by storage extension');
             }
@@ -337,11 +340,11 @@
             save: save,
             _serialise: _serialise,
             ensureIndexesForAll: ensureIndexesForAll,
-            _reset: function (cb) {
+            _reset: function(cb) {
                 siesta.removeListener('Siesta', listener);
                 unsavedObjects = [];
                 unsavedObjectsHash = {};
-                pouch.destroy(function (err) {
+                pouch.destroy(function(err) {
                     if (!err) {
                         pouch = new PouchDB(DB_NAME);
                     }
@@ -355,22 +358,22 @@
 
         Object.defineProperties(storage, {
             _unsavedObjects: {
-                get: function () {
+                get: function() {
                     return unsavedObjects
                 }
             },
             _unsavedObjectsHash: {
-                get: function () {
+                get: function() {
                     return unsavedObjectsHash
                 }
             },
             _unsavedObjectsByCollection: {
-                get: function () {
+                get: function() {
                     return unsavedObjectsByCollection
                 }
             },
             _pouch: {
-                get: function () {
+                get: function() {
                     return pouch
                 }
             }
@@ -382,13 +385,13 @@
 
         Object.defineProperties(siesta.ext, {
             storageEnabled: {
-                get: function () {
+                get: function() {
                     if (siesta.ext._storageEnabled !== undefined) {
                         return siesta.ext._storageEnabled;
                     }
                     return !!siesta.ext.storage;
                 },
-                set: function (v) {
+                set: function(v) {
                     siesta.ext._storageEnabled = v;
                 },
                 enumerable: true
@@ -399,17 +402,17 @@
 
         Object.defineProperties(siesta, {
             autosave: {
-                get: function () {
+                get: function() {
                     return !!interval;
                 },
-                set: function (autosave) {
+                set: function(autosave) {
                     if (autosave) {
                         if (!interval) {
-                            interval = setInterval(function () {
+                            interval = setInterval(function() {
                                 // Cheeky way of avoiding multiple saves happening...
                                 if (!saving) {
                                     saving = true;
-                                    siesta.save(function (err) {
+                                    siesta.save(function(err) {
                                         if (!err) {
                                             events.emit('saved');
                                         }
@@ -428,10 +431,10 @@
                 }
             },
             autosaveInterval: {
-                get: function () {
+                get: function() {
                     return autosaveInterval;
                 },
-                set: function (_autosaveInterval) {
+                set: function(_autosaveInterval) {
                     autosaveInterval = _autosaveInterval;
                     if (interval) {
                         // Reset interval
@@ -441,7 +444,7 @@
                 }
             },
             dirty: {
-                get: function () {
+                get: function() {
                     var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
                     return !!Object.keys(unsavedObjectsByCollection).length;
                 },
@@ -451,7 +454,7 @@
 
         _.extend(siesta, {
             save: save,
-            setPouch: function (_p) {
+            setPouch: function(_p) {
                 if (siesta._canChange) pouch = _p;
                 else throw new Error('Cannot change PouchDB instance when an object graph exists.');
             }

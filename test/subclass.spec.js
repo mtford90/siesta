@@ -126,12 +126,12 @@ describe('Subclass', function () {
 
                         Person.graph({age: 24, name: 'Mike'}).then(function (_mike) {
                             mike = _mike;
-                            Car.graph({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                            Car.graph({colour: 'red', name: 'Aston Martin', owner: {localId: mike.localId}})
                                 .then(SportsCar.graph({
                                     colour: 'yellow',
                                     name: 'Lamborghini',
                                     maxSpeed: 160,
-                                    owner: {_id: mike._id}
+                                    owner: {localId: mike.localId}
                                 }))
                                 .then(function () {
                                     done();
@@ -179,12 +179,12 @@ describe('Subclass', function () {
 
                         Person.graph({age: 24, name: 'Mike'}).then(function (_mike) {
                             mike = _mike;
-                            Car.graph({colour: 'red', name: 'Aston Martin', owner: {_id: mike._id}})
+                            Car.graph({colour: 'red', name: 'Aston Martin', owner: {localId: mike.localId}})
                                 .then(SportsCar.graph({
                                     colour: 'yellow',
                                     name: 'Lamborghini',
                                     maxSpeed: 160,
-                                    owner: {_id: mike._id}
+                                    owner: {localId: mike.localId}
                                 }))
                                 .then(function () {
                                     done();
@@ -235,12 +235,12 @@ describe('Subclass', function () {
 
                         Person.graph({age: 24, name: 'Mike'}).then(function (_mike) {
                             mike = _mike;
-                            Car.graph({colour: 'red', name: 'Aston Martin', owners: [{_id: mike._id}]})
+                            Car.graph({colour: 'red', name: 'Aston Martin', owners: [{localId: mike.localId}]})
                                 .then(SportsCar.graph({
                                     colour: 'yellow',
                                     name: 'Lamborghini',
                                     maxSpeed: 160,
-                                    owners: [{_id: mike._id}]
+                                    owners: [{localId: mike.localId}]
                                 }))
                                 .then(function () {
                                     done();

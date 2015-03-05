@@ -139,7 +139,7 @@
               modelEvents.emit({
                 collection: modelInstance.collectionName,
                 model: modelInstance.model.name,
-                _id: modelInstance._id,
+                localId: modelInstance.localId,
                 index: splice.index,
                 removed: splice.removed,
                 added: splice.addedCount ? array.slice(splice.index, splice.index + splice.addedCount) : [],

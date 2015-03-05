@@ -243,7 +243,7 @@
     function get(opts) {
         log('get', opts);
         var obj, idField, remoteId;
-        var localId = opts._id;
+        var localId = opts.localId;
         if (localId) {
             obj = getViaLocalId(localId);
             if (obj) {
@@ -280,7 +280,7 @@
      * @throws {InternalSiestaError} An object with _id/remoteId already exists. Not thrown if same obhect.
      */
     function insert(obj) {
-        var localId = obj._id;
+        var localId = obj.localId;
         if (localId) {
             var collectionName = obj.model.collectionName;
             var modelName = obj.model.name;
@@ -294,7 +294,7 @@
             } else {
                 // Something has gone badly wrong here. Two objects should never exist with the same _id
                 if (localCacheById[localId] != obj) {
-                    var message = 'Object with _id="' + localId.toString() + '" is already in the cache. ' +
+                    var message = 'Object with localId="' + localId.toString() + '" is already in the cache. ' +
                         'This is a serious error. Please file a bug report if you are experiencing this out in the wild';
                     log(message);
                     throw new InternalSiestaError(message);
@@ -317,7 +317,7 @@
      */
     function contains(obj) {
         var q = {
-            _id: obj._id
+            localId: obj.localId
         };
         var model = obj.model;
         if (model.id) {
@@ -338,12 +338,12 @@
         if (contains(obj)) {
             var collectionName = obj.model.collectionName;
             var modelName = obj.model.name;
-            var _id = obj._id;
+            var localId = obj.localId;
             if (!modelName) throw InternalSiestaError('No mapping name');
             if (!collectionName) throw InternalSiestaError('No collection name');
-            if (!_id) throw InternalSiestaError('No _id');
-            delete localCache[collectionName][modelName][_id];
-            delete localCacheById[_id];
+            if (!localId) throw InternalSiestaError('No localId');
+            delete localCache[collectionName][modelName][localId];
+            delete localCacheById[localId];
             if (obj.model.id) {
                 var remoteId = obj[obj.model.id];
                 if (remoteId) {

@@ -109,7 +109,7 @@ describe('mapping operation', function () {
                         id: '12324',
                         repositories: [ // Invalid
                             {
-                                _id: 'nosuchlocalid'
+                                localId: 'nosuchlocalid'
                             }
                         ]
                     }];

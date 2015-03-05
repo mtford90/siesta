@@ -114,7 +114,7 @@ describe('Models', function() {
         car.colour = 'red';
         car.name = 'Aston Martin';
         car.id = '2';
-        car._id = 'xyz';
+        car.localId = 'xyz';
         cache.insert(car);
         assert.notOk(car.removed);
         assert.ok(cache.contains(car));
@@ -141,7 +141,7 @@ describe('Models', function() {
         car = new ModelInstance(Model);
         car.colour = 'red';
         car.name = 'Aston Martin';
-        car._id = 'xyz';
+        car.localId = 'xyz';
         cache.insert(car);
         assert.notOk(car.removed);
         assert.ok(cache.contains(car));
