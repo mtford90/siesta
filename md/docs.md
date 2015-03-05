@@ -101,6 +101,48 @@ var User = Collection.model({
 }); 
 ```
 
+It is also possible to define a parse function that can perform some processing when values are assigned to an attribute.
+
+```js
+var User = Collection.model({
+  attributes: [
+    'username',
+    'name',
+    {
+      name: 'dateOfBirth',
+      parse: function (value) {
+        if (!(value instanceof Date)) {
+          value = new Date(Date.parse(value));
+        }
+        return value;
+      }
+    }
+  ]
+});
+```
+
+Attribute parsing can also be done at the Model level:
+
+```js
+var User = Collection.model({
+  attributes: [
+    'username',
+    'name',
+    'dateOfBirth'
+  ],
+  parseAttribute: function (attributeName, value) {
+    if (attributeName == 'dateOfBirth') {
+       if (!(value instanceof Date)) {
+           value = new Date(Date.parse(value));
+       }
+    }
+    return value;
+  }
+});
+```
+
+
+
 ### id
 
 Define the field that uniquely identifies each model instance. The value of this field will be used by Siesta to determine onto which object data should be mapped. If an object within the object graph exists with the unique identifier, data will be mapped onto that instance, otherwise a new object will be created.
