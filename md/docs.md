@@ -141,7 +141,7 @@ var User = Collection.model({
 });
 ```
 
-
+Do note that per attribute parsing is performed before Model-level attribute parsing.
 
 ### id
 
