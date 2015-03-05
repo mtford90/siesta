@@ -396,6 +396,26 @@ var Model = Collection.model('Model', {
 });
 ```
 
+### serialiseField
+
+`serialiseField` allows overriding the default serialisation on a field-by-field basis. If `serialise` is defined, `serialiseField will be ignored.
+
+```js
+var Model = Collection.model('Model', {
+	attributes: ['date'],
+	relationships: {
+	  user: {
+	    model: 'User'
+	  }
+	},
+	serialiseField: function (fieldName, value) {
+    if (fieldName == 'date') return value.format('YYYY-MM-DD');
+    else if (fieldName == 'user') return value._id;
+    return value;
+	}
+});
+```
+
 ## Inheritance
 
 Siesta supports model inheritance through which a child can inherit all attributes, relationships, methods etc.
@@ -986,7 +1006,7 @@ By default depth=1 serialisation is used whereby all related objects are seriali
 }
 ```
 
-You can customise how models are serialised by setting the `serialise` attribute when defining your models. Details on this are [here](#models-defining-models-serialise)
+You can customise how models are serialised by setting the `serialise` and `serialiseField` attributes when defining your models. Details on this are [here](#models-defining-models-serialise).
 
 # Storage
 
