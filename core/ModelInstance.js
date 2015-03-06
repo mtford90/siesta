@@ -180,14 +180,17 @@
       var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
         includeNullRelationships = opts.includeNullRelationships !== undefined ? opts.includeNullRelationships : true;
       _.each(this._attributeNames, function(attrName) {
+        var attrDefinition = this.model._attributeDefinitionWithName(attrName) || {};
+        var serialiser = attrDefinition.serialise || this.model.serialiseField;
+        serialiser = serialiser.bind(this);
         var val = this[attrName];
         if (val === null) {
           if (includeNullAttributes) {
-            serialised[attrName] = this.model.serialiseField(attrName, val);
+            serialised[attrName] = serialiser(attrName, val);
           }
         }
         else if (val !== undefined) {
-          serialised[attrName] = this.model.serialiseField(attrName, val);
+          serialised[attrName] = serialiser(attrName, val);
         }
       }.bind(this));
       _.each(this._relationshipNames, function(relName) {
