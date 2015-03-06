@@ -149,12 +149,10 @@
         }
         return memo;
       }, serialised);
-      console.log('serialised', serialised);
       return serialised;
     }
 
     function _prepareDatum(rawDatum, model) {
-      console.log('rawDatum', rawDatum);
       _processMeta(rawDatum);
       delete rawDatum.collection;
       delete rawDatum.model;
@@ -283,7 +281,6 @@
     function saveToPouch(objects, cb) {
       var conflicts = [];
       var serialisedDocs = _.map(objects, _serialise);
-      console.log('serialisedDocs', serialisedDocs);
       pouch.bulkDocs(serialisedDocs).then(function(resp) {
         for (var i = 0; i < resp.length; i++) {
           var response = resp[i];
