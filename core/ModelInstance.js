@@ -179,46 +179,52 @@
       var serialised = {};
       var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
         includeNullRelationships = opts.includeNullRelationships !== undefined ? opts.includeNullRelationships : true;
+      var serialisableFields = this.model.serialisableFields ||
+        this._attributeNames.concat.apply(this._attributeNames, this._relationshipNames).concat(this.id);
       _.each(this._attributeNames, function(attrName) {
-        var attrDefinition = this.model._attributeDefinitionWithName(attrName) || {};
-        var serialiser;
-        if (attrDefinition.serialise) serialiser = attrDefinition.serialise.bind(this);
-        else serialiser = this.model.serialiseField.bind(this, attrName);
-        var val = this[attrName];
-        if (val === null) {
-          if (includeNullAttributes) {
-            serialised[attrName] = serialiser(val);
-          }
-        }
-        else if (val !== undefined) {
-          serialised[attrName] = serialiser(val);
-        }
-      }.bind(this));
-      _.each(this._relationshipNames, function(relName) {
-        var val = this[relName],
-          rel = this.model.relationships[relName];
-        if (util.isArray(val)) {
-          val = _.pluck(val, this.model.id);
-        }
-        else if (val) {
-          val = val[this.model.id];
-        }
-        if (rel && !rel.isReverse) {
+        if (serialisableFields.indexOf(attrName) > -1) {
+          var attrDefinition = this.model._attributeDefinitionWithName(attrName) || {};
           var serialiser;
-          if (rel.serialise) serialiser = rel.serialise.bind(this);
+          if (attrDefinition.serialise) serialiser = attrDefinition.serialise.bind(this);
           else serialiser = this.model.serialiseField.bind(this, attrName);
+          var val = this[attrName];
           if (val === null) {
-            if (includeNullRelationships) {
-              serialised[relName] = serialiser(val);
-            }
-          }
-          else if (util.isArray(val)) {
-            if ((includeNullRelationships && !val.length) || val.length) {
-              serialised[relName] = serialiser(val);
+            if (includeNullAttributes) {
+              serialised[attrName] = serialiser(val);
             }
           }
           else if (val !== undefined) {
-            serialised[relName] = serialiser(val);
+            serialised[attrName] = serialiser(val);
+          }
+        }
+      }.bind(this));
+      _.each(this._relationshipNames, function(relName) {
+        if (serialisableFields.indexOf(relName) > -1) {
+          var val = this[relName],
+            rel = this.model.relationships[relName];
+          if (util.isArray(val)) {
+            val = _.pluck(val, this.model.id);
+          }
+          else if (val) {
+            val = val[this.model.id];
+          }
+          if (rel && !rel.isReverse) {
+            var serialiser;
+            if (rel.serialise) serialiser = rel.serialise.bind(this);
+            else serialiser = this.model.serialiseField.bind(this, attrName);
+            if (val === null) {
+              if (includeNullRelationships) {
+                serialised[relName] = serialiser(val);
+              }
+            }
+            else if (util.isArray(val)) {
+              if ((includeNullRelationships && !val.length) || val.length) {
+                serialised[relName] = serialiser(val);
+              }
+            }
+            else if (val !== undefined) {
+              serialised[relName] = serialiser(val);
+            }
           }
         }
       }.bind(this));

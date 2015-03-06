@@ -313,6 +313,101 @@ describe('model serialisation', function() {
         }).catch(done);
       });
     });
+
+    describe('serialisableFields', function() {
+      var OtherModel;
+      describe('attributes', function() {
+        it('plain', function(done) {
+          Collection = siesta.collection('myCollection');
+          CustomModel = Collection.model('Custom', {
+            attributes: ['attr1', 'attr2'],
+            serialisableFields: ['attr1', 'id']
+          });
+          CustomModel.graph({
+            attr1: 'abcd',
+            attr2: 'def',
+            id: 5
+          }).then(function(custom) {
+            var serialised = custom.serialise();
+            assert.equal(serialised.attr1, 'abcd');
+            assert.notOk(serialised.attr2);
+            assert.equal(serialised.id, 5);
+            done();
+          }).catch(done);
+        });
+        it('remote id', function(done) {
+          Collection = siesta.collection('myCollection');
+          CustomModel = Collection.model('Custom', {
+            attributes: ['attr1', 'attr2'],
+            serialisableFields: ['attr1']
+          });
+          CustomModel.graph({
+            attr1: 'abcd',
+            attr2: 'def',
+            id: 5
+          }).then(function(custom) {
+            var serialised = custom.serialise();
+            assert.equal(serialised.attr1, 'abcd');
+            assert.notOk(serialised.attr2);
+            assert.notOk(serialised.id);
+            done();
+          }).catch(done);
+        });
+        it('overrides serialiseField', function(done) {
+          Collection = siesta.collection('myCollection');
+          CustomModel = Collection.model('Custom', {
+            attributes: ['attr1', 'attr2'],
+            serialisableFields: ['attr1', 'id'],
+            serialiseField: function(field, value) {
+              if (field == 'attr2') {
+                return 2;
+              }
+              return value;
+            }
+          });
+          CustomModel.graph({
+            attr1: 'abcd',
+            attr2: 'def',
+            id: 5
+          }).then(function(custom) {
+            var serialised = custom.serialise();
+            assert.equal(serialised.attr1, 'abcd');
+            assert.notOk(serialised.attr2);
+            assert.equal(serialised.id, 5);
+            done();
+          }).catch(done);
+        });
+      });
+
+      it('relationships', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: ['attr1', 'attr2'],
+          serialisableFields: ['attr1', 'id'],
+          relationships: {
+            other: {
+              model: 'Other',
+              reverse: 'customs',
+              serialise: function(instance) {
+                return 1;
+              }
+            }
+          },
+        });
+
+        OtherModel = Collection.model('Other', {});
+        CustomModel.graph({
+          attr1: 'abcd',
+          attr2: 'def',
+          id: 5
+        }).then(function(custom) {
+          var serialised = custom.serialise();
+          assert.notOk(serialised.other);
+          done();
+        }).catch(done);
+      });
+
+    })
   });
 
 });

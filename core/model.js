@@ -49,9 +49,10 @@
       init: null,
       serialise: null,
       serialiseField: null,
+      serialisableFields: null,
       remove: null,
       parseAttribute: null
-    });
+    }, false);
 
     if (!this.parseAttribute) {
       this.parseAttribute = function(attrName, value) {
