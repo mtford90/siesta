@@ -502,7 +502,10 @@
         properties: _.extend(_.extend({}, this._opts.properties) || {}, opts.properties),
         id: opts.id || this._opts.id,
         init: opts.init || this._opts.init,
-        remove: opts.remove || this._opts.remove
+        remove: opts.remove || this._opts.remove,
+        serialise: opts.serialise || this._opts.serialise,
+        serialiseField: opts.serialiseField || this._opts.serialiseField,
+        parseAttribute: opts.parseAttribute || this._opts.parseAttribute
       });
       var model = this.collection.model(opts.name, opts);
       model.parent = this;

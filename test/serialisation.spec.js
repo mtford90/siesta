@@ -1,7 +1,7 @@
 var assert = require('chai').assert,
   internal = siesta._internal;
 
-describe.only('model serialisation', function() {
+describe('model serialisation', function() {
 
   var Collection, PersonModel, CarModel, CustomModel;
 
