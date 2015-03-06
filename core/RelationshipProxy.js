@@ -166,7 +166,7 @@
      */
     setIdAndRelated: function(obj, opts) {
       opts = opts || {};
-      if (!opts.disableevents) var oldValue = this._getOldValue();
+      if (!opts.disableevents) var oldValue = this._getOldValueForSetChangeEvent();
       var previouslyRelated = this.related;
       if (previouslyRelated) this.clearRemovalListener(previouslyRelated);
       if (obj) {
@@ -195,10 +195,13 @@
       return function(idx, numRemove) {
         opts = opts || {};
         if (!opts.disableevents) {
-          this.registerSpliceChange.apply(this, arguments);
+          var added = this._getAddedForSpliceChangeEvent(arguments),
+            removed = this._getRemovedForSpliceChangeEvent(idx, numRemove);
         }
         var add = Array.prototype.slice.call(arguments, 2);
-        return _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+        var res = _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+        if (!opts.disableevents) this.registerSpliceChange(idx, added, removed);
+        return res;
       }.bind(this);
     },
     clearReverseRelated: function(opts) {
@@ -249,7 +252,7 @@
      * @returns {*}
      * @private
      */
-    _getOldValue: function() {
+    _getOldValueForSetChangeEvent: function() {
       var oldValue = this.related;
       if (util.isArray(oldValue) && !oldValue.length) {
         oldValue = null;
@@ -274,18 +277,28 @@
       });
     },
 
-    registerSpliceChange: function(idx, numRemove) {
-      var add = Array.prototype.slice.call(arguments, 2);
-      var model = this.object.model.name;
-      var coll = this.object.collectionName;
+    _getRemovedForSpliceChangeEvent: function(idx, numRemove) {
+      var removed = this.related ? this.related.slice(idx, idx + numRemove) : null;
+      return removed;
+    },
+
+    _getAddedForSpliceChangeEvent: function(arguments) {
+      var add = Array.prototype.slice.call(arguments, 2),
+        added = add.length ? add : [];
+      return added;
+    },
+
+    registerSpliceChange: function(idx, added, removed) {
+      var model = this.object.model.name,
+        coll = this.object.collectionName;
       modelEvents.emit({
         collection: coll,
         model: model,
         localId: this.object.localId,
         field: this.getForwardName(),
         index: idx,
-        removed: this.related ? this.related.slice(idx, idx + numRemove) : null,
-        added: add.length ? add : [],
+        removed: removed,
+        added: added,
         type: ModelEventType.Splice,
         obj: this.object
       });
