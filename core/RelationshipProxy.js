@@ -3,6 +3,7 @@
  * @module relationships
  */
 (function() {
+
   var InternalSiestaError = require('./error').InternalSiestaError,
     Store = require('./store'),
     util = require('./util'),
@@ -282,8 +283,8 @@
       return removed;
     },
 
-    _getAddedForSpliceChangeEvent: function(arguments) {
-      var add = Array.prototype.slice.call(arguments, 2),
+    _getAddedForSpliceChangeEvent: function(args) {
+      var add = Array.prototype.slice.call(args, 2),
         added = add.length ? add : [];
       return added;
     },
