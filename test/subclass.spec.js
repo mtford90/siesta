@@ -635,6 +635,57 @@ describe('Subclass', function() {
     });
   });
 
+  describe.only('serialisableFields', function() {
+    var Collection, Car, SportsCar;
+
+    it('parent serialiseFields inherited by child', function(done) {
+      Collection = siesta.collection('myCollection');
+      Car = Collection.model('Car', {
+        attributes: ['x', 'y'],
+        serialisableFields: ['x']
+      });
+      SportsCar = Car.child('SportsCar', {
+        attributes: ['z']
+      });
+      SportsCar.graph({
+        x: 1,
+        y: 2,
+        z: 3
+      }).then(function(c) {
+        var serialised = c.serialise();
+        assert.equal(serialised.x, 1);
+        assert.notOk(serialised.y);
+        assert.notOk(serialised.z);
+        done();
+      }).catch(done);
+    });
+
+    it('parent serialiseFields merged with child serialisableFields', function(done) {
+      Collection = siesta.collection('myCollection');
+      Car = Collection.model('Car', {
+        attributes: ['x', 'y'],
+        serialisableFields: ['x']
+      });
+      SportsCar = Car.child('SportsCar', {
+        attributes: ['z'],
+        serialisableFields: ['z']
+      });
+      console.log(SportsCar.serialisableFields);
+      SportsCar.graph({
+        x: 1,
+        y: 2,
+        z: 3
+      }).then(function(c) {
+        var serialised = c.serialise();
+        assert.equal(serialised.x, 1);
+        assert.notOk(serialised.y);
+        assert.equal(serialised.z, 3);
+        done();
+      }).catch(done);
+    });
+
+  });
+
   describe('parseAttribute', function() {
     var Collection, Car, SportsCar;
 

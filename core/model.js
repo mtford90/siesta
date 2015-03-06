@@ -505,6 +505,11 @@
         serialiseField: opts.serialiseField || this._opts.serialiseField,
         parseAttribute: opts.parseAttribute || this._opts.parseAttribute
       });
+
+      if (this._opts.serialisableFields) {
+        opts.serialisableFields = Array.prototype.concat.apply(opts.serialisableFields || [], this._opts.serialisableFields);
+      }
+
       var model = this.collection.model(opts.name, opts);
       model.parent = this;
       this.children.push(model);
