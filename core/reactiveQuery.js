@@ -250,7 +250,8 @@
       return this._link({
         on: this.on.bind(this),
         once: this.once.bind(this)
-      }, function() {
+      },
+        function() {
         if (name.trim() == '*') {
           Object.keys(modelEvents.ModelEventType).forEach(function(k) {
             removeListener.call(this, modelEvents.ModelEventType[k], fn);

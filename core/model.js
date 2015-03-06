@@ -332,12 +332,12 @@
         then: linkPromise.then.bind(linkPromise),
         catch: linkPromise.catch.bind(linkPromise),
         on: argsarray(function(args) {
-          var rq = new ReactiveQuery();
+          var rq = new ReactiveQuery(this._query(query));
           promise.then(function(results) {
             rq.query = queryInstance;
             rq._applyResults(results);
           });
-          return rq.on.apply(rq, args);
+          rq.on.apply(rq, args);
         }.bind(this))
       });
     },

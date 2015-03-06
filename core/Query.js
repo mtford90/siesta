@@ -44,7 +44,7 @@
         e: function(opts) {
             var fieldValue = opts.object[opts.field];
             if (log.enabled) {
-                log(opts.field + ': ' + valueAsString(fieldValue) + ' == ' + valueAsString(opts.value));
+                log(opts.field + ': ' + valueAsString(fieldValue) + ' == ' + valueAsString(opts.value), {opts: opts});
             }
             return fieldValue == opts.value;
         },

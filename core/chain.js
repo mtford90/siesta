@@ -67,7 +67,7 @@
         var func = opts[prop];
         link[prop] = argsarray(function(args) {
           var possibleLink = func.apply(func.__siesta_bound_object, args);
-          if (!possibleLink.__siesta_isLink) { // Patch in a link in the chain to avoid it being broken, basing off the current link
+          if (!possibleLink || !possibleLink.__siesta_isLink) { // Patch in a link in the chain to avoid it being broken, basing off the current link
             nextLink = chain._link(link.opts);
             for (var prop in possibleLink) {
               //noinspection JSUnfilteredForInLoop
