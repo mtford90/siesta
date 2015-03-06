@@ -18,6 +18,10 @@
 
   var storage = {};
 
+  // Variables beginning with underscore are treated as special by PouchDB/CouchDB so when serialising we need to
+  // replace with something else.
+  var UNDERSCORE = /_/g,
+    UNDERSCORE_REPLACEMENT = /@/g;
 
   function _initMeta() {
     return {dateFields: []};
@@ -120,7 +124,14 @@
      * @param {ModelInstance} modelInstance
      */
     function _serialise(modelInstance) {
-      var serialised = siesta._.extend({}, modelInstance.__values);
+      var serialised = {};
+      var __values = modelInstance.__values;
+      serialised = siesta._.extend(serialised, __values);
+      Object.keys(serialised).forEach(function(k) {
+
+
+        serialised[k.replace(UNDERSCORE, '@')] = __values[k];
+      });
       _addMeta(serialised);
       serialised['collection'] = modelInstance.collectionName;
       serialised['model'] = modelInstance.modelName;
@@ -138,15 +149,22 @@
         }
         return memo;
       }, serialised);
+      console.log('serialised', serialised);
       return serialised;
     }
 
-    function _prepareDatum(datum, model) {
-      _processMeta(datum);
-      delete datum.collection;
-      delete datum.model;
-      datum.localId = datum._id;
-      delete datum._id;
+    function _prepareDatum(rawDatum, model) {
+      console.log('rawDatum', rawDatum);
+      _processMeta(rawDatum);
+      delete rawDatum.collection;
+      delete rawDatum.model;
+      rawDatum.localId = rawDatum._id;
+      delete rawDatum._id;
+      var datum = {};
+      Object.keys(rawDatum).forEach(function(k) {
+        datum[k.replace(UNDERSCORE_REPLACEMENT, '_')] = rawDatum[k];
+      });
+
       var relationshipNames = model._relationshipNames;
       _.each(relationshipNames, function(r) {
         var localId = datum[r];

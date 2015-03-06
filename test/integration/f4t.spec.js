@@ -12,86 +12,89 @@ describe('f4t', function() {
     siesta.ext.storageEnabled = true;
   });
 
-  beforeEach(function(done) {
-    siesta.reset(function() {
-      F4TCollection = siesta.collection('F4TCollection');
+  function configureSiesta() {
+    F4TCollection = siesta.collection('F4TCollection');
 
-      Base = F4TCollection.model('Base', {
-        id: '_id',
-        attributes: [
-          'pushed'
-        ]
-      });
-
-      User = Base.child('User', {
-        attributes: [
-          'username',
-          'displayName',
-          'email',
-          'birthdate',
-          'city',
-          'region',
-          'country',
-          'lastName',
-          'firstName',
-          'sex',
-          'accessToken',
-          'avatarUrl',
-          'thumbnailUrl'
-        ]
-      });
-
-      Company = Base.child('Company', {
-        attributes: [
-          'name',
-          'numEmployees',
-          'address',
-          'region',
-          'city',
-          'country',
-          'type',
-          'farmingType',
-          'identificationNumber'
-        ],
-        relationships: {
-          owner: {
-            model: 'User',
-            reverse: 'companies'
-          }
-        },
-        statics: {
-          getCurrentUsersCompanies: function() {
-            var newVar = {owner: $rootScope.user};
-            return this.query(newVar);
-          }
-        }
-      });
-
-      Species = Base.child('Species', {
-        id: '_id',
-        attributes: [
-          'name',
-          'latinName',
-          'avatarUrl',
-          'type'
-        ],
-        serialisableFields: [
-          'name',
-          'latinName',
-          'avatarUrl',
-          'type',
-          'user'
-        ],
-        relationships: {
-          user: {
-            model: 'User',
-            reverse: 'breeds'
-          }
-        }
-      });
-      done();
+    Base = F4TCollection.model('Base', {
+      id: '_id',
+      attributes: [
+        'pushed'
+      ]
     });
 
+    User = Base.child('User', {
+      attributes: [
+        'username',
+        'displayName',
+        'email',
+        'birthdate',
+        'city',
+        'region',
+        'country',
+        'lastName',
+        'firstName',
+        'sex',
+        'accessToken',
+        'avatarUrl',
+        'thumbnailUrl'
+      ]
+    });
+
+    Company = Base.child('Company', {
+      attributes: [
+        'name',
+        'numEmployees',
+        'address',
+        'region',
+        'city',
+        'country',
+        'type',
+        'farmingType',
+        'identificationNumber'
+      ],
+      relationships: {
+        owner: {
+          model: 'User',
+          reverse: 'companies'
+        }
+      },
+      statics: {
+        getCurrentUsersCompanies: function() {
+          var newVar = {owner: $rootScope.user};
+          return this.query(newVar);
+        }
+      }
+    });
+
+    Species = Base.child('Species', {
+      id: '_id',
+      attributes: [
+        'name',
+        'latinName',
+        'avatarUrl',
+        'type'
+      ],
+      serialisableFields: [
+        'name',
+        'latinName',
+        'avatarUrl',
+        'type',
+        'user'
+      ],
+      relationships: {
+        user: {
+          model: 'User',
+          reverse: 'breeds'
+        }
+      }
+    });
+  }
+
+  beforeEach(function(done) {
+    siesta.reset(function() {
+      configureSiesta();
+      done();
+    });
 
   });
 
@@ -213,34 +216,58 @@ describe('f4t', function() {
   });
 
   describe('storage', function() {
-    it('species', function(done) {
-      Species.graph([{
+
+    describe('field loading', function() {
+      var data = [{
         "_id": "54f75cb292997f5041132d94",
         "created": "2015-03-06T18:16:25.577Z",
-        "localizedName": ["[object Object]"],
         "latinName": "Gallus gallus domesticus",
         "name": "Chicken"
       }, {
         "_id": "54f75cb292997f5041132d95",
         "created": "2015-03-06T18:16:25.577Z",
-        "localizedName": ["[object Object]"],
         "latinName": "Sus scrofa domesticus",
         "name": "Pig"
       }, {
         "_id": "54f75cb292997f5041132d96",
         "created": "2015-03-06T18:16:25.577Z",
-        "localizedName": ["[object Object]"],
         "latinName": "Ovis aries",
         "name": "Sheep"
-      }]).then(function(species) {
-        siesta
-          .save()
-          .then(function() {
-            done();
-          });
-      }).catch(done);
+      }];
+
+      var instances;
+
+      beforeEach(function(done) {
+        Species.graph(data).then(function(species) {
+          siesta.save()
+            .then(function() {
+              siesta.reset(function() {
+                configureSiesta();
+                Species
+                  .all()
+                  .then(function(species) {
+                    instances = species;
+                    done();
+                  });
+              }, false);
+            });
+        }).catch(done);
+      });
+
+      it('should load remote identifiers', function() {
+        console.debug('instances', instances);
+        assert.equal(instances.length, 3);
+        var dataIdentifiers = _.pluck(data, '_id'),
+          modelIdentifiers = _.pluck(instances, '_id');
+        dataIdentifiers.forEach(function(_id) {
+          assert.include(modelIdentifiers, _id);
+        });
+        console.debug('identifiers', dataIdentifiers);
+      });
     });
+
   });
+
 
 
 });

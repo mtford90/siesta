@@ -96,6 +96,7 @@
       if (siesta.ext.storageEnabled) {
         resetStorage = resetStorage === undefined ? true : resetStorage;
         if (resetStorage) siesta.ext.storage._reset(cb);
+        else cb();
       }
       else {
         cb();
