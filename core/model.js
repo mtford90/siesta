@@ -333,10 +333,7 @@
         catch: linkPromise.catch.bind(linkPromise),
         on: argsarray(function(args) {
           var rq = new ReactiveQuery(this._query(query));
-          promise.then(function(results) {
-            rq.query = queryInstance;
-            rq._applyResults(results);
-          });
+          rq.init();
           rq.on.apply(rq, args);
         }.bind(this))
       });

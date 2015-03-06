@@ -86,7 +86,7 @@ describe('f4t', function() {
 
   describe('reactive queries', function() {
 
-    it('on should work', function(done) {
+    it('on should work with a delay', function(done) {
       User.graph({
         _id: '54e8cc3011c8a11c633c5449',
         username: 'mtford'
@@ -104,8 +104,54 @@ describe('f4t', function() {
             "created": "2015-02-28T12:57:53.883Z",
             "employees": []
           }]).catch(done);
-        }, 200);
+        }, 100);
 
+      }).catch(done);
+    });
+
+    it('on should work without a delay', function(done) {
+      User.graph({
+        _id: '54e8cc3011c8a11c633c5449',
+        username: 'mtford'
+      }).then(function(user) {
+        var cancel = Company.query({owner: user})
+          .on('*', function(e) {
+            done();
+          });
+        setTimeout(function() {
+          Company.graph([{
+            "owner": "54e8cc3011c8a11c633c5449",
+            "name": "Mikes Companyasdasd",
+            "type": "farm",
+            "_id": "54f1bb5116634c5e3570d5c2",
+            "created": "2015-02-28T12:57:53.883Z",
+            "employees": []
+          }]).catch(done);
+        });
+      }).catch(done);
+    });
+
+
+    it('on should work without a setTimeout', function(done) {
+      User.graph({
+        _id: '54e8cc3011c8a11c633c5449',
+        username: 'mtford'
+      }).then(function(user) {
+        var cancel = Company.query({owner: user})
+          .then(function (res) {
+            console.log('ffs', res);
+          })
+          .on('*', function(e) {
+            done();
+          });
+        Company.graph([{
+          "owner": "54e8cc3011c8a11c633c5449",
+          "name": "Mikes Companyasdasd",
+          "type": "farm",
+          "_id": "54f1bb5116634c5e3570d5c2",
+          "created": "2015-02-28T12:57:53.883Z",
+          "employees": []
+        }]).catch(done);
       }).catch(done);
     });
 
