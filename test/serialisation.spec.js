@@ -153,84 +153,166 @@ describe('model serialisation', function() {
         done();
       }).catch(done);
     });
-    it('attribute', function(done) {
-      Collection = siesta.collection('myCollection');
-      CustomModel = Collection.model('Custom', {
-        attributes: [
-          {
-            name: 'attr1',
-            serialise: function (value) {
-              return 1;
-            }
-          },
-          'attr2'
-        ]
+    describe('attribute', function() {
+      it('attribute', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: [
+            {
+              name: 'attr1',
+              serialise: function(value) {
+                return 1;
+              }
+            },
+            'attr2'
+          ]
+        });
+        CustomModel.graph({
+          attr1: 'attr1',
+          attr2: 'attr2'
+        }).then(function(model) {
+          assert.equal(model.serialise().attr1, 1);
+          assert.equal(model.serialise().attr2, 'attr2');
+          done();
+        }).catch(done);
       });
-      CustomModel.graph({
-        attr1: 'attr1',
-        attr2: 'attr2'
-      }).then(function(model) {
-        assert.equal(model.serialise().attr1, 1);
-        assert.equal(model.serialise().attr2, 'attr2');
-        done();
-      }).catch(done);
+      it('serialiseField should be overidden by serialise', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: [
+            {
+              name: 'attr1',
+              serialise: function(value) {
+                return 1;
+              }
+            },
+            'attr2'
+          ],
+          serialiseField: function(field, value) {
+            if (field == 'attr1') {
+              return 2;
+            }
+            else if (field == 'attr2') {
+              return 5;
+            }
+            return value;
+          }
+        });
+        CustomModel.graph({
+          attr1: 'attr1',
+          attr2: 'attr2'
+        }).then(function(model) {
+          assert.equal(model.serialise().attr1, 1);
+          assert.equal(model.serialise().attr2, 5);
+          done();
+        }).catch(done);
+      });
+      it('serialise should override per-attribute serialise', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: [
+            {
+              name: 'attr1',
+              serialise: function(value) {
+                return 1;
+              }
+            },
+            'attr2'
+          ],
+          serialise: function(model) {
+            return 1;
+          }
+        });
+        CustomModel.graph({
+          attr1: 'attr1',
+          attr2: 'attr2'
+        }).then(function(model) {
+          assert.equal(model.serialise(), 1);
+          done();
+        }).catch(done);
+      });
+
     });
-    it('serialiseField should be overidden by serialise', function(done) {
-      Collection = siesta.collection('myCollection');
-      CustomModel = Collection.model('Custom', {
-        attributes: [
-          {
-            name: 'attr1',
-            serialise: function (value) {
-              return 1;
+    describe('relationship', function() {
+      var OtherModel;
+      it('relationship', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: ['attr1'],
+          relationships: {
+            other: {
+              model: 'Other',
+              reverse: 'customs',
+              serialise: function(instance) {
+                return 1;
+              }
+            }
+          }
+        });
+        OtherModel = Collection.model('Other', {});
+        CustomModel.graph({
+          attr1: 'asdasdasd',
+          other: 'abcd'
+        }).then(function(custom) {
+          var serialised = custom.serialise();
+          assert.equal(serialised.other, 1);
+          done();
+        }).catch(done);
+      });
+      it('serialiseField should be overidden by serialise', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          relationships: {
+            other: {
+              model: 'Other',
+              reverse: 'customs',
+              serialise: function(instance) {
+                return 1;
+              }
             }
           },
-          'attr2'
-        ],
-        serialiseField: function (field, value) {
-          if (field == 'attr1') {
+          serialiseField: function(field, value) {
+            if (field == 'other') {
+              return 2;
+            }
+            return value;
+          }
+        });
+        OtherModel = Collection.model('Other', {});
+        CustomModel.graph({
+          other: 'abcd'
+        }).then(function(custom) {
+          var serialised = custom.serialise();
+          assert.equal(serialised.other, 1);
+          done();
+        }).catch(done);
+      });
+      it('serialise should override per-relationship serialise', function(done) {
+        Collection = siesta.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          relationships: {
+            other: {
+              model: 'Other',
+              reverse: 'customs',
+              serialise: function(instance) {
+                return 1;
+              }
+            }
+          },
+          serialise: function(model) {
             return 2;
           }
-          else if (field == 'attr2') {
-            return 5;
-          }
-          return value;
-        }
+        });
+        OtherModel = Collection.model('Other', {});
+        CustomModel.graph({
+          other: 'abcd'
+        }).then(function(custom) {
+          var serialised = custom.serialise();
+          assert.equal(serialised, 2);
+          done();
+        }).catch(done);
       });
-      CustomModel.graph({
-        attr1: 'attr1',
-        attr2: 'attr2'
-      }).then(function(model) {
-        assert.equal(model.serialise().attr1, 1);
-        assert.equal(model.serialise().attr2, 5);
-        done();
-      }).catch(done);
     });
-    it('serialise should override per-attribute serialise', function(done) {
-      Collection = siesta.collection('myCollection');
-      CustomModel = Collection.model('Custom', {
-        attributes: [
-          {
-            name: 'attr1',
-            serialise: function (value) {
-              return 1;
-            }
-          },
-          'attr2'
-        ],
-        serialise: function (model) {
-          return 1;
-        }
-      });
-      CustomModel.graph({
-        attr1: 'attr1',
-        attr2: 'attr2'
-      }).then(function(model) {
-        assert.equal(model.serialise(), 1);
-        done();
-      }).catch(done);
-    });
-
   });
 
 });

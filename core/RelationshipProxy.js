@@ -48,8 +48,9 @@
       forwardModel: null,
       forwardName: null,
       reverseName: null,
-      isReverse: null
-    });
+      isReverse: null,
+      serialise: null
+    }, false);
 
     this.cancelListens = {};
   }
