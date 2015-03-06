@@ -396,6 +396,8 @@ var Model = Collection.model('Model', {
 });
 ```
 
+To prevent a field from being serialised return `undefined`.
+
 ### serialiseField
 
 `serialiseField` allows overriding the default serialisation on a field-by-field basis. If `serialise` is defined, `serialiseField will be ignored.
@@ -415,6 +417,8 @@ var Model = Collection.model('Model', {
 	}
 });
 ```
+
+To prevent a field from being serialised return `undefined`.
 
 ## Inheritance
 
@@ -1006,7 +1010,79 @@ By default depth=1 serialisation is used whereby all related objects are seriali
 }
 ```
 
-You can customise how models are serialised by setting the `serialise` and `serialiseField` attributes when defining your models. Details on this are [here](#models-defining-models-serialise).
+You can customise how models are serialised by setting the `serialise` attribute when defining your models.
+
+
+```js
+var Model = Collection.model('Model', {
+	serialise: function (instance) {
+      return {
+        instanceId: instance.id,
+        related: instance.related.map(function (r) {
+          return r.name;
+        });
+      }
+	}
+});
+```
+
+You can also customise serialisation on a per-field basis by setting `serialiseField`:
+
+```js
+var Model = Collection.model('Model', {
+	attributes: ['date'],
+	relationships: {
+	  user: {
+	    model: 'User'
+	  }
+	},
+	serialiseField: function (fieldName, value) {
+    if (fieldName == 'date') return value.format('YYYY-MM-DD');
+    else if (fieldName == 'user') return value._id;
+    return value;
+	}
+});
+```
+
+The `serialisableFields` attribute can be used to customise which fields undergo serialisation:
+
+```js
+var Model = Collection.model('Model', {
+  id: '_id',
+	attributes: ['date'],
+	relationships: {
+	  user: {
+	    model: 'User'
+	  }
+	},
+	// _id field will not be serialised
+	serialisableFields: ['date', 'user']
+});
+```
+
+You can also set the serialise function on a per-attribute and per-relationship basis. Note that these will be ignored if `serialise` or `serialiseField` is present on the model.
+
+```js
+var Model = Collection.model('Model', {
+  id: '_id',
+	attributes: [
+	  {
+	    name: 'date',
+	    serialise: function (value) {
+	      return value.format('YYYY-MM-DD');
+	    }
+	  }
+	],
+	relationships: {
+	  user: {
+	    model: 'User',
+	    serialise: function (instance) {
+	      return instance._id;
+	    }
+	  }
+	}
+});
+```
 
 # Storage
 
