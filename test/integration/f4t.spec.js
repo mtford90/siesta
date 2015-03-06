@@ -2,8 +2,15 @@ var assert = require('chai').assert;
 siesta.log.disable('*');
 
 describe('f4t', function() {
-  var F4TCollection, Base, User, Company;
+  var F4TCollection,
+    Base,
+    User,
+    Company,
+    Species;
 
+  before(function() {
+    siesta.ext.storageEnabled = true;
+  });
 
   beforeEach(function(done) {
     siesta.reset(function() {
@@ -59,8 +66,32 @@ describe('f4t', function() {
           }
         }
       });
+
+      Species = Base.child('Species', {
+        id: '_id',
+        attributes: [
+          'name',
+          'latinName',
+          'avatarUrl',
+          'type'
+        ],
+        serialisableFields: [
+          'name',
+          'latinName',
+          'avatarUrl',
+          'type',
+          'user'
+        ],
+        relationships: {
+          user: {
+            model: 'User',
+            reverse: 'breeds'
+          }
+        }
+      });
       done();
     });
+
 
   });
 
@@ -138,7 +169,7 @@ describe('f4t', function() {
         username: 'mtford'
       }).then(function(user) {
         var cancel = Company.query({owner: user})
-          .then(function (res) {
+          .then(function(res) {
             console.log('ffs', res);
           })
           .on('*', function(e) {
@@ -179,6 +210,36 @@ describe('f4t', function() {
       }).catch(done);
     });
 
+  });
+
+  describe('storage', function() {
+    it('species', function(done) {
+      Species.graph([{
+        "_id": "54f75cb292997f5041132d94",
+        "created": "2015-03-06T18:16:25.577Z",
+        "localizedName": ["[object Object]"],
+        "latinName": "Gallus gallus domesticus",
+        "name": "Chicken"
+      }, {
+        "_id": "54f75cb292997f5041132d95",
+        "created": "2015-03-06T18:16:25.577Z",
+        "localizedName": ["[object Object]"],
+        "latinName": "Sus scrofa domesticus",
+        "name": "Pig"
+      }, {
+        "_id": "54f75cb292997f5041132d96",
+        "created": "2015-03-06T18:16:25.577Z",
+        "localizedName": ["[object Object]"],
+        "latinName": "Ovis aries",
+        "name": "Sheep"
+      }]).then(function(species) {
+        siesta
+          .save()
+          .then(function() {
+            done();
+          });
+      }).catch(done);
+    });
   });
 
 

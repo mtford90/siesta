@@ -1,22 +1,22 @@
 (function() {
   var util = require('./util'),
-      CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
-      Collection = require('./collection'),
-      cache = require('./cache'),
-      Model = require('./model'),
-      error = require('./error'),
-      events = require('./events'),
-      RelationshipType = require('./RelationshipType'),
-      ReactiveQuery = require('./ReactiveQuery'),
-      ManyToManyProxy = require('./ManyToManyProxy'),
-      OneToOneProxy = require('./OneToOneProxy'),
-      OneToManyProxy = require('./OneToManyProxy'),
-      RelationshipProxy = require('./RelationshipProxy'),
-      modelEvents = require('./modelEvents'),
-      Query = require('./Query'),
-      querySet = require('./QuerySet'),
-      log = require('./log'),
-      _ = util._;
+    CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+    Collection = require('./collection'),
+    cache = require('./cache'),
+    Model = require('./model'),
+    error = require('./error'),
+    events = require('./events'),
+    RelationshipType = require('./RelationshipType'),
+    ReactiveQuery = require('./ReactiveQuery'),
+    ManyToManyProxy = require('./ManyToManyProxy'),
+    OneToOneProxy = require('./OneToOneProxy'),
+    OneToManyProxy = require('./OneToManyProxy'),
+    RelationshipProxy = require('./RelationshipProxy'),
+    modelEvents = require('./modelEvents'),
+    Query = require('./Query'),
+    querySet = require('./QuerySet'),
+    log = require('./log'),
+    _ = util._;
   util._patchBind();
 
   // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
@@ -79,14 +79,14 @@
   siesta.ext = {};
 
   var installed = false,
-      installing = false;
+    installing = false;
 
 
   _.extend(siesta, {
     /**
      * Wipe everything. Used during test generally.
      */
-    reset: function(cb) {
+    reset: function(cb, resetStorage) {
       installed = false;
       installing = false;
       delete this.queuedTasks;
@@ -94,7 +94,8 @@
       CollectionRegistry.reset();
       events.removeAllListeners();
       if (siesta.ext.storageEnabled) {
-        siesta.ext.storage._reset(cb);
+        resetStorage = resetStorage === undefined ? true : resetStorage;
+        if (resetStorage) siesta.ext.storage._reset(cb);
       }
       else {
         cb();
@@ -119,10 +120,10 @@
         return util.promise(cb, function(cb) {
           installing = true;
           var collectionNames = CollectionRegistry.collectionNames,
-              tasks = _.map(collectionNames, function(n) {
-                return CollectionRegistry[n].install.bind(CollectionRegistry[n]);
-              }),
-              storageEnabled = siesta.ext.storageEnabled;
+            tasks = _.map(collectionNames, function(n) {
+              return CollectionRegistry[n].install.bind(CollectionRegistry[n]);
+            }),
+            storageEnabled = siesta.ext.storageEnabled;
           if (storageEnabled) tasks = tasks.concat([siesta.ext.storage.ensureIndexesForAll, siesta.ext.storage._load]);
           tasks.push(function(done) {
             installed = true;

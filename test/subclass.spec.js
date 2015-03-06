@@ -635,7 +635,7 @@ describe('Subclass', function() {
     });
   });
 
-  describe.only('serialisableFields', function() {
+  describe('serialisableFields', function() {
     var Collection, Car, SportsCar;
 
     it('parent serialiseFields inherited by child', function(done) {
