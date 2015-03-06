@@ -211,7 +211,7 @@
           if (rel && !rel.isReverse) {
             var serialiser;
             if (rel.serialise) serialiser = rel.serialise.bind(this);
-            else serialiser = this.model.serialiseField.bind(this, attrName);
+            else serialiser = this.model.serialiseField.bind(this, relName);
             if (val === null) {
               if (includeNullRelationships) {
                 serialised[relName] = serialiser(val);

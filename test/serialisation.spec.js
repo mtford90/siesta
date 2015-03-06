@@ -114,7 +114,7 @@ describe('model serialisation', function() {
       })
   });
 
-  describe.only('custom serialisation', function() {
+  describe('custom serialisation', function() {
     beforeEach(function(done) {
       siesta.reset(done);
     });
