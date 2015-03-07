@@ -418,20 +418,28 @@ var Model = Collection.model('Model', {
 });
 ```
 
-### shouldSave
+To prevent a field from being serialised return `undefined`.
 
-You can define the `shouldSave` function on your models to determine whether or not a particular model instance is suitable for storing locally. For example, you may only want to save model instances that have a certain field.
+### store
+
+You can define the `store` function on your models to determine whether or not a particular model instance is suitable for storing locally. For example, you may only want to save model instances that have a certain field.
 
 ```js
 var Model = Collection.model('Model', {
-  shouldSave: function (instance) {
-    // The instance is only saved to local storage if it has a name.
+  store: function (instance) {
+    // The instance is only ever saved to local storage if it has a name.
     return instance.name;
   }
 });
 ```
 
-To prevent a field from being serialised return `undefined`.
+If you simply want to prevent any instances of a model being placed in storage, simply set `store` to false.
+
+```js
+var Model = Collection.model('Model', {
+  store: false
+});
+```
 
 ## Inheritance
 
@@ -1139,14 +1147,22 @@ console.log(instance.collection.dirty); // true
 
 ## Selective Saving
 
-You can define the `shouldSave` function on your models to determine whether or not a particular model instance is suitable for localStorage. For example, you may only want to save model instances that have a certain field.
+You can define the `store` function on your models to determine whether or not a particular model instance is suitable for localStorage. For example, you may only want to save model instances that have a certain field. This can be used to prevent storage from getting out of control.
 
 ```js
 var Model = Collection.model('Model', {
-  shouldSave: function (instance) {
+  store: function (instance) {
     // The instance is only saved to local storage if it has a name.
     return instance.name;
   }
+});
+```
+
+If you simply want to prevent any instances of a model being placed in storage, simply set `store` to false.
+
+```js
+var Model = Collection.model('Model', {
+  store: false
 });
 ```
 
