@@ -6,7 +6,7 @@
   var _i = siesta._internal,
     cache = _i.cache,
     CollectionRegistry = _i.CollectionRegistry,
-    log = _i.log('Storage'),
+    log = _i.log('storage'),
     error = _i.error,
     util = _i.util,
     _ = util._,
@@ -313,17 +313,17 @@
     function save(cb) {
       return util.promise(cb, function(cb) {
         siesta._afterInstall(function() {
-          var objects = unsavedObjects;
+          var instances = unsavedObjects;
           unsavedObjects = [];
           unsavedObjectsHash = {};
           unsavedObjectsByCollection = {};
-          log('Saving objects', _.map(objects, function(x) {
-            return x._dump()
-          }))
-          saveToPouch(objects, cb);
+          instances = instances.filter(function (instance) {
+            return instance.model.shouldStore(instance);
+          });
+          log('Saving instances', instances);
+          saveToPouch(instances, cb);
         });
       }.bind(this));
-
     }
 
     var listener = function(n) {

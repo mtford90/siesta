@@ -51,7 +51,8 @@
       serialiseField: null,
       serialisableFields: null,
       remove: null,
-      parseAttribute: null
+      parseAttribute: null,
+      shouldStore: null
     }, false);
 
     if (!this.parseAttribute) {
@@ -64,6 +65,12 @@
       this.serialiseField = function(attrName, value) {
         return value;
       };
+    }
+
+    if (!this.shouldStore) {
+      this.shouldStore = function () {
+        return true;
+      }
     }
 
     this.attributes = Model._processAttributes(this.attributes);
