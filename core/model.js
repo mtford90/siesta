@@ -521,7 +521,7 @@
         serialise: opts.serialise || this._opts.serialise,
         serialiseField: opts.serialiseField || this._opts.serialiseField,
         parseAttribute: opts.parseAttribute || this._opts.parseAttribute,
-        store: opts.store || this._opts.store
+        store: opts.store == undefined ? this._opts.store : opts.store
       });
 
       if (this._opts.serialisableFields) {
