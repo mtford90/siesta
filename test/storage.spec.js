@@ -914,20 +914,17 @@ describe('storage', function() {
             }).catch(done);
           }).catch(done);
         }).catch(done);
-
       });
-
     });
-
   });
 
-  describe('shouldStore', function() {
+  describe('store', function() {
     it('simple example with no relationships should selectively save', function(done) {
       var Collection = siesta.collection('MyCollection'),
         Model = Collection.model('myModel', {
           id: '_id',
           attributes: ['name'],
-          shouldStore: function(instance) {
+          store: function(instance) {
             return instance.name;
           }
         });
@@ -954,7 +951,6 @@ describe('storage', function() {
           .catch(done);
       }).catch(done);
     });
-
     it('OneToOne', function(done) {
       var Collection = siesta.collection('MyCollection'),
         Model = Collection.model('myModel', {
@@ -970,7 +966,7 @@ describe('storage', function() {
         Other = Collection.model('Other', {
           id: '_id',
           attributes: ['name'],
-          shouldStore: function(instance) {
+          store: function(instance) {
             console.log(':)');
             return instance.name;
           }
@@ -1002,7 +998,6 @@ describe('storage', function() {
           .catch(done);
       }).catch(done);
     });
-
     it('OneToMany, forward', function(done) {
       var Collection = siesta.collection('MyCollection'),
         Model = Collection.model('Model', {
@@ -1018,7 +1013,7 @@ describe('storage', function() {
         Other = Collection.model('Other', {
           id: '_id',
           attributes: ['name'],
-          shouldStore: function(instance) {
+          store: function(instance) {
             return instance.name;
           }
         });
@@ -1049,7 +1044,6 @@ describe('storage', function() {
           .catch(done);
       }).catch(done);
     });
-
     it('OneToMany, reverse', function(done) {
       var Collection = siesta.collection('MyCollection'),
         Model = Collection.model('Model', {
@@ -1062,7 +1056,7 @@ describe('storage', function() {
               type: 'OneToMany'
             }
           },
-          shouldStore: function(instance) {
+          store: function(instance) {
             return instance.name;
           }
         }),
@@ -1096,7 +1090,6 @@ describe('storage', function() {
           .catch(done);
       }).catch(done);
     });
-
     it('ManyToMany, reverse', function(done) {
       var Collection = siesta.collection('MyCollection'),
         Model = Collection.model('Model', {
@@ -1109,7 +1102,7 @@ describe('storage', function() {
               type: 'ManyToMany'
             }
           },
-          shouldStore: function(instance) {
+          store: function(instance) {
             return instance.name;
           }
         }),
@@ -1158,7 +1151,7 @@ describe('storage', function() {
         Other = Collection.model('Other', {
           id: '_id',
           attributes: ['name'],
-          shouldStore: function(instance) {
+          store: function(instance) {
             return instance.name;
           }
         });
@@ -1189,7 +1182,35 @@ describe('storage', function() {
           .catch(done);
       }).catch(done);
     });
-
+    it('false', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('myModel', {
+          id: '_id',
+          attributes: ['name'],
+          store: false
+        });
+      Model.graph([
+        {_id: 1, name: 'Howdy'},
+        {_id: 2}
+      ]).then(function(instance) {
+        siesta
+          .save()
+          .then(function() {
+            var pouch = siesta.ext.storage._pouch;
+            console.log('pouch', pouch);
+            pouch.query(function(doc) {
+              if (doc.collection == 'MyCollection') {
+                emit(doc._id, doc);
+              }
+            }).then(function(resp) {
+              var rows = resp.rows;
+              assert.notOk(rows.length);
+              done();
+            }).catch(done);
+          })
+          .catch(done);
+      }).catch(done);
+    })
   });
 
   it('init should  be called on load with storage == true', function(done) {
@@ -1230,6 +1251,5 @@ describe('storage', function() {
 
 
   });
-
 
 });

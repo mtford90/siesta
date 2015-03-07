@@ -52,7 +52,7 @@
       serialisableFields: null,
       remove: null,
       parseAttribute: null,
-      shouldStore: null
+      store: null
     }, false);
 
     if (!this.parseAttribute) {
@@ -67,8 +67,18 @@
       };
     }
 
-    if (!this.shouldStore) {
-      this.shouldStore = function () {
+    if (this.store === undefined || this.store === null) {
+      this.store = function() {
+        return true;
+      }
+    }
+    else if (this.store === false) {
+      this.store = function() {
+        return false;
+      }
+    }
+    else if (this.store === true) {
+      this.store = function() {
         return true;
       }
     }
@@ -510,7 +520,8 @@
         remove: opts.remove || this._opts.remove,
         serialise: opts.serialise || this._opts.serialise,
         serialiseField: opts.serialiseField || this._opts.serialiseField,
-        parseAttribute: opts.parseAttribute || this._opts.parseAttribute
+        parseAttribute: opts.parseAttribute || this._opts.parseAttribute,
+        store: opts.store || this._opts.store
       });
 
       if (this._opts.serialisableFields) {

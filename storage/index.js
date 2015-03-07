@@ -142,14 +142,14 @@
         if (siesta.isArray(val)) {
           // If the related is not stored then it wouldn't make sense to create a relation in storage.
           val = val.filter(function(instance) {
-            return instance.model.shouldStore(instance);
+            return instance.model.store(instance);
           });
           memo[n] = _.pluck(val, 'localId');
         }
         else if (val) {
           // If the related is not stored then it wouldn't make sense to create a relation in storage.
-          var shouldStore = val.model.shouldStore(val);
-          if (shouldStore) memo[n] = val.localId;
+          var store = val.model.store(val);
+          if (store) memo[n] = val.localId;
         }
         return memo;
       }, serialised);
@@ -322,7 +322,7 @@
           unsavedObjectsHash = {};
           unsavedObjectsByCollection = {};
           instances = instances.filter(function(instance) {
-            return instance.model.shouldStore(instance);
+            return instance.model.store(instance);
           });
           log('Saving instances', instances);
           saveToPouch(instances, cb);
