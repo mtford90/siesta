@@ -214,6 +214,13 @@
     registerComparator: Query.registerComparator.bind(Query),
     count: function() {
       return cache.count();
+    },
+    get: function(id, cb) {
+      return util.promise(cb, function(cb) {
+        this._afterInstall(function() {
+          cb(null, cache._localCache()[id]);
+        });
+      }.bind(this));
     }
   });
 
