@@ -955,6 +955,241 @@ describe('storage', function() {
       }).catch(done);
     });
 
+    it('OneToOne', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('myModel', {
+          id: '_id',
+          relationships: {
+            related: {
+              model: 'Other',
+              reverse: 'reverseRelated',
+              type: 'OneToOne'
+            }
+          }
+        }),
+        Other = Collection.model('Other', {
+          id: '_id',
+          attributes: ['name'],
+          shouldStore: function(instance) {
+            console.log(':)');
+            return instance.name;
+          }
+        });
+      Model.graph([
+        {_id: 1, related: {_id: 3, name: 'name'}},
+        {_id: 2, related: {_id: 4}}
+      ]).then(function(instance) {
+        siesta
+          .save()
+          .then(function() {
+            var pouch = siesta.ext.storage._pouch;
+            console.log('pouch', pouch);
+            pouch.query(function(doc) {
+              if (doc.collection == 'MyCollection') {
+                emit(doc._id, doc);
+              }
+            }).then(function(resp) {
+              var rows = resp.rows;
+              assert.equal(rows.length, 3);
+              var indexed = _.chain(rows)
+                .pluck('value')
+                .indexBy('@id')
+                .value();
+              assert.notOk(indexed[2].related, 'If related object was not saved, the localId should not be present');
+              done();
+            }).catch(done);
+          })
+          .catch(done);
+      }).catch(done);
+    });
+
+    it('OneToMany, forward', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('Model', {
+          id: '_id',
+          relationships: {
+            related: {
+              model: 'Other',
+              reverse: 'reverseRelated',
+              type: 'OneToMany'
+            }
+          }
+        }),
+        Other = Collection.model('Other', {
+          id: '_id',
+          attributes: ['name'],
+          shouldStore: function(instance) {
+            return instance.name;
+          }
+        });
+      Model.graph([
+        {_id: 1, related: {_id: 3, name: 'name'}},
+        {_id: 2, related: {_id: 4}}
+      ]).then(function(instance) {
+        siesta
+          .save()
+          .then(function() {
+            var pouch = siesta.ext.storage._pouch;
+            console.log('pouch', pouch);
+            pouch.query(function(doc) {
+              if (doc.collection == 'MyCollection') {
+                emit(doc._id, doc);
+              }
+            }).then(function(resp) {
+              var rows = resp.rows;
+              assert.equal(rows.length, 3);
+              var indexed = _.chain(rows)
+                .pluck('value')
+                .indexBy('@id')
+                .value();
+              assert.notOk(indexed[3].related, 'If related object was not saved, the localId should not be present');
+              done();
+            }).catch(done);
+          })
+          .catch(done);
+      }).catch(done);
+    });
+
+    it('OneToMany, reverse', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('Model', {
+          id: '_id',
+          attributes: ['name'],
+          relationships: {
+            related: {
+              model: 'Other',
+              reverse: 'reverseRelated',
+              type: 'OneToMany'
+            }
+          },
+          shouldStore: function(instance) {
+            return instance.name;
+          }
+        }),
+        Other = Collection.model('Other', {
+          id: '_id'
+        });
+      Other.graph([
+        {_id: 1, reverseRelated: [{_id: 3, name: 'name'}]},
+        {_id: 2, reverseRelated: [{_id: 4}]}
+      ]).then(function(instance) {
+        siesta
+          .save()
+          .then(function() {
+            var pouch = siesta.ext.storage._pouch;
+            console.log('pouch', pouch);
+            pouch.query(function(doc) {
+              if (doc.collection == 'MyCollection') {
+                emit(doc._id, doc);
+              }
+            }).then(function(resp) {
+              var rows = resp.rows;
+              assert.equal(rows.length, 3);
+              var indexed = _.chain(rows)
+                .pluck('value')
+                .indexBy('@id')
+                .value();
+              assert.notOk(indexed[2].reverseRelated.length, 'If related object was not saved, the localId should not be present');
+              done();
+            }).catch(done);
+          })
+          .catch(done);
+      }).catch(done);
+    });
+
+    it('ManyToMany, reverse', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('Model', {
+          id: '_id',
+          attributes: ['name'],
+          relationships: {
+            related: {
+              model: 'Other',
+              reverse: 'reverseRelated',
+              type: 'ManyToMany'
+            }
+          },
+          shouldStore: function(instance) {
+            return instance.name;
+          }
+        }),
+        Other = Collection.model('Other', {
+          id: '_id'
+        });
+      Other.graph([
+        {_id: 1, reverseRelated: [{_id: 3, name: 'name'}]},
+        {_id: 2, reverseRelated: [{_id: 4}]}
+      ]).then(function(instance) {
+        siesta
+          .save()
+          .then(function() {
+            var pouch = siesta.ext.storage._pouch;
+            console.log('pouch', pouch);
+            pouch.query(function(doc) {
+              if (doc.collection == 'MyCollection') {
+                emit(doc._id, doc);
+              }
+            }).then(function(resp) {
+              var rows = resp.rows;
+              assert.equal(rows.length, 3);
+              var indexed = _.chain(rows)
+                .pluck('value')
+                .indexBy('@id')
+                .value();
+              assert.notOk(indexed[2].reverseRelated.length, 'If related object was not saved, the localId should not be present');
+              done();
+            }).catch(done);
+          })
+          .catch(done);
+      }).catch(done);
+    });
+    it('ManyToMany, forward', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('Model', {
+          id: '_id',
+          relationships: {
+            related: {
+              model: 'Other',
+              reverse: 'reverseRelated',
+              type: 'ManyToMany'
+            }
+          },
+        }),
+        Other = Collection.model('Other', {
+          id: '_id',
+          attributes: ['name'],
+          shouldStore: function(instance) {
+            return instance.name;
+          }
+        });
+      Model.graph([
+        {_id: 1, related: [{_id: 3, name: 'name'}]},
+        {_id: 2, related: [{_id: 4}]}
+      ]).then(function(instance) {
+        siesta
+          .save()
+          .then(function() {
+            var pouch = siesta.ext.storage._pouch;
+            console.log('pouch', pouch);
+            pouch.query(function(doc) {
+              if (doc.collection == 'MyCollection') {
+                emit(doc._id, doc);
+              }
+            }).then(function(resp) {
+              var rows = resp.rows;
+              assert.equal(rows.length, 3);
+              var indexed = _.chain(rows)
+                .pluck('value')
+                .indexBy('@id')
+                .value();
+              assert.notOk(indexed[2].related.length, 'If related object was not saved, the localId should not be present');
+              done();
+            }).catch(done);
+          })
+          .catch(done);
+      }).catch(done);
+    });
+
   });
 
   it('init should  be called on load with storage == true', function(done) {

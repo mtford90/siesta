@@ -128,8 +128,6 @@
       var __values = modelInstance.__values;
       serialised = siesta._.extend(serialised, __values);
       Object.keys(serialised).forEach(function(k) {
-
-
         serialised[k.replace(UNDERSCORE, '@')] = __values[k];
       });
       _addMeta(serialised);
@@ -142,10 +140,16 @@
       serialised = _.reduce(modelInstance._relationshipNames, function(memo, n) {
         var val = modelInstance[n];
         if (siesta.isArray(val)) {
+          // If the related is not stored then it wouldn't make sense to create a relation in storage.
+          val = val.filter(function(instance) {
+            return instance.model.shouldStore(instance);
+          });
           memo[n] = _.pluck(val, 'localId');
         }
         else if (val) {
-          memo[n] = val.localId;
+          // If the related is not stored then it wouldn't make sense to create a relation in storage.
+          var shouldStore = val.model.shouldStore(val);
+          if (shouldStore) memo[n] = val.localId;
         }
         return memo;
       }, serialised);
@@ -317,7 +321,7 @@
           unsavedObjects = [];
           unsavedObjectsHash = {};
           unsavedObjectsByCollection = {};
-          instances = instances.filter(function (instance) {
+          instances = instances.filter(function(instance) {
             return instance.model.shouldStore(instance);
           });
           log('Saving instances', instances);
