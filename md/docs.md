@@ -418,6 +418,19 @@ var Model = Collection.model('Model', {
 });
 ```
 
+### shouldSave
+
+You can define the `shouldSave` function on your models to determine whether or not a particular model instance is suitable for storing locally. For example, you may only want to save model instances that have a certain field.
+
+```js
+var Model = Collection.model('Model', {
+  shouldSave: function (instance) {
+    // The instance is only saved to local storage if it has a name.
+    return instance.name;
+  }
+});
+```
+
 To prevent a field from being serialised return `undefined`.
 
 ## Inheritance
@@ -1122,6 +1135,19 @@ instance.attr = 'value';
 console.log(instance.dirty); // true
 console.log(instance.model.dirty); // true
 console.log(instance.collection.dirty); // true
+```
+
+## Selective Saving
+
+You can define the `shouldSave` function on your models to determine whether or not a particular model instance is suitable for localStorage. For example, you may only want to save model instances that have a certain field.
+
+```js
+var Model = Collection.model('Model', {
+  shouldSave: function (instance) {
+    // The instance is only saved to local storage if it has a name.
+    return instance.name;
+  }
+});
 ```
 
 ## PouchDB Configuration
