@@ -144,7 +144,8 @@
     },
     _installRemoteId: function(modelInstance) {
       var Model = this.model;
-      Object.defineProperty(modelInstance, this.model.id, {
+      var idField = Model.id;
+      Object.defineProperty(modelInstance, idField, {
         get: function() {
           return modelInstance.__values[Model.id] || null;
         },

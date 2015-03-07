@@ -201,39 +201,39 @@ describe('storage', function() {
     describe('attributes only', function() {
       var Collection, Car;
 
-      beforeEach(function(done) {
+      beforeEach(function() {
         Collection = siesta.collection('myCollection');
         Car = Collection.model('Car', {
           attributes: ['colour', 'name']
         });
-        siesta.install(done);
       });
       it('load attributes', function(done) {
         siesta.ext.storage._pouch.bulkDocs([
           {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
           {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
         ]).then(function() {
-          siesta.ext.storage._load().then(function() {
-            assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-            Car.all().then(function(cars) {
-              assert.equal(cars.length, 2, 'Should have loaded the two cars');
-              var redCar = _.filter(cars, function(x) {
-                  return x.colour == 'red'
-                })[0],
-                blackCar = _.filter(cars, function(x) {
-                  return x.colour == 'black'
-                })[0];
-              assert.equal(redCar.colour, 'red');
-              assert.equal(redCar.name, 'Aston Martin');
-              assert.ok(redCar._rev);
-              assert.ok(redCar.localId);
-              assert.equal(blackCar.colour, 'black');
-              assert.equal(blackCar.name, 'Bentley');
-              assert.ok(blackCar._rev);
-              assert.ok(blackCar.localId);
-              done();
+          siesta.install()
+            .then(function() {
+              assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+              Car.all().then(function(cars) {
+                assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                var redCar = _.filter(cars, function(x) {
+                    return x.colour == 'red'
+                  })[0],
+                  blackCar = _.filter(cars, function(x) {
+                    return x.colour == 'black'
+                  })[0];
+                assert.equal(redCar.colour, 'red');
+                assert.equal(redCar.name, 'Aston Martin');
+                assert.ok(redCar._rev);
+                assert.ok(redCar.localId);
+                assert.equal(blackCar.colour, 'black');
+                assert.equal(blackCar.name, 'Bentley');
+                assert.ok(blackCar._rev);
+                assert.ok(blackCar.localId);
+                done();
+              }).catch(done);
             }).catch(done);
-          }).catch(done);
         }).catch(done);
       })
     });
@@ -286,12 +286,13 @@ describe('storage', function() {
               cars: ['abc', 'def']
             }
           ]).then(function() {
-            siesta.install().then(function() {
-              siesta.ext.storage._load().then(function() {
+            siesta
+              .install()
+              .then(function() {
                 assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                 done();
-              }).catch(done);
-            }).catch(done);
+              })
+              .catch(done);
           }).catch(done);
 
         });
@@ -352,69 +353,67 @@ describe('storage', function() {
         Person = Collection.model('Person', {
           attributes: ['name', 'age']
         });
-        siesta.install()
-          .then(function() {
-            siesta.ext.storage._pouch.bulkDocs([
-              {
-                collection: 'myCollection',
-                model: 'Car',
-                colour: 'red',
-                name: 'Aston Martin',
-                owners: ['xyz'],
-                _id: 'abc'
-              },
-              {
-                collection: 'myCollection',
-                model: 'Car',
-                colour: 'black',
-                name: 'Bentley',
-                owners: ['xyz'],
-                _id: 'def'
-              },
-              {
-                collection: 'myCollection',
-                model: 'Person',
-                name: 'Michael',
-                age: 24,
-                _id: 'xyz',
-                cars: ['abc', 'def']
-              },
-              {
-                collection: 'myCollection',
-                model: 'Person',
-                name: 'Bob',
-                age: 24,
-                _id: 'xyz',
-                cars: ['abc']
-              }
-            ]).then(function() {
-              siesta.ext.storage._load().then(function() {
-                assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-                Car.all().then(function(cars) {
-                  assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                  var redCar = _.filter(cars, function(x) {
-                      return x.colour == 'red'
-                    })[0],
-                    blackCar = _.filter(cars, function(x) {
-                      return x.colour == 'black'
-                    })[0];
-                  assert.equal(redCar.colour, 'red');
-                  assert.equal(redCar.name, 'Aston Martin');
-                  assert.ok(redCar._rev);
-                  assert.ok(redCar.localId);
-                  assert.equal(blackCar.colour, 'black');
-                  assert.equal(blackCar.name, 'Bentley');
-                  assert.ok(blackCar._rev);
-                  assert.ok(blackCar.localId);
-                  assert.include(_.pluck(redCar.owners, 'localId'), 'xyz');
-                  assert.include(_.pluck(blackCar.owners, 'localId'), 'xyz');
-                  done();
-                }).catch(done);
+
+        siesta.ext.storage._pouch.bulkDocs([
+          {
+            collection: 'myCollection',
+            model: 'Car',
+            colour: 'red',
+            name: 'Aston Martin',
+            owners: ['xyz'],
+            _id: 'abc'
+          },
+          {
+            collection: 'myCollection',
+            model: 'Car',
+            colour: 'black',
+            name: 'Bentley',
+            owners: ['xyz'],
+            _id: 'def'
+          },
+          {
+            collection: 'myCollection',
+            model: 'Person',
+            name: 'Michael',
+            age: 24,
+            _id: 'xyz',
+            cars: ['abc', 'def']
+          },
+          {
+            collection: 'myCollection',
+            model: 'Person',
+            name: 'Bob',
+            age: 24,
+            _id: 'xyz',
+            cars: ['abc']
+          }
+        ]).then(function() {
+          siesta.install()
+            .then(function() {
+              assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+              Car.all().then(function(cars) {
+                assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                var redCar = _.filter(cars, function(x) {
+                    return x.colour == 'red'
+                  })[0],
+                  blackCar = _.filter(cars, function(x) {
+                    return x.colour == 'black'
+                  })[0];
+                assert.equal(redCar.colour, 'red');
+                assert.equal(redCar.name, 'Aston Martin');
+                assert.ok(redCar._rev);
+                assert.ok(redCar.localId);
+                assert.equal(blackCar.colour, 'black');
+                assert.equal(blackCar.name, 'Bentley');
+                assert.ok(blackCar._rev);
+                assert.ok(blackCar.localId);
+                assert.include(_.pluck(redCar.owners, 'localId'), 'xyz');
+                assert.include(_.pluck(blackCar.owners, 'localId'), 'xyz');
+                done();
               }).catch(done);
             }).catch(done);
+        }).catch(done);
 
-          })
-          .catch(done)
         ;
       });
 
@@ -433,61 +432,58 @@ describe('storage', function() {
         Person = Collection.model('Person', {
           attributes: ['name', 'age']
         });
-        siesta.install()
-          .then(function() {
-            siesta.ext.storage._pouch.bulkDocs([
-              {
-                collection: 'myCollection',
-                model: 'Car',
-                colour: 'red',
-                name: 'Aston Martin',
-                owner: 'xyz',
-                _id: 'abc'
-              },
-              {
-                collection: 'myCollection',
-                model: 'Car',
-                colour: 'black',
-                name: 'Bentley',
-                owner: 'xyz',
-                _id: 'def'
-              },
-              {
-                collection: 'myCollection',
-                model: 'Person',
-                name: 'Michael',
-                age: 24,
-                _id: 'xyz',
-                car: 'def'
-              }
-            ]).then(function() {
-              siesta.ext.storage._load().then(function() {
-                assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-                Car.all().then(function(cars) {
-                  assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                  var redCar = _.filter(cars, function(x) {
-                      return x.colour == 'red'
-                    })[0],
-                    blackCar = _.filter(cars, function(x) {
-                      return x.colour == 'black'
-                    })[0];
-                  assert.equal(redCar.colour, 'red');
-                  assert.equal(redCar.name, 'Aston Martin');
-                  assert.ok(redCar._rev);
-                  assert.ok(redCar.localId);
-                  assert.equal(blackCar.colour, 'black');
-                  assert.equal(blackCar.name, 'Bentley');
-                  assert.ok(blackCar._rev);
-                  assert.ok(blackCar.localId);
-                  assert.notOk(redCar.owner);
-                  assert.equal(blackCar.owner.localId, 'xyz');
-                  done();
-                }).catch(done);
+
+        siesta.ext.storage._pouch.bulkDocs([
+          {
+            collection: 'myCollection',
+            model: 'Car',
+            colour: 'red',
+            name: 'Aston Martin',
+            owner: 'xyz',
+            _id: 'abc'
+          },
+          {
+            collection: 'myCollection',
+            model: 'Car',
+            colour: 'black',
+            name: 'Bentley',
+            owner: 'xyz',
+            _id: 'def'
+          },
+          {
+            collection: 'myCollection',
+            model: 'Person',
+            name: 'Michael',
+            age: 24,
+            _id: 'xyz',
+            car: 'def'
+          }
+        ]).then(function() {
+          siesta.install()
+            .then(function() {
+              assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+              Car.all().then(function(cars) {
+                assert.equal(cars.length, 2, 'Should have loaded the two cars');
+                var redCar = _.filter(cars, function(x) {
+                    return x.colour == 'red'
+                  })[0],
+                  blackCar = _.filter(cars, function(x) {
+                    return x.colour == 'black'
+                  })[0];
+                assert.equal(redCar.colour, 'red');
+                assert.equal(redCar.name, 'Aston Martin');
+                assert.ok(redCar._rev);
+                assert.ok(redCar.localId);
+                assert.equal(blackCar.colour, 'black');
+                assert.equal(blackCar.name, 'Bentley');
+                assert.ok(blackCar._rev);
+                assert.ok(blackCar.localId);
+                assert.notOk(redCar.owner);
+                assert.equal(blackCar.owner.localId, 'xyz');
+                done();
               }).catch(done);
             }).catch(done);
-          })
-          .catch(done)
-        ;
+        }).catch(done);
       });
 
     });
@@ -1250,6 +1246,23 @@ describe('storage', function() {
     });
 
 
+  });
+
+  describe('prevent duplicates', function() {
+    it('it should be impossible to write down multiple objects to pouchdb that have the same remote id', function(done) {
+      var Collection = siesta.collection('MyCollection'),
+        Model = Collection.model('myModel', {
+          id: '_id',
+          attributes: ['name'],
+          store: function(instance) {
+            return instance.name;
+          }
+        });
+      siesta.install(function() {
+        var pouch = siesta.ext.storage._pouch;
+        done();
+      });
+    })
   });
 
 });

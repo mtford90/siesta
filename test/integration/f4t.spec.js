@@ -67,7 +67,6 @@ describe('f4t', function() {
     });
 
     Species = Base.child('Species', {
-      id: '_id',
       attributes: [
         'name',
         'latinName',
@@ -218,7 +217,7 @@ describe('f4t', function() {
   describe('storage', function() {
 
     describe('field loading', function() {
-      var data = [{
+      var speciesData = [{
         "_id": "54f75cb292997f5041132d94",
         "created": "2015-03-06T18:16:25.577Z",
         "latinName": "Gallus gallus domesticus",
@@ -238,7 +237,7 @@ describe('f4t', function() {
       var instances;
 
       beforeEach(function(done) {
-        Species.graph(data).then(function(species) {
+        Species.graph(speciesData).then(function(species) {
           siesta.save()
             .then(function() {
               siesta.reset(function() {
@@ -257,17 +256,33 @@ describe('f4t', function() {
       it('should load remote identifiers', function() {
         console.debug('instances', instances);
         assert.equal(instances.length, 3);
-        var dataIdentifiers = _.pluck(data, '_id'),
+        var dataIdentifiers = _.pluck(speciesData, '_id'),
           modelIdentifiers = _.pluck(instances, '_id');
         dataIdentifiers.forEach(function(_id) {
           assert.include(modelIdentifiers, _id);
         });
         console.debug('identifiers', dataIdentifiers);
       });
+
+      it('xyz', function(done) {
+        siesta.log.enable('siesta:storage');
+        console.log('here we go!');
+        siesta.reset(function() {
+          configureSiesta();
+          siesta
+            .install()
+            .then(function() {
+              var remoteCache = siesta._internal.cache._remoteCache();
+              var localCache = siesta._internal.cache._localCache();
+              assert.equal(Object.keys(localCache).length, 3, 'local cache should be populated');
+              assert.equal(Object.keys(remoteCache.F4TCollection.Species).length, 3, 'remote cache should be populated');
+              done();
+            })
+            .catch(done);
+        }, false);
+      })
     });
-
   });
-
 
 
 });

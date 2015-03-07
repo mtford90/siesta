@@ -211,7 +211,10 @@
       }.bind(this));
     },
     notify: util.next,
-    registerComparator: Query.registerComparator.bind(Query)
+    registerComparator: Query.registerComparator.bind(Query),
+    count: function() {
+      return cache.count();
+    }
   });
 
   Object.defineProperties(siesta, {

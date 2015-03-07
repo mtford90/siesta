@@ -1,7 +1,7 @@
 (function() {
   var Store = require('./store'),
     SiestaModel = require('./ModelInstance'),
-    log = require('./log')('mapping'),
+    log = require('./log')('graph'),
     cache = require('./cache'),
     util = require('./util'),
     _ = util._,
@@ -222,11 +222,11 @@
         var self = this;
         // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
         // always be the same. This is just a precaution.
-        var _ids = _.pluck(self.data, 'localId'),
+        var localIdentifiers = _.pluck(self.data, 'localId'),
           localId;
-        for (i = 0; i < _ids.length; i++) {
-          if (_ids[i]) {
-            localId = {localId: _ids[i]};
+        for (i = 0; i < localIdentifiers.length; i++) {
+          if (localIdentifiers[i]) {
+            localId = {localId: localIdentifiers[i]};
             break;
           }
         }

@@ -83,7 +83,7 @@
       };
     }
 
-    function constructIndexesForAll() {
+    function constructIndexesForAllModels() {
       var indexes = [];
       var registry = siesta._internal.CollectionRegistry;
       registry.collectionNames.forEach(function(collectionName) {
@@ -115,7 +115,7 @@
     }
 
     function ensureIndexesForAll(cb) {
-      var indexes = constructIndexesForAll();
+      var indexes = constructIndexesForAllModels();
       __ensureIndexes(indexes, cb);
     }
 
@@ -170,14 +170,17 @@
       var relationshipNames = model._relationshipNames;
       _.each(relationshipNames, function(r) {
         var localId = datum[r];
-        if (siesta.isArray(localId)) {
-          datum[r] = _.map(localId, function(x) {
-            return {localId: x}
-          });
+        if (localId) {
+          if (siesta.isArray(localId)) {
+            datum[r] = _.map(localId, function(x) {
+              return {localId: x}
+            });
+          }
+          else {
+            datum[r] = {localId: localId};
+          }
         }
-        else {
-          datum[r] = {localId: localId};
-        }
+
       });
       return datum;
     }
@@ -191,6 +194,7 @@
      * @private
      */
     function _loadModel(opts, callback) {
+      var loaded = {};
       var collectionName = opts.collectionName,
         modelName = opts.modelName;
       var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
@@ -201,12 +205,26 @@
         //pouch.query({map: mapFunc})
         .then(function(resp) {
           log('Queried pouch successfully');
-          var data = siesta._.map(siesta._.pluck(resp.rows, 'value'), function(datum) {
+          var rows = resp.rows;
+          var data = siesta._.map(siesta._.pluck(rows, 'value'), function(datum) {
             return _prepareDatum(datum, Model);
           });
+
+          siesta._.map(data, function(datum) {
+            var remoteId = datum[Model.id];
+            if (remoteId) {
+              if (loaded[remoteId]) {
+                console.error('Duplicates detected in storage. You have encountered a serious bug. Please report this.');
+              }
+              else {
+                loaded[remoteId] = datum;
+              }
+            }
+          });
+
           log('Mapping data', data);
+
           Model.graph(data, {
-            disableevents: true,
             _ignoreInstalled: true,
             fromStorage: true
           }, function(err, instances) {
@@ -257,9 +275,14 @@
               });
               n = instances.length;
               if (log) {
-                log('Loaded ' + n.toString() + ' instances');
+                log('Loaded ' + n.toString() + ' instances. Cache size is ' + cache.count(), {
+                  remote: cache._remoteCache(),
+                  localCache: cache._localCache()
+                });
               }
+              siesta.on('Siesta', listener);
             }
+
             cb(err, n);
           });
         }
@@ -330,7 +353,7 @@
       }.bind(this));
     }
 
-    var listener = function(n) {
+    function listener(n) {
       var changedObject = n.obj,
         ident = changedObject.localId;
       if (!changedObject) {
@@ -349,8 +372,7 @@
         }
         unsavedObjectsByCollection[collectionName][modelName][ident] = changedObject;
       }
-    };
-    siesta.on('Siesta', listener);
+    }
 
     _.extend(storage, {
       _load: _load,
@@ -366,7 +388,6 @@
           if (!err) {
             pouch = new PouchDB(DB_NAME);
           }
-          siesta.on('Siesta', listener);
           log('Reset complete');
           cb(err);
         })
