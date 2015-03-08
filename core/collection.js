@@ -3,16 +3,16 @@
  */
 (function() {
   var log = require('./log')('collection'),
-      CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
-      InternalSiestaError = require('./error').InternalSiestaError,
-      Model = require('./model'),
-      extend = require('extend'),
-      observe = require('../vendor/observe-js/src/observe').Platform,
-      events = require('./events'),
-      util = require('./util'),
-      _ = util._,
-      error = require('./error'),
-      cache = require('./cache');
+    CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+    InternalSiestaError = require('./error').InternalSiestaError,
+    Model = require('./model'),
+    extend = require('extend'),
+    observe = require('../vendor/observe-js/src/observe').Platform,
+    events = require('./events'),
+    util = require('./util'),
+    _ = util._,
+    error = require('./error'),
+    cache = require('./cache');
 
 
   /**
@@ -63,7 +63,7 @@
         get: function() {
           if (siesta.ext.storageEnabled) {
             var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-                hash = unsavedObjectsByCollection[self.name] || {};
+              hash = unsavedObjectsByCollection[self.name] || {};
             return !!Object.keys(hash).length;
           }
           else return undefined;
@@ -299,6 +299,20 @@
           cb(err, results);
         });
         else cb(error(err, {data: data, invalidModelName: modelName}));
+      }.bind(this));
+    },
+
+    removeAll: function(cb) {
+      return util.promise(cb, function(cb) {
+        util.Promise.all(
+          Object.keys(this._models).map(function(modelName) {
+            var model = this._models[modelName];
+            return model.removeAll();
+          }.bind(this))
+        ).then(function() {
+            cb(null);
+          })
+          .catch(cb)
       }.bind(this));
     }
   });

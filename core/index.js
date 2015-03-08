@@ -221,6 +221,17 @@
           cb(null, cache._localCache()[id]);
         });
       }.bind(this));
+    },
+    removeAll: function(cb) {
+      return util.promise(cb, function(cb) {
+        util.Promise.all(
+          CollectionRegistry.collectionNames.map(function(collectionName) {
+            return CollectionRegistry[collectionName].removeAll();
+          }.bind(this))
+        ).then(function() {
+            cb(null);
+          }).catch(cb)
+      }.bind(this));
     }
   });
 

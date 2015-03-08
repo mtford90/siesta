@@ -497,6 +497,16 @@
     },
     toString: function() {
       return 'Model[' + this.name + ']';
+    },
+    removeAll: function(cb) {
+      return util.promise(cb, function(cb) {
+        this.all()
+          .then(function(instances) {
+            instances.remove();
+            cb();
+          })
+          .catch(cb);
+      }.bind(this));
     }
 
   });
