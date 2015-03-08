@@ -350,8 +350,6 @@
           delete remoteCache[collectionName][modelName][remoteId];
         }
       }
-    } else {
-      throw new InternalSiestaError('Object was not in cache.');
     }
   }
 
