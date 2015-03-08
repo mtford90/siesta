@@ -334,7 +334,7 @@
 
       // By wrapping the promise in another promise we can push the invocations to the bottom of the event loop so that
       // any event handlers added to the chain are honoured straight away.
-      var linkPromise = new Promise(function(resolve, reject) {
+      var linkPromise = new util.Promise(function(resolve, reject) {
         promise.then(argsarray(function(args) {
           setTimeout(function() {
             resolve.apply(null, args);
