@@ -214,6 +214,46 @@ describe('f4t', function() {
 
   });
 
+  describe('errors', function() {
+    it('assign string to reverse OneToMany should return a nice error.', function(done) {
+      User.graph({
+        companies: 'asdasd'
+      }).then(function() {
+        done('should not succeed');
+      }).catch(function(err) {
+        console.log('err', err);
+        assert.ok(err);
+        done();
+      });
+    });
+    it('should be an error on duplicate reverse key', function(done) {
+      var Model = F4TCollection.model('Model', {
+        relationships: {
+          related: {
+            model: 'RelatedModel',
+            reverse: 'blah'
+          },
+          relatedAgain: {
+            model: 'RelatedModel',
+            reverse: 'blah'
+          }
+        }
+      });
+      var RelatedModel = F4TCollection.model('RelatedModel', {});
+      siesta.install()
+        .then(function() {
+          done(new Error('Should not succeed'));
+        })
+        .catch(function(err) {
+          console.log('err', err);
+          assert.ok(err);
+          done();
+        })
+    });
+
+  });
+
+
   describe('storage', function() {
 
     describe('field loading', function() {
@@ -280,10 +320,11 @@ describe('f4t', function() {
             })
             .catch(done);
         }, false);
-      })
+      });
+
+
     });
   });
-
 
 });
 
