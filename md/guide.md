@@ -100,7 +100,23 @@ A `Model` describes a (possibly remote) resource that you would like to represen
 }
 ```
 
-## Relationship
+## Field
+
+A field is an attribute or a relationship.
+
+### Attribute
+
+An attribute is a simple data item such as a `String`, `Integer` or `Date`.
+
+e.g. a user could be described as follows:
+
+```js
+var User = {
+	attributes: ['username']
+}
+```
+
+### Relationship
 
 A `Relationship` describes a relation between two models. For example, all Github repositories have a user that owns that repository. We would define a relationship between our `Repo` and `User` model to describe this.
 

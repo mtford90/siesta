@@ -542,6 +542,20 @@ Siesta.graph({
 });
 ```
 
+### localId
+
+Siesta assigns each object a unique local identifier which is available at `localId`.
+
+You can query by `localId` using `siesta.get`.
+
+```js
+siesta
+  .get('030685b9-938a-46ff-9af3-168dfd198040')
+  .then(function (instance) {
+    // ...
+  });
+```
+
 ## Updating Instances
 
 When we map instances to the object graph, if an instance that matches `id` already exists, then this instance will be updated.
@@ -569,6 +583,31 @@ You can restore a deleted instance by calling `restore` however do note that all
 ```js
 myInstance.restore();
 console.log(myInstance.removed); // false
+```
+
+You can also remove objects in bulk.
+
+```js
+// Remove all instances of a particular model.
+User
+  .removeAll()
+  .then(function() {
+    // ...
+  });
+
+// Remove all instances of a particular collection.
+Collection
+  .removeAll()
+  .then(function () {
+    // ...
+  });
+
+// Remove all instances in the app
+siesta
+  .removeAll()
+  .then(function () {
+    // ...
+  });
 ```
 
 ## Events
@@ -853,7 +892,7 @@ Repo.query({stars__customLt: 50})
 
 Prepending `-` signifies descending order.
 
-## Result Set
+## Result Sets
 
 Once a query has completed successfully we can access the result set which contains the results of the query. This is an array-like object and can be treated as such however has additional methods that allows us to apply bulk operations to all instances within it. For example:
 
@@ -875,6 +914,7 @@ Repo.all()
     .then(function (repos) {
         repos.name = repos.name.toUpperCase();
     });
+```
 
 Each method call returns another result set and hence we can chain method calls.
 
@@ -915,14 +955,27 @@ Repo.query({stars__gte: 1000})
   });
 ```
 
+## localId
+
+Siesta assigns each object a unique local identifier which is available at `localId`.
+
+You can query by `localId` using `siesta.get`.
+
+```js
+siesta
+  .get('030685b9-938a-46ff-9af3-168dfd198040')
+  .then(function (instance) {
+    // ...
+  });
+```
+
 # Reactive Programming
 
 As well as the various events documented so far Siesta features various other mechanisms to support Reactive Programming.
 
-## Reactive Queries
+## Queries
 
-Reactive queries allow us to listen to changes that match a particular query.
-
+We can react to changes in query result sets by registering event handlers.
 ```js
 var query = Repo
   .query({
@@ -955,12 +1008,14 @@ query.update();
 
 ### Events
 
+The event objects emitted on changes to query result sets are similar to those described in the [model events section](#events).
+
 Reactive Query events are emitted under 4 circumstances:
 
-* `remove`: An object has been removed from the result set due to no longer matching the query.
-* `new`: An object has been added to the result set due to now matching the query.
-* `splice`: An object has been moved to a different position in the query due to ordering.
-* An object in the result set has changed but not removed. In this instance, the change object will be an event described in the [model events section](#events).
+* `splice`: The result set of the query has changed.
+* `new`, `set`, `splice`: An object in the result set has changed but not removed. In this instance, the change object will be an event described in the 
+
+`e.obj` will either be an object in the result set that has changed, or the query result set itself.
 
 ### Insertion Policy
 
@@ -979,6 +1034,8 @@ var query = Repo
 ```
 
 ### Track
+
+<span style="color: red; font-size: 14px">**Warning:** Not yet implemented</span>
 
 You can track the indexes of the ordered elements by using the `__track` option.
 
@@ -1023,7 +1080,7 @@ var data = user.serialise();
 
 By default depth=1 serialisation is used whereby all related objects are serialised into their unique identifier e.g. in a Todo app a serialised todo may look like:
 
-```
+```js
 {
   id: 53,
   description: 'Go to the store',
@@ -1031,8 +1088,18 @@ By default depth=1 serialisation is used whereby all related objects are seriali
 }
 ```
 
-You can customise how models are serialised by setting the `serialise` attribute when defining your models.
+`serialise` takes an options object that allows you to customise how the instance is serialised.
 
+```js
+var data = user.serialise({
+	// If an attribute is null/undefined it will not be present in the serialised data.
+	includeNullAttributes: false,
+	// If a relationship is not defined it will not be present as null in the serialised data.
+	includeNullRelationships: false
+});
+```
+
+You can customise how models are serialised by setting the `serialise` attribute when defining your models.
 
 ```js
 var Model = Collection.model('Model', {
@@ -1270,13 +1337,13 @@ Model.graph('sdfsdfsdf')
 Siesta uses the [debug](https://www.npmjs.org/package/debug) module for log output. You can enable all logs by executing the following:
 
 ```js
-Siesta.log.enable('*');
+siesta.log.enable('*');
 ```
 
 Or for more fine-grained logging:
 
 ```js
-Siesta.log.enable('siesta:storage');
+siesta.log.enable('siesta:storage');
 ```
 
 The various loggers are listed below:
@@ -1289,7 +1356,7 @@ The various loggers are listed below:
 Note that these settings are saved to the browsers local storage. To disable log output call:
 
 ```js
-Siesta.log.disable();
+siesta.log.disable();
 ```
 
 # Testing
@@ -1366,6 +1433,8 @@ siesta.notify().then(function () {
 In browsers that implement `Object.observe`, `siesta.notify()` simply does nothing and so it is safe to use throughout your code no matter which browsers you are targeting.
 
 # ReactJS mixin
+
+<span style="color: red; font-size: 16px">**Warning:** The ReactJS mixin is currently out of date. Update is incoming.</span>
 
 The ReactJS mixin adds useful methods to React components in order to make integration with Siesta more concise.
 
@@ -1633,4 +1702,8 @@ var MyComponent = React.createClass({
     }
 });   
 ```
+
+# AngularJS 
+
+Coming soon.
 
