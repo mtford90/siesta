@@ -1,6 +1,6 @@
 (function() {
   var Store = require('./store'),
-    SiestaModel = require('./ModelInstance'),
+    ModelInstance = require('./ModelInstance'),
     log = require('./log')('graph'),
     cache = require('./cache'),
     util = require('./util'),
@@ -41,6 +41,8 @@
       subTaskResults: {},
       _newObjects: []
     });
+
+    this.data = this.preprocessData();
   }
 
 
@@ -124,7 +126,7 @@
                 };
                 lookup.datum[self.model.id] = datum;
                 remoteLookups.push(lookup);
-              } else if (datum instanceof SiestaModel) { // We won't need to perform any mapping.
+              } else if (datum instanceof ModelInstance) { // We won't need to perform any mapping.
                 this.objects[i] = datum;
               } else if (datum.localId) {
                 localLookups.push({
@@ -220,7 +222,7 @@
     _lookupSingleton: function(cb) {
       return util.promise(cb, function(cb) {
         var self = this;
-        // Pick a random _id from the array of data being mapped onto the singleton object. Note that they should
+        // Pick a random localId from the array of data being mapped onto the singleton object. Note that they should
         // always be the same. This is just a precaution.
         var localIdentifiers = _.pluck(self.data, 'localId'),
           localId;
@@ -244,8 +246,34 @@
       this._newObjects.push(modelInstance);
       return modelInstance;
     },
+    preprocessData: function() {
+      var data = _.extend([], this.data);
+      return _.map(data, function(datum) {
+        var keys = Object.keys(datum);
+        _.each(keys, function(k) {
+          var isRelationship = this.model._relationshipNames.indexOf(k) > -1;
+
+          if (isRelationship) {
+            var val = datum[k];
+            if (val instanceof ModelInstance) {
+              datum[k] = {localId: val.localId};
+            }
+            else if (util.isArray(val)) {
+              datum[k] = _.each(val, function(e) {
+                if (e instanceof ModelInstance) {
+                  return {localId: val.localId};
+                }
+                return val;
+              });
+            }
+          }
+        }.bind(this));
+        return datum;
+      }.bind(this));
+    },
     start: function(done) {
-      if (this.data.length) {
+      var data = this.data;
+      if (data.length) {
         var self = this;
         var tasks = [];
         var lookupFunc = this.model.singleton ? this._lookupSingleton : this._lookup;
@@ -300,9 +328,10 @@
       for (var i = 0; i < this.data.length; i++) {
         var datum = this.data[i];
         if (datum) {
-          if (datum[name]) {
+          var val = datum[name];
+          if (val) {
             indexes.push(i);
-            relatedData.push(datum[name]);
+            relatedData.push(val);
           }
         }
       }

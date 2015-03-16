@@ -253,7 +253,6 @@ describe('f4t', function() {
 
   });
 
-
   describe('storage', function() {
 
     describe('field loading', function() {
