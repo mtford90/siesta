@@ -482,7 +482,7 @@ JavascriptEngineer
 
 In siesta, model instances are created and updated during the process of [mapping](#concepts-object-mapping). This refers to mapping data onto the object graph and is explained [here](#concepts-object-mapping).
 
-When data is mapped onto the object graph a new model instance will be created if and only if an instance does not exist with the `id` supplied in the mapped data.
+When data is mapped onto the object graph a new model instance will be created if and only if an instance does not exist with the `id` supplied in the mapped data. Otherwise the data will update an instance that already exists in the object graph.
 
 ```js
 // Map a single object.
@@ -509,6 +509,62 @@ User.graph([
         console.log(m.login);
     });
 });
+```
+
+In the case of relationship fields, related objects will automatically be created/updated.
+
+```js
+User.graph({login: 'mtford90', id: 123})
+    .then(function (user) {
+        Repo.graph({
+            id: 2,
+            name: 'My Repo',
+            user: {
+                login: 'mtford90',
+                id: 123 // The id matches the previous created user.
+            }
+        }).then(function (repo) {
+            assert.equal(repo.user, user);
+        });
+    });
+
+```
+
+This is also the case with the `Many` side of relationships.
+
+```js
+
+Repo.graph({
+    id: 2,
+    name: 'My Repo'
+}).then(function (repo) {
+    User.graph({
+        login: 'mtford90',
+        id: 123,
+        repos: [
+            {name: 'My Renamed Repo', id: 2}
+        ]
+    }).then(function (user) {
+      assert.equal(user.repos[0], repo);
+      console.log(users.repo[0].name); // My Renamed Repo - the single source of truth was maintained.
+    });
+});
+
+```
+
+It is often the case that APIs represent relationships with just an identifier. Siesta handles this gracefully.
+
+```js
+User.graph({login: 'mtford90', id: 123})
+    .then(function (user) {
+        Repo.graph({
+            id: 2,
+            name: 'My Repo',
+            user: 123
+        }).then(function (repo) {
+            assert.equal(repo.user, user);
+        });
+    });
 ```
 
 ### Collection Level
@@ -616,25 +672,25 @@ You can listen to model change events on the `Collection`, `Model` and `ModelIns
 
 ```js
 // Listen to events related to model instances in a particular collection
-Collection.on('*', function (e) {
+Collection.on('<event_name>', function (e) {
     // ...
 });
 
 // Listen to events related to instances of particular models
-Model.on('*', function (e) {
+Model.on('<event_name>', function (e) {
     // ...
 });
 
 // Listen to events related to particular instances
 Model.graph({attr: 'something'})
     .then(function (instance) {
-        instance.on('*', function (e) {
+        instance.on('<event_name>', function (e) {
 
         });
     });
 
 // Listen to just one event before canceling the listener automatically.
-something.once(function (e) {
+something.once('<event_name>', function (e) {
     // ...
 });
 ```
@@ -642,11 +698,11 @@ something.once(function (e) {
 `on` returns a function which you can call to stop listening.
 
 ```js
-var cancel = something.on(function (e) { /* ... */ });
+var cancel = something.on('<event_name>', function (e) { /* ... */ });
 cancel();
 ```
 
-### Types
+### Event Names
 
 There are four different event types.
 
@@ -668,7 +724,7 @@ Every event features the following fields.
 |model|name of the model of which the modified object is an instance|
 |type|type of event, one of Set, Splice, New, Delete|
 
-`Set` events have the following extra fields
+`set` events have the following extra fields
 
 |Field|Description|
 |-----|-----------|
@@ -676,7 +732,7 @@ Every event features the following fields.
 |old|the old value|
 |field|name of the property that has changed|
 
-`Splice` events have the following extra fields and obey Javascript splice convention of `array.splice(index, numDelete, ... itemsToAdd)
+`splice` events have the following extra fields and obey Javascript splice convention of `array.splice(index, numDelete, ... itemsToAdd)
 
 |Field|Description|
 |-----|-----------|
@@ -686,7 +742,7 @@ Every event features the following fields.
 |added|added model instances|
 |field|name of the property that refers to the spliced array|
 
-`New` and `Delete` events do not have any additional fields.
+`new` and `remove` events do not have any additional fields.
 
 ### Custom Events
 
@@ -744,7 +800,7 @@ var Collection = siesta.collection('Collection'),
 Model.one().then(function (instance) {
     instance.x = 1;
     instance.y = 1;
-    instance.on('*', function (x) {
+    instance.on('<event_name>', function (x) {
         // This will never happen.
         assert.equal(x.field, 'z');
     });
@@ -808,6 +864,18 @@ Repo.count()
     .then(function (n) {
         console.log(n); // Log the number of repos that we have locally.
     });
+
+// Query for a repo belonging to a particular user
+Repo.query({user: userModelInstance})
+    .then(function (repo) {
+        // ...
+    });
+
+// Query for a repo belonging to a particular user with a particular `id`
+Repo.query({user: 563})
+    .then(function (repo) {
+        // ...
+    });
 ```
 
 ## Nested Queries
@@ -816,6 +884,11 @@ You can query using dot syntax to access nested objects.
 
 ```js
 Repo.query({'owner.username': 'mtford90'})
+    .then(function (repos) {
+        // ...
+    });
+
+Repo.query({'owner.id': 123})
     .then(function (repos) {
         // ...
     });
@@ -873,6 +946,7 @@ Here are the current built-in comparators
 * `<field>__gt` - greater than
 * `<field>__gte` - greater than or equal to
 * `<field>__contains` - string contains or array contains
+* `<field>__in` - alias for `<field>__contains`
 
 You can register your own comparators.
 
@@ -1296,7 +1370,7 @@ And then update and listen to changes from anywhere in your app.
 Settings.one().then(function (settings) {
     settings.someSettings.setting1 = 'something';
     settings.someMoreSettings.setting4 = 'something else';
-    settings.someMoreSettings.on('*', function (e) {
+    settings.someMoreSettings.on('set', function (e) {
         console.log('Some more settings changed!', e);
     });
 });

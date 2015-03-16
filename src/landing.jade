@@ -95,9 +95,8 @@ html
                       // Called on user creation
                   })
                   .query({$or: {age__gte: 20, age__lte: 30}})
-                  .on('*', function (change) {
-                      // Called whenever result set changes
-                      // as well as when elements change
+                  .on('new', function (e) {
+                      // Fired whenever a new user matching the query is created.
                    });
             p React to changes in the object graph.
           .col-md-6
