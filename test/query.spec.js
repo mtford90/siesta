@@ -1388,7 +1388,48 @@ describe('query...', function() {
             .catch(done);
         });
 
-      })
+      });
+
+      describe('reverse', function() {
+        var data;
+        beforeEach(function(done) {
+          Collection.graph({
+            RelatedModel: [
+              {
+                id: 3,
+                y: 1,
+                reverseRel: [{id: 1, x: 'x'}]
+              }
+            ]
+          }).then(function(_data) {
+            data = _data;
+            done();
+          }).catch(done);
+        });
+
+        it('simple', function(done) {
+          var reverseInstance = data.RelatedModel[0];
+          var instance = reverseInstance.reverseRel[0];
+          RelatedModel.query({reverseRel__in: instance})
+            .then(function(instances) {
+              assert.equal(instances[0], reverseInstance);
+              done();
+            })
+            .catch(done);
+        });
+
+        it('simple, _id', function(done) {
+          var reverseInstance = data.RelatedModel[0];
+          var instance = reverseInstance.reverseRel[0];
+          RelatedModel.query({'reverseRel.id__in': instance.id})
+            .then(function(instances) {
+              assert.equal(instances[0], reverseInstance);
+              done();
+            })
+            .catch(done);
+        });
+
+      });
     });
   })
 

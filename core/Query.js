@@ -233,7 +233,12 @@
       }
       fields[fields.length - 1] = field;
       _.each(fields.slice(0, fields.length - 1), function(f) {
-        obj = obj[f];
+        if (util.isArray(obj)) {
+          obj = _.pluck(obj, f);
+        }
+        else {
+          obj = obj[f];
+        }
       });
       // If we get to the point where we're about to index null or undefined we stop - obviously this object does
       // not match the query.
