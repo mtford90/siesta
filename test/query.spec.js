@@ -1,8 +1,8 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    SiestaUserError = internal.error.SiestaUserError,
-    createQuerySet = internal.querySet,
-    Query = internal.Query;
+  internal = siesta._internal,
+  SiestaUserError = internal.error.SiestaUserError,
+  createQuerySet = internal.querySet,
+  Query = internal.Query;
 
 describe('query...', function() {
   before(function() {
@@ -755,13 +755,13 @@ describe('query...', function() {
         return value == 3;
       });
       Person.graph([{age: 2}, {age: 3}])
-          .then(function() {
-            Person.query({age__three: 'doesnt matter'})
-                .then(function(res) {
-                  assert.equal(res.length, 1);
-                  done();
-                }).catch(done);
-          }).catch(done);
+        .then(function() {
+          Person.query({age__three: 'doesnt matter'})
+            .then(function(res) {
+              assert.equal(res.length, 1);
+              done();
+            }).catch(done);
+        }).catch(done);
     });
   });
 
@@ -782,15 +782,15 @@ describe('query...', function() {
         {name: 'John', age: 12}
       ]).then(function() {
         Person.query({__order: '-age'})
-            .then(function(orderedPeople) {
-              var lastAge = orderedPeople[0].age;
-              for (var i = 1; i < orderedPeople.length; i++) {
-                var person = orderedPeople[i];
-                assert(person.age < lastAge, 'Should be descending');
-                lastAge = person.age;
-              }
-              done();
-            }).catch(done);
+          .then(function(orderedPeople) {
+            var lastAge = orderedPeople[0].age;
+            for (var i = 1; i < orderedPeople.length; i++) {
+              var person = orderedPeople[i];
+              assert(person.age < lastAge, 'Should be descending');
+              lastAge = person.age;
+            }
+            done();
+          }).catch(done);
       }).catch(done);
     });
 
@@ -801,15 +801,15 @@ describe('query...', function() {
         {name: 'John', age: 12}
       ]).then(function() {
         Person.query({__order: 'age'})
-            .then(function(orderedPeople) {
-              var lastAge = orderedPeople[0].age;
-              for (var i = 1; i < orderedPeople.length; i++) {
-                var person = orderedPeople[i];
-                assert(person.age > lastAge, 'Should be descending');
-                lastAge = person.age;
-              }
-              done();
-            }).catch(done);
+          .then(function(orderedPeople) {
+            var lastAge = orderedPeople[0].age;
+            for (var i = 1; i < orderedPeople.length; i++) {
+              var person = orderedPeople[i];
+              assert(person.age > lastAge, 'Should be descending');
+              lastAge = person.age;
+            }
+            done();
+          }).catch(done);
       }).catch(done);
     });
 
@@ -820,15 +820,15 @@ describe('query...', function() {
         {name: 'John', age: 12}
       ]).then(function() {
         var query = Person.query({__order: ['age', 'name']})
-            .then(function(orderedPeople) {
-              var lastAge = orderedPeople[0].age;
-              for (var i = 1; i < orderedPeople.length; i++) {
-                var person = orderedPeople[i];
-                assert(person.age >= lastAge, 'Should be ascending');
-                lastAge = person.age;
-              }
-              done();
-            }).catch(done);
+          .then(function(orderedPeople) {
+            var lastAge = orderedPeople[0].age;
+            for (var i = 1; i < orderedPeople.length; i++) {
+              var person = orderedPeople[i];
+              assert(person.age >= lastAge, 'Should be ascending');
+              lastAge = person.age;
+            }
+            done();
+          }).catch(done);
       }).catch(done);
     });
 
@@ -839,15 +839,15 @@ describe('query...', function() {
         {name: 'John', dob: new Date(1984, 3, 5)}
       ]).then(function() {
         Person.query({__order: 'dob'})
-            .then(function(orderedPeople) {
-              var lastDob = orderedPeople[0].dob;
-              for (var i = 1; i < orderedPeople.length; i++) {
-                var person = orderedPeople[i];
-                assert(person.dob >= lastDob, 'Should be ascending');
-                lastDob = person.dob;
-              }
-              done();
-            }).catch(done);
+          .then(function(orderedPeople) {
+            var lastDob = orderedPeople[0].dob;
+            for (var i = 1; i < orderedPeople.length; i++) {
+              var person = orderedPeople[i];
+              assert(person.dob >= lastDob, 'Should be ascending');
+              lastDob = person.dob;
+            }
+            done();
+          }).catch(done);
       }).catch(done);
     });
 
@@ -859,13 +859,13 @@ describe('query...', function() {
         {name: 'John'}
       ]).then(function(people) {
         Person.query({__order: 'name'})
-            .then(function(orderedPeople) {
-              console.log(_.pluck(orderedPeople, 'name'));
-              assert.equal(orderedPeople[0], people[1]);
-              assert.equal(orderedPeople[1], people[2]);
-              assert.equal(orderedPeople[2], people[0]);
-              done();
-            }).catch(done);
+          .then(function(orderedPeople) {
+            console.log(_.pluck(orderedPeople, 'name'));
+            assert.equal(orderedPeople[0], people[1]);
+            assert.equal(orderedPeople[1], people[2]);
+            assert.equal(orderedPeople[2], people[0]);
+            done();
+          }).catch(done);
       }).catch(done);
     });
 
@@ -877,13 +877,13 @@ describe('query...', function() {
         {name: 'John'}
       ]).then(function(people) {
         Person.query({__order: '-name'})
-            .then(function(orderedPeople) {
-              console.log(_.pluck(orderedPeople, 'name'));
-              assert.equal(orderedPeople[2], people[1]);
-              assert.equal(orderedPeople[1], people[2]);
-              assert.equal(orderedPeople[0], people[0]);
-              done();
-            }).catch(done);
+          .then(function(orderedPeople) {
+            console.log(_.pluck(orderedPeople, 'name'));
+            assert.equal(orderedPeople[2], people[1]);
+            assert.equal(orderedPeople[1], people[2]);
+            assert.equal(orderedPeople[0], people[0]);
+            done();
+          }).catch(done);
       }).catch(done);
     });
   });
@@ -994,21 +994,21 @@ describe('query...', function() {
         {name: 'Bob', age: 24},
         {name: 'Peter', age: 24}
       ])
-          .then(function() {
-            Person.query({
-              $and: [
-                {age: 24},
-                {name: 'Mike'}
-              ]
-            }).then(function(res) {
-              assert.equal(res.length, 1);
-              var r = res[0];
-              assert.equal(r.age, 24);
-              assert.equal(r.name, 'Mike');
-              done();
-            }).catch(done);
-          })
-          .catch(done)
+        .then(function() {
+          Person.query({
+            $and: [
+              {age: 24},
+              {name: 'Mike'}
+            ]
+          }).then(function(res) {
+            assert.equal(res.length, 1);
+            var r = res[0];
+            assert.equal(r.age, 24);
+            assert.equal(r.name, 'Mike');
+            done();
+          }).catch(done);
+        })
+        .catch(done)
       ;
     });
 
@@ -1019,18 +1019,18 @@ describe('query...', function() {
         {name: 'Peter', age: 24},
         {name: 'Roger', age: 24}
       ])
-          .then(function() {
-            Person.query({
-              $and: [
-                {$or: [{name: 'Mike'}, {name: 'Peter'}]},
-                {age: 24}
-              ]
-            }).then(function(res) {
-              assert.equal(res.length, 2);
-              done();
-            }).catch(done);
-          })
-          .catch(done)
+        .then(function() {
+          Person.query({
+            $and: [
+              {$or: [{name: 'Mike'}, {name: 'Peter'}]},
+              {age: 24}
+            ]
+          }).then(function(res) {
+            assert.equal(res.length, 2);
+            done();
+          }).catch(done);
+        })
+        .catch(done)
       ;
     });
   });
@@ -1062,16 +1062,16 @@ describe('query...', function() {
         {name: 'Aston Martin', colour: 'blue', owner: {id: 1}},
         {name: 'Bentley', colour: 'green', owner: {id: 2, name: 'Bob', age: 22}}
       ])
-          .then(function() {
-            Car.query({'owner.age': 23})
-                .then(function(cars) {
-                  assert.equal(cars.length, 2);
-                  done();
-                })
-                .catch(done)
-            ;
-          })
-          .catch(done)
+        .then(function() {
+          Car.query({'owner.age': 23})
+            .then(function(cars) {
+              assert.equal(cars.length, 2);
+              done();
+            })
+            .catch(done)
+          ;
+        })
+        .catch(done)
       ;
     });
 
@@ -1081,16 +1081,16 @@ describe('query...', function() {
         {name: 'Aston Martin', colour: 'blue', owner: {id: 2, name: 'John', age: 24}},
         {name: 'Bentley', colour: 'green', owner: {id: 3, name: 'Bob', age: 25}}
       ])
-          .then(function() {
-            Car.query({'owner.age__lte': 24})
-                .then(function(cars) {
-                  assert.equal(cars.length, 2);
-                  done();
-                })
-                .catch(done)
-            ;
-          })
-          .catch(done)
+        .then(function() {
+          Car.query({'owner.age__lte': 24})
+            .then(function(cars) {
+              assert.equal(cars.length, 2);
+              done();
+            })
+            .catch(done)
+          ;
+        })
+        .catch(done)
       ;
     });
 
@@ -1101,57 +1101,57 @@ describe('query...', function() {
 
     it('object', function(done) {
       var Collection = siesta.collection('myCollection'),
-          Model = Collection.model('Model', {
-            id: 'id',
-            attributes: ['x']
-          });
+        Model = Collection.model('Model', {
+          id: 'id',
+          attributes: ['x']
+        });
       var data = [{x: {y: 1}}, {x: {y: 2}}];
       Model.graph(data)
-          .then(function() {
-            Model.query({'x.y': 1})
-                .then(function(res) {
-                  assert.equal(res.length, 1);
-                  assert.equal(res[0].x.y, 1);
-                  done();
-                }).catch(done);
-          }).catch(done);
+        .then(function() {
+          Model.query({'x.y': 1})
+            .then(function(res) {
+              assert.equal(res.length, 1);
+              assert.equal(res[0].x.y, 1);
+              done();
+            }).catch(done);
+        }).catch(done);
     });
 
 
     it('should be able to deal with bad attribute accesses', function(done) {
       var Collection = siesta.collection('myCollection'),
-          Model = Collection.model('Model', {
-            id: 'id',
-            attributes: ['x']
-          });
+        Model = Collection.model('Model', {
+          id: 'id',
+          attributes: ['x']
+        });
       var data = [{x: {y: 1}}, {}];
       Model.graph(data)
-          .then(function() {
-            Model.query({'x.y': 1})
-                .then(function(res) {
-                  assert.equal(res.length, 1);
-                  assert.equal(res[0].x.y, 1);
-                  done();
-                }).catch(done);
-          }).catch(done);
+        .then(function() {
+          Model.query({'x.y': 1})
+            .then(function(res) {
+              assert.equal(res.length, 1);
+              assert.equal(res[0].x.y, 1);
+              done();
+            }).catch(done);
+        }).catch(done);
     });
 
     it('should be able to deal with different value types', function(done) {
       var Collection = siesta.collection('myCollection'),
-          Model = Collection.model('Model', {
-            id: 'id',
-            attributes: ['x']
-          });
+        Model = Collection.model('Model', {
+          id: 'id',
+          attributes: ['x']
+        });
       var data = [{x: {y: 1}}, {x: {y: {z: 1}}}, {x: {y: undefined}}, {x: {y: null}}, {x: {y: [1, 2, 3]}}];
       Model.graph(data)
-          .then(function() {
-            Model.query({'x.y': 1})
-                .then(function(res) {
-                  assert.equal(res.length, 1);
-                  assert.equal(res[0].x.y, 1);
-                  done();
-                }).catch(done);
-          }).catch(done);
+        .then(function() {
+          Model.query({'x.y': 1})
+            .then(function(res) {
+              assert.equal(res.length, 1);
+              assert.equal(res[0].x.y, 1);
+              done();
+            }).catch(done);
+        }).catch(done);
     });
 
 
@@ -1160,38 +1160,38 @@ describe('query...', function() {
   describe('querying non-relationship arrays', function() {
     it('should be able to match against arrays', function(done) {
       var Collection = siesta.collection('myCollection'),
-          Model = Collection.model('Model', {
-            id: 'id',
-            attributes: ['x']
-          });
+        Model = Collection.model('Model', {
+          id: 'id',
+          attributes: ['x']
+        });
       var data = [{x: {y: [1, 2, 3]}}, {x: {y: [4, 5, 6]}}];
       Model.graph(data)
-          .then(function() {
-            Model.query({'x.y__contains': 2})
-                .then(function(res) {
-                  assert.equal(res.length, 1);
-                  assert.include(res[0].x.y, 2);
-                  done();
-                }).catch(done);
-          }).catch(done);
+        .then(function() {
+          Model.query({'x.y__contains': 2})
+            .then(function(res) {
+              assert.equal(res.length, 1);
+              assert.include(res[0].x.y, 2);
+              done();
+            }).catch(done);
+        }).catch(done);
     });
 
     it('should be able to match against arrays, even if data not always an arrayan array.', function(done) {
       var Collection = siesta.collection('myCollection'),
-          Model = Collection.model('Model', {
-            id: 'id',
-            attributes: ['x']
-          });
+        Model = Collection.model('Model', {
+          id: 'id',
+          attributes: ['x']
+        });
       var data = [{x: {y: [1, 2, 3]}}, {x: {y: 1}}, {x: {y: {}}}, {x: {y: undefined}}, {x: {y: null}}, {x: 1}];
       Model.graph(data)
-          .then(function() {
-            Model.query({'x.y__contains': 2})
-                .then(function(res) {
-                  assert.equal(res.length, 1);
-                  assert.include(res[0].x.y, 2);
-                  done();
-                }).catch(done);
-          }).catch(done);
+        .then(function() {
+          Model.query({'x.y__contains': 2})
+            .then(function(res) {
+              assert.equal(res.length, 1);
+              assert.include(res[0].x.y, 2);
+              done();
+            }).catch(done);
+        }).catch(done);
     });
   });
 
@@ -1235,7 +1235,7 @@ describe('query...', function() {
 
       it('can set ages', function() {
         var michaelsNewAge = 25,
-            bobsNewAge = 28;
+          bobsNewAge = 28;
         querySet.age = [michaelsNewAge, bobsNewAge];
         assert.equal(michael.age, michaelsNewAge);
         assert.equal(bob.age, bobsNewAge);
@@ -1311,7 +1311,7 @@ describe('query...', function() {
 
       it('remove all cars', function(done) {
         var cars = _.extend([], michael.cars),
-            querySet = createQuerySet(cars, Car);
+          querySet = createQuerySet(cars, Car);
 
         querySet.remove().then(function() {
           siesta.notify(function() {
@@ -1327,6 +1327,70 @@ describe('query...', function() {
     });
 
   });
+
+
+  describe.only('relationships', function() {
+    describe('one-to-many', function() {
+      var Collection, Model, RelatedModel;
+
+      beforeEach(function() {
+        Collection = siesta.collection('Collection');
+        Model = Collection.model('Model', {
+          attributes: ['x'],
+          relationships: {
+            rel: {
+              model: 'RelatedModel',
+              reverse: 'reverseRel'
+            }
+          }
+        });
+        RelatedModel = Collection.model('RelatedModel', {
+          attributes: ['y']
+        })
+      });
+
+
+      describe('forward', function() {
+        var data;
+        beforeEach(function(done) {
+          Collection.graph({
+            RelatedModel: [
+              {
+                id: 3,
+                y: 1,
+                reverseRel: [{id: 1, x: 'x'}]
+              }
+            ]
+          }).then(function(_data) {
+            data = _data;
+            done();
+          }).catch(done);
+        });
+
+        it('simple', function(done) {
+          var instance = data.RelatedModel[0];
+          Model.query({rel: instance})
+            .then(function(instances) {
+              assert.include(instance.reverseRel, instances[0]);
+              done();
+            })
+            .catch(done);
+        });
+
+        it('simple, _id', function(done) {
+          var instance = data.RelatedModel[0];
+          Model.query({'rel.id': instance.id})
+            .then(function(instances) {
+              assert.equal(instances.length, 1);
+              assert.include(instance.reverseRel, instances[0]);
+              done();
+            })
+            .catch(done);
+        });
+
+      })
+    });
+  })
 
 
 });
