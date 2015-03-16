@@ -1,10 +1,10 @@
 var assert = require('chai').assert,
-  internal = siesta._internal,
-  events = internal.events,
-  util = internal.util,
-  ModelEventType = internal.ModelEventType,
-  ProxyEventEmitter = internal.ProxyEventEmitter,
-  RelationshipType = siesta.RelationshipType;
+    internal = siesta._internal,
+    events = internal.events,
+    util = internal.util,
+    ModelEventType = internal.ModelEventType,
+    ProxyEventEmitter = internal.ProxyEventEmitter,
+    RelationshipType = siesta.RelationshipType;
 
 describe('events', function() {
 
@@ -67,10 +67,10 @@ describe('events', function() {
 
             function checkDone() {
               if (event &&
-                genericEvent &&
-                collectionEvent &&
-                localIdEvent &&
-                remoteIdEvent) {
+                  genericEvent &&
+                  collectionEvent &&
+                  localIdEvent &&
+                  remoteIdEvent) {
                 done();
               }
             }
@@ -438,49 +438,49 @@ describe('events', function() {
 
           beforeEach(function(done) {
             siesta.install()
-              .then(function() {
-                car = Car._instance();
-                anotherCar = Car._instance();
-                person = Person._instance();
+                .then(function() {
+                  car = Car._instance();
+                  anotherCar = Car._instance();
+                  person = Person._instance();
 
-                person.cars = [car];
-                siesta.on('myCollection:Person', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personEvent = n;
-                  }
-                });
-                siesta.on('myCollection', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personCollectionEvent = n;
-                  }
-                });
-                siesta.on('Siesta', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personGenericEvent = n;
-                  }
-                });
-                siesta.on('myCollection:Car', function(n) {
-                  if (n.type == ModelEventType.Set && n.model == 'Car') {
-                    carEvent = n;
-                  }
-                });
-                siesta.on('myCollection', function(n) {
-                  if (n.type == ModelEventType.Set && n.model == 'Car') {
-                    carCollectionEvent = n;
-                  }
-                });
-                siesta.on('Siesta', function(n) {
-                  if (n.type == ModelEventType.Set && n.model == 'Car') {
-                    carGenericEvent = n;
-                  }
-                });
-                person.cars.push(anotherCar);
-                util.next(function() {
-                  events.removeAllListeners();
-                  done();
+                  person.cars = [car];
+                  siesta.on('myCollection:Person', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                      personEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                      personCollectionEvent = n;
+                    }
+                  });
+                  siesta.on('Siesta', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                      personGenericEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection:Car', function(n) {
+                    if (n.type == ModelEventType.Set && n.model == 'Car') {
+                      carEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection', function(n) {
+                    if (n.type == ModelEventType.Set && n.model == 'Car') {
+                      carCollectionEvent = n;
+                    }
+                  });
+                  siesta.on('Siesta', function(n) {
+                    if (n.type == ModelEventType.Set && n.model == 'Car') {
+                      carGenericEvent = n;
+                    }
+                  });
+                  person.cars.push(anotherCar);
+                  util.next(function() {
+                    events.removeAllListeners();
+                    done();
+                  })
                 })
-              })
-              .catch(done);
+                .catch(done);
           });
 
           describe('person', function() {
@@ -517,47 +517,47 @@ describe('events', function() {
 
           beforeEach(function(done) {
             siesta.install()
-              .then(function() {
-                car = Car._instance();
-                person = Person._instance();
-                person.cars = [car];
-                siesta.on('myCollection:Person', function(n) {
-                  if (n.type == ModelEventType.Splice) {
-                    personEvent = n;
-                  }
-                });
-                siesta.on('myCollection', function(n) {
-                  if (n.type == ModelEventType.Splice) {
-                    personCollectionEvent = n;
-                  }
-                });
-                siesta.on('Siesta', function(n) {
-                  if (n.type == ModelEventType.Splice) {
-                    personGenericEvent = n;
-                  }
-                });
-                siesta.on('myCollection:Car', function(n) {
-                  if (n.type == ModelEventType.Set && n.model == 'Car') {
-                    carEvent = n;
-                  }
-                });
-                siesta.on('myCollection', function(n) {
-                  if (n.type == ModelEventType.Set && n.model == 'Car') {
-                    carCollectionEvent = n;
-                  }
-                });
-                siesta.on('Siesta', function(n) {
-                  if (n.type == ModelEventType.Set && n.model == 'Car') {
-                    carGenericEvent = n;
-                  }
-                });
-                person.cars.splice(0, 1);
-                util.next(function() {
-                  events.removeAllListeners();
-                  done();
+                .then(function() {
+                  car = Car._instance();
+                  person = Person._instance();
+                  person.cars = [car];
+                  siesta.on('myCollection:Person', function(n) {
+                    if (n.type == ModelEventType.Splice) {
+                      personEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection', function(n) {
+                    if (n.type == ModelEventType.Splice) {
+                      personCollectionEvent = n;
+                    }
+                  });
+                  siesta.on('Siesta', function(n) {
+                    if (n.type == ModelEventType.Splice) {
+                      personGenericEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection:Car', function(n) {
+                    if (n.type == ModelEventType.Set && n.model == 'Car') {
+                      carEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection', function(n) {
+                    if (n.type == ModelEventType.Set && n.model == 'Car') {
+                      carCollectionEvent = n;
+                    }
+                  });
+                  siesta.on('Siesta', function(n) {
+                    if (n.type == ModelEventType.Set && n.model == 'Car') {
+                      carGenericEvent = n;
+                    }
+                  });
+                  person.cars.splice(0, 1);
+                  util.next(function() {
+                    events.removeAllListeners();
+                    done();
+                  })
                 })
-              })
-              .catch(done);
+                .catch(done);
           });
 
           describe('person', function() {
@@ -706,47 +706,47 @@ describe('events', function() {
           describe('splice', function() {
             beforeEach(function(done) {
               siesta.install()
-                .then(function() {
-                  car = Car._instance();
-                  person = Person._instance();
-                  person.cars = [car];
-                  siesta.on('myCollection:Person', function(n) {
-                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                      event = n;
-                    }
-                  });
-                  siesta.on('myCollection', function(n) {
-                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                      collectionEvent = n;
-                    }
-                  });
-                  siesta.on('Siesta', function(n) {
-                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                      genericEvent = n;
-                    }
-                  });
-                  siesta.on('myCollection:Car', function(n) {
-                    if (n.type == ModelEventType.Splice && n.model == 'Car') {
-                      carEvent = n;
-                    }
-                  });
-                  siesta.on('myCollection', function(n) {
-                    if (n.type == ModelEventType.Splice && n.model == 'Car') {
-                      carCollectionEvent = n;
-                    }
-                  });
-                  siesta.on('Siesta', function(n) {
-                    if (n.type == ModelEventType.Splice && n.model == 'Car') {
-                      carGenericEvent = n;
-                    }
-                  });
-                  person.cars.splice(0, 1);
-                  util.next(function() {
-                    events.removeAllListeners();
-                    done();
+                  .then(function() {
+                    car = Car._instance();
+                    person = Person._instance();
+                    person.cars = [car];
+                    siesta.on('myCollection:Person', function(n) {
+                      if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                        event = n;
+                      }
+                    });
+                    siesta.on('myCollection', function(n) {
+                      if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                        collectionEvent = n;
+                      }
+                    });
+                    siesta.on('Siesta', function(n) {
+                      if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                        genericEvent = n;
+                      }
+                    });
+                    siesta.on('myCollection:Car', function(n) {
+                      if (n.type == ModelEventType.Splice && n.model == 'Car') {
+                        carEvent = n;
+                      }
+                    });
+                    siesta.on('myCollection', function(n) {
+                      if (n.type == ModelEventType.Splice && n.model == 'Car') {
+                        carCollectionEvent = n;
+                      }
+                    });
+                    siesta.on('Siesta', function(n) {
+                      if (n.type == ModelEventType.Splice && n.model == 'Car') {
+                        carGenericEvent = n;
+                      }
+                    });
+                    person.cars.splice(0, 1);
+                    util.next(function() {
+                      events.removeAllListeners();
+                      done();
+                    })
                   })
-                })
-                .catch(done);
+                  .catch(done);
             });
 
 
@@ -993,7 +993,7 @@ describe('events', function() {
 
     it('listen works', function(done) {
       var emitter = new ProxyEventEmitter(EVENT),
-        e = {};
+          e = {};
       var cancelListen = emitter.on('*', function(_e) {
         assert.equal(e, _e, 'payload is emitted');
         cancelListen();
@@ -1004,7 +1004,7 @@ describe('events', function() {
 
     it('listen * works', function(done) {
       var emitter = new ProxyEventEmitter(EVENT),
-        e = {};
+          e = {};
       var cancelListen = emitter.on('*', function(_e) {
         assert.equal(e, _e, 'payload is emitted');
         cancelListen();
@@ -1015,7 +1015,7 @@ describe('events', function() {
 
     it('once works', function(done) {
       var emitter = new ProxyEventEmitter(EVENT),
-        e = {};
+          e = {};
       emitter.once(function(_e) {
         assert.equal(e, _e, 'payload is emitted');
         done();
@@ -1051,7 +1051,7 @@ describe('events', function() {
     it('remove listeners of specific type', function() {
       var emitter = new ProxyEventEmitter(EVENT);
       var type1 = 'blah',
-        type2 = 'blah2';
+          type2 = 'blah2';
       emitter.on(type1, function() {
       });
       emitter.on(type1, function() {
@@ -1070,7 +1070,7 @@ describe('events', function() {
     it('remove all listeners', function() {
       var emitter = new ProxyEventEmitter(EVENT);
       var type1 = 'blah',
-        type2 = 'blah2';
+          type2 = 'blah2';
       emitter.on(type1, function() {
       });
       emitter.on(type1, function() {
@@ -1122,7 +1122,7 @@ describe('events', function() {
         describe('chain', function() {
           it('cancel, one link', function(done) {
             var cancelChain,
-              newCalled = 0;
+                newCalled = 0;
             cancelChain = Car.on('new', function() {
               cancelChain();
               newCalled++;
@@ -1137,8 +1137,8 @@ describe('events', function() {
           });
           it('cancel, two on links', function(done) {
             var cancelChain,
-              newCalled = 0,
-              setCalled = 0;
+                newCalled = 0,
+                setCalled = 0;
             cancelChain = Car.on('new', function() {
               newCalled++;
             }).on('set', function(e) {
@@ -1159,8 +1159,8 @@ describe('events', function() {
           });
           it('cancel, two on links, and query', function(done) {
             var cancelChain,
-              newCalled = 0,
-              setCalled = 0;
+                newCalled = 0,
+                setCalled = 0;
             Car.graph({colour: 'purple'}, function(err, purpleCar) {
               assert.notOk(err);
               cancelChain = Car.on('new', function() {
@@ -1170,19 +1170,19 @@ describe('events', function() {
                   setCalled++;
                 }
               }).query({})
-                .then(function(allCars) {
-                  assert.include(allCars, purpleCar);
-                  Car.graph({colour: 'green'}, function(err, car) {
-                    car.colour = 'red';
-                    cancelChain();
-                    Car.graph({colour: 'green'}, function(err, car2) {
-                      car2.colour = 'red';
-                      assert.equal(newCalled, 1, 'chain should be cancelled (new handler was called multiple times)');
-                      assert.equal(setCalled, 1, 'chain should be cancelled (set handler was called multiple times)');
-                      done();
+                  .then(function(allCars) {
+                    assert.include(allCars, purpleCar);
+                    Car.graph({colour: 'green'}, function(err, car) {
+                      car.colour = 'red';
+                      cancelChain();
+                      Car.graph({colour: 'green'}, function(err, car2) {
+                        car2.colour = 'red';
+                        assert.equal(newCalled, 1, 'chain should be cancelled (new handler was called multiple times)');
+                        assert.equal(setCalled, 1, 'chain should be cancelled (set handler was called multiple times)');
+                        done();
+                      });
                     });
                   });
-                });
             });
           });
         });
@@ -1235,6 +1235,93 @@ describe('events', function() {
       });
     });
 
-  })
+  });
+
+  describe('properties', function() {
+    var Collection, Car;
+
+    beforeEach(function(done) {
+      siesta.reset(done);
+    });
+
+    describe('attribute dependency', function() {
+      beforeEach(function() {
+        Collection = siesta.collection('myCollection');
+        Car = Collection.model('Car', {
+          id: 'id',
+          attributes: ['colour'],
+          properties: {
+            blah: {
+              get: function() {
+                return this.colour ? this.colour.toUpperCase() : this.colour;
+
+              },
+              // Workaround for chrome.
+              dependencies: ['colour']
+            }
+          }
+        });
+      });
+
+      it('triggers', function(done) {
+        Car.graph({
+          colour: 'red'
+        }).then(function(car) {
+          assert.equal(car.blah, 'RED');
+          car.once('*', function(n) {
+            if (n.field == 'blah') {
+              assert.equal(car.blah, 'BLUE');
+              assert.equal(n.obj, car);
+              assert.equal(n.new, 'BLUE');
+              assert.equal(n.old, 'RED');
+              done();
+            }
+          });
+          car.colour = 'blue';
+          siesta.notify();
+        }).catch(done);
+      });
+    });
+
+    describe('error in property', function() {
+      beforeEach(function() {
+        Collection = siesta.collection('myCollection');
+        Car = Collection.model('Car', {
+          id: 'id',
+          attributes: ['colour'],
+          properties: {
+            blah: {
+              get: function() {
+                console.log('throwing error');
+                throw new Error('oops');
+              },
+              // Workaround for chrome.
+              dependencies: ['colour']
+            }
+          }
+        });
+      });
+
+      it('error should be thrown', function(done) {
+        Car.graph({
+          colour: 'red'
+        }).then(function() {
+          done('Should have thrown an error!');
+        }).catch(function(err) {
+          assert.ok(err);
+          done();
+        });
+      });
+
+      it('will install', function(done) {
+        siesta.install(function(err) {
+          done(err);
+        });
+      });
+
+    });
+
+
+  });
 
 });

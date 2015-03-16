@@ -10,7 +10,7 @@ var assert = require('chai').assert,
     internal = siesta._internal,
     RelationshipType = siesta.RelationshipType;
 
-describe('intercollection relationships', function () {
+describe('photos intercollection', function () {
     var MyOfflineCollection, MyOnlineCollection, OfflineUser, Photo, OnlineUser;
 
     before(function () {
