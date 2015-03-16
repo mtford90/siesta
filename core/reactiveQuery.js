@@ -9,15 +9,15 @@
 (function() {
 
   var log = require('./log')('query:reactive'),
-      Query = require('./Query'),
-      EventEmitter = require('events').EventEmitter,
-      events = require('./events'),
-      Chain = require('./Chain'),
-      modelEvents = require('./modelEvents'),
-      InternalSiestaError = require('./error').InternalSiestaError,
-      constructQuerySet = require('./QuerySet'),
-      util = require('./util'),
-      _ = util._;
+    Query = require('./Query'),
+    EventEmitter = require('events').EventEmitter,
+    events = require('./events'),
+    Chain = require('./Chain'),
+    modelEvents = require('./modelEvents'),
+    InternalSiestaError = require('./error').InternalSiestaError,
+    constructQuerySet = require('./QuerySet'),
+    util = require('./util'),
+    _ = util._;
 
   /**
    *
@@ -169,8 +169,8 @@
       else if (n.type == modelEvents.ModelEventType.Set) {
         newObj = n.obj;
         var index = this.results.indexOf(newObj),
-            alreadyContains = index > -1,
-            matches = this._query.objectMatchesQuery(newObj);
+          alreadyContains = index > -1,
+          matches = this._query.objectMatchesQuery(newObj);
         if (matches && !alreadyContains) {
           log('Updated object now matches!', newObj);
           idx = this.insert(newObj);
@@ -248,19 +248,21 @@
         on.call(this, name, fn);
       }
       return this._link({
-        on: this.on.bind(this),
-        once: this.once.bind(this)
-      },
+          on: this.on.bind(this),
+          once: this.once.bind(this),
+          update: this.update.bind(this),
+          insert: this.insert.bind(this)
+        },
         function() {
-        if (name.trim() == '*') {
-          Object.keys(modelEvents.ModelEventType).forEach(function(k) {
-            removeListener.call(this, modelEvents.ModelEventType[k], fn);
-          }.bind(this));
-        }
-        else {
-          removeListener.call(this, name, fn);
-        }
-      })
+          if (name.trim() == '*') {
+            Object.keys(modelEvents.ModelEventType).forEach(function(k) {
+              removeListener.call(this, modelEvents.ModelEventType[k], fn);
+            }.bind(this));
+          }
+          else {
+            removeListener.call(this, name, fn);
+          }
+        })
     },
     on: function(name, fn) {
       return this._registerEventHandler(EventEmitter.prototype.on, name, fn);
