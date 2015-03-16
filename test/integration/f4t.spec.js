@@ -304,7 +304,6 @@ describe('f4t', function() {
       });
 
       it('xyz', function(done) {
-        siesta.log.enable('siesta:storage');
         console.log('here we go!');
         siesta.reset(function() {
           configureSiesta();
