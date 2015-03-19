@@ -1,9 +1,9 @@
 (function() {
   var events = require('./events'),
-    InternalSiestaError = require('./error').InternalSiestaError,
-    log = require('./log')('events'),
-    extend = require('./util')._.extend,
-    collectionRegistry = require('./collectionRegistry').CollectionRegistry;
+      InternalSiestaError = require('./error').InternalSiestaError,
+      log = require('./log')('events'),
+      extend = require('./util')._.extend,
+      collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 
   /**
@@ -73,30 +73,17 @@
    * @return {[type]}
    */
   function broadcastEvent(collectionName, modelName, c) {
-    log('Sending notification "' + collectionName + '" of type ' + c.type, c);
+    var modelNotif = collectionName + ':' + modelName,
+        genericNotif = 'Siesta',
+        localIdNotif = c.localId,
+        collection = collectionRegistry[collectionName],
+        model = collection[modelName];
     events.emit(collectionName, c);
-    var modelNotif = collectionName + ':' + modelName;
-    log('Sending notification "' + modelNotif + '" of type ' + c.type, c);
     events.emit(modelNotif, c);
-    var genericNotif = 'Siesta';
-    log('Sending notification "' + genericNotif + '" of type ' + c.type, c);
     events.emit(genericNotif, c);
-    var localIdNotif = c.localId;
-    log('Sending notification "' + localIdNotif + '" of type ' + c.type, c);
     events.emit(localIdNotif, c);
-    var collection = collectionRegistry[collectionName];
-    var err;
-    if (!collection) {
-      err = 'No such collection "' + collectionName + '"';
-      log(err, collectionRegistry);
-      throw new InternalSiestaError(err);
-    }
-    var model = collection[modelName];
-    if (!model) {
-      err = 'No such model "' + modelName + '"';
-      log(err, collectionRegistry);
-      throw new InternalSiestaError(err);
-    }
+    if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
+    if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
     if (model.id && c.obj[model.id]) {
       var remoteIdNotif = collectionName + ':' + modelName + ':' + c.obj[model.id];
       log('Sending notification "' + remoteIdNotif + '" of type ' + c.type);

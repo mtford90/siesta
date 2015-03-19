@@ -240,6 +240,11 @@
       get: function() {
         return !(installing || installed);
       }
+    },
+    installed: {
+      get: function () {
+        return installed;
+      }
     }
   });
 
