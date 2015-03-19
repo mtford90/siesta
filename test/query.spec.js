@@ -1329,7 +1329,7 @@ describe('query...', function() {
   });
 
 
-  describe.only('relationships', function() {
+  describe('relationships', function() {
     describe('one-to-many', function() {
       var Collection, Model, RelatedModel;
 
