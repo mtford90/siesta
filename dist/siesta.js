@@ -3614,7 +3614,7 @@ module.exports = modelQuerySet;
     preprocessData: function() {
       var data = _.extend([], this.data);
       return _.map(data, function(datum) {
-        var keys = Object.keys(datum);
+        var keys = _.keys(datum);
         _.each(keys, function(k) {
           var isRelationship = this.model._relationshipNames.indexOf(k) > -1;
 
