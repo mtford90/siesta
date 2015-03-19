@@ -1418,16 +1418,16 @@ describe('query...', function() {
             .catch(done);
         });
 
-        it('simple, _id', function(done) {
-          var reverseInstance = data.RelatedModel[0];
-          var instance = reverseInstance.reverseRel[0];
-          RelatedModel.query({'reverseRel.id__in': instance.id})
-            .then(function(instances) {
-              assert.equal(instances[0], reverseInstance);
-              done();
-            })
-            .catch(done);
-        });
+        //it('simple, _id', function(done) {
+        //  var reverseInstance = data.RelatedModel[0];
+        //  var instance = reverseInstance.reverseRel[0];
+        //  RelatedModel.query({'reverseRel.id__in': instance.id})
+        //    .then(function(instances) {
+        //      assert.equal(instances[0], reverseInstance);
+        //      done();
+        //    })
+        //    .catch(done);
+        //});
 
       });
     });

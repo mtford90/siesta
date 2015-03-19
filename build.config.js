@@ -11,7 +11,7 @@ module.exports = {
 
 
     app_files: {
-        js: ['core/**/*.js', 'http/**/*.js', 'index.js', 'storage/**/*.js', 'performance/**/*.js', 'vendor/observe-js/src/**/*.js'],
+        js: ['core/**/*.js', 'http/**/*.js', 'index.js', 'storage/**/*.js', 'performance/**/*.js', 'sync/**/*.js', 'vendor/observe-js/src/**/*.js'],
         jsunit: ['test/**/*.spec.js']
     },
 

@@ -4,7 +4,8 @@
     throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
   }
 
-  var util = siesta._internal.util;
+  var util = siesta._internal.util,
+      Collection = siesta._internal.Collection;
 
 
   // TODO: Place this in Siesta core and use it for all other extensions.
@@ -20,7 +21,7 @@
         }
         return !!siesta.ext[name];
       },
-      set: function () {
+      set: function (v) {
         siesta.ext[privateProp] = v;
       }
     })
@@ -28,6 +29,8 @@
 
   var sync = {};
   installExtension('sync', sync);
+
+
 
 
   module.exports = sync;
