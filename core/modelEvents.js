@@ -73,22 +73,20 @@
    * @return {[type]}
    */
   function broadcastEvent(collectionName, modelName, c) {
-    var modelNotif = collectionName + ':' + modelName,
-        genericNotif = 'Siesta',
-        localIdNotif = c.localId,
+    var genericNotif = 'Siesta',
         collection = collectionRegistry[collectionName],
         model = collection[modelName];
-    events.emit(collectionName, c);
-    events.emit(modelNotif, c);
-    events.emit(genericNotif, c);
-    events.emit(localIdNotif, c);
     if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
     if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
-    if (model.id && c.obj[model.id]) {
-      var remoteIdNotif = collectionName + ':' + modelName + ':' + c.obj[model.id];
-      log('Sending notification "' + remoteIdNotif + '" of type ' + c.type);
-      events.emit(remoteIdNotif, c);
+    events.emit(genericNotif, c);
+    if (siesta.installed) {
+      var modelNotif = collectionName + ':' + modelName,
+          localIdNotif = c.localId;
+      events.emit(collectionName, c);
+      events.emit(modelNotif, c);
+      events.emit(localIdNotif, c);
     }
+    if (model.id && c.obj[model.id]) events.emit(collectionName + ':' + modelName + ':' + c.obj[model.id], c);
   }
 
   function validateEventOpts(opts) {

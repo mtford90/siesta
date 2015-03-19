@@ -483,31 +483,37 @@ describe('mapping operation', function() {
   });
 
   it('preprocess', function(done) {
-    var Collection = siesta.collection('Collection'),
-      Model = Collection.model('Model', {
-        attributes: ['x'],
-        relationships: {
-          rel: {
-            model: 'Model2'
+    siesta.reset(function() {
+      var Collection = siesta.collection('Collection'),
+        Model = Collection.model('Model', {
+          attributes: ['x'],
+          relationships: {
+            rel: {
+              model: 'Model2'
+            }
           }
-        }
-      }),
-      Model2 = Collection.model('Model2', {
-        attributes: ['y']
-      });
-    Model2.graph({y: 1})
-      .then(function(instance) {
-        var data = [{rel: instance}];
-        var op = new MappingOperation({
-          model: Model,
-          data: data
+        }),
+        Model2 = Collection.model('Model2', {
+          attributes: ['y']
         });
-        var preprocessedData = op.data[0];
-        assert.notInstanceOf(preprocessedData.rel, siesta._internal.ModelInstance);
-        assert.equal(preprocessedData.rel.localId, instance.localId);
-        done();
-      })
-      .catch(done);
+
+
+      Model2.graph({y: 1})
+        .then(function(instance) {
+          console.log('1');
+          var data = [{rel: instance}];
+          var op = new MappingOperation({
+            model: Model,
+            data: data
+          });
+          console.log('2');
+          var preprocessedData = op.data[0];
+          assert.notInstanceOf(preprocessedData.rel, siesta._internal.ModelInstance);
+          assert.equal(preprocessedData.rel.localId, instance.localId);
+          done();
+        })
+        .catch(done);
+    });
   });
 
   it('return model instance if map model instance', function(done) {

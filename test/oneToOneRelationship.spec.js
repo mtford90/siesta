@@ -1,10 +1,10 @@
 var assert = require('chai').assert,
-  internal = siesta._internal,
-  ModelInstance = internal.ModelInstance,
-  cache = internal.cache,
-  OneToOneProxy = internal.OneToOneProxy;
+    internal = siesta._internal,
+    ModelInstance = internal.ModelInstance,
+    cache = internal.cache,
+    OneToOneProxy = internal.OneToOneProxy;
 
-describe('one to one relationship proxy', function() {
+describe('one to one relationship', function() {
 
   before(function() {
     siesta.ext.storageEnabled = false;
@@ -25,7 +25,7 @@ describe('one to one relationship proxy', function() {
         id: 'id',
         attributes: ['name', 'age']
       });
-      done();
+      siesta.install(done);
     });
   });
 
