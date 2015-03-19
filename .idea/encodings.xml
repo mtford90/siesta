@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/../farm4trade/Frontend/gulpfile.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../farm4trade/Frontend/www/bower_components/siesta/dist/siesta.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../farm4trade/Frontend/www/js/src/index.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../farm4trade/Frontend/www/js/src/services/background.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/../farm4trade/Frontend/www/js/src/siesta/models/Base.js" charset="UTF-8" />
+  </component>
 </project>
-

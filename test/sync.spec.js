@@ -10,7 +10,18 @@ describe.only('syncext', function () {
     siesta.reset(done);
   });
 
-  it('xyz', function () {
+  describe('override', function () {
+    var Collection, Model;
+    beforeEach(function () {
+      Collection = siesta.collection('Collection');
+      Model = Collection.model('Model', {
+        attributes: ['attr']
+      });
+    });
 
-  })
+    it('xyz', function () {
+      var sync = Collection.sync('http://blah.com');
+    })
+  });
+
 });

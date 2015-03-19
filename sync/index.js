@@ -5,8 +5,8 @@
   }
 
   var util = siesta._internal.util,
+      _ = util._,
       Collection = siesta._internal.Collection;
-
 
   // TODO: Place this in Siesta core and use it for all other extensions.
   function installExtension(name, ext) {
@@ -30,8 +30,28 @@
   var sync = {};
   installExtension('sync', sync);
 
+  /**
+   * Handle synchronisation of collections with remote APIs
+   * @constructor
+   */
+  function Sync(opts) {
+    var defaultOpts = {};
+    this.opts = _.extend(defaultOpts, opts || {});
+    this.modelOpts = opts.opts || {};
+    if (!this.opts.base) throw Error('Must pass base');
+  }
 
+  
 
+  _.extend(Sync.prototype, {
+    tick: function () {
+
+    }
+  });
+
+  Collection.prototype.sync = function (base, opts) {
+    return new Sync({collection: this, base: base, opts: opts});
+  };
 
   module.exports = sync;
 })();
