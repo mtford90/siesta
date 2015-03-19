@@ -20,7 +20,8 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     '<%= build_dir %>/siesta.js': ['core/index.js'],
-                    '<%= build_dir %>/siesta.performance.js': ['performance/index.js']
+                    '<%= build_dir %>/siesta.performance.js': ['performance/index.js'],
+                    '<%= build_dir %>/siesta.sync.js': ['sync/index.js']
                 }
             },
             test: {
