@@ -250,25 +250,27 @@
       var data = _.extend([], this.data);
       return _.map(data, function(datum) {
         if (datum) {
-          var keys = _.keys(datum);
-          _.each(keys, function(k) {
-            var isRelationship = this.model._relationshipNames.indexOf(k) > -1;
+          if (!util.isString(datum)) {
+            var keys = _.keys(datum);
+            _.each(keys, function(k) {
+              var isRelationship = this.model._relationshipNames.indexOf(k) > -1;
 
-            if (isRelationship) {
-              var val = datum[k];
-              if (val instanceof ModelInstance) {
-                datum[k] = {localId: val.localId};
+              if (isRelationship) {
+                var val = datum[k];
+                if (val instanceof ModelInstance) {
+                  datum[k] = {localId: val.localId};
+                }
+                else if (util.isArray(val)) {
+                  datum[k] = _.each(val, function(e) {
+                    if (e instanceof ModelInstance) {
+                      return {localId: val.localId};
+                    }
+                    return val;
+                  });
+                }
               }
-              else if (util.isArray(val)) {
-                datum[k] = _.each(val, function(e) {
-                  if (e instanceof ModelInstance) {
-                    return {localId: val.localId};
-                  }
-                  return val;
-                });
-              }
-            }
-          }.bind(this));
+            }.bind(this));
+          }
         }
         return datum;
       }.bind(this));
