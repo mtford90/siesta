@@ -670,7 +670,7 @@ siesta
 
 ## Validation
 
-Data can be validated before an instance is added to the object graph.
+Data can be validated before an instance is added to the object graph. This allows you to filter out data that should not be present in your app.
 
 ```js
 var User = Collection.model({
