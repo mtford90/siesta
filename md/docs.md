@@ -73,6 +73,16 @@ var User = Github.model('User', {
 
 ## Defining models
 
+### id
+
+Define the field that uniquely identifies each model instance. The value of this field will be used by Siesta to determine onto which object data should be mapped. If an object within the object graph exists with the unique identifier, data will be mapped onto that instance, otherwise a new object will be created.
+
+```js
+var Repo = Github.model({
+    id: 'id' // Defaults to id
+});
+```
+
 ### attributes
 
 Attributes are simple data types associated with a model. For example, a `User` model could have a username and an email.
@@ -121,6 +131,8 @@ var User = Collection.model({
 });
 ```
 
+### parseAttribute
+
 Attribute parsing can also be done at the Model level:
 
 ```js
@@ -142,16 +154,6 @@ var User = Collection.model({
 ```
 
 Do note that per attribute parsing is performed before Model-level attribute parsing.
-
-### id
-
-Define the field that uniquely identifies each model instance. The value of this field will be used by Siesta to determine onto which object data should be mapped. If an object within the object graph exists with the unique identifier, data will be mapped onto that instance, otherwise a new object will be created.
-
-```js
-var Repo = Github.model({
-    id: 'id' // Defaults to id
-});
-```
 
 ### relationships
 
@@ -664,6 +666,38 @@ siesta
   .then(function () {
     // ...
   });
+```
+
+## Validation
+
+Data can be validated before an instance is added to the object graph.
+
+```js
+var User = Collection.model({
+  attributes: [
+    'username',
+    {
+        name: 'birthDate',
+        parse: function (value) {
+            return new Date(Date.parse(value));
+        }
+    }
+  ]
+});
+
+User.addValidator({
+    function (data) {
+        return date.birthDate.getYear() == 90;
+    }
+});
+
+// Only users born in 1990 will be added to the object graph.
+User.graph([
+    {username: 'mike', birthDate: '10-09-1990'},
+    {username: 'bob', birthDate: '10-09-1991'},
+], function (users) {
+    assert.equal(users.length, 1);
+});
 ```
 
 ## Events
