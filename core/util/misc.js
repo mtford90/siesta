@@ -162,9 +162,7 @@
           }
           else {
             try {
-              console.log('Resolving');
               resolve(rest[0]);
-              console.log('Resolved!');
             }
             catch (e) {
               try {

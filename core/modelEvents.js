@@ -50,21 +50,26 @@
     return pretty ? util.prettyPrint(dumped) : dumped;
   };
 
-  function broadcastEvent(collectionName, modelName, c) {
+  function broadcastEvent(collectionName, modelName, opts) {
     var genericEvent = 'Siesta',
       collection = collectionRegistry[collectionName],
       model = collection[modelName];
     if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
     if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
-    events.emit(genericEvent, c);
-    if (siesta.installed) {
-      var modelEvent = collectionName + ':' + modelName,
-        localIdEvent = c.localId;
-      events.emit(collectionName, c);
-      events.emit(modelEvent, c);
-      events.emit(localIdEvent, c);
+    var shouldEmit = true;
+    // Don't emit pointless events.
+    if ('new' in opts && 'old' in opts) shouldEmit = opts.new != opts.old;
+    if (shouldEmit) {
+      events.emit(genericEvent, opts);
+      if (siesta.installed) {
+        var modelEvent = collectionName + ':' + modelName,
+          localIdEvent = opts.localId;
+        events.emit(collectionName, opts);
+        events.emit(modelEvent, opts);
+        events.emit(localIdEvent, opts);
+      }
+      if (model.id && opts.obj[model.id]) events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
     }
-    if (model.id && c.obj[model.id]) events.emit(collectionName + ':' + modelName + ':' + c.obj[model.id], c);
   }
 
   function validateEventOpts(opts) {
