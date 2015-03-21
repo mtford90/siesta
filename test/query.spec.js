@@ -1197,6 +1197,12 @@ describe('query...', function() {
 
   describe('query sets', function() {
 
+    function _instance(Model, data) {
+      var instance = Model._instance(data);
+      instance._emitEvents = true;
+      return instance;
+    }
+
     before(function() {
       siesta.ext.storageEnabled = false;
     });
@@ -1215,8 +1221,8 @@ describe('query...', function() {
           attributes: ['name', 'age']
         });
         siesta.install(function() {
-          michael = Person._instance({name: 'Michael', age: 24});
-          bob = Person._instance({name: 'Bob', age: 21});
+          michael = _instance(Person, {name: 'Michael', age: 24});
+          bob = _instance(Person, {name: 'Bob', age: 21});
           querySet = createQuerySet([michael, bob], Person);
           done();
         });
@@ -1293,10 +1299,9 @@ describe('query...', function() {
           }
         });
         siesta.install(function() {
-          michael = Person._instance({name: 'Michael', age: 24});
-          bob = Person._instance({name: 'Bob', age: 21});
-          michael.cars = [Car._instance({colour: 'red'}), Car._instance({colour: 'blue'})];
-
+          michael = _instance(Person, {name: 'Michael', age: 24});
+          bob = _instance(Person, {name: 'Bob', age: 21});
+          michael.cars = [_instance(Car, {colour: 'red'}), _instance(Car, {colour: 'blue'})];
           done();
         });
 

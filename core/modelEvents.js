@@ -56,9 +56,9 @@
       model = collection[modelName];
     if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
     if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
-    var shouldEmit = true;
+    var shouldEmit = opts.obj._emitEvents;
     // Don't emit pointless events.
-    if ('new' in opts && 'old' in opts) {
+    if (shouldEmit && 'new' in opts && 'old' in opts) {
       if (opts.new instanceof Date && opts.old instanceof Date) {
         shouldEmit = opts.new.getTime() != opts.old.getTime();
       }

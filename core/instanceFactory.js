@@ -192,16 +192,7 @@
     _registerInstance: function(modelInstance, shouldRegisterChange) {
       cache.insert(modelInstance);
       shouldRegisterChange = shouldRegisterChange === undefined ? true : shouldRegisterChange;
-      if (shouldRegisterChange) {
-        modelEvents.emit({
-          collection: this.model.collectionName,
-          model: this.model.name,
-          localId: modelInstance.localId,
-          new: modelInstance,
-          type: ModelEventType.New,
-          obj: modelInstance
-        });
-      }
+      if (shouldRegisterChange) modelInstance._emitNew();
     },
     _installLocalId: function(modelInstance, data) {
       modelInstance.localId = this._getLocalId(data);

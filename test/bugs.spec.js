@@ -246,6 +246,28 @@ describe('bugs', function() {
     }, done);
   });
 
+  it('way too many events sent out on object creation (sets and news)', function(done) {
+    var Collection = siesta.collection('Collection'),
+      Person = Collection.model('Person', {
+        attributes: ['name', 'age']
+      });
+
+    var events = [];
+    Person.on('*', function(e) {
+      events.push(e);
+    });
+
+    Person
+      .graph({name: 'mike', age: 24, id: 1})
+      .then(function() {
+        assert.equal(events.length, 1);
+        var e = events[0];
+        assert.equal(e.type, 'new');
+        done()
+      })
+      .catch(done);
+  });
+
   //it.only('errors in promises being swallowed', function(done) {
   //  var Collection = siesta.collection('Collection'),
   //    Person = Collection.model('Person', {

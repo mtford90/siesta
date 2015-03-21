@@ -1,14 +1,20 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    ModelInstance = internal.ModelInstance,
-    cache = internal.cache,
-    OneToOneProxy = internal.OneToOneProxy;
+  internal = siesta._internal,
+  ModelInstance = internal.ModelInstance,
+  cache = internal.cache,
+  OneToOneProxy = internal.OneToOneProxy;
 
 describe('one to one relationship', function() {
 
   before(function() {
     siesta.ext.storageEnabled = false;
   });
+
+  function instance(model) {
+    var i = new ModelInstance(model);
+    i._emitEvents = true;
+    return i;
+  }
 
   var MyCollection, Car, Person;
   var carProxy, personProxy;
@@ -45,10 +51,10 @@ describe('one to one relationship', function() {
         forwardName: 'owner',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
       cache.insert(person);
@@ -93,10 +99,10 @@ describe('one to one relationship', function() {
         forwardName: 'owner',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
     });
@@ -139,7 +145,7 @@ describe('one to one relationship', function() {
       var anotherPerson, anotherPersonProxy;
 
       beforeEach(function() {
-        anotherPerson = new ModelInstance(Person);
+        anotherPerson = instance(Person);
         anotherPerson.localId = 'anotherPerson';
         anotherPersonProxy = new OneToOneProxy({
           reverseModel: Person,
@@ -221,10 +227,10 @@ describe('one to one relationship', function() {
         forwardName: 'owner',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
       cache.insert(car);

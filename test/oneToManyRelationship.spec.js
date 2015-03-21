@@ -1,14 +1,20 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    ModelInstance = internal.ModelInstance,
-    cache = internal.cache,
-    OneToManyProxy = internal.OneToManyProxy;
+  internal = siesta._internal,
+  ModelInstance = internal.ModelInstance,
+  cache = internal.cache,
+  OneToManyProxy = internal.OneToManyProxy;
 
 describe('one to many relationship', function() {
 
   before(function() {
     siesta.ext.storageEnabled = false;
   });
+
+  function instance(model) {
+    var i = new ModelInstance(model);
+    i._emitEvents = true;
+    return i;
+  }
 
   var MyCollection, Car, Person;
   var carProxy, personProxy;
@@ -45,10 +51,10 @@ describe('one to many relationship', function() {
         forwardName: 'owner',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
       cache.insert(person);
@@ -96,10 +102,10 @@ describe('one to many relationship', function() {
         forwardName: 'owner',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
     });
@@ -120,7 +126,7 @@ describe('one to many relationship', function() {
 
         it('multiple', function() {
           car.owner = person;
-          var anotherCar = new ModelInstance(Car);
+          var anotherCar = instance(Car);
           anotherCar.localId = 'anotherCar';
           var anotherCarProxy = new OneToManyProxy({
             reverseModel: Person,
@@ -158,7 +164,7 @@ describe('one to many relationship', function() {
       var anotherPerson, anotherPersonProxy;
 
       beforeEach(function() {
-        anotherPerson = new ModelInstance(Person);
+        anotherPerson = instance(Person);
         anotherPerson.localId = 'anotherPerson';
         anotherPersonProxy = new OneToManyProxy({
           reverseModel: Person,
@@ -273,10 +279,10 @@ describe('one to many relationship', function() {
         forwardName: 'owner',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
       cache.insert(person);

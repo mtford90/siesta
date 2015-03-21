@@ -1,10 +1,16 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    cache = internal.cache,
-    ModelInstance = internal.ModelInstance,
-    ManyToManyProxy = internal.ManyToManyProxy;
+  internal = siesta._internal,
+  cache = internal.cache,
+  ModelInstance = internal.ModelInstance,
+  ManyToManyProxy = internal.ManyToManyProxy;
 
 describe('many to many proxy', function() {
+
+  function instance(model) {
+    var i = new ModelInstance(model);
+    i._emitEvents = true;
+    return i;
+  }
 
   before(function() {
     siesta.ext.storageEnabled = false;
@@ -45,10 +51,10 @@ describe('many to many proxy', function() {
         forwardName: 'owners',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
       cache.insert(person);
@@ -95,10 +101,10 @@ describe('many to many proxy', function() {
         forwardName: 'owners',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
     });
@@ -141,7 +147,7 @@ describe('many to many proxy', function() {
       var anotherPerson, anotherPersonProxy;
 
       beforeEach(function() {
-        anotherPerson = new ModelInstance(Person);
+        anotherPerson = instance(Person);
         anotherPerson.localId = 'anotherPerson';
         anotherPersonProxy = new ManyToManyProxy({
           reverseModel: Person,
@@ -248,10 +254,10 @@ describe('many to many proxy', function() {
         forwardName: 'owners',
         isReverse: true
       });
-      car = new ModelInstance(Car);
+      car = instance(Car);
       car.localId = 'car';
       carProxy.install(car);
-      person = new ModelInstance(Person);
+      person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
       cache.insert(person);

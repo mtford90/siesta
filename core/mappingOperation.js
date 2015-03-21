@@ -300,18 +300,20 @@
             //
             // Here we ensure the execution of all of them
             var fromStorage = this.fromStorage;
-            var initTasks = _.reduce(self._newObjects, function(m, o) {
+            var initTasks = _.reduce(self._newObjects, function(memo, o) {
               var init = o.model.init;
               if (init) {
                 var paramNames = util.paramNames(init);
                 if (paramNames.length > 1) {
-                  m.push(_.bind(init, o, fromStorage, done));
+                  memo.push(_.bind(init, o, fromStorage, done));
                 }
                 else {
                   init.call(o, fromStorage);
                 }
               }
-              return m;
+              o._emitEvents = true;
+              o._emitNew();
+              return memo;
             }, []);
             async.parallel(initTasks, function() {
               done(self.errors.length ? self.errors : null, self.objects);

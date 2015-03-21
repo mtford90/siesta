@@ -5,6 +5,7 @@
     error = require('./error'),
     InternalSiestaError = error.InternalSiestaError,
     modelEvents = require('./modelEvents'),
+    ModelEventType = modelEvents.ModelEventType,
     events = require('./events'),
     cache = require('./cache');
 
@@ -63,6 +64,19 @@
     });
 
     this.removed = false;
+
+    /**
+     * Whether or not events (set, remove etc) are emitted for this model instance.
+     *
+     * This is used as a way of controlling what events are emitted when the model instance is created. E.g. we don't
+     * want to send a metric shit ton of 'set' events if we're newly creating an instance. We only want to send the
+     * 'new' event once constructed.
+     *
+     * This is probably a bit of a hack and should be removed eventually.
+     * @type {boolean}
+     * @private
+     */
+    this._emitEvents = false;
   }
 
   ModelInstance.prototype = Object.create(events.ProxyEventEmitter.prototype);
@@ -234,6 +248,23 @@
       opts = opts || {};
       if (!this.model.serialise) return this._defaultSerialise(opts);
       else return this.model.serialise(this, opts);
+    }
+  });
+
+  _.extend(ModelInstance.prototype, {
+    /**
+     * Emit an event indicating that this instance has just been created.
+     * @private
+     */
+    _emitNew: function() {
+      modelEvents.emit({
+        collection: this.model.collectionName,
+        model: this.model.name,
+        localId: this.localId,
+        new: this,
+        type: ModelEventType.New,
+        obj: this
+      });
     }
   });
 
