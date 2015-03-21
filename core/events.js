@@ -1,14 +1,14 @@
 (function() {
   var EventEmitter = require('events').EventEmitter,
-      ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-      util = require('./util'),
-      argsarray = require('argsarray'),
-      _ = util._,
-      modelEvents = require('./modelEvents'),
-      Chain = require('./Chain');
+    ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
+    util = require('./util'),
+    argsarray = require('argsarray'),
+    _ = util._,
+    modelEvents = require('./modelEvents'),
+    Chain = require('./Chain');
 
-  var events = new EventEmitter();
-  events.setMaxListeners(100);
+  var eventEmitter = new EventEmitter();
+  eventEmitter.setMaxListeners(100);
 
   /**
    * Listen to a particular event from the Siesta global EventEmitter.
@@ -56,7 +56,7 @@
           listeners[type].push(fn);
         }
       }
-      events.on(this.event, fn);
+      eventEmitter.on(this.event, fn);
       return this._handlerLink({
         fn: fn,
         type: type,
@@ -76,7 +76,7 @@
           e = e || {};
           if (type) {
             if (e.type == type) {
-              events.removeListener(event, fn);
+              eventEmitter.removeListener(event, fn);
               _fn(e);
             }
           }
@@ -85,16 +85,16 @@
           }
         }
       }
-      if (type) return events.on(event, fn);
-      else return events.once(event, fn);
+      if (type) return eventEmitter.on(event, fn);
+      else return eventEmitter.once(event, fn);
     },
     _removeListener: function(fn, type) {
       if (type) {
         var listeners = this.listeners[type],
-            idx = listeners.indexOf(fn);
+          idx = listeners.indexOf(fn);
         listeners.splice(idx, 1);
       }
-      return events.removeListener(this.event, fn);
+      return eventEmitter.removeListener(this.event, fn);
     },
     emit: function(type, payload) {
       if (typeof type == 'object') {
@@ -105,11 +105,11 @@
         payload = payload || {};
         payload.type = type;
       }
-      events.emit.call(events, this.event, payload);
+      eventEmitter.emit.call(eventEmitter, this.event, payload);
     },
     _removeAllListeners: function(type) {
       (this.listeners[type] || []).forEach(function(fn) {
-        events.removeListener(this.event, fn);
+        eventEmitter.removeListener(this.event, fn);
       }.bind(this));
       this.listeners[type] = [];
     },
@@ -127,7 +127,7 @@
     }
   });
 
-  _.extend(events, {
+  _.extend(eventEmitter, {
     ProxyEventEmitter: ProxyEventEmitter,
     wrapArray: function(array, field, modelInstance) {
       if (!array.observer) {
@@ -154,5 +154,17 @@
     }
   });
 
-  module.exports = events;
+  var oldEmit = eventEmitter.emit;
+
+  // Ensure that errors in event handlers do not stall Siesta.
+  eventEmitter.emit = function(event, payload) {
+    try {
+      oldEmit.call(eventEmitter, event, payload);
+    }
+    catch (e) {
+      console.error(e);
+    }
+  };
+
+  module.exports = eventEmitter;
 })();

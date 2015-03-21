@@ -14,7 +14,7 @@
     "debug": "^2.1.1",
     "extend": "~1.3.0",
     "jstream": "~0.2.7",
-    "lie": "^2.8.1",
+    "lie": "git+https://github.com/mtford90/lie.git",
     "qs": "~0.6.6",
     "querystring": "~0.2.0",
     "underscore": "~1.7.0",

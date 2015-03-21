@@ -17,5 +17,6 @@
     <orderEntry type="library" name="siesta node_modules" level="project" />
     <orderEntry type="library" name="siesta bower" level="project" />
     <orderEntry type="library" name="Node.js Core Modules" level="project" />
+    <orderEntry type="module" module-name="lie" />
   </component>
 </module>

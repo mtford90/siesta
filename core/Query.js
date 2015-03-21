@@ -185,6 +185,7 @@
         }
         res = this._sortResults(res);
         if (err) log('Error executing query', err);
+        console.log('yo');
         callback(err, err ? null : constructQuerySet(res, this.model));
       }.bind(this);
       if (this.opts.ignoreInstalled) {

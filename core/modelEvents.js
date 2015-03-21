@@ -1,9 +1,9 @@
 (function() {
   var events = require('./events'),
-      InternalSiestaError = require('./error').InternalSiestaError,
-      log = require('./log')('events'),
-      extend = require('./util')._.extend,
-      collectionRegistry = require('./collectionRegistry').CollectionRegistry;
+    InternalSiestaError = require('./error').InternalSiestaError,
+    log = require('./log')('events'),
+    extend = require('./util')._.extend,
+    collectionRegistry = require('./collectionRegistry').CollectionRegistry;
 
 
   /**
@@ -50,26 +50,19 @@
     return pretty ? util.prettyPrint(dumped) : dumped;
   };
 
-  /**
-   * Broadcas
-   * @param  {String} collectionName
-   * @param  {String} modelName
-   * @param  {Object} c an options dictionary representing the change
-   * @return {[type]}
-   */
   function broadcastEvent(collectionName, modelName, c) {
-    var genericNotif = 'Siesta',
-        collection = collectionRegistry[collectionName],
-        model = collection[modelName];
+    var genericEvent = 'Siesta',
+      collection = collectionRegistry[collectionName],
+      model = collection[modelName];
     if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
     if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
-    events.emit(genericNotif, c);
+    events.emit(genericEvent, c);
     if (siesta.installed) {
-      var modelNotif = collectionName + ':' + modelName,
-          localIdNotif = c.localId;
+      var modelEvent = collectionName + ':' + modelName,
+        localIdEvent = c.localId;
       events.emit(collectionName, c);
-      events.emit(modelNotif, c);
-      events.emit(localIdNotif, c);
+      events.emit(modelEvent, c);
+      events.emit(localIdEvent, c);
     }
     if (model.id && c.obj[model.id]) events.emit(collectionName + ':' + modelName + ':' + c.obj[model.id], c);
   }
