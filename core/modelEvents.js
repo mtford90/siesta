@@ -58,7 +58,14 @@
     if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
     var shouldEmit = true;
     // Don't emit pointless events.
-    if ('new' in opts && 'old' in opts) shouldEmit = opts.new != opts.old;
+    if ('new' in opts && 'old' in opts) {
+      if (opts.new instanceof Date && opts.old instanceof Date) {
+        shouldEmit = opts.new.getTime() != opts.old.getTime();
+      }
+      else {
+        shouldEmit = opts.new != opts.old;
+      }
+    }
     if (shouldEmit) {
       events.emit(genericEvent, opts);
       if (siesta.installed) {

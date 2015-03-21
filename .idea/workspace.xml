@@ -4,12 +4,10 @@
     <list default="true" id="aea203e4-1007-4c13-a7fd-0c31059878e9" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/observe-js" afterPath="$PROJECT_DIR$/vendor/observe-js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/operations.js/Gruntfile.js" afterPath="$PROJECT_DIR$/vendor/operations.js/Gruntfile.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/Query.js" afterPath="$PROJECT_DIR$/core/Query.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/operations.js/README.md" afterPath="$PROJECT_DIR$/vendor/operations.js/README.md" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/operations.js/build.config.js" afterPath="$PROJECT_DIR$/vendor/operations.js/build.config.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/jquery.custom.js" afterPath="$PROJECT_DIR$/vendor/jquery.custom.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/jquery.custom.js/jquery.js" afterPath="$PROJECT_DIR$/vendor/jquery.custom.js/jquery.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/util/misc.js" afterPath="$PROJECT_DIR$/core/util/misc.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/core/modelEvents.js" afterPath="$PROJECT_DIR$/core/modelEvents.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/observe-js/src/observe.js" afterPath="$PROJECT_DIR$/vendor/observe-js/src/observe.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vendor/operations.js" afterPath="$PROJECT_DIR$/vendor/operations.js" />
@@ -42,10 +40,10 @@
     <splitter split-orientation="horizontal" split-proportion="0.40640098">
       <split-first>
         <leaf>
-          <file leaf-file-name="bugs.spec.js" pinned="false" current-in-tab="false">
+          <file leaf-file-name="bugs.spec.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/test/bugs.spec.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="84" max-vertical-offset="1092">
+                <state vertical-scroll-proportion="0.3452381" vertical-offset="84" max-vertical-offset="1092">
                   <caret line="236" column="9" selection-start-line="236" selection-start-column="9" selection-end-line="237" selection-end-column="33" />
                   <folding>
                     <element signature="e#366#500#0" expanded="false" />
@@ -58,11 +56,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="unwrap.js" pinned="false" current-in-tab="true">
+          <file leaf-file-name="unwrap.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/../lie/lib/unwrap.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.3690476" vertical-offset="0" max-vertical-offset="1008">
-                  <caret line="31" column="1" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="444">
+                  <caret line="28" column="45" selection-start-line="28" selection-start-column="45" selection-end-line="28" selection-end-column="45" />
                   <folding />
                 </state>
               </provider>
@@ -125,8 +123,8 @@
           <file leaf-file-name="modelEvents.js" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/core/modelEvents.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.5" vertical-offset="144" max-vertical-offset="1224">
-                  <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
+                <state vertical-scroll-proportion="0.5119048" vertical-offset="276" max-vertical-offset="1308">
+                  <caret line="66" column="7" selection-start-line="66" selection-start-column="7" selection-end-line="66" selection-end-column="7" />
                   <folding />
                 </state>
               </provider>
@@ -1152,20 +1150,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/bugs.spec.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="84" max-vertical-offset="1092">
-          <caret line="236" column="9" selection-start-line="236" selection-start-column="9" selection-end-line="237" selection-end-column="33" />
-          <folding>
-            <element signature="e#366#500#0" expanded="false" />
-            <element signature="e#533#671#0" expanded="false" />
-            <element signature="e#812#6523#0" expanded="false" />
-            <element signature="e#6677#6739#0" expanded="false" />
-            <element signature="e#6817#7053#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/lie/lib/unwrap.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.1257485" vertical-offset="0" max-vertical-offset="668">
@@ -1190,14 +1174,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../lie/lib/unwrap.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3690476" vertical-offset="0" max-vertical-offset="1008">
-          <caret line="31" column="1" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/core/util/misc.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3540">
@@ -1206,10 +1182,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../lie/lib/unwrap.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="444">
+          <caret line="28" column="45" selection-start-line="28" selection-start-column="45" selection-end-line="28" selection-end-column="45" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/bugs.spec.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3452381" vertical-offset="84" max-vertical-offset="1092">
+          <caret line="236" column="9" selection-start-line="236" selection-start-column="9" selection-end-line="237" selection-end-column="33" />
+          <folding>
+            <element signature="e#366#500#0" expanded="false" />
+            <element signature="e#533#671#0" expanded="false" />
+            <element signature="e#812#6523#0" expanded="false" />
+            <element signature="e#6677#6739#0" expanded="false" />
+            <element signature="e#6817#7053#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/core/modelEvents.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5" vertical-offset="144" max-vertical-offset="1224">
-          <caret line="54" column="54" selection-start-line="54" selection-start-column="54" selection-end-line="54" selection-end-column="54" />
+        <state vertical-scroll-proportion="0.5119048" vertical-offset="276" max-vertical-offset="1308">
+          <caret line="66" column="7" selection-start-line="66" selection-start-column="7" selection-end-line="66" selection-end-column="7" />
           <folding />
         </state>
       </provider>
