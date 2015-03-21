@@ -50,21 +50,6 @@
     return pretty ? util.prettyPrint(dumped) : dumped;
   };
 
-  function prettyChange(c) {
-    if (c.type == ModelEventType.Set) {
-      return c.model + '[' + c.localId + '].' + c.field + ' = ' + c.new;
-    }
-    else if (c.type == ModelEventType.Splice) {
-
-    }
-    else if (c.type == ModelEventType.New) {
-
-    }
-    else if (c.type == ModelEventType.Remove) {
-
-    }
-  }
-
   /**
    * Broadcas
    * @param  {String} collectionName
