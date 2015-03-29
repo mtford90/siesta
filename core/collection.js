@@ -177,7 +177,9 @@
         }
       }
       if (this.installed) {
-
+        var error = model.installRelationships();
+        if (!error) error = model.installReverseRelationships();
+        if (error) throw error;
       }
       return null;
     },

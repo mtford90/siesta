@@ -108,93 +108,91 @@
      * @private
      */
     _lookup: function(cb) {
-      return util.promise(cb, function(cb) {
-        var self = this;
-        var remoteLookups = [];
-        var localLookups = [];
-        for (var i = 0; i < this.data.length; i++) {
-          if (!this.objects[i]) {
-            var lookup;
-            var datum = this.data[i];
-            var isScalar = typeof datum == 'string' || typeof datum == 'number' || datum instanceof String;
-            if (datum) {
-              if (isScalar) {
-                lookup = {
-                  index: i,
-                  datum: {}
-                };
-                lookup.datum[self.model.id] = datum;
-                remoteLookups.push(lookup);
-              } else if (datum instanceof ModelInstance) { // We won't need to perform any mapping.
-                this.objects[i] = datum;
-              } else if (datum.localId) {
-                localLookups.push({
-                  index: i,
-                  datum: datum
-                });
-              } else if (datum[self.model.id]) {
-                remoteLookups.push({
-                  index: i,
-                  datum: datum
-                });
-              } else {
-                this.objects[i] = self._instance();
-              }
+      var self = this;
+      var remoteLookups = [];
+      var localLookups = [];
+      for (var i = 0; i < this.data.length; i++) {
+        if (!this.objects[i]) {
+          var lookup;
+          var datum = this.data[i];
+          var isScalar = typeof datum == 'string' || typeof datum == 'number' || datum instanceof String;
+          if (datum) {
+            if (isScalar) {
+              lookup = {
+                index: i,
+                datum: {}
+              };
+              lookup.datum[self.model.id] = datum;
+              remoteLookups.push(lookup);
+            } else if (datum instanceof ModelInstance) { // We won't need to perform any mapping.
+              this.objects[i] = datum;
+            } else if (datum.localId) {
+              localLookups.push({
+                index: i,
+                datum: datum
+              });
+            } else if (datum[self.model.id]) {
+              remoteLookups.push({
+                index: i,
+                datum: datum
+              });
             } else {
-              this.objects[i] = null;
+              this.objects[i] = self._instance();
             }
+          } else {
+            this.objects[i] = null;
           }
         }
-        util.async.parallel([
-          function(done) {
-            var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
-            var objects = cache.getViaLocalId(localIdentifiers);
-            for (var i = 0; i < localIdentifiers.length; i++) {
-              var obj = objects[i];
-              var localId = localIdentifiers[i];
-              var lookup = localLookups[i];
-              if (!obj) {
-                // If there are multiple mapping operations going on, there may be
-                obj = cache.get({localId: localId});
-                if (!obj) obj = self._instance({localId: localId}, !self.disableevents);
-                self.objects[lookup.index] = obj;
-              } else {
-                self.objects[lookup.index] = obj;
-              }
+      }
+      util.async.parallel([
+        function(done) {
+          var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
+          var objects = cache.getViaLocalId(localIdentifiers);
+          for (var i = 0; i < localIdentifiers.length; i++) {
+            var obj = objects[i];
+            var localId = localIdentifiers[i];
+            var lookup = localLookups[i];
+            if (!obj) {
+              // If there are multiple mapping operations going on, there may be
+              obj = cache.get({localId: localId});
+              if (!obj) obj = self._instance({localId: localId}, !self.disableevents);
+              self.objects[lookup.index] = obj;
+            } else {
+              self.objects[lookup.index] = obj;
             }
-            done();
-          },
-          function(done) {
-            var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
-            var objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
-            for (i = 0; i < objects.length; i++) {
-              var obj = objects[i];
-              var lookup = remoteLookups[i];
-              if (obj) {
-                self.objects[lookup.index] = obj;
-              } else {
-                var data = {};
-                var remoteId = remoteIdentifiers[i];
-                data[self.model.id] = remoteId;
-                var cacheQuery = {
-                  model: self.model
-                };
-                cacheQuery[self.model.id] = remoteId;
-                var cached = cache.get(cacheQuery);
-                if (cached) {
-                  self.objects[lookup.index] = cached;
-                } else {
-                  self.objects[lookup.index] = self._instance();
-                  // It's important that we map the remote identifier here to ensure that it ends
-                  // up in the cache.
-                  self.objects[lookup.index][self.model.id] = remoteId;
-                }
-              }
-            }
-            done();
           }
-        ], cb);
-      }.bind(this));
+          done();
+        },
+        function(done) {
+          var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
+          var objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
+          for (i = 0; i < objects.length; i++) {
+            var obj = objects[i];
+            var lookup = remoteLookups[i];
+            if (obj) {
+              self.objects[lookup.index] = obj;
+            } else {
+              var data = {};
+              var remoteId = remoteIdentifiers[i];
+              data[self.model.id] = remoteId;
+              var cacheQuery = {
+                model: self.model
+              };
+              cacheQuery[self.model.id] = remoteId;
+              var cached = cache.get(cacheQuery);
+              if (cached) {
+                self.objects[lookup.index] = cached;
+              } else {
+                self.objects[lookup.index] = self._instance();
+                // It's important that we map the remote identifier here to ensure that it ends
+                // up in the cache.
+                self.objects[lookup.index][self.model.id] = remoteId;
+              }
+            }
+          }
+          done();
+        }
+      ], cb);
     },
     _lookupSingleton: function(cb) {
       return util.promise(cb, function(cb) {
@@ -263,10 +261,10 @@
         var lookupFunc = this.model.singleton ? this._lookupSingleton : this._lookup;
         tasks.push(_.bind(lookupFunc, this));
         tasks.push(_.bind(this._executeSubOperations, this));
-        util.async.parallel(tasks, function() {
+        util.async.parallel(tasks, function(err) {
+          if (err) console.error(err);
           try {
             self._map();
-
             // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
             //
             //
