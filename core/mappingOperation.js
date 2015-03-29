@@ -19,7 +19,7 @@
    * Encapsulates the idea of mapping arrays of data onto the object graph or arrays of objects.
    * @param {Object} opts
    * @param opts.model
-   * @param opts.data#
+   * @param opts.data
    * @param opts.objects
    * @param opts.disableNotifications
    */
@@ -350,8 +350,7 @@
           }
         }
       }
-    }
-    ,
+    },
     _executeSubOperations: function(callback) {
       var self = this,
         relationshipNames = _.keys(this.model.relationships);

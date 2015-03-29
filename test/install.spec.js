@@ -300,10 +300,6 @@ describe('add stuff after install', function() {
       assert.equal(MyCollection.Car, Car);
     });
 
-    it('is available on the collection', function() {
-      assert.equal(MyCollection.Car, Car);
-    });
-
     it('graph works', function(done) {
       Car.graph({type: 'red'})
         .then(function(car) {
@@ -312,6 +308,105 @@ describe('add stuff after install', function() {
         })
         .catch(done);
     });
+
+  });
+
+
+  describe('add model with relationship', function() {
+    var MyCollection, Car, Person;
+
+    afterEach(function() {
+      MyCollection = null;
+      Car = null;
+      Person = null;
+    });
+
+    describe('forward', function() {
+      beforeEach(function(done) {
+        MyCollection = siesta.collection('MyCollection');
+        Person = MyCollection.model('Person', {
+          id: 'id',
+          attributes: ['name', 'age']
+        });
+        siesta
+          .install()
+          .then(function() {
+            Car = MyCollection.model('Car', {
+              attributes: ['type'],
+              relationships: {
+                owner: {
+                  model: 'Person',
+                  reverse: 'cars'
+                }
+              }
+            });
+            done();
+          })
+          .catch(done);
+      });
+
+      it('is available on the collection', function() {
+        assert.equal(MyCollection.Car, Car);
+      });
+
+      it('graph works', function(done) {
+        Person.graph({name: 'mike', age: 21})
+          .then(function(p) {
+            Car.graph({type: 'red', owner: p})
+              .then(function(car) {
+                assert.ok(car);
+                assert.equal(car.owner, p);
+                assert.include(p.cars, car);
+                done();
+              })
+              .catch(done);
+          }).catch(done);
+
+      });
+    });
+
+    describe('reverse', function() {
+      beforeEach(function(done) {
+        MyCollection = siesta.collection('MyCollection');
+        Car = MyCollection.model('Car', {
+          attributes: ['type'],
+          relationships: {
+            owner: {
+              model: 'Person',
+              reverse: 'cars'
+            }
+          }
+        });
+        siesta.install()
+          .then(function() {
+            Person = MyCollection.model('Person', {
+              id: 'id',
+              attributes: ['name', 'age']
+            });
+            done();
+          }).catch(done);
+      });
+
+      it('is available on the collection', function() {
+        assert.equal(MyCollection.Car, Car);
+      });
+
+      it('graph works', function(done) {
+        Person.graph({name: 'mike', age: 21})
+          .then(function(p) {
+            Car.graph({type: 'red', owner: p})
+              .then(function(car) {
+                assert.ok(car);
+                assert.equal(car.owner, p);
+                assert.include(p.cars, car);
+                done();
+              })
+              .catch(done);
+          }).catch(done);
+
+      });
+    })
+
 
   });
 

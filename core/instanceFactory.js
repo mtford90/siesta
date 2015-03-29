@@ -176,11 +176,14 @@
           delete relationshipOpts.type;
           if (type == RelationshipType.OneToMany) {
             proxy = new OneToManyProxy(relationshipOpts);
-          } else if (type == RelationshipType.OneToOne) {
+          }
+          else if (type == RelationshipType.OneToOne) {
             proxy = new OneToOneProxy(relationshipOpts);
-          } else if (type == RelationshipType.ManyToMany) {
+          }
+          else if (type == RelationshipType.ManyToMany) {
             proxy = new ManyToManyProxy(relationshipOpts);
-          } else {
+          }
+          else {
             throw new InternalSiestaError('No such relationship type: ' + type);
           }
         }
