@@ -64,7 +64,6 @@
       querySet: querySet,
       observe: require('../vendor/observe-js/src/observe'),
       Query: Query,
-      Store: require('./store'),
       ManyToManyProxy: ManyToManyProxy,
       OneToManyProxy: OneToManyProxy,
       OneToOneProxy: OneToOneProxy,

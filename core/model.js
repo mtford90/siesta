@@ -19,7 +19,6 @@
     Placeholder = require('./Placeholder'),
     ReactiveQuery = require('./ReactiveQuery'),
     instanceFactory = require('./instanceFactory'),
-    ArrangedReactiveQuery = require('./ArrangedReactiveQuery'),
     _ = util._;
 
   /**
@@ -368,14 +367,6 @@
      */
     _reactiveQuery: function(query) {
       return new ReactiveQuery(new Query(this, query || {}));
-    },
-    /**
-     * Only used in the testing at the moment.
-     * @param query
-     * @returns {ArrangedReactiveQuery}
-     */
-    _arrangedReactiveQuery: function(query) {
-      return new ArrangedReactiveQuery(new Query(this, query || {}));
     },
     one: function(opts, cb) {
       if (typeof opts == 'function') {
