@@ -3,8 +3,8 @@
  */
 
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    RelationshipType = siesta.RelationshipType;
+  internal = siesta._internal,
+  RelationshipType = siesta.RelationshipType;
 
 describe('install step', function() {
   var MyCollection, Person;
@@ -28,41 +28,41 @@ describe('install step', function() {
 
     it('map', function(done) {
       Person.graph({name: 'Mike', age: 24})
-          .then(function() {
-            done();
-          })
-          .catch(done);
+        .then(function() {
+          done();
+        })
+        .catch(done);
     });
 
     it('query', function(done) {
       Person.query({age__gt: 23})
-          .then(function(res) {
-            assert.notOk(res.length, 'Should be no results');
-            done();
-          })
-          .catch(done);
+        .then(function(res) {
+          assert.notOk(res.length, 'Should be no results');
+          done();
+        })
+        .catch(done);
     });
 
     it('reactive query', function(done) {
       var rq = Person._reactiveQuery({age__lt: 30});
       rq.init()
-          .then(function() {
-            assert.notOk(rq.results.length);
-            rq.terminate();
-            done();
-          })
-          .catch(done);
+        .then(function() {
+          assert.notOk(rq.results.length);
+          rq.terminate();
+          done();
+        })
+        .catch(done);
     });
 
     it('arranged reactive query', function(done) {
       var rq = Person._arrangedReactiveQuery({age__lt: 30});
       rq.init()
-          .then(function() {
-            assert.notOk(rq.results.length);
-            rq.terminate();
-            done();
-          })
-          .catch(done);
+        .then(function() {
+          assert.notOk(rq.results.length);
+          rq.terminate();
+          done();
+        })
+        .catch(done);
     });
 
     it('should not be able to define a model after install', function(done) {
@@ -103,10 +103,10 @@ describe('install step', function() {
 
     it('map', function(done) {
       Person.graph({name: 'Mike', age: 24})
-          .then(function() {
-            done();
-          })
-          .catch(done);
+        .then(function() {
+          done();
+        })
+        .catch(done);
     });
 
 
@@ -116,11 +116,11 @@ describe('install step', function() {
         {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
       ]).then(function() {
         Person.query({age__gt: 23})
-            .then(function(res) {
-              assert.equal(res.length, 1, 'Should have installed and loaded before returning from the query');
-              done();
-            })
-            .catch(done);
+          .then(function(res) {
+            assert.equal(res.length, 1, 'Should have installed and loaded before returning from the query');
+            done();
+          })
+          .catch(done);
       }).catch(done);
     });
 
@@ -132,12 +132,12 @@ describe('install step', function() {
       ]).then(function() {
         var rq = Person._reactiveQuery({age__gt: 23});
         rq.init()
-            .then(function() {
-              assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
-              rq.terminate();
-              done();
-            })
-            .catch(done);
+          .then(function() {
+            assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
+            rq.terminate();
+            done();
+          })
+          .catch(done);
       }).catch(done);
     });
 
@@ -148,12 +148,12 @@ describe('install step', function() {
       ]).then(function() {
         var rq = Person._arrangedReactiveQuery({age__gt: 23});
         rq.init()
-            .then(function() {
-              assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
-              rq.terminate();
-              done();
-            })
-            .catch(done);
+          .then(function() {
+            assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
+            rq.terminate();
+            done();
+          })
+          .catch(done);
       }).catch(done);
     });
 
@@ -320,4 +320,24 @@ describe('install step', function() {
   });
 
 
+});
+
+describe('add stuff after install', function() {
+
+  beforeEach(function(done) {
+    siesta.reset(done);
+  });
+  it('add collection', function(done) {
+    var MyCollection = siesta.collection('MyCollection'),
+      Person = MyCollection.model('Person', {
+        id: 'id',
+        attributes: ['name', 'age', 'index']
+      });
+    siesta
+      .install()
+      .then(function() {
+        var AnotherCollection = siesta.collection('AnotherCollection');
+        done();
+      }).catch(done);
+  });
 });

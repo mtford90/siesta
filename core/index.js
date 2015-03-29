@@ -122,7 +122,8 @@
           installing = true;
           var collectionNames = CollectionRegistry.collectionNames,
             tasks = _.map(collectionNames, function(n) {
-              return CollectionRegistry[n].install.bind(CollectionRegistry[n]);
+              var collection = CollectionRegistry[n];
+              return collection.install.bind(collection);
             }),
             storageEnabled = siesta.ext.storageEnabled;
           if (storageEnabled) tasks = tasks.concat([siesta.ext.storage.ensureIndexesForAll, siesta.ext.storage._load]);

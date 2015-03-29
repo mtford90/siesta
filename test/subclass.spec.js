@@ -39,7 +39,6 @@ describe('Subclass', function() {
   describe('attributes', function() {
     beforeEach(function(done) {
       Collection = siesta.collection('myCollection');
-
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -47,7 +46,6 @@ describe('Subclass', function() {
       SportsCar = Car.child('SportsCar', {
         attributes: ['maxSpeed']
       });
-
       siesta.install(done);
     });
 
@@ -65,9 +63,7 @@ describe('Subclass', function() {
   });
 
   describe('relationships', function() {
-    var Collection, Car, SportsCar, Person;
-
-    var mike;
+    var Collection, Car, SportsCar, Person, mike;
 
     describe('names', function() {
       beforeEach(function(done) {
@@ -98,7 +94,6 @@ describe('Subclass', function() {
       it('parent attributes', function() {
         assert.include(Car._relationshipNames, 'owner');
       });
-
     });
 
     describe('relationship types', function() {
@@ -266,7 +261,6 @@ describe('Subclass', function() {
 
 
     });
-
 
   });
 

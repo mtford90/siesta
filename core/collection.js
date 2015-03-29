@@ -79,6 +79,17 @@
   Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
   _.extend(Collection.prototype, {
+    _getModelsToInstall: function() {
+      var modelsToInstall = [];
+      for (var name in this._models) {
+        if (this._models.hasOwnProperty(name)) {
+          var model = this._models[name];
+          modelsToInstall.push(model);
+        }
+      }
+      log('There are ' + modelsToInstall.length.toString() + ' mappings to install');
+      return modelsToInstall;
+    },
     /**
      * Ensure mappings are installed.
      * @param [cb]
@@ -88,74 +99,51 @@
       return util.promise(cb, function(cb) {
         var self = this;
         if (!this.installed) {
-          var modelsToInstall = [];
-          for (var name in this._models) {
-            if (this._models.hasOwnProperty(name)) {
-              var model = this._models[name];
-              modelsToInstall.push(model);
-            }
-          }
-          log('There are ' + modelsToInstall.length.toString() + ' mappings to install');
-          if (modelsToInstall.length) {
-            var tasks = _.map(modelsToInstall, function(m) {
-              return _.bind(m.install, m);
-            });
+          var modelsToInstall = this._getModelsToInstall();
+          var tasks = _.map(modelsToInstall, function(m) {
+            return _.bind(m.install, m);
+          });
 
-            util.async.parallel(tasks, function(err) {
-              if (err) {
-
-                log('Failed to install collection', err);
-                self._finaliseInstallation(err, cb);
-              }
-              else {
-                self.installed = true;
-                var errors = [];
+          util.async.parallel(tasks, function(err) {
+            if (!err) {
+              self.installed = true;
+              var errors = [];
+              _.each(modelsToInstall, function(m) {
+                log('Installing relationships for mapping with name "' + m.name + '"');
+                var err = m.installRelationships();
+                if (err) errors.push(err);
+              });
+              if (!errors.length) {
                 _.each(modelsToInstall, function(m) {
-                  log('Installing relationships for mapping with name "' + m.name + '"');
-                  var err = m.installRelationships();
+                  log('Installing reverse relationships for mapping with name "' + m.name + '"');
+                  var err = m.installReverseRelationships();
                   if (err) errors.push(err);
                 });
-                if (!errors.length) {
-                  _.each(modelsToInstall, function(m) {
-                    log('Installing reverse relationships for mapping with name "' + m.name + '"');
-                    var err = m.installReverseRelationships();
-                    if (err) errors.push(err);
-                  });
-                }
-
-                if (errors.length == 1) {
-                  err = errors[0];
-                } else if (errors.length) {
-                  err = errors;
-                }
-
-                self._finaliseInstallation(err, cb);
               }
-            });
 
-          } else {
-            self._finaliseInstallation(null, cb);
-          }
+              if (errors.length == 1) {
+                err = errors[0];
+              } else if (errors.length) {
+                err = errors;
+              }
+            }
+
+
+            if (err) {
+              err = error('Errors were encountered whilst setting up the collection', {errors: err});
+            }
+            else {
+              this.installed = true;
+              var index = require('./index');
+              index[this.name] = this;
+            }
+            cb(err);
+          }.bind(this));
+
         } else {
           throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
         }
       }.bind(this));
-    },
-
-    /**
-     * Mark this collection as installed, and place the collection on the global Siesta object.
-     * @param  {Object}   err
-     * @param  {Function} callback
-     * @class Collection
-     */
-    _finaliseInstallation: function(err, callback) {
-      if (err) err = error('Errors were encountered whilst setting up the collection', {errors: err});
-      if (!err) {
-        this.installed = true;
-        var index = require('./index');
-        index[this.name] = this;
-      }
-      callback(err);
     },
     /**
      * Given the name of a mapping and an options object describing the mapping, creating a Model
