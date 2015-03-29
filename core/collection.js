@@ -91,6 +91,14 @@
       return modelsToInstall;
     },
     /**
+     * Means that we can access the collection on the siesta object.
+     * @private
+     */
+    _makeAvailableOnRoot: function() {
+      var index = require('./index');
+      index[this.name] = this;
+    },
+    /**
      * Ensure mappings are installed.
      * @param [cb]
      * @class Collection
@@ -119,22 +127,16 @@
                   var err = m.installReverseRelationships();
                   if (err) errors.push(err);
                 });
-              }
-              if (errors.length) {
-                err = error('Errors were encountered whilst setting up the collection', {errors: errors});
-              }
-              else {
-                this.installed = true;
-                var index = require('./index');
-                index[this.name] = this;
+                if (!errors.length) {
+                  this.installed = true;
+                  this._makeAvailableOnRoot();
+                }
               }
             }
-            cb(err);
+            cb(errors.length ? error('Errors were encountered whilst setting up the collection', {errors: errors}) : null);
           }.bind(this));
 
-        } else {
-          throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
-        }
+        } else throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
       }.bind(this));
     },
     /**
