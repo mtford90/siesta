@@ -66,18 +66,6 @@ describe('install step', function() {
         .catch(done);
     });
 
-    it('should not be able to define a model after install', function(done) {
-      siesta.install().then(function() {
-        assert.throws(function() {
-          MyCollection.model('AnotherModel', {
-            id: 'id',
-            attributes: ['something']
-          });
-        }, Error);
-
-        done();
-      }).catch(done);
-    })
   });
 
   describe('storage', function() {
@@ -323,7 +311,7 @@ describe('install step', function() {
 
 });
 
-describe.only('add stuff after install', function() {
+describe('add stuff after install', function() {
 
   beforeEach(function(done) {
     siesta.reset(done);
@@ -340,6 +328,22 @@ describe.only('add stuff after install', function() {
         var AnotherCollection = siesta.collection('AnotherCollection');
         assert.equal(siesta.AnotherCollection, AnotherCollection);
         assert.equal(CollectionRegistry.AnotherCollection, AnotherCollection);
+        done();
+      }).catch(done);
+  });
+
+  it('add simple model', function(done) {
+    var MyCollection = siesta.collection('MyCollection'),
+      Person = MyCollection.model('Person', {
+        id: 'id',
+        attributes: ['name', 'age', 'index']
+      });
+    siesta
+      .install()
+      .then(function() {
+        var Car = MyCollection.model('Car', {
+          attributes: ['type']
+        });
         done();
       }).catch(done);
   });

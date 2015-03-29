@@ -421,15 +421,8 @@
       }
     },
     install: function(cb) {
-      log('Installing mapping ' + this.name);
-      return util.promise(cb, function(cb) {
-        if (!this._installed) {
-          this._installed = true;
-          cb();
-        } else {
-          throw new InternalSiestaError('Model "' + this.name + '" has already been installed');
-        }
-      }.bind(this));
+      this._installed = true;
+      cb();
     },
     /**
      * Map data into Siesta.
