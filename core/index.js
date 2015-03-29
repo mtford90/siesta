@@ -108,7 +108,9 @@
      * @return {Collection}
      */
     collection: function(name, opts) {
-      return new Collection(name, opts);
+      var c = new Collection(name, opts);
+      if (installed) c.installed = true; // TODO: Remove
+      return c;
     },
     /**
      * Install all collections.

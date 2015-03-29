@@ -243,7 +243,9 @@
             }
           }
         }
-      } else throw new InternalSiestaError('Relationships for "' + this.name + '" have already been installed');
+      } else {
+        throw new InternalSiestaError('Relationships for "' + this.name + '" have already been installed');
+      }
       if (!err) this._relationshipsInstalled = true;
       return err;
     },
@@ -277,7 +279,8 @@
           }
         }
         this._reverseRelationshipsInstalled = true;
-      } else {
+      }
+      else {
         throw new InternalSiestaError('Reverse relationships for "' + this.name + '" have already been installed.');
       }
     },

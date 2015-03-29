@@ -300,14 +300,18 @@ describe('add stuff after install', function() {
       assert.equal(MyCollection.Car, Car);
     });
 
-    //it('graph works', function(done) {
-    //  Car.graph({type: 'red'})
-    //    .then(function(car) {
-    //      assert.ok(car);
-    //      done();
-    //    })
-    //    .catch(done);
-    //});
+    it('is available on the collection', function() {
+      assert.equal(MyCollection.Car, Car);
+    });
+
+    it('graph works', function(done) {
+      Car.graph({type: 'red'})
+        .then(function(car) {
+          assert.ok(car);
+          done();
+        })
+        .catch(done);
+    });
 
   });
 

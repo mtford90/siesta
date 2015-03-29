@@ -120,14 +120,7 @@
         } else throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
       }.bind(this));
     },
-    /**
-     * Given the name of a mapping and an options object describing the mapping, creating a Model
-     * object, install it and return it.
-     * @param  {String} name
-     * @param  {Object} opts
-     * @return {Model}
-     * @class Collection
-     */
+
     _model: function(name, opts) {
       if (name) {
         this._rawModels[name] = opts;
@@ -137,8 +130,14 @@
         var model = new Model(opts);
         this._models[name] = model;
         this[name] = model;
+        if (this.installed) {
+          var error = model.installRelationships();
+          if (!error) error = model.installReverseRelationships();
+          if (error) throw error;
+        }
         return model;
-      } else {
+      }
+      else {
         throw new Error('No name specified when creating mapping');
       }
     },
@@ -176,11 +175,7 @@
           }
         }
       }
-      if (this.installed) {
-        var error = model.installRelationships();
-        if (!error) error = model.installReverseRelationships();
-        if (error) throw error;
-      }
+
       return null;
     },
 
