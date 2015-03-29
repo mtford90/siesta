@@ -1107,41 +1107,6 @@ var query = Repo
   });
 ```
 
-### Track
-
-<span style="color: red; font-size: 14px">**Warning:** Not yet implemented</span>
-
-You can track the indexes of the ordered elements by using the `__track` option.
-
-```js
-var query = Repo
-  .query({
-      stars__gte: 1000,
-      __initial_order: '-stars',
-      __track: 'index'
-  })
-  .on('new', function (e) {
-      // Fired whenever a new repo matching the query is created/modified.
-     var repo = e.instance;
-     assert.hasAttribute('index');
-  });
-```
-
-All repositories will now have their position within that reactive query stored in the index attribute.
-
-Note if `__order` is defined, you cannot manipulate the order manually. Use `__initial_order` instead.
-
-There are several ways to mutate the arrangements of the objects when using `__track`:
-
-```js
-// Swap the objects at indexes `from` and `to` and update the index field.
-query.swapObjectsAtIndexes(from, to);
-// Swap the objects or throw an error if the objects are not within the result set.
-query.swapObjects(obj1, obj2);
-// Move the object at index from index "from" to index "to"
-query.move(from, to);
-```
-
 # Serialisation
 
 `Serialisation` is the process of getting a model ready for conversion into a data transfer format like JSON e.g. eliminating circular references.
