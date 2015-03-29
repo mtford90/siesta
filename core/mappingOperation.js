@@ -107,7 +107,7 @@
      * For indices where no object is present, perform lookups, creating a new object if necessary.
      * @private
      */
-    _lookup: function(cb) {
+    _lookup: function() {
       var self = this;
       var remoteLookups = [];
       var localLookups = [];
@@ -144,85 +144,73 @@
           }
         }
       }
-      util.async.parallel([
-        function(done) {
-          var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
-          var objects = cache.getViaLocalId(localIdentifiers);
-          for (var i = 0; i < localIdentifiers.length; i++) {
-            var obj = objects[i];
-            var localId = localIdentifiers[i];
-            var lookup = localLookups[i];
-            if (!obj) {
-              // If there are multiple mapping operations going on, there may be
-              obj = cache.get({localId: localId});
-              if (!obj) obj = self._instance({localId: localId}, !self.disableevents);
-              self.objects[lookup.index] = obj;
-            } else {
-              self.objects[lookup.index] = obj;
-            }
-          }
-          done();
-        },
-        function(done) {
-          var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
-          var objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
-          for (i = 0; i < objects.length; i++) {
-            var obj = objects[i];
-            var lookup = remoteLookups[i];
-            if (obj) {
-              self.objects[lookup.index] = obj;
-            } else {
-              var data = {};
-              var remoteId = remoteIdentifiers[i];
-              data[self.model.id] = remoteId;
-              var cacheQuery = {
-                model: self.model
-              };
-              cacheQuery[self.model.id] = remoteId;
-              var cached = cache.get(cacheQuery);
-              if (cached) {
-                self.objects[lookup.index] = cached;
-              } else {
-                self.objects[lookup.index] = self._instance();
-                // It's important that we map the remote identifier here to ensure that it ends
-                // up in the cache.
-                self.objects[lookup.index][self.model.id] = remoteId;
-              }
-            }
-          }
-          done();
+
+      var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
+      var objects = cache.getViaLocalId(localIdentifiers);
+      for (i = 0; i < localIdentifiers.length; i++) {
+        var obj = objects[i];
+        var localId = localIdentifiers[i];
+        lookup = localLookups[i];
+        if (!obj) {
+          // If there are multiple mapping operations going on, there may be
+          obj = cache.get({localId: localId});
+          if (!obj) obj = self._instance({localId: localId}, !self.disableevents);
+          self.objects[lookup.index] = obj;
+        } else {
+          self.objects[lookup.index] = obj;
         }
-      ], cb);
+      }
+
+      var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
+      objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
+      for (i = 0; i < objects.length; i++) {
+        obj = objects[i];
+        lookup = remoteLookups[i];
+        if (obj) {
+          self.objects[lookup.index] = obj;
+        } else {
+          var data = {};
+          var remoteId = remoteIdentifiers[i];
+          data[self.model.id] = remoteId;
+          var cacheQuery = {
+            model: self.model
+          };
+          cacheQuery[self.model.id] = remoteId;
+          var cached = cache.get(cacheQuery);
+          if (cached) {
+            self.objects[lookup.index] = cached;
+          } else {
+            self.objects[lookup.index] = self._instance();
+            // It's important that we map the remote identifier here to ensure that it ends
+            // up in the cache.
+            self.objects[lookup.index][self.model.id] = remoteId;
+          }
+        }
+      }
     },
-    _lookupSingleton: function(cb) {
-      return util.promise(cb, function(cb) {
-        var self = this;
-        // Pick a random localId from the array of data being mapped onto the singleton object. Note that they should
-        // always be the same. This is just a precaution.
-        var localIdentifiers = _.pluck(self.data, 'localId'),
-          localId;
-        for (i = 0; i < localIdentifiers.length; i++) {
-          if (localIdentifiers[i]) {
-            localId = {localId: localIdentifiers[i]};
-            break;
-          }
+    _lookupSingleton: function() {
+      // Pick a random localId from the array of data being mapped onto the singleton object. Note that they should
+      // always be the same. This is just a precaution.
+      var localIdentifiers = _.pluck(this.data, 'localId'),
+        localId;
+      for (i = 0; i < localIdentifiers.length; i++) {
+        if (localIdentifiers[i]) {
+          localId = {localId: localIdentifiers[i]};
+          break;
         }
-        // The mapping operation is responsible for creating singleton instances if they do not already exist.
-        var singleton = cache.getSingleton(this.model) || this._instance(localId);
-        for (var i = 0; i < self.data.length; i++) {
-          self.objects[i] = singleton;
-        }
-        cb();
-      }.bind(this));
-    }
-    ,
+      }
+      // The mapping operation is responsible for creating singleton instances if they do not already exist.
+      var singleton = cache.getSingleton(this.model) || this._instance(localId);
+      for (var i = 0; i < this.data.length; i++) {
+        this.objects[i] = singleton;
+      }
+    },
     _instance: function() {
       var model = this.model,
         modelInstance = model._instance.apply(model, arguments);
       this._newObjects.push(modelInstance);
       return modelInstance;
-    }
-    ,
+    },
     preprocessData: function() {
       var data = _.extend([], this.data);
       return _.map(data, function(datum) {
@@ -258,8 +246,8 @@
       if (data.length) {
         var self = this;
         var tasks = [];
-        var lookupFunc = this.model.singleton ? this._lookupSingleton : this._lookup;
-        tasks.push(_.bind(lookupFunc, this));
+        if (this.model.singleton) this._lookupSingleton();
+        else this._lookup();
         tasks.push(_.bind(this._executeSubOperations, this));
         util.async.parallel(tasks, function(err) {
           if (err) console.error(err);
@@ -396,11 +384,6 @@
         callback();
       }
     }
-  })
-  ;
-
+  });
   module.exports = MappingOperation;
-
-
-})
-();
+})();
