@@ -323,7 +323,7 @@ describe('install step', function() {
 
 });
 
-describe('add stuff after install', function() {
+describe.only('add stuff after install', function() {
 
   beforeEach(function(done) {
     siesta.reset(done);

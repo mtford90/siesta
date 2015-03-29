@@ -36,3 +36,5 @@ docs/_site
 # Sublime
 *.sublime-project
 *.sublime-workspace
+
+.idea

@@ -45,10 +45,6 @@
       _rawModels: {},
       _models: {},
       _opts: opts,
-      /**
-       * Set to true if installation has succeeded. You cannot use the collectio
-       * @type {boolean}
-       */
       installed: false
     });
 
@@ -67,6 +63,7 @@
     });
 
     CollectionRegistry.register(this);
+    this._makeAvailableOnRoot();
     events.ProxyEventEmitter.call(this, this.name);
   }
 
