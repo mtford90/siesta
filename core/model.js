@@ -9,7 +9,6 @@
     ModelInstance = require('./ModelInstance'),
     util = require('./util'),
     cache = require('./cache'),
-    store = require('./store'),
     argsarray = require('argsarray'),
     error = require('./error'),
     extend = require('extend'),

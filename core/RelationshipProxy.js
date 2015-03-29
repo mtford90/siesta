@@ -5,7 +5,6 @@
 (function() {
 
   var InternalSiestaError = require('./error').InternalSiestaError,
-    Store = require('./store'),
     util = require('./util'),
     _ = util._,
     Query = require('./Query'),

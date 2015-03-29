@@ -1,6 +1,5 @@
 (function() {
-  var Store = require('./store'),
-    ModelInstance = require('./ModelInstance'),
+  var ModelInstance = require('./ModelInstance'),
     log = require('./log')('graph'),
     cache = require('./cache'),
     util = require('./util'),
@@ -157,8 +156,7 @@
               if (!obj) {
                 // If there are multiple mapping operations going on, there may be
                 obj = cache.get({localId: localId});
-                if (!obj)
-                  obj = self._instance({localId: localId}, !self.disableevents);
+                if (!obj) obj = self._instance({localId: localId}, !self.disableevents);
                 self.objects[lookup.index] = obj;
               } else {
                 self.objects[lookup.index] = obj;
