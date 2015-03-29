@@ -580,61 +580,6 @@ describe('Subclass', function() {
     });
   });
 
-  describe('store', function() {
-    var Collection, Car, SportsCar;
-
-    it('parent store inherited by child', function() {
-      Collection = siesta.collection('myCollection');
-      Car = Collection.model('Car', {
-        attributes: ['x'],
-        store: function(instance) {
-          return false;
-        }
-      });
-      SportsCar = Car.child('SportsCar', {
-        attributes: ['y']
-      });
-
-      assert.equal(SportsCar.store, Car.store);
-    });
-
-    it('parent store overriden by child', function() {
-      Collection = siesta.collection('myCollection');
-      Car = Collection.model('Car', {
-        attributes: ['x'],
-        store: function(instance) {
-          return false;
-        }
-      });
-      var sportsCarStore = function(instance) {
-        return false;
-      };
-      SportsCar = Car.child('SportsCar', {
-        attributes: ['y'],
-        store: sportsCarStore
-      });
-      assert.equal(SportsCar.store, sportsCarStore);
-    });
-
-    it('parent store overriden by child being false', function() {
-      Collection = siesta.collection('myCollection');
-      Car = Collection.model('Car', {
-        attributes: ['x'],
-        store: function(instance) {
-          return true;
-        }
-      });
-      var sportsCarStore = function(instance) {
-        return false;
-      };
-      SportsCar = Car.child('SportsCar', {
-        attributes: ['y'],
-        store: false
-      });
-      assert.ok(SportsCar.store() === false);
-    });
-  });
-
   describe('serialiseField', function() {
     var Collection, Car, SportsCar;
 

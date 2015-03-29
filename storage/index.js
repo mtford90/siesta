@@ -140,16 +140,10 @@
       serialised = _.reduce(modelInstance._relationshipNames, function(memo, n) {
         var val = modelInstance[n];
         if (siesta.isArray(val)) {
-          // If the related is not stored then it wouldn't make sense to create a relation in storage.
-          val = val.filter(function(instance) {
-            return instance.model.store(instance);
-          });
           memo[n] = _.pluck(val, 'localId');
         }
         else if (val) {
-          // If the related is not stored then it wouldn't make sense to create a relation in storage.
-          var store = val.model.store(val);
-          if (store) memo[n] = val.localId;
+          memo[n] = val.localId;
         }
         return memo;
       }, serialised);
@@ -344,10 +338,6 @@
           unsavedObjects = [];
           unsavedObjectsHash = {};
           unsavedObjectsByCollection = {};
-          instances = instances.filter(function(instance) {
-            return instance.model.store(instance);
-          });
-          log('Saving instances', instances);
           saveToPouch(instances, cb);
         });
       }.bind(this));

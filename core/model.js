@@ -50,36 +50,19 @@
       serialiseField: null,
       serialisableFields: null,
       remove: null,
-      parseAttribute: null,
-      store: null
+      parseAttribute: null
     }, false);
 
     if (!this.parseAttribute) {
       this.parseAttribute = function(attrName, value) {
         return value;
       }
-    }
+    }+
 
     if (!this.serialiseField) {
       this.serialiseField = function(attrName, value) {
         return value;
       };
-    }
-
-    if (this.store === undefined || this.store === null) {
-      this.store = function() {
-        return true;
-      }
-    }
-    else if (this.store === false) {
-      this.store = function() {
-        return false;
-      }
-    }
-    else if (this.store === true) {
-      this.store = function() {
-        return true;
-      }
     }
 
     this.attributes = Model._processAttributes(this.attributes);
@@ -515,8 +498,7 @@
         remove: opts.remove || this._opts.remove,
         serialise: opts.serialise || this._opts.serialise,
         serialiseField: opts.serialiseField || this._opts.serialiseField,
-        parseAttribute: opts.parseAttribute || this._opts.parseAttribute,
-        store: opts.store == undefined ? this._opts.store : opts.store
+        parseAttribute: opts.parseAttribute || this._opts.parseAttribute
       });
 
       if (this._opts.serialisableFields) {
