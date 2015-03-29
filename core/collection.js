@@ -38,13 +38,7 @@
     if (!name) throw new Error('Collection must have a name');
 
     opts = opts || {};
-    util.extendFromOpts(this, opts, {
-      /**
-       * The URL of the API e.g. http://api.github.com
-       * @type {string}
-       */
-      baseURL: ''
-    });
+    util.extendFromOpts(this, opts, {});
 
     _.extend(this, {
       name: name,
@@ -219,7 +213,6 @@
       obj.installed = this.installed;
       obj.docId = this._docId;
       obj.name = this.name;
-      obj.baseURL = this.baseURL;
       return asJson ? util.prettyPrint(obj) : obj;
     },
 

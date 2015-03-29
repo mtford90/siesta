@@ -4,6 +4,7 @@
 
 var assert = require('chai').assert,
   internal = siesta._internal,
+  CollectionRegistry = internal.CollectionRegistry,
   RelationshipType = siesta.RelationshipType;
 
 describe('install step', function() {
@@ -337,6 +338,8 @@ describe('add stuff after install', function() {
       .install()
       .then(function() {
         var AnotherCollection = siesta.collection('AnotherCollection');
+        assert.equal(siesta.AnotherCollection, AnotherCollection);
+        assert.equal(CollectionRegistry.AnotherCollection, AnotherCollection);
         done();
       }).catch(done);
   });
