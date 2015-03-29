@@ -238,13 +238,10 @@
      */
     installRelationships: function() {
       if (!this._relationshipsInstalled) {
-        var self = this,
-          err = null;
-        self._relationships = [];
-
-        for (var name in self._opts.relationships) {
-          if (self._opts.relationships.hasOwnProperty(name)) {
-            var relationship = self._opts.relationships[name];
+        var err = null;
+        for (var name in this._opts.relationships) {
+          if (this._opts.relationships.hasOwnProperty(name)) {
+            var relationship = this._opts.relationships[name];
             // If a reverse relationship is installed beforehand, we do not want to process them.
             var isForward = !relationship.isReverse;
             if (isForward) {
