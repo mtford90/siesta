@@ -259,25 +259,6 @@ describe('install step', function() {
     });
 
     describe('invalid', function() {
-      it('No such mapping', function(done) {
-        var collection = siesta.collection('myCollection');
-        collection.model('Car', {
-          id: 'id',
-          attributes: ['colour', 'name'],
-          relationships: {
-            owner: {
-              model: 'asd',
-              type: RelationshipType.OneToMany,
-              reverse: 'cars'
-            }
-          }
-        });
-        siesta.install(function(err) {
-          assert.ok(err);
-          done();
-        });
-      });
-
       it('No such relationship type', function(done) {
         var collection = siesta.collection('myCollection');
         collection.model('Car', {
@@ -304,11 +285,7 @@ describe('install step', function() {
 
       });
     });
-
-
   });
-
-
 });
 
 describe('add stuff after install', function() {
@@ -332,19 +309,35 @@ describe('add stuff after install', function() {
       }).catch(done);
   });
 
-  it('add simple model', function(done) {
-    var MyCollection = siesta.collection('MyCollection'),
-      Person = MyCollection.model('Person', {
-        id: 'id',
-        attributes: ['name', 'age', 'index']
-      });
-    siesta
-      .install()
-      .then(function() {
-        var Car = MyCollection.model('Car', {
-          attributes: ['type']
-        });
-        done();
-      }).catch(done);
+  describe('add simple model', function() {
+    var MyCollection, Car;
+    beforeEach(function(done) {
+      MyCollection = siesta.collection('MyCollection');
+      siesta
+        .install()
+        .then(function() {
+          Car = MyCollection.model('Car', {
+            attributes: ['type']
+          });
+          done();
+        })
+        .catch(done);
+    });
+
+    it('is available on the collection', function() {
+      assert.equal(MyCollection.Car, Car);
+    });
+
+    //it('graph works', function(done) {
+    //  Car.graph({type: 'red'})
+    //    .then(function(car) {
+    //      assert.ok(car);
+    //      done();
+    //    })
+    //    .catch(done);
+    //});
+
   });
+
+
 });

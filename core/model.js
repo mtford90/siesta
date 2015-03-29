@@ -17,6 +17,7 @@
     events = require('./events'),
     OneToOneProxy = require('./OneToOneProxy'),
     ManyToManyProxy = require('./ManyToManyProxy'),
+    Placeholder = require('./Placeholder'),
     ReactiveQuery = require('./ReactiveQuery'),
     instanceFactory = require('./instanceFactory'),
     ArrangedReactiveQuery = require('./ArrangedReactiveQuery'),
@@ -88,7 +89,6 @@
     this._instance = new instanceFactory(this);
 
     _.extend(this, {
-      _installed: false,
       _relationshipsInstalled: false,
       _reverseRelationshipsInstalled: false,
       children: []
@@ -117,7 +117,7 @@
       },
       installed: {
         get: function() {
-          return self._installed && self._relationshipsInstalled && self._reverseRelationshipsInstalled;
+          return self._relationshipsInstalled && self._reverseRelationshipsInstalled;
         },
         enumerable: true,
         configurable: true
@@ -221,46 +221,51 @@
             if (self._opts.relationships.hasOwnProperty(name)) {
               var relationship = self._opts.relationships[name];
               // If a reverse relationship is installed beforehand, we do not want to process them.
-              if (!relationship.isReverse) {
+              var isForward = !relationship.isReverse;
+              if (isForward) {
                 log(this.name + ': configuring relationship ' + name, relationship);
                 if (!(err = this._validateRelationshipType(relationship))) {
-                  var modelName = relationship.model;
-                  if (modelName) {
+                  var reverseModelName = relationship.model;
+                  if (reverseModelName) {
                     delete relationship.model;
                     var reverseModel;
-                    if (modelName instanceof Model) {
-                      reverseModel = modelName;
+                    if (reverseModelName instanceof Model) {
+                      reverseModel = reverseModelName;
                     }
                     else {
-                      log('reverseModelName', modelName);
+                      log('reverseModelName', reverseModelName);
                       if (!self.collection) throw new InternalSiestaError('Model must have collection');
                       var collection = self.collection;
-                      if (!collection)    throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
-                      reverseModel = collection[modelName];
+                      if (!collection) throw new InternalSiestaError('Collection ' + self.collectionName + ' not registered');
+                      reverseModel = collection[reverseModelName];
                     }
                     if (!reverseModel) {
-                      var arr = modelName.split('.');
+                      var arr = reverseModelName.split('.');
                       if (arr.length == 2) {
                         var collectionName = arr[0];
-                        modelName = arr[1];
+                        reverseModelName = arr[1];
                         var otherCollection = CollectionRegistry[collectionName];
                         if (!otherCollection) return 'Collection with name "' + collectionName + '" does not exist.';
-                        reverseModel = otherCollection[modelName];
+                        reverseModel = otherCollection[reverseModelName];
                       }
                     }
+                    if (!reverseModel) {
+                      reverseModel = new Placeholder({name: reverseModelName});
+                    }
                     log('reverseModel', reverseModel);
-                    if (reverseModel) {
-                      _.extend(relationship, {
-                        reverseModel: reverseModel,
-                        forwardModel: this,
-                        forwardName: name,
-                        reverseName: relationship.reverse || 'reverse_' + name,
-                        isReverse: false
-                      });
-                      delete relationship.reverse;
-                    } else return 'Model with name "' + modelName.toString() + '" does not exist';
+                    _.extend(relationship, {
+                      reverseModel: reverseModel,
+                      forwardModel: this,
+                      forwardName: name,
+                      reverseName: relationship.reverse || 'reverse_' + name,
+                      isReverse: false
+                    });
+                    delete relationship.reverse;
+
                   }
-                  else return 'Must pass model';
+                  else {
+                    return 'Must pass model';
+                  }
                 }
               }
             }
