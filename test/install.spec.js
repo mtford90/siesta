@@ -267,7 +267,6 @@ describe('install step', function() {
           relationships: {
             owner: {
               model: 'Person',
-
               type: 'invalidtype',
               reverse: 'cars'
             }

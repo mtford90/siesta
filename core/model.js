@@ -214,14 +214,9 @@
      */
     _getReverseModel: function(name) {
       var reverseModel;
-      if (name instanceof Model) {
-        reverseModel = name;
-      }
-      else {
-        var collection = this.collection;
-        reverseModel = collection[name];
-      }
-      if (!reverseModel) {
+      if (name instanceof Model) reverseModel = name;
+      else reverseModel = this.collection[name];
+      if (!reverseModel) { // May have used Collection.Model format.
         var arr = name.split('.');
         if (arr.length == 2) {
           var collectionName = arr[0];
@@ -232,7 +227,8 @@
         }
       }
       return reverseModel || new Placeholder({name: name});
-    }, /**
+    },
+    /**
      * Install relationships. Returns error in form of string if fails.
      * @return {String|null}
      */
@@ -261,16 +257,12 @@
                   delete relationship.model;
                   delete relationship.reverse;
                 }
-                else {
-                  return 'Must pass model';
-                }
+                else return 'Must pass model';
               }
             }
           }
         }
-      } else {
-        throw new InternalSiestaError('Relationships for "' + this.name + '" have already been installed');
-      }
+      } else throw new InternalSiestaError('Relationships for "' + this.name + '" have already been installed');
       if (!err) this._relationshipsInstalled = true;
       return err;
     },

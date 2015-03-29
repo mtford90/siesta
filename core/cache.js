@@ -72,28 +72,14 @@
   /**
    * Given a remote identifier and an options object that describes mapping/collection,
    * return the model if cached.
-   * @param  {String} remoteId
+   * @param  {String|Array} remoteId
    * @param  {Object} opts
+   * @param  {Object} opts.model
    * @return {ModelInstance}
    */
   function getViaRemoteId(remoteId, opts) {
-    var type = opts.model.name;
-    var collectionName = opts.model.collectionName;
-    var collectionCache = remoteCache[collectionName];
-    if (collectionCache) {
-      var typeCache = remoteCache[collectionName][type];
-      if (typeCache) {
-        var obj = typeCache[remoteId];
-        if (obj) {
-          log('Remote cache hit: ' + obj._dump(true));
-        } else {
-          log('Remote cache miss: ' + remoteId);
-        }
-        return obj;
-      }
-    }
-    log('Remote cache miss: ' + remoteId);
-    return null;
+    var cache = (remoteCache[opts.model.collectionName] || {})[opts.model.name] || {};
+    return util.isArray(remoteId) ? _.map(remoteId, function(x) {return cache[x]}) : cache[remoteId];
   }
 
   /**
@@ -186,8 +172,8 @@
       }
     }
     return asJson ? util.prettyPrint((dumpedRestCache, null, 4
-  )) :
-    dumpedRestCache;
+    )) :
+      dumpedRestCache;
   }
 
   /**
@@ -203,8 +189,8 @@
       }
     }
     return asJson ? util.prettyPrint((dumpedIdCache, null, 4
-  )) :
-    dumpedIdCache;
+    )) :
+      dumpedIdCache;
   }
 
   /**
@@ -218,8 +204,8 @@
       remoteCache: remoteDump()
     };
     return asJson ? util.prettyPrint((dumped, null, 4
-  )) :
-    dumped;
+    )) :
+      dumped;
   }
 
   function _remoteCache() {
@@ -369,6 +355,7 @@
   exports.contains = contains;
   exports.remove = remove;
   exports.getSingleton = getSingleton;
+  exports.getViaRemoteId = getViaRemoteId;
   exports.count = function() {
     return Object.keys(localCacheById).length;
   }

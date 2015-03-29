@@ -176,41 +176,39 @@
             function(done) {
               var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
               if (remoteIdentifiers.length) {
-                Store.getMultipleRemote(remoteIdentifiers, self.model, function(err, objects) {
-                  if (!err) {
-                    if (log.enabled) {
-                      var results = {};
-                      for (i = 0; i < objects.length; i++) {
-                        results[remoteIdentifiers[i]] = objects[i] ? objects[i].localId : null;
-                      }
-                    }
-                    for (i = 0; i < objects.length; i++) {
-                      var obj = objects[i];
-                      var lookup = remoteLookups[i];
-                      if (obj) {
-                        self.objects[lookup.index] = obj;
-                      } else {
-                        var data = {};
-                        var remoteId = remoteIdentifiers[i];
-                        data[self.model.id] = remoteId;
-                        var cacheQuery = {
-                          model: self.model
-                        };
-                        cacheQuery[self.model.id] = remoteId;
-                        var cached = cache.get(cacheQuery);
-                        if (cached) {
-                          self.objects[lookup.index] = cached;
-                        } else {
-                          self.objects[lookup.index] = self._instance();
-                          // It's important that we map the remote identifier here to ensure that it ends
-                          // up in the cache.
-                          self.objects[lookup.index][self.model.id] = remoteId;
-                        }
-                      }
+                var objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
+                console.log('howdy', objects);
+                if (log.enabled) {
+                  var results = {};
+                  for (i = 0; i < objects.length; i++) {
+                    results[remoteIdentifiers[i]] = objects[i] ? objects[i].localId : null;
+                  }
+                }
+                for (i = 0; i < objects.length; i++) {
+                  var obj = objects[i];
+                  var lookup = remoteLookups[i];
+                  if (obj) {
+                    self.objects[lookup.index] = obj;
+                  } else {
+                    var data = {};
+                    var remoteId = remoteIdentifiers[i];
+                    data[self.model.id] = remoteId;
+                    var cacheQuery = {
+                      model: self.model
+                    };
+                    cacheQuery[self.model.id] = remoteId;
+                    var cached = cache.get(cacheQuery);
+                    if (cached) {
+                      self.objects[lookup.index] = cached;
+                    } else {
+                      self.objects[lookup.index] = self._instance();
+                      // It's important that we map the remote identifier here to ensure that it ends
+                      // up in the cache.
+                      self.objects[lookup.index][self.model.id] = remoteId;
                     }
                   }
-                  done(err);
-                });
+                }
+                done();
               } else {
                 done();
               }
