@@ -147,74 +147,55 @@
           }
         }
         util.async.parallel([
-            function(done) {
-              var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
-              if (localIdentifiers.length) {
-                Store.getMultipleLocal(localIdentifiers, function(err, objects) {
-                  if (!err) {
-                    for (var i = 0; i < localIdentifiers.length; i++) {
-                      var obj = objects[i];
-                      var localId = localIdentifiers[i];
-                      var lookup = localLookups[i];
-                      if (!obj) {
-                        // If there are multiple mapping operations going on, there may be
-                        obj = cache.get({localId: localId});
-                        if (!obj)
-                          obj = self._instance({localId: localId}, !self.disableevents);
-                        self.objects[lookup.index] = obj;
-                      } else {
-                        self.objects[lookup.index] = obj;
-                      }
-                    }
-                  }
-                  done(err);
-                });
+          function(done) {
+            var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
+            var objects = cache.getViaLocalId(localIdentifiers);
+            for (var i = 0; i < localIdentifiers.length; i++) {
+              var obj = objects[i];
+              var localId = localIdentifiers[i];
+              var lookup = localLookups[i];
+              if (!obj) {
+                // If there are multiple mapping operations going on, there may be
+                obj = cache.get({localId: localId});
+                if (!obj)
+                  obj = self._instance({localId: localId}, !self.disableevents);
+                self.objects[lookup.index] = obj;
               } else {
-                done();
-              }
-            },
-            function(done) {
-              var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
-              if (remoteIdentifiers.length) {
-                var objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
-                console.log('howdy', objects);
-                if (log.enabled) {
-                  var results = {};
-                  for (i = 0; i < objects.length; i++) {
-                    results[remoteIdentifiers[i]] = objects[i] ? objects[i].localId : null;
-                  }
-                }
-                for (i = 0; i < objects.length; i++) {
-                  var obj = objects[i];
-                  var lookup = remoteLookups[i];
-                  if (obj) {
-                    self.objects[lookup.index] = obj;
-                  } else {
-                    var data = {};
-                    var remoteId = remoteIdentifiers[i];
-                    data[self.model.id] = remoteId;
-                    var cacheQuery = {
-                      model: self.model
-                    };
-                    cacheQuery[self.model.id] = remoteId;
-                    var cached = cache.get(cacheQuery);
-                    if (cached) {
-                      self.objects[lookup.index] = cached;
-                    } else {
-                      self.objects[lookup.index] = self._instance();
-                      // It's important that we map the remote identifier here to ensure that it ends
-                      // up in the cache.
-                      self.objects[lookup.index][self.model.id] = remoteId;
-                    }
-                  }
-                }
-                done();
-              } else {
-                done();
+                self.objects[lookup.index] = obj;
               }
             }
-          ],
-          cb);
+            done();
+          },
+          function(done) {
+            var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
+            var objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
+            for (i = 0; i < objects.length; i++) {
+              var obj = objects[i];
+              var lookup = remoteLookups[i];
+              if (obj) {
+                self.objects[lookup.index] = obj;
+              } else {
+                var data = {};
+                var remoteId = remoteIdentifiers[i];
+                data[self.model.id] = remoteId;
+                var cacheQuery = {
+                  model: self.model
+                };
+                cacheQuery[self.model.id] = remoteId;
+                var cached = cache.get(cacheQuery);
+                if (cached) {
+                  self.objects[lookup.index] = cached;
+                } else {
+                  self.objects[lookup.index] = self._instance();
+                  // It's important that we map the remote identifier here to ensure that it ends
+                  // up in the cache.
+                  self.objects[lookup.index][self.model.id] = remoteId;
+                }
+              }
+            }
+            done();
+          }
+        ], cb);
       }.bind(this));
     },
     _lookupSingleton: function(cb) {
@@ -237,13 +218,15 @@
         }
         cb();
       }.bind(this));
-    },
+    }
+    ,
     _instance: function() {
       var model = this.model,
         modelInstance = model._instance.apply(model, arguments);
       this._newObjects.push(modelInstance);
       return modelInstance;
-    },
+    }
+    ,
     preprocessData: function() {
       var data = _.extend([], this.data);
       return _.map(data, function(datum) {
@@ -272,7 +255,8 @@
         }
         return datum;
       }.bind(this));
-    },
+    }
+    ,
     start: function(done) {
       var data = this.data;
       if (data.length) {
@@ -325,7 +309,8 @@
       } else {
         done(null, []);
       }
-    },
+    }
+    ,
     getRelatedData: function(name) {
       var indexes = [];
       var relatedData = [];
@@ -343,7 +328,8 @@
         indexes: indexes,
         relatedData: relatedData
       };
-    },
+    }
+    ,
     processErrorsFromTask: function(relationshipName, errors, indexes) {
       if (errors.length) {
         var relatedData = this.getRelatedData(relationshipName).relatedData;
@@ -361,7 +347,8 @@
           }
         }
       }
-    },
+    }
+    ,
     _executeSubOperations: function(callback) {
       var self = this,
         relationshipNames = _.keys(this.model.relationships);
@@ -413,9 +400,11 @@
         callback();
       }
     }
-  });
+  })
+  ;
 
   module.exports = MappingOperation;
 
 
-})();
+})
+();

@@ -8,7 +8,6 @@
     _ = util._,
     guid = util.guid,
     cache = require('./cache'),
-    store = require('./store'),
     extend = require('extend'),
     modelEvents = require('./modelEvents'),
     wrapArray = require('./events').wrapArray,

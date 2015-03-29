@@ -25,17 +25,12 @@
 
   /**
    * Return the object in the cache given a local id (_id)
-   * @param  {String} localId
+   * @param  {String|Array} localId
    * @return {ModelInstance}
    */
   function getViaLocalId(localId) {
-    var obj = localCacheById[localId];
-    if (obj) {
-      log('Local cache hit: ' + obj._dump(true));
-    } else {
-      log('Local cache miss: ' + localId);
-    }
-    return obj;
+    if (util.isArray(localId)) return _.map(localId, function (x) {return localCacheById[x]});
+    else return localCacheById[localId];
   }
 
   /**
@@ -107,7 +102,6 @@
           if (!cachedObject) {
             remoteCache[collectionName][type][remoteId] = obj;
             log('Remote cache insert: ' + obj._dump(true));
-            log('Remote cache now looks like: ' + remoteDump(true))
           } else {
             // Something has gone really wrong. Only one object for a particular collection/type/remoteid combo
             // should ever exist.
@@ -143,70 +137,6 @@
     }
   }
 
-  /**
-   * Dump the remote id cache
-   * @param  {boolean} asJson Whether or not to apply JSON.stringify
-   * @return {String|Object}
-   */
-  function remoteDump(asJson) {
-    var dumpedRestCache = {};
-    for (var coll in remoteCache) {
-      if (remoteCache.hasOwnProperty(coll)) {
-        var dumpedCollCache = {};
-        dumpedRestCache[coll] = dumpedCollCache;
-        var collCache = remoteCache[coll];
-        for (var model in collCache) {
-          if (collCache.hasOwnProperty(model)) {
-            var dumpedModelCache = {};
-            dumpedCollCache[model] = dumpedModelCache;
-            var modelCache = collCache[model];
-            for (var remoteId in modelCache) {
-              if (modelCache.hasOwnProperty(remoteId)) {
-                if (modelCache[remoteId]) {
-                  dumpedModelCache[remoteId] = modelCache[remoteId]._dump();
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return asJson ? util.prettyPrint((dumpedRestCache, null, 4
-    )) :
-      dumpedRestCache;
-  }
-
-  /**
-   * Dump the local id (_id) cache
-   * @param  {boolean} asJson Whether or not to apply JSON.stringify
-   * @return {String|Object}
-   */
-  function localDump(asJson) {
-    var dumpedIdCache = {};
-    for (var id in localCacheById) {
-      if (localCacheById.hasOwnProperty(id)) {
-        dumpedIdCache[id] = localCacheById[id]._dump()
-      }
-    }
-    return asJson ? util.prettyPrint((dumpedIdCache, null, 4
-    )) :
-      dumpedIdCache;
-  }
-
-  /**
-   * Dump to the cache.
-   * @param  {boolean} asJson Whether or not to apply JSON.stringify
-   * @return {String|Object}
-   */
-  function dump(asJson) {
-    var dumped = {
-      localCache: localDump(),
-      remoteCache: remoteDump()
-    };
-    return asJson ? util.prettyPrint((dumped, null, 4
-    )) :
-      dumped;
-  }
 
   function _remoteCache() {
     return remoteCache
@@ -270,10 +200,8 @@
     if (localId) {
       var collectionName = obj.model.collectionName;
       var modelName = obj.model.name;
-      log('Local cache insert: ' + obj._dumpString());
       if (!localCacheById[localId]) {
         localCacheById[localId] = obj;
-        log('Local cache now looks like: ' + localDump(true));
         if (!localCache[collectionName]) localCache[collectionName] = {};
         if (!localCache[collectionName][modelName]) localCache[collectionName][modelName] = {};
         localCache[collectionName][modelName][localId] = obj;
@@ -351,10 +279,10 @@
   exports.insert = insert;
   exports.remoteInsert = remoteInsert;
   exports.reset = reset;
-  exports._dump = dump;
   exports.contains = contains;
   exports.remove = remove;
   exports.getSingleton = getSingleton;
+  exports.getViaLocalId = getViaLocalId;
   exports.getViaRemoteId = getViaRemoteId;
   exports.count = function() {
     return Object.keys(localCacheById).length;

@@ -135,48 +135,11 @@
     }.bind(this));
   }
 
-  /**
-   * Uses pouch bulk fetch API. Much faster than getMultiple.
-   * @param localIdentifiers
-   * @param cb
-   */
-  function getMultipleLocal(localIdentifiers, cb) {
-    return util.promise(cb, function (cb) {
-      var results = _.reduce(localIdentifiers, function (memo, localId) {
-        var obj = cache.get({
-          localId: localId
-        });
-        if (obj) {
-          memo.cached[localId] = obj;
-        } else {
-          memo.notCached.push(localId);
-        }
-        return memo;
-      }, {
-        cached: {},
-        notCached: []
-      });
 
-      function finish(err) {
-        if (cb) {
-          if (err) {
-            cb(err);
-          } else {
-            cb(null, _.map(localIdentifiers, function (localId) {
-              return results.cached[localId];
-            }));
-          }
-        }
-      }
-
-      finish();
-    }.bind(this));
-  }
 
   module.exports = {
     get: get,
-    getMultiple: getMultiple,
-    getMultipleLocal: getMultipleLocal
+    getMultiple: getMultiple
   };
 
 })();
