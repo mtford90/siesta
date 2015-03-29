@@ -120,23 +120,6 @@ describe('install step', function() {
       }).catch(done);
     });
 
-    it('arranged reactive query', function(done) {
-      siesta.ext.storage._pouch.bulkDocs([
-        {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
-        {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
-      ]).then(function() {
-        var rq = Person._arrangedReactiveQuery({age__gt: 23});
-        rq.init()
-          .then(function() {
-            assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
-            rq.terminate();
-            done();
-          })
-          .catch(done);
-      }).catch(done);
-    });
-
-
   });
 
   describe('install relationships', function() {

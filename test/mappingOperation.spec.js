@@ -336,13 +336,11 @@ describe('mapping operation', function() {
             });
           });
 
-          it('lookup', function(done) {
-            op._lookup(function() {
-              assert.equal(op.objects.length, 2);
-              assert.notOk(op.objects[0].login);
-              assert.notOk(op.objects[1].login);
-              done();
-            });
+          it('lookup', function() {
+            op._lookup();
+            assert.equal(op.objects.length, 2);
+            assert.notOk(op.objects[0].login);
+            assert.notOk(op.objects[1].login);
           });
 
           it('completion', function(done) {
@@ -411,14 +409,10 @@ describe('mapping operation', function() {
         });
       });
 
-      it('lookupSingleton', function(done) {
-        op._lookupSingleton(function(err) {
-          if (!err) {
-            assert.equal(op.objects.length, 2);
-            assert.equal(op.objects[0], op.objects[1]);
-          }
-          done(err);
-        });
+      it('lookupSingleton', function() {
+        op._lookupSingleton();
+        assert.equal(op.objects.length, 2);
+        assert.equal(op.objects[0], op.objects[1]);
       });
 
       it('map', function(done) {
@@ -455,15 +449,11 @@ describe('mapping operation', function() {
         }).catch(done);
       });
 
-      it('lookupSingleton', function(done) {
-        op._lookupSingleton(function(err) {
-          if (!err) {
-            assert.equal(op.objects.length, 2);
-            assert.equal(op.objects[0], obj);
-            assert.equal(op.objects[0], op.objects[1]);
-          }
-          done(err);
-        });
+      it('lookupSingleton', function() {
+        op._lookupSingleton();
+        assert.equal(op.objects.length, 2);
+        assert.equal(op.objects[0], obj);
+        assert.equal(op.objects[0], op.objects[1]);
       });
 
       it('map', function(done) {

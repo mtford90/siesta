@@ -104,11 +104,11 @@
       });
     },
     /**
-     * For indices where no object is present, perform lookups, creating a new object if necessary.
+     * Figure out which data items require a cache lookup.
+     * @returns {{remoteLookups: Array, localLookups: Array}}
      * @private
      */
-    _lookup: function() {
-      var self = this;
+    _sortLookups: function() {
       var remoteLookups = [];
       var localLookups = [];
       for (var i = 0; i < this.data.length; i++) {
@@ -122,7 +122,7 @@
                 index: i,
                 datum: {}
               };
-              lookup.datum[self.model.id] = datum;
+              lookup.datum[this.model.id] = datum;
               remoteLookups.push(lookup);
             } else if (datum instanceof ModelInstance) { // We won't need to perform any mapping.
               this.objects[i] = datum;
@@ -131,68 +131,87 @@
                 index: i,
                 datum: datum
               });
-            } else if (datum[self.model.id]) {
+            } else if (datum[this.model.id]) {
               remoteLookups.push({
                 index: i,
                 datum: datum
               });
             } else {
-              this.objects[i] = self._instance();
+              this.objects[i] = this._instance();
             }
           } else {
             this.objects[i] = null;
           }
         }
       }
-
-      var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId');
-      var objects = cache.getViaLocalId(localIdentifiers);
-      for (i = 0; i < localIdentifiers.length; i++) {
-        var obj = objects[i];
+      return {remoteLookups: remoteLookups, localLookups: localLookups};
+    },
+    _performLocalLookups: function(localLookups) {
+      var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId'),
+        localObjects = cache.getViaLocalId(localIdentifiers);
+      for (var i = 0; i < localIdentifiers.length; i++) {
+        var obj = localObjects[i];
         var localId = localIdentifiers[i];
-        lookup = localLookups[i];
+        var lookup = localLookups[i];
         if (!obj) {
           // If there are multiple mapping operations going on, there may be
           obj = cache.get({localId: localId});
-          if (!obj) obj = self._instance({localId: localId}, !self.disableevents);
-          self.objects[lookup.index] = obj;
+          if (!obj) obj = this._instance({localId: localId}, !this.disableevents);
+          this.objects[lookup.index] = obj;
         } else {
-          self.objects[lookup.index] = obj;
+          this.objects[lookup.index] = obj;
         }
       }
 
-      var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), self.model.id);
-      objects = cache.getViaRemoteId(remoteIdentifiers, {model: self.model});
-      for (i = 0; i < objects.length; i++) {
-        obj = objects[i];
-        lookup = remoteLookups[i];
+    },
+    _performRemoteLookups: function(remoteLookups) {
+      var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), this.model.id),
+        remoteObjects = cache.getViaRemoteId(remoteIdentifiers, {model: this.model});
+      for (var i = 0; i < remoteObjects.length; i++) {
+        var obj = remoteObjects[i],
+          lookup = remoteLookups[i];
         if (obj) {
-          self.objects[lookup.index] = obj;
+          this.objects[lookup.index] = obj;
         } else {
           var data = {};
           var remoteId = remoteIdentifiers[i];
-          data[self.model.id] = remoteId;
+          data[this.model.id] = remoteId;
           var cacheQuery = {
-            model: self.model
+            model: this.model
           };
-          cacheQuery[self.model.id] = remoteId;
+          cacheQuery[this.model.id] = remoteId;
           var cached = cache.get(cacheQuery);
           if (cached) {
-            self.objects[lookup.index] = cached;
+            this.objects[lookup.index] = cached;
           } else {
-            self.objects[lookup.index] = self._instance();
+            this.objects[lookup.index] = this._instance();
             // It's important that we map the remote identifier here to ensure that it ends
             // up in the cache.
-            self.objects[lookup.index][self.model.id] = remoteId;
+            this.objects[lookup.index][this.model.id] = remoteId;
           }
         }
+      }
+    },
+    /**
+     * For indices where no object is present, perform cache lookups, creating a new object if necessary.
+     * @private
+     */
+    _lookup: function() {
+      if (this.model.singleton) {
+        this._lookupSingleton();
+      }
+      else {
+        var lookups = this._sortLookups(),
+          remoteLookups = lookups.remoteLookups,
+          localLookups = lookups.localLookups;
+        this._performLocalLookups(localLookups);
+        this._performRemoteLookups(remoteLookups);
       }
     },
     _lookupSingleton: function() {
       // Pick a random localId from the array of data being mapped onto the singleton object. Note that they should
       // always be the same. This is just a precaution.
-      var localIdentifiers = _.pluck(this.data, 'localId'),
-        localId;
+      var localIdentifiers = _.pluck(this.data, 'localId'), localId;
       for (i = 0; i < localIdentifiers.length; i++) {
         if (localIdentifiers[i]) {
           localId = {localId: localIdentifiers[i]};
@@ -211,6 +230,7 @@
       this._newObjects.push(modelInstance);
       return modelInstance;
     },
+
     preprocessData: function() {
       var data = _.extend([], this.data);
       return _.map(data, function(datum) {
@@ -246,8 +266,7 @@
       if (data.length) {
         var self = this;
         var tasks = [];
-        if (this.model.singleton) this._lookupSingleton();
-        else this._lookup();
+        this._lookup();
         tasks.push(_.bind(this._executeSubOperations, this));
         util.async.parallel(tasks, function(err) {
           if (err) console.error(err);
@@ -384,6 +403,10 @@
         callback();
       }
     }
-  });
+  })
+  ;
+
   module.exports = MappingOperation;
+
+
 })();
