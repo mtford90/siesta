@@ -57,7 +57,7 @@
       this.parseAttribute = function(attrName, value) {
         return value;
       }
-    }+
+    }
 
     if (!this.serialiseField) {
       this.serialiseField = function(attrName, value) {
