@@ -173,46 +173,10 @@
     }.bind(this));
   }
 
-  function getMultipleRemote(remoteIdentifiers, model, cb) {
-    return util.promise(cb, function (cb) {
-      var results = _.reduce(remoteIdentifiers, function (memo, id) {
-        var cacheQuery = {
-          model: model
-        };
-        cacheQuery[model.id] = id;
-        var obj = cache.get(cacheQuery);
-        if (obj) {
-          memo.cached[id] = obj;
-        } else {
-          memo.notCached.push(id);
-        }
-        return memo;
-      }, {
-        cached: {},
-        notCached: []
-      });
-
-      function finish(err) {
-        if (cb) {
-          if (err) {
-            cb(err);
-          } else {
-            cb(null, _.map(remoteIdentifiers, function (id) {
-              return results.cached[id];
-            }));
-          }
-        }
-      }
-
-      finish();
-    }.bind(this));
-  }
-
   module.exports = {
     get: get,
     getMultiple: getMultiple,
-    getMultipleLocal: getMultipleLocal,
-    getMultipleRemote: getMultipleRemote
+    getMultipleLocal: getMultipleLocal
   };
 
 })();
