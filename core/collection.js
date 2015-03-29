@@ -120,22 +120,14 @@
                   if (err) errors.push(err);
                 });
               }
-
-              if (errors.length == 1) {
-                err = errors[0];
-              } else if (errors.length) {
-                err = errors;
+              if (errors.length) {
+                err = error('Errors were encountered whilst setting up the collection', {errors: errors});
               }
-            }
-
-
-            if (err) {
-              err = error('Errors were encountered whilst setting up the collection', {errors: err});
-            }
-            else {
-              this.installed = true;
-              var index = require('./index');
-              index[this.name] = this;
+              else {
+                this.installed = true;
+                var index = require('./index');
+                index[this.name] = this;
+              }
             }
             cb(err);
           }.bind(this));
