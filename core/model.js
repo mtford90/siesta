@@ -420,10 +420,6 @@
         if (attributeDefinition.name == name) return attributeDefinition;
       }
     },
-    install: function(cb) {
-      this._installed = true;
-      cb();
-    },
     /**
      * Map data into Siesta.
      *

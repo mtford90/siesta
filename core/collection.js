@@ -95,38 +95,28 @@
      * @class Collection
      */
     install: function(cb) {
+      var modelsToInstall = this._getModelsToInstall();
       return util.promise(cb, function(cb) {
-        var self = this;
         if (!this.installed) {
-          var modelsToInstall = this._getModelsToInstall();
-          var tasks = _.map(modelsToInstall, function(m) {
-            return _.bind(m.install, m);
+          this.installed = true;
+          var errors = [];
+          _.each(modelsToInstall, function(m) {
+            log('Installing relationships for mapping with name "' + m.name + '"');
+            var err = m.installRelationships();
+            if (err) errors.push(err);
           });
-
-          util.async.parallel(tasks, function(err) {
-            if (!err) {
-              self.installed = true;
-              var errors = [];
-              _.each(modelsToInstall, function(m) {
-                log('Installing relationships for mapping with name "' + m.name + '"');
-                var err = m.installRelationships();
-                if (err) errors.push(err);
-              });
-              if (!errors.length) {
-                _.each(modelsToInstall, function(m) {
-                  log('Installing reverse relationships for mapping with name "' + m.name + '"');
-                  var err = m.installReverseRelationships();
-                  if (err) errors.push(err);
-                });
-                if (!errors.length) {
-                  this.installed = true;
-                  this._makeAvailableOnRoot();
-                }
-              }
+          if (!errors.length) {
+            _.each(modelsToInstall, function(m) {
+              log('Installing reverse relationships for mapping with name "' + m.name + '"');
+              var err = m.installReverseRelationships();
+              if (err) errors.push(err);
+            });
+            if (!errors.length) {
+              this.installed = true;
+              this._makeAvailableOnRoot();
             }
-            cb(errors.length ? error('Errors were encountered whilst setting up the collection', {errors: errors}) : null);
-          }.bind(this));
-
+          }
+          cb(errors.length ? error('Errors were encountered whilst setting up the collection', {errors: errors}) : null);
         } else throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
       }.bind(this));
     },

@@ -202,19 +202,18 @@
      * @returns {ModelInstance}
      */
     _instance: function(data, shouldRegisterChange) {
-      if (this.model.installed) {
-        var modelInstance = new ModelInstance(this.model);
-        this._installLocalId(modelInstance, data);
-        this._installAttributes(modelInstance, data);
-        this._installMethods(modelInstance);
-        this._installProperties(modelInstance);
-        this._installRemoteId(modelInstance);
-        this._installRelationships(modelInstance);
-        this._registerInstance(modelInstance, shouldRegisterChange);
-        return modelInstance;
-      } else {
+      if (!this.model._relationshipsInstalled || !this.model._reverseRelationshipsInstalled) {
         throw new InternalSiestaError('Model must be fully installed before creating any models');
       }
+      var modelInstance = new ModelInstance(this.model);
+      this._installLocalId(modelInstance, data);
+      this._installAttributes(modelInstance, data);
+      this._installMethods(modelInstance);
+      this._installProperties(modelInstance);
+      this._installRemoteId(modelInstance);
+      this._installRelationships(modelInstance);
+      this._registerInstance(modelInstance, shouldRegisterChange);
+      return modelInstance;
     }
   };
 
