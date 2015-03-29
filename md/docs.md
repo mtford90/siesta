@@ -420,27 +420,6 @@ var Model = Collection.model('Model', {
 
 To prevent a field from being serialised return `undefined`.
 
-### store
-
-You can define the `store` function on your models to determine whether or not a particular model instance is suitable for storing locally. For example, you may only want to save model instances that have a certain field.
-
-```js
-var Model = Collection.model('Model', {
-  store: function (instance) {
-    // The instance is only ever saved to local storage if it has a name.
-    return instance.name;
-  }
-});
-```
-
-If you simply want to prevent any instances of a model being placed in storage, simply set `store` to false.
-
-```js
-var Model = Collection.model('Model', {
-  store: false
-});
-```
-
 ## Inheritance
 
 Siesta supports model inheritance through which a child can inherit all attributes, relationships, methods etc.
@@ -1249,27 +1228,6 @@ instance.attr = 'value';
 console.log(instance.dirty); // true
 console.log(instance.model.dirty); // true
 console.log(instance.collection.dirty); // true
-```
-
-## Selective Saving
-
-You can define the `store` function on your models to determine whether or not a particular model instance is suitable for localStorage. For example, you may only want to save model instances that have a certain field. This can be used to prevent storage from getting out of control.
-
-```js
-var Model = Collection.model('Model', {
-  store: function (instance) {
-    // The instance is only saved to local storage if it has a name.
-    return instance.name;
-  }
-});
-```
-
-If you simply want to prevent any instances of a model being placed in storage, simply set `store` to false.
-
-```js
-var Model = Collection.model('Model', {
-  store: false
-});
 ```
 
 ## PouchDB Configuration
