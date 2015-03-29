@@ -55,16 +55,6 @@ describe('install step', function() {
         .catch(done);
     });
 
-    it('arranged reactive query', function(done) {
-      var rq = Person._arrangedReactiveQuery({age__lt: 30});
-      rq.init()
-        .then(function() {
-          assert.notOk(rq.results.length);
-          rq.terminate();
-          done();
-        })
-        .catch(done);
-    });
 
   });
 
