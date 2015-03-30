@@ -35,5 +35,6 @@ function fakeServer() {
 
 module.exports = {
   assert: assert,
+  async2: require('./async2'),
   fakeServer: fakeServer
 };
