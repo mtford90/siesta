@@ -18,7 +18,7 @@
     ManyToManyProxy = require('./ManyToManyProxy'),
     Placeholder = require('./Placeholder'),
     ReactiveQuery = require('./ReactiveQuery'),
-    instanceFactory = require('./instanceFactory'),
+    InstanceFactory = require('./instanceFactory'),
     _ = util._;
 
   /**
@@ -67,7 +67,8 @@
 
     this.attributes = Model._processAttributes(this.attributes);
 
-    this._instance = new instanceFactory(this);
+    this._factory = new InstanceFactory(this);
+    this._instance = this._factory._instance.bind(this._factory);
 
     _.extend(this, {
       _relationshipsInstalled: false,
@@ -271,6 +272,11 @@
         var err;
         var reverseName = relationship.reverseName,
           forwardModel = relationship.forwardModel;
+        var reverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name];
+        _.each(reverseInstances, function (o) {
+
+        });
+        console.log('allObjects', reverseInstances);
         if (reverseModel != this || reverseModel == forwardModel) {
           if (reverseModel.singleton) {
             if (relationship.type == RelationshipType.ManyToMany) err = 'Singleton model cannot be related via reverse ManyToMany';

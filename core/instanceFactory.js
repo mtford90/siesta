@@ -166,30 +166,35 @@
         configurable: true
       });
     },
+    /**
+     * @param definition - Definition of a relationship
+     * @param modelInstance - Instance of which to install the relationship.
+     */
+    _installRelationship: function(definition, modelInstance) {
+      var proxy;
+      var type = definition.type;
+      delete definition.type;
+      if (type == RelationshipType.OneToMany) {
+        proxy = new OneToManyProxy(definition);
+      }
+      else if (type == RelationshipType.OneToOne) {
+        proxy = new OneToOneProxy(definition);
+      }
+      else if (type == RelationshipType.ManyToMany) {
+        proxy = new ManyToManyProxy(definition);
+      }
+      else {
+        throw new InternalSiestaError('No such relationship type: ' + type);
+      }
+      proxy.install(modelInstance);
+    },
     _installRelationshipProxies: function(modelInstance) {
       var model = this.model;
       for (var name in model.relationships) {
-        var proxy;
-        console.log('uno', name);
         if (model.relationships.hasOwnProperty(name)) {
-          var relationshipOpts = _.extend({}, model.relationships[name]),
-            type = relationshipOpts.type;
-          delete relationshipOpts.type;
-          if (type == RelationshipType.OneToMany) {
-            proxy = new OneToManyProxy(relationshipOpts);
-          }
-          else if (type == RelationshipType.OneToOne) {
-            proxy = new OneToOneProxy(relationshipOpts);
-          }
-          else if (type == RelationshipType.ManyToMany) {
-            proxy = new ManyToManyProxy(relationshipOpts);
-          }
-          else {
-            throw new InternalSiestaError('No such relationship type: ' + type);
-          }
+          var definition = _.extend({}, model.relationships[name]);
+          this._installRelationship(definition, modelInstance);
         }
-        console.log('dos', modelInstance);
-        proxy.install(modelInstance);
       }
     },
     _registerInstance: function(modelInstance, shouldRegisterChange) {
@@ -220,8 +225,5 @@
     }
   };
 
-  module.exports = function(model) {
-    var factory = new ModelInstanceFactory(model);
-    return factory._instance.bind(factory);
-  }
+  module.exports = ModelInstanceFactory;
 })();

@@ -6,6 +6,7 @@
     InternalSiestaError = error.InternalSiestaError,
     modelEvents = require('./modelEvents'),
     ModelEventType = modelEvents.ModelEventType,
+
     events = require('./events'),
     cache = require('./cache');
 
