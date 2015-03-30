@@ -296,9 +296,9 @@
           var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
           _.each(Object.keys(existingReverseInstances), function(localId) {
             var instancce = existingReverseInstances[localId];
-              var r = _.extend({}, relationship);
-              r.isReverse = true;
-              this._factory._installRelationship(r, instancce);
+            var r = _.extend({}, relationship);
+            r.isReverse = true;
+            this._factory._installRelationship(r, instancce);
           }.bind(this));
         }
       }

@@ -204,15 +204,21 @@
     /**
      *
      * @param opts
-     * @param opts.collectionName
-     * @param opts.modelName
+     * @param [opts.collectionName]
+     * @param [opts.modelName]
+     * @param [opts.model]
      * @param callback
      * @private
      */
     function _loadModel(opts, callback) {
       var loaded = {};
       var collectionName = opts.collectionName,
-        modelName = opts.modelName;
+        modelName = opts.modelName,
+        model = opts.model;
+      if (model) {
+        collectionName = model.collectionName;
+        modelName = model.name;
+      }
       var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
       log('Loading instances for ' + fullyQualifiedName);
       var Model = CollectionRegistry[collectionName][modelName];
