@@ -195,7 +195,7 @@
      * @returns {*}
      * @private
      */
-    _getReverseModel: function(forwardName, reverseName) {
+    _getReverseModelOrPlaceholder: function(forwardName, reverseName) {
       var reverseModel;
       if (reverseName instanceof Model) reverseModel = reverseName;
       else reverseModel = this.collection[reverseName];
@@ -205,11 +205,11 @@
           var collectionName = arr[0];
           reverseName = arr[1];
           var otherCollection = CollectionRegistry[collectionName];
-          if (!otherCollection) return 'Collection with name "' + collectionName + '" does not exist.';
+          if (!otherCollection) var err = 'Collection with name "' + collectionName + '" does not exist.';
           reverseModel = otherCollection[reverseName];
         }
       }
-
+      if (err) return err;
       return reverseModel || new Placeholder({name: reverseName, ref: this, forwardName: forwardName});
     },
     /**
@@ -229,8 +229,7 @@
               if (!(err = this._validateRelationshipType(relationship))) {
                 var reverseModelName = relationship.model;
                 if (reverseModelName) {
-                  var reverseModel = this._getReverseModel(name, reverseModelName);
-
+                  var reverseModel = this._getReverseModelOrPlaceholder(name, reverseModelName);
                   if (util.isString(reverseModel)) return reverseModel;
                   _.extend(relationship, {
                     reverseModel: reverseModel,
@@ -255,9 +254,11 @@
       return err;
     },
     _installReverse: function(relationship) {
-      var err;
       var reverseModel = relationship.reverseModel;
-      if (!reverseModel.isPlaceholder) {
+      if (reverseModel.isPlaceholder) {
+      }
+      else {
+        var err;
         var reverseName = relationship.reverseName,
           forwardModel = relationship.forwardModel;
         if (reverseModel != this || reverseModel == forwardModel) {
@@ -280,6 +281,16 @@
         }
       }
       return err;
+    },
+    _installPlaceholders: function() {
+      for (var forwardName in this.relationships) {
+        if (this.relationships.hasOwnProperty(forwardName)) {
+          var relationship = this.relationships[forwardName];
+          if (relationship.reverseModel.isPlaceholder) {
+            return this._installReverse(relationship);
+          }
+        }
+      }
     },
     installReverseRelationships: function() {
       if (!this._reverseRelationshipsInstalled) {
