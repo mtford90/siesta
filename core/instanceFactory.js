@@ -166,10 +166,11 @@
         configurable: true
       });
     },
-    _installRelationships: function(modelInstance) {
+    _installRelationshipProxies: function(modelInstance) {
       var model = this.model;
       for (var name in model.relationships) {
         var proxy;
+        console.log('uno', name);
         if (model.relationships.hasOwnProperty(name)) {
           var relationshipOpts = _.extend({}, model.relationships[name]),
             type = relationshipOpts.type;
@@ -187,6 +188,7 @@
             throw new InternalSiestaError('No such relationship type: ' + type);
           }
         }
+        console.log('dos', modelInstance);
         proxy.install(modelInstance);
       }
     },
@@ -212,7 +214,7 @@
       this._installMethods(modelInstance);
       this._installProperties(modelInstance);
       this._installRemoteId(modelInstance);
-      this._installRelationships(modelInstance);
+      this._installRelationshipProxies(modelInstance);
       this._registerInstance(modelInstance, shouldRegisterChange);
       return modelInstance;
     }

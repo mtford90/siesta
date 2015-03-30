@@ -188,14 +188,7 @@
         return 'Relationship type ' + relationship.type + ' does not exist';
       return null;
     },
-    /**
-     * Return the reverse model or a placeholder that will be resolved later.
-     * @param forwardName
-     * @param reverseName
-     * @returns {*}
-     * @private
-     */
-    _getReverseModelOrPlaceholder: function(forwardName, reverseName) {
+    _getReverseModel: function(reverseName) {
       var reverseModel;
       if (reverseName instanceof Model) reverseModel = reverseName;
       else reverseModel = this.collection[reverseName];
@@ -205,11 +198,21 @@
           var collectionName = arr[0];
           reverseName = arr[1];
           var otherCollection = CollectionRegistry[collectionName];
-          if (!otherCollection) var err = 'Collection with name "' + collectionName + '" does not exist.';
-          reverseModel = otherCollection[reverseName];
+          if (otherCollection)
+            reverseModel = otherCollection[reverseName];
         }
       }
-      if (err) return err;
+      return reverseModel;
+    },
+    /**
+     * Return the reverse model or a placeholder that will be resolved later.
+     * @param forwardName
+     * @param reverseName
+     * @returns {*}
+     * @private
+     */
+    _getReverseModelOrPlaceholder: function(forwardName, reverseName) {
+      var reverseModel = this._getReverseModel(reverseName);
       return reverseModel || new Placeholder({name: reverseName, ref: this, forwardName: forwardName});
     },
     /**
@@ -230,7 +233,6 @@
                 var reverseModelName = relationship.model;
                 if (reverseModelName) {
                   var reverseModel = this._getReverseModelOrPlaceholder(name, reverseModelName);
-                  if (util.isString(reverseModel)) return reverseModel;
                   _.extend(relationship, {
                     reverseModel: reverseModel,
                     forwardModel: this,
@@ -256,8 +258,16 @@
     _installReverse: function(relationship) {
       var reverseModel = relationship.reverseModel;
       if (reverseModel.isPlaceholder) {
+        var modelName = relationship.reverseModel.name;
+        reverseModel = this._getReverseModel(modelName);
+        console.log('asdasd', modelName, reverseModel);
+        if (reverseModel) {
+          relationship.reverseModel = reverseModel;
+          this._installReverse(relationship);
+        }
       }
       else {
+        console.log('??');
         var err;
         var reverseName = relationship.reverseName,
           forwardModel = relationship.forwardModel;
@@ -276,19 +286,23 @@
                 err = 'Reverse relationship "' + reverseName + '" already exists on model "' + reverseModel.name + '"';
               }
             }
-            if (!err) reverseModel.relationships[reverseName] = relationship;
+            if (!err) {
+              console.log(':)')
+              reverseModel.relationships[reverseName] = relationship;
+            }
           }
         }
       }
       return err;
     },
-    _installPlaceholders: function() {
+    /**
+     * Cycle through relationships and replace any placeholders with the actual models where possible.
+     */
+    _installReversePlaceholders: function() {
       for (var forwardName in this.relationships) {
         if (this.relationships.hasOwnProperty(forwardName)) {
           var relationship = this.relationships[forwardName];
-          if (relationship.reverseModel.isPlaceholder) {
-            return this._installReverse(relationship);
-          }
+          if (relationship.reverseModel.isPlaceholder) this._installReverse(relationship);
         }
       }
     },
