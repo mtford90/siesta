@@ -83,6 +83,27 @@
       };
     }
 
+    function ensureIndexInstalled(model, cb) {
+      if (!model._indexInstalled) {
+        var designDoc = constructIndexDesignDoc(model.collectionName, model.name);
+        pouch
+          .put(designDoc)
+          .then(function(resp) {
+            var err;
+            if (!resp.ok) {
+              var isConflict = response.status == 409;
+              if (!isConflict) err = resp;
+              model.indexInstalled = true;
+            }
+            cb(err);
+          })
+          .catch(cb);
+      }
+      else {
+        cb();
+      }
+    }
+
     function constructIndexesForAllModels() {
       var indexes = [];
       var registry = siesta._internal.CollectionRegistry;
@@ -98,7 +119,8 @@
     }
 
     function __ensureIndexes(indexes, cb) {
-      pouch.bulkDocs(indexes)
+      pouch
+        .bulkDocs(indexes)
         .then(function(resp) {
           var errors = [];
           for (var i = 0; i < resp.length; i++) {
@@ -370,6 +392,7 @@
       save: save,
       _serialise: _serialise,
       ensureIndexesForAll: ensureIndexesForAll,
+      ensureIndexInstalled: ensureIndexInstalled,
       _reset: function(cb) {
         siesta.removeListener('Siesta', listener);
         unsavedObjects = [];
@@ -407,7 +430,6 @@
         }
       }
     });
-
 
     if (!siesta.ext) siesta.ext = {};
     siesta.ext.storage = storage;

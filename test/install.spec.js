@@ -321,7 +321,7 @@ describe('add stuff after install', function() {
       Person = null;
     });
 
-    describe('forward', function() {
+    describe('delay creation of relationship', function() {
       beforeEach(function(done) {
         MyCollection = siesta.collection('MyCollection');
         Person = MyCollection.model('Person', {
@@ -365,7 +365,7 @@ describe('add stuff after install', function() {
       });
     });
 
-    describe('reverse', function() {
+    describe('delay creation of related model', function() {
       beforeEach(function(done) {
         MyCollection = siesta.collection('MyCollection');
         Car = MyCollection.model('Car', {
@@ -403,10 +403,10 @@ describe('add stuff after install', function() {
               })
               .catch(done);
           }).catch(done);
-
       });
-    })
+    });
 
+    it('should setup indexes');
 
   });
 

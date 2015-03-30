@@ -258,21 +258,19 @@
     },
     _installReverse: function(relationship) {
       var reverseModel = relationship.reverseModel;
-      if (reverseModel.isPlaceholder) {
+      var isPlaceholder = reverseModel.isPlaceholder;
+      if (isPlaceholder) {
         var modelName = relationship.reverseModel.name;
         reverseModel = this._getReverseModel(modelName);
         console.log('asdasd', modelName, reverseModel);
         if (reverseModel) {
           relationship.reverseModel = reverseModel;
-          this._installReverse(relationship);
         }
       }
-      else {
-        console.log('??');
+      if (reverseModel) {
         var err;
         var reverseName = relationship.reverseName,
           forwardModel = relationship.forwardModel;
-        var existingReverseInstances = (cache._localCacheByType[forwardModel.collectionName] || {})[forwardModel.name];
 
         if (reverseModel != this || reverseModel == forwardModel) {
           if (reverseModel.singleton) {
@@ -290,10 +288,18 @@
               }
             }
             if (!err) {
-              console.log(':)')
               reverseModel.relationships[reverseName] = relationship;
             }
           }
+        }
+        if (isPlaceholder) {
+          var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
+          _.each(Object.keys(existingReverseInstances), function(localId) {
+            var instancce = existingReverseInstances[localId];
+              var r = _.extend({}, relationship);
+              r.isReverse = true;
+              this._factory._installRelationship(r, instancce);
+          }.bind(this));
         }
       }
       return err;
