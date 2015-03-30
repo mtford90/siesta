@@ -254,35 +254,41 @@
       if (!err) this._relationshipsInstalled = true;
       return err;
     },
+    _installReverse: function(relationship) {
+      var err;
+      var reverseModel = relationship.reverseModel;
+      if (!reverseModel.isPlaceholder) {
+        var reverseName = relationship.reverseName,
+          forwardModel = relationship.forwardModel;
+        if (reverseModel != this || reverseModel == forwardModel) {
+          if (reverseModel.singleton) {
+            if (relationship.type == RelationshipType.ManyToMany) err = 'Singleton model cannot be related via reverse ManyToMany';
+            if (relationship.type == RelationshipType.OneToMany) err = 'Singleton model cannot be related via reverse OneToMany';
+          }
+          if (!err) {
+            log(this.name + ': configuring  reverse relationship ' + reverseName);
+            if (reverseModel.relationships[reverseName]) {
+              // We are ok to redefine reverse relationships whereby the models are in the same hierarchy
+              var isAncestorModel = reverseModel.relationships[reverseName].forwardModel.isAncestorOf(this);
+              var isDescendentModel = reverseModel.relationships[reverseName].forwardModel.isDescendantOf(this);
+              if (!isAncestorModel && !isDescendentModel) {
+                err = 'Reverse relationship "' + reverseName + '" already exists on model "' + reverseModel.name + '"';
+              }
+            }
+            if (!err) reverseModel.relationships[reverseName] = relationship;
+          }
+        }
+      }
+      return err;
+    },
     installReverseRelationships: function() {
-      var installed = [];
       if (!this._reverseRelationshipsInstalled) {
         for (var forwardName in this.relationships) {
           if (this.relationships.hasOwnProperty(forwardName)) {
             var relationship = this.relationships[forwardName];
             relationship = extend(true, {}, relationship);
             relationship.isReverse = true;
-            var reverseModel = relationship.reverseModel;
-            if (!reverseModel.isPlaceholder) {
-              var reverseName = relationship.reverseName,
-                forwardModel = relationship.forwardModel;
-              if (reverseModel != this || reverseModel == forwardModel) {
-                installed.push(reverseName);
-                if (reverseModel.singleton) {
-                  if (relationship.type == RelationshipType.ManyToMany) return 'Singleton model cannot be related via reverse ManyToMany';
-                  if (relationship.type == RelationshipType.OneToMany) return 'Singleton model cannot be related via reverse OneToMany';
-                }
-                log(this.name + ': configuring  reverse relationship ' + reverseName);
-                if (reverseModel.relationships[reverseName]) {
-                  // We are ok to redefine reverse relationships whereby the models are in the same hierarchy
-                  var isAncestorModel = reverseModel.relationships[reverseName].forwardModel.isAncestorOf(this);
-                  var isDescendentModel = reverseModel.relationships[reverseName].forwardModel.isDescendantOf(this);
-                  if (!isAncestorModel && !isDescendentModel)
-                    return 'Reverse relationship "' + reverseName + '" already exists on model "' + reverseModel.name + '"';
-                }
-                reverseModel.relationships[reverseName] = relationship;
-              }
-            }
+            var err = this._installReverse(relationship);
           }
         }
         this._reverseRelationshipsInstalled = true;
@@ -290,6 +296,7 @@
       else {
         throw new InternalSiestaError('Reverse relationships for "' + this.name + '" have already been installed.');
       }
+      return err;
     },
     _query: function(query) {
       return new Query(this, query || {});

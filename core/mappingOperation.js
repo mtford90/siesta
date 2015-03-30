@@ -44,12 +44,11 @@
     this.data = this.preprocessData();
   }
 
-
   _.extend(MappingOperation.prototype, {
     mapAttributes: function() {
       for (var i = 0; i < this.data.length; i++) {
-        var datum = this.data[i];
-        var object = this.objects[i];
+        var datum = this.data[i],
+          object = this.objects[i];
         // No point mapping object onto itself. This happens if a ModelInstance is passed as a relationship.
         if (datum != object) {
           if (object) { // If object is falsy, then there was an error looking up that object/creating it.
