@@ -272,11 +272,8 @@
         var err;
         var reverseName = relationship.reverseName,
           forwardModel = relationship.forwardModel;
-        var reverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name];
-        _.each(reverseInstances, function (o) {
+        var existingReverseInstances = (cache._localCacheByType[forwardModel.collectionName] || {})[forwardModel.name];
 
-        });
-        console.log('allObjects', reverseInstances);
         if (reverseModel != this || reverseModel == forwardModel) {
           if (reverseModel.singleton) {
             if (relationship.type == RelationshipType.ManyToMany) err = 'Singleton model cannot be related via reverse ManyToMany';
