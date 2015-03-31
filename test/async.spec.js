@@ -6,7 +6,9 @@ describe('async2', function() {
     it('single, no res', function(done) {
       async2.parallel([
         function(done) {
-          done();
+          setTimeout(function() {
+            done();
+          }, 4);
         }
       ], function(err) {
         assert.notOk(err);
@@ -16,7 +18,9 @@ describe('async2', function() {
     it('single, res', function(done) {
       async2.parallel([
         function(done) {
-          done(null, 'res');
+          setTimeout(function() {
+            done(null, 'res');
+          }, 1);
         }
       ], function(err, res) {
         assert.notOk(err);
@@ -38,9 +42,7 @@ describe('async2', function() {
           }, 1);
         },
         function(done) {
-          setTimeout(function() {
-            done(null, 'res');
-          }, 2);
+          done(null, 'res');
         }
 
       ], function(err, res, all) {
@@ -72,7 +74,9 @@ describe('async2', function() {
       var n = 0,
         task = function(done) {
           n++;
-          done();
+          setTimeout(function() {
+            done();
+          }, 1);
         };
       async2.parallel([
         task,
@@ -94,7 +98,9 @@ describe('async2', function() {
         taskSuccess,
         function(done) {
           n++;
-          done('wtf');
+          setTimeout(function() {
+            done('wtf');
+          })
         },
         taskSuccess
       ], function(err, res, map) {

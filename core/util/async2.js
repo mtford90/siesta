@@ -1,6 +1,7 @@
 var _ = require('./underscore');
 
 function splat(arr) {
+  arr = arr || [];
   return arr.filter(function(x) {return x});
 }
 
@@ -10,10 +11,7 @@ function parallel(tasks, cb) {
     results[idx] = false;
     fn(function(err, res) {
       numFinished++;
-      if (err) {
-        errors[idx] = err;
-        console.log('errors', errors.length);
-      }
+      if (err) errors[idx] = err;
       results[idx] = res;
       if (numFinished == tasks.length) {
         cb(

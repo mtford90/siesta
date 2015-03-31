@@ -29,7 +29,7 @@
    * @return {ModelInstance}
    */
   function getViaLocalId(localId) {
-    if (util.isArray(localId)) return _.map(localId, function (x) {return localCacheById[x]});
+    if (util.isArray(localId)) return localId.map(function(x) {return localCacheById[x]});
     else return localCacheById[localId];
   }
 
@@ -74,7 +74,7 @@
    */
   function getViaRemoteId(remoteId, opts) {
     var cache = (remoteCache[opts.model.collectionName] || {})[opts.model.name] || {};
-    return util.isArray(remoteId) ? _.map(remoteId, function(x) {return cache[x]}) : cache[remoteId];
+    return util.isArray(remoteId) ? remoteId.map(function(x) {return cache[x]}) : cache[remoteId];
   }
 
   /**

@@ -40,7 +40,7 @@
     opts = opts || {};
     util.extendFromOpts(this, opts, {});
 
-    _.extend(this, {
+    util.extend(this, {
       name: name,
       _rawModels: {},
       _models: {},
@@ -69,7 +69,7 @@
 
   Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
-  _.extend(Collection.prototype, {
+  util.extend(Collection.prototype, {
     _getModelsToInstall: function() {
       var modelsToInstall = [];
       for (var name in this._models) {
@@ -100,7 +100,7 @@
         if (!this.installed) {
           this.installed = true;
           var errors = [];
-          _.each(modelsToInstall, function(m) {
+          modelsToInstall.forEach(function(m) {
             log('Installing relationships for mapping with name "' + m.name + '"');
             var err = m.installRelationships();
             if (err) errors.push(err);

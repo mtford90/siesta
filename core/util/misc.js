@@ -51,6 +51,13 @@
      * @returns {Function}
      */
     cb: cb,
+    extend: function (left, right) {
+      for (var prop in right) {
+        if (right.hasOwnProperty(prop)) {
+          left[prop] = right[prop];
+        }
+      }
+    },
     guid: (function() {
       function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
