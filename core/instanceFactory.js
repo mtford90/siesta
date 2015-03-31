@@ -5,7 +5,6 @@
     Query = require('./Query'),
     ModelInstance = require('./ModelInstance'),
     util = require('./util'),
-    _ = util._,
     guid = util.guid,
     cache = require('./cache'),
     extend = require('extend'),
@@ -43,13 +42,13 @@
         attributeNames = Model._attributeNames,
         idx = attributeNames.indexOf(Model.id);
       util.extend(modelInstance, {
-        __values: util.extend(_.reduce(Model.attributes, function(m, a) {
+        __values: util.extend(Model.attributes.reduce(function(m, a) {
           if (a.default !== undefined) m[a.name] = a.default;
           return m;
         }, {}), data || {})
       });
       if (idx > -1) attributeNames.splice(idx, 1);
-      _.each(attributeNames, function(attributeName) {
+      attributeNames.forEach(function(attributeName) {
         var attributeDefinition = Model._attributeDefinitionWithName(attributeName);
         Object.defineProperty(modelInstance, attributeName, {
           get: function() {
@@ -64,8 +63,8 @@
               v = Model.parseAttribute.call(modelInstance, attributeName, v);
             }
             var old = modelInstance.__values[attributeName];
-            var propertyDependencies = this._propertyDependencies[attributeName];
-            propertyDependencies = _.map(propertyDependencies, function(dependant) {
+            var propertyDependencies = this._propertyDependencies[attributeName] || [];
+            propertyDependencies = propertyDependencies.map(function(dependant) {
               return {
                 prop: dependant,
                 old: this[dependant]
@@ -110,7 +109,7 @@
     },
     _installMethods: function(modelInstance) {
       var Model = this.model;
-      _.each(Object.keys(Model.methods), function(methodName) {
+      Object.keys(Model.methods).forEach(function(methodName) {
         if (modelInstance[methodName] === undefined) {
           modelInstance[methodName] = Model.methods[methodName].bind(modelInstance);
         }
@@ -122,7 +121,7 @@
     _installProperties: function(modelInstance) {
       var _propertyNames = Object.keys(this.model.properties),
         _propertyDependencies = {};
-      _.each(_propertyNames, function(propName) {
+      _propertyNames.forEach(function(propName) {
         var propDef = this.model.properties[propName];
         var dependencies = propDef.dependencies || [];
         dependencies.forEach(function(attr) {

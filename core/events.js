@@ -3,7 +3,6 @@
     ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
     util = require('./util'),
     argsarray = require('argsarray'),
-    _ = util._,
     modelEvents = require('./modelEvents'),
     Chain = require('./Chain');
 

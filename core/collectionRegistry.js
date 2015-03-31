@@ -17,7 +17,7 @@
     },
     reset: function() {
       var self = this;
-      _.each(this.collectionNames, function(name) {
+      this.collectionNames.forEach(function(name) {
         delete self[name];
       });
       this.collectionNames = [];
