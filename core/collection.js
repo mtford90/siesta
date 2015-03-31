@@ -12,6 +12,7 @@
     util = require('./util'),
     _ = util._,
     error = require('./error'),
+    argsarray = require('./argsarray'),
     cache = require('./cache');
 
 
@@ -106,7 +107,7 @@
             if (err) errors.push(err);
           });
           if (!errors.length) {
-            _.each(modelsToInstall, function(m) {
+            modelsToInstall.forEach(function(m) {
               log('Installing reverse relationships for mapping with name "' + m.name + '"');
               var err = m.installReverseRelationships();
               if (err) errors.push(err);
@@ -144,32 +145,31 @@
 
     /**
      * Registers a model with this collection.
-     * @param op
      */
-    model: function(op) {
-      if (arguments.length) {
-        if (arguments.length == 1) {
-          if (util.isArray(arguments[0])) {
-            return _.map(arguments[0], function(m) {
+    model: argsarray(function(args) {
+      if (args.length) {
+        if (args.length == 1) {
+          if (util.isArray(args[0])) {
+            return args[0].map(function(m) {
               return this._model(m.name, m);
             }.bind(this));
           } else {
             var name, opts;
-            if (util.isString(arguments[0])) {
-              name = arguments[0];
+            if (util.isString(args[0])) {
+              name = args[0];
               opts = {};
             }
             else {
-              opts = arguments[0];
+              opts = args[0];
               name = opts.name;
             }
             return this._model(name, opts);
           }
         } else {
-          if (typeof arguments[0] == 'string') {
-            return this._model(arguments[0], arguments[1]);
+          if (typeof args[0] == 'string') {
+            return this._model(args[0], args[1]);
           } else {
-            return _.map(arguments, function(m) {
+            return args.map(function(m) {
               return this._model(m.name, m);
             }.bind(this));
           }
@@ -177,7 +177,7 @@
       }
 
       return null;
-    },
+    }),
 
     /**
      * Dump this collection as JSON
