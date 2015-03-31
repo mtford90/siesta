@@ -12,7 +12,7 @@
     util = require('./util'),
     _ = util._,
     error = require('./error'),
-    argsarray = require('./argsarray'),
+    argsarray = require('argsarray'),
     cache = require('./cache');
 
 
@@ -202,7 +202,7 @@
     count: function(cb) {
       return util.promise(cb, function(cb) {
         var tasks = _.map(this._models, function(m) {
-          return _.bind(m.count, m);
+          return m.count.bind(m);
         });
         util.async.parallel(tasks, function(err, ns) {
           var n;

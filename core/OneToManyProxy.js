@@ -114,7 +114,7 @@
             RelationshipProxy.prototype.install.call(this, obj);
 
             if (this.isReverse) {
-                obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
+                obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = this.splice.bind(this);
                 this.wrapArray(this.related);
             }
 

@@ -106,7 +106,7 @@
         install: function (obj) {
             RelationshipProxy.prototype.install.call(this, obj);
             this.wrapArray(this.related);
-            obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = _.bind(this.splice, this);
+            obj[('splice' + util.capitaliseFirstLetter(this.reverseName))] = this.splice.bind(this);
         },
         registerRemovalListener: function (obj) {
             this.relatedCancelListeners[obj.localId] = obj.on('*', function (e) {

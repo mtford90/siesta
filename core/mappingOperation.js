@@ -291,7 +291,7 @@
               if (init) {
                 var paramNames = util.paramNames(init);
                 if (paramNames.length > 1) {
-                  memo.push(_.bind(init, o, fromStorage, done));
+                  memo.push(init.bind(o, fromStorage, done));
                 }
                 else {
                   init.call(o, fromStorage);

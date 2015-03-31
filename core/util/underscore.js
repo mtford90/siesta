@@ -125,7 +125,7 @@
     var initial = arguments.length > 2;
     if (obj == null) obj = [];
     if (nativeReduce && obj.reduce === nativeReduce) {
-      if (context) iterator = _.bind(iterator, context);
+      if (context) iterator = iterator.bind(context);
       return initial ? obj.reduce(iterator, memo) : obj.reduce(iterator);
     }
     _.each(obj, function(value, index, list) {
