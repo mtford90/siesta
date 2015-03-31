@@ -57,6 +57,7 @@
           left[prop] = right[prop];
         }
       }
+      return left;
     },
     guid: (function() {
       function s4() {

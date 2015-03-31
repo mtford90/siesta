@@ -10,7 +10,6 @@
     observe = require('../vendor/observe-js/src/observe').Platform,
     events = require('./events'),
     util = require('./util'),
-    _ = util._,
     error = require('./error'),
     argsarray = require('argsarray'),
     cache = require('./cache');
@@ -246,7 +245,7 @@
         if (!err) util.async.series(tasks, function(err, results) {
           if (!err) {
             results = results.reduce(function(memo, res) {
-              return _.extend(memo, res);
+              return util.extend(memo, res || {});
             }, {})
           } else results = null;
           cb(err, results);
