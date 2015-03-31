@@ -104,5 +104,25 @@ describe('async2', function() {
         done();
       });
     });
+
+    it('allow throw error', function() {
+      var n = 0,
+        task = function(done) {
+          n++;
+          done();
+        };
+      assert.throws(function() {
+        async2.parallel([
+          task,
+          function() {
+            throw Error('wtf');
+          },
+          task
+        ], function(err) {
+          assert.notOk(err);
+          assert.equal(n, 3);
+        });
+      })
+    });
   });
 });
