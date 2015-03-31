@@ -7,7 +7,7 @@ var util = require('./util'),
  * @constructor
  */
 function Placeholder(opts) {
-  _.extend(this, opts || {});
+  util.extend(this, opts || {});
   this.isPlaceholder = true;
 }
 

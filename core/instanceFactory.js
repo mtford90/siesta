@@ -42,8 +42,8 @@
       var Model = this.model,
         attributeNames = Model._attributeNames,
         idx = attributeNames.indexOf(Model.id);
-      _.extend(modelInstance, {
-        __values: _.extend(_.reduce(Model.attributes, function(m, a) {
+      util.extend(modelInstance, {
+        __values: util.extend(_.reduce(Model.attributes, function(m, a) {
           if (a.default !== undefined) m[a.name] = a.default;
           return m;
         }, {}), data || {})
@@ -192,7 +192,7 @@
       var model = this.model;
       for (var name in model.relationships) {
         if (model.relationships.hasOwnProperty(name)) {
-          var definition = _.extend({}, model.relationships[name]);
+          var definition = util.extend({}, model.relationships[name]);
           this._installRelationship(definition, modelInstance);
         }
       }

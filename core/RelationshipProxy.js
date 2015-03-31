@@ -25,7 +25,7 @@
     var self = this;
     opts = opts || {};
 
-    _.extend(this, {
+    util.extend(this, {
       object: null,
       related: null
     });
@@ -54,9 +54,9 @@
     this.cancelListens = {};
   }
 
-  _.extend(RelationshipProxy, {});
+  util.extend(RelationshipProxy, {});
 
-  _.extend(RelationshipProxy.prototype, {
+  util.extend(RelationshipProxy.prototype, {
     /**
      * Install this proxy on the given instance
      * @param {ModelInstance} modelInstance
@@ -94,7 +94,7 @@
   });
 
   //noinspection JSUnusedLocalSymbols
-  _.extend(RelationshipProxy.prototype, {
+  util.extend(RelationshipProxy.prototype, {
     set: function(obj, opts) {
       throw new InternalSiestaError('Must subclass RelationshipProxy');
     },
@@ -103,7 +103,7 @@
     }
   });
 
-  _.extend(RelationshipProxy.prototype, {
+  util.extend(RelationshipProxy.prototype, {
     proxyForInstance: function(modelInstance, reverse) {
       var name = reverse ? this.getReverseName() : this.getForwardName(),
         model = reverse ? this.reverseModel : this.forwardModel;

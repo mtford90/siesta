@@ -20,7 +20,7 @@
 
     OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
 
-    _.extend(OneToManyProxy.prototype, {
+    util.extend(OneToManyProxy.prototype, {
         clearReverse: function (removed) {
             var self = this;
             _.each(removed, function (removedObject) {

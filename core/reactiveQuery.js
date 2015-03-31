@@ -28,7 +28,7 @@
     var self = this;
     EventEmitter.call(this);
     Chain.call(this);
-    _.extend(this, {
+    util.extend(this, {
       insertionPolicy: ReactiveQuery.InsertionPolicy.Back,
       initialised: false
     });
@@ -52,7 +52,7 @@
     });
 
     if (query) {
-      _.extend(this, {
+      util.extend(this, {
         _query: query,
         results: constructQuerySet([], query.model)
       })
@@ -83,16 +83,16 @@
   }
 
   ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
-  _.extend(ReactiveQuery.prototype, Chain.prototype);
+  util.extend(ReactiveQuery.prototype, Chain.prototype);
 
-  _.extend(ReactiveQuery, {
+  util.extend(ReactiveQuery, {
     InsertionPolicy: {
       Front: 'Front',
       Back: 'Back'
     }
   });
 
-  _.extend(ReactiveQuery.prototype, {
+  util.extend(ReactiveQuery.prototype, {
     /**
      *
      * @param cb

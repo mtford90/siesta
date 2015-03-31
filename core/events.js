@@ -16,7 +16,7 @@
    * @constructor
    */
   function ProxyEventEmitter(event, chainOpts) {
-    _.extend(this, {
+    util.extend(this, {
       event: event,
       listeners: {}
     });
@@ -25,12 +25,12 @@
     defaultChainOpts.on = this.on.bind(this);
     defaultChainOpts.once = this.once.bind(this);
 
-    Chain.call(this, _.extend(defaultChainOpts, chainOpts || {}));
+    Chain.call(this, util.extend(defaultChainOpts, chainOpts || {}));
   }
 
   ProxyEventEmitter.prototype = Object.create(Chain.prototype);
 
-  _.extend(ProxyEventEmitter.prototype, {
+  util.extend(ProxyEventEmitter.prototype, {
     on: function(type, fn) {
       if (typeof type == 'function') {
         fn = type;
@@ -127,7 +127,7 @@
     }
   });
 
-  _.extend(eventEmitter, {
+  util.extend(eventEmitter, {
     ProxyEventEmitter: ProxyEventEmitter,
     wrapArray: function(array, field, modelInstance) {
       if (!array.observer) {

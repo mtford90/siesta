@@ -22,7 +22,7 @@
         }
       }
     }
-    _.extend(this, {
+    util.extend(this, {
       model: model,
       query: query,
       opts: opts
@@ -78,7 +78,7 @@
     in: contains
   };
 
-  _.extend(Query, {
+  util.extend(Query, {
     comparators: comparators,
     registerComparator: function(symbol, fn) {
       if (!comparators[symbol]) {
@@ -99,7 +99,7 @@
     return cacheByLocalId;
   }
 
-  _.extend(Query.prototype, {
+  util.extend(Query.prototype, {
     execute: function(cb) {
       return util.promise(cb, function(cb) {
         this._executeInMemory(cb);
@@ -162,8 +162,8 @@
      */
     _getCacheByLocalId: function() {
       return _.reduce(this.model.descendants, function(memo, childModel) {
-        return _.extend(memo, cacheForModel(childModel));
-      }, _.extend({}, cacheForModel(this.model)));
+        return util.extend(memo, cacheForModel(childModel));
+      }, util.extend({}, cacheForModel(this.model)));
     },
     _executeInMemory: function(callback) {
       var _executeInMemory = function() {

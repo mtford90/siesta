@@ -25,6 +25,15 @@
     };
   }
 
+  var extend = function(left, right) {
+    for (var prop in right) {
+      if (right.hasOwnProperty(prop)) {
+        left[prop] = right[prop];
+      }
+    }
+    return left;
+  };
+
   var isArrayShim = function(obj) {
       return _.toString.call(obj) === '[object Array]';
     },
@@ -32,7 +41,7 @@
     isString = function(o) {
       return typeof o == 'string' || o instanceof String
     };
-  _.extend(module.exports, {
+  extend(module.exports, {
     argsarray: argsarray,
     /**
      * Performs dirty check/Object.observe callbacks depending on the browser.
@@ -51,14 +60,7 @@
      * @returns {Function}
      */
     cb: cb,
-    extend: function(left, right) {
-      for (var prop in right) {
-        if (right.hasOwnProperty(prop)) {
-          left[prop] = right[prop];
-        }
-      }
-      return left;
-    },
+    extend: extend,
     guid: (function() {
       function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
@@ -199,7 +201,7 @@
             property: property
           };
           if (!isString(property)) {
-            _.extend(opts, property);
+            extend(opts, property);
           }
           var desc = {
             get: function() {
@@ -238,8 +240,8 @@
           delete opts[k];
         }
       });
-      _.extend(defaults, opts);
-      _.extend(obj, defaults);
+      extend(defaults, opts);
+      extend(obj, defaults);
     },
     isString: isString,
     isArray: isArray,

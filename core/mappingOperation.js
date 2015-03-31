@@ -35,7 +35,7 @@
       fromStorage: false
     });
 
-    _.extend(this, {
+    util.extend(this, {
       errors: [],
       subTaskResults: {},
       _newObjects: []
@@ -46,7 +46,7 @@
     this.data = this.preprocessData();
   }
 
-  _.extend(MappingOperation.prototype, {
+  util.extend(MappingOperation.prototype, {
     mapAttributes: function() {
       for (var i = 0; i < this.data.length; i++) {
         var datum = this.data[i],
@@ -233,7 +233,7 @@
     },
 
     preprocessData: function() {
-      var data = _.extend([], this.data);
+      var data = util.extend([], this.data);
       return _.map(data, function(datum) {
         if (datum) {
           if (!util.isString(datum)) {

@@ -27,7 +27,7 @@
    */
   function Model(opts) {
     var self = this;
-    this._opts = opts ? _.extend({}, opts) : {};
+    this._opts = opts ? util.extend({}, opts) : {};
 
     util.extendFromOpts(this, opts, {
       methods: {},
@@ -70,7 +70,7 @@
     this._factory = new InstanceFactory(this);
     this._instance = this._factory._instance.bind(this._factory);
 
-    _.extend(this, {
+    util.extend(this, {
       _relationshipsInstalled: false,
       _reverseRelationshipsInstalled: false,
       children: []
@@ -108,7 +108,7 @@
         get: function() {
           return _.reduce(self.children, function(memo, descendant) {
             return Array.prototype.concat.call(memo, descendant.descendants);
-          }.bind(self), _.extend([], self.children));
+          }.bind(self), util.extend([], self.children));
         },
         enumerable: true
       },
@@ -138,7 +138,7 @@
     events.ProxyEventEmitter.call(this, globalEventName, proxied);
   }
 
-  _.extend(Model, {
+  util.extend(Model, {
     /**
      * Normalise attributes passed via the options dictionary.
      * @param attributes
@@ -162,7 +162,7 @@
 
   Model.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
-  _.extend(Model.prototype, {
+  util.extend(Model.prototype, {
     installStatics: function(statics) {
       if (statics) {
         _.each(Object.keys(statics), function(staticName) {
@@ -234,7 +234,7 @@
                 var reverseModelName = relationship.model;
                 if (reverseModelName) {
                   var reverseModel = this._getReverseModelOrPlaceholder(name, reverseModelName);
-                  _.extend(relationship, {
+                  util.extend(relationship, {
                     reverseModel: reverseModel,
                     forwardModel: this,
                     forwardName: name,
@@ -296,7 +296,7 @@
           var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
           _.each(Object.keys(existingReverseInstances), function(localId) {
             var instancce = existingReverseInstances[localId];
-            var r = _.extend({}, relationship);
+            var r = util.extend({}, relationship);
             r.isReverse = true;
             this._factory._installRelationship(r, instancce);
           }.bind(this));
@@ -348,7 +348,7 @@
             if (err) cb(err);
             else {
               // Cache a new singleton and then reexecute the query
-              query = _.extend({}, query);
+              query = util.extend({}, query);
               query.__ignoreInstalled = true;
               if (!objs.length) {
                 this.graph({}, function(err) {
@@ -480,7 +480,7 @@
       }.bind(this));
     },
     _mapBulk: function(data, opts, callback) {
-      _.extend(opts, {model: this, data: data});
+      util.extend(opts, {model: this, data: data});
       var op = new MappingOperation(opts);
       op.start(function(err, objects) {
         if (err) {
@@ -531,19 +531,19 @@
   });
 
   // Subclassing
-  _.extend(Model.prototype, {
+  util.extend(Model.prototype, {
     child: function(nameOrOpts, opts) {
       if (typeof nameOrOpts == 'string') {
         opts.name = nameOrOpts;
       } else {
         opts = name;
       }
-      _.extend(opts, {
+      util.extend(opts, {
         attributes: Array.prototype.concat.call(opts.attributes || [], this._opts.attributes),
-        relationships: _.extend(opts.relationships || {}, this._opts.relationships),
-        methods: _.extend(_.extend({}, this._opts.methods) || {}, opts.methods),
-        statics: _.extend(_.extend({}, this._opts.statics) || {}, opts.statics),
-        properties: _.extend(_.extend({}, this._opts.properties) || {}, opts.properties),
+        relationships: util.extend(opts.relationships || {}, this._opts.relationships),
+        methods: util.extend(util.extend({}, this._opts.methods) || {}, opts.methods),
+        statics: util.extend(util.extend({}, this._opts.statics) || {}, opts.statics),
+        properties: util.extend(util.extend({}, this._opts.properties) || {}, opts.properties),
         id: opts.id || this._opts.id,
         init: opts.init || this._opts.init,
         remove: opts.remove || this._opts.remove,

@@ -9,11 +9,11 @@
     async2 = require('./async2'),
     misc = require('./misc');
 
-  _.extend(module.exports, {
+  misc.extend(module.exports, {
     _: _,
     async: async,
     async2: async2
   });
-  _.extend(module.exports, misc);
+  misc.extend(module.exports, misc);
 
 })();

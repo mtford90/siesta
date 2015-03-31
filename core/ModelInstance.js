@@ -82,7 +82,7 @@
 
   ModelInstance.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
-  _.extend(ModelInstance.prototype, {
+  util.extend(ModelInstance.prototype, {
     get: function(cb) {
       return util.promise(cb, function(cb) {
         cb(null, this);
@@ -92,7 +92,7 @@
       if (typeof type == 'object') opts = type;
       else opts.type = type;
       opts = opts || {};
-      _.extend(opts, {
+      util.extend(opts, {
         collection: this.collectionName,
         model: this.model.name,
         localId: this.localId,
@@ -163,9 +163,9 @@
   });
 
   // Inspection
-  _.extend(ModelInstance.prototype, {
+  util.extend(ModelInstance.prototype, {
     getAttributes: function() {
-      return _.extend({}, this.__values);
+      return util.extend({}, this.__values);
     },
     isInstanceOf: function(model) {
       return this.model == model;
@@ -176,12 +176,12 @@
   });
 
   // Dump
-  _.extend(ModelInstance.prototype, {
+  util.extend(ModelInstance.prototype, {
     _dumpString: function(reverseRelationships) {
       return JSON.stringify(this._dump(reverseRelationships, null, 4));
     },
     _dump: function(reverseRelationships) {
-      var dumped = _.extend({}, this.__values);
+      var dumped = util.extend({}, this.__values);
       dumped._rev = this._rev;
       dumped.localId = this.localId;
       return dumped;
@@ -189,7 +189,7 @@
   });
 
   // Serialisation
-  _.extend(ModelInstance.prototype, {
+  util.extend(ModelInstance.prototype, {
     _defaultSerialise: function(opts) {
       var serialised = {};
       var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
@@ -252,7 +252,7 @@
     }
   });
 
-  _.extend(ModelInstance.prototype, {
+  util.extend(ModelInstance.prototype, {
     /**
      * Emit an event indicating that this instance has just been created.
      * @private

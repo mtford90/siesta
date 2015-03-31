@@ -15,7 +15,7 @@
 
     OneToOneProxy.prototype = Object.create(RelationshipProxy.prototype);
 
-    _.extend(OneToOneProxy.prototype, {
+    util.extend(OneToOneProxy.prototype, {
         /**
          * Validate the object that we're setting
          * @param obj

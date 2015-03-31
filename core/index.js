@@ -22,24 +22,24 @@
   // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
   var siesta = function(ext) {
     if (!siesta.ext) siesta.ext = {};
-    _.extend(siesta.ext, ext || {});
+    util.extend(siesta.ext, ext || {});
     return siesta;
   };
 
   // Notifications
-  _.extend(siesta, {
+  util.extend(siesta, {
     on: events.on.bind(events),
     off: events.removeListener.bind(events),
     once: events.once.bind(events),
     removeAllListeners: events.removeAllListeners.bind(events)
   });
-  _.extend(siesta, {
+  util.extend(siesta, {
     removeListener: siesta.off,
     addListener: siesta.on
   });
 
   // Expose some stuff for usage by extensions and/or users
-  _.extend(siesta, {
+  util.extend(siesta, {
     RelationshipType: RelationshipType,
     ModelEventType: modelEvents.ModelEventType,
     log: log.Level,
@@ -81,7 +81,7 @@
     installing = false;
 
 
-  _.extend(siesta, {
+  util.extend(siesta, {
     /**
      * Wipe everything. Used during test generally.
      */
@@ -204,7 +204,7 @@
         if (!err) util.async.series(tasks, function(err, results) {
           if (!err) {
             results = results.reduce(function(memo, res) {
-              return _.extend(memo, res);
+              return util.extend(memo, res);
             }, {})
           } else results = null;
           cb(err, results);

@@ -96,7 +96,7 @@ function defineMethod(arr, prop) {
  * @param model - The model with which to proxy to
  */
 function modelQuerySet(arr, model) {
-    arr = _.extend([], arr);
+    arr = util.extend([], arr);
     var attributeNames = model._attributeNames,
         relationshipNames = model._relationshipNames,
         names = attributeNames.concat(relationshipNames).concat(instanceMethods);
