@@ -51,7 +51,7 @@
      * @returns {Function}
      */
     cb: cb,
-    extend: function (left, right) {
+    extend: function(left, right) {
       for (var prop in right) {
         if (right.hasOwnProperty(prop)) {
           left[prop] = right[prop];

@@ -201,13 +201,14 @@
      */
     count: function(cb) {
       return util.promise(cb, function(cb) {
-        var tasks = _.map(this._models, function(m) {
+        var tasks = Object.keys(this._models).map(function(modelName) {
+          var m = this._models[modelName];
           return m.count.bind(m);
-        });
+        }.bind(this));
         util.async.parallel(tasks, function(err, ns) {
           var n;
           if (!err) {
-            n = _.reduce(ns, function(m, r) {
+            n = ns.reduce(function(m, r) {
               return m + r
             }, 0);
           }
