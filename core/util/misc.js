@@ -41,6 +41,7 @@
     isString = function(o) {
       return typeof o == 'string' || o instanceof String
     };
+
   extend(module.exports, {
     argsarray: argsarray,
     /**
