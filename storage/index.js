@@ -9,7 +9,6 @@
     log = _i.log('storage'),
     error = _i.error,
     util = _i.util,
-    _ = util._,
     events = _i.events;
 
   var unsavedObjects = [],
@@ -148,7 +147,7 @@
     function _serialise(modelInstance) {
       var serialised = {};
       var __values = modelInstance.__values;
-      serialised = siesta._.extend(serialised, __values);
+      serialised = util.extend(serialised, __values);
       Object.keys(serialised).forEach(function(k) {
         serialised[k.replace(UNDERSCORE, '@')] = __values[k];
       });
@@ -159,10 +158,10 @@
       if (modelInstance.removed) serialised['_deleted'] = true;
       var rev = modelInstance._rev;
       if (rev) serialised['_rev'] = rev;
-      serialised = _.reduce(modelInstance._relationshipNames, function(memo, n) {
+      serialised = modelInstance._relationshipNames.reduce(function(memo, n) {
         var val = modelInstance[n];
         if (siesta.isArray(val)) {
-          memo[n] = _.pluck(val, 'localId');
+          memo[n] = util.pluck(val, 'localId');
         }
         else if (val) {
           memo[n] = val.localId;
@@ -184,11 +183,11 @@
       });
 
       var relationshipNames = model._relationshipNames;
-      _.each(relationshipNames, function(r) {
+      relationshipNames.forEach(function(r) {
         var localId = datum[r];
         if (localId) {
           if (siesta.isArray(localId)) {
-            datum[r] = _.map(localId, function(x) {
+            datum[r] = localId.map(function(x) {
               return {localId: x}
             });
           }
@@ -228,11 +227,11 @@
         .then(function(resp) {
           log('Queried pouch successfully');
           var rows = resp.rows;
-          var data = siesta._.map(siesta._.pluck(rows, 'value'), function(datum) {
+          var data = util.pluck(rows, 'value').map(function(datum) {
             return _prepareDatum(datum, Model);
           });
 
-          siesta._.map(data, function(datum) {
+          data.map(function(datum) {
             var remoteId = datum[Model.id];
             if (remoteId) {
               if (loaded[remoteId]) {
@@ -275,10 +274,10 @@
         if (siesta.ext.storageEnabled) {
           var collectionNames = CollectionRegistry.collectionNames;
           var tasks = [];
-          _.each(collectionNames, function(collectionName) {
+          collectionNames.forEach(function(collectionName) {
             var collection = CollectionRegistry[collectionName],
               modelNames = Object.keys(collection._models);
-            _.each(modelNames, function(modelName) {
+            modelNames.forEach(function(modelName) {
               tasks.push(function(cb) {
                 // We call from storage to allow for replacement of _loadModel for performance extension.
                 storage._loadModel({
@@ -292,7 +291,7 @@
             var n;
             if (!err) {
               var instances = [];
-              siesta._.each(results, function(r) {
+              results.forEach(function(r) {
                 instances = instances.concat(r)
               });
               n = instances.length;
@@ -315,7 +314,7 @@
     }
 
     function saveConflicts(objects, cb) {
-      pouch.allDocs({keys: _.pluck(objects, 'localId')})
+      pouch.allDocs({keys: util.pluck(objects, 'localId')})
         .then(function(resp) {
           for (var i = 0; i < resp.rows.length; i++) {
             objects[i]._rev = resp.rows[i].value.rev;
@@ -329,7 +328,7 @@
 
     function saveToPouch(objects, cb) {
       var conflicts = [];
-      var serialisedDocs = _.map(objects, _serialise);
+      var serialisedDocs = objects.map(_serialise);
       pouch.bulkDocs(serialisedDocs).then(function(resp) {
         for (var i = 0; i < resp.length; i++) {
           var response = resp[i];
@@ -392,7 +391,7 @@
       }
     }
 
-    _.extend(storage, {
+    util.extend(storage, {
       _load: _load,
       _loadModel: _loadModel,
       save: save,
@@ -509,7 +508,7 @@
       }
     });
 
-    _.extend(siesta, {
+    util.extend(siesta, {
       save: save,
       setPouch: function(_p) {
         if (siesta._canChange) pouch = _p;
