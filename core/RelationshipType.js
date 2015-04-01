@@ -1,7 +1,5 @@
-(function () {
-    module.exports = {
-        OneToMany: 'OneToMany',
-        OneToOne: 'OneToOne',
-        ManyToMany: 'ManyToMany'
-    };
-})();
+module.exports = {
+  OneToMany: 'OneToMany',
+  OneToOne: 'OneToOne',
+  ManyToMany: 'ManyToMany'
+};

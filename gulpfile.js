@@ -14,3 +14,10 @@ gulp.task('build', function() {
     .pipe(gulp.dest('./build'))
     .pipe(plugins.livereload({port: 47835}));
 });
+
+gulp.task('dist', ['build'], function() {
+  return gulp.src(['./build/siesta.js'])
+    .pipe(plugins.uglify())
+    .pipe(plugins.rename('siesta.min.js'))
+    .pipe(gulp.dest('./build'));
+});
