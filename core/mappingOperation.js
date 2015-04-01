@@ -13,7 +13,6 @@
     return JSON.stringify(this.opts, null, 4);
   };
 
-
   /**
    * Encapsulates the idea of mapping arrays of data onto the object graph or arrays of objects.
    * @param {Object} opts
