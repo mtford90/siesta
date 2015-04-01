@@ -164,7 +164,7 @@
       }, callback);
     } else {
       var results = {};
-      eachSeries(_.keys(tasks), function(k, callback) {
+      eachSeries(Object.keys(tasks), function(k, callback) {
         tasks[k](function(err) {
           var args = Array.prototype.slice.call(arguments, 1);
           if (args.length <= 1) {

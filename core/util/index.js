@@ -4,13 +4,11 @@
  */
 
 (function() {
-  var _ = require('./underscore'),
-    async = require('./async'),
+  var async = require('./async'),
     async2 = require('./async2'),
     misc = require('./misc');
 
   misc.extend(module.exports, {
-    _: _,
     async: async,
     async2: async2
   });

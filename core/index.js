@@ -15,8 +15,7 @@
     modelEvents = require('./modelEvents'),
     Query = require('./Query'),
     querySet = require('./QuerySet'),
-    log = require('./log'),
-    _ = util._;
+    log = require('./log');
   util._patchBind();
 
   // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
@@ -60,7 +59,6 @@
       Collection: Collection,
       utils: util,
       util: util,
-      _: util._,
       querySet: querySet,
       observe: require('../vendor/observe-js/src/observe'),
       Query: Query,
@@ -69,7 +67,6 @@
       OneToOneProxy: OneToOneProxy,
       RelationshipProxy: RelationshipProxy
     },
-    _: util._,
     async: util.async,
     isArray: util.isArray,
     isString: util.isString
@@ -122,7 +119,7 @@
         return util.promise(cb, function(cb) {
           installing = true;
           var collectionNames = CollectionRegistry.collectionNames,
-            tasks = _.map(collectionNames, function(n) {
+            tasks = collectionNames.map(function(n) {
               var collection = CollectionRegistry[n];
               return collection.install.bind(collection);
             }),

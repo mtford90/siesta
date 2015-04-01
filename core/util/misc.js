@@ -35,7 +35,8 @@
   };
 
   var isArrayShim = function(obj) {
-      return _.toString.call(obj) === '[object Array]';
+      if (obj)return obj.toString() === '[object Array]';
+      return false;
     },
     isArray = Array.isArray || isArrayShim,
     isString = function(o) {
@@ -236,7 +237,7 @@
         if (unknownKeys.length) throw Error('Unknown options: ' + unknownKeys.toString());
       }
       // Apply any functions specified in the defaults.
-      _.each(Object.keys(defaults), function(k) {
+      Object.keys(defaults).each(function(k) {
         var d = defaults[k];
         if (typeof d == 'function') {
           defaults[k] = d(opts[k]);
@@ -252,7 +253,7 @@
       return JSON.stringify(o, null, 4);
     },
     flattenArray: function(arr) {
-      return _.reduce(arr, function(memo, e) {
+      return arr.reduce(function(memo, e) {
         if (isArray(e)) {
           memo = memo.concat(e);
         } else {
