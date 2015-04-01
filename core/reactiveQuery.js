@@ -16,8 +16,7 @@
     modelEvents = require('./modelEvents'),
     InternalSiestaError = require('./error').InternalSiestaError,
     constructQuerySet = require('./QuerySet'),
-    util = require('./util'),
-    _ = util._;
+    util = require('./util');
 
   /**
    *

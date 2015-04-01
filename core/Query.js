@@ -4,8 +4,7 @@
     util = require('./util'),
     error = require('./error'),
     ModelInstance = require('./ModelInstance'),
-    constructQuerySet = require('./QuerySet'),
-    _ = util._;
+    constructQuerySet = require('./QuerySet');
 
   /**
    * @class [Query description]
@@ -137,7 +136,7 @@
     _sortResults: function(res) {
       var order = this.opts.order;
       if (res && order) {
-        var fields = _.map(order, function(ordering) {
+        var fields = order.map(function(ordering) {
           var splt = ordering.split('-'),
             ascending = true,
             field = null;
@@ -161,7 +160,7 @@
      * @private
      */
     _getCacheByLocalId: function() {
-      return _.reduce(this.model.descendants, function(memo, childModel) {
+      return this.model.descendants.reduce(function(memo, childModel) {
         return util.extend(memo, cacheForModel(childModel));
       }, util.extend({}, cacheForModel(this.model)));
     },
@@ -232,9 +231,9 @@
         field = splt[0];
       }
       fields[fields.length - 1] = field;
-      _.each(fields.slice(0, fields.length - 1), function(f) {
+      fields.slice(0, fields.length - 1).forEach(function(f) {
         if (util.isArray(obj)) {
-          obj = _.pluck(obj, f);
+          obj = util.pluck(obj, f);
         }
         else {
           obj = obj[f];

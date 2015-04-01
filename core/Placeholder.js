@@ -1,5 +1,4 @@
-var util = require('./util'),
-  _ = util._;
+var util = require('./util');
 
 /**
  * Acts as a placeholder for various objects e.g. lazy registration of models.

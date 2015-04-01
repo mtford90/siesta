@@ -6,7 +6,6 @@
 
   var InternalSiestaError = require('./error').InternalSiestaError,
     util = require('./util'),
-    _ = util._,
     Query = require('./Query'),
     log = require('./log'),
     cache = require('./cache'),
@@ -110,7 +109,7 @@
       var ret;
       // This should never happen. Should g   et caught in the mapping operation?
       if (util.isArray(modelInstance)) {
-        ret = _.map(modelInstance, function(o) {
+        ret = modelInstance.map(function(o) {
           return o.__proxies[name];
         });
       } else {
@@ -205,7 +204,7 @@
             removed = this._getRemovedForSpliceChangeEvent(idx, numRemove);
         }
         var add = Array.prototype.slice.call(arguments, 2);
-        var res = _.partial(this.related.splice, idx, numRemove).apply(this.related, add);
+        var res = this.related.splice.bind(this.related, idx, numRemove).apply(this.related, add);
         if (!opts.disableevents) this.registerSpliceChange(idx, added, removed);
         return res;
       }.bind(this);
@@ -216,7 +215,7 @@
       if (this.related) {
         var reverseProxy = this.reverseProxyForInstance(this.related);
         var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-        _.each(reverseProxies, function(p) {
+        reverseProxies.forEach(function(p) {
           if (util.isArray(p.related)) {
             var idx = p.related.indexOf(self.object);
             p.makeChangesToRelatedWithoutObservations(function() {
@@ -232,7 +231,7 @@
       var self = this;
       var reverseProxy = this.reverseProxyForInstance(obj);
       var reverseProxies = util.isArray(reverseProxy) ? reverseProxy : [reverseProxy];
-      _.each(reverseProxies, function(p) {
+      reverseProxies.forEach(function(p) {
         if (util.isArray(p.related)) {
           p.makeChangesToRelatedWithoutObservations(function() {
             p.splicer(opts)(p.related.length, 0, self.object);
