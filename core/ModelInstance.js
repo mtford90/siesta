@@ -1,12 +1,9 @@
 (function() {
   var log = require('./log'),
     util = require('./util'),
-    _ = util._,
     error = require('./error'),
-    InternalSiestaError = error.InternalSiestaError,
     modelEvents = require('./modelEvents'),
     ModelEventType = modelEvents.ModelEventType,
-
     events = require('./events'),
     cache = require('./cache');
 
@@ -33,10 +30,10 @@
     Object.defineProperties(this, {
       _relationshipNames: {
         get: function() {
-          var proxies = _.map(Object.keys(self.__proxies || {}), function(x) {
+          var proxies = Object.keys(self.__proxies || {}).map(function(x) {
             return self.__proxies[x]
           });
-          return _.map(proxies, function(p) {
+          return proxies.map(function(p) {
             if (p.isForward) {
               return p.forwardName;
             } else {
@@ -196,7 +193,7 @@
         includeNullRelationships = opts.includeNullRelationships !== undefined ? opts.includeNullRelationships : true;
       var serialisableFields = this.model.serialisableFields ||
         this._attributeNames.concat.apply(this._attributeNames, this._relationshipNames).concat(this.id);
-      _.each(this._attributeNames, function(attrName) {
+      this._attributeNames.forEach(function(attrName) {
         if (serialisableFields.indexOf(attrName) > -1) {
           var attrDefinition = this.model._attributeDefinitionWithName(attrName) || {};
           var serialiser;
@@ -213,12 +210,12 @@
           }
         }
       }.bind(this));
-      _.each(this._relationshipNames, function(relName) {
+      this._relationshipNames.forEach(function(relName) {
         if (serialisableFields.indexOf(relName) > -1) {
           var val = this[relName],
             rel = this.model.relationships[relName];
           if (util.isArray(val)) {
-            val = _.pluck(val, this.model.id);
+            val = util.pluck(val, this.model.id);
           }
           else if (val) {
             val = val[this.model.id];

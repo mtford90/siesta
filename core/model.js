@@ -18,8 +18,7 @@
     ManyToManyProxy = require('./ManyToManyProxy'),
     Placeholder = require('./Placeholder'),
     ReactiveQuery = require('./ReactiveQuery'),
-    InstanceFactory = require('./instanceFactory'),
-    _ = util._;
+    InstanceFactory = require('./instanceFactory');
 
   /**
    *
@@ -89,7 +88,7 @@
           if (self.id) {
             names.push(self.id);
           }
-          _.each(self.attributes, function(x) {
+          self.attributes.forEach(function(x) {
             names.push(x.name)
           });
           return names;
@@ -106,7 +105,7 @@
       },
       descendants: {
         get: function() {
-          return _.reduce(self.children, function(memo, descendant) {
+          return self.children.reduce(function(memo, descendant) {
             return Array.prototype.concat.call(memo, descendant.descendants);
           }.bind(self), util.extend([], self.children));
         },
@@ -146,7 +145,7 @@
      * @private
      */
     _processAttributes: function(attributes) {
-      return _.reduce(attributes, function(m, a) {
+      return attributes.reduce(function(m, a) {
         if (typeof a == 'string') {
           m.push({
             name: a
@@ -165,7 +164,7 @@
   util.extend(Model.prototype, {
     installStatics: function(statics) {
       if (statics) {
-        _.each(Object.keys(statics), function(staticName) {
+        Object.keys(statics).forEach(function(staticName) {
           if (this[staticName]) {
             log('Static method with name "' + staticName + '" already exists. Ignoring it.');
           }
@@ -294,7 +293,7 @@
         }
         if (isPlaceholder) {
           var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
-          _.each(Object.keys(existingReverseInstances), function(localId) {
+          Object.keys(existingReverseInstances).forEach(function(localId) {
             var instancce = existingReverseInstances[localId];
             var r = util.extend({}, relationship);
             r.isReverse = true;
@@ -493,7 +492,7 @@
     _countCache: function() {
       var collCache = cache._localCacheByType[this.collectionName] || {};
       var modelCache = collCache[this.name] || {};
-      return _.reduce(Object.keys(modelCache), function(m, localId) {
+      return Object.keys(modelCache).reduce(function(m, localId) {
         m[localId] = {};
         return m;
       }, {});
@@ -509,7 +508,7 @@
       dumped.attributes = this.attributes;
       dumped.id = this.id;
       dumped.collection = this.collectionName;
-      dumped.relationships = _.map(this.relationships, function(r) {
+      dumped.relationships = this.relationships.map(function(r) {
         return r.isForward ? r.forwardName : r.reverseName;
       });
       return asJSON ? util.prettyPrint(dumped) : dumped;

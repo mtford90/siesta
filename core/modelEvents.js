@@ -43,8 +43,8 @@
     dumped.field = this.field;
     dumped.type = this.type;
     if (this.index) dumped.index = this.index;
-    if (this.added) dumped.added = _.map(this.added, function(x) {return x._dump()});
-    if (this.removed) dumped.removed = _.map(this.removed, function(x) {return x._dump()});
+    if (this.added) dumped.added = this.added.map(function(x) {return x._dump()});
+    if (this.removed) dumped.removed = this.removed.map(function(x) {return x._dump()});
     if (this.old) dumped.old = this.old;
     if (this.new) dumped.new = this.new;
     return pretty ? util.prettyPrint(dumped) : dumped;

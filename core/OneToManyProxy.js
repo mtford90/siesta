@@ -1,7 +1,6 @@
 (function () {
     var RelationshipProxy = require('./RelationshipProxy'),
         util = require('./util'),
-        _ = util._,
         modelEvents = require('./modelEvents'),
         events = require('./events'),
         wrapArrayForAttributes = events.wrapArray,
@@ -23,14 +22,14 @@
     util.extend(OneToManyProxy.prototype, {
         clearReverse: function (removed) {
             var self = this;
-            _.each(removed, function (removedObject) {
+            removed.forEach(function (removedObject) {
                 var reverseProxy = self.reverseProxyForInstance(removedObject);
                 reverseProxy.setIdAndRelated(null);
             });
         },
         setReverseOfAdded: function (added) {
             var self = this;
-            _.each(added, function (added) {
+            added.forEach(function (added) {
                 var forwardProxy = self.reverseProxyForInstance(added);
                 forwardProxy.setIdAndRelated(self.object);
             });
