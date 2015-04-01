@@ -80,6 +80,9 @@
         throw new InternalSiestaError(message, context);
       }
     },
+    pluck: function(coll, key) {
+      return coll.map(function(o) {return o[key]});
+    },
     thenBy: (function() {
       /* mixin for the `thenBy` property */
       function extend(f) {

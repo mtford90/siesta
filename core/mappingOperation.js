@@ -3,7 +3,6 @@
     log = require('./log')('graph'),
     cache = require('./cache'),
     util = require('./util'),
-    _ = util._,
     async = util.async;
 
   function SiestaError(opts) {
@@ -55,7 +54,7 @@
         if (datum != object) {
           if (object) { // If object is falsy, then there was an error looking up that object/creating it.
             var fields = this.model._attributeNames;
-            _.each(fields, function(f) {
+            fields.forEach(function(f) {
               if (datum[f] !== undefined) { // null is fine
                 // If events are disabled we update __values object directly. This avoids triggering
                 // events which are built into the set function of the property.
@@ -78,8 +77,8 @@
       var self = this;
       var err;
       this.mapAttributes();
-      var relationshipFields = _.keys(self.subTaskResults);
-      _.each(relationshipFields, function(f) {
+      var relationshipFields = Object.keys(self.subTaskResults);
+      relationshipFields.forEach(function(f) {
         var res = self.subTaskResults[f];
         var indexes = res.indexes,
           objects = res.objects;
@@ -148,7 +147,7 @@
       return {remoteLookups: remoteLookups, localLookups: localLookups};
     },
     _performLocalLookups: function(localLookups) {
-      var localIdentifiers = _.pluck(_.pluck(localLookups, 'datum'), 'localId'),
+      var localIdentifiers = util.pluck(util.pluck(localLookups, 'datum'), 'localId'),
         localObjects = cache.getViaLocalId(localIdentifiers);
       for (var i = 0; i < localIdentifiers.length; i++) {
         var obj = localObjects[i];
@@ -166,7 +165,7 @@
 
     },
     _performRemoteLookups: function(remoteLookups) {
-      var remoteIdentifiers = _.pluck(_.pluck(remoteLookups, 'datum'), this.model.id),
+      var remoteIdentifiers = util.pluck(util.pluck(remoteLookups, 'datum'), this.model.id),
         remoteObjects = cache.getViaRemoteId(remoteIdentifiers, {model: this.model});
       for (var i = 0; i < remoteObjects.length; i++) {
         var obj = remoteObjects[i],
@@ -212,7 +211,7 @@
     _lookupSingleton: function() {
       // Pick a random localId from the array of data being mapped onto the singleton object. Note that they should
       // always be the same. This is just a precaution.
-      var localIdentifiers = _.pluck(this.data, 'localId'), localId;
+      var localIdentifiers = util.pluck(this.data, 'localId'), localId;
       for (i = 0; i < localIdentifiers.length; i++) {
         if (localIdentifiers[i]) {
           localId = {localId: localIdentifiers[i]};
@@ -234,11 +233,11 @@
 
     preprocessData: function() {
       var data = util.extend([], this.data);
-      return _.map(data, function(datum) {
+      return data.map(function(datum) {
         if (datum) {
           if (!util.isString(datum)) {
-            var keys = _.keys(datum);
-            _.each(keys, function(k) {
+            var keys = Object.keys(datum);
+            keys.forEach(function(k) {
               var isRelationship = this.model._relationshipNames.indexOf(k) > -1;
 
               if (isRelationship) {
@@ -246,29 +245,21 @@
                 if (val instanceof ModelInstance) {
                   datum[k] = {localId: val.localId};
                 }
-                else if (util.isArray(val)) {
-                  datum[k] = _.each(val, function(e) {
-                    if (e instanceof ModelInstance) {
-                      return {localId: val.localId};
-                    }
-                    return val;
-                  });
-                }
+
               }
             }.bind(this));
           }
         }
         return datum;
       }.bind(this));
-    }
-    ,
+    },
     start: function(done) {
       var data = this.data;
       if (data.length) {
         var self = this;
         var tasks = [];
         this._lookup();
-        tasks.push(_.bind(this._executeSubOperations, this));
+        tasks.push(this._executeSubOperations.bind(this));
         util.async.parallel(tasks, function(err) {
           if (err) console.error(err);
           try {
@@ -286,7 +277,7 @@
             //
             // Here we ensure the execution of all of them
             var fromStorage = this.fromStorage;
-            var initTasks = _.reduce(self._newObjects, function(memo, o) {
+            var initTasks = self._newObjects.reduce(function(memo, o) {
               var init = o.model.init;
               if (init) {
                 var paramNames = util.paramNames(init);
@@ -342,7 +333,7 @@
           var idx = indexes[i];
           var err = unflattenedErrors[i];
           var isError = err;
-          if (util.isArray(err)) isError = _.reduce(err, function(memo, x) {
+          if (util.isArray(err)) isError = err.reduce(function(memo, x) {
             return memo || x
           }, false);
           if (isError) {
@@ -354,9 +345,9 @@
     },
     _executeSubOperations: function(callback) {
       var self = this,
-        relationshipNames = _.keys(this.model.relationships);
+        relationshipNames = Object.keys(this.model.relationships);
       if (relationshipNames.length) {
-        var tasks = _.reduce(relationshipNames, function(m, relationshipName) {
+        var tasks = relationshipNames.reduce(function(m, relationshipName) {
           var relationship = self.model.relationships[relationshipName];
           var reverseModel = relationship.forwardName == relationshipName ? relationship.reverseModel : relationship.forwardModel;
           // Mock any missing singleton data to ensure that all singleton instances are created.
