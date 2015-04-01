@@ -21,3 +21,30 @@ gulp.task('dist', ['build'], function() {
     .pipe(plugins.rename('siesta.min.js'))
     .pipe(gulp.dest('./build'));
 });
+
+gulp.task('release', ['dist'], function () {
+  return gulp.src(['./build/siesta.js', './build/siesta.min.js'])
+    .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('serve', function() {
+  plugins.connect.server({
+    root: './',
+    port: 4001
+  });
+});
+
+gulp.task('livereload:listen', function () {
+  plugins.livereload.listen({port: 47835});
+});
+
+
+gulp.task('watch:js', function() {
+  return gulp.watch(['./core/**/*.js', './storage/**/*.js'], ['build']);
+});
+
+gulp.task('watch:test', function() {
+  return gulp.watch(['./core/**/*.js', './storage/**/*.js'], ['build']);
+});
+
+gulp.task('watch', ['watch:js', 'watch:test', 'livereload:listen', 'serve']);
