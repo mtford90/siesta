@@ -1,5 +1,3 @@
-var _ = require('./underscore');
-
 function splat(arr) {
   arr = arr || [];
   return arr.filter(function(x) {return x});

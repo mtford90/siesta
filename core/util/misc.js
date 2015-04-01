@@ -1,6 +1,5 @@
 (function() {
   var observe = require('../../vendor/observe-js/src/observe').Platform,
-    _ = require('./underscore'),
     Promise = require('lie'),
     argsarray = require('argsarray'),
     InternalSiestaError = require('./../error').InternalSiestaError;
@@ -237,7 +236,7 @@
         if (unknownKeys.length) throw Error('Unknown options: ' + unknownKeys.toString());
       }
       // Apply any functions specified in the defaults.
-      Object.keys(defaults).each(function(k) {
+      Object.keys(defaults).forEach(function(k) {
         var d = defaults[k];
         if (typeof d == 'function') {
           defaults[k] = d(opts[k]);
