@@ -131,6 +131,8 @@ function Model(opts) {
     };
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
+
+  this.indexedInstalled = false;
 }
 
 util.extend(Model, {

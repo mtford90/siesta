@@ -289,10 +289,28 @@ function series(tasks, cb) {
   } else cb();
 }
 
+function Condition() {
+  this._queued = [];
+  this._ready = false;
+}
+
+Condition.prototype = {
+  queue: function(fn) {
+    if (!this._ready)
+      this._queued.push(fn);
+    else fn();
+  },
+  set: function() {
+    this._ready = true;
+    this._queued.forEach(function(fn) {fn()});
+  }
+};
+
 extend(module.exports, {
   compact: compact,
   parallel: parallel,
-  series: series
+  series: series,
+  Condition: Condition
 });
 
 var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
