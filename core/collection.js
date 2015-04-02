@@ -112,7 +112,9 @@ util.extend(Collection.prototype, {
           }
         }
         cb(errors.length ? error('Errors were encountered whilst setting up the collection', {errors: errors}) : null);
-      } else throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
+      } else {
+        throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
+      }
     }.bind(this));
   },
 
@@ -237,14 +239,16 @@ util.extend(Collection.prototype, {
           }
         }
       }
-      if (!err) util.series(tasks, function(err, results) {
-        if (!err) {
-          results = results.reduce(function(memo, res) {
-            return util.extend(memo, res || {});
-          }, {})
-        } else results = null;
-        cb(err, results);
-      });
+      if (!err) {
+        util.series(tasks, function(err, results) {
+          if (!err) {
+            results = results.reduce(function(memo, res) {
+              return util.extend(memo, res || {});
+            }, {})
+          } else results = null;
+          cb(err, results);
+        });
+      }
       else cb(error(err, {data: data, invalidModelName: modelName}));
     }.bind(this));
   },

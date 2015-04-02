@@ -169,7 +169,6 @@ ModelInstanceFactory.prototype = {
    * @param modelInstance - Instance of which to install the relationship.
    */
   _installRelationship: function(definition, modelInstance) {
-    console.log('installing def', definition, modelInstance);
     var proxy;
     var type = definition.type;
     if (type == RelationshipType.OneToMany) {

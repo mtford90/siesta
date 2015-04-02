@@ -40,7 +40,12 @@ function valueAsString(fieldValue) {
 
 function contains(opts) {
   if (!opts.invalid) {
-    var arr = opts.object[opts.field];
+    var obj = opts.object;
+    if (util.isArray(obj)) {
+      arr = util.pluck(obj, opts.field);
+    }
+    else
+      var arr = obj[opts.field];
     if (util.isArray(arr) || util.isString(arr)) {
       return arr.indexOf(opts.value) > -1;
     }
@@ -242,8 +247,12 @@ util.extend(Query.prototype, {
     // not match the query.
     var notNullOrUndefined = obj != undefined;
     if (notNullOrUndefined) {
-      var val = obj[field]; // Breaks here.
-      var invalid = val === null || val === undefined;
+      if (util.isArray(obj)) {
+      }
+      else {
+        var val = obj[field];
+        var invalid = util.isArray(val) ? false : val === null || val === undefined;
+      }
       var comparator = Query.comparators[op],
         opts = {object: obj, field: field, value: value, invalid: invalid};
       if (!comparator) {

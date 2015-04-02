@@ -172,7 +172,6 @@ util.extend(Model.prototype, {
     return statics;
   },
   _validateRelationshipType: function(relationship) {
-    console.log('validateRelationship', relationship);
     if (!relationship.type) {
       if (this.singleton) relationship.type = RelationshipType.OneToOne;
       else relationship.type = RelationshipType.OneToMany;
@@ -257,7 +256,6 @@ util.extend(Model.prototype, {
     if (isPlaceholder) {
       var modelName = relationship.reverseModel.name;
       reverseModel = this._getReverseModel(modelName);
-      console.log('asdasd', modelName, reverseModel);
       if (reverseModel) {
         relationship.reverseModel = reverseModel;
       }

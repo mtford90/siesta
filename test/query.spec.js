@@ -1424,11 +1424,15 @@ describe('query...', function() {
         });
 
         it('simple, _id', function(done) {
-          var reverseInstance = data.RelatedModel[0];
-          var instance = reverseInstance.reverseRel[0];
-          RelatedModel.query({'reverseRel.id__in': instance.id})
+          var reverseInstance = data.RelatedModel[0],
+            instance = reverseInstance.reverseRel[0];
+          console.log(1, instance.id);
+          RelatedModel
+            .query({'reverseRel.id__in': instance.id})
             .then(function(instances) {
+              console.log(instances);
               assert.equal(instances[0], reverseInstance);
+              console.log(3);
               done();
             })
             .catch(done);

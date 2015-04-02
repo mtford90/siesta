@@ -2086,6 +2086,8 @@ describe('perform mapping', function() {
         }).then(function() {
           done('Should not have succeeeded');
         }).catch(function(err) {
+          assert.equal(err.length, 1);
+          err = err[0];
           assert.equal(err.invalidModelName, 'Invalid');
           assert.ok(err);
           done();

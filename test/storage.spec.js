@@ -928,11 +928,11 @@ describe('storage', function() {
     siesta.install(function() {
       siesta.ext.storage._pouch.bulkDocs([
         {collection: 'myCollection', model: 'Car', colour: 'red'},
-        {collection: 'myCollection', model: 'Car', name: 'Mike'}
+        {collection: 'myCollection', model: 'Person', name: 'Mike'}
       ]).then(function() {
         siesta.ext.storage._load().then(function() {
-          assert.ok(carInitCalled);
-          assert.ok(personInitCalled);
+          assert.ok(carInitCalled, 'car init should be called');
+          assert.ok(personInitCalled, 'person init should be called');
           done();
         }).catch(done);
       }).catch(done);

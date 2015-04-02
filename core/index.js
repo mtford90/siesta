@@ -196,14 +196,16 @@ util.extend(siesta, {
           }
         }
       }
-      if (!err) util.series(tasks, function(err, results) {
-        if (!err) {
-          results = results.reduce(function(memo, res) {
-            return util.extend(memo, res);
-          }, {})
-        } else results = null;
-        cb(err, results);
-      });
+      if (!err) {
+        util.series(tasks, function(err, results) {
+          if (!err) {
+            results = results.reduce(function(memo, res) {
+              return util.extend(memo, res);
+            }, {})
+          } else results = null;
+          cb(err, results);
+        });
+      }
       else cb(error(err, {data: data, invalidCollectionName: collectionName}));
     }.bind(this));
   },
