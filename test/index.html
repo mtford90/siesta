@@ -2,16 +2,13 @@
 <head>
     <meta charset="utf-8">
     <title>Mocha Siesta</title>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css"/>
-    <script src="../node_modules/es5-shim/es5-shim.js"></script>
-
-    <script src="../node_modules/mocha/mocha.js"></script>
-    <script src="../node_modules/chai/chai.js"></script>
-
-    <script src="../node_modules/underscore/underscore.js"></script>
-    <script src="../node_modules/pouchdb/dist/pouchdb.js"></script>
-    <script src="../node_modules/source-map-support/browser-source-map-support.js"></script>
-
+    <link rel="stylesheet" href="vendor/mocha/mocha.css"/>
+    <script src="vendor/es5-shim/es5-shim.js"></script>
+    <script src="vendor/mocha/mocha.js"></script>
+    <script src="vendor/chai/chai.js"></script>
+    <script src="vendor/underscore/underscore.js"></script>
+    <script src="vendor/pouchdb/dist/pouchdb.js"></script>
+    <script src="vendor/source-map-support/browser-source-map-support.js"></script>
 
     <script>mocha.setup('bdd')</script>
 
@@ -24,8 +21,8 @@
 </head>
 <body>
 <div id="mocha"></div>
-<script src="../build/siesta.js"></script>
-<script src="../build/test-bundle.js"></script>
+<script src="build/siesta-with-src-map.js"></script>
+<script src="build/test-bundle.js"></script>
 <!--suppress JSUnresolvedLibraryURL -->
 <script src="http://localhost:47835/livereload.js"></script>
 </body>
