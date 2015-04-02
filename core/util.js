@@ -3,101 +3,6 @@ var observe = require('../vendor/observe-js/src/observe').Platform,
   argsarray = require('argsarray'),
   InternalSiestaError = require('./error').InternalSiestaError;
 
-// Used by paramNames function.
-var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
-  FN_ARG_SPLIT = /,/,
-  FN_ARG = /^\s*(_?)(.+?)\1\s*$/,
-  STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-
-/**
- * Compact a sparse array
- * @param arr
- * @returns {Array}
- */
-function compact(arr) {
-  arr = arr || [];
-  return arr.filter(function(x) {return x});
-}
-
-/**
- * Execute tasks in parallel
- * @param tasks
- * @param cb
- */
-function parallel(tasks, cb) {
-  cb = cb || function() {};
-  if (tasks && tasks.length) {
-    var results = [], errors = [], numFinished = 0;
-    tasks.forEach(function(fn, idx) {
-      results[idx] = false;
-      fn(function(err, res) {
-        numFinished++;
-        if (err) errors[idx] = err;
-        results[idx] = res;
-        if (numFinished == tasks.length) {
-          cb(
-            errors.length ? compact(errors) : null,
-            compact(results),
-            {results: results, errors: errors}
-          );
-        }
-      });
-    });
-  } else cb();
-}
-
-/**
- * Execute tasks one after another
- * @param tasks
- * @param cb
- */
-function series(tasks, cb) {
-  cb = cb || function() {};
-  if (tasks && tasks.length) {
-    var results = [], errors = [], idx = 0;
-
-    function executeTask(task) {
-      task(function(err, res) {
-        if (err) errors[idx] = err;
-        results[idx] = res;
-        if (!tasks.length) {
-          cb(
-            errors.length ? compact(errors) : null,
-            compact(results),
-            {results: results, errors: errors}
-          );
-        }
-        else {
-          idx++;
-          nextTask();
-        }
-      });
-    }
-
-    function nextTask() {
-      var nextTask = tasks.shift();
-      executeTask(nextTask);
-    }
-
-    nextTask();
-
-  } else cb();
-}
-
-function cb(callback, deferred) {
-  return function(err) {
-    if (callback) callback.apply(callback, arguments);
-    if (deferred) {
-      if (err) {
-        deferred.reject(err);
-      }
-      else {
-        deferred.resolve.apply(deferred, Array.prototype.slice.call(arguments, 1));
-      }
-    }
-  };
-}
-
 var extend = function(left, right) {
   for (var prop in right) {
     if (right.hasOwnProperty(prop)) {
@@ -107,11 +12,7 @@ var extend = function(left, right) {
   return left;
 };
 
-var isArrayShim = function(obj) {
-    if (obj)return obj.toString() === '[object Array]';
-    return false;
-  },
-  isArray = Array.isArray || isArrayShim,
+var isArray = Array.isArray,
   isString = function(o) {
     return typeof o == 'string' || o instanceof String
   };
@@ -128,13 +29,6 @@ extend(module.exports, {
     observe.performMicrotaskCheckpoint();
     setTimeout(callback);
   },
-  /**
-   * Returns a handler that acts upon a callback or a promise depending on the result of a different callback.
-   * @param callback
-   * @param [deferred]
-   * @returns {Function}
-   */
-  cb: cb,
   extend: extend,
   guid: (function() {
     function s4() {
@@ -317,7 +211,96 @@ extend(module.exports, {
       }
     }
     return unflattened;
-  },
+  }
+});
+
+/**
+ * Compact a sparse array
+ * @param arr
+ * @returns {Array}
+ */
+function compact(arr) {
+  arr = arr || [];
+  return arr.filter(function(x) {return x});
+}
+
+/**
+ * Execute tasks in parallel
+ * @param tasks
+ * @param cb
+ */
+function parallel(tasks, cb) {
+  cb = cb || function() {};
+  if (tasks && tasks.length) {
+    var results = [], errors = [], numFinished = 0;
+    tasks.forEach(function(fn, idx) {
+      results[idx] = false;
+      fn(function(err, res) {
+        numFinished++;
+        if (err) errors[idx] = err;
+        results[idx] = res;
+        if (numFinished == tasks.length) {
+          cb(
+            errors.length ? compact(errors) : null,
+            compact(results),
+            {results: results, errors: errors}
+          );
+        }
+      });
+    });
+  } else cb();
+}
+
+/**
+ * Execute tasks one after another
+ * @param tasks
+ * @param cb
+ */
+function series(tasks, cb) {
+  cb = cb || function() {};
+  if (tasks && tasks.length) {
+    var results = [], errors = [], idx = 0;
+
+    function executeTask(task) {
+      task(function(err, res) {
+        if (err) errors[idx] = err;
+        results[idx] = res;
+        if (!tasks.length) {
+          cb(
+            errors.length ? compact(errors) : null,
+            compact(results),
+            {results: results, errors: errors}
+          );
+        }
+        else {
+          idx++;
+          nextTask();
+        }
+      });
+    }
+
+    function nextTask() {
+      var nextTask = tasks.shift();
+      executeTask(nextTask);
+    }
+
+    nextTask();
+
+  } else cb();
+}
+
+extend(module.exports, {
+  compact: compact,
+  parallel: parallel,
+  series: series
+});
+
+var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,
+  FN_ARG_SPLIT = /,/,
+  FN_ARG = /^\s*(_?)(.+?)\1\s*$/,
+  STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
+
+extend(module.exports, {
   /**
    * Return the parameter names of a function.
    * Note: adapted from AngularJS dependency injection :)
@@ -337,8 +320,5 @@ extend(module.exports, {
       });
     });
     return params;
-  },
-  compact: compact,
-  parallel: parallel,
-  series: series
+  }
 });
