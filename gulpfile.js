@@ -1,8 +1,5 @@
 var gulp = require('gulp'),
   _ = require('underscore'),
-  runSequence = require('run-sequence'),
-  glob = require('glob'),
-  path = require('path'),
   async = require('async'),
   plugins = require('gulp-load-plugins')();
 
