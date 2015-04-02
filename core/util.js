@@ -291,7 +291,7 @@ function series(tasks, cb) {
 
 /**
  * Encapsulates the idea of queueing tasks until a certain condition is meant.
- * @param {Function} execute
+ * @param {Function} [execute]
  * @constructor
  */
 function Condition(execute) {
@@ -316,9 +316,11 @@ Condition.when = function(conditions, cb) {
       n++;
       if (n == conditions.length) cb(errors.length ? errors : null);
     };
-    c.when(fn).fail(function(err) {
-      errors.push(err);
-    }).fail(fn)
+    c.when(fn)
+      .fail(function(err) {
+        errors.push(err);
+      })
+      .fail(fn)
   })
 };
 
@@ -326,7 +328,7 @@ Condition.prototype = {
   when: function(fn) {
     if (!this._ready) {
       var first = !this._queued.length;
-      if (first) {
+      if (first && this.execute) {
         this.execute(function(err) {
           if (!err) {
             this.set();
