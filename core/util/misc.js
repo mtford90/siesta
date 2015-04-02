@@ -103,42 +103,6 @@
 
       return extend;
     })(),
-    defineSubProperty: function(property, subObj, innerProperty) {
-      return Object.defineProperty(this, property, {
-        get: function() {
-          if (innerProperty) {
-            return subObj[innerProperty];
-          }
-          else {
-            return subObj[property];
-          }
-        },
-        set: function(value) {
-          if (innerProperty) {
-            subObj[innerProperty] = value;
-          }
-          else {
-            subObj[property] = value;
-          }
-        },
-        enumerable: true,
-        configurable: true
-      });
-    },
-    defineSubPropertyNoSet: function(property, subObj, innerProperty) {
-      return Object.defineProperty(this, property, {
-        get: function() {
-          if (innerProperty) {
-            return subObj[innerProperty];
-          }
-          else {
-            return subObj[property];
-          }
-        },
-        enumerable: true,
-        configurable: true
-      });
-    },
     /**
      * TODO: This is bloody ugly.
      * Pretty damn useful to be able to access the bound object on a function tho.
