@@ -132,7 +132,7 @@ function Model(opts) {
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
-  this.indexedInstalled = false;
+  this._indexInstalled = new util.Condition(siesta.ext.storage.ensureIndexInstalled.bind(null, this));
 }
 
 util.extend(Model, {

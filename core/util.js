@@ -289,20 +289,65 @@ function series(tasks, cb) {
   } else cb();
 }
 
-function Condition() {
+/**
+ * Encapsulates the idea of queueing tasks until a certain condition is meant.
+ * @param {Function} execute
+ * @constructor
+ */
+function Condition(execute) {
   this._queued = [];
+  this._errQueued = [];
   this._ready = false;
+  this._err = null;
+  this.execute = execute;
 }
 
+/**
+ * @param {Array} conditions
+ * @param {Function} [cb]
+ */
+Condition.when = function(conditions, cb) {
+  conditions = conditions || [];
+  cb = cb || function() {};
+  var n = conditions.length;
+  var errors = [];
+  conditions.forEach(function(c) {
+    var fn = function() {
+      n++;
+      if (n == conditions.length) cb(errors.length ? errors : null);
+    };
+    c.when(fn).fail(function(err) {
+      errors.push(err);
+    }).fail(fn)
+  })
+};
+
 Condition.prototype = {
-  queue: function(fn) {
-    if (!this._ready)
+  when: function(fn) {
+    if (!this._ready) {
+      var first = !this._queued.length;
+      if (first) {
+        this.execute(function(err) {
+          if (!err) {
+            this._ready = true;
+            this._queued.forEach(function(fn) {fn()});
+          }
+          else {
+            this._err = err;
+            this._errQueued.forEach(function(fn) {fn(err)});
+          }
+
+        }.bind(this));
+      }
       this._queued.push(fn);
+    }
     else fn();
+    return this;
   },
-  set: function() {
-    this._ready = true;
-    this._queued.forEach(function(fn) {fn()});
+  fail: function(fn) {
+    if (this._err) fn(this._err);
+    else this._errQueued.push(fn);
+    return this;
   }
 };
 

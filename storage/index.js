@@ -81,25 +81,27 @@ else {
     };
   }
 
+  /**
+   * Ensure that the PouchDB index for the given model exists, creating it if not.
+   * @param model
+   * @param cb
+   */
   function ensureIndexInstalled(model, cb) {
-    if (!model._indexInstalled) {
-      var designDoc = constructIndexDesignDoc(model.collectionName, model.name);
-      pouch
-        .put(designDoc)
-        .then(function(resp) {
-          var err;
-          if (!resp.ok) {
-            var isConflict = response.status == 409;
-            if (!isConflict) err = resp;
-            model.indexInstalled = true;
-          }
-          cb(err);
-        })
-        .catch(cb);
+    function fn(resp) {
+      var err;
+      if (!resp.ok) {
+        if (resp.status == 409) {
+          err = null;
+          model.indexInstalled = true;
+        }
+      }
+      cb(err);
     }
-    else {
-      cb();
-    }
+
+    pouch
+      .put(constructIndexDesignDoc(model.collectionName, model.name))
+      .then(fn)
+      .catch(fn);
   }
 
   function constructIndexesForAllModels() {
