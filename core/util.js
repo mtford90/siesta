@@ -290,8 +290,8 @@ function series(tasks, cb) {
 }
 
 /**
- * Encapsulates the idea of queueing tasks until a certain condition is meant.
- * @param {Function} [execute]
+ * Encapsulates the idea of queueing tasks until a certain condition is met.
+ * @param {Function|Array|Condition} [execute]
  * @constructor
  */
 function Condition(execute) {
@@ -299,7 +299,19 @@ function Condition(execute) {
   this._errQueued = [];
   this._ready = false;
   this._err = null;
-  this.execute = execute;
+  if (execute instanceof Condition) execute = [execute];
+  if (isArray(execute)) {
+    var conditions = execute;
+    this.execute = function() {
+      Condition.when(conditions, function(err) {
+        if (!err) this.set();
+        else this.error(err);
+      }.bind(this));
+    }
+  }
+  else {
+    this.execute = execute;
+  }
 }
 
 /**
@@ -309,7 +321,7 @@ function Condition(execute) {
 Condition.when = function(conditions, cb) {
   conditions = conditions || [];
   cb = cb || function() {};
-  var n = conditions.length;
+  var n = 0;
   var errors = [];
   conditions.forEach(function(c) {
     var fn = function() {
@@ -320,7 +332,7 @@ Condition.when = function(conditions, cb) {
       .fail(function(err) {
         errors.push(err);
       })
-      .fail(fn)
+      .fail(fn);
   })
 };
 
@@ -328,19 +340,13 @@ Condition.prototype = {
   when: function(fn) {
     if (!this._ready) {
       var first = !this._queued.length;
+      this._queued.push(fn);
       if (first && this.execute) {
         this.execute(function(err) {
-          if (!err) {
-            this.set();
-          }
-          else {
-            this._err = err;
-            this._errQueued.forEach(function(fn) {fn(err)});
-          }
-
+          if (!err) this.set();
+          else this.error(err);
         }.bind(this));
       }
-      this._queued.push(fn);
     }
     else fn();
     return this;
@@ -354,6 +360,12 @@ Condition.prototype = {
     if (!this._ready) {
       this._ready = true;
       this._queued.forEach(function(fn) {fn()});
+    }
+  },
+  error: function(err) {
+    if (!this._err) {
+      this._err = err;
+      this._errQueued.forEach(function(fn) {fn(err)});
     }
   }
 };
