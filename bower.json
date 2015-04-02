@@ -1,6 +1,6 @@
 {
   "name": "siesta",
-  "version": "0.1.35",
+  "version": "0.1.36",
   "dependencies": {},
   "devDependencies": {
     "async": "~0.9.0",
