@@ -6,6 +6,7 @@ var log = require('./log')('model'),
   MappingOperation = require('./mappingOperation'),
   ModelInstance = require('./ModelInstance'),
   util = require('./util'),
+  Condition = util.Condition,
   cache = require('./cache'),
   argsarray = require('argsarray'),
   error = require('./error'),
@@ -132,7 +133,7 @@ function Model(opts) {
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
-  this._indexInstalled = new util.Condition(siesta.ext.storage.ensureIndexInstalled.bind(null, this));
+  this._indexInstalled = new Condition(siesta.ext.storage.ensureIndexInstalled.bind(null, this));
 }
 
 util.extend(Model, {

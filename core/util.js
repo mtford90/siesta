@@ -329,8 +329,7 @@ Condition.prototype = {
       if (first) {
         this.execute(function(err) {
           if (!err) {
-            this._ready = true;
-            this._queued.forEach(function(fn) {fn()});
+            this.set();
           }
           else {
             this._err = err;
@@ -348,6 +347,12 @@ Condition.prototype = {
     if (this._err) fn(this._err);
     else this._errQueued.push(fn);
     return this;
+  },
+  set: function() {
+    if (!this._ready) {
+      this._ready = true;
+      this._queued.forEach(function(fn) {fn()});
+    }
   }
 };
 

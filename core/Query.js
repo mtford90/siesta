@@ -206,7 +206,6 @@ util.extend(Query.prototype, {
     else {
       siesta._afterInstall(_executeInMemory);
     }
-
   },
   clearOrdering: function() {
     this.opts.order = null;

@@ -104,41 +104,59 @@ else {
       .catch(fn);
   }
 
-  function constructIndexesForAllModels() {
-    var indexes = [];
+  function getAllModels() {
+    var allModels = [];
     var registry = siesta._internal.CollectionRegistry;
     registry.collectionNames.forEach(function(collectionName) {
-      var models = registry[collectionName]._models;
+      var coll = registry[collectionName];
+      var models = coll._models;
       for (var modelName in models) {
         if (models.hasOwnProperty(modelName)) {
-          indexes.push(constructIndexDesignDoc(collectionName, modelName));
+          var model = coll[modelName];
+          allModels.push(model);
         }
       }
     });
-    return indexes;
+    return allModels;
+  }
+
+  function constructIndexesForAllModels(models) {
+    return models.map(function(model) {
+      return constructIndexDesignDoc(model.collectionName, model.name);
+    });
   }
 
   function __ensureIndexes(indexes, cb) {
+    function fn(resp) {
+      var errors = [];
+      for (var i = 0; i < resp.length; i++) {
+        var response = resp[i];
+        if (!response.ok) {
+          // Conflict means already exists, and this is fine!
+          var isConflict = response.status == 409;
+          if (!isConflict) errors.push(response);
+        }
+      }
+      cb(errors.length ? error('multiple errors', {errors: errors}) : null);
+    }
+
     pouch
       .bulkDocs(indexes)
-      .then(function(resp) {
-        var errors = [];
-        for (var i = 0; i < resp.length; i++) {
-          var response = resp[i];
-          if (!response.ok) {
-            // Conflict means already exists, and this is fine!
-            var isConflict = response.status == 409;
-            if (!isConflict) errors.push(response);
-          }
-        }
-        cb(errors.length ? error('multiple errors', {errors: errors}) : null);
-      })
-      .catch(cb);
+      .then(fn)
+      .catch(fn);
   }
 
   function ensureIndexesForAll(cb) {
-    var indexes = constructIndexesForAllModels();
-    __ensureIndexes(indexes, cb);
+    var models = getAllModels();
+    var indexes = constructIndexesForAllModels(models);
+    __ensureIndexes(indexes, function(err) {
+      if (!err) {
+        models.forEach(function(m) {
+          m._indexInstalled.set();
+        })
+      }
+      cb(err);
+    });
   }
 
   /**
