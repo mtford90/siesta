@@ -24,6 +24,7 @@ describe('async2', function() {
         }
       ], function(err, res) {
         assert.notOk(err);
+        console.log('res', res);
         assert.equal(res.length, 1);
         assert.equal(res[0], 'res');
         done();
@@ -46,6 +47,7 @@ describe('async2', function() {
         }
 
       ], function(err, res, all) {
+        console.log('res', res);
         assert.equal(res.length, 2);
         assert.equal(res[0], 'res');
         assert.equal(res[1], 'res');

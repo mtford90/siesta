@@ -2,7 +2,7 @@ var ModelInstance = require('./ModelInstance'),
   log = require('./log')('graph'),
   cache = require('./cache'),
   util = require('./util'),
-  async = util.async;
+  async2 = util.async2;
 
 function SiestaError(opts) {
   this.opts = opts;
@@ -258,7 +258,7 @@ util.extend(MappingOperation.prototype, {
       var tasks = [];
       this._lookup();
       tasks.push(this._executeSubOperations.bind(this));
-      util.async.parallel(tasks, function(err) {
+      async2.parallel(tasks, function(err) {
         if (err) console.error(err);
         try {
           self._map();
@@ -290,7 +290,7 @@ util.extend(MappingOperation.prototype, {
             o._emitNew();
             return memo;
           }, []);
-          async.parallel(initTasks, function() {
+          async2.parallel(initTasks, function() {
             done(self.errors.length ? self.errors : null, self.objects);
           });
         }
@@ -385,7 +385,7 @@ util.extend(MappingOperation.prototype, {
         }
         return m;
       }.bind(this), []);
-      async.parallel(tasks, function(err) {
+      async2.parallel(tasks, function(err) {
         callback(err);
       });
     } else {

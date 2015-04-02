@@ -61,7 +61,7 @@ gulp.task('watch:js', function() {
 });
 
 gulp.task('watch:test', function() {
-  return gulp.watch(['./test/**/*.js'], ['test-bundle']);
+  return gulp.watch(['./test/**/*.spec.js'], ['test-bundle']);
 });
 
 gulp.task('watch', [
