@@ -13,9 +13,9 @@ describe('conditions', function() {
   });
   it('composite, multiple', function(done) {
     var conditions = [
-      new util.Condition(function(cb) { cb()}),
-      new util.Condition(function(cb) { cb()}),
-      new util.Condition(function(cb) { cb()})
+      new util.Condition(function(cb) {cb()}),
+      new util.Condition(function(cb) {cb()}),
+      new util.Condition(function(cb) {cb()})
     ];
     var c2 = new util.Condition(conditions);
     c2.when(function() {
@@ -27,9 +27,9 @@ describe('conditions', function() {
   });
   it('composite, multiple, async', function(done) {
     var conditions = [
-      new util.Condition(function(cb) { setTimeout(cb, 2)}),
-      new util.Condition(function(cb) { setTimeout(cb, 3)}),
-      new util.Condition(function(cb) { setTimeout(cb, 1)})
+      new util.Condition(function(cb) {setTimeout(cb, 2)}),
+      new util.Condition(function(cb) {setTimeout(cb, 3)}),
+      new util.Condition(function(cb) {setTimeout(cb, 1)})
     ];
     var c2 = new util.Condition(conditions);
     c2.when(function() {
@@ -41,9 +41,9 @@ describe('conditions', function() {
   });
   it('composite, multiple, mix async, sync', function(done) {
     var conditions = [
-      new util.Condition(function(cb) { setTimeout(cb, 2)}),
-      new util.Condition(function(cb) { cb()}),
-      new util.Condition(function(cb) { setTimeout(cb, 1)})
+      new util.Condition(function(cb) {setTimeout(cb, 2)}),
+      new util.Condition(function(cb) {cb()}),
+      new util.Condition(function(cb) {setTimeout(cb, 1)})
     ];
     var c2 = new util.Condition(conditions);
     c2.when(function() {
@@ -55,9 +55,9 @@ describe('conditions', function() {
   });
   it('composite, multiple, one error', function(done) {
     var conditions = [
-      new util.Condition(function(cb) { setTimeout(cb, 2)}),
-      new util.Condition(function(cb) { cb('err')}),
-      new util.Condition(function(cb) { setTimeout(cb, 1)})
+      new util.Condition(function(cb) {setTimeout(cb, 2)}),
+      new util.Condition(function(cb) {cb('err')}),
+      new util.Condition(function(cb) {setTimeout(cb, 1)})
     ];
     var c2 = new util.Condition(conditions);
     c2.when(function() {

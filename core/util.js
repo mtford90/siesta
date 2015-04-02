@@ -291,6 +291,10 @@ function series(tasks, cb) {
 
 /**
  * Encapsulates the idea of queueing tasks until a certain condition is met.
+ *
+ * Similar to a promise except can also encapsulate the piece of work that states whether the condition
+ * is met.
+ *
  * @param {Function|Array|Condition} [execute]
  * @constructor
  */
@@ -314,10 +318,7 @@ function Condition(execute) {
   }
 }
 
-/**
- * @param {Array} conditions
- * @param {Function} [cb]
- */
+
 Condition.when = function(conditions, cb) {
   conditions = conditions || [];
   cb = cb || function() {};
@@ -328,11 +329,7 @@ Condition.when = function(conditions, cb) {
       n++;
       if (n == conditions.length) cb(errors.length ? errors : null);
     };
-    c.when(fn)
-      .fail(function(err) {
-        errors.push(err);
-      })
-      .fail(fn);
+    c.when(fn).fail(function(err) {errors.push(err);}).fail(fn);
   })
 };
 
