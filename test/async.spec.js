@@ -1,10 +1,10 @@
 var assert = require('chai').assert,
-  async2 = siesta._internal.util.async2;
+  util = siesta._internal.util;
 
-describe('async2', function() {
+describe('async', function() {
   describe('parallel', function() {
     it('single, no res', function(done) {
-      async2.parallel([
+      util.parallel([
         function(done) {
           setTimeout(function() {
             done();
@@ -16,7 +16,7 @@ describe('async2', function() {
       });
     });
     it('single, res', function(done) {
-      async2.parallel([
+      util.parallel([
         function(done) {
           setTimeout(function() {
             done(null, 'res');
@@ -31,7 +31,7 @@ describe('async2', function() {
       });
     });
     it('multiple, res, err', function(done) {
-      async2.parallel([
+      util.parallel([
         function(done) {
           setTimeout(function() {
             done(null, 'res');
@@ -62,7 +62,7 @@ describe('async2', function() {
       });
     });
     it('single, no res, err', function(done) {
-      async2.parallel([
+      util.parallel([
         function(done) {
           done('err');
         }
@@ -80,7 +80,7 @@ describe('async2', function() {
             done();
           }, 1);
         };
-      async2.parallel([
+      util.parallel([
         task,
         task,
         task
@@ -96,7 +96,7 @@ describe('async2', function() {
           n++;
           done();
         };
-      async2.parallel([
+      util.parallel([
         taskSuccess,
         function(done) {
           n++;
@@ -120,7 +120,7 @@ describe('async2', function() {
           done();
         };
       assert.throws(function() {
-        async2.parallel([
+        util.parallel([
           task,
           function() {
             throw Error('wtf');
@@ -135,7 +135,7 @@ describe('async2', function() {
   });
   describe('series', function() {
     it('single, no res', function(done) {
-      async2.series([
+      util.series([
         function(done) {
           setTimeout(function() {
             done();
@@ -147,7 +147,7 @@ describe('async2', function() {
       });
     });
     it('single, res', function(done) {
-      async2.series([
+      util.series([
         function(done) {
           setTimeout(function() {
             done(null, 'res');
@@ -162,7 +162,7 @@ describe('async2', function() {
       });
     });
     it('multiple, res, err', function(done) {
-      async2.series([
+      util.series([
         function(done) {
           setTimeout(function() {
             done(null, 'res');
@@ -193,7 +193,7 @@ describe('async2', function() {
       });
     });
     it('single, no res, err', function(done) {
-      async2.series([
+      util.series([
         function(done) {
           done('err');
         }
@@ -211,7 +211,7 @@ describe('async2', function() {
             done();
           }, 1);
         };
-      async2.series([
+      util.series([
         task,
         task,
         task
@@ -222,7 +222,7 @@ describe('async2', function() {
       });
     });
     it('multiple, res', function(done) {
-      async2.series([
+      util.series([
         function(done) {
           setTimeout(function() {
             done(null, 1);
@@ -252,7 +252,7 @@ describe('async2', function() {
           n++;
           done();
         };
-      async2.series([
+      util.series([
         taskSuccess,
         function(done) {
           n++;
@@ -276,7 +276,7 @@ describe('async2', function() {
           done();
         };
       assert.throws(function() {
-        async2.series([
+        util.series([
           task,
           function() {
             throw Error('wtf');

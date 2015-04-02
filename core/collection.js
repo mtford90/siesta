@@ -199,7 +199,7 @@ util.extend(Collection.prototype, {
         var m = this._models[modelName];
         return m.count.bind(m);
       }.bind(this));
-      util.async.parallel(tasks, function(err, ns) {
+      util.parallel(tasks, function(err, ns) {
         var n;
         if (!err) {
           n = ns.reduce(function(m, r) {
@@ -237,7 +237,7 @@ util.extend(Collection.prototype, {
           }
         }
       }
-      if (!err) util.async.series(tasks, function(err, results) {
+      if (!err) util.series(tasks, function(err, results) {
         if (!err) {
           results = results.reduce(function(memo, res) {
             return util.extend(memo, res || {});

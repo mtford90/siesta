@@ -209,6 +209,7 @@ else {
    * @private
    */
   function _loadModel(opts, callback) {
+    console.log('1');
     var loaded = {};
     var collectionName = opts.collectionName,
       modelName = opts.modelName,
@@ -218,9 +219,9 @@ else {
       modelName = model.name;
     }
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
-    log('Loading instances for ' + fullyQualifiedName);
+    console.log('Loading instances for ' + fullyQualifiedName);
     var Model = CollectionRegistry[collectionName][modelName];
-    log('Querying pouch');
+    console.log('Querying pouch');
     pouch.query(fullyQualifiedName)
       //pouch.query({map: mapFunc})
       .then(function(resp) {
@@ -278,6 +279,7 @@ else {
             modelNames = Object.keys(collection._models);
           modelNames.forEach(function(modelName) {
             tasks.push(function(cb) {
+              console.log(2);
               // We call from storage to allow for replacement of _loadModel for performance extension.
               storage._loadModel({
                 collectionName: collectionName,
@@ -286,10 +288,12 @@ else {
             });
           });
         });
-        siesta.async.series(tasks, function(err, results) {
+        console.log('tasks', tasks.map(function (x) {return x.toString()}));
+        util.series(tasks, function(err, results) {
           var n;
           if (!err) {
             var instances = [];
+            console.log('res', results);
             results.forEach(function(r) {
               instances = instances.concat(r)
             });

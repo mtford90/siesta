@@ -1,8 +1,7 @@
 var ModelInstance = require('./ModelInstance'),
   log = require('./log')('graph'),
   cache = require('./cache'),
-  util = require('./util'),
-  async2 = util.async2;
+  util = require('./util');
 
 function SiestaError(opts) {
   this.opts = opts;
@@ -258,52 +257,45 @@ util.extend(MappingOperation.prototype, {
       var tasks = [];
       this._lookup();
       tasks.push(this._executeSubOperations.bind(this));
-      async2.parallel(tasks, function(err) {
+      util.parallel(tasks, function(err) {
         if (err) console.error(err);
-        try {
-          self._map();
-          // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
-          //
-          //
-          // init: function ([done]) {
-          //     // ...
-          //  }
-          //
-          //
-          // If done is passed, then __init must be executed asynchronously, and the mapping operation will not
-          // finish until all inits have executed.
-          //
-          // Here we ensure the execution of all of them
-          var fromStorage = this.fromStorage;
-          var initTasks = self._newObjects.reduce(function(memo, o) {
-            var init = o.model.init;
-            if (init) {
-              var paramNames = util.paramNames(init);
-              if (paramNames.length > 1) {
-                memo.push(init.bind(o, fromStorage, done));
-              }
-              else {
-                init.call(o, fromStorage);
-              }
+        self._map();
+        // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
+        //
+        //
+        // init: function ([done]) {
+        //     // ...
+        //  }
+        //
+        //
+        // If done is passed, then __init must be executed asynchronously, and the mapping operation will not
+        // finish until all inits have executed.
+        //
+        // Here we ensure the execution of all of them
+        var fromStorage = this.fromStorage;
+        var initTasks = self._newObjects.reduce(function(memo, o) {
+          var init = o.model.init;
+          if (init) {
+            var paramNames = util.paramNames(init);
+            if (paramNames.length > 1) {
+              memo.push(init.bind(o, fromStorage, done));
             }
-            o._emitEvents = true;
-            o._emitNew();
-            return memo;
-          }, []);
-          async2.parallel(initTasks, function() {
-            done(self.errors.length ? self.errors : null, self.objects);
-          });
-        }
-        catch (e) {
-          console.error('Uncaught error when executing init funcitons on models.', e);
-          done(e);
-        }
+            else {
+              init.call(o, fromStorage);
+            }
+          }
+          o._emitEvents = true;
+          o._emitNew();
+          return memo;
+        }, []);
+        util.parallel(initTasks, function() {
+          done(self.errors.length ? self.errors : null, self.objects);
+        });
       }.bind(this));
     } else {
       done(null, []);
     }
-  }
-  ,
+  },
   getRelatedData: function(name) {
     var indexes = [];
     var relatedData = [];
@@ -385,7 +377,7 @@ util.extend(MappingOperation.prototype, {
         }
         return m;
       }.bind(this), []);
-      async2.parallel(tasks, function(err) {
+      util.parallel(tasks, function(err) {
         callback(err);
       });
     } else {

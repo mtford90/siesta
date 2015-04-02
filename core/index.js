@@ -15,6 +15,7 @@ var util = require('./util'),
   Query = require('./Query'),
   querySet = require('./QuerySet'),
   log = require('./log');
+
 util._patchBind();
 
 // Initialise siesta object. Strange format facilities using submodules with requireJS (eventually)
@@ -66,7 +67,6 @@ util.extend(siesta, {
     OneToOneProxy: OneToOneProxy,
     RelationshipProxy: RelationshipProxy
   },
-  async: util.async,
   isArray: util.isArray,
   isString: util.isString
 });
@@ -129,8 +129,7 @@ util.extend(siesta, {
           if (this.queuedTasks) this.queuedTasks.execute();
           done();
         }.bind(this));
-
-        siesta.async.series(tasks, cb);
+        util.series(tasks, cb);
       }.bind(this));
     }
     else cb(error('already installing'));
@@ -197,7 +196,7 @@ util.extend(siesta, {
           }
         }
       }
-      if (!err) util.async.series(tasks, function(err, results) {
+      if (!err) util.series(tasks, function(err, results) {
         if (!err) {
           results = results.reduce(function(memo, res) {
             return util.extend(memo, res);
