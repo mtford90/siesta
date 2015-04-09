@@ -112,10 +112,6 @@ util.extend(RelationshipProxy.prototype, {
       });
     } else {
       var proxies = modelInstance.__proxies;
-      if (!proxies) {
-        console.error('modelInstancce', modelInstance);
-        throw 'help me';
-      }
       var proxy = proxies[name];
       if (!proxy) {
         var err = 'No proxy with name "' + name + '" on mapping ' + model.name;

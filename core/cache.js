@@ -17,65 +17,63 @@ Cache.prototype = {
     this.remote = {};
     this.localById = {};
     this.local = {};
+  },
+  /**
+   * Return the object in the cache given a local id (_id)
+   * @param  {String|Array} localId
+   * @return {ModelInstance}
+   */
+  getViaLocalId: function getViaLocalId(localId) {
+    if (util.isArray(localId)) return localId.map(function(x) {return this.localById[x]}.bind(this));
+    else return this.localById[localId];
+  },
+  /**
+   * Given a remote identifier and an options object that describes mapping/collection,
+   * return the model if cached.
+   * @param  {String|Array} remoteId
+   * @param  {Object} opts
+   * @param  {Object} opts.model
+   * @return {ModelInstance}
+   */
+  getViaRemoteId: function(remoteId, opts) {
+    var c = (this.remote[opts.model.collectionName] || {})[opts.model.name] || {};
+    return util.isArray(remoteId) ? remoteId.map(function(x) {return c[x]}) : c[remoteId];
+  },
+  /**
+   * Return the singleton object given a singleton model.
+   * @param  {Model} model
+   * @return {ModelInstance}
+   */
+  getSingleton: function(model) {
+    var modelName = model.name;
+    var collectionName = model.collectionName;
+    var collectionCache = this.local[collectionName];
+    if (collectionCache) {
+      var typeCache = collectionCache[modelName];
+      if (typeCache) {
+        var objs = [];
+        for (var prop in typeCache) {
+          if (typeCache.hasOwnProperty(prop)) {
+            objs.push(typeCache[prop]);
+          }
+        }
+        if (objs.length > 1) {
+          var errStr = 'A singleton model has more than 1 object in the cache! This is a serious error. ' +
+            'Either a model has been modified after objects have already been created, or something has gone' +
+            'very wrong. Please file a bug report if the latter.';
+          throw new InternalSiestaError(errStr);
+        } else if (objs.length) {
+          return objs[0];
+        }
+      }
+    }
+    return null;
   }
 };
 
 
 var cache = new Cache();
 
-/**
- * Return the object in the cache given a local id (_id)
- * @param  {String|Array} localId
- * @return {ModelInstance}
- */
-function getViaLocalId(localId) {
-  if (util.isArray(localId)) return localId.map(function(x) {return cache.localById[x]});
-  else return cache.localById[localId];
-}
-
-/**
- * Return the singleton object given a singleton model.
- * @param  {Model} model
- * @return {ModelInstance}
- */
-function getSingleton(model) {
-  var modelName = model.name;
-  var collectionName = model.collectionName;
-  var collectionCache = cache.local[collectionName];
-  if (collectionCache) {
-    var typeCache = collectionCache[modelName];
-    if (typeCache) {
-      var objs = [];
-      for (var prop in typeCache) {
-        if (typeCache.hasOwnProperty(prop)) {
-          objs.push(typeCache[prop]);
-        }
-      }
-      if (objs.length > 1) {
-        var errStr = 'A singleton model has more than 1 object in the cache! This is a serious error. ' +
-          'Either a model has been modified after objects have already been created, or something has gone' +
-          'very wrong. Please file a bug report if the latter.';
-        throw new InternalSiestaError(errStr);
-      } else if (objs.length) {
-        return objs[0];
-      }
-    }
-  }
-  return null;
-}
-
-/**
- * Given a remote identifier and an options object that describes mapping/collection,
- * return the model if cached.
- * @param  {String|Array} remoteId
- * @param  {Object} opts
- * @param  {Object} opts.model
- * @return {ModelInstance}
- */
-function getViaRemoteId(remoteId, opts) {
-  var c = (cache.remote[opts.model.collectionName] || {})[opts.model.name] || {};
-  return util.isArray(remoteId) ? remoteId.map(function(x) {return c[x]}) : c[remoteId];
-}
 
 /**
  * Insert an object into the cache using a remote identifier defined by the mapping.
@@ -161,7 +159,7 @@ function get(opts) {
   var obj, idField, remoteId;
   var localId = opts.localId;
   if (localId) {
-    obj = getViaLocalId(localId);
+    obj = cache.getViaLocalId(localId);
     if (obj) {
       return obj;
     } else {
@@ -169,7 +167,7 @@ function get(opts) {
         idField = opts.model.id;
         remoteId = opts[idField];
         log(idField + '=' + remoteId);
-        return getViaRemoteId(remoteId, opts);
+        return cache.getViaRemoteId(remoteId, opts);
       } else {
         return null;
       }
@@ -178,9 +176,9 @@ function get(opts) {
     idField = opts.model.id;
     remoteId = opts[idField];
     if (remoteId) {
-      return getViaRemoteId(remoteId, opts);
+      return cache.getViaRemoteId(remoteId, opts);
     } else if (opts.model.singleton) {
-      return getSingleton(opts.model);
+      return cache.getSingleton(opts.model);
     }
   } else {
     log('Invalid opts to cache', {
@@ -281,9 +279,9 @@ exports.remoteInsert = remoteInsert;
 exports.reset = cache.reset.bind(cache);
 exports.contains = contains;
 exports.remove = remove;
-exports.getSingleton = getSingleton;
-exports.getViaLocalId = getViaLocalId;
-exports.getViaRemoteId = getViaRemoteId;
+exports.getSingleton = cache.getSingleton.bind(cache);
+exports.getViaLocalId = cache.getViaLocalId.bind(cache);
+exports.getViaRemoteId = cache.getViaRemoteId.bind(cache);
 exports.count = function() {
   return Object.keys(cache.localById).length;
 };
