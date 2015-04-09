@@ -104,54 +104,6 @@ else {
       .catch(fn);
   }
 
-  function getAllModels() {
-    var allModels = [];
-    var registry = siesta._internal.CollectionRegistry;
-    registry.collectionNames.forEach(function(collectionName) {
-      var coll = registry[collectionName];
-      var models = coll._models;
-      for (var modelName in models) {
-        if (models.hasOwnProperty(modelName)) {
-          var model = coll[modelName];
-          allModels.push(model);
-        }
-      }
-    });
-    return allModels;
-  }
-
-  function constructIndexesForAllModels(models) {
-    return models.map(function(model) {
-      return constructIndexDesignDoc(model.collectionName, model.name);
-    });
-  }
-
-  function __ensureIndexes(indexes, cb) {
-    function fn(resp) {
-      var errors = [];
-      for (var i = 0; i < resp.length; i++) {
-        var response = resp[i];
-        if (!response.ok) {
-          // Conflict means already exists, and this is fine!
-          var isConflict = response.status == 409;
-          if (!isConflict) errors.push(response);
-        }
-      }
-      cb(errors.length ? error('multiple errors', {errors: errors}) : null);
-    }
-
-    pouch
-      .bulkDocs(indexes)
-      .then(fn)
-      .catch(fn);
-  }
-
-  function ensureIndexesForAll(cb) {
-    var models = getAllModels();
-    var indexes = constructIndexesForAllModels(models);
-    __ensureIndexes(indexes, cb);
-  }
-
   /**
    * Serialise a model into a format that PouchDB bulkDocs API can process
    * @param {ModelInstance} modelInstance
@@ -261,6 +213,7 @@ else {
         }, function(err, instances) {
           if (!err) {
             console.log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
+            model.on('*', listener);
           }
           else {
             console.error('Error loading models', err);
@@ -272,53 +225,6 @@ else {
         cb(err);
       });
 
-  }
-
-  /**
-   * Load all data from PouchDB.
-   */
-  function _load(cb) {
-    if (saving) throw new Error('not loaded yet how can i save');
-    return util.promise(cb, function(cb) {
-      if (siesta.ext.storageEnabled) {
-        var collectionNames = CollectionRegistry.collectionNames;
-        var tasks = [];
-        collectionNames.forEach(function(collectionName) {
-          var collection = CollectionRegistry[collectionName],
-            modelNames = Object.keys(collection._models);
-          modelNames.forEach(function(modelName) {
-            tasks.push(function(cb) {
-              // We call from storage to allow for replacement of _loadModel for performance extension.
-              storage.loadModel({
-                collectionName: collectionName,
-                modelName: modelName
-              }, cb);
-            });
-          });
-        });
-        util.series(tasks, function(err, results) {
-          var n;
-          if (!err) {
-            var instances = [];
-            results.forEach(function(r) {
-              instances = instances.concat(r)
-            });
-            n = instances.length;
-            if (log) {
-              log('Loaded ' + n.toString() + ' instances. Cache size is ' + cache.count(), {
-                remote: cache._remoteCache(),
-                localCache: cache._localCache()
-              });
-            }
-            siesta.on('Siesta', listener);
-          }
-          cb(err, n);
-        });
-      }
-      else {
-        cb();
-      }
-    }.bind(this));
   }
 
   function saveConflicts(objects, cb) {
@@ -400,11 +306,9 @@ else {
   }
 
   util.extend(storage, {
-    _load: _load,
     loadModel: loadModel,
     save: save,
     _serialise: _serialise,
-    ensureIndexesForAll: ensureIndexesForAll,
     ensureIndexInstalled: ensureIndexInstalled,
     _reset: function(cb) {
       siesta.removeListener('Siesta', listener);

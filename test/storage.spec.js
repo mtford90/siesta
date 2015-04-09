@@ -905,45 +905,6 @@ describe('storage', function() {
     });
   });
 
-  it('init should  be called on load with storage == true', function(done) {
-    var Collection, Car, Person;
-    var carInitCalled = false, personInitCalled = false;
-    Collection = siesta.collection('myCollection');
-    Car = Collection.model('Car', {
-      attributes: ['colour'],
-      init: function(fromStorage) {
-        assert.ok(fromStorage);
-        carInitCalled = true;
-      },
-      relationships: {
-        owner: {
-          model: 'Person'
-        }
-      }
-    });
-    Person = Collection.model('Person', {
-      attributes: ['name'],
-      init: function(fromStorage) {
-        assert.ok(fromStorage);
-        personInitCalled = true;
-      }
-    });
-    siesta.install(function() {
-      siesta.ext.storage._pouch.bulkDocs([
-        {collection: 'myCollection', model: 'Car', colour: 'red'},
-        {collection: 'myCollection', model: 'Person', name: 'Mike'}
-      ]).then(function() {
-        siesta.ext.storage._load().then(function() {
-          assert.ok(carInitCalled, 'car init should be called');
-          assert.ok(personInitCalled, 'person init should be called');
-          done();
-        }).catch(done);
-      }).catch(done);
-    });
-
-
-  });
-
   describe('prevent duplicates', function() {
     it('it should be impossible to write down multiple objects to pouchdb that have the same remote id', function(done) {
       var Collection = siesta.collection('MyCollection'),
