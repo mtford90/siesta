@@ -171,7 +171,7 @@ util.extend(Query.prototype, {
   _executeInMemory: function(callback) {
     var _executeInMemory = function() {
       this.model
-        ._indexInstalled
+        ._indexIsInstalled
         .then(function() {
           var cacheByLocalId = this._getCacheByLocalId();
           var keys = Object.keys(cacheByLocalId);

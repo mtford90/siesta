@@ -149,14 +149,7 @@ else {
   function ensureIndexesForAll(cb) {
     var models = getAllModels();
     var indexes = constructIndexesForAllModels(models);
-    __ensureIndexes(indexes, function(err) {
-      if (!err) {
-        models.forEach(function(m) {
-          m._indexInstalled.resolve();
-        })
-      }
-      cb(err);
-    });
+    __ensureIndexes(indexes, cb);
   }
 
   /**
@@ -228,7 +221,7 @@ else {
    * @param callback
    * @private
    */
-  function _loadModel(opts, callback) {
+  function loadModel(opts, callback) {
     var loaded = {};
     var collectionName = opts.collectionName,
       modelName = opts.modelName,
@@ -240,7 +233,6 @@ else {
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
     var Model = CollectionRegistry[collectionName][modelName];
     pouch.query(fullyQualifiedName)
-      //pouch.query({map: mapFunc})
       .then(function(resp) {
         log('Queried pouch successfully');
         var rows = resp.rows;
@@ -297,7 +289,7 @@ else {
           modelNames.forEach(function(modelName) {
             tasks.push(function(cb) {
               // We call from storage to allow for replacement of _loadModel for performance extension.
-              storage._loadModel({
+              storage.loadModel({
                 collectionName: collectionName,
                 modelName: modelName
               }, cb);
@@ -409,7 +401,7 @@ else {
 
   util.extend(storage, {
     _load: _load,
-    _loadModel: _loadModel,
+    loadModel: loadModel,
     save: save,
     _serialise: _serialise,
     ensureIndexesForAll: ensureIndexesForAll,

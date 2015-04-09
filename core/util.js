@@ -125,9 +125,9 @@ extend(module.exports, {
       fn(_cb);
     })
   },
-  defer: function () {
+  defer: function() {
     var resolve, reject;
-    var p = new Promise(function (_resolve, _reject) {
+    var p = new Promise(function(_resolve, _reject) {
       resolve = _resolve;
       reject = _reject;
     });

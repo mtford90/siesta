@@ -11,6 +11,7 @@ var log = require('./log')('model'),
   error = require('./error'),
   extend = require('extend'),
   modelEvents = require('./modelEvents'),
+  Condition = require('./Condition'),
   events = require('./events'),
   Placeholder = require('./Placeholder'),
   ReactiveQuery = require('./ReactiveQuery'),
@@ -132,8 +133,17 @@ function Model(opts) {
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
-  this._indexInstalled = util.defer();
-  if (!siesta.ext.storageEnabled) this._indexInstalled.resolve();
+  this._indexIsInstalled = new Condition(function(done) {
+    if (siesta.ext.storageEnabled) siesta.ext.storage.ensureIndexInstalled(this, done);
+    else done();
+  }.bind(this));
+
+  this._modelLoadedFromStorage = new Condition(function(done) {
+    if (siesta.ext.storageEnabled) siesta.ext.storage.loadModel({model: this}, done);
+    else done();
+  });
+
+  this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
 }
 
 util.extend(Model, {
