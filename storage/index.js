@@ -218,10 +218,10 @@ else {
    * @param [opts.collectionName]
    * @param [opts.modelName]
    * @param [opts.model]
-   * @param callback
+   * @param cb
    * @private
    */
-  function loadModel(opts, callback) {
+  function loadModel(opts, cb) {
     var loaded = {};
     var collectionName = opts.collectionName,
       modelName = opts.modelName,
@@ -230,11 +230,12 @@ else {
       collectionName = model.collectionName;
       modelName = model.name;
     }
+
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
     var Model = CollectionRegistry[collectionName][modelName];
     pouch.query(fullyQualifiedName)
       .then(function(resp) {
-        log('Queried pouch successfully');
+        console.log('Queried pouch successfully');
         var rows = resp.rows;
         var data = util.pluck(rows, 'value').map(function(datum) {
           return _prepareDatum(datum, Model);
@@ -252,24 +253,23 @@ else {
           }
         });
 
-        log('Mapping data', data);
+        console.log('Mapping data', data);
 
-        Model.graph(data, {
+        Model._graph(data, {
           _ignoreInstalled: true,
           fromStorage: true
         }, function(err, instances) {
           if (!err) {
-            if (log.enabled)
-              log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
+            console.log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
           }
           else {
-            log('Error loading models', err);
+            console.error('Error loading models', err);
           }
-          callback(err, instances);
+          cb(err, instances);
         });
       })
       .catch(function(err) {
-        callback(err);
+        cb(err);
       });
 
   }

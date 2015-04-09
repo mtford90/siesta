@@ -94,7 +94,8 @@ describe('install step', function() {
         {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
         {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
       ]).then(function() {
-        Person.query({age__gt: 23})
+        Person
+          .query({age__gt: 23})
           .then(function(res) {
             assert.equal(res.length, 1, 'Should have installed and loaded before returning from the query');
             done();

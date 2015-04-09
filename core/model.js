@@ -139,9 +139,14 @@ function Model(opts) {
   }.bind(this));
 
   this._modelLoadedFromStorage = new Condition(function(done) {
-    if (siesta.ext.storageEnabled) siesta.ext.storage.loadModel({model: this}, done);
+    if (siesta.ext.storageEnabled) {
+      siesta.ext.storage.loadModel({model: this}, function() {
+        console.log('loaded from storage');
+        done();
+      }.bind(this));
+    }
     else done();
-  });
+  }.bind(this));
 
   this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
 }
@@ -445,6 +450,34 @@ util.extend(Model.prototype, {
       if (attributeDefinition.name == name) return attributeDefinition;
     }
   },
+  _graph: function(data, opts, cb) {
+    var _map = function() {
+      var overrides = opts.override;
+      if (overrides) {
+        if (util.isArray(overrides)) opts.objects = overrides;
+        else opts.objects = [overrides];
+      }
+      delete opts.override;
+      if (util.isArray(data)) {
+        this._mapBulk(data, opts, cb);
+      } else {
+        this._mapBulk([data], opts, function(err, objects) {
+          var obj;
+          if (objects) {
+            if (objects.length) {
+              obj = objects[0];
+            }
+          }
+          err = err ? (util.isArray(data) ? err : (util.isArray(err) ? err[0] : err)) : null;
+          cb(err, obj);
+        });
+      }
+    }.bind(this);
+    if (opts._ignoreInstalled) {
+      _map();
+    }
+    else siesta._afterInstall(_map);
+  },
   /**
    * Map data into Siesta.
    *
@@ -458,32 +491,11 @@ util.extend(Model.prototype, {
     if (typeof opts == 'function') cb = opts;
     opts = opts || {};
     return util.promise(cb, function(cb) {
-      var _map = function() {
-        var overrides = opts.override;
-        if (overrides) {
-          if (util.isArray(overrides)) opts.objects = overrides;
-          else opts.objects = [overrides];
-        }
-        delete opts.override;
-        if (util.isArray(data)) {
-          this._mapBulk(data, opts, cb);
-        } else {
-          this._mapBulk([data], opts, function(err, objects) {
-            var obj;
-            if (objects) {
-              if (objects.length) {
-                obj = objects[0];
-              }
-            }
-            err = err ? (util.isArray(data) ? err : (util.isArray(err) ? err[0] : err)) : null;
-            cb(err, obj);
-          });
-        }
-      }.bind(this);
-      if (opts._ignoreInstalled) {
-        _map();
-      }
-      else siesta._afterInstall(_map);
+      this._storageEnabled
+        .then(function() {
+          this._graph(data, opts, cb);
+        }.bind(this))
+        .catch(cb);
     }.bind(this));
   },
   _mapBulk: function(data, opts, callback) {

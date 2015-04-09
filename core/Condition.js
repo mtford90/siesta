@@ -16,21 +16,30 @@ function Condition(fn, lazy) {
       var errors = [];
       if (util.isArray(fn)) {
         var checkComplete = function() {
-          if (numComplete.length == fn.length) {
-            if (errors.length) this._promise.reject(errors);
-            else this._promise.resolve(null, results);
+          if (numComplete == fn.length) {
+            if (errors.length) {
+              reject(errors);
+            }
+            else {
+              resolve(results);
+            }
           }
         }.bind(this);
 
         fn.forEach(function(cond, idx) {
-          cond.then(function(res) {
-            results[idx] = res;
-            numComplete++;
-            checkComplete();
-          }).catch(function(err) {
-            errors[idx] = err;
-            numComplete++;
-          });
+          console.log(1, cond);
+          cond
+            .then(function(res) {
+              console.log(2, cond);
+              results[idx] = res;
+              numComplete++;
+              checkComplete();
+            })
+            .catch(function(err) {
+              errors[idx] = err;
+              numComplete++;
+              checkComplete();
+            });
         });
       }
       else {
@@ -58,11 +67,11 @@ Condition.prototype = {
     this._execute();
     return this._promise.catch(fail);
   },
-  resolve: function (res) {
+  resolve: function(res) {
     this.executed = true;
     this._promise.resolve(res);
   },
-  reject: function (err) {
+  reject: function(err) {
     this.executed = true;
     this._promise.reject(err);
   }

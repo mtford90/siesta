@@ -123,7 +123,7 @@ util.extend(siesta, {
             return collection.install.bind(collection);
           }),
           storageEnabled = siesta.ext.storageEnabled;
-        if (storageEnabled) tasks = tasks.concat([siesta.ext.storage.ensureIndexesForAll, siesta.ext.storage._load]);
+        //if (storageEnabled) tasks = tasks.concat([siesta.ext.storage.ensureIndexesForAll, siesta.ext.storage._load]);
         tasks.push(function(done) {
           installed = true;
           if (this.queuedTasks) this.queuedTasks.execute();
