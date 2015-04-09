@@ -152,7 +152,7 @@ else {
     __ensureIndexes(indexes, function(err) {
       if (!err) {
         models.forEach(function(m) {
-          m._indexInstalled.set();
+          m._indexInstalled.resolve();
         })
       }
       cb(err);

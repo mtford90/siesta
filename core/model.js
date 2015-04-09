@@ -6,7 +6,6 @@ var log = require('./log')('model'),
   MappingOperation = require('./mappingOperation'),
   ModelInstance = require('./ModelInstance'),
   util = require('./util'),
-  Condition = util.Condition,
   cache = require('./cache'),
   argsarray = require('argsarray'),
   error = require('./error'),
@@ -133,7 +132,8 @@ function Model(opts) {
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
-  this._indexInstalled = new Condition(siesta.ext.storage.ensureIndexInstalled.bind(null, this));
+  this._indexInstalled = util.defer();
+  if (!siesta.ext.storageEnabled) this._indexInstalled.resolve();
 }
 
 util.extend(Model, {
@@ -156,6 +156,7 @@ util.extend(Model, {
       return m;
     }, [])
   }
+
 });
 
 Model.prototype = Object.create(events.ProxyEventEmitter.prototype);
@@ -370,11 +371,11 @@ util.extend(Model.prototype, {
     // any event handlers added to the chain are honoured straight away.
     var linkPromise = new util.Promise(function(resolve, reject) {
       promise.then(argsarray(function(args) {
-        setTimeout(function() {
+        setImmediate(function() {
           resolve.apply(null, args);
         });
       }), argsarray(function(args) {
-        setTimeout(function() {
+        setImmediate(function() {
           reject.apply(null, args);
         })
       }));

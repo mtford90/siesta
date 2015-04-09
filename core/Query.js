@@ -172,7 +172,7 @@ util.extend(Query.prototype, {
     var _executeInMemory = function() {
       this.model
         ._indexInstalled
-        .when(function() {
+        .then(function() {
           var cacheByLocalId = this._getCacheByLocalId();
           var keys = Object.keys(cacheByLocalId);
           var self = this;
@@ -193,7 +193,7 @@ util.extend(Query.prototype, {
           if (err) log('Error executing query', err);
           callback(err, err ? null : constructQuerySet(res, this.model));
         }.bind(this))
-        .fail(function(err) {
+        .catch(function(err) {
           var _err = 'Unable to execute query due to failed index installation on Model "' +
             this.model.name + '"';
           console.error(_err, err);

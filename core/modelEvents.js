@@ -33,7 +33,6 @@ function ModelEvent(opts) {
   }.bind(this));
 }
 
-
 ModelEvent.prototype._dump = function(pretty) {
   var dumped = {};
   dumped.collection = (typeof this.collection) == 'string' ? this.collection : this.collection._dump();

@@ -37,7 +37,7 @@ describe('pomodoro', function() {
           done();
         });
         Task.graph({title: 'title', description: 'an awesome description', completed: false})
-            .catch(done);
+          .catch(done);
       }).catch(done);
     });
   });
@@ -107,15 +107,16 @@ describe('pomodoro', function() {
         longBreak: 'green',
         _id: 'xyz'
       }).then(function() {
-        ColourConfig.one()
+        siesta.install().then(function() {
+          ColourConfig.one()
             .then(function(colourConfig) {
               assert.equal(colourConfig.primary, 'red');
               assert.equal(colourConfig.shortBreak, 'blue');
               assert.equal(colourConfig.longBreak, 'green');
               done();
             })
-            .catch(done)
-        ;
+            .catch(done);
+        }).catch(done);
       }).catch(done);
 
     });
@@ -129,15 +130,16 @@ describe('pomodoro', function() {
         longBreak: 'green',
         _id: 'xyz'
       }).then(function() {
-        Config.one()
+        siesta.install().then(function() {
+          Config.one()
             .then(function(config) {
               var colourConfig = config.colours;
               assert.equal(colourConfig.primary, 'red');
               assert.equal(colourConfig.shortBreak, 'blue');
               assert.equal(colourConfig.longBreak, 'green');
               done();
-            })
-            .catch(done)
+            }).catch(done);
+        });
       }).catch(done);
     });
 
@@ -150,31 +152,32 @@ describe('pomodoro', function() {
         longBreak: 'green',
         _id: 'xyz'
       }).then(function() {
-        Config.one()
+        siesta.install().then(function() {
+          Config.one()
             .then(function(config) {
               var colourConfig = config.colours;
               colourConfig.primary = 'blue';
               siesta.save()
-                  .then(function() {
-                    colourConfig.primary = 'orange';
-                    siesta.save().then(function() {
-                      siesta.ext.storage._pouch.query(function(doc) {
-                        if (doc.model == 'ColourConfig') {
-                          emit(doc._id, doc);
-                        }
-                      }, {include_docs: true})
-                          .then(function(resp) {
-                            var rows = resp.rows;
-                            assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
-                            done();
-                          })
-                          .catch(done);
-                    }).catch(done);
-                  })
-                  .catch(done);
+                .then(function() {
+                  colourConfig.primary = 'orange';
+                  siesta.save().then(function() {
+                    siesta.ext.storage._pouch.query(function(doc) {
+                      if (doc.model == 'ColourConfig') {
+                        emit(doc._id, doc);
+                      }
+                    }, {include_docs: true})
+                      .then(function(resp) {
+                        var rows = resp.rows;
+                        assert.equal(rows.length, 1, 'Should only ever be one row for singleton');
+                        done();
+                      })
+                      .catch(done);
+                  }).catch(done);
+                })
+                .catch(done);
             })
-            .catch(done)
-        ;
+            .catch(done);
+        });
       }).catch(done);
     });
   });

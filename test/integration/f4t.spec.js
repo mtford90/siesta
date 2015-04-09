@@ -170,13 +170,15 @@ describe('f4t', function() {
         _id: '54e8cc3011c8a11c633c5449',
         username: 'mtford'
       }).then(function(user) {
-        var cancel = Company.query({owner: user})
+        var cancel = Company
+          .query({owner: user})
           .then(function(res) {
             console.log('ffs', res);
           })
           .on('*', function(e) {
             done();
           });
+
         Company.graph([{
           "owner": "54e8cc3011c8a11c633c5449",
           "name": "Mikes Companyasdasd",

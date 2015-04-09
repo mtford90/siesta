@@ -665,29 +665,32 @@ describe('storage', function() {
           longBreak: 'green',
           _id: 'xyz'
         }).then(function() {
-          ColourConfig.one()
-            .then(function(colourConfig) {
-              extracted(function(err, rows) {
-                if (!err) {
-                  assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
-                  assert.equal(colourConfig.primary, 'red');
-                  assert.equal(colourConfig.shortBreak, 'blue');
-                  assert.equal(colourConfig.longBreak, 'green');
-                  siesta.save()
-                    .then(function() {
-                      extracted(function(err, rows) {
-                        if (!err) {
-                          assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
-                          done();
-                        }
-                        else done(err);
-                      });
-                    }).catch(done);
-                }
-                else done(err);
-              });
-            }).catch(done)
-        }).catch(done);
+          siesta.install().then(function() {
+            ColourConfig
+              .one()
+              .then(function(colourConfig) {
+                extracted(function(err, rows) {
+                  if (!err) {
+                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
+                    assert.equal(colourConfig.primary, 'red');
+                    assert.equal(colourConfig.shortBreak, 'blue');
+                    assert.equal(colourConfig.longBreak, 'green');
+                    siesta.save()
+                      .then(function() {
+                        extracted(function(err, rows) {
+                          if (!err) {
+                            assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
+                            done();
+                          }
+                          else done(err);
+                        });
+                      }).catch(done);
+                  }
+                  else done(err);
+                });
+              }).catch(done)
+          }).catch(done);
+        });
       });
     });
 

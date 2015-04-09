@@ -125,6 +125,18 @@ extend(module.exports, {
       fn(_cb);
     })
   },
+  defer: function () {
+    var resolve, reject;
+    var p = new Promise(function (_resolve, _reject) {
+      resolve = _resolve;
+      reject = _reject;
+    });
+    //noinspection JSUnusedAssignment
+    p.resolve = resolve;
+    //noinspection JSUnusedAssignment
+    p.reject = reject;
+    return p;
+  },
   subProperties: function(obj, subObj, properties) {
     if (!isArray(properties)) {
       properties = Array.prototype.slice.call(arguments, 2);
@@ -289,89 +301,11 @@ function series(tasks, cb) {
   } else cb();
 }
 
-/**
- * Encapsulates the idea of queueing tasks until a certain condition is met.
- *
- * Similar to a promise except can also encapsulate the piece of work that states whether the condition
- * is met.
- *
- * @param {Function|Array|Condition} [execute]
- * @constructor
- */
-function Condition(execute) {
-  this._queued = [];
-  this._errQueued = [];
-  this._ready = false;
-  this._err = null;
-  if (execute instanceof Condition) execute = [execute];
-  if (isArray(execute)) {
-    var conditions = execute;
-    this.execute = function() {
-      Condition.when(conditions, function(err) {
-        if (!err) this.set();
-        else this.error(err);
-      }.bind(this));
-    }
-  }
-  else {
-    this.execute = execute;
-  }
-}
-
-
-Condition.when = function(conditions, cb) {
-  conditions = conditions || [];
-  cb = cb || function() {};
-  var n = 0;
-  var errors = [];
-  conditions.forEach(function(c) {
-    var fn = function() {
-      n++;
-      if (n == conditions.length) cb(errors.length ? errors : null);
-    };
-    c.when(fn).fail(function(err) {errors.push(err);}).fail(fn);
-  })
-};
-
-Condition.prototype = {
-  when: function(fn) {
-    if (!this._ready) {
-      var first = !this._queued.length;
-      this._queued.push(fn);
-      if (first && this.execute) {
-        this.execute(function(err) {
-          if (!err) this.set();
-          else this.error(err);
-        }.bind(this));
-      }
-    }
-    else fn();
-    return this;
-  },
-  fail: function(fn) {
-    if (this._err) fn(this._err);
-    else this._errQueued.push(fn);
-    return this;
-  },
-  set: function() {
-    if (!this._ready) {
-      this._ready = true;
-      this._queued.forEach(function(fn) {fn()});
-    }
-  },
-  error: function(err) {
-    if (!this._err) {
-      this._err = err;
-      this._errQueued.forEach(function(fn) {fn(err)});
-    }
-  }
-};
 
 extend(module.exports, {
   compact: compact,
   parallel: parallel,
-  series: series,
-  Condition: Condition
+  series: series
 });
 
 var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m,

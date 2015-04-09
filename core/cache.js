@@ -110,10 +110,7 @@ Cache.prototype = {
                 cachedObject: cachedObject
               });
               throw new InternalSiestaError(message);
-            } else {
-              log('Object has already been inserted: ' + obj._dump(true));
             }
-
           }
         } else {
           throw new InternalSiestaError('Model has no type', {

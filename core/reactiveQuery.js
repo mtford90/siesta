@@ -97,7 +97,13 @@ util.extend(ReactiveQuery.prototype, {
    */
   init: function(cb, _ignoreInit) {
     if (this._query) {
-      if (log) log('init');
+      var name = this._constructNotificationName();
+      var handler = function(n) {
+        console.log(1, n);
+        this._handleNotif(n);
+      }.bind(this);
+      this.handler = handler;
+      events.on(name, handler);
       return util.promise(cb, function(cb) {
         if ((!this.initialised) || _ignoreInit) {
           this._query.execute(function(err, results) {
@@ -118,15 +124,6 @@ util.extend(ReactiveQuery.prototype, {
   },
   _applyResults: function(results) {
     this.results = results;
-    if (!this.handler) {
-      var name = this._constructNotificationName();
-      var handler = function(n) {
-        this._handleNotif(n);
-      }.bind(this);
-      this.handler = handler;
-      events.on(name, handler);
-    }
-    log('Listening to ' + name);
     this.initialised = true;
     return this.results;
   },
@@ -145,7 +142,6 @@ util.extend(ReactiveQuery.prototype, {
     return this.init(cb, true)
   },
   _handleNotif: function(n) {
-    log('_handleNotif', n);
     if (n.type == modelEvents.ModelEventType.New) {
       var newObj = n.new;
       if (this._query.objectMatchesQuery(newObj)) {
