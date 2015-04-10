@@ -28,7 +28,7 @@ function ManyToManyProxy(opts) {
         }
         modelEvents.emit({
           collection: this.reverseModel.collectionName,
-          model: model.name,
+          model: this.reverseModel.name,
           localId: this.object.localId,
           field: this.reverseName,
           removed: removed,
