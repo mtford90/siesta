@@ -97,6 +97,14 @@ util.extend(ModelInstance.prototype, {
     modelEvents.emit(opts);
   },
   remove: function(cb, notification) {
+    _.each(this._relationshipNames, function (name) {
+      if (util.isArray(this[name])) {
+        this[name] = [];
+      }
+      else {
+        this[name] = null;
+      }
+    }.bind(this));
     notification = notification == null ? true : notification;
     return util.promise(cb, function(cb) {
       cache.remove(this);
