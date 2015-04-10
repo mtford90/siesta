@@ -99,7 +99,6 @@ util.extend(ReactiveQuery.prototype, {
     if (this._query) {
       var name = this._constructNotificationName();
       var handler = function(n) {
-        console.log(1, n);
         this._handleNotif(n);
       }.bind(this);
       this.handler = handler;
