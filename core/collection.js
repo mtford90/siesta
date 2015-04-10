@@ -3,7 +3,6 @@ var log = require('./log')('collection'),
   InternalSiestaError = require('./error').InternalSiestaError,
   Model = require('./model'),
   extend = require('extend'),
-  observe = require('../vendor/observe-js/src/observe').Platform,
   events = require('./events'),
   util = require('./util'),
   error = require('./error'),
@@ -61,6 +60,7 @@ function Collection(name, opts) {
   CollectionRegistry.register(this);
   this._makeAvailableOnRoot();
   events.ProxyEventEmitter.call(this, this.name);
+
 }
 
 Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);

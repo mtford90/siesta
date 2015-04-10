@@ -140,8 +140,13 @@ function Model(opts) {
 
   this._modelLoadedFromStorage = new Condition(function(done) {
     if (siesta.ext.storageEnabled) {
-      siesta.ext.storage.loadModel({model: this}, function() {
-        console.log('loaded from storage');
+      siesta.ext.storage.loadModel({model: this}, function(err) {
+        if (!err) {
+          console.log('loaded from storage');
+        }
+        else {
+          console.error('error loading from storage', err);
+        }
         done();
       }.bind(this));
     }
@@ -149,6 +154,8 @@ function Model(opts) {
   }.bind(this));
 
   this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
+
+
 }
 
 util.extend(Model, {
@@ -234,6 +241,7 @@ util.extend(Model.prototype, {
    * @return {String|null}
    */
   installRelationships: function() {
+    console.log('installRelationships');
     if (!this._relationshipsInstalled) {
       var err = null;
       for (var name in this._opts.relationships) {
@@ -320,14 +328,17 @@ util.extend(Model.prototype, {
    * Cycle through relationships and replace any placeholders with the actual models where possible.
    */
   _installReversePlaceholders: function() {
+    console.log(3);
     for (var forwardName in this.relationships) {
       if (this.relationships.hasOwnProperty(forwardName)) {
         var relationship = this.relationships[forwardName];
+        console.log('relationship', relationship);
         if (relationship.reverseModel.isPlaceholder) this._installReverse(relationship);
       }
     }
   },
   installReverseRelationships: function() {
+    console.log(2);
     if (!this._reverseRelationshipsInstalled) {
       for (var forwardName in this.relationships) {
         if (this.relationships.hasOwnProperty(forwardName)) {

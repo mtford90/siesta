@@ -27,7 +27,6 @@ function Condition(fn, lazy) {
         }.bind(this);
 
         fn.forEach(function(cond, idx) {
-          console.log(1, cond);
           cond
             .then(function(res) {
               console.log(2, cond);
@@ -53,11 +52,19 @@ function Condition(fn, lazy) {
 
   if (!lazy) this._execute();
   this.executed = false;
+  this.dependent = [];
 }
 
 Condition.prototype = {
   _execute: function() {
-    if (!this.executed) this.fn();
+    if (!this.executed) {
+      Promise
+        .all(util.pluck(this.dependent, '_promise'))
+        .then(this.fn);
+      this.dependent.forEach(function(d) {
+        d._execute();
+      });
+    }
   },
   then: function(success, fail) {
     this._execute();
@@ -74,6 +81,9 @@ Condition.prototype = {
   reject: function(err) {
     this.executed = true;
     this._promise.reject(err);
+  },
+  dependentOn: function(cond) {
+    this.dependent.push(cond);
   }
 };
 

@@ -278,24 +278,25 @@ describe('f4t', function() {
       var instances;
 
       beforeEach(function(done) {
-        Species.graph(speciesData).then(function(species) {
-          siesta.save()
-            .then(function() {
-              siesta.reset(function() {
-                configureSiesta();
-                Species
-                  .all()
-                  .then(function(species) {
-                    instances = species;
-                    done();
-                  });
-              }, false);
-            });
-        }).catch(done);
+        Species
+          .graph(speciesData)
+          .then(function(species) {
+            siesta.save()
+              .then(function() {
+                siesta.reset(function() {
+                  configureSiesta();
+                  Species
+                    .all()
+                    .then(function(species) {
+                      instances = species;
+                      done();
+                    });
+                }, false);
+              });
+          }).catch(done);
       });
 
       it('should load remote identifiers', function() {
-        console.debug('instances', instances);
         assert.equal(instances.length, 3);
         var dataIdentifiers = _.pluck(speciesData, '_id'),
           modelIdentifiers = _.pluck(instances, '_id');
@@ -306,7 +307,6 @@ describe('f4t', function() {
       });
 
       it('xyz', function(done) {
-        console.log('here we go!');
         siesta.reset(function() {
           configureSiesta();
           siesta

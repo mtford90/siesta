@@ -205,8 +205,6 @@ else {
           }
         });
 
-        console.log('Mapping data', data);
-
         Model._graph(data, {
           _ignoreInstalled: true,
           fromStorage: true

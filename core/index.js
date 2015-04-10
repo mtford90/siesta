@@ -32,6 +32,7 @@ util.extend(siesta, {
   once: events.once.bind(events),
   removeAllListeners: events.removeAllListeners.bind(events)
 });
+
 util.extend(siesta, {
   removeListener: siesta.off,
   addListener: siesta.on

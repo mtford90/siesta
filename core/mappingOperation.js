@@ -37,7 +37,6 @@ function MappingOperation(opts) {
     _newObjects: []
   });
 
-
   this.model._installReversePlaceholders();
   this.data = this.preprocessData();
 }
