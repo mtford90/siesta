@@ -18,6 +18,28 @@ function ManyToManyProxy(opts) {
   RelationshipProxy.call(this, opts);
   this.related = [];
   this.relatedCancelListeners = {};
+  if (this.isReverse) {
+    this.related = [];
+    //this.forwardModel.on(modelEvents.ModelEventType.Remove, function(e) {
+    //  if (e.field == e.forwardName) {
+    //    var idx = this.related.indexOf(e.obj);
+    //    if (idx > -1) {
+    //      var removed = this.related.splice(idx, 1);
+    //    }
+    //    modelEvents.emit({
+    //      collection: this.reverseModel.collectionName,
+    //      model: this.reverseModel.name,
+    //      localId: this.object.localId,
+    //      field: this.reverseName,
+    //      removed: removed,
+    //      added: [],
+    //      type: ModelEventType.Splice,
+    //      index: idx,
+    //      obj: this.object
+    //    });
+    //  }
+    //}.bind(this));
+  }
 }
 
 ManyToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
