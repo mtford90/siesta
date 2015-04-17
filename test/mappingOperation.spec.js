@@ -2,6 +2,7 @@ var assert = require('chai').assert,
   util = siesta._internal.util,
   RelationshipType = siesta.RelationshipType,
   cache = siesta._internal.cache,
+  Model = siesta._internal.Model,
   MappingOperation = siesta._internal.MappingOperation;
 
 var collection;
@@ -78,7 +79,11 @@ describe('mapping operation', function() {
           id: 'id',
           attributes: ['login']
         });
-        done();
+        Model.install([User, Repo]).then(function() {
+          console.log('User', User);
+          console.log('Repo', Repo);
+          done()
+        }).catch(done);
       });
     });
 
@@ -113,6 +118,8 @@ describe('mapping operation', function() {
               }
             ]
           }];
+
+
           op = new MappingOperation({
             model: User,
             data: data
@@ -143,14 +150,13 @@ describe('mapping operation', function() {
           owner: [5, 6]
         }];
 
-        var op = new MappingOperation({
-          model: Repo,
-          data: data
-        });
-        op.start(function(errors) {
-          assert.ok(errors);
-          done();
-        });
+        Repo.graph(data)
+          .then(function() {done('Should not succeed')})
+          .catch(function(err) {
+            assert.ok(err);
+            done();
+          });
+
       });
 
       it('scalar to array', function(done) {
@@ -159,14 +165,17 @@ describe('mapping operation', function() {
           id: '123124',
           repositories: 5
         }];
-        var op = new MappingOperation({
-          model: User,
-          data: data
-        });
-        op.start(function(errors) {
-          assert.ok(errors);
-          done();
-        });
+
+        User.graph(data)
+          .then(function(obj) {
+            done('Should not succeed')
+          })
+          .catch(function(err) {
+            console.log(1);
+            assert.ok(err);
+            done();
+          });
+
       });
 
 
@@ -201,6 +210,8 @@ describe('mapping operation', function() {
               id: 'remoteId3',
               owner: owner
             }];
+
+
             var op = new MappingOperation({
               model: Repo,
               data: data

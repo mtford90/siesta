@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
   internal = siesta._internal,
+  Model = internal.Model,
   cache = internal.cache;
 
 describe('singleton mapping', function() {
@@ -291,29 +292,31 @@ describe('singleton mapping', function() {
       it('should throw error with singleton model', function(done) {
         siesta.reset(function() {
           Collection = siesta.collection('Collection');
-          Car = Collection.model('Car', {
-            id: 'id',
-            attributes: [
-              'name'
-            ],
-            relationships: {
-              owners: {
-                type: 'ManyToMany',
-                model: 'Person',
-                reverse: 'cars'
-              }
-            },
-            singleton: true
+
+          assert.throws(function() {
+            Person = Collection.model('Person', {
+              id: 'id',
+              attributes: ['name'],
+              singleton: true
+            });
+            Car = Collection.model('Car', {
+              id: 'id',
+              attributes: [
+                'name'
+              ],
+              relationships: {
+                owners: {
+                  type: 'ManyToMany',
+                  model: 'Person',
+                  reverse: 'cars'
+                }
+              },
+              singleton: true
+            });
+
           });
-          Person = Collection.model('Person', {
-            id: 'id',
-            attributes: ['name'],
-            singleton: true
-          });
-          siesta.install(function(err) {
-            assert.ok(err);
-            done();
-          })
+          done();
+
         });
       });
 
@@ -323,6 +326,10 @@ describe('singleton mapping', function() {
       it('with ordinary model', function(done) {
         siesta.reset(function() {
           Collection = siesta.collection('Collection');
+          Person = Collection.model('Person', {
+            id: 'id',
+            attributes: ['name']
+          });
           Car = Collection.model('Car', {
             id: 'id',
             attributes: [
@@ -337,10 +344,8 @@ describe('singleton mapping', function() {
             },
             singleton: true
           });
-          Person = Collection.model('Person', {
-            id: 'id',
-            attributes: ['name']
-          });
+          Car._installReversePlaceholders();
+          Person._installReversePlaceholders();
           Car.graph({name: 'Blah', owner: {name: 'Blah blah'}})
             .then(function(car) {
               assert.ok(car);
@@ -356,30 +361,31 @@ describe('singleton mapping', function() {
 
       it('with singleton model', function(done) {
         siesta.reset(function() {
-          Collection = siesta.collection('Collection');
-          Car = Collection.model('Car', {
-            id: 'id',
-            attributes: [
-              'name'
-            ],
-            relationships: {
-              owner: {
-                type: 'OneToMany',
-                model: 'Person',
-                reverse: 'cars'
-              }
-            },
-            singleton: true
+          assert.throws(function() {
+            Collection = siesta.collection('Collection');
+            Car = Collection.model('Car', {
+              id: 'id',
+              attributes: [
+                'name'
+              ],
+              relationships: {
+                owner: {
+                  type: 'OneToMany',
+                  model: 'Person',
+                  reverse: 'cars'
+                }
+              },
+              singleton: true
+            });
+            Person = Collection.model('Person', {
+              id: 'id',
+              attributes: ['name'],
+              singleton: true
+            });
+            Car._installReversePlaceholders();
+            Person._installReversePlaceholders();
           });
-          Person = Collection.model('Person', {
-            id: 'id',
-            attributes: ['name'],
-            singleton: true
-          });
-          siesta.install(function(err) {
-            assert.ok(err);
-            done();
-          })
+          done();
         });
       });
 

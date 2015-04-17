@@ -416,7 +416,7 @@ describe('Models', function() {
             },
             attributes: ['attr']
           });
-          Model.install([M])
+          internal.Model.install([M])
             .then(function() {
               M.graph({
                 attr: 1
@@ -563,7 +563,7 @@ describe('Models', function() {
           attributes: ['attr']
         });
 
-        Model.install([M])
+        internal.Model.install([M])
           .then(function() {
             M.graph({
               attr: 'xyz'
@@ -684,7 +684,7 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        Model.install([M])
+        internal.Model.install([M])
           .then(function() {
             assert.equal(M.f(), M);
             done();
@@ -701,7 +701,7 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        Model.install([M])
+        internal.Model.install([M])
           .then(function() {
             assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
             done();

@@ -189,6 +189,8 @@ ModelInstanceFactory.prototype = {
     console.log('instanceFactory: _installRelationshipProxies', modelInstance);
     var model = this.model;
     for (var name in model.relationships) {
+      console.log('model', model);
+      console.log('model.relationships', model.relationships);
       if (model.relationships.hasOwnProperty(name)) {
         var definition = util.extend({}, model.relationships[name]);
         this._installRelationship(definition, modelInstance);

@@ -1,6 +1,8 @@
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+  internal = siesta._internal,
+  Model = internal.Model;
 
-describe('storage', function() {
+describe.only('storage', function() {
 
   before(function() {
     siesta.ext.storageEnabled = true;
@@ -283,8 +285,8 @@ describe('storage', function() {
               cars: ['abc', 'def']
             }
           ]).then(function() {
-            siesta
-              .install()
+            Model
+              .install([Person, Car])
               .then(function() {
                 assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
                 done();
@@ -385,7 +387,8 @@ describe('storage', function() {
             cars: ['abc']
           }
         ]).then(function() {
-          siesta.install()
+          Model
+            .install([Person, Car])
             .then(function() {
               assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
               Car.all().then(function(cars) {
@@ -831,7 +834,13 @@ describe('storage', function() {
       });
 
       it('install', function(done) {
-        siesta.install(function(err) {
+        internal
+          .Model
+          .install([
+            Config,
+            PomodoroConfig,
+            PomodoroTimer,
+            ColourConfig])(function(err) {
           done(err);
         });
       })
@@ -907,7 +916,7 @@ describe('storage', function() {
             return instance.name;
           }
         });
-      siesta.install(function() {
+      internal.Model.install([Model]).then(function () {
         var pouch = siesta.ext.storage._pouch;
         done();
       });

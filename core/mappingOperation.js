@@ -89,7 +89,10 @@ util.extend(MappingOperation.prototype, {
           var related = unflattenedObjects[i]; // Can be array or scalar.
           var object = self.objects[idx];
           if (object) {
-            err = object.__proxies[f].set(related, {disableevents: self.disableevents});
+            console.log('yo object', object, f);
+            err = object.__proxies[f].set(related, {
+              disableevents: self.disableevents
+            });
             if (err) {
               if (!self.errors[idx]) self.errors[idx] = {};
               self.errors[idx][f] = err;
@@ -313,8 +316,7 @@ util.extend(MappingOperation.prototype, {
       indexes: indexes,
       relatedData: relatedData
     };
-  }
-  ,
+  },
   processErrorsFromTask: function(relationshipName, errors, indexes) {
     if (errors.length) {
       var relatedData = this.getRelatedData(relationshipName).relatedData;

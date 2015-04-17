@@ -1,5 +1,6 @@
 var assert = require('chai').assert,
   internal = siesta._internal,
+  Model = internal.Model,
   SiestaUserError = internal.error.SiestaUserError,
   createQuerySet = internal.querySet,
   Query = internal.Query;
@@ -1220,12 +1221,12 @@ describe('query...', function() {
           id: 'id',
           attributes: ['name', 'age']
         });
-        siesta.install(function() {
+        Person._storageEnabled.then(function() {
           michael = _instance(Person, {name: 'Michael', age: 24});
           bob = _instance(Person, {name: 'Bob', age: 21});
           querySet = createQuerySet([michael, bob], Person);
           done();
-        });
+        }).catch(done);
       });
 
       it('contains the instances', function() {
@@ -1298,13 +1299,15 @@ describe('query...', function() {
             }
           }
         });
-        siesta.install(function() {
-          michael = _instance(Person, {name: 'Michael', age: 24});
-          bob = _instance(Person, {name: 'Bob', age: 21});
-          michael.cars = [_instance(Car, {colour: 'red'}), _instance(Car, {colour: 'blue'})];
-          done();
-        });
-
+        Model
+          .install([Person, Car])
+          .then(function() {
+            michael = _instance(Person, {name: 'Michael', age: 24});
+            bob = _instance(Person, {name: 'Bob', age: 21});
+            michael.cars = [_instance(Car, {colour: 'red'}), _instance(Car, {colour: 'blue'})];
+            done();
+          })
+          .catch(done);
       });
 
       it('new owner', function() {

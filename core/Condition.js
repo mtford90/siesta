@@ -28,9 +28,7 @@ function Condition(fn, lazy) {
             }
           }
         }.bind(this);
-        console.log('fn', fn);
         fn.forEach(function(cond, idx) {
-          console.log('cond', cond);
           cond
             .then(function(res) {
               results[idx] = res;

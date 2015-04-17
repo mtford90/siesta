@@ -64,6 +64,7 @@ util.extend(RelationshipProxy.prototype, {
         this.object = modelInstance;
         var self = this;
         var name = this.getForwardName();
+        console.log('installing ' + name + ' on ', this.object.modelName);
         Object.defineProperty(modelInstance, name, {
           get: function() {
             return self.related;
@@ -245,14 +246,12 @@ util.extend(RelationshipProxy.prototype, {
   },
 
   _getRemovedForSpliceChangeEvent: function(idx, numRemove) {
-    var removed = this.related ? this.related.slice(idx, idx + numRemove) : null;
-    return removed;
+    return this.related ? this.related.slice(idx, idx + numRemove) : null;
   },
 
   _getAddedForSpliceChangeEvent: function(args) {
-    var add = Array.prototype.slice.call(args, 2),
-      added = add.length ? add : [];
-    return added;
+    var add = Array.prototype.slice.call(args, 2);
+    return add.length ? add : [];
   },
 
   registerSpliceChange: function(idx, added, removed) {
