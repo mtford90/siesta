@@ -14,6 +14,7 @@ var util = require('./util'),
   modelEvents = require('./modelEvents'),
   Query = require('./Query'),
   querySet = require('./QuerySet'),
+  Condition = require('./Condition'),
   log = require('./log');
 
 util._patchBind();
@@ -46,6 +47,7 @@ util.extend(siesta, {
   InsertionPolicy: ReactiveQuery.InsertionPolicy,
   _internal: {
     log: log,
+    Condition: Condition,
     Model: Model,
     error: error,
     ModelEventType: modelEvents.ModelEventType,
@@ -74,8 +76,6 @@ util.extend(siesta, {
 
 siesta.ext = {};
 
-var installed = false,
-  installing = false;
 
 
 util.extend(siesta, {
@@ -83,11 +83,18 @@ util.extend(siesta, {
    * Wipe everything. Used during test generally.
    */
   reset: function(cb, resetStorage) {
-    installed = false;
-    installing = false;
     delete this.queuedTasks;
     cache.reset();
     CollectionRegistry.reset();
+    var collectionNames = CollectionRegistry.collectionNames;
+    collectionNames.reduce(function(memo, collName) {
+      var coll = siesta[collName];
+      Object.keys(coll._models).forEach(function(modelName) {
+        var model = coll[modelName];
+        memo.push(model._storageEnabled);
+      });
+      return memo;
+    }, []);
     events.removeAllListeners();
     if (siesta.ext.storageEnabled) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
@@ -105,36 +112,9 @@ util.extend(siesta, {
    * @return {Collection}
    */
   collection: function(name, opts) {
-    var c = new Collection(name, opts);
-    if (installed) c.installed = true; // TODO: Remove
-    return c;
+    return new Collection(name, opts);
   },
-  /**
-   * Install all collections.
-   * @param {Function} [cb]
-   * @returns {q.Promise}
-   */
-  install: function(cb) {
-    if (!installing && !installed) {
-      return util.promise(cb, function(cb) {
-        installing = true;
-        var collectionNames = CollectionRegistry.collectionNames,
-          tasks = collectionNames.map(function(n) {
-            var collection = CollectionRegistry[n];
-            return collection.install.bind(collection);
-          }),
-          storageEnabled = siesta.ext.storageEnabled;
-        //if (storageEnabled) tasks = tasks.concat([siesta.ext.storage.ensureIndexesForAll, siesta.ext.storage._load]);
-        tasks.push(function(done) {
-          installed = true;
-          if (this.queuedTasks) this.queuedTasks.execute();
-          done();
-        }.bind(this));
-        util.series(tasks, cb);
-      }.bind(this));
-    }
-    else cb(error('already installing'));
-  },
+
   _pushTask: function(task) {
     if (!this.queuedTasks) {
       this.queuedTasks = new function Queue() {
@@ -148,24 +128,6 @@ util.extend(siesta, {
       };
     }
     this.queuedTasks.tasks.push(task);
-  },
-  _afterInstall: function(task) {
-    if (!installed) {
-      if (!installing) {
-        this.install(function(err) {
-          if (err) {
-            console.error('Error setting up siesta', err);
-          }
-          delete this.queuedTasks;
-        }.bind(this));
-      }
-      // In case installed straight away e.g. if storage extension not installed.
-      if (!installed) this._pushTask(task);
-      else task();
-    }
-    else {
-      task();
-    }
   },
   setLogLevel: function(loggerName, level) {
     var Logger = log.loggerWithName(loggerName);
@@ -217,9 +179,7 @@ util.extend(siesta, {
   },
   get: function(id, cb) {
     return util.promise(cb, function(cb) {
-      this._afterInstall(function() {
-        cb(null, cache._localCache()[id]);
-      });
+      cb(null, cache._localCache()[id]);
     }.bind(this));
   },
   removeAll: function(cb) {
@@ -235,18 +195,6 @@ util.extend(siesta, {
   }
 });
 
-Object.defineProperties(siesta, {
-  _canChange: {
-    get: function() {
-      return !(installing || installed);
-    }
-  },
-  installed: {
-    get: function() {
-      return installed;
-    }
-  }
-});
 
 if (typeof window != 'undefined') {
   window['siesta'] = siesta;

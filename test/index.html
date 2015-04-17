@@ -13,11 +13,13 @@
     <script>mocha.setup('bdd')</script>
 
     <script>
-        onload = function () {
+        onload = function() {
             mocha.globals(['jQuery']);
             var runner = mocha.run();
         };
     </script>
+    <script>sourceMapSupport.install();</script>
+
 </head>
 <body>
 <div id="mocha"></div>

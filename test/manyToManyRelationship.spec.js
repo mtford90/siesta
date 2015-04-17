@@ -262,7 +262,7 @@ describe('many to many proxy', function() {
       personProxy.install(person);
       cache.insert(person);
       cache.insert(car);
-      siesta.install(done);
+      done();
     });
 
     it('removal', function(done) {

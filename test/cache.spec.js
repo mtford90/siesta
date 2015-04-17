@@ -2,6 +2,7 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   ModelInstance = internal.ModelInstance,
   cache = internal.cache,
+  Condition = internal.Condition,
   RelationshipType = siesta.RelationshipType;
 
 describe('cache...', function() {
@@ -20,7 +21,7 @@ describe('cache...', function() {
           id: 'id',
           attributes: ['colour', 'name']
         });
-        siesta.install(done);
+        done();
       });
     });
     it('by pouch id', function() {
@@ -60,7 +61,7 @@ describe('cache...', function() {
           id: 'id',
           attributes: ['colour', 'name']
         });
-        siesta.install(done);
+        done();
       });
     });
     it('by pouch id', function() {
@@ -107,7 +108,7 @@ describe('cache...', function() {
             }
           }
         });
-        siesta.install(done);
+        done();
       });
 
     });

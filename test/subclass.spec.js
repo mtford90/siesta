@@ -23,7 +23,7 @@ describe('Subclass', function() {
         attributes: ['maxSpeed']
       });
 
-      siesta.install(done);
+      done();
     });
 
     it('children', function() {
@@ -46,7 +46,7 @@ describe('Subclass', function() {
       SportsCar = Car.child('SportsCar', {
         attributes: ['maxSpeed']
       });
-      siesta.install(done);
+      done();
     });
 
     it('child attributes', function() {
@@ -85,7 +85,7 @@ describe('Subclass', function() {
           attributes: ['age', 'name']
         });
 
-        siesta.install(done);
+        done();
       });
       it('child attributes', function() {
         assert.include(SportsCar._relationshipNames, 'owner');
@@ -285,7 +285,7 @@ describe('Subclass', function() {
             }
           }
         });
-        siesta.install(done);
+        done();
       });
     });
 
@@ -339,7 +339,7 @@ describe('Subclass', function() {
             }
           }
         });
-        siesta.install(done);
+        done();
       });
     });
 
@@ -419,7 +419,7 @@ describe('Subclass', function() {
         }
       });
 
-      siesta.install(done);
+      done();
     });
 
     it('parent property should be available on parent', function(done) {
@@ -823,7 +823,7 @@ describe('Subclass', function() {
           attributes: ['attr']
         });
 
-        siesta.install(done);
+        done();
       });
     });
 

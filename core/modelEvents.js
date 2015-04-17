@@ -66,13 +66,11 @@ function broadcastEvent(collectionName, modelName, opts) {
   }
   if (shouldEmit) {
     events.emit(genericEvent, opts);
-    if (siesta.installed) {
-      var modelEvent = collectionName + ':' + modelName,
-        localIdEvent = opts.localId;
-      events.emit(collectionName, opts);
-      events.emit(modelEvent, opts);
-      events.emit(localIdEvent, opts);
-    }
+    var modelEvent = collectionName + ':' + modelName,
+      localIdEvent = opts.localId;
+    events.emit(collectionName, opts);
+    events.emit(modelEvent, opts);
+    events.emit(localIdEvent, opts);
     if (model.id && opts.obj[model.id]) events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
   }
 }

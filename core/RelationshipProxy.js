@@ -74,11 +74,7 @@ util.extend(RelationshipProxy.prototype, {
           configurable: true,
           enumerable: true
         });
-        if (!modelInstance.__proxies) modelInstance.__proxies = {};
         modelInstance.__proxies[name] = this;
-        if (!modelInstance._proxies) {
-          modelInstance._proxies = [];
-        }
         modelInstance._proxies.push(this);
       } else {
         throw new InternalSiestaError('Already installed.');
@@ -102,6 +98,7 @@ util.extend(RelationshipProxy.prototype, {
 
 util.extend(RelationshipProxy.prototype, {
   proxyForInstance: function(modelInstance, reverse) {
+    console.log(111111);
     var name = reverse ? this.getReverseName() : this.getForwardName(),
       model = reverse ? this.reverseModel : this.forwardModel;
     var ret;

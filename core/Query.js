@@ -200,12 +200,7 @@ util.extend(Query.prototype, {
           callback(_err);
         }.bind(this));
     }.bind(this);
-    if (this.opts.ignoreInstalled) {
-      _executeInMemory();
-    }
-    else {
-      siesta._afterInstall(_executeInMemory);
-    }
+    _executeInMemory();
   },
   clearOrdering: function() {
     this.opts.order = null;

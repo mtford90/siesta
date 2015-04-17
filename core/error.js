@@ -6,6 +6,7 @@
  * @constructor
  */
 function InternalSiestaError(message, context, ssf) {
+  Error.call(this, message, context, ssf);
   this.message = message;
   this.context = context;
   // capture stack trace

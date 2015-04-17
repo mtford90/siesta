@@ -32,7 +32,7 @@ describe('intercoll relationships', function() {
       id: 'id',
       attributes: ['name', 'age']
     });
-    siesta.install(done);
+    done();
   }
 
   describe('Inter-collection', function() {

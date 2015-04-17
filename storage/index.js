@@ -34,7 +34,8 @@ if (typeof PouchDB == 'undefined') {
   console.log('PouchDB is not present therefore storage is disabled.');
 }
 else {
-  var DB_NAME = 'siesta',
+  var DEFAULT_DB_NAME = 'siesta',
+    DB_NAME = DEFAULT_DB_NAME,
     pouch = new PouchDB(DB_NAME, {auto_compaction: true});
 
   /**
@@ -185,7 +186,8 @@ else {
 
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
     var Model = CollectionRegistry[collectionName][modelName];
-    pouch.query(fullyQualifiedName)
+    pouch
+      .query(fullyQualifiedName)
       .then(function(resp) {
         console.log('Queried pouch successfully');
         var rows = resp.rows;
@@ -272,13 +274,11 @@ else {
    */
   function save(cb) {
     return util.promise(cb, function(cb) {
-      siesta._afterInstall(function() {
-        var instances = unsavedObjects;
-        unsavedObjects = [];
-        unsavedObjectsHash = {};
-        unsavedObjectsByCollection = {};
-        saveToPouch(instances, cb);
-      });
+      var instances = unsavedObjects;
+      unsavedObjects = [];
+      unsavedObjectsHash = {};
+      unsavedObjectsByCollection = {};
+      saveToPouch(instances, cb);
     }.bind(this));
   }
 
@@ -308,19 +308,28 @@ else {
     save: save,
     _serialise: _serialise,
     ensureIndexInstalled: ensureIndexInstalled,
+    /**
+     * Used during testing only.
+     * @param cb
+     * @private
+     */
     _reset: function(cb) {
       siesta.removeListener('Siesta', listener);
       unsavedObjects = [];
       unsavedObjectsHash = {};
-      pouch.destroy(function(err) {
-        if (!err) {
-          pouch = new PouchDB(DB_NAME);
-        }
-        log('Reset complete');
-        cb(err);
-      })
+      pouch
+        .allDocs()
+        .then(function(result) {
+          var docs = result.rows.map(function(r) {
+            console.log('r', r);
+            return {_id: r.id, _deleted: true, _rev: r.value.rev};
+          });
+          console.log('docs', docs);
+          pouch.bulkDocs(docs).then(function() {
+            pouch.compact().then(function() {cb()}).catch(cb);
+          }).catch(cb);
+        }).catch(cb);
     }
-
   });
 
   Object.defineProperties(storage, {

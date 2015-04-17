@@ -27,7 +27,7 @@ describe('mapping new object', function () {
                 id: 'id',
                 attributes: ['colour', 'name']
             });
-            siesta.install(done);
+            done();
         });
 
         it('valid', function () {
@@ -93,7 +93,7 @@ describe('mapping new object', function () {
                 id: 'id',
                 attributes: ['age', 'name']
             });
-            siesta.install(done);
+            done();
         }
 
         beforeEach(function (done) {

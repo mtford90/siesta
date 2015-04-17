@@ -151,7 +151,7 @@ describe('install step', function() {
         id: 'id',
         attributes: ['name', 'age']
       });
-      siesta.install(done);
+      done();
     }
 
     describe('valid', function() {

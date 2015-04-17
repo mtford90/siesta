@@ -31,7 +31,7 @@ describe('one to many relationship', function() {
         id: 'id',
         attributes: ['name', 'age']
       });
-      siesta.install(done);
+      done();
     });
   });
 

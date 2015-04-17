@@ -78,7 +78,7 @@ describe('mapping operation', function() {
           id: 'id',
           attributes: ['login']
         });
-        siesta.install(done);
+        done();
       });
     });
 
@@ -390,7 +390,7 @@ describe('mapping operation', function() {
           attributes: ['login'],
           singleton: true
         });
-        siesta.install(done);
+        done();
       });
     });
 
@@ -543,7 +543,7 @@ describe('bug', function() {
         attributes: ['colour', 'name']
 
       });
-      siesta.install(done);
+      done();
     });
 
   });

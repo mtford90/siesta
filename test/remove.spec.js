@@ -32,20 +32,18 @@ describe('remove models from object graph', function() {
           id: 'id',
           attributes: ['name']
         });
-        siesta.install(function() {
-          Car.graph({
-            id: 1,
-            colour: 'red',
-            owner: {
-              id: 2,
-              name: 'mike'
-            }
-          }).then(function(res) {
-            car = res;
-            person = res.owner;
-            done();
-          })
-        });
+        Car.graph({
+          id: 1,
+          colour: 'red',
+          owner: {
+            id: 2,
+            name: 'mike'
+          }
+        }).then(function(res) {
+          car = res;
+          person = res.owner;
+          done();
+        })
       });
     });
 
@@ -90,20 +88,18 @@ describe('remove models from object graph', function() {
           id: 'id',
           attributes: ['name']
         });
-        siesta.install(function() {
-          Car.graph({
-            id: 1,
-            colour: 'red',
-            owner: {
-              id: 2,
-              name: 'mike'
-            }
-          }).then(function(res) {
-            car = res;
-            person = res.owner;
-            done();
-          })
-        });
+        Car.graph({
+          id: 1,
+          colour: 'red',
+          owner: {
+            id: 2,
+            name: 'mike'
+          }
+        }).then(function(res) {
+          car = res;
+          person = res.owner;
+          done();
+        })
       });
     });
 
@@ -148,20 +144,18 @@ describe('remove models from object graph', function() {
           id: 'id',
           attributes: ['name']
         });
-        siesta.install(function() {
-          Car.graph({
-            id: 1,
-            colour: 'red',
-            owners: [{
-              id: 2,
-              name: 'mike'
-            }]
-          }).then(function(res) {
-            car = res;
-            person = res.owners[0];
-            done();
-          })
-        });
+        Car.graph({
+          id: 1,
+          colour: 'red',
+          owners: [{
+            id: 2,
+            name: 'mike'
+          }]
+        }).then(function(res) {
+          car = res;
+          person = res.owners[0];
+          done();
+        })
       });
     });
 

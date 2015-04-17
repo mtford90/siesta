@@ -204,7 +204,7 @@ describe('singleton mapping', function() {
           },
           singleton: true
         });
-        siesta.install().then(function() {done()}).catch(done);
+        done();
       });
     });
     it('instance exists', function(done) {

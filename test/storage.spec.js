@@ -212,28 +212,25 @@ describe('storage', function() {
           {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
           {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
         ]).then(function() {
-          siesta.install()
-            .then(function() {
-              assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-              Car.all().then(function(cars) {
-                assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                var redCar = _.filter(cars, function(x) {
-                    return x.colour == 'red'
-                  })[0],
-                  blackCar = _.filter(cars, function(x) {
-                    return x.colour == 'black'
-                  })[0];
-                assert.equal(redCar.colour, 'red');
-                assert.equal(redCar.name, 'Aston Martin');
-                assert.ok(redCar._rev);
-                assert.ok(redCar.localId);
-                assert.equal(blackCar.colour, 'black');
-                assert.equal(blackCar.name, 'Bentley');
-                assert.ok(blackCar._rev);
-                assert.ok(blackCar.localId);
-                done();
-              }).catch(done);
-            }).catch(done);
+          assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+          Car.all().then(function(cars) {
+            assert.equal(cars.length, 2, 'Should have loaded the two cars');
+            var redCar = _.filter(cars, function(x) {
+                return x.colour == 'red'
+              })[0],
+              blackCar = _.filter(cars, function(x) {
+                return x.colour == 'black'
+              })[0];
+            assert.equal(redCar.colour, 'red');
+            assert.equal(redCar.name, 'Aston Martin');
+            assert.ok(redCar._rev);
+            assert.ok(redCar.localId);
+            assert.equal(blackCar.colour, 'black');
+            assert.equal(blackCar.name, 'Bentley');
+            assert.ok(blackCar._rev);
+            assert.ok(blackCar.localId);
+            done();
+          }).catch(done);
         }).catch(done);
       })
     });
@@ -413,8 +410,6 @@ describe('storage', function() {
               }).catch(done);
             }).catch(done);
         }).catch(done);
-
-        ;
       });
 
       it('onetoone', function(done) {
@@ -459,30 +454,27 @@ describe('storage', function() {
             car: 'def'
           }
         ]).then(function() {
-          siesta.install()
-            .then(function() {
-              assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
-              Car.all().then(function(cars) {
-                assert.equal(cars.length, 2, 'Should have loaded the two cars');
-                var redCar = _.filter(cars, function(x) {
-                    return x.colour == 'red'
-                  })[0],
-                  blackCar = _.filter(cars, function(x) {
-                    return x.colour == 'black'
-                  })[0];
-                assert.equal(redCar.colour, 'red');
-                assert.equal(redCar.name, 'Aston Martin');
-                assert.ok(redCar._rev);
-                assert.ok(redCar.localId);
-                assert.equal(blackCar.colour, 'black');
-                assert.equal(blackCar.name, 'Bentley');
-                assert.ok(blackCar._rev);
-                assert.ok(blackCar.localId);
-                assert.notOk(redCar.owner);
-                assert.equal(blackCar.owner.localId, 'xyz');
-                done();
-              }).catch(done);
-            }).catch(done);
+          assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+          Car.all().then(function(cars) {
+            assert.equal(cars.length, 2, 'Should have loaded the two cars');
+            var redCar = _.filter(cars, function(x) {
+                return x.colour == 'red'
+              })[0],
+              blackCar = _.filter(cars, function(x) {
+                return x.colour == 'black'
+              })[0];
+            assert.equal(redCar.colour, 'red');
+            assert.equal(redCar.name, 'Aston Martin');
+            assert.ok(redCar._rev);
+            assert.ok(redCar.localId);
+            assert.equal(blackCar.colour, 'black');
+            assert.equal(blackCar.name, 'Bentley');
+            assert.ok(blackCar._rev);
+            assert.ok(blackCar.localId);
+            assert.notOk(redCar.owner);
+            assert.equal(blackCar.owner.localId, 'xyz');
+            done();
+          }).catch(done);
         }).catch(done);
       });
 
@@ -585,10 +577,12 @@ describe('storage', function() {
 
     it('global dirtyness', function(done) {
       assert.ok(siesta.dirty);
-      siesta.save().then(function() {
-        assert.notOk(siesta.dirty);
-        done();
-      }).catch(done);
+      siesta
+        .save()
+        .then(function() {
+          assert.notOk(siesta.dirty);
+          done();
+        }).catch(done);
     });
 
     it('collection dirtyness', function(done) {
@@ -665,31 +659,29 @@ describe('storage', function() {
           longBreak: 'green',
           _id: 'xyz'
         }).then(function() {
-          siesta.install().then(function() {
-            ColourConfig
-              .one()
-              .then(function(colourConfig) {
-                extracted(function(err, rows) {
-                  if (!err) {
-                    assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
-                    assert.equal(colourConfig.primary, 'red');
-                    assert.equal(colourConfig.shortBreak, 'blue');
-                    assert.equal(colourConfig.longBreak, 'green');
-                    siesta.save()
-                      .then(function() {
-                        extracted(function(err, rows) {
-                          if (!err) {
-                            assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
-                            done();
-                          }
-                          else done(err);
-                        });
-                      }).catch(done);
-                  }
-                  else done(err);
-                });
-              }).catch(done)
-          }).catch(done);
+          ColourConfig
+            .one()
+            .then(function(colourConfig) {
+              extracted(function(err, rows) {
+                if (!err) {
+                  assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the load');
+                  assert.equal(colourConfig.primary, 'red');
+                  assert.equal(colourConfig.shortBreak, 'blue');
+                  assert.equal(colourConfig.longBreak, 'green');
+                  siesta.save()
+                    .then(function() {
+                      extracted(function(err, rows) {
+                        if (!err) {
+                          assert.equal(rows.length, 1, 'Should only ever be one row for singleton after the save');
+                          done();
+                        }
+                        else done(err);
+                      });
+                    }).catch(done);
+                }
+                else done(err);
+              });
+            }).catch(done)
         });
       });
     });

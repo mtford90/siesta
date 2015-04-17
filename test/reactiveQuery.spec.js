@@ -265,61 +265,61 @@ describe('reactive query', function() {
 
         it('emission', function(done) {
           Person.graph(initialData)
-              .then(function(res) {
-                var person = res[0];
-                var rq = Person._reactiveQuery({age__lt: 30});
-                rq.init(function(err) {
-                  if (err) done(err);
-                  else {
-                    rq.once('*', function(change) {
-                      try {
-                        var removed = change.removed;
-                        assert.include(removed, person);
-                        assert.equal(change.type, siesta.ModelEventType.Splice);
-                        assert.equal(change.obj, rq);
-                        assertResultsCorrect(rq, person);
-                        rq.terminate();
-                        siesta.notify(done);
-                      }
-                      catch (e) {
-                        done(e);
-                      }
-                    });
-                    person.remove();
-                    siesta.notify();
-                  }
-                });
-              }).catch(done);
+            .then(function(res) {
+              var person = res[0];
+              var rq = Person._reactiveQuery({age__lt: 30});
+              rq.init(function(err) {
+                if (err) done(err);
+                else {
+                  rq.once('*', function(change) {
+                    try {
+                      var removed = change.removed;
+                      assert.include(removed, person);
+                      assert.equal(change.type, siesta.ModelEventType.Splice);
+                      assert.equal(change.obj, rq);
+                      assertResultsCorrect(rq, person);
+                      rq.terminate();
+                      siesta.notify(done);
+                    }
+                    catch (e) {
+                      done(e);
+                    }
+                  });
+                  person.remove();
+                  siesta.notify();
+                }
+              });
+            }).catch(done);
         });
 
 
         it('emission, having listened before init', function(done) {
           Person.graph(initialData)
-              .then(function(res) {
-                var person = res[0];
-                var rq = Person._reactiveQuery({age__lt: 30});
-                rq.once('*', function(change) {
-                  try {
-                    var removed = change.removed;
-                    assert.include(removed, person);
-                    assert.equal(change.type, siesta.ModelEventType.Splice);
-                    assert.equal(change.obj, rq);
-                    assertResultsCorrect(rq, person);
-                    rq.terminate();
-                    siesta.notify(done);
-                  }
-                  catch (e) {
-                    done(e);
-                  }
-                });
-                rq.init(function(err) {
-                  if (err) done(err);
-                  else {
-                    person.remove();
-                    siesta.notify();
-                  }
-                });
-              }).catch(done);
+            .then(function(res) {
+              var person = res[0];
+              var rq = Person._reactiveQuery({age__lt: 30});
+              rq.once('*', function(change) {
+                try {
+                  var removed = change.removed;
+                  assert.include(removed, person);
+                  assert.equal(change.type, siesta.ModelEventType.Splice);
+                  assert.equal(change.obj, rq);
+                  assertResultsCorrect(rq, person);
+                  rq.terminate();
+                  siesta.notify(done);
+                }
+                catch (e) {
+                  done(e);
+                }
+              });
+              rq.init(function(err) {
+                if (err) done(err);
+                else {
+                  person.remove();
+                  siesta.notify();
+                }
+              });
+            }).catch(done);
         });
 
 
@@ -440,62 +440,6 @@ describe('reactive query', function() {
 
   });
 
-  describe('load', function() {
-    var initialData = [
-      {
-        name: 'Bob',
-        age: 19,
-        id: 1,
-        collection: 'MyCollection',
-        model: 'Person'
-      },
-      {
-        name: 'John',
-        age: 40,
-        id: 3,
-        collection: 'MyCollection',
-        model: 'Person'
-      },
-      {
-        name: 'Mike',
-        age: 24,
-        id: 2,
-        collection: 'MyCollection',
-        model: 'Person'
-      },
-      {
-        name: 'James',
-        age: 12,
-        id: 4,
-        collection: 'MyCollection',
-        model: 'Person'
-      }
-    ];
-    before(function() {
-      siesta.ext.storageEnabled = true;
-    });
-    beforeEach(function(done) {
-      siesta.reset(function() {
-        MyCollection = siesta.collection('MyCollection');
-        Person = MyCollection.model('Person', {
-          id: 'id',
-          attributes: ['name', 'age']
-        });
-        done();
-      });
-    });
-    it('before install', function(done) {
-      siesta.ext.storage._pouch.bulkDocs(initialData)
-          .then(function() {
-            var rq = Person._reactiveQuery({age__lt: 30, __order: 'age'});
-            siesta.install(function() {
-              rq.terminate();
-              done();
-            });
-          })
-          .catch(done);
-    })
-  });
 
   describe('chains', function() {
     beforeEach(function(done) {
@@ -511,68 +455,68 @@ describe('reactive query', function() {
     it('emission, register handler afterwards', function(done) {
       var cancel;
       cancel = Person.query({age__lt: 30})
-          .then(function() {
-            Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
-          })
-          .on('*', function() {
-            cancel();
-            done();
-          });
+        .then(function() {
+          Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
+        })
+        .on('*', function() {
+          cancel();
+          done();
+        });
     });
     it('emission, register handler first', function(done) {
       var cancel;
       cancel = Person.query({age__lt: 30})
-          .on('*', function() {
-            cancel();
-            done();
-          })
-          .then(function() {
-            Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
-          });
+        .on('*', function() {
+          cancel();
+          done();
+        })
+        .then(function() {
+          Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
+        });
     });
     it('emission, multiple handlers', function(done) {
       var cancel;
       var numCalls = 0;
       cancel = Person.query({age__lt: 30})
-          .then(function() {
-            Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
-          })
-          .on('*', function() {
-            console.log(1);
-            numCalls++;
-          })
-          .on('*', function() {
-            console.log(2);
-            numCalls++;
-          })
-          .on('*', function() {
-            console.log(3);
-            numCalls++;
-            assert.equal(numCalls, 3);
-            cancel();
-            done();
-          })
+        .then(function() {
+          Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
+        })
+        .on('*', function() {
+          console.log(1);
+          numCalls++;
+        })
+        .on('*', function() {
+          console.log(2);
+          numCalls++;
+        })
+        .on('*', function() {
+          console.log(3);
+          numCalls++;
+          assert.equal(numCalls, 3);
+          cancel();
+          done();
+        })
 
     });
     it('emission, multiple handlers, weird order', function(done) {
       var cancel;
       var numCalls = 0;
       cancel = Person.query({age__lt: 30})
-          .on('*', function() {
-            numCalls++;
-          })
-          .then(function() {
-            Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
-          })
-          .on('*', function() {
-            numCalls++;
-          })
-          .on('*', function() {
-            numCalls++;
-            assert.equal(numCalls, 3);
-            cancel();
-            done();
-          });
+        .on('*', function() {
+          numCalls++;
+        })
+        .then(function() {
+          Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
+        })
+        .on('*', function() {
+          numCalls++;
+        })
+        .on('*', function() {
+          numCalls++;
+          assert.equal(numCalls, 3);
+          cancel();
+          done();
+        });
 
     });
   });

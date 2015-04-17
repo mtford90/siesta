@@ -294,6 +294,7 @@ util.extend(MappingOperation.prototype, {
     } else {
       done(null, []);
     }
+
   },
   getRelatedData: function(name) {
     var indexes = [];

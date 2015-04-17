@@ -1,4 +1,5 @@
-var util = require('./util');
+var util = require('./util'),
+  argsarray = require('argsarray');
 
 function Condition(fn, lazy) {
   if (lazy === undefined || lazy === null) {
@@ -9,6 +10,8 @@ function Condition(fn, lazy) {
   };
 
   this._promise = new util.Promise(function(resolve, reject) {
+    this.reject = reject;
+    this.resolve = resolve;
     this.fn = function() {
       this.executed = true;
       var numComplete = 0;
@@ -29,7 +32,6 @@ function Condition(fn, lazy) {
         fn.forEach(function(cond, idx) {
           cond
             .then(function(res) {
-              console.log(2, cond);
               results[idx] = res;
               numComplete++;
               checkComplete();
@@ -55,12 +57,17 @@ function Condition(fn, lazy) {
   this.dependent = [];
 }
 
+Condition.all = argsarray(function(args) {
+  return new Condition(args);
+});
+
 Condition.prototype = {
   _execute: function() {
     if (!this.executed) {
       Promise
         .all(util.pluck(this.dependent, '_promise'))
-        .then(this.fn);
+        .then(this.fn)
+        .catch(this.reject.bind(this));
       this.dependent.forEach(function(d) {
         d._execute();
       });
@@ -68,11 +75,13 @@ Condition.prototype = {
   },
   then: function(success, fail) {
     this._execute();
-    return this._promise.then(success, fail);
+    this._promise.then(success, fail);
+    return this;
   },
   catch: function(fail) {
     this._execute();
-    return this._promise.catch(fail);
+    this._promise.catch(fail);
+    return this;
   },
   resolve: function(res) {
     this.executed = true;
@@ -84,6 +93,9 @@ Condition.prototype = {
   },
   dependentOn: function(cond) {
     this.dependent.push(cond);
+  },
+  reset: function () {
+
   }
 };
 

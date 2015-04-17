@@ -277,7 +277,7 @@ describe('perform mapping', function() {
             }
           }
         });
-        siesta.install(done);
+        done();
       });
 
 
@@ -932,7 +932,7 @@ describe('perform mapping', function() {
             }
           }
         });
-        siesta.install(done);
+        done();
 
 
       });
@@ -1540,7 +1540,7 @@ describe('perform mapping', function() {
             id: 'id',
             attributes: ['colour', 'name']
           });
-          siesta.install(done);
+          done();
         });
 
         it('all valid', function(done) {
@@ -1587,7 +1587,7 @@ describe('perform mapping', function() {
               }
             }
           });
-          siesta.install(done);
+          done();
         });
 
         it('same owner using _mapBulk', function(done) {
@@ -1668,7 +1668,7 @@ describe('perform mapping', function() {
             }
           }
         });
-        siesta.install(done);
+        done();
       });
 
 

@@ -11,16 +11,14 @@ describe('bugs', function() {
     siesta.reset(done);
   });
   describe('no name specified when creating mapping', function() {
-    it('No obj', function(done) {
+    it('No obj', function() {
       var Collection = siesta.collection('Collection'),
         Model = Collection.model('Model');
-      siesta.install(done);
     });
 
-    it('obj', function(done) {
+    it('obj', function() {
       var Collection = siesta.collection('Collection'),
         Model = Collection.model('Model', {});
-      siesta.install(done);
     });
 
   });

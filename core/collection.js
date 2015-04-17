@@ -7,6 +7,7 @@ var log = require('./log')('collection'),
   util = require('./util'),
   error = require('./error'),
   argsarray = require('argsarray'),
+  Condition = require('./condition'),
   cache = require('./cache');
 
 
@@ -83,39 +84,6 @@ util.extend(Collection.prototype, {
    */
   _makeAvailableOnRoot: function() {
     siesta[this.name] = this;
-  },
-  /**
-   * Ensure mappings are installed.
-   * @param [cb]
-   * @class Collection
-   */
-  install: function(cb) {
-    var modelsToInstall = this._getModelsToInstall();
-    return util.promise(cb, function(cb) {
-      if (!this.installed) {
-        this.installed = true;
-        var errors = [];
-        modelsToInstall.forEach(function(m) {
-          log('Installing relationships for mapping with name "' + m.name + '"');
-          var err = m.installRelationships();
-          if (err) errors.push(err);
-        });
-        if (!errors.length) {
-          modelsToInstall.forEach(function(m) {
-            log('Installing reverse relationships for mapping with name "' + m.name + '"');
-            var err = m.installReverseRelationships();
-            if (err) errors.push(err);
-          });
-          if (!errors.length) {
-            this.installed = true;
-            this._makeAvailableOnRoot();
-          }
-        }
-        cb(errors.length ? error('Errors were encountered whilst setting up the collection', {errors: errors}) : null);
-      } else {
-        throw new InternalSiestaError('Collection "' + this.name + '" has already been installed');
-      }
-    }.bind(this));
   },
 
   _model: function(name, opts) {

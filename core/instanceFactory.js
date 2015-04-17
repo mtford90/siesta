@@ -186,6 +186,7 @@ ModelInstanceFactory.prototype = {
     proxy.install(modelInstance);
   },
   _installRelationshipProxies: function(modelInstance) {
+    console.log('instanceFactory: _installRelationshipProxies', modelInstance);
     var model = this.model;
     for (var name in model.relationships) {
       if (model.relationships.hasOwnProperty(name)) {
@@ -207,9 +208,6 @@ ModelInstanceFactory.prototype = {
    * @returns {ModelInstance}
    */
   _instance: function(data, shouldRegisterChange) {
-    if (!this.model._relationshipsInstalled || !this.model._reverseRelationshipsInstalled) {
-      throw new InternalSiestaError('Model must be fully installed before creating any models');
-    }
     var modelInstance = new ModelInstance(this.model);
     this._installLocalId(modelInstance, data);
     this._installAttributes(modelInstance, data);

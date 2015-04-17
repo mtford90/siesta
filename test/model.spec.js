@@ -1,8 +1,8 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    cache = internal.cache,
-    Model = internal.Model,
-    ModelInstance = internal.ModelInstance;
+  internal = siesta._internal,
+  cache = internal.cache,
+  Model = internal.Model,
+  ModelInstance = internal.ModelInstance;
 
 describe('Models', function() {
 
@@ -63,12 +63,12 @@ describe('Models', function() {
       collection: 'myCollection'
     });
     Model
-        .graph({date: 'xyz', name: 'blah'})
-        .then(function(model) {
-          assert.equal(model.date, 'xyz');
-          done();
-        })
-        .catch(done);
+      .graph({date: 'xyz', name: 'blah'})
+      .then(function(model) {
+        assert.equal(model.date, 'xyz');
+        done();
+      })
+      .catch(done);
   });
 
   it('id', function() {
@@ -83,50 +83,50 @@ describe('Models', function() {
 
   it('define relationship with string', function(done) {
     var Collection = siesta.collection('myCollection'),
-        Person = Collection.model('Person', {
-          attributes: ['name']
-        }),
-        Car = Collection.model('Car', {
-          attributes: ['colour'],
-          relationships: {
-            owner: {
-              model: 'Person',
-              reverse: 'cars'
-            }
+      Person = Collection.model('Person', {
+        attributes: ['name']
+      }),
+      Car = Collection.model('Car', {
+        attributes: ['colour'],
+        relationships: {
+          owner: {
+            model: 'Person',
+            reverse: 'cars'
           }
-        });
+        }
+      });
 
     Car.graph({colour: 'red', owner: {name: 'bob'}})
-        .then(function(car) {
-          assert.ok(car);
-          assert.ok(car.owner);
-          done();
-        })
-        .catch(done);
+      .then(function(car) {
+        assert.ok(car);
+        assert.ok(car.owner);
+        done();
+      })
+      .catch(done);
   });
 
   it('define relationship with model', function(done) {
     var Collection = siesta.collection('myCollection'),
-        Person = Collection.model('Person', {
-          attributes: ['name']
-        }),
-        Car = Collection.model('Car', {
-          attributes: ['colour'],
-          relationships: {
-            owner: {
-              model: Person,
-              reverse: 'cars'
-            }
+      Person = Collection.model('Person', {
+        attributes: ['name']
+      }),
+      Car = Collection.model('Car', {
+        attributes: ['colour'],
+        relationships: {
+          owner: {
+            model: Person,
+            reverse: 'cars'
           }
-        });
+        }
+      });
 
     Car.graph({colour: 'red', owner: {name: 'bob'}})
-        .then(function(car) {
-          assert.ok(car);
-          assert.ok(car.owner);
-          done();
-        })
-        .catch(done);
+      .then(function(car) {
+        assert.ok(car);
+        assert.ok(car.owner);
+        done();
+      })
+      .catch(done);
   });
 
   describe('basics', function() {
@@ -144,15 +144,15 @@ describe('Models', function() {
 
     it('get attributes', function(done) {
       Model.graph({id: 1, colour: 'red', name: 'Aston martin'})
-          .then(function(car) {
-            var attributes = car.getAttributes();
-            assert.equal(Object.keys(attributes).length, 3);
-            assert.equal(attributes.id, 1);
-            assert.equal(attributes.colour, 'red');
-            assert.equal(attributes.name, 'Aston martin');
-            done();
-          })
-          .catch(done);
+        .then(function(car) {
+          var attributes = car.getAttributes();
+          assert.equal(Object.keys(attributes).length, 3);
+          assert.equal(attributes.id, 1);
+          assert.equal(attributes.colour, 'red');
+          assert.equal(attributes.name, 'Aston martin');
+          done();
+        })
+        .catch(done);
     });
 
 
@@ -180,13 +180,13 @@ describe('Models', function() {
         collection: 'myCollection'
       });
       Model
-          .graph({date: '2015-02-22', name: 'blah'})
-          .then(function(_model) {
-            modelInstance = _model;
-            assert.instanceOf(_model.date, Date);
-            done();
-          })
-          .catch(done);
+        .graph({date: '2015-02-22', name: 'blah'})
+        .then(function(_model) {
+          modelInstance = _model;
+          assert.instanceOf(_model.date, Date);
+          done();
+        })
+        .catch(done);
     });
     it('whole model basis', function(done) {
       var modelInstance;
@@ -211,14 +211,14 @@ describe('Models', function() {
         collection: 'myCollection'
       });
       Model
-          .graph({date: '2015-02-22', name: 'blah'})
-          .then(function(_model) {
-            modelInstance = _model;
-            assert.instanceOf(_model.date, Date);
-            assert.equal(_model.name, 'blah');
-            done();
-          })
-          .catch(done);
+        .graph({date: '2015-02-22', name: 'blah'})
+        .then(function(_model) {
+          modelInstance = _model;
+          assert.instanceOf(_model.date, Date);
+          assert.equal(_model.name, 'blah');
+          done();
+        })
+        .catch(done);
     });
   });
 
@@ -346,15 +346,15 @@ describe('Models', function() {
           }
         });
         Model.graph({colour: 'red'})
-            .then(function(m) {
-              m.once('*', function(e) {
-                console.log('e', e);
-                assert.equal(e.type, 'x');
-                assert.equal(e.y, 1);
-                done();
-              });
-              m.foo();
-            }).catch(done);
+          .then(function(m) {
+            m.once('*', function(e) {
+              console.log('e', e);
+              assert.equal(e.type, 'x');
+              assert.equal(e.y, 1);
+              done();
+            });
+            m.foo();
+          }).catch(done);
       });
     });
     it('obj format', function(done) {
@@ -372,15 +372,15 @@ describe('Models', function() {
           }
         });
         Model.graph({colour: 'red'})
-            .then(function(m) {
-              m.once('*', function(e) {
-                console.log('e', e);
-                assert.equal(e.type, 'x');
-                assert.equal(e.y, 1);
-                done();
-              });
-              m.foo();
-            }).catch(done);
+          .then(function(m) {
+            m.once('*', function(e) {
+              console.log('e', e);
+              assert.equal(e.type, 'x');
+              assert.equal(e.y, 1);
+              done();
+            });
+            m.foo();
+          }).catch(done);
       });
     });
   });
@@ -398,13 +398,11 @@ describe('Models', function() {
             },
             attributes: ['attr']
           });
-          siesta.install()
-              .then(function() {
-                M.graph({
-                  attr: 1
-                });
-              })
-              .catch(done);
+
+          M.graph({
+            attr: 1
+          }).then(function() {done();}).catch(done);
+
         });
         it('async', function(done) {
           var C = siesta.collection('C');
@@ -419,81 +417,77 @@ describe('Models', function() {
             attributes: ['attr']
           });
           siesta.install()
-              .then(function() {
-                M.graph({
-                  attr: 1
-                })
-                    .then(function() {
-                      assert.ok(initExecuted);
-                      done();
-                    })
-                    .catch(done);
+            .then(function() {
+              M.graph({
+                attr: 1
               })
-              .catch(done);
+                .then(function() {
+                  assert.ok(initExecuted);
+                  done();
+                })
+                .catch(done);
+            })
+            .catch(done);
         });
         it('mixture of async and sync', function(done) {
           var C = siesta.collection('C');
           var asyncInitExecuted = false,
-              syncInitExecuted = false;
+            syncInitExecuted = false;
           var M = C.model('M', {
-                init: function(fromStorage, cb) {
-                  assert.notOk(fromStorage);
-                  assert.equal(this.attr, 1);
-                  asyncInitExecuted = true;
-                  cb();
-                },
-                attributes: ['attr']
-              }),
-              M_2 = C.model('M_2', {
-                init: function(fromStorage) {
-                  assert.notOk(fromStorage);
-                  assert.equal(this.attr, 2);
-                  syncInitExecuted = true;
-                },
-                attributes: ['attr']
-              });
-          siesta.install()
-              .then(function() {
-                M.graph({
-                  attr: 1
-                })
-                    .then(function() {
-                      M_2.graph({
-                        attr: 2
-                      })
-                          .then(function() {
-                            assert.ok(asyncInitExecuted);
-                            assert.ok(syncInitExecuted);
-                            done();
-                          }).catch(done);
-                    })
-                    .catch(done);
+              init: function(fromStorage, cb) {
+                assert.notOk(fromStorage);
+                assert.equal(this.attr, 1);
+                asyncInitExecuted = true;
+                cb();
+              },
+              attributes: ['attr']
+            }),
+            M_2 = C.model('M_2', {
+              init: function(fromStorage) {
+                assert.notOk(fromStorage);
+                assert.equal(this.attr, 2);
+                syncInitExecuted = true;
+              },
+              attributes: ['attr']
+            });
+          M.graph({
+            attr: 1
+          })
+            .then(function() {
+              M_2.graph({
+                attr: 2
               })
-              .catch(done);
+                .then(function() {
+                  assert.ok(asyncInitExecuted);
+                  assert.ok(syncInitExecuted);
+                  done();
+                }).catch(done);
+            })
+            .catch(done);
         });
 
         it('use queries within', function(done) {
           var C = siesta.collection('C'),
-              asyncInitExecuted = false,
-              syncInitExecuted = false;
+            asyncInitExecuted = false,
+            syncInitExecuted = false;
           var M = C.model('M', {
-                init: function(fromStorage, cb) {
-                  assert.notOk(fromStorage);
-                  M_2.query({}).then(function() {
-                    asyncInitExecuted = true;
-                    cb();
-                  }).catch(cb);
-                },
-                attributes: ['attr']
-              }),
-              M_2 = C.model('M_2', {
-                init: function(fromStorage) {
-                  assert.notOk(fromStorage);
-                  assert.equal(this.attr, 2);
-                  syncInitExecuted = true;
-                },
-                attributes: ['attr']
-              });
+              init: function(fromStorage, cb) {
+                assert.notOk(fromStorage);
+                M_2.query({}).then(function() {
+                  asyncInitExecuted = true;
+                  cb();
+                }).catch(cb);
+              },
+              attributes: ['attr']
+            }),
+            M_2 = C.model('M_2', {
+              init: function(fromStorage) {
+                assert.notOk(fromStorage);
+                assert.equal(this.attr, 2);
+                syncInitExecuted = true;
+              },
+              attributes: ['attr']
+            });
           M.graph({
             attr: 1
           }).then(function() {
@@ -511,19 +505,19 @@ describe('Models', function() {
           var C = siesta.collection('C');
           var asyncInitExecuted = false;
           var M = C.model('M', {
-                init: function(fromStorage, cb) {
-                  assert.notOk(fromStorage);
-                  M_2.one().then(function() {
-                    asyncInitExecuted = true;
-                    cb();
-                  }).catch(cb);
-                },
-                attributes: ['attr']
-              }),
-              M_2 = C.model('M_2', {
-                attributes: ['attr'],
-                singleton: true
-              });
+              init: function(fromStorage, cb) {
+                assert.notOk(fromStorage);
+                M_2.one().then(function() {
+                  asyncInitExecuted = true;
+                  cb();
+                }).catch(cb);
+              },
+              attributes: ['attr']
+            }),
+            M_2 = C.model('M_2', {
+              attributes: ['attr'],
+              singleton: true
+            });
           M.graph({
             attr: 1
           }).then(function() {
@@ -536,19 +530,19 @@ describe('Models', function() {
           var C = siesta.collection('C');
           var asyncInitExecuted = false;
           var M = C.model('M', {
-                init: function(fromStorage, cb) {
-                  assert.notOk(fromStorage);
-                  M_2.one().then(function() {
-                    asyncInitExecuted = true;
-                    cb();
-                  }).catch(cb);
-                },
-                attributes: ['attr'],
-                singleton: true
-              }),
-              M_2 = C.model('M_2', {
-                attributes: ['attr']
-              });
+              init: function(fromStorage, cb) {
+                assert.notOk(fromStorage);
+                M_2.one().then(function() {
+                  asyncInitExecuted = true;
+                  cb();
+                }).catch(cb);
+              },
+              attributes: ['attr'],
+              singleton: true
+            }),
+            M_2 = C.model('M_2', {
+              attributes: ['attr']
+            });
           M.graph({
             attr: 1
           }).then(function() {
@@ -572,32 +566,28 @@ describe('Models', function() {
           M.graph({
             attr: 'xyz'
           })
-              .then(function(m) {
-                assert.equal(m.attr, m.f());
-                done();
-              })
-              .catch(done);
+            .then(function(m) {
+              assert.equal(m.attr, m.f());
+              done();
+            })
+            .catch(done);
         }).catch(done);
       });
       it('clash', function(done) {
-        var C = siesta.collection('C');
-        var M = C.model('M', {
-          methods: {
-            restore: function() {
-              return 'a'
-            }
-          },
-          attributes: ['attr']
-        });
-        siesta.install().then(function() {
-          M.graph({
-            attr: 'xyz'
-          })
-              .then(function(m) {
-                assert.notEqual(m.restore(), 'a', 'Should not replace existing definitions')
-                done();
-              })
-              .catch(done);
+        var C = siesta.collection('C'),
+          M = C.model('M', {
+            methods: {
+              restore: function() {
+                return 'a'
+              }
+            },
+            attributes: ['attr']
+          });
+        M.graph({
+          attr: 'xyz'
+        }).then(function(m) {
+          assert.notEqual(m.restore(), 'a', 'Should not replace existing definitions')
+          done();
         }).catch(done);
       });
 
@@ -611,17 +601,16 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install()
-            .then(function() {
-              M.graph({
-                attr: 1
-              })
-                  .then(function(_m) {
-                    m = _m;
-                    _m.remove();
-                  });
-            })
-            .catch(done);
+
+        M.graph({
+          attr: 1
+        })
+          .then(function(_m) {
+            m = _m;
+            _m.remove();
+            done();
+          });
+
       });
       it('async remove', function(done) {
         var C = siesta.collection('C');
@@ -635,22 +624,20 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install()
-            .then(function() {
-              M.graph({
-                attr: 1
+
+        M.graph({
+          attr: 1
+        })
+          .then(function(_m) {
+            m = _m;
+            _m.remove()
+              .then(function() {
+                assert.ok(removeCalled);
+                done();
               })
-                  .then(function(_m) {
-                    m = _m;
-                    _m.remove()
-                        .then(function() {
-                          assert.ok(removeCalled);
-                          done();
-                        })
-                        .catch(done);
-                  });
-            })
-            .catch(done);
+              .catch(done);
+          });
+
       });
       it('init on restore', function(done) {
         var C = siesta.collection('C');
@@ -664,27 +651,24 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install()
+
+        M.graph({
+          attr: 1
+        }).then(function(_m) {
+          m = _m;
+          _m.remove()
             .then(function() {
-              M.graph({
-                attr: 1
-              }).then(function(_m) {
-                m = _m;
-                _m.remove()
-                    .then(function() {
-                      initCalled = false;
-                      M.init = function(restored) {
-                        assert.ok(restored);
-                        assert.equal(this.attr, 1);
-                        initCalled = true;
-                      };
-                      _m.restore();
-                      assert.ok(initCalled);
-                      done();
-                    }).catch(done);
-              }).catch(done);
-            })
-            .catch(done);
+              initCalled = false;
+              M.init = function(restored) {
+                assert.ok(restored);
+                assert.equal(this.attr, 1);
+                initCalled = true;
+              };
+              _m.restore();
+              assert.ok(initCalled);
+              done();
+            }).catch(done);
+        }).catch(done);
       });
     });
     describe('statics', function() {
@@ -698,10 +682,12 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install().then(function() {
-          assert.equal(M.f(), M);
-          done();
-        }).catch(done);
+        siesta
+          .install()
+          .then(function() {
+            assert.equal(M.f(), M);
+            done();
+          }).catch(done);
       });
       it('clash', function(done) {
         var C = siesta.collection('C');
@@ -734,17 +720,13 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install()
-            .then(function() {
-              M.graph({
-                attr: 1
-              })
-                  .then(function(_m) {
-                    assert.equal(_m.prop, 'a');
-                    done();
-                  }).catch(done);
-            })
-            .catch(done);
+
+        M.graph({
+          attr: 1
+        }).then(function(_m) {
+          assert.equal(_m.prop, 'a');
+          done();
+        }).catch(done);
       });
       it('clash', function(done) {
         var C = siesta.collection('C');
@@ -758,17 +740,13 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install()
-            .then(function() {
-              M.graph({
-                attr: 1
-              })
-                  .then(function(_m) {
-                    assert.notEqual(_m.restore, 'a');
-                    done();
-                  }).catch(done);
-            })
-            .catch(done);
+
+        M.graph({
+          attr: 1
+        }).then(function(_m) {
+          assert.notEqual(_m.restore, 'a');
+          done();
+        }).catch(done);
       });
 
     });

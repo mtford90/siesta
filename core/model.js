@@ -133,6 +133,16 @@ function Model(opts) {
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
+  this._relationshipsAreInstalled = new Condition(function(done) {
+    var err = this.installRelationships();
+    if (!err) {
+      err = this.installReverseRelationships();
+      if (err) done(err);
+      else done();
+    }
+    else done(err);
+  }.bind(this));
+
   this._indexIsInstalled = new Condition(function(done) {
     if (siesta.ext.storageEnabled) siesta.ext.storage.ensureIndexInstalled(this, done);
     else done();
@@ -140,6 +150,7 @@ function Model(opts) {
 
   this._modelLoadedFromStorage = new Condition(function(done) {
     if (siesta.ext.storageEnabled) {
+      console.log(1);
       siesta.ext.storage.loadModel({model: this}, function(err) {
         if (!err) {
           console.log('loaded from storage');
@@ -153,9 +164,9 @@ function Model(opts) {
     else done();
   }.bind(this));
 
+
   this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
-
-
+  this._storageEnabled.dependentOn(this._relationshipsAreInstalled);
 }
 
 util.extend(Model, {
@@ -241,8 +252,8 @@ util.extend(Model.prototype, {
    * @return {String|null}
    */
   installRelationships: function() {
-    console.log('installRelationships');
     if (!this._relationshipsInstalled) {
+      console.log('installRelationships');
       var err = null;
       for (var name in this._opts.relationships) {
         if (this._opts.relationships.hasOwnProperty(name)) {
@@ -293,12 +304,12 @@ util.extend(Model.prototype, {
         forwardModel = relationship.forwardModel;
 
       if (reverseModel != this || reverseModel == forwardModel) {
+
         if (reverseModel.singleton) {
           if (relationship.type == RelationshipType.ManyToMany) err = 'Singleton model cannot be related via reverse ManyToMany';
           if (relationship.type == RelationshipType.OneToMany) err = 'Singleton model cannot be related via reverse OneToMany';
         }
         if (!err) {
-          log(this.name + ': configuring  reverse relationship ' + reverseName);
           if (reverseModel.relationships[reverseName]) {
             // We are ok to redefine reverse relationships whereby the models are in the same hierarchy
             var isAncestorModel = reverseModel.relationships[reverseName].forwardModel.isAncestorOf(this);
@@ -309,18 +320,17 @@ util.extend(Model.prototype, {
           }
           if (!err) {
             reverseModel.relationships[reverseName] = relationship;
+            console.log('reverseModel', reverseModel);
           }
         }
       }
-      if (isPlaceholder) {
-        var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
-        Object.keys(existingReverseInstances).forEach(function(localId) {
-          var instancce = existingReverseInstances[localId];
-          var r = util.extend({}, relationship);
-          r.isReverse = true;
-          this._factory._installRelationship(r, instancce);
-        }.bind(this));
-      }
+      var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
+      Object.keys(existingReverseInstances).forEach(function(localId) {
+        var instancce = existingReverseInstances[localId];
+        var r = util.extend({}, relationship);
+        r.isReverse = true;
+        this._factory._installRelationship(r, instancce);
+      }.bind(this));
     }
     return err;
   },
@@ -328,17 +338,15 @@ util.extend(Model.prototype, {
    * Cycle through relationships and replace any placeholders with the actual models where possible.
    */
   _installReversePlaceholders: function() {
-    console.log(3);
     for (var forwardName in this.relationships) {
       if (this.relationships.hasOwnProperty(forwardName)) {
         var relationship = this.relationships[forwardName];
-        console.log('relationship', relationship);
         if (relationship.reverseModel.isPlaceholder) this._installReverse(relationship);
       }
     }
   },
   installReverseRelationships: function() {
-    console.log(2);
+    console.log('installing reverse relationships for ' + this.name);
     if (!this._reverseRelationshipsInstalled) {
       for (var forwardName in this.relationships) {
         if (this.relationships.hasOwnProperty(forwardName)) {
@@ -484,10 +492,7 @@ util.extend(Model.prototype, {
         });
       }
     }.bind(this);
-    if (opts._ignoreInstalled) {
-      _map();
-    }
-    else siesta._afterInstall(_map);
+    _map();
   },
   /**
    * Map data into Siesta.

@@ -26,7 +26,9 @@ gulp.task('build-source-map', function() {
 
 gulp.task('test-bundle', function() {
   return gulp.src(['./test/**/*.spec.js'])
-    .pipe(plugins.webpack({}))
+    .pipe(plugins.webpack({
+      devtool: 'inline-source-map'
+    }))
     .pipe(plugins.rename('test-bundle.js'))
     .pipe(gulp.dest('./build'))
     .pipe(plugins.livereload({port: 47835}));

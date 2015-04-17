@@ -10,6 +10,9 @@ function ModelInstance(model) {
   var self = this;
   this.model = model;
 
+  this.__proxies = {};
+  this._proxies = [];
+
   util.subProperties(this, this.model, [
     'collection',
     'collectionName',
@@ -97,7 +100,7 @@ util.extend(ModelInstance.prototype, {
     modelEvents.emit(opts);
   },
   remove: function(cb, notification) {
-    _.each(this._relationshipNames, function (name) {
+    _.each(this._relationshipNames, function(name) {
       if (util.isArray(this[name])) {
         this[name] = [];
       }
