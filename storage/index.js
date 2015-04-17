@@ -209,6 +209,7 @@ else {
 
         Model._graph(data, {
           _ignoreInstalled: true,
+          disableevents: true,
           fromStorage: true
         }, function(err, instances) {
           if (!err) {
@@ -428,11 +429,7 @@ else {
   });
 
   util.extend(siesta, {
-    save: save,
-    setPouch: function(_p) {
-      if (siesta._canChange) pouch = _p;
-      else throw new Error('Cannot change PouchDB instance when an object graph exists.');
-    }
+    save: save
   });
 
 }

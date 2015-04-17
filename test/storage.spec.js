@@ -332,10 +332,7 @@ describe.only('storage', function() {
             done();
           }).catch(done);
         });
-
-
       });
-
 
       it('manytomany', function(done) {
         Collection = siesta.collection('myCollection');
@@ -689,173 +686,10 @@ describe.only('storage', function() {
       });
     });
 
-    describe('singleton relationships', function() {
-      var Pomodoro, Config, ColourConfig, PomodoroConfig, PomodoroTimer;
-      beforeEach(function() {
-        Pomodoro = siesta.collection('Pomodoro');
-
-        var DEFAULT_COLOURS = {
-          primary: '#df423c',
-          shortBreak: '#37a2c4',
-          longBreak: '#292f37'
-        };
-
-        Config = Pomodoro.model('Config', {
-          relationships: {
-            pomodoro: {model: 'PomodoroConfig'},
-            colours: {model: 'ColourConfig'}
-          },
-          singleton: true
-        });
-        ColourConfig = Pomodoro.model('ColourConfig', {
-          attributes: [
-            {
-              name: 'primary',
-              default: DEFAULT_COLOURS.primary
-            },
-            {
-              name: 'shortBreak',
-              default: DEFAULT_COLOURS.shortBreak
-            },
-            {
-              name: 'longBreak',
-              default: DEFAULT_COLOURS.longBreak
-            }
-          ],
-          singleton: true
-        });
-        PomodoroConfig = Pomodoro.model('PomodoroConfig', {
-          attributes: [
-            {
-              name: 'pomodoroLength',
-              default: 25
-            },
-            {
-              name: 'longBreakLength',
-              default: 15
-            },
-            {
-              name: 'shortBreakLength',
-              default: 5
-            },
-            {
-              name: 'roundLength',
-              default: 4
-            }
-          ],
-          singleton: true
-        });
-        PomodoroTimer = Pomodoro.model('PomodoroTimer', {
-          attributes: [
-            {
-              name: 'seconds',
-              default: 25 * 60
-            },
-            {
-              name: 'round',
-              default: 1
-            },
-            {
-              name: 'target',
-              default: 1
-            }
-          ],
-          init: function(fromStorage, done) {
-            // Setup listeners.
-            // Note: The reason why we listen to self rather than simply execute logic when we decrement seconds in
-            // the interval is that this options leaves open the possibility of modifying seconds outside of the model
-            // instance.
-            this.listen(function(n) {
-              if (n.field == 'seconds') this.onSecondsChange();
-            }.bind(this));
-            console.log('starting');
-            data.PomodoroConfig.one()
-              .then(function(config) {
-                console.log('started');
-
-                config.on('*', this.onConfigChange.bind(this));
-                done();
-              }.bind(this))
-              .catch(done);
-          },
-          methods: {
-            onSecondsChange: function() {
-              if (this.seconds == 0) {
-
-              }
-            },
-            onConfigChange: function(n) {
-              switch (n.field) {
-                case 'pomodoroLength':
-                  this.onPomodoroLengthChange(n.old, n.new);
-                  break;
-                case 'longBreakLength':
-                  this.onLongBreakLengthChange(n.old, n.new);
-                  break;
-                case 'shortBreakLength':
-                  this.onShortBreakLengthChange(n.old, n.new);
-                  break;
-                case 'roundLength':
-                  this.onRoundLengthChange(n.old, n.new);
-                  break;
-                default:
-                  break;
-              }
-            },
-            onPomodoroLengthChange: function(old, _instance) {
-
-            },
-            onLongBreakLengthChange: function(old, _instance) {
-
-            },
-            onShortBreakLengthChange: function(old, _instance) {
-
-            },
-            onRoundLengthChange: function(old, _instance) {
-
-            },
-            start: function() {
-              if (!this._token) {
-                this._token = setInterval(function() {
-                  this.seconds--;
-                }, 1000);
-              }
-            },
-            stop: function() {
-              if (this._token) {
-                clearInterval(this._token);
-                this._token = null;
-              }
-            }
-          },
-          singleton: true
-        });
-
-      });
-
-      it('install', function(done) {
-        internal
-          .Model
-          .install([
-            Config,
-            PomodoroConfig,
-            PomodoroTimer,
-            ColourConfig])(function(err) {
-          done(err);
-        });
-      })
-    });
 
 
   });
 
-  describe('custom pouch', function() {
-    it('custom pouch', function() {
-      var pouch = new PouchDB('customPouch');
-      siesta.setPouch(pouch);
-      assert.equal(siesta.ext.storage._pouch, pouch);
-    });
-  });
 
   describe('saving and loading different data types', function() {
     var db;
