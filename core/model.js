@@ -133,15 +133,8 @@ function Model(opts) {
 
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
-  this._relationshipsAreInstalled = new Condition(function(done) {
-    var err = this.installRelationships();
-    if (!err) {
-      err = this.installReverseRelationships();
-      if (err) done(err);
-      else done();
-    }
-    else done(err);
-  }.bind(this));
+  this.installRelationships();
+  this.installReverseRelationships();
 
   this._indexIsInstalled = new Condition(function(done) {
     if (siesta.ext.storageEnabled) siesta.ext.storage.ensureIndexInstalled(this, done);
@@ -164,9 +157,7 @@ function Model(opts) {
     else done();
   }.bind(this));
 
-
   this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
-  this._storageEnabled.dependentOn(this._relationshipsAreInstalled);
 }
 
 util.extend(Model, {
@@ -188,6 +179,22 @@ util.extend(Model, {
       }
       return m;
     }, [])
+  },
+  install: function(models, cb) {
+    cb = cb || function() {};
+    return new Promise(function(resolve, reject) {
+      Condition.all.apply(Condition, models.map(function(x) {return x._storageEnabled}))
+        .then(function() {
+          models.forEach(function(m) {
+            m._installReversePlaceholders();
+          });
+          cb();
+          resolve();
+        })
+        .catch(function(err) {
+          reject(err);
+        });
+    });
   }
 
 });
@@ -213,12 +220,10 @@ util.extend(Model.prototype, {
       if (this.singleton) relationship.type = RelationshipType.OneToOne;
       else relationship.type = RelationshipType.OneToMany;
     }
-    if (this.singleton && relationship.type == RelationshipType.ManyToMany) {
-      return 'Singleton model cannot use ManyToMany relationship.';
-    }
+    if (this.singleton && relationship.type == RelationshipType.ManyToMany)
+      throw new Error('Singleton model cannot use ManyToMany relationship.');
     if (Object.keys(RelationshipType).indexOf(relationship.type) < 0)
-      return 'Relationship type ' + relationship.type + ' does not exist';
-    return null;
+      throw new Error('Relationship type ' + relationship.type + ' does not exist');
   },
   _getReverseModel: function(reverseName) {
     var reverseModel;
@@ -331,6 +336,7 @@ util.extend(Model.prototype, {
         r.isReverse = true;
         this._factory._installRelationship(r, instancce);
       }.bind(this));
+
     }
     return err;
   },
@@ -369,36 +375,38 @@ util.extend(Model.prototype, {
   query: function(query, cb) {
     var queryInstance;
     var promise = util.promise(cb, function(cb) {
-      if (!this.singleton) {
-        queryInstance = this._query(query);
-        return queryInstance.execute(cb);
-      }
-      else {
-        queryInstance = this._query({__ignoreInstalled: true});
-        queryInstance.execute(function(err, objs) {
-          if (err) cb(err);
-          else {
-            // Cache a new singleton and then reexecute the query
-            query = util.extend({}, query);
-            query.__ignoreInstalled = true;
-            if (!objs.length) {
-              this.graph({}, function(err) {
-                if (!err) {
-                  queryInstance = this._query(query);
-                  queryInstance.execute(cb);
-                }
-                else {
-                  cb(err);
-                }
-              }.bind(this));
-            }
+      this._storageEnabled.then(function() {
+        if (!this.singleton) {
+          queryInstance = this._query(query);
+          return queryInstance.execute(cb);
+        }
+        else {
+          queryInstance = this._query({__ignoreInstalled: true});
+          queryInstance.execute(function(err, objs) {
+            if (err) cb(err);
             else {
-              queryInstance = this._query(query);
-              queryInstance.execute(cb);
+              // Cache a new singleton and then reexecute the query
+              query = util.extend({}, query);
+              query.__ignoreInstalled = true;
+              if (!objs.length) {
+                this.graph({}, function(err) {
+                  if (!err) {
+                    queryInstance = this._query(query);
+                    queryInstance.execute(cb);
+                  }
+                  else {
+                    cb(err);
+                  }
+                }.bind(this));
+              }
+              else {
+                queryInstance = this._query(query);
+                queryInstance.execute(cb);
+              }
             }
-          }
-        }.bind(this));
-      }
+          }.bind(this));
+        }
+      }.bind(this));
     }.bind(this));
 
     // By wrapping the promise in another promise we can push the invocations to the bottom of the event loop so that

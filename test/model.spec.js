@@ -416,7 +416,7 @@ describe('Models', function() {
             },
             attributes: ['attr']
           });
-          siesta.install()
+          Model.install([M])
             .then(function() {
               M.graph({
                 attr: 1
@@ -562,16 +562,18 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install().then(function() {
-          M.graph({
-            attr: 'xyz'
-          })
-            .then(function(m) {
-              assert.equal(m.attr, m.f());
-              done();
+
+        Model.install([M])
+          .then(function() {
+            M.graph({
+              attr: 'xyz'
             })
-            .catch(done);
-        }).catch(done);
+              .then(function(m) {
+                assert.equal(m.attr, m.f());
+                done();
+              })
+              .catch(done);
+          }).catch(done);
       });
       it('clash', function(done) {
         var C = siesta.collection('C'),
@@ -682,8 +684,7 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta
-          .install()
+        Model.install([M])
           .then(function() {
             assert.equal(M.f(), M);
             done();
@@ -700,10 +701,12 @@ describe('Models', function() {
           },
           attributes: ['attr']
         });
-        siesta.install().then(function() {
-          assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
-          done();
-        }).catch(done);
+        Model.install([M])
+          .then(function() {
+            assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
+            done();
+          })
+          .catch(done);
       });
 
     });

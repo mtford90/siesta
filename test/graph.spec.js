@@ -375,7 +375,7 @@ describe('perform mapping', function() {
                 name: 'Ford',
                 id: "remoteId3"
               }];
-              Car._mapBulk(raw, {}, function(err, objs, res) {
+              Car.graph(raw, {}, function(err, objs, res) {
                 if (err) {
                   done(err);
                 } else {
@@ -428,6 +428,8 @@ describe('perform mapping', function() {
             });
 
             it('person has 3 new cars, and those cars are owned by the person', function(done) {
+              console.log('Person', Person);
+              console.log('Car', Car);
               person.__proxies['cars'].get(function(err, cars) {
                 done(err);
                 assert.equal(cars.length, 3);

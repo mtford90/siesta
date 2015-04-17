@@ -169,38 +169,25 @@ util.extend(Query.prototype, {
     }, util.extend({}, cacheForModel(this.model)));
   },
   _executeInMemory: function(callback) {
-    var _executeInMemory = function() {
-      this.model
-        ._storageEnabled
-        .then(function() {
-          var cacheByLocalId = this._getCacheByLocalId();
-          var keys = Object.keys(cacheByLocalId);
-          var self = this;
-          var res = [];
-          var err;
-          for (var i = 0; i < keys.length; i++) {
-            var k = keys[i];
-            var obj = cacheByLocalId[k];
-            var matches = self.objectMatchesQuery(obj);
-            if (typeof(matches) == 'string') {
-              err = error(matches);
-              break;
-            } else {
-              if (matches) res.push(obj);
-            }
-          }
-          res = this._sortResults(res);
-          if (err) log('Error executing query', err);
-          callback(err, err ? null : constructQuerySet(res, this.model));
-        }.bind(this))
-        .catch(function(err) {
-          var _err = 'Unable to execute query due to failed index installation on Model "' +
-            this.model.name + '"';
-          console.error(_err, err);
-          callback(_err);
-        }.bind(this));
-    }.bind(this);
-    _executeInMemory();
+    var cacheByLocalId = this._getCacheByLocalId();
+    var keys = Object.keys(cacheByLocalId);
+    var self = this;
+    var res = [];
+    var err;
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      var obj = cacheByLocalId[k];
+      var matches = self.objectMatchesQuery(obj);
+      if (typeof(matches) == 'string') {
+        err = error(matches);
+        break;
+      } else {
+        if (matches) res.push(obj);
+      }
+    }
+    res = this._sortResults(res);
+    if (err) log('Error executing query', err);
+    callback(err, err ? null : constructQuerySet(res, this.model));
   },
   clearOrdering: function() {
     this.opts.order = null;

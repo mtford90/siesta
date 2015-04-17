@@ -500,6 +500,10 @@ describe('events', function() {
 
           describe('person', function() {
             it('type', function() {
+              assert.ok(personEvent);
+              assert.ok(personGenericEvent);
+              assert.ok(personCollectionEvent);
+
               assert.equal(personEvent.type, ModelEventType.Splice);
               assert.equal(personGenericEvent.type, ModelEventType.Splice);
               assert.equal(personCollectionEvent.type, ModelEventType.Splice);

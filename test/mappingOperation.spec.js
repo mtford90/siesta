@@ -136,10 +136,7 @@ describe('mapping operation', function() {
           assert.ok(op.errors[2]);
           assert.ok(op.errors[2].repositories);
         });
-
-
       });
-
 
       it('array to scalar', function(done) {
         var data = [{
