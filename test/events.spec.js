@@ -2,6 +2,7 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   events = internal.events,
   util = internal.util,
+  Condition = internal.Condition,
   ModelEventType = internal.ModelEventType,
   ProxyEventEmitter = internal.ProxyEventEmitter,
   RelationshipType = siesta.RelationshipType;
@@ -450,7 +451,7 @@ describe('events', function() {
           var anotherCar;
 
           beforeEach(function(done) {
-            siesta.install()
+            Condition.all(Car._storageEnabled, Person._storageEnabled)
               .then(function() {
                 car = _instance(Car);
                 anotherCar = _instance(Car);
@@ -494,6 +495,7 @@ describe('events', function() {
                 })
               })
               .catch(done);
+
           });
 
           describe('person', function() {
@@ -529,7 +531,7 @@ describe('events', function() {
         describe('splice', function() {
 
           beforeEach(function(done) {
-            siesta.install()
+            Condition.all(Car._storageEnabled, Person._storageEnabled)
               .then(function() {
                 car = _instance(Car);
                 person = _instance(Person);
@@ -568,7 +570,7 @@ describe('events', function() {
                 util.next(function() {
                   events.removeAllListeners();
                   done();
-                })
+                });
               })
               .catch(done);
           });
@@ -639,47 +641,50 @@ describe('events', function() {
 
           describe('push', function() {
             beforeEach(function(done) {
-              siesta.install(function() {
-                car = _instance(Car);
-                anotherCar = _instance(Car);
-                person = _instance(Person);
-                person.cars = [car];
-                siesta.on('myCollection:Person', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personEvent = n;
-                  }
-                });
-                siesta.on('myCollection', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personCollectionEvent = n;
-                  }
-                });
-                siesta.on('Siesta', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personGenericEvent = n;
-                  }
-                });
-                siesta.on('myCollection:Car', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Car') {
-                    carEvent = n;
-                  }
-                });
-                siesta.on('myCollection', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Car') {
-                    carCollectionEvent = n;
-                  }
-                });
-                siesta.on('Siesta', function(n) {
-                  if (n.type == ModelEventType.Splice && n.model == 'Car') {
-                    carGenericEvent = n;
-                  }
-                });
-                person.cars.push(anotherCar);
-                util.next(function() {
-                  events.removeAllListeners();
-                  done();
-                });
-              });
+              Condition
+                .all(Car._storageEnabled, Person._storageEnabled)
+                .then(function() {
+                  car = _instance(Car);
+                  anotherCar = _instance(Car);
+                  person = _instance(Person);
+                  person.cars = [car];
+                  siesta.on('myCollection:Person', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                      personEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                      personCollectionEvent = n;
+                    }
+                  });
+                  siesta.on('Siesta', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Person') {
+                      personGenericEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection:Car', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Car') {
+                      carEvent = n;
+                    }
+                  });
+                  siesta.on('myCollection', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Car') {
+                      carCollectionEvent = n;
+                    }
+                  });
+                  siesta.on('Siesta', function(n) {
+                    if (n.type == ModelEventType.Splice && n.model == 'Car') {
+                      carGenericEvent = n;
+                    }
+                  });
+                  person.cars.push(anotherCar);
+                  util.next(function() {
+                    events.removeAllListeners();
+                    done();
+                  });
+                }).catch(done);
+
             });
 
             describe('person', function() {
@@ -718,7 +723,8 @@ describe('events', function() {
 
           describe('splice', function() {
             beforeEach(function(done) {
-              siesta.install()
+              Condition
+                .all(Car._storageEnabled, Person._storageEnabled)
                 .then(function() {
                   car = _instance(Car);
                   person = _instance(Person);
@@ -1327,9 +1333,11 @@ describe('events', function() {
       });
 
       it('will install', function(done) {
-        siesta.install(function(err) {
-          done(err);
-        });
+        Condition
+          .all(Car._storageEnabled, Person._storageEnabled)
+          .then(function() {
+            done();
+          }).catch(done)
       });
 
     });
