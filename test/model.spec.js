@@ -199,7 +199,6 @@ describe('Models', function() {
           'name'
         ],
         parseAttribute: function(attributeName, value) {
-          console.log('yo!');
           if (attributeName == 'date') {
             if (!(value instanceof Date)) {
               value = new Date(Date.parse(value));

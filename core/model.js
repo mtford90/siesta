@@ -143,16 +143,7 @@ function Model(opts) {
 
   this._modelLoadedFromStorage = new Condition(function(done) {
     if (siesta.ext.storageEnabled) {
-      console.log(1);
-      siesta.ext.storage.loadModel({model: this}, function(err) {
-        if (!err) {
-          console.log('loaded from storage');
-        }
-        else {
-          console.error('error loading from storage', err);
-        }
-        done();
-      }.bind(this));
+      siesta.ext.storage.loadModel({model: this}, done);
     }
     else done();
   }.bind(this));
@@ -258,7 +249,6 @@ util.extend(Model.prototype, {
    */
   installRelationships: function() {
     if (!this._relationshipsInstalled) {
-      console.log('installRelationships');
       var err = null;
       for (var name in this._opts.relationships) {
         if (this._opts.relationships.hasOwnProperty(name)) {
@@ -299,7 +289,6 @@ util.extend(Model.prototype, {
     var reverseModel = reverseRelationship.reverseModel;
     var isPlaceholder = reverseModel.isPlaceholder;
     if (isPlaceholder) {
-      console.log('reverseModel is placeholder', reverseModel);
       var modelName = reverseRelationship.reverseModel.name;
       reverseModel = this._getReverseModel(modelName);
       if (reverseModel) {

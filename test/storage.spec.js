@@ -2,7 +2,7 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   Model = internal.Model;
 
-describe.only('storage', function() {
+describe('storage', function() {
 
   before(function() {
     siesta.ext.storageEnabled = true;

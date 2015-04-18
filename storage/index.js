@@ -29,14 +29,23 @@ function fullyQualifiedModelName(collectionName, modelName) {
   return collectionName + '.' + modelName;
 }
 
+
 if (typeof PouchDB == 'undefined') {
   siesta.ext.storageEnabled = false;
   console.log('PouchDB is not present therefore storage is disabled.');
 }
 else {
   var DEFAULT_DB_NAME = 'siesta',
-    DB_NAME = DEFAULT_DB_NAME,
-    pouch = new PouchDB(DB_NAME, {auto_compaction: true});
+    DB_NAME = DEFAULT_DB_NAME;
+
+
+  var pouch;
+
+  function initDb() {
+    pouch = new PouchDB(DB_NAME, {auto_compaction: true, adapter: 'memory'});
+  }
+
+  initDb();
 
   /**
    * Sometimes siesta needs to store some extra information about the model instance.
@@ -44,8 +53,6 @@ else {
    * @private
    */
   function _addMeta(serialised) {
-    // PouchDB <= 3.2.1 has a bug whereby date fields are not deserialised properly if you use db.query
-    // therefore we need to add extra info to the object for deserialising dates manually.
     serialised.siesta_meta = _initMeta();
     for (var prop in serialised) {
       if (serialised.hasOwnProperty(prop)) {
@@ -229,7 +236,8 @@ else {
   }
 
   function saveConflicts(objects, cb) {
-    pouch.allDocs({keys: util.pluck(objects, 'localId')})
+    pouch
+      .allDocs({keys: util.pluck(objects, 'localId')})
       .then(function(resp) {
         for (var i = 0; i < resp.rows.length; i++) {
           objects[i]._rev = resp.rows[i].value.rev;
@@ -318,18 +326,19 @@ else {
       siesta.removeListener('Siesta', listener);
       unsavedObjects = [];
       unsavedObjectsHash = {};
-      pouch
-        .allDocs()
-        .then(function(result) {
-          var docs = result.rows.map(function(r) {
-            console.log('r', r);
-            return {_id: r.id, _deleted: true, _rev: r.value.rev};
-          });
-          console.log('docs', docs);
-          pouch.bulkDocs(docs).then(function() {
-            pouch.compact().then(function() {cb()}).catch(cb);
-          }).catch(cb);
-        }).catch(cb);
+        pouch
+          .allDocs()
+          .then(function (results) {
+            var docs = results.rows.map(function (r) {
+              return {_id: r.id, _rev: r.value.rev, _deleted: true};
+            });
+
+            pouch
+              .bulkDocs(docs)
+              .then(function () {cb()})
+              .catch(cb);
+          })
+          .catch(cb);
     }
   });
 

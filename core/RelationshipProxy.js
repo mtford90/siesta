@@ -64,19 +64,24 @@ util.extend(RelationshipProxy.prototype, {
         this.object = modelInstance;
         var self = this;
         var name = this.getForwardName();
-        console.log('installing ' + name + ' on ', this.object.modelName);
-        Object.defineProperty(modelInstance, name, {
-          get: function() {
-            return self.related;
-          },
-          set: function(v) {
-            self.set(v);
-          },
-          configurable: true,
-          enumerable: true
-        });
-        modelInstance.__proxies[name] = this;
-        modelInstance._proxies.push(this);
+
+        // If it's a subclass, a proxy will already exist. Therefore no need to install.
+        if (!modelInstance.__proxies[name]) {
+          Object.defineProperty(modelInstance, name, {
+            get: function() {
+              return self.related;
+            },
+            set: function(v) {
+              self.set(v);
+            },
+            configurable: true,
+            enumerable: true
+          });
+
+          modelInstance.__proxies[name] = this;
+          modelInstance._proxies.push(this);
+        }
+
       } else {
         throw new InternalSiestaError('Already installed.');
       }
@@ -99,7 +104,6 @@ util.extend(RelationshipProxy.prototype, {
 
 util.extend(RelationshipProxy.prototype, {
   proxyForInstance: function(modelInstance, reverse) {
-    console.log(111111);
     var name = reverse ? this.getReverseName() : this.getForwardName(),
       model = reverse ? this.reverseModel : this.forwardModel;
     var ret;
@@ -197,7 +201,9 @@ util.extend(RelationshipProxy.prototype, {
     reverseProxies.forEach(function(p) {
       if (util.isArray(p.related)) {
         p.makeChangesToRelatedWithoutObservations(function() {
+          console.log('p.related', p.related);
           p.splicer(opts)(p.related.length, 0, self.object);
+          console.log('new p.related', p.related);
         });
       } else {
         p.clearReverseRelated(opts);

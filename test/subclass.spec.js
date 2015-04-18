@@ -1,6 +1,8 @@
-var assert = require('chai').assert;
+var assert = require('chai').assert,
+  internal = siesta._internal,
+  Model = internal.Model;
 
-describe('Subclass', function() {
+describe.only('Subclass', function() {
   var Collection, Car, SportsCar;
 
   before(function() {
@@ -98,6 +100,8 @@ describe('Subclass', function() {
 
     describe('relationship types', function() {
 
+      var sportsCar, car;
+
       describe('OneToMany', function() {
         beforeEach(function(done) {
           siesta.reset(function() {
@@ -122,17 +126,21 @@ describe('Subclass', function() {
             Person.graph({age: 24, name: 'Mike'}).then(function(_mike) {
               mike = _mike;
               Car.graph({colour: 'red', name: 'Aston Martin', owner: {localId: mike.localId}})
-                .then(SportsCar.graph({
-                  colour: 'yellow',
-                  name: 'Lamborghini',
-                  maxSpeed: 160,
-                  owner: {localId: mike.localId}
-                }))
-                .then(function() {
-                  done();
+                .then(function(_car) {
+                  car = _car;
+                  SportsCar.graph({
+                    colour: 'yellow',
+                    name: 'Lamborghini',
+                    maxSpeed: 160,
+                    owner: {localId: mike.localId}
+                  }).then(function(i) {
+                    sportsCar = i;
+                    console.log('i', i);
+                    console.log('SportsCar', SportsCar);
+                    done();
+                  })
                 })
-                .catch(done)
-              ;
+                .catch(done);
             });
           });
 
@@ -140,14 +148,11 @@ describe('Subclass', function() {
         });
 
         it('same relationship', function() {
-          assert.ok(mike);
-          assert.equal(mike.cars.length, 2);
-          var car = _.filter(mike.cars, function(x) {return x.model == Car})[0],
-            sportsCar = _.filter(mike.cars, function(x) {return x.model == SportsCar})[0];
-          assert.ok(car);
-          assert.ok(sportsCar);
+          assert.equal(car.owner, sportsCar.owner);
           assert.equal(car.owner, mike);
           assert.equal(sportsCar.owner, mike);
+          assert.include(mike.cars, sportsCar, 'Should be related to the sports car');
+          assert.include(mike.cars, car, 'should be related to the normal car');
         });
       });
 
@@ -370,11 +375,13 @@ describe('Subclass', function() {
         id: 'blah'
       });
       SportsCar = Car.child('SportsCar', {});
-      siesta.install(function() {
-        assert.equal(Car.id, 'blah');
-        assert.equal(SportsCar.id, 'blah');
-        done();
-      });
+      Model.install([Car, SportsCar])
+        .then(function() {
+          assert.equal(Car.id, 'blah');
+          assert.equal(SportsCar.id, 'blah');
+          done();
+        })
+        .catch(done);
     });
 
     it('overrides', function(done) {
@@ -385,11 +392,14 @@ describe('Subclass', function() {
       SportsCar = Car.child('SportsCar', {
         id: 'blah2'
       });
-      siesta.install(function() {
-        assert.equal(Car.id, 'blah');
-        assert.equal(SportsCar.id, 'blah2');
-        done();
-      });
+      Model.install([Car, SportsCar])
+        .then(function() {
+          assert.equal(Car.id, 'blah');
+          assert.equal(SportsCar.id, 'blah2');
+          done();
+        })
+        .catch(done);
+
     });
 
   });
@@ -462,7 +472,7 @@ describe('Subclass', function() {
   describe('init', function() {
     var Collection, Car, SportsCar;
 
-    it('parent init inherited by child', function() {
+    it('parent init inherited by child', function(done) {
       Collection = siesta.collection('myCollection');
       Car = Collection.model('Car', {
         init: function(fromStorage) {
@@ -471,13 +481,17 @@ describe('Subclass', function() {
         }
       });
       SportsCar = Car.child('SportsCar', {});
-      siesta.install(function() {
-        assert.equal(Car.init(), 'a');
-        assert.equal(SportsCar.init(), 'a');
-      });
+      Model.install([Car, SportsCar])
+        .then(function() {
+          assert.equal(Car.init(), 'a');
+          assert.equal(SportsCar.init(), 'a');
+          done();
+        })
+        .catch(done);
+
     });
 
-    it('parent init overriden by child', function() {
+    it('parent init overriden by child', function(done) {
       Collection = siesta.collection('myCollection');
       Car = Collection.model('Car', {
         init: function(fromStorage) {
@@ -491,10 +505,15 @@ describe('Subclass', function() {
           return 'b';
         }
       });
-      siesta.install(function() {
-        assert.equal(Car.init(), 'a');
-        assert.equal(SportsCar.init(), 'b');
-      });
+      Model.install([Car, SportsCar])
+        .then(function() {
+          assert.equal(Car.init(), 'a');
+          assert.equal(SportsCar.init(), 'b');
+          done();
+        })
+        .catch(done);
+
+
     });
 
   });
@@ -502,7 +521,7 @@ describe('Subclass', function() {
   describe('remove', function() {
     var Collection, Car, SportsCar;
 
-    it('parent remove inherited by child', function() {
+    it('parent remove inherited by child', function(done) {
       Collection = siesta.collection('myCollection');
       Car = Collection.model('Car', {
         remove: function() {
@@ -510,13 +529,16 @@ describe('Subclass', function() {
         }
       });
       SportsCar = Car.child('SportsCar', {});
-      siesta.install(function() {
-        assert.equal(Car.remove(), 'a');
-        assert.equal(SportsCar.remove(), 'a');
-      });
+      Model.install([Car, SportsCar])
+        .then(function() {
+          assert.equal(Car.remove(), 'a');
+          assert.equal(SportsCar.remove(), 'a');
+          done();
+        })
+        .catch(done);
     });
 
-    it('parent remove overriden by child', function() {
+    it('parent remove overriden by child', function(done) {
       Collection = siesta.collection('myCollection');
       Car = Collection.model('Car', {
         remove: function() {
@@ -528,10 +550,14 @@ describe('Subclass', function() {
           return 'b';
         }
       });
-      siesta.install(function() {
-        assert.equal(Car.remove(), 'a');
-        assert.equal(SportsCar.remove(), 'b');
-      });
+      Model.install([Car, SportsCar])
+        .then(function() {
+          assert.equal(Car.remove(), 'a');
+          assert.equal(SportsCar.remove(), 'b');
+          done();
+        })
+        .catch(done);
+
     });
 
   });

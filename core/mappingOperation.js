@@ -89,7 +89,6 @@ util.extend(MappingOperation.prototype, {
           var related = unflattenedObjects[i]; // Can be array or scalar.
           var object = self.objects[idx];
           if (object) {
-            console.log('yo object', object, f);
             err = object.__proxies[f].set(related, {
               disableevents: self.disableevents
             });
