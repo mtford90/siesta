@@ -2,7 +2,7 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   Model = internal.Model;
 
-describe.only('Subclass', function() {
+describe('Subclass', function() {
   var Collection, Car, SportsCar;
 
   before(function() {

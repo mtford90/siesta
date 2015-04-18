@@ -47,6 +47,7 @@ ModelInstanceFactory.prototype = {
       }, {}), data || {})
     });
     if (idx > -1) attributeNames.splice(idx, 1);
+
     attributeNames.forEach(function(attributeName) {
       var attributeDefinition = Model._attributeDefinitionWithName(attributeName);
       Object.defineProperty(modelInstance, attributeName, {
@@ -64,9 +65,16 @@ ModelInstanceFactory.prototype = {
           var old = modelInstance.__values[attributeName];
           var propertyDependencies = this._propertyDependencies[attributeName] || [];
           propertyDependencies = propertyDependencies.map(function(dependant) {
+            try {
+              var oldPropertyValue = this[dependant];
+            }
+            catch (e) {
+              console.error('Uncaught error during property access for model "' + modelInstance.model.name + '"', e);
+              throw e;
+            }
             return {
               prop: dependant,
-              old: this[dependant]
+              old: oldPropertyValue
             }
           }.bind(this));
 
@@ -169,7 +177,6 @@ ModelInstanceFactory.prototype = {
    * @param modelInstance - Instance of which to install the relationship.
    */
   _installRelationship: function(definition, modelInstance) {
-    console.log('installingRelationship', definition, modelInstance.model.name);
     var proxy;
     var type = definition.type;
     if (type == RelationshipType.OneToMany) {

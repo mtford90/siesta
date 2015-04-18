@@ -1315,7 +1315,7 @@ describe('events', function() {
           properties: {
             blah: {
               get: function() {
-                console.log('throwing error');
+                console.error('throwing error');
                 throw new Error('oops');
               },
               // Workaround for chrome.
@@ -1338,7 +1338,7 @@ describe('events', function() {
 
       it('will install', function(done) {
         Condition
-          .all(Car._storageEnabled, Person._storageEnabled)
+          .all(Car._storageEnabled)
           .then(function() {
             done();
           }).catch(done)

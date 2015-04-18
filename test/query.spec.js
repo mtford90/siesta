@@ -1354,7 +1354,7 @@ describe('query...', function() {
         });
         RelatedModel = Collection.model('RelatedModel', {
           attributes: ['y']
-        })
+        });
       });
 
 
@@ -1379,6 +1379,8 @@ describe('query...', function() {
           var instance = data.RelatedModel[0];
           Model.query({rel: instance})
             .then(function(instances) {
+              console.log('?', instances);
+
               assert.include(instance.reverseRel, instances[0]);
               done();
             })
@@ -1387,8 +1389,10 @@ describe('query...', function() {
 
         it('simple, _id', function(done) {
           var instance = data.RelatedModel[0];
-          Model.query({'rel.id': instance.id})
+          Model
+            .query({'rel.id': instance.id})
             .then(function(instances) {
+              console.log('?', instances);
               assert.equal(instances.length, 1);
               assert.include(instance.reverseRel, instances[0]);
               done();
@@ -1418,7 +1422,8 @@ describe('query...', function() {
         it('simple', function(done) {
           var reverseInstance = data.RelatedModel[0];
           var instance = reverseInstance.reverseRel[0];
-          RelatedModel.query({reverseRel__in: instance})
+          RelatedModel
+            .query({reverseRel__in: instance})
             .then(function(instances) {
               assert.equal(instances[0], reverseInstance);
               done();
@@ -1429,7 +1434,6 @@ describe('query...', function() {
         it('simple, _id', function(done) {
           var reverseInstance = data.RelatedModel[0],
             instance = reverseInstance.reverseRel[0];
-          console.log(1, instance.id);
           RelatedModel
             .query({'reverseRel.id__in': instance.id})
             .then(function(instances) {
@@ -1443,7 +1447,5 @@ describe('query...', function() {
 
       });
     });
-  })
-
-
+  });
 });

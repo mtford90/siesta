@@ -58,7 +58,12 @@ util.extend(MappingOperation.prototype, {
                 object.__values[f] = datum[f];
               }
               else {
-                object[f] = datum[f];
+                try {
+                  object[f] = datum[f];
+                }
+                catch (e) {
+                  this.errors[i] = e;
+                }
               }
             }
           }.bind(this));
@@ -260,6 +265,7 @@ util.extend(MappingOperation.prototype, {
       tasks.push(this._executeSubOperations.bind(this));
       util.parallel(tasks, function(err) {
         if (err) console.error(err);
+
         self._map();
         // Users are allowed to add a custom init method to the methods object when defining a Model, of the form:
         //

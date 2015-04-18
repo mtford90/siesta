@@ -13,6 +13,7 @@ var log = require('./log')('model'),
   modelEvents = require('./modelEvents'),
   Condition = require('./Condition'),
   events = require('./events'),
+  Promise = util.Promise,
   Placeholder = require('./Placeholder'),
   ReactiveQuery = require('./ReactiveQuery'),
   InstanceFactory = require('./instanceFactory');
@@ -174,7 +175,8 @@ util.extend(Model, {
   install: function(models, cb) {
     cb = cb || function() {};
     return new Promise(function(resolve, reject) {
-      Condition.all.apply(Condition, models.map(function(x) {return x._storageEnabled}))
+      Condition
+        .all.apply(Condition, models.map(function(x) {return x._storageEnabled}))
         .then(function() {
           models.forEach(function(m) {
             m._installReversePlaceholders();
@@ -359,7 +361,7 @@ util.extend(Model.prototype, {
   query: function(query, cb) {
     var queryInstance;
     var promise = util.promise(cb, function(cb) {
-      this._storageEnabled.then(function() {
+      siesta._ensureInstalled(function() {
         if (!this.singleton) {
           queryInstance = this._query(query);
           return queryInstance.execute(cb);
@@ -499,11 +501,9 @@ util.extend(Model.prototype, {
     if (typeof opts == 'function') cb = opts;
     opts = opts || {};
     return util.promise(cb, function(cb) {
-      this._storageEnabled
-        .then(function() {
-          this._graph(data, opts, cb);
-        }.bind(this))
-        .catch(cb);
+      siesta._ensureInstalled(function() {
+        this._graph(data, opts, cb);
+      }.bind(this));
     }.bind(this));
   },
   _mapBulk: function(data, opts, callback) {

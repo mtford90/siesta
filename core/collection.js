@@ -55,6 +55,13 @@ function Collection(name, opts) {
         else return undefined;
       },
       enumerable: true
+    },
+    models: {
+      get: function() {
+        return Object.keys(this._models).map(function(modelName) {
+          return this._models[modelName];
+        }.bind(this));
+      }
     }
   });
 
@@ -67,17 +74,6 @@ function Collection(name, opts) {
 Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
 util.extend(Collection.prototype, {
-  _getModelsToInstall: function() {
-    var modelsToInstall = [];
-    for (var name in this._models) {
-      if (this._models.hasOwnProperty(name)) {
-        var model = this._models[name];
-        modelsToInstall.push(model);
-      }
-    }
-    log('There are ' + modelsToInstall.length.toString() + ' mappings to install');
-    return modelsToInstall;
-  },
   /**
    * Means that we can access the collection on the siesta object.
    * @private
@@ -95,11 +91,6 @@ util.extend(Collection.prototype, {
       var model = new Model(opts);
       this._models[name] = model;
       this[name] = model;
-      if (this.installed) {
-        var error = model.installRelationships();
-        if (!error) error = model.installReverseRelationships();
-        if (error)  throw error;
-      }
       return model;
     }
     else {

@@ -77,7 +77,6 @@ util.extend(siesta, {
 siesta.ext = {};
 
 
-
 util.extend(siesta, {
   /**
    * Wipe everything. Used during test generally.
@@ -192,6 +191,15 @@ util.extend(siesta, {
           cb(null);
         }).catch(cb)
     }.bind(this));
+  },
+  _ensureInstalled: function(cb) {
+    cb = cb || function() {};
+    var allModels = CollectionRegistry.collectionNames.reduce(function(memo, collectionName) {
+      var collection = CollectionRegistry[collectionName];
+      memo = memo.concat(collection.models);
+      return memo;
+    }.bind(this), []);
+    Model.install(allModels, cb);
   }
 });
 
