@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    Model = internal.Model;
+  internal = siesta._internal,
+  Model = internal.Model;
 
 describe('model serialisation', function() {
 
@@ -44,75 +44,75 @@ describe('model serialisation', function() {
 
   it('default serialisation, no relationships', function(done) {
     PersonModel
-        .graph({name: 'Mike', age: 24})
-        .then(function(person) {
-          var serialised = person.serialise();
-          assert.equal(serialised.name, 'Mike');
-          assert.equal(serialised.age, 24);
-          assert.equal(serialised.id, null);
-          assert.equal(Object.keys(serialised).length, 3);
-          done();
-        }).catch(done);
+      .graph({name: 'Mike', age: 24})
+      .then(function(person) {
+        var serialised = person.serialise();
+        assert.equal(serialised.name, 'Mike');
+        assert.equal(serialised.age, 24);
+        assert.equal(serialised.id, null);
+        assert.equal(Object.keys(serialised).length, 3);
+        done();
+      }).catch(done);
   });
 
   it('default serialisation, no nulls', function(done) {
     PersonModel
-        .graph({name: 'Mike', age: 24})
-        .then(function(person) {
-          var serialised = person.serialise({includeNullAttributes: false});
-          assert.equal(serialised.name, 'Mike');
-          assert.equal(serialised.age, 24);
-          console.log('serialised', serialised);
-          assert.equal(Object.keys(serialised).length, 2);
-          done();
-        }).catch(done);
+      .graph({name: 'Mike', age: 24})
+      .then(function(person) {
+        var serialised = person.serialise({includeNullAttributes: false});
+        assert.equal(serialised.name, 'Mike');
+        assert.equal(serialised.age, 24);
+        console.log('serialised', serialised);
+        assert.equal(Object.keys(serialised).length, 2);
+        done();
+      }).catch(done);
   });
 
   it('default serialisation, one-to-many relationship', function(done) {
     Collection
-        .graph({
-          Person: {name: 'Mike', age: 24, id: 1},
-          Car: {colour: 'red', id: 2, owner: 1}
-        })
-        .then(function(results) {
-          var car = results.Car;
-          var serialised = car.serialise();
-          assert.equal(serialised.owner, 1);
-          done();
-        }).catch(done)
+      .graph({
+        Person: {name: 'Mike', age: 24, id: 1},
+        Car: {colour: 'red', id: 2, owner: 1}
+      })
+      .then(function(results) {
+        var car = results.Car;
+        var serialised = car.serialise();
+        assert.equal(serialised.owner, 1);
+        done();
+      }).catch(done)
   });
 
   it('default serialisation, many-to-many relationship', function(done) {
     Collection
-        .graph({
-          Person: {name: 'Mike', age: 24, id: 1},
-          Car: {colour: 'red', id: 2, owners: [1]}
-        })
-        .then(function(results) {
-          var car = results.Car;
-          var serialised = car.serialise();
-          assert.include(serialised.owners, 1);
-          done();
-        }).catch(function(err) {
-          console.error(err);
-          done(err);
-        })
+      .graph({
+        Person: {name: 'Mike', age: 24, id: 1},
+        Car: {colour: 'red', id: 2, owners: [1]}
+      })
+      .then(function(results) {
+        var car = results.Car;
+        var serialised = car.serialise();
+        assert.include(serialised.owners, 1);
+        done();
+      }).catch(function(err) {
+        console.error(err);
+        done(err);
+      })
   });
   it('default serialisation, many-to-many relationship, reverse', function(done) {
     Collection
-        .graph({
-          Person: {name: 'Mike', age: 24, id: 1, ownedCars: [2]},
-          Car: {colour: 'red', id: 2}
-        })
-        .then(function(results) {
-          var person = results.Person;
-          var serialised = person.serialise();
-          assert.notOk(serialised.ownedCars);
-          done();
-        }).catch(function(err) {
-          console.error(err);
-          done(err);
-        })
+      .graph({
+        Person: {name: 'Mike', age: 24, id: 1, ownedCars: [2]},
+        Car: {colour: 'red', id: 2}
+      })
+      .then(function(results) {
+        var person = results.Person;
+        var serialised = person.serialise();
+        assert.notOk(serialised.ownedCars);
+        done();
+      }).catch(function(err) {
+        console.error(err);
+        done(err);
+      })
   });
 
   describe('custom serialisation', function() {
@@ -236,7 +236,9 @@ describe('model serialisation', function() {
     });
     describe('relationship', function() {
       var OtherModel;
-      it('relationship', function(done) {
+
+      it('serialise', function(done) {
+        var _instance;
         Collection = siesta.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: ['attr1'],
@@ -245,6 +247,7 @@ describe('model serialisation', function() {
               model: 'Other',
               reverse: 'customs',
               serialise: function(instance) {
+                _instance = instance;
                 return 1;
               }
             }
@@ -256,10 +259,12 @@ describe('model serialisation', function() {
           other: 'abcd'
         }).then(function(custom) {
           var serialised = custom.serialise();
+          assert.equal(_instance, custom.other);
           assert.equal(serialised.other, 1);
           done();
         }).catch(done);
       });
+
       it('serialiseField should be overidden by serialise', function(done) {
         Collection = siesta.collection('myCollection');
         CustomModel = Collection.model('Custom', {
@@ -288,6 +293,7 @@ describe('model serialisation', function() {
           done();
         }).catch(done);
       });
+
       it('serialise should override per-relationship serialise', function(done) {
         Collection = siesta.collection('myCollection');
         CustomModel = Collection.model('Custom', {
@@ -381,6 +387,8 @@ describe('model serialisation', function() {
       });
 
       it('relationships', function(done) {
+
+        var _instance;
         Collection = siesta.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: ['attr1', 'attr2'],
@@ -390,6 +398,7 @@ describe('model serialisation', function() {
               model: 'Other',
               reverse: 'customs',
               serialise: function(instance) {
+                _instance = instance;
                 return 1;
               }
             }

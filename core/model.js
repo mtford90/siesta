@@ -55,12 +55,6 @@ function Model(opts) {
     }
   }
 
-  if (!this.serialiseField) {
-    this.serialiseField = function(attrName, value) {
-      return value;
-    };
-  }
-
   this.attributes = Model._processAttributes(this.attributes);
 
   this._factory = new InstanceFactory(this);

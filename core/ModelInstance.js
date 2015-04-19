@@ -97,7 +97,7 @@ util.extend(ModelInstance.prototype, {
     modelEvents.emit(opts);
   },
   remove: function(cb, notification) {
-    _.each(this._relationshipNames, function (name) {
+    _.each(this._relationshipNames, function(name) {
       if (util.isArray(this[name])) {
         this[name] = [];
       }
@@ -192,6 +192,10 @@ util.extend(ModelInstance.prototype, {
   }
 });
 
+function defaultSerialiser(attrName, value) {
+  return value;
+}
+
 // Serialisation
 util.extend(ModelInstance.prototype, {
   _defaultSerialise: function(opts) {
@@ -205,7 +209,10 @@ util.extend(ModelInstance.prototype, {
         var attrDefinition = this.model._attributeDefinitionWithName(attrName) || {};
         var serialiser;
         if (attrDefinition.serialise) serialiser = attrDefinition.serialise.bind(this);
-        else serialiser = this.model.serialiseField.bind(this, attrName);
+        else {
+          var serialiseField = this.model.serialiseField || defaultSerialiser;
+          serialiser = serialiseField.bind(this, attrName);
+        }
         var val = this[attrName];
         if (val === null) {
           if (includeNullAttributes) {
@@ -221,16 +228,21 @@ util.extend(ModelInstance.prototype, {
       if (serialisableFields.indexOf(relName) > -1) {
         var val = this[relName],
           rel = this.model.relationships[relName];
-        if (util.isArray(val)) {
-          val = util.pluck(val, this.model.id);
-        }
-        else if (val) {
-          val = val[this.model.id];
-        }
+
         if (rel && !rel.isReverse) {
           var serialiser;
-          if (rel.serialise) serialiser = rel.serialise.bind(this);
-          else serialiser = this.model.serialiseField.bind(this, relName);
+          if (rel.serialise) {
+            serialiser = rel.serialise.bind(this);
+          }
+          else {
+            var serialiseField = this.model.serialiseField;
+            if (!serialiseField) {
+              if (util.isArray(val)) val = util.pluck(val, this.model.id);
+              else if (val) val = val[this.model.id];
+            }
+            serialiseField = serialiseField || defaultSerialiser;
+            serialiser = serialiseField.bind(this, relName);
+          }
           if (val === null) {
             if (includeNullRelationships) {
               serialised[relName] = serialiser(val);
