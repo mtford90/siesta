@@ -527,7 +527,9 @@ util.extend(Model.prototype, {
   },
   count: function(cb) {
     return util.promise(cb, function(cb) {
-      cb(null, Object.keys(this._countCache()).length);
+      siesta._ensureInstalled(function() {
+        cb(null, Object.keys(this._countCache()).length);
+      }.bind(this));
     }.bind(this));
   },
   _dump: function(asJSON) {

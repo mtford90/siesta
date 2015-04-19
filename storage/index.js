@@ -283,11 +283,13 @@ else {
    */
   function save(cb) {
     return util.promise(cb, function(cb) {
-      var instances = unsavedObjects;
-      unsavedObjects = [];
-      unsavedObjectsHash = {};
-      unsavedObjectsByCollection = {};
-      saveToPouch(instances, cb);
+      siesta._ensureInstalled(function() {
+        var instances = unsavedObjects;
+        unsavedObjects = [];
+        unsavedObjectsHash = {};
+        unsavedObjectsByCollection = {};
+        saveToPouch(instances, cb);
+      });
     }.bind(this));
   }
 
@@ -326,19 +328,25 @@ else {
       siesta.removeListener('Siesta', listener);
       unsavedObjects = [];
       unsavedObjectsHash = {};
-        pouch
-          .allDocs()
-          .then(function (results) {
-            var docs = results.rows.map(function (r) {
-              return {_id: r.id, _rev: r.value.rev, _deleted: true};
-            });
+      //pouch
+      //  .destroy()
+      //  .then(function() {
+      //    initDb();
+      //  })
+      //  .catch(cb);
+      pouch
+        .allDocs()
+        .then(function(results) {
+          var docs = results.rows.map(function(r) {
+            return {_id: r.id, _rev: r.value.rev, _deleted: true};
+          });
 
-            pouch
-              .bulkDocs(docs)
-              .then(function () {cb()})
-              .catch(cb);
-          })
-          .catch(cb);
+          pouch
+            .bulkDocs(docs)
+            .then(function() {cb()})
+            .catch(cb);
+        })
+        .catch(cb);
     }
   });
 
