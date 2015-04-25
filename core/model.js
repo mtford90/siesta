@@ -28,12 +28,7 @@ function Model(opts) {
   util.extendFromOpts(this, opts, {
     methods: {},
     attributes: [],
-    collection: function(c) {
-      if (util.isString(c)) {
-        c = siesta.app.collectionRegistry[c];
-      }
-      return c;
-    },
+    collection: null,
     id: 'id',
     relationships: [],
     name: null,
@@ -225,7 +220,7 @@ util.extend(Model.prototype, {
       if (arr.length == 2) {
         var collectionName = arr[0];
         reverseName = arr[1];
-        var otherCollection = siesta.app.collectionRegistry[collectionName];
+        var otherCollection = this.app.collectionRegistry[collectionName];
         if (otherCollection)
           reverseModel = otherCollection[reverseName];
       }

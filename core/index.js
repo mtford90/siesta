@@ -26,6 +26,13 @@ var siesta = function(ext) {
   return siesta;
 };
 
+/**
+ * - Collection Registry
+ * - Event Emitter
+ * - Cache
+ * - PouchDB Instnace
+ *
+ */
 siesta.app = {
   collectionRegistry: CollectionRegistry
 };
@@ -119,9 +126,8 @@ util.extend(siesta, {
    */
   collection: function(name, opts) {
     opts = opts || {};
-    var collection = new Collection(name, opts);
     opts.app = siesta.app;
-    return collection;
+    return new Collection(name, opts);
   },
 
   _pushTask: function(task) {

@@ -34,7 +34,9 @@ function Collection(name, opts) {
   if (!name) throw new Error('Collection must have a name');
 
   opts = opts || {};
-  util.extendFromOpts(this, opts, {});
+  util.extendFromOpts(this, opts, {
+    app: null
+  });
 
   util.extend(this, {
     name: name,
