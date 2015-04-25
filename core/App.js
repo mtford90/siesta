@@ -3,6 +3,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   modelEvents = require('./modelEvents'),
   Cache = require('./cache'),
   util = require('./util'),
+  Model = require('./model'),
   error = require('./error'),
   Collection = require('./collection');
 
@@ -26,9 +27,7 @@ App.prototype = {
     opts.app = this;
     return new Collection(name, opts);
   },
-  reset: function() {
-    this.removeAllListeners();
-  },
+
   broadcast: function(opts) {
     modelEvents.emit(this, opts);
   },
@@ -89,7 +88,58 @@ App.prototype = {
           cb(null);
         }).catch(cb)
     }.bind(this));
-  }
+  },
+  _ensureInstalled: function(cb) {
+    cb = cb || function() {};
+    var allModels = this.collectionRegistry.collectionNames.reduce(function(memo, collectionName) {
+      var collection = this.collectionRegistry[collectionName];
+      memo = memo.concat(collection.models);
+      return memo;
+    }.bind(this), []);
+    Model.install(allModels, cb);
+  },
+  _pushTask: function(task) {
+    if (!this.queuedTasks) {
+      this.queuedTasks = new function Queue() {
+        this.tasks = [];
+        this.execute = function() {
+          this.tasks.forEach(function(f) {
+            f()
+          });
+          this.tasks = [];
+        }.bind(this);
+      };
+    }
+    this.queuedTasks.tasks.push(task);
+  },
+  reset: function(cb, resetStorage) {
+    delete this.queuedTasks;
+    this.cache.reset();
+    this.collectionRegistry.reset();
+    var collectionNames = this.collectionRegistry.collectionNames;
+    collectionNames.reduce(function(memo, collName) {
+      var coll = siesta[collName];
+      Object.keys(coll._models).forEach(function(modelName) {
+        var model = coll[modelName];
+        memo.push(model._storageEnabled);
+      });
+      return memo;
+    }, []);
+    this.removeAllListeners();
+    if (siesta.ext.storageEnabled) {
+      resetStorage = resetStorage === undefined ? true : resetStorage;
+      if (resetStorage) {
+        siesta.ext.storage._reset(cb);
+        siesta.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
+      }
+      else {
+        cb();
+      }
+    }
+    else {
+      cb();
+    }
+  },
 };
 
 module.exports = App;

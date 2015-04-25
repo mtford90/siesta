@@ -84,80 +84,16 @@ siesta.ext = {};
 
 
 util.extend(siesta, {
-  /**
-   * Wipe everything. Used during test generally.
-   */
-  reset: function(cb, resetStorage) {
-    delete this.queuedTasks;
-    siesta.app.cache.reset();
-    siesta.app.collectionRegistry.reset();
-    var collectionNames = siesta.app.collectionRegistry.collectionNames;
-    collectionNames.reduce(function(memo, collName) {
-      var coll = siesta[collName];
-      Object.keys(coll._models).forEach(function(modelName) {
-        var model = coll[modelName];
-        memo.push(model._storageEnabled);
-      });
-      return memo;
-    }, []);
-    siesta.app.reset();
-    if (siesta.ext.storageEnabled) {
-      resetStorage = resetStorage === undefined ? true : resetStorage;
-      if (resetStorage) {
-        siesta.ext.storage._reset(cb);
-        siesta.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
-      }
-      else {
-        cb();
-      }
-    }
-    else {
-      cb();
-    }
-  },
-  /**
-   * Creates and registers a new Collection.
-   * @param  {String} name
-   * @param  {Object} [opts]
-   * @return {Collection}
-   */
-  collection: function(name, opts) {
-    return siesta.app.collection(name, opts);
-  },
-
-  _pushTask: function(task) {
-    if (!this.queuedTasks) {
-      this.queuedTasks = new function Queue() {
-        this.tasks = [];
-        this.execute = function() {
-          this.tasks.forEach(function(f) {
-            f()
-          });
-          this.tasks = [];
-        }.bind(this);
-      };
-    }
-    this.queuedTasks.tasks.push(task);
-  },
-  setLogLevel: function(loggerName, level) {
-    var Logger = log.loggerWithName(loggerName);
-    Logger.setLevel(level);
-  },
+  reset: siesta.app.reset.bind(siesta.app),
+  collection: siesta.app.collection.bind(siesta.app),
+  _pushTask: siesta.app._pushTask.bind(siesta.app),
   graph: siesta.app.graph.bind(siesta.app),
   notify: util.next,
   registerComparator: Query.registerComparator.bind(Query),
   count: siesta.app.count.bind(siesta.app),
   get: siesta.app.get.bind(siesta.app),
   removeAll: siesta.app.removeAll.bind(siesta.app),
-  _ensureInstalled: function(cb) {
-    cb = cb || function() {};
-    var allModels = siesta.app.collectionRegistry.collectionNames.reduce(function(memo, collectionName) {
-      var collection = siesta.app.collectionRegistry[collectionName];
-      memo = memo.concat(collection.models);
-      return memo;
-    }.bind(this), []);
-    Model.install(allModels, cb);
-  }
+  _ensureInstalled: siesta.app._ensureInstalled.bind(siesta.app)
 });
 
 
@@ -166,7 +102,6 @@ if (typeof window != 'undefined') {
 }
 
 siesta.log = require('debug');
-
 module.exports = siesta;
 
 (function loadExtensions() {
