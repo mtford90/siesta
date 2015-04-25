@@ -26,6 +26,10 @@ var siesta = function(ext) {
   return siesta;
 };
 
+siesta.app = {
+  collectionRegistry: CollectionRegistry
+};
+
 // Notifications
 util.extend(siesta, {
   on: events.on.bind(events),

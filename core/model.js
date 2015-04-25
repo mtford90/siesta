@@ -1,5 +1,4 @@
 var log = require('./log')('model'),
-  CollectionRegistry = require('./collectionRegistry'),
   InternalSiestaError = require('./error').InternalSiestaError,
   RelationshipType = require('./RelationshipType'),
   Query = require('./Query'),
@@ -31,7 +30,7 @@ function Model(opts) {
     attributes: [],
     collection: function(c) {
       if (util.isString(c)) {
-        c = CollectionRegistry[c];
+        c = siesta.app.collectionRegistry[c];
       }
       return c;
     },
@@ -221,7 +220,7 @@ util.extend(Model.prototype, {
       if (arr.length == 2) {
         var collectionName = arr[0];
         reverseName = arr[1];
-        var otherCollection = CollectionRegistry[collectionName];
+        var otherCollection = siesta.app.collectionRegistry[collectionName];
         if (otherCollection)
           reverseModel = otherCollection[reverseName];
       }
