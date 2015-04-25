@@ -53,7 +53,6 @@ util.extend(ProxyEventEmitter.prototype, {
         listeners[type].push(fn);
       }
     }
-    console.log('this.app', this.app);
     this.app.events.on(this.event, fn);
     return this._handlerLink({
       fn: fn,

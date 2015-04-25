@@ -1,7 +1,6 @@
-var events = require('./events'),
-  InternalSiestaError = require('./error').InternalSiestaError,
+var InternalSiestaError = require('./error').InternalSiestaError,
   log = require('./log')('events'),
-  extend = require('./util').extend
+  extend = require('./util').extend;
 
 
 /**
@@ -64,13 +63,13 @@ function broadcastEvent(collectionName, modelName, opts) {
     }
   }
   if (shouldEmit) {
-    events.emit(genericEvent, opts);
+    siesta.app.events.emit(genericEvent, opts);
     var modelEvent = collectionName + ':' + modelName,
       localIdEvent = opts.localId;
-    events.emit(collectionName, opts);
-    events.emit(modelEvent, opts);
-    events.emit(localIdEvent, opts);
-    if (model.id && opts.obj[model.id]) events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
+    siesta.app.events.emit(collectionName, opts);
+    siesta.app.events.emit(modelEvent, opts);
+    siesta.app.events.emit(localIdEvent, opts);
+    if (model.id && opts.obj[model.id]) siesta.app.events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
   }
 }
 

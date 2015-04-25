@@ -5,8 +5,7 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
 var _i = siesta._internal,
   log = _i.log('storage'),
   error = _i.error,
-  util = _i.util,
-  events = _i.events;
+  util = _i.util;
 
 var unsavedObjects = [],
   unsavedObjectsHash = {},
@@ -405,7 +404,7 @@ else {
                 saving = true;
                 siesta.save(function(err) {
                   if (!err) {
-                    events.emit('saved');
+                    siesta.app.events.emit('saved');
                   }
                   saving = false;
                 });

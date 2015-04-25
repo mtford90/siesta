@@ -3,8 +3,7 @@ var log = require('./log'),
   error = require('./error'),
   modelEvents = require('./modelEvents'),
   ModelEventType = modelEvents.ModelEventType,
-  ProxyEventEmitter = require('./ProxyEventEmitter'),
-  events = require('./events');
+  ProxyEventEmitter = require('./ProxyEventEmitter');
 
 
 function ModelInstance(model) {

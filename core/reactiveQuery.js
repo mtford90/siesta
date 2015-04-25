@@ -8,7 +8,6 @@
 var log = require('./log')('query:reactive'),
   Query = require('./Query'),
   EventEmitter = require('events').EventEmitter,
-  events = require('./events'),
   Chain = require('./Chain'),
   modelEvents = require('./modelEvents'),
   InternalSiestaError = require('./error').InternalSiestaError,
@@ -102,7 +101,7 @@ util.extend(ReactiveQuery.prototype, {
         this._handleNotif(n);
       }.bind(this);
       this.handler = handler;
-      events.on(name, handler);
+      siesta.app.events.on(name, handler);
       return util.promise(cb, function(cb) {
         if ((!this.initialised) || _ignoreInit) {
           this._query.execute(function(err, results) {
@@ -223,7 +222,7 @@ util.extend(ReactiveQuery.prototype, {
   },
   terminate: function() {
     if (this.handler) {
-      events.removeListener(this._constructNotificationName(), this.handler);
+      siesta.app.events.removeListener(this._constructNotificationName(), this.handler);
     }
     this.results = null;
     this.handler = null;

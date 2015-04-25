@@ -5,8 +5,7 @@
 var RelationshipProxy = require('./RelationshipProxy'),
   util = require('./util'),
   modelEvents = require('./modelEvents'),
-  events = require('./events'),
-  wrapArrayForAttributes = events.wrapArray,
+  wrapArrayForAttributes = require('./events').wrapArray,
   ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
   ModelEventType = require('./modelEvents').ModelEventType;
 
