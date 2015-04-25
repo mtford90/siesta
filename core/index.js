@@ -8,6 +8,7 @@ var util = require('./util'),
   RelationshipType = require('./RelationshipType'),
   ReactiveQuery = require('./ReactiveQuery'),
   ManyToManyProxy = require('./ManyToManyProxy'),
+  App = require('./App'),
   OneToOneProxy = require('./OneToOneProxy'),
   OneToManyProxy = require('./OneToManyProxy'),
   RelationshipProxy = require('./RelationshipProxy'),
@@ -33,9 +34,7 @@ var siesta = function(ext) {
  * - PouchDB Instnace
  *
  */
-siesta.app = {
-  collectionRegistry: CollectionRegistry
-};
+siesta.app = new App();
 
 // Notifications
 util.extend(siesta, {

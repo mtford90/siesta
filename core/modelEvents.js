@@ -1,7 +1,7 @@
 var events = require('./events'),
   InternalSiestaError = require('./error').InternalSiestaError,
   log = require('./log')('events'),
-  extend = require('./util').extend;
+  extend = require('./util').extend
 
 
 /**
