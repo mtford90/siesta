@@ -248,7 +248,7 @@ describe('installation', function() {
         .then(function() {
           var AnotherCollection = siesta.collection('AnotherCollection');
           assert.equal(siesta.AnotherCollection, AnotherCollection);
-          assert.equal(CollectionRegistry.AnotherCollection, AnotherCollection);
+          assert.equal(siesta.app.collectionRegistry.AnotherCollection, AnotherCollection);
           done();
         }).catch(done);
     });

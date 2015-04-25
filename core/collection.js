@@ -66,7 +66,7 @@ function Collection(name, opts) {
     }
   });
 
-  CollectionRegistry.register(this);
+  this.app.collectionRegistry.register(this);
   this._makeAvailableOnRoot();
   events.ProxyEventEmitter.call(this, this.name);
 

@@ -20,4 +20,4 @@ util.extend(CollectionRegistry.prototype, {
   }
 });
 
-module.exports = new CollectionRegistry();
+module.exports = CollectionRegistry;

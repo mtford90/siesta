@@ -1,5 +1,4 @@
 var util = require('./util'),
-  CollectionRegistry = require('./collectionRegistry'),
   Collection = require('./collection'),
   Model = require('./model'),
   error = require('./error'),
@@ -66,7 +65,6 @@ util.extend(siesta, {
     events: events,
     ProxyEventEmitter: events.ProxyEventEmitter,
     modelEvents: modelEvents,
-    CollectionRegistry: require('./collectionRegistry'),
     Collection: Collection,
     utils: util,
     util: util,
@@ -92,8 +90,8 @@ util.extend(siesta, {
   reset: function(cb, resetStorage) {
     delete this.queuedTasks;
     siesta.app.cache.reset();
-    CollectionRegistry.reset();
-    var collectionNames = CollectionRegistry.collectionNames;
+    siesta.app.collectionRegistry.reset();
+    var collectionNames = siesta.app.collectionRegistry.collectionNames;
     collectionNames.reduce(function(memo, collName) {
       var coll = siesta[collName];
       Object.keys(coll._models).forEach(function(modelName) {
@@ -150,7 +148,7 @@ util.extend(siesta, {
       var tasks = [], err;
       for (var collectionName in data) {
         if (data.hasOwnProperty(collectionName)) {
-          var collection = CollectionRegistry[collectionName];
+          var collection = siesta.app.collectionRegistry[collectionName];
           if (collection) {
             (function(collection, data) {
               tasks.push(function(done) {
@@ -195,8 +193,8 @@ util.extend(siesta, {
   removeAll: function(cb) {
     return util.promise(cb, function(cb) {
       util.Promise.all(
-        CollectionRegistry.collectionNames.map(function(collectionName) {
-          return CollectionRegistry[collectionName].removeAll();
+        siesta.app.collectionRegistry.collectionNames.map(function(collectionName) {
+          return siesta.app.collectionRegistry[collectionName].removeAll();
         }.bind(this))
       ).then(function() {
           cb(null);
@@ -205,8 +203,8 @@ util.extend(siesta, {
   },
   _ensureInstalled: function(cb) {
     cb = cb || function() {};
-    var allModels = CollectionRegistry.collectionNames.reduce(function(memo, collectionName) {
-      var collection = CollectionRegistry[collectionName];
+    var allModels = siesta.app.collectionRegistry.collectionNames.reduce(function(memo, collectionName) {
+      var collection = siesta.app.collectionRegistry[collectionName];
       memo = memo.concat(collection.models);
       return memo;
     }.bind(this), []);
