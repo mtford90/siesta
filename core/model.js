@@ -11,6 +11,7 @@ var log = require('./log')('model'),
   modelEvents = require('./modelEvents'),
   Condition = require('./Condition'),
   events = require('./events'),
+  ProxyEventEmitter = require('./ProxyEventEmitter'),
   Promise = util.Promise,
   Placeholder = require('./Placeholder'),
   ReactiveQuery = require('./ReactiveQuery'),
@@ -124,7 +125,7 @@ function Model(opts) {
       query: this.query.bind(this)
     };
 
-  events.ProxyEventEmitter.call(this, globalEventName, proxied);
+  ProxyEventEmitter.call(this, globalEventName, proxied);
 
   this.installRelationships();
   this.installReverseRelationships();
@@ -184,7 +185,7 @@ util.extend(Model, {
 
 });
 
-Model.prototype = Object.create(events.ProxyEventEmitter.prototype);
+Model.prototype = Object.create(ProxyEventEmitter.prototype);
 
 util.extend(Model.prototype, {
   installStatics: function(statics) {

@@ -63,7 +63,7 @@ util.extend(siesta, {
     extend: require('extend'),
     MappingOperation: require('./mappingOperation'),
     events: events,
-    ProxyEventEmitter: events.ProxyEventEmitter,
+    ProxyEventEmitter: require('./ProxyEventEmitter'),
     modelEvents: modelEvents,
     Collection: Collection,
     utils: util,

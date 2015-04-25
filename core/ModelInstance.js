@@ -3,7 +3,9 @@ var log = require('./log'),
   error = require('./error'),
   modelEvents = require('./modelEvents'),
   ModelEventType = modelEvents.ModelEventType,
+  ProxyEventEmitter = require('./ProxyEventEmitter'),
   events = require('./events');
+
 
 function ModelInstance(model) {
   var self = this;
@@ -26,7 +28,7 @@ function ModelInstance(model) {
     }
   ]);
 
-  events.ProxyEventEmitter.call(this);
+  ProxyEventEmitter.call(this);
 
   Object.defineProperties(this, {
     _relationshipNames: {
@@ -83,7 +85,7 @@ function ModelInstance(model) {
   this._emitEvents = false;
 }
 
-ModelInstance.prototype = Object.create(events.ProxyEventEmitter.prototype);
+ModelInstance.prototype = Object.create(ProxyEventEmitter.prototype);
 
 util.extend(ModelInstance.prototype, {
   get: function(cb) {

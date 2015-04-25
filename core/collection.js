@@ -4,6 +4,7 @@ var log = require('./log')('collection'),
   Model = require('./model'),
   extend = require('extend'),
   events = require('./events'),
+  ProxyEventEmitter = require('./ProxyEventEmitter'),
   util = require('./util'),
   error = require('./error'),
   argsarray = require('argsarray'),
@@ -68,11 +69,11 @@ function Collection(name, opts) {
 
   this.app.collectionRegistry.register(this);
   this._makeAvailableOnRoot();
-  events.ProxyEventEmitter.call(this, this.name);
+  ProxyEventEmitter.call(this, this.name);
 
 }
 
-Collection.prototype = Object.create(events.ProxyEventEmitter.prototype);
+Collection.prototype = Object.create(ProxyEventEmitter.prototype);
 
 util.extend(Collection.prototype, {
   /**
