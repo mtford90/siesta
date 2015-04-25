@@ -1,5 +1,4 @@
 var log = require('./log')('query'),
-  cache = require('./cache'),
   util = require('./util'),
   error = require('./error'),
   ModelInstance = require('./ModelInstance'),
@@ -91,7 +90,7 @@ util.extend(Query, {
 });
 
 function cacheForModel(model) {
-  var cacheByType = cache._localCacheByType;
+  var cacheByType = model.app.cache._localCacheByType;
   var modelName = model.name;
   var collectionName = model.collectionName;
   var cacheByModel = cacheByType[collectionName];
@@ -107,7 +106,7 @@ util.extend(Query.prototype, {
     return util.promise(cb, function(cb) {
       this._executeInMemory(cb);
     }.bind(this));
-  },
+
   _dump: function(asJson) {
     return asJson ? '{}' : {};
   },
