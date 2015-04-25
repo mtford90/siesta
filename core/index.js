@@ -124,9 +124,7 @@ util.extend(siesta, {
    * @return {Collection}
    */
   collection: function(name, opts) {
-    opts = opts || {};
-    opts.app = siesta.app;
-    return new Collection(name, opts);
+    return siesta.app.collection(name, opts);
   },
 
   _pushTask: function(task) {

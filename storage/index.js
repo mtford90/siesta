@@ -4,7 +4,6 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
 
 var _i = siesta._internal,
   cache = _i.cache,
-  CollectionRegistry = _i.CollectionRegistry,
   log = _i.log('storage'),
   error = _i.error,
   util = _i.util,
@@ -192,7 +191,7 @@ else {
     }
 
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
-    var Model = CollectionRegistry[collectionName][modelName];
+    var Model = siesta.app.collectionRegistry[collectionName][modelName];
     pouch
       .query(fullyQualifiedName)
       .then(function(resp) {

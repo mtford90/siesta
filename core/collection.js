@@ -7,8 +7,7 @@ var log = require('./log')('collection'),
   util = require('./util'),
   error = require('./error'),
   argsarray = require('argsarray'),
-  Condition = require('./condition'),
-  cache = require('./cache');
+  Condition = require('./condition');
 
 
 /**

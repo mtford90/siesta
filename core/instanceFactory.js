@@ -5,7 +5,6 @@ var log = require('./log')('model'),
   ModelInstance = require('./ModelInstance'),
   util = require('./util'),
   guid = util.guid,
-  cache = require('./cache'),
   extend = require('extend'),
   modelEvents = require('./modelEvents'),
   wrapArray = require('./events').wrapArray,
@@ -148,6 +147,7 @@ ModelInstanceFactory.prototype = {
   },
   _installRemoteId: function(modelInstance) {
     var Model = this.model;
+    var cache = Model.app.cache;
     var idField = Model.id;
     Object.defineProperty(modelInstance, idField, {
       get: function() {
@@ -203,6 +203,7 @@ ModelInstanceFactory.prototype = {
     }
   },
   _registerInstance: function(modelInstance, shouldRegisterChange) {
+    var cache = this.model.app.cache;
     cache.insert(modelInstance);
     shouldRegisterChange = shouldRegisterChange === undefined ? true : shouldRegisterChange;
     if (shouldRegisterChange) modelInstance._emitNew();
