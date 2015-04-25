@@ -3,8 +3,7 @@ var log = require('./log'),
   error = require('./error'),
   modelEvents = require('./modelEvents'),
   ModelEventType = modelEvents.ModelEventType,
-  events = require('./events'),
-  cache = require('./cache');
+  events = require('./events');
 
 function ModelInstance(model) {
   var self = this;
@@ -115,7 +114,7 @@ util.extend(ModelInstance.prototype, {
     }.bind(this));
     notification = notification == null ? true : notification;
     return util.promise(cb, function(cb) {
-      cache.remove(this);
+      this.app.cache.remove(this);
       this.removed = true;
       if (notification) {
         this.emit(modelEvents.ModelEventType.Remove, {
@@ -152,7 +151,7 @@ util.extend(ModelInstance.prototype, {
         cb(err, this);
       }.bind(this);
       if (this.removed) {
-        cache.insert(this);
+        this.app.cache.insert(this);
         this.removed = false;
         var init = this.model.init;
         if (init) {
