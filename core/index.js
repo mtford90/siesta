@@ -107,7 +107,9 @@ util.extend(siesta, {
         siesta.ext.storage._reset(cb);
         siesta.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
       }
-      else cb();
+      else {
+        cb();
+      }
     }
     else {
       cb();
@@ -141,45 +143,7 @@ util.extend(siesta, {
     var Logger = log.loggerWithName(loggerName);
     Logger.setLevel(level);
   },
-  graph: function(data, opts, cb) {
-    if (typeof opts == 'function') cb = opts;
-    opts = opts || {};
-    return util.promise(cb, function(cb) {
-      var tasks = [], err;
-      for (var collectionName in data) {
-        if (data.hasOwnProperty(collectionName)) {
-          var collection = siesta.app.collectionRegistry[collectionName];
-          if (collection) {
-            (function(collection, data) {
-              tasks.push(function(done) {
-                collection.graph(data, function(err, res) {
-                  if (!err) {
-                    var results = {};
-                    results[collection.name] = res;
-                  }
-                  done(err, results);
-                });
-              });
-            })(collection, data[collectionName]);
-          }
-          else {
-            err = 'No such collection "' + collectionName + '"';
-          }
-        }
-      }
-      if (!err) {
-        util.series(tasks, function(err, results) {
-          if (!err) {
-            results = results.reduce(function(memo, res) {
-              return util.extend(memo, res);
-            }, {})
-          } else results = null;
-          cb(err, results);
-        });
-      }
-      else cb(error(err, {data: data, invalidCollectionName: collectionName}));
-    }.bind(this));
-  },
+  graph: siesta.app.graph.bind(siesta.app),
   notify: util.next,
   registerComparator: Query.registerComparator.bind(Query),
   count: function() {

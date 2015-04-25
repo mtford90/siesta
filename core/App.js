@@ -3,6 +3,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   modelEvents = require('./modelEvents'),
   Cache = require('./cache'),
   util = require('./util'),
+  error = require('./error'),
   Collection = require('./collection');
 
 function App(name) {
@@ -25,12 +26,51 @@ App.prototype = {
     opts.app = this;
     return new Collection(name, opts);
   },
-  reset: function () {
+  reset: function() {
     this.removeAllListeners();
   },
-  broadcast: function (opts) {
+  broadcast: function(opts) {
     modelEvents.emit(this, opts);
-  }
+  },
+  graph: function(data, opts, cb) {
+    if (typeof opts == 'function') cb = opts;
+    opts = opts || {};
+    return util.promise(cb, function(cb) {
+      var tasks = [], err;
+      for (var collectionName in data) {
+        if (data.hasOwnProperty(collectionName)) {
+          var collection = this.collectionRegistry[collectionName];
+          if (collection) {
+            (function(collection, data) {
+              tasks.push(function(done) {
+                collection.graph(data, function(err, res) {
+                  if (!err) {
+                    var results = {};
+                    results[collection.name] = res;
+                  }
+                  done(err, results);
+                });
+              });
+            })(collection, data[collectionName]);
+          }
+          else {
+            err = 'No such collection "' + collectionName + '"';
+          }
+        }
+      }
+      if (!err) {
+        util.series(tasks, function(err, results) {
+          if (!err) {
+            results = results.reduce(function(memo, res) {
+              return util.extend(memo, res);
+            }, {})
+          } else results = null;
+          cb(err, results);
+        });
+      }
+      else cb(error(err, {data: data, invalidCollectionName: collectionName}));
+    }.bind(this));
+  },
 };
 
 module.exports = App;
