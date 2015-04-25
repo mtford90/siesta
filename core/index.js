@@ -36,10 +36,10 @@ siesta.app = new App();
 
 // Notifications
 util.extend(siesta, {
-  on: events.on.bind(events),
-  off: events.removeListener.bind(events),
-  once: events.once.bind(events),
-  removeAllListeners: events.removeAllListeners.bind(events)
+  on: siesta.app.on,
+  off: siesta.app.off,
+  once: siesta.app.once,
+  removeAllListeners: siesta.app.removeAllListeners
 });
 
 util.extend(siesta, {
