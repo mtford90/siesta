@@ -18,7 +18,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x'}
+      collection: {name: 'x', app: siesta.app}
     });
     assert.include(model._attributeNames, 'id');
     assert.include(model._attributeNames, 'field1');
@@ -31,7 +31,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x'}
+      collection: {name: 'x', app: siesta.app}
     });
     var attributes = _.pluck(model.attributes, 'name');
     assert.include(attributes, 'field1');
@@ -43,7 +43,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x'}
+      collection: {name: 'x', app: siesta.app}
     });
     assert.equal(model.name, 'name');
   });
@@ -75,7 +75,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x'}
+      collection: {name: 'x', app: siesta.app}
     });
     assert.equal(model.id, 'id');
   });
@@ -119,7 +119,8 @@ describe('Models', function() {
         }
       });
 
-    Car.graph({colour: 'red', owner: {name: 'bob'}})
+    Car
+      .graph({colour: 'red', owner: {name: 'bob'}})
       .then(function(car) {
         assert.ok(car);
         assert.ok(car.owner);

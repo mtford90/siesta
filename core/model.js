@@ -125,7 +125,7 @@ function Model(opts) {
       query: this.query.bind(this)
     };
 
-  ProxyEventEmitter.call(this, globalEventName, proxied);
+  ProxyEventEmitter.call(this, this.collection.app, globalEventName, proxied);
 
   this.installRelationships();
   this.installReverseRelationships();

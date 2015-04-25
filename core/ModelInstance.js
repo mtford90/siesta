@@ -8,8 +8,11 @@ var log = require('./log'),
 
 
 function ModelInstance(model) {
+  if (!model) throw new Error('wtf');
   var self = this;
   this.model = model;
+
+  ProxyEventEmitter.call(this, model.app);
 
   this.__proxies = {};
   this._proxies = [];
@@ -28,7 +31,6 @@ function ModelInstance(model) {
     }
   ]);
 
-  ProxyEventEmitter.call(this);
 
   Object.defineProperties(this, {
     _relationshipNames: {
@@ -83,6 +85,8 @@ function ModelInstance(model) {
    * @private
    */
   this._emitEvents = false;
+
+
 }
 
 ModelInstance.prototype = Object.create(ProxyEventEmitter.prototype);

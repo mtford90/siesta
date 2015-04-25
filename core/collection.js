@@ -69,7 +69,7 @@ function Collection(name, opts) {
 
   this.app.collectionRegistry.register(this);
   this._makeAvailableOnRoot();
-  ProxyEventEmitter.call(this, this.name);
+  ProxyEventEmitter.call(this, this.app, this.name);
 
 }
 

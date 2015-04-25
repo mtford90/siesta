@@ -1004,7 +1004,7 @@ describe('events', function() {
     var EVENT = 'event';
 
     it('listen works', function(done) {
-      var emitter = new ProxyEventEmitter(EVENT),
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT),
         e = {};
       var cancelListen = emitter.on('*', function(_e) {
         assert.equal(e, _e, 'payload is emitted');
@@ -1015,7 +1015,7 @@ describe('events', function() {
     });
 
     it('listen * works', function(done) {
-      var emitter = new ProxyEventEmitter(EVENT),
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT),
         e = {};
       var cancelListen = emitter.on('*', function(_e) {
         assert.equal(e, _e, 'payload is emitted');
@@ -1026,7 +1026,7 @@ describe('events', function() {
     });
 
     it('once works', function(done) {
-      var emitter = new ProxyEventEmitter(EVENT),
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT),
         e = {};
       emitter.once(function(_e) {
         assert.equal(e, _e, 'payload is emitted');
@@ -1036,7 +1036,7 @@ describe('events', function() {
     });
 
     it('once to specific type', function(done) {
-      var emitter = new ProxyEventEmitter(EVENT);
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT);
       var type = 'blah';
       emitter.once(type, function(e) {
         assert.equal(e.type, type);
@@ -1047,7 +1047,7 @@ describe('events', function() {
     });
 
     it('listen to specific type', function(done) {
-      var emitter = new ProxyEventEmitter(EVENT);
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT);
       var type = 'blah';
       var cancelListen = emitter.on(type, function(e) {
         assert.equal(e.type, type);
@@ -1061,7 +1061,7 @@ describe('events', function() {
     });
 
     it('remove listeners of specific type', function() {
-      var emitter = new ProxyEventEmitter(EVENT);
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT);
       var type1 = 'blah',
         type2 = 'blah2';
       emitter.on(type1, function() {
@@ -1080,7 +1080,7 @@ describe('events', function() {
     });
 
     it('remove all listeners', function() {
-      var emitter = new ProxyEventEmitter(EVENT);
+      var emitter = new ProxyEventEmitter(siesta.app, EVENT);
       var type1 = 'blah',
         type2 = 'blah2';
       emitter.on(type1, function() {

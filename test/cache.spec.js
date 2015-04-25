@@ -132,7 +132,7 @@ describe('cache...', function() {
           id: 'xyz'
         });
         siesta.app.cache.insert(person);
-        var duplicateObject = new ModelInstance();
+        var duplicateObject = new ModelInstance(Person);
         duplicateObject.localId = person.localId;
         assert.throws(function() {
           siesta.app.cache.insert(duplicateObject);

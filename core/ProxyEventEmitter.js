@@ -2,7 +2,6 @@ var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
   util = require('./util'),
   argsarray = require('argsarray'),
   modelEvents = require('./modelEvents'),
-  eventEmitter = require('./events'),
   Chain = require('./Chain');
 
 
@@ -11,9 +10,11 @@ var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
  * Manages its own set of listeners.
  * @constructor
  */
-function ProxyEventEmitter(event, chainOpts) {
+function ProxyEventEmitter(app, event, chainOpts) {
+  if (!app) throw new Error('wtf');
   util.extend(this, {
     event: event,
+    app: app,
     listeners: {}
   });
   var defaultChainOpts = {};
@@ -52,7 +53,8 @@ util.extend(ProxyEventEmitter.prototype, {
         listeners[type].push(fn);
       }
     }
-    eventEmitter.on(this.event, fn);
+    console.log('this.app', this.app);
+    this.app.events.on(this.event, fn);
     return this._handlerLink({
       fn: fn,
       type: type,
@@ -72,17 +74,17 @@ util.extend(ProxyEventEmitter.prototype, {
         e = e || {};
         if (type) {
           if (e.type == type) {
-            eventEmitter.removeListener(event, fn);
+            this.app.events.removeListener(event, fn);
             _fn(e);
           }
         }
         else {
           _fn(e);
         }
-      }
+      }.bind(this)
     }
-    if (type) return eventEmitter.on(event, fn);
-    else return eventEmitter.once(event, fn);
+    if (type) return this.app.events.on(event, fn);
+    else return this.app.events.once(event, fn);
   },
   _removeListener: function(fn, type) {
     if (type) {
@@ -90,7 +92,7 @@ util.extend(ProxyEventEmitter.prototype, {
         idx = listeners.indexOf(fn);
       listeners.splice(idx, 1);
     }
-    return eventEmitter.removeListener(this.event, fn);
+    return this.app.events.removeListener(this.event, fn);
   },
   emit: function(type, payload) {
     if (typeof type == 'object') {
@@ -101,11 +103,11 @@ util.extend(ProxyEventEmitter.prototype, {
       payload = payload || {};
       payload.type = type;
     }
-    eventEmitter.emit.call(eventEmitter, this.event, payload);
+    this.app.events.emit.call(this.app.events, this.event, payload);
   },
   _removeAllListeners: function(type) {
     (this.listeners[type] || []).forEach(function(fn) {
-      eventEmitter.removeListener(this.event, fn);
+      this.app.events.removeListener(this.event, fn);
     }.bind(this));
     this.listeners[type] = [];
   },
