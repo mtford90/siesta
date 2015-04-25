@@ -237,7 +237,7 @@ util.extend(RelationshipProxy.prototype, {
     var model = proxyObject.model.name;
     var collectionName = proxyObject.collectionName;
     // We take [] == null == undefined in the case of relationships.
-    modelEvents.emit({
+    siesta.app.broadcast({
       collection: collectionName,
       model: model,
       localId: proxyObject.localId,
@@ -261,7 +261,7 @@ util.extend(RelationshipProxy.prototype, {
   registerSpliceChange: function(idx, added, removed) {
     var model = this.object.model.name,
       coll = this.object.collectionName;
-    modelEvents.emit({
+    siesta.app.broadcast({
       collection: coll,
       model: model,
       localId: this.object.localId,
@@ -282,7 +282,7 @@ util.extend(RelationshipProxy.prototype, {
         splices.forEach(function(splice) {
           var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
           var model = self.getForwardModel();
-          modelEvents.emit({
+          siesta.app.broadcast({
             collection: model.collectionName,
             model: model.name,
             localId: self.object.localId,

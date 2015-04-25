@@ -65,7 +65,7 @@ util.extend(OneToManyProxy.prototype, {
           self.clearReverse(removed);
           self.setReverseOfAdded(added);
           var model = self.getForwardModel();
-          modelEvents.emit({
+          siesta.app.broadcast({
             collection: model.collectionName,
             model: model.name,
             localId: self.object.localId,

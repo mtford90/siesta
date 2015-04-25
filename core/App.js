@@ -1,5 +1,6 @@
 var CollectionRegistry = require('./collectionRegistry'),
   events = require('./events'),
+  modelEvents = require('./modelEvents'),
   Cache = require('./cache'),
   util = require('./util'),
   Collection = require('./collection');
@@ -26,6 +27,9 @@ App.prototype = {
   },
   reset: function () {
     this.removeAllListeners();
+  },
+  broadcast: function (opts) {
+    modelEvents.emit(this, opts);
   }
 };
 

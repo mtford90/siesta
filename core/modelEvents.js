@@ -3,7 +3,6 @@ var InternalSiestaError = require('./error').InternalSiestaError,
   ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
   extend = require('./util').extend;
 
-
 /**
  * Constants that describe change events.
  * Set => A new value is assigned to an attribute/relationship
@@ -48,8 +47,9 @@ ModelEvent.prototype._dump = function(pretty) {
 };
 
 function broadcastEvent(collectionName, modelName, opts) {
+  var app = siesta.app;
   var genericEvent = 'Siesta',
-    collection = siesta.app.collectionRegistry[collectionName],
+    collection = app.collectionRegistry[collectionName],
     model = collection[modelName];
   if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
   if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
@@ -64,13 +64,13 @@ function broadcastEvent(collectionName, modelName, opts) {
     }
   }
   if (shouldEmit) {
-    siesta.app.events.emit(genericEvent, opts);
+    app.events.emit(genericEvent, opts);
     var modelEvent = collectionName + ':' + modelName,
       localIdEvent = opts.localId;
-    siesta.app.events.emit(collectionName, opts);
-    siesta.app.events.emit(modelEvent, opts);
-    siesta.app.events.emit(localIdEvent, opts);
-    if (model.id && opts.obj[model.id]) siesta.app.events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
+    app.events.emit(collectionName, opts);
+    app.events.emit(modelEvent, opts);
+    app.events.emit(localIdEvent, opts);
+    if (model.id && opts.obj[model.id]) app.events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
   }
 }
 
@@ -81,7 +81,7 @@ function validateEventOpts(opts) {
   if (!opts.obj) throw new InternalSiestaError('Must pass the object');
 }
 
-function emit(opts) {
+function emit(app, opts) {
   validateEventOpts(opts);
   var collection = opts.collection;
   var model = opts.model;
@@ -102,7 +102,7 @@ extend(exports, {
         var fieldIsAttribute = modelInstance._attributeNames.indexOf(field) > -1;
         if (fieldIsAttribute) {
           splices.forEach(function(splice) {
-            emit({
+            emit(modelInstance.app, {
               collection: modelInstance.collectionName,
               model: modelInstance.model.name,
               localId: modelInstance.localId,
