@@ -27,17 +27,17 @@ describe('cache...', function() {
     it('by pouch id', function() {
       var car = new ModelInstance(Car);
       car.localId = 'dsfsd';
-      cache.insert(car);
-      assert.equal(car, cache._localCache()[car.localId]);
-      assert.equal(car, cache._localCacheByType[car.model.collectionName][car.modelName][car.localId], car);
+      siesta.app.cache.insert(car);
+      assert.equal(car, siesta.app.cache._localCache()[car.localId]);
+      assert.equal(car, siesta.app.cache._localCacheByType[car.model.collectionName][car.modelName][car.localId], car);
     });
 
     it('by default id', function() {
       var car = new ModelInstance(Car);
       car.id = 'dsfsd';
-      cache.insert(car);
+      siesta.app.cache.insert(car);
 
-      var remoteCache = cache._remoteCache();
+      var remoteCache = siesta.app.cache._remoteCache();
       assert.equal(car, remoteCache[car.collectionName][car.modelName][car.id]);
     });
 
@@ -46,8 +46,8 @@ describe('cache...', function() {
       m.id = 'customId';
       var car = new ModelInstance(m);
       car.customId = 'dsfsd';
-      cache.insert(car);
-      var remoteCache = cache._remoteCache();
+      siesta.app.cache.insert(car);
+      var remoteCache = siesta.app.cache._remoteCache();
       assert.equal(car, remoteCache[car.collectionName][car.modelName][car.customId]);
     });
 
@@ -67,8 +67,8 @@ describe('cache...', function() {
     it('by pouch id', function() {
       var r = new ModelInstance(Car);
       r.id = 'dsfsd';
-      cache.insert(r);
-      var returned = cache.get({
+      siesta.app.cache.insert(r);
+      var returned = siesta.app.cache.get({
         model: Car,
         id: 'dsfsd'
       });
@@ -78,8 +78,8 @@ describe('cache...', function() {
       var model = new ModelInstance(Car);
       model.id = 'dsfsd';
       model.localId = 'xyz';
-      cache.insert(model);
-      var returned = cache.get({
+      siesta.app.cache.insert(model);
+      var returned = siesta.app.cache.get({
         model: Car,
         id: 'dsfsd'
       });
@@ -121,8 +121,8 @@ describe('cache...', function() {
           age: 23,
           id: 'xyz'
         });
-        cache.insert(person);
-        cache.insert(person); // Should be fine as is the exact same object.
+        siesta.app.cache.insert(person);
+        siesta.app.cache.insert(person); // Should be fine as is the exact same object.
       });
 
       it('cant insert object with same localId', function() {
@@ -131,11 +131,11 @@ describe('cache...', function() {
           age: 23,
           id: 'xyz'
         });
-        cache.insert(person);
+        siesta.app.cache.insert(person);
         var duplicateObject = new ModelInstance();
         duplicateObject.localId = person.localId;
         assert.throws(function() {
-          cache.insert(duplicateObject);
+          siesta.app.cache.insert(duplicateObject);
         }, siesta.InternalsError);
       });
 
@@ -145,10 +145,10 @@ describe('cache...', function() {
           age: 23,
           id: 'xyz'
         });
-        cache.insert(person);
+        siesta.app.cache.insert(person);
 
         assert.throws(function() {
-          cache.insert(Person._instance({
+          siesta.app.cache.insert(Person._instance({
             name: 'Michael Ford',
             age: 23,
             id: 'xyz'

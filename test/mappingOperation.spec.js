@@ -285,7 +285,7 @@ describe('mapping operation', function() {
               name: 'Old Name',
               full_name: 'Old Full Name'
             });
-            cache.insert(repo);
+            siesta.app.cache.insert(repo);
             var data = [{
               login: 'mike',
               id: '123',

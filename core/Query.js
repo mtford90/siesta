@@ -106,7 +106,7 @@ util.extend(Query.prototype, {
     return util.promise(cb, function(cb) {
       this._executeInMemory(cb);
     }.bind(this));
-
+  },
   _dump: function(asJson) {
     return asJson ? '{}' : {};
   },

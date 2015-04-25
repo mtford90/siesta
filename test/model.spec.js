@@ -1,6 +1,5 @@
 var assert = require('chai').assert,
   internal = siesta._internal,
-  cache = internal.cache,
   Model = internal.Model,
   ModelInstance = internal.ModelInstance;
 
@@ -268,11 +267,11 @@ describe('Models', function() {
         car.name = 'Aston Martin';
         car.id = '2';
         car.localId = 'xyz';
-        cache.insert(car);
+        siesta.app.cache.insert(car);
         assert.notOk(car.removed);
-        assert.ok(cache.contains(car));
+        assert.ok(siesta.app.cache.contains(car));
         car.remove();
-        assert.notOk(cache.contains(car));
+        assert.notOk(siesta.app.cache.contains(car));
         assert.ok(car.removed);
       }
 
@@ -284,7 +283,7 @@ describe('Models', function() {
         remove();
         car.restore();
         assert.notOk(car.removed);
-        assert.ok(cache.contains(car));
+        assert.ok(siesta.app.cache.contains(car));
       });
 
     });
@@ -295,11 +294,11 @@ describe('Models', function() {
         car.colour = 'red';
         car.name = 'Aston Martin';
         car.localId = 'xyz';
-        cache.insert(car);
+        siesta.app.cache.insert(car);
         assert.notOk(car.removed);
-        assert.ok(cache.contains(car));
+        assert.ok(siesta.app.cache.contains(car));
         car.remove();
-        assert.notOk(cache.contains(car));
+        assert.notOk(siesta.app.cache.contains(car));
         assert.ok(car.removed);
       }
 
@@ -311,7 +310,7 @@ describe('Models', function() {
         remove();
         car.restore();
         assert.notOk(car.removed);
-        assert.ok(cache.contains(car));
+        assert.ok(siesta.app.cache.contains(car));
       });
     })
 

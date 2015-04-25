@@ -1,7 +1,6 @@
 var util = require('./util'),
   CollectionRegistry = require('./collectionRegistry'),
   Collection = require('./collection'),
-  cache = require('./cache'),
   Model = require('./model'),
   error = require('./error'),
   events = require('./events'),
@@ -66,7 +65,6 @@ util.extend(siesta, {
     MappingOperation: require('./mappingOperation'),
     events: events,
     ProxyEventEmitter: events.ProxyEventEmitter,
-    cache: require('./cache'),
     modelEvents: modelEvents,
     CollectionRegistry: require('./collectionRegistry'),
     Collection: Collection,
@@ -93,7 +91,7 @@ util.extend(siesta, {
    */
   reset: function(cb, resetStorage) {
     delete this.queuedTasks;
-    cache.reset();
+    siesta.app.cache.reset();
     CollectionRegistry.reset();
     var collectionNames = CollectionRegistry.collectionNames;
     collectionNames.reduce(function(memo, collName) {
@@ -187,11 +185,11 @@ util.extend(siesta, {
   notify: util.next,
   registerComparator: Query.registerComparator.bind(Query),
   count: function() {
-    return cache.count();
+    return siesta.app.cache.count();
   },
   get: function(id, cb) {
     return util.promise(cb, function(cb) {
-      cb(null, cache._localCache()[id]);
+      cb(null, siesta.app.cache._localCache()[id]);
     }.bind(this));
   },
   removeAll: function(cb) {

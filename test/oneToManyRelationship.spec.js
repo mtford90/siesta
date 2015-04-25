@@ -57,8 +57,8 @@ describe('one to many relationship', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      cache.insert(person);
-      cache.insert(car);
+      siesta.app.cache.insert(person);
+      siesta.app.cache.insert(car);
     });
 
     describe('get', function() {
@@ -174,9 +174,9 @@ describe('one to many relationship', function() {
           isReverse: true
         });
         anotherPersonProxy.install(anotherPerson);
-        cache.insert(anotherPerson);
-        cache.insert(person);
-        cache.insert(car);
+        siesta.app.cache.insert(anotherPerson);
+        siesta.app.cache.insert(person);
+        siesta.app.cache.insert(car);
       });
 
       describe('no fault', function() {
@@ -285,8 +285,8 @@ describe('one to many relationship', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      cache.insert(person);
-      cache.insert(car);
+      siesta.app.cache.insert(person);
+      siesta.app.cache.insert(car);
     });
 
     it('removal', function(done) {

@@ -57,8 +57,8 @@ describe('one to one relationship', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      cache.insert(person);
-      cache.insert(car);
+      siesta.app.cache.insert(person);
+      siesta.app.cache.insert(car);
     });
 
     it('forward', function(done) {
@@ -155,9 +155,9 @@ describe('one to one relationship', function() {
           isReverse: true
         });
         anotherPersonProxy.install(anotherPerson);
-        cache.insert(anotherPerson);
-        cache.insert(person);
-        cache.insert(car);
+        siesta.app.cache.insert(anotherPerson);
+        siesta.app.cache.insert(person);
+        siesta.app.cache.insert(car);
       });
 
 
@@ -233,8 +233,8 @@ describe('one to one relationship', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      cache.insert(car);
-      cache.insert(person);
+      siesta.app.cache.insert(car);
+      siesta.app.cache.insert(person);
     });
 
     it('removal', function(done) {

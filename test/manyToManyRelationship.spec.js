@@ -57,8 +57,8 @@ describe('many to many proxy', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      cache.insert(person);
-      cache.insert(car);
+      siesta.app.cache.insert(person);
+      siesta.app.cache.insert(car);
     });
 
 
@@ -157,9 +157,9 @@ describe('many to many proxy', function() {
           isReverse: true
         });
         anotherPersonProxy.install(anotherPerson);
-        cache.insert(anotherPerson);
-        cache.insert(person);
-        cache.insert(car);
+        siesta.app.cache.insert(anotherPerson);
+        siesta.app.cache.insert(person);
+        siesta.app.cache.insert(car);
       });
 
       describe('no fault', function() {
@@ -260,8 +260,8 @@ describe('many to many proxy', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      cache.insert(person);
-      cache.insert(car);
+      siesta.app.cache.insert(person);
+      siesta.app.cache.insert(car);
       done();
     });
 

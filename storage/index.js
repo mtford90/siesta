@@ -3,7 +3,6 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
 }
 
 var _i = siesta._internal,
-  cache = _i.cache,
   log = _i.log('storage'),
   error = _i.error,
   util = _i.util,

@@ -26,10 +26,10 @@ describe('change identifiers', function () {
     });
 
     it('xyz', function (done) {
-        assert.equal(cache.get({id: 'xyz', model: Car}), car);
+        assert.equal(siesta.app.cache.get({id: 'xyz', model: Car}), car);
         car.id = 'abc';
-        assert.notOk(cache.get({id: 'xyz', model: Car}), car);
-        assert.equal(cache.get({id: 'abc', model: Car}), car);
+        assert.notOk(siesta.app.cache.get({id: 'xyz', model: Car}), car);
+        assert.equal(siesta.app.cache.get({id: 'abc', model: Car}), car);
         done();
     });
 

@@ -1,7 +1,6 @@
 var assert = require('chai').assert,
   internal = siesta._internal,
-  Model = internal.Model,
-  cache = internal.cache;
+  Model = internal.Model;
 
 describe('singleton mapping', function() {
 
@@ -66,7 +65,7 @@ describe('singleton mapping', function() {
       id: 5
     }, function(err, car) {
       if (err) done(err);
-      var obj = cache.get({
+      var obj = siesta.app.cache.get({
         model: Car
       });
       assert.equal(obj, car);
