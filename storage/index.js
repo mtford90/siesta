@@ -7,16 +7,82 @@ var _i = siesta._internal,
   error = _i.error,
   util = _i.util;
 
-var unsavedObjects = [],
-  unsavedObjectsHash = {},
-  unsavedObjectsByCollection = {};
-
-var storage = {};
-
 // Variables beginning with underscore are treated as special by PouchDB/CouchDB so when serialising we need to
 // replace with something else.
 var UNDERSCORE = /_/g,
   UNDERSCORE_REPLACEMENT = /@/g;
+
+function Storage(name) {
+  name = name || 'siesta';
+
+  this.unsavedObjects = [];
+  this.unsavedObjectsHash = {};
+  this.unsavedObjectsByCollection = {};
+
+  this.pouch = new PouchDB(name, {auto_compaction: true})
+}
+
+Storage.prototype = {
+  /**
+   * Save all modelEvents down to PouchDB.
+   */
+  save: function(cb) {
+    return util.promise(cb, function(cb) {
+      siesta._ensureInstalled(function() {
+        var instances = storage.unsavedObjects;
+        this.unsavedObjects = [];
+        this.unsavedObjectsHash = {};
+        this.unsavedObjectsByCollection = {};
+        this.saveToPouch(instances, cb);
+      }.bind(this));
+    }.bind(this));
+  },
+  saveToPouch: function(objects, cb) {
+    var conflicts = [];
+    var serialisedDocs = objects.map(_serialise);
+    this.pouch.bulkDocs(serialisedDocs).then(function(resp) {
+      for (var i = 0; i < resp.length; i++) {
+        var response = resp[i];
+        var obj = objects[i];
+        if (response.ok) {
+          obj._rev = response.rev;
+        }
+        else if (response.status == 409) {
+          conflicts.push(obj);
+        }
+        else {
+          log('Error saving object with localId="' + obj.localId + '"', response);
+        }
+      }
+      if (conflicts.length) {
+        this.saveConflicts(conflicts, cb);
+      }
+      else {
+        cb();
+      }
+    }, function(err) {
+      cb(err);
+    });
+  },
+  saveConflicts: function(objects, cb) {
+    this
+      .pouch
+      .allDocs({keys: util.pluck(objects, 'localId')})
+      .then(function(resp) {
+        for (var i = 0; i < resp.rows.length; i++) {
+          objects[i]._rev = resp.rows[i].value.rev;
+        }
+        this.saveToPouch(objects, cb);
+      })
+      .catch(function(err) {
+        cb(err);
+      })
+  }
+};
+
+
+var storage = new Storage();
+
 
 function _initMeta() {
   return {dateFields: []};
@@ -32,17 +98,6 @@ if (typeof PouchDB == 'undefined') {
   console.log('PouchDB is not present therefore storage is disabled.');
 }
 else {
-  var DEFAULT_DB_NAME = 'siesta',
-    DB_NAME = DEFAULT_DB_NAME;
-
-
-  var pouch;
-
-  function initDb() {
-    pouch = new PouchDB(DB_NAME, {auto_compaction: true});
-  }
-
-  initDb();
 
   /**
    * Sometimes siesta needs to store some extra information about the model instance.
@@ -103,7 +158,7 @@ else {
       cb(err);
     }
 
-    pouch
+    storage.pouch
       .put(constructIndexDesignDoc(model.collectionName, model.name))
       .then(fn)
       .catch(fn);
@@ -190,7 +245,7 @@ else {
 
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
     var Model = siesta.app.collectionRegistry[collectionName][modelName];
-    pouch
+    storage.pouch
       .query(fullyQualifiedName)
       .then(function(resp) {
         console.log('Queried pouch successfully');
@@ -232,63 +287,6 @@ else {
 
   }
 
-  function saveConflicts(objects, cb) {
-    pouch
-      .allDocs({keys: util.pluck(objects, 'localId')})
-      .then(function(resp) {
-        for (var i = 0; i < resp.rows.length; i++) {
-          objects[i]._rev = resp.rows[i].value.rev;
-        }
-        saveToPouch(objects, cb);
-      })
-      .catch(function(err) {
-        cb(err);
-      })
-  }
-
-  function saveToPouch(objects, cb) {
-    var conflicts = [];
-    var serialisedDocs = objects.map(_serialise);
-    pouch.bulkDocs(serialisedDocs).then(function(resp) {
-      for (var i = 0; i < resp.length; i++) {
-        var response = resp[i];
-        var obj = objects[i];
-        if (response.ok) {
-          obj._rev = response.rev;
-        }
-        else if (response.status == 409) {
-          conflicts.push(obj);
-        }
-        else {
-          log('Error saving object with localId="' + obj.localId + '"', response);
-        }
-      }
-      if (conflicts.length) {
-        saveConflicts(conflicts, cb);
-      }
-      else {
-        cb();
-      }
-    }, function(err) {
-      cb(err);
-    });
-  }
-
-
-  /**
-   * Save all modelEvents down to PouchDB.
-   */
-  function save(cb) {
-    return util.promise(cb, function(cb) {
-      siesta._ensureInstalled(function() {
-        var instances = unsavedObjects;
-        unsavedObjects = [];
-        unsavedObjectsHash = {};
-        unsavedObjectsByCollection = {};
-        saveToPouch(instances, cb);
-      });
-    }.bind(this));
-  }
 
   function listener(n) {
     var changedObject = n.obj,
@@ -296,24 +294,24 @@ else {
     if (!changedObject) {
       throw new _i.error.InternalSiestaError('No obj field in notification received by storage extension');
     }
-    if (!(ident in unsavedObjectsHash)) {
-      unsavedObjectsHash[ident] = changedObject;
-      unsavedObjects.push(changedObject);
+    if (!(ident in storage.unsavedObjectsHash)) {
+      storage.unsavedObjectsHash[ident] = changedObject;
+      storage.unsavedObjects.push(changedObject);
       var collectionName = changedObject.collectionName;
-      if (!unsavedObjectsByCollection[collectionName]) {
-        unsavedObjectsByCollection[collectionName] = {};
+      if (!storage.unsavedObjectsByCollection[collectionName]) {
+        storage.unsavedObjectsByCollection[collectionName] = {};
       }
       var modelName = changedObject.model.name;
-      if (!unsavedObjectsByCollection[collectionName][modelName]) {
-        unsavedObjectsByCollection[collectionName][modelName] = {};
+      if (!storage.unsavedObjectsByCollection[collectionName][modelName]) {
+        storage.unsavedObjectsByCollection[collectionName][modelName] = {};
       }
-      unsavedObjectsByCollection[collectionName][modelName][ident] = changedObject;
+      storage.unsavedObjectsByCollection[collectionName][modelName][ident] = changedObject;
     }
   }
 
   util.extend(storage, {
     loadModel: loadModel,
-    save: save,
+    save: storage.save.bind(storage),
     _serialise: _serialise,
     ensureIndexInstalled: ensureIndexInstalled,
     /**
@@ -323,22 +321,22 @@ else {
      */
     _reset: function(cb) {
       siesta.removeListener('Siesta', listener);
-      unsavedObjects = [];
-      unsavedObjectsHash = {};
-      //pouch
+      storage.unsavedObjects = [];
+      storage.unsavedObjectsHash = {};
+      //storage.pouch
       //  .destroy()
       //  .then(function() {
       //    initDb();
       //  })
       //  .catch(cb);
-      pouch
+      storage.pouch
         .allDocs()
         .then(function(results) {
           var docs = results.rows.map(function(r) {
             return {_id: r.id, _rev: r.value.rev, _deleted: true};
           });
 
-          pouch
+          storage.pouch
             .bulkDocs(docs)
             .then(function() {cb()})
             .catch(cb);
@@ -350,22 +348,22 @@ else {
   Object.defineProperties(storage, {
     _unsavedObjects: {
       get: function() {
-        return unsavedObjects
+        return storage.unsavedObjects
       }
     },
     _unsavedObjectsHash: {
       get: function() {
-        return unsavedObjectsHash
+        return storage.unsavedObjectsHash
       }
     },
     _unsavedObjectsByCollection: {
       get: function() {
-        return unsavedObjectsByCollection
+        return storage.unsavedObjectsByCollection
       }
     },
     _pouch: {
       get: function() {
-        return pouch
+        return storage.pouch
       }
     }
   });
@@ -436,16 +434,16 @@ else {
     dirty: {
       get: function() {
         var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
-        return !!Object.keys(unsavedObjectsByCollection).length;
+        return !!Object.keys(storage.unsavedObjectsByCollection).length;
       },
       enumerable: true
     }
   });
 
   util.extend(siesta, {
-    save: save,
-    setPouch: function (p) {
-      pouch = p;
+    save: storage.save.bind(storage),
+    setPouch: function(p) {
+      storage.pouch = p;
     }
   });
 
