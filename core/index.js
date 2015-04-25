@@ -100,7 +100,7 @@ util.extend(siesta, {
       });
       return memo;
     }, []);
-    events.removeAllListeners();
+    siesta.app.reset();
     if (siesta.ext.storageEnabled) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
       if (resetStorage) {

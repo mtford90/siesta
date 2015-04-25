@@ -1,6 +1,6 @@
 var assert = require('chai').assert,
   internal = siesta._internal,
-  events = internal.events,
+  events = siesta.app.events,
   util = internal.util,
   Condition = internal.Condition,
   ModelEventType = internal.ModelEventType,

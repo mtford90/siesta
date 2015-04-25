@@ -8,13 +8,13 @@ function App(name) {
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
   this.name = name;
-  this.events = events;
+  this.events = events();
 
   util.extend(this, {
-    on: events.on.bind(events),
-    off: events.removeListener.bind(events),
-    once: events.once.bind(events),
-    removeAllListeners: events.removeAllListeners.bind(events)
+    on: this.events.on.bind(this.events),
+    off: this.events.removeListener.bind(this.events),
+    once: this.events.once.bind(this.events),
+    removeAllListeners: this.events.removeAllListeners.bind(this.events)
   });
 }
 
@@ -23,6 +23,9 @@ App.prototype = {
     opts = opts || {};
     opts.app = this;
     return new Collection(name, opts);
+  },
+  reset: function () {
+    this.removeAllListeners();
   }
 };
 
