@@ -1,8 +1,7 @@
 var events = require('./events'),
   InternalSiestaError = require('./error').InternalSiestaError,
   log = require('./log')('events'),
-  extend = require('./util').extend,
-  collectionRegistry = require('./collectionRegistry');
+  extend = require('./util').extend;
 
 
 /**
@@ -50,7 +49,7 @@ ModelEvent.prototype._dump = function(pretty) {
 
 function broadcastEvent(collectionName, modelName, opts) {
   var genericEvent = 'Siesta',
-    collection = collectionRegistry[collectionName],
+    collection = siesta.app.collectionRegistry[collectionName],
     model = collection[modelName];
   if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
   if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
