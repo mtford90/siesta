@@ -1,9 +1,9 @@
 var RelationshipProxy = require('./RelationshipProxy'),
   util = require('./util'),
   modelEvents = require('./modelEvents'),
-  wrapArrayForAttributes = require('./events').wrapArray,
+  wrapArrayForAttributes = modelEvents.wrapArray,
   ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-  ModelEventType = require('./modelEvents').ModelEventType;
+  ModelEventType = modelEvents.ModelEventType;
 
 /**
  * @class  [OneToManyProxy description]

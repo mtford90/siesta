@@ -6,9 +6,9 @@ var InternalSiestaError = require('./error').InternalSiestaError,
   util = require('./util'),
   Query = require('./Query'),
   log = require('./log'),
-  wrapArrayForAttributes = require('./events').wrapArray,
-  ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
   modelEvents = require('./modelEvents'),
+  wrapArrayForAttributes = modelEvents.wrapArray,
+  ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
   ModelEventType = modelEvents.ModelEventType;
 
 /**
