@@ -5,7 +5,6 @@ var log = require('./log')('model'),
   MappingOperation = require('./mappingOperation'),
   ModelInstance = require('./ModelInstance'),
   util = require('./util'),
-  cache = require('./cache'),
   argsarray = require('argsarray'),
   error = require('./error'),
   extend = require('extend'),
@@ -314,7 +313,7 @@ util.extend(Model.prototype, {
         reverseModel.relationships[reverseName] = reverseRelationship;
       }
 
-      var existingReverseInstances = (cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
+      var existingReverseInstances = (this.app.cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
       Object.keys(existingReverseInstances).forEach(function(localId) {
         var instancce = existingReverseInstances[localId];
         this._factory._installRelationship(reverseRelationship, instancce);
@@ -511,7 +510,7 @@ util.extend(Model.prototype, {
     });
   },
   _countCache: function() {
-    var collCache = cache._localCacheByType[this.collectionName] || {};
+    var collCache = this.app.cache._localCacheByType[this.collectionName] || {};
     var modelCache = collCache[this.name] || {};
     return Object.keys(modelCache).reduce(function(m, localId) {
       m[localId] = {};
