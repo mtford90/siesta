@@ -1,5 +1,5 @@
 var log = require('./log')('collection'),
-  CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+  CollectionRegistry = require('./collectionRegistry'),
   InternalSiestaError = require('./error').InternalSiestaError,
   Model = require('./model'),
   extend = require('extend'),

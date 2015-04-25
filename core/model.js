@@ -1,5 +1,5 @@
 var log = require('./log')('model'),
-  CollectionRegistry = require('./collectionRegistry').CollectionRegistry,
+  CollectionRegistry = require('./collectionRegistry'),
   InternalSiestaError = require('./error').InternalSiestaError,
   RelationshipType = require('./RelationshipType'),
   Query = require('./Query'),
