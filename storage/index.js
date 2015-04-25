@@ -42,7 +42,7 @@ else {
   var pouch;
 
   function initDb() {
-    pouch = new PouchDB(DB_NAME, {auto_compaction: true, adapter: 'memory'});
+    pouch = new PouchDB(DB_NAME, {auto_compaction: true});
   }
 
   initDb();
@@ -446,7 +446,10 @@ else {
   });
 
   util.extend(siesta, {
-    save: save
+    save: save,
+    setPouch: function (p) {
+      pouch = p;
+    }
   });
 
 }

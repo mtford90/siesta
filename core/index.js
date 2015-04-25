@@ -97,7 +97,10 @@ util.extend(siesta, {
     events.removeAllListeners();
     if (siesta.ext.storageEnabled) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
-      if (resetStorage) siesta.ext.storage._reset(cb);
+      if (resetStorage) {
+        siesta.ext.storage._reset(cb);
+        siesta.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
+      }
       else cb();
     }
     else {
