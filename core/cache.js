@@ -260,4 +260,4 @@ Cache.prototype = {
   }
 };
 
-module.exports = new Cache();
+module.exports = Cache;

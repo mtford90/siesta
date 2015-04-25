@@ -1,10 +1,10 @@
 var CollectionRegistry = require('./collectionRegistry'),
-  cache = require('./cache'),
+  Cache = require('./cache'),
   Collection = require('./collection');
 
 function App(name) {
   this.collectionRegistry = new CollectionRegistry();
-  this.cache = cache;
+  this.cache = new Cache();
   this.name = name;
 }
 
