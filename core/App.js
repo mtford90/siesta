@@ -71,6 +71,25 @@ App.prototype = {
       else cb(error(err, {data: data, invalidCollectionName: collectionName}));
     }.bind(this));
   },
+  count: function() {
+    return this.cache.count();
+  },
+  get: function(id, cb) {
+    return util.promise(cb, function(cb) {
+      cb(null, this.cache._localCache()[id]);
+    }.bind(this));
+  },
+  removeAll: function(cb) {
+    return util.promise(cb, function(cb) {
+      util.Promise.all(
+        this.collectionRegistry.collectionNames.map(function(collectionName) {
+          return this.collectionRegistry[collectionName].removeAll();
+        }.bind(this))
+      ).then(function() {
+          cb(null);
+        }).catch(cb)
+    }.bind(this));
+  }
 };
 
 module.exports = App;

@@ -146,25 +146,9 @@ util.extend(siesta, {
   graph: siesta.app.graph.bind(siesta.app),
   notify: util.next,
   registerComparator: Query.registerComparator.bind(Query),
-  count: function() {
-    return siesta.app.cache.count();
-  },
-  get: function(id, cb) {
-    return util.promise(cb, function(cb) {
-      cb(null, siesta.app.cache._localCache()[id]);
-    }.bind(this));
-  },
-  removeAll: function(cb) {
-    return util.promise(cb, function(cb) {
-      util.Promise.all(
-        siesta.app.collectionRegistry.collectionNames.map(function(collectionName) {
-          return siesta.app.collectionRegistry[collectionName].removeAll();
-        }.bind(this))
-      ).then(function() {
-          cb(null);
-        }).catch(cb)
-    }.bind(this));
-  },
+  count: siesta.app.count.bind(siesta.app),
+  get: siesta.app.get.bind(siesta.app),
+  removeAll: siesta.app.removeAll.bind(siesta.app),
   _ensureInstalled: function(cb) {
     cb = cb || function() {};
     var allModels = siesta.app.collectionRegistry.collectionNames.reduce(function(memo, collectionName) {
