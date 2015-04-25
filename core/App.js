@@ -8,6 +8,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   Collection = require('./collection');
 
 function App(name) {
+  if (!name) throw new Error('App must have a name');
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
   this.name = name;

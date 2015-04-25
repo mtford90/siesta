@@ -32,7 +32,7 @@ var siesta = function(ext) {
  * - PouchDB Instnace
  *
  */
-siesta.app = new App();
+siesta.app = new App('siesta');
 
 // Notifications
 util.extend(siesta, {

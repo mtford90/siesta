@@ -1,11 +1,6 @@
-if (typeof siesta == 'undefined' && typeof module == 'undefined') {
-  throw new Error('Could not find window.siesta. Make sure you include siesta.core.js first.');
-}
-
-var _i = siesta._internal,
-  log = _i.log('storage'),
-  error = _i.error,
-  util = _i.util;
+var util = require('../core/util'),
+  error = require('../core/error'),
+  log = require('../core/log')('storage');
 
 // Variables beginning with underscore are treated as special by PouchDB/CouchDB so when serialising we need to
 // replace with something else.
@@ -13,7 +8,7 @@ var UNDERSCORE = /_/g,
   UNDERSCORE_REPLACEMENT = /@/g;
 
 function Storage(name) {
-  name = name || 'siesta';
+  name = name || 'siesta-old';
 
   this.unsavedObjects = [];
   this.unsavedObjectsHash = {};
@@ -251,7 +246,7 @@ Storage.prototype = {
     var changedObject = n.obj,
       ident = changedObject.localId;
     if (!changedObject) {
-      throw new _i.error.InternalSiestaError('No obj field in notification received by storage extension');
+      throw new Error('No obj field in notification received by storage extension');
     }
     if (!(ident in this.unsavedObjectsHash)) {
       this.unsavedObjectsHash[ident] = changedObject;
@@ -426,4 +421,5 @@ else {
 
 }
 
+storage.Storage = Storage;
 module.exports = storage;
