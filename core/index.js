@@ -118,7 +118,10 @@ util.extend(siesta, {
    * @return {Collection}
    */
   collection: function(name, opts) {
-    return new Collection(name, opts);
+    opts = opts || {};
+    var collection = new Collection(name, opts);
+    opts.app = siesta.app;
+    return collection;
   },
 
   _pushTask: function(task) {

@@ -60,6 +60,11 @@ function ModelInstance(model) {
       get: function() {
         return this.localId
       }
+    },
+    app: {
+      get: function() {
+        return this.model.app;
+      }
     }
   });
 

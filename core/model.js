@@ -118,6 +118,11 @@ function Model(opts) {
         return this.collection.name;
       },
       enumerable: true
+    },
+    app: {
+      get: function() {
+        return this.collection.app;
+      }
     }
   });
   var globalEventName = this.collectionName + ':' + this.name,
