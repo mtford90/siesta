@@ -144,7 +144,6 @@ Storage.prototype = {
       .pouch
       .query(fullyQualifiedName)
       .then(function(resp) {
-        console.log('Queried pouch successfully');
         var rows = resp.rows;
         var data = util.pluck(rows, 'value').map(function(datum) {
           return this._prepareDatum(datum, Model);
