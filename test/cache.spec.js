@@ -6,17 +6,17 @@ var assert = require('chai').assert,
   RelationshipType = siesta.RelationshipType;
 
 describe('cache...', function() {
-
+  var app = siesta.app;
 
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
   var Car;
 
   describe('insertion', function() {
     beforeEach(function(done) {
-      siesta.reset(function() {
-        var coll = siesta.collection('myCollection');
+      app.reset(function() {
+        var coll = app.collection('myCollection');
         Car = coll.model('Car', {
           id: 'id',
           attributes: ['colour', 'name']
@@ -27,17 +27,17 @@ describe('cache...', function() {
     it('by pouch id', function() {
       var car = new ModelInstance(Car);
       car.localId = 'dsfsd';
-      siesta.app.cache.insert(car);
-      assert.equal(car, siesta.app.cache._localCache()[car.localId]);
-      assert.equal(car, siesta.app.cache._localCacheByType[car.model.collectionName][car.modelName][car.localId], car);
+      app.cache.insert(car);
+      assert.equal(car, app.cache._localCache()[car.localId]);
+      assert.equal(car, app.cache._localCacheByType[car.model.collectionName][car.modelName][car.localId], car);
     });
 
     it('by default id', function() {
       var car = new ModelInstance(Car);
       car.id = 'dsfsd';
-      siesta.app.cache.insert(car);
+      app.cache.insert(car);
 
-      var remoteCache = siesta.app.cache._remoteCache();
+      var remoteCache = app.cache._remoteCache();
       assert.equal(car, remoteCache[car.collectionName][car.modelName][car.id]);
     });
 
@@ -46,8 +46,8 @@ describe('cache...', function() {
       m.id = 'customId';
       var car = new ModelInstance(m);
       car.customId = 'dsfsd';
-      siesta.app.cache.insert(car);
-      var remoteCache = siesta.app.cache._remoteCache();
+      app.cache.insert(car);
+      var remoteCache = app.cache._remoteCache();
       assert.equal(car, remoteCache[car.collectionName][car.modelName][car.customId]);
     });
 
@@ -55,8 +55,8 @@ describe('cache...', function() {
 
   describe('get', function() {
     beforeEach(function(done) {
-      siesta.reset(function() {
-        var Collection = siesta.collection('myCollection');
+      app.reset(function() {
+        var Collection = app.collection('myCollection');
         Car = Collection.model('Car', {
           id: 'id',
           attributes: ['colour', 'name']
@@ -67,8 +67,8 @@ describe('cache...', function() {
     it('by pouch id', function() {
       var r = new ModelInstance(Car);
       r.id = 'dsfsd';
-      siesta.app.cache.insert(r);
-      var returned = siesta.app.cache.get({
+      app.cache.insert(r);
+      var returned = app.cache.get({
         model: Car,
         id: 'dsfsd'
       });
@@ -78,8 +78,8 @@ describe('cache...', function() {
       var model = new ModelInstance(Car);
       model.id = 'dsfsd';
       model.localId = 'xyz';
-      siesta.app.cache.insert(model);
-      var returned = siesta.app.cache.get({
+      app.cache.insert(model);
+      var returned = app.cache.get({
         model: Car,
         id: 'dsfsd'
       });
@@ -91,8 +91,8 @@ describe('cache...', function() {
     var collection, Car, Person;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        collection = siesta.collection('myCollection');
+      app.reset(function() {
+        collection = app.collection('myCollection');
         Person = collection.model('Person', {
           id: 'id',
           attributes: ['name', 'age']
@@ -121,8 +121,8 @@ describe('cache...', function() {
           age: 23,
           id: 'xyz'
         });
-        siesta.app.cache.insert(person);
-        siesta.app.cache.insert(person); // Should be fine as is the exact same object.
+        app.cache.insert(person);
+        app.cache.insert(person); // Should be fine as is the exact same object.
       });
 
       it('cant insert object with same localId', function() {
@@ -131,11 +131,11 @@ describe('cache...', function() {
           age: 23,
           id: 'xyz'
         });
-        siesta.app.cache.insert(person);
+        app.cache.insert(person);
         var duplicateObject = new ModelInstance(Person);
         duplicateObject.localId = person.localId;
         assert.throws(function() {
-          siesta.app.cache.insert(duplicateObject);
+          app.cache.insert(duplicateObject);
         }, siesta.InternalsError);
       });
 
@@ -145,10 +145,10 @@ describe('cache...', function() {
           age: 23,
           id: 'xyz'
         });
-        siesta.app.cache.insert(person);
+        app.cache.insert(person);
 
         assert.throws(function() {
-          siesta.app.cache.insert(Person._instance({
+          app.cache.insert(Person._instance({
             name: 'Michael Ford',
             age: 23,
             id: 'xyz'

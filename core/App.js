@@ -20,7 +20,8 @@ function App(name) {
     on: this.events.on.bind(this.events),
     off: this.events.removeListener.bind(this.events),
     once: this.events.once.bind(this.events),
-    removeAllListeners: this.events.removeAllListeners.bind(this.events)
+    removeAllListeners: this.events.removeAllListeners.bind(this.events),
+    notify: util.next
   });
 
   this.storage = storage;
