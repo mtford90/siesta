@@ -92,6 +92,21 @@ else {
     };
   }
 
+  function constructAllIndex() {
+    return {
+      _id: '_design/all',
+      views: {
+        all: {
+          map: function(doc) {
+            if (doc.model) {
+              emit(doc.collection + '.' + doc.model, doc);
+            }
+          }.toString()
+        }
+      }
+    };
+  }
+
   /**
    * Ensure that the PouchDB index for the given model exists, creating it if not.
    * @param model
@@ -159,7 +174,7 @@ else {
 
   function ensureIndexesForAll(cb) {
     var models = getAllModels();
-    var indexes = constructIndexesForAllModels(models);
+    var indexes = [constructAllIndex()];
     __ensureIndexes(indexes, cb);
   }
 
@@ -223,17 +238,42 @@ else {
     return datum;
   }
 
+
+  var all;
+
+  function _loadPouch(cb) {
+    if (!all) {
+      pouch
+        .query('all')
+        .then(function(resp) {
+          all = {};
+          var rows = resp.rows;
+          rows.forEach(function(row) {
+            var key = row.key;
+            if (!all[key]) all[key] = [];
+            all[key].push(row.value);
+          });
+          cb(null, all);
+        }).catch(cb);
+    }
+    else {
+      cb(null, all);
+    }
+  }
+
   function _getDataFromPouch(collectionName, modelName, cb) {
-    var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
-    var Model = CollectionRegistry[collectionName][modelName];
-    pouch
-      .query(fullyQualifiedName)
-      .then(function(resp) {
-        var rows = resp.rows;
-        var data = util.pluck(rows, 'value').map(function(datum) {
-          return _prepareDatum(datum, Model);
-        });
-        var loaded = {};
+    _loadPouch(function(err, all) {
+      if (err) {
+        cb(err);
+      }
+      else {
+        var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName),
+          Model = CollectionRegistry[collectionName][modelName],
+          rows = all[fullyQualifiedName] || [],
+          data = rows.map(function(row) {
+            return _prepareDatum(row, Model);
+          }),
+          loaded = {};
 
         data.map(function(datum) {
           var remoteId = datum[Model.id];
@@ -247,9 +287,10 @@ else {
           }
         });
         cb(null, data);
-      })
-      .catch(cb);
+      }
 
+
+    });
   }
 
   /**
@@ -316,6 +357,7 @@ else {
             }
             siesta.on('Siesta', listener);
           }
+
           cb(err, n);
         });
       }
@@ -416,6 +458,7 @@ else {
       siesta.removeListener('Siesta', listener);
       unsavedObjects = [];
       unsavedObjectsHash = {};
+      all = undefined;
       pouch.destroy(function(err) {
         if (!err) {
           pouch = new PouchDB(DB_NAME);
