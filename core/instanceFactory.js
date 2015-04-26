@@ -81,7 +81,7 @@ ModelInstanceFactory.prototype = {
           propertyDependencies.forEach(function(dep) {
             var propertyName = dep.prop;
             var new_ = this[propertyName];
-            siesta.app.broadcast({
+            Model.app.broadcast({
               collection: Model.collectionName,
               model: Model.name,
               localId: modelInstance.localId,
@@ -103,7 +103,7 @@ ModelInstanceFactory.prototype = {
             obj: modelInstance
           };
           window.lastEmission = e;
-          siesta.app.broadcast(e);
+          Model.app.broadcast(e);
           if (util.isArray(v)) {
             wrapArray(v, attributeName, modelInstance);
           }
@@ -156,7 +156,7 @@ ModelInstanceFactory.prototype = {
       set: function(v) {
         var old = modelInstance[Model.id];
         modelInstance.__values[Model.id] = v;
-        siesta.app.broadcast({
+        Model.app.broadcast({
           collection: Model.collectionName,
           model: Model.name,
           localId: modelInstance.localId,

@@ -46,8 +46,7 @@ ModelEvent.prototype._dump = function(pretty) {
   return pretty ? util.prettyPrint(dumped) : dumped;
 };
 
-function broadcastEvent(collectionName, modelName, opts) {
-  var app = siesta.app;
+function broadcastEvent(app, collectionName, modelName, opts) {
   var genericEvent = 'Siesta',
     collection = app.collectionRegistry[collectionName],
     model = collection[modelName];
@@ -86,7 +85,7 @@ function emit(app, opts) {
   var collection = opts.collection;
   var model = opts.model;
   var c = new ModelEvent(opts);
-  broadcastEvent(collection, model, c);
+  broadcastEvent(app, collection, model, c);
   return c;
 }
 

@@ -27,6 +27,10 @@ var siesta = function(ext) {
 
 siesta.app = new App('siesta');
 
+siesta.createApp = function(name) {
+  return new App(name);
+};
+
 // Notifications
 util.extend(siesta, {
   on: siesta.app.on,

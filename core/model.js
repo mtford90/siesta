@@ -98,8 +98,8 @@ function Model(opts) {
     },
     dirty: {
       get: function() {
-        if (siesta.app.storageEnabled) {
-          var unsavedObjectsByCollection = siesta.app.storage._unsavedObjectsByCollection,
+        if (this.app.storageEnabled) {
+          var unsavedObjectsByCollection = this.app.storage._unsavedObjectsByCollection,
             hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
           return !!Object.keys(hash).length;
         }

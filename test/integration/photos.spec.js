@@ -12,7 +12,7 @@ var assert = require('chai').assert,
 describe('photos intercollection', function() {
   var MyOfflineCollection, MyOnlineCollection, OfflineUser, Photo, OnlineUser;
 
-  var app = siesta.app;
+  var app = siesta.createApp('yooo');
   before(function() {
     app.storageEnabled = false;
   });

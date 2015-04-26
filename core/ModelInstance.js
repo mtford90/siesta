@@ -106,7 +106,7 @@ util.extend(ModelInstance.prototype, {
       localId: this.localId,
       obj: this
     });
-    siesta.app.broadcast(opts);
+    this.app.broadcast(opts);
   },
   remove: function(cb, notification) {
     _.each(this._relationshipNames, function(name) {
@@ -286,7 +286,7 @@ util.extend(ModelInstance.prototype, {
    * @private
    */
   _emitNew: function() {
-    siesta.app.broadcast({
+    this.app.broadcast({
       collection: this.model.collectionName,
       model: this.model.name,
       localId: this.localId,

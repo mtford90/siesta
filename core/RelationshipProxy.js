@@ -234,12 +234,13 @@ util.extend(RelationshipProxy.prototype, {
   registerSetChange: function(newValue, oldValue) {
     var proxyObject = this.object;
     if (!proxyObject) throw new InternalSiestaError('Proxy must have an object associated');
-    var model = proxyObject.model.name;
+    var model = proxyObject.model;
+    var modelName = model.name;
     var collectionName = proxyObject.collectionName;
     // We take [] == null == undefined in the case of relationships.
-    siesta.app.broadcast({
+    model.app.broadcast({
       collection: collectionName,
-      model: model,
+      model: modelName,
       localId: proxyObject.localId,
       field: this.getForwardName(),
       old: oldValue,
@@ -259,11 +260,12 @@ util.extend(RelationshipProxy.prototype, {
   },
 
   registerSpliceChange: function(idx, added, removed) {
-    var model = this.object.model.name,
+    var model = this.object.model,
+      modelName = model.name,
       coll = this.object.collectionName;
-    siesta.app.broadcast({
+    model.app.broadcast({
       collection: coll,
-      model: model,
+      model: modelName,
       localId: this.object.localId,
       field: this.getForwardName(),
       index: idx,
@@ -282,7 +284,7 @@ util.extend(RelationshipProxy.prototype, {
         splices.forEach(function(splice) {
           var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
           var model = self.getForwardModel();
-          siesta.app.broadcast({
+          model.app.broadcast({
             collection: model.collectionName,
             model: model.name,
             localId: self.object.localId,

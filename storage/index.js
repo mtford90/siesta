@@ -141,7 +141,7 @@ Storage.prototype = {
     }
 
     var fullyQualifiedName = this.fullyQualifiedModelName(collectionName, modelName);
-    var Model = siesta.app.collectionRegistry[collectionName][modelName];
+    var Model = this.app.collectionRegistry[collectionName][modelName];
     this
       .pouch
       .query(fullyQualifiedName)
