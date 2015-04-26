@@ -5,11 +5,12 @@ var CollectionRegistry = require('./collectionRegistry'),
   util = require('./util'),
   Model = require('./model'),
   error = require('./error'),
-  storage = require('../storage'),
+  Storage = require('../storage'),
   Collection = require('./collection');
 
 function App(name) {
   if (!name) throw new Error('App must have a name');
+  var storage = new Storage();
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
   this.name = name;
@@ -23,8 +24,9 @@ function App(name) {
   });
 
   this.storage = storage;
+
   util.extend(this, {
-    save: storage.save.bind(storage),
+    save: this.storage.save.bind(this.storage),
     setPouch: function(p) {
       storage.pouch = p;
     }

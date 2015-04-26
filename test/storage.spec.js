@@ -134,22 +134,27 @@ describe('storage', function() {
     });
 
     it('new object', function(done) {
+      console.log(1);
       assert.equal(1, siesta.app.storage._unsavedObjects.length, 'Should be one car to save.');
       var car = siesta.app.storage._unsavedObjects[0];
-      siesta.save().then(function() {
-        assert.equal(0, siesta.app.storage._unsavedObjects.length, 'Should be no more cars');
-        siesta.app.storage._pouch.get(car.localId).then(function(carDoc) {
-          assert.ok(carDoc);
-          assert.equal(carDoc._id, car.localId, 'Should have same localId');
-          assert.equal(carDoc._rev, car._rev, 'Should have same revision');
-          assert.equal(carDoc.collection, 'myCollection');
-          assert.equal(carDoc.model, 'Car');
-          assert.equal(carDoc.colour, 'black');
-          assert.equal(carDoc.name, 'bentley');
-          assert.equal(carDoc.id, 2);
-          done();
+      console.log(2);
+      siesta
+        .save()
+        .then(function() {
+          console.log(3);
+          assert.equal(0, siesta.app.storage._unsavedObjects.length, 'Should be no more cars');
+          siesta.app.storage._pouch.get(car.localId).then(function(carDoc) {
+            assert.ok(carDoc);
+            assert.equal(carDoc._id, car.localId, 'Should have same localId');
+            assert.equal(carDoc._rev, car._rev, 'Should have same revision');
+            assert.equal(carDoc.collection, 'myCollection');
+            assert.equal(carDoc.model, 'Car');
+            assert.equal(carDoc.colour, 'black');
+            assert.equal(carDoc.name, 'bentley');
+            assert.equal(carDoc.id, 2);
+            done();
+          }).catch(done);
         }).catch(done);
-      }).catch(done);
     });
 
     it('update object', function(done) {
@@ -687,7 +692,6 @@ describe('storage', function() {
     });
 
 
-
   });
 
 
@@ -750,7 +754,7 @@ describe('storage', function() {
             return instance.name;
           }
         });
-      internal.Model.install([Model]).then(function () {
+      internal.Model.install([Model]).then(function() {
         var pouch = siesta.app.storage._pouch;
         done();
       });

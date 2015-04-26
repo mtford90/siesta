@@ -48,7 +48,8 @@ Storage.prototype = {
   save: function(cb) {
     return util.promise(cb, function(cb) {
       siesta._ensureInstalled(function() {
-        var instances = storage.unsavedObjects;
+        var instances = this.unsavedObjects;
+        console.log(4);
         this.unsavedObjects = [];
         this.unsavedObjectsHash = {};
         this.unsavedObjectsByCollection = {};
@@ -287,7 +288,6 @@ Storage.prototype = {
    * @param {ModelInstance} modelInstance
    */
   _serialise: function(modelInstance) {
-    console.log(1);
     var serialised = {};
     var __values = modelInstance.__values;
     serialised = util.extend(serialised, __values);
@@ -331,6 +331,4 @@ Storage.prototype = {
   }
 };
 
-var storage = new Storage();
-storage.Storage = Storage;
-module.exports = storage;
+module.exports = Storage;

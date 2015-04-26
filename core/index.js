@@ -85,7 +85,7 @@ siesta.ext = {};
 
 util.extend(siesta, {
   reset: siesta.app.reset.bind(siesta.app),
-  save: siesta.app.save.bind(siesta.save),
+  save: siesta.app.save.bind(siesta.app),
   collection: siesta.app.collection.bind(siesta.app),
   _pushTask: siesta.app._pushTask.bind(siesta.app),
   graph: siesta.app.graph.bind(siesta.app),
