@@ -45,7 +45,7 @@ function timeMaps() {
       oldGraph.call(this, data, opts, function(err, res) {
         var end = (new Date).getTime(),
           timeTaken = end - start;
-        console.info('[Performance: model.prototype.map] It took ' + timeTaken + 'ms to map ' + numDatums + ' datums to "' + this.name + '"');
+        console.info('[Performance: model.prototype.graph] It took ' + timeTaken + 'ms to graph ' + numDatums + ' datums to "' + this.name + '"');
         cb(err, res);
       }.bind(this));
     }.bind(this));
@@ -108,7 +108,7 @@ function timeStorage() {
   };
 }
 
-//timeMaps();
-//timeQueries();
+timeMaps();
+timeQueries();
 timeStorage();
 module.exports = performance;
