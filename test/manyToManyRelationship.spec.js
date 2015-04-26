@@ -13,7 +13,7 @@ describe('many to many proxy', function() {
   }
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
   var MyCollection, Car, Person;
   var carProxy, personProxy;

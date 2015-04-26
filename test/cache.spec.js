@@ -9,7 +9,7 @@ describe('cache...', function() {
 
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
   var Car;
 

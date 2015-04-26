@@ -50,8 +50,8 @@ function ModelInstance(model) {
     },
     dirty: {
       get: function() {
-        if (siesta.ext.storageEnabled) {
-          return self.localId in siesta.ext.storage._unsavedObjectsHash;
+        if (this.app.storageEnabled) {
+          return self.localId in this.app.storage._unsavedObjectsHash;
         }
         else return undefined;
       },

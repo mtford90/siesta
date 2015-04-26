@@ -48,8 +48,8 @@ function Collection(name, opts) {
   Object.defineProperties(this, {
     dirty: {
       get: function() {
-        if (siesta.ext.storageEnabled) {
-          var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
+        if (this.app.storageEnabled) {
+          var unsavedObjectsByCollection = this.app.storage._unsavedObjectsByCollection,
             hash = unsavedObjectsByCollection[self.name] || {};
           return !!Object.keys(hash).length;
         }

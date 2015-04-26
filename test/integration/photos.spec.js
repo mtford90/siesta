@@ -14,7 +14,7 @@ describe('photos intercollection', function () {
     var MyOfflineCollection, MyOnlineCollection, OfflineUser, Photo, OnlineUser;
 
     before(function () {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
     });
 
     beforeEach(function () {

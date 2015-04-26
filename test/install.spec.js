@@ -19,7 +19,7 @@ describe('installation', function() {
 
     describe('no storage', function() {
       before(function() {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
       });
 
       beforeEach(function() {
@@ -52,13 +52,13 @@ describe('installation', function() {
 
     describe('storage', function() {
       before(function() {
-        siesta.ext.storageEnabled = true;
+        siesta.app.storageEnabled = true;
       });
 
       after(function(done) {
         siesta.reset(function() {
-          siesta.ext.storageEnabled = false;
-          siesta.ext.storage._pouch.allDocs().then(function(resp) {
+          siesta.app.storageEnabled = false;
+          siesta.app.storage._pouch.allDocs().then(function(resp) {
             done();
           });
         })
@@ -82,7 +82,7 @@ describe('installation', function() {
 
 
       it('query', function(done) {
-        siesta.ext.storage._pouch.bulkDocs([
+        siesta.app.storage._pouch.bulkDocs([
           {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
           {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
         ]).then(function() {
@@ -101,7 +101,7 @@ describe('installation', function() {
 
     describe('install relationships', function() {
       before(function() {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
       });
 
       beforeEach(function(done) {

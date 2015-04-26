@@ -98,8 +98,8 @@ function Model(opts) {
     },
     dirty: {
       get: function() {
-        if (siesta.ext.storageEnabled) {
-          var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
+        if (siesta.app.storageEnabled) {
+          var unsavedObjectsByCollection = siesta.app.storage._unsavedObjectsByCollection,
             hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
           return !!Object.keys(hash).length;
         }
@@ -130,13 +130,13 @@ function Model(opts) {
   this.installReverseRelationships();
 
   this._indexIsInstalled = new Condition(function(done) {
-    if (siesta.ext.storageEnabled) siesta.ext.storage.ensureIndexInstalled(this, done);
+    if (this.app.storageEnabled) this.app.storage.ensureIndexInstalled(this, done);
     else done();
   }.bind(this));
 
   this._modelLoadedFromStorage = new Condition(function(done) {
-    if (siesta.ext.storageEnabled) {
-      siesta.ext.storage.loadModel({model: this}, done);
+    if (this.app.storageEnabled) {
+      this.app.storage.loadModel({model: this}, done);
     }
     else done();
   }.bind(this));

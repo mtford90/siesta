@@ -23,7 +23,7 @@ function _instance(Model) {
 describe('events', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   beforeEach(function(done) {

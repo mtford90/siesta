@@ -7,7 +7,7 @@ var assert = require('chai').assert,
 
 describe('observer', function () {
     before(function () {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
     });
 
     it('indexes', function (done) {

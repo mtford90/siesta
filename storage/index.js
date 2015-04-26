@@ -7,9 +7,10 @@ var util = require('../core/util'),
 var UNDERSCORE = /_/g,
   UNDERSCORE_REPLACEMENT = /@/g;
 
-function Storage(name) {
+function Storage(name, app) {
   name = name || 'siesta-old';
 
+  this.app = app;
   this.unsavedObjects = [];
   this.unsavedObjectsHash = {};
   this.unsavedObjectsByCollection = {};
@@ -330,95 +331,6 @@ Storage.prototype = {
   }
 };
 
-
 var storage = new Storage();
-
-
-if (typeof PouchDB == 'undefined') {
-  siesta.ext.storageEnabled = false;
-  console.log('PouchDB is not present therefore storage is disabled.');
-}
-else {
-  if (!siesta.ext) siesta.ext = {};
-  siesta.ext.storage = storage;
-
-  Object.defineProperties(siesta.ext, {
-    storageEnabled: {
-      get: function() {
-        if (siesta.ext._storageEnabled !== undefined) {
-          return siesta.ext._storageEnabled;
-        }
-        return !!siesta.ext.storage;
-      },
-      set: function(v) {
-        siesta.ext._storageEnabled = v;
-      },
-      enumerable: true
-    }
-  });
-
-  var interval, saving, autosaveInterval = 1000;
-
-  Object.defineProperties(siesta, {
-    autosave: {
-      get: function() {
-        return !!interval;
-      },
-      set: function(autosave) {
-        if (autosave) {
-          if (!interval) {
-            interval = setInterval(function() {
-              // Cheeky way of avoiding multiple saves happening...
-              if (!saving) {
-                saving = true;
-                siesta.save(function(err) {
-                  if (!err) {
-                    siesta.app.events.emit('saved');
-                  }
-                  saving = false;
-                });
-              }
-            }, siesta.autosaveInterval);
-          }
-        }
-        else {
-          if (interval) {
-            clearInterval(interval);
-            interval = null;
-          }
-        }
-      }
-    },
-    autosaveInterval: {
-      get: function() {
-        return autosaveInterval;
-      },
-      set: function(_autosaveInterval) {
-        autosaveInterval = _autosaveInterval;
-        if (interval) {
-          // Reset interval
-          siesta.autosave = false;
-          siesta.autosave = true;
-        }
-      }
-    },
-    dirty: {
-      get: function() {
-        var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
-        return !!Object.keys(storage.unsavedObjectsByCollection).length;
-      },
-      enumerable: true
-    }
-  });
-
-  util.extend(siesta, {
-    save: storage.save.bind(storage),
-    setPouch: function(p) {
-      storage.pouch = p;
-    }
-  });
-
-}
-
 storage.Storage = Storage;
 module.exports = storage;

@@ -7,7 +7,7 @@ describe('model serialisation', function() {
   var Collection, PersonModel, CarModel, CustomModel;
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   beforeEach(function(done) {

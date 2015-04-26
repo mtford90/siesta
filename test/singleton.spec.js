@@ -7,7 +7,7 @@ describe('singleton mapping', function() {
   var Collection, Car;
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   beforeEach(function(done) {

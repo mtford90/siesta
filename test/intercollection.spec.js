@@ -6,7 +6,7 @@ var assert = require('chai').assert,
 describe('intercoll relationships', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   beforeEach(function(done) {

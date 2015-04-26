@@ -5,6 +5,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   util = require('./util'),
   Model = require('./model'),
   error = require('./error'),
+  storage = require('../storage'),
   Collection = require('./collection');
 
 function App(name) {
@@ -12,14 +13,95 @@ function App(name) {
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
   this.name = name;
-  this.events = events();
 
+  this.events = events();
   util.extend(this, {
     on: this.events.on.bind(this.events),
     off: this.events.removeListener.bind(this.events),
     once: this.events.once.bind(this.events),
     removeAllListeners: this.events.removeAllListeners.bind(this.events)
   });
+
+  this.storage = storage;
+  util.extend(this, {
+    save: storage.save.bind(storage),
+    setPouch: function(p) {
+      storage.pouch = p;
+    }
+  });
+
+  var interval, saving, autosaveInterval = 1000;
+  var storageEnabled;
+
+  Object.defineProperties(this, {
+    dirty: {
+      get: function() {
+        var unsavedObjectsByCollection = storage._unsavedObjectsByCollection;
+        return !!Object.keys(storage.unsavedObjectsByCollection).length;
+      },
+      enumerable: true
+    },
+    autosaveInterval: {
+      get: function() {
+        return autosaveInterval;
+      },
+      set: function(_autosaveInterval) {
+        autosaveInterval = _autosaveInterval;
+        if (interval) {
+          // Reset interval
+          this.autosave = false;
+          this.autosave = true;
+        }
+      }
+    },
+    autosave: {
+      get: function() {
+        return !!interval;
+      },
+      set: function(autosave) {
+        if (autosave) {
+          if (!interval) {
+            interval = setInterval(function() {
+              // Cheeky way of avoiding multiple saves happening...
+              if (!saving) {
+                saving = true;
+                this.save(function(err) {
+                  if (!err) {
+                    this.events.emit('saved');
+                  }
+                  saving = false;
+                }.bind(this));
+              }
+            }.bind(this), this.autosaveInterval);
+          }
+        }
+        else {
+          if (interval) {
+            clearInterval(interval);
+            interval = null;
+          }
+        }
+      }
+    },
+    storageEnabled: {
+      get: function() {
+        if (storageEnabled !== undefined) {
+          return storageEnabled;
+        }
+        return !!this.storage;
+      },
+      set: function(v) {
+        storageEnabled = v;
+      },
+      enumerable: true
+    }
+  });
+
+  if (typeof PouchDB == 'undefined') {
+    this.storageEnabled = false;
+    console.warn('PouchDB is not present therefore storage is disabled.');
+  }
+
 }
 
 App.prototype = {
@@ -127,10 +209,10 @@ App.prototype = {
       return memo;
     }, []);
     this.removeAllListeners();
-    if (siesta.ext.storageEnabled) {
+    if (this.storageEnabled) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
       if (resetStorage) {
-        siesta.ext.storage._reset(cb);
+        this.storage._reset(cb);
         siesta.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
       }
       else {

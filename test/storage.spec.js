@@ -5,7 +5,7 @@ var assert = require('chai').assert,
 describe('storage', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = true;
+    siesta.app.storageEnabled = true;
   });
 
   beforeEach(function(done) {
@@ -28,7 +28,7 @@ describe('storage', function() {
         Car.graph({colour: 'black', name: 'bentley', id: 2})
           .then(function(car) {
             car._rev = '123'; //Fake pouchdb revision.
-            var serialised = siesta.ext.storage._serialise(car);
+            var serialised = siesta.app.storage._serialise(car);
             assert.equal(serialised.colour, 'black');
             assert.equal(serialised.name, 'bentley');
             assert.equal(serialised.id, 2);
@@ -67,7 +67,7 @@ describe('storage', function() {
         Person.graph({name: 'Michael', age: 24}).then(function(person) {
           Car.graph({colour: 'black', name: 'bentley', id: 2, owner: {localId: person.localId}})
             .then(function(car) {
-              var serialisedCar = siesta.ext.storage._serialise(car);
+              var serialisedCar = siesta.app.storage._serialise(car);
               assert.equal(serialisedCar.colour, 'black');
               assert.equal(serialisedCar.name, 'bentley');
               assert.equal(serialisedCar.id, 2);
@@ -75,7 +75,7 @@ describe('storage', function() {
               assert.equal(serialisedCar.collection, 'myCollection');
               assert.equal(serialisedCar.owner, person.localId);
               assert.equal(serialisedCar.model, 'Car');
-              var serialisedPerson = siesta.ext.storage._serialise(person);
+              var serialisedPerson = siesta.app.storage._serialise(person);
               assert.equal(serialisedPerson.name, 'Michael');
               assert.equal(serialisedPerson.age, 24);
               assert.include(serialisedPerson.cars, car.localId);
@@ -101,14 +101,14 @@ describe('storage', function() {
       it('meta', function(done) {
         Model.graph({x: 1, date: new Date()})
           .then(function(car) {
-            var serialised = siesta.ext.storage._serialise(car);
+            var serialised = siesta.app.storage._serialise(car);
             console.log('serialised', serialised);
             var meta = serialised.siesta_meta;
             assert.ok(meta, 'should have a meta object');
             assert.equal(meta.dateFields.length, 1);
             assert.include(meta.dateFields, 'date');
             car.date = 2;
-            serialised = siesta.ext.storage._serialise(car);
+            serialised = siesta.app.storage._serialise(car);
             meta = serialised.siesta_meta;
             assert.ok(meta, 'should  have a meta object');
             assert.equal(meta.dateFields.length, 0);
@@ -134,11 +134,11 @@ describe('storage', function() {
     });
 
     it('new object', function(done) {
-      assert.equal(1, siesta.ext.storage._unsavedObjects.length, 'Should be one car to save.');
-      var car = siesta.ext.storage._unsavedObjects[0];
+      assert.equal(1, siesta.app.storage._unsavedObjects.length, 'Should be one car to save.');
+      var car = siesta.app.storage._unsavedObjects[0];
       siesta.save().then(function() {
-        assert.equal(0, siesta.ext.storage._unsavedObjects.length, 'Should be no more cars');
-        siesta.ext.storage._pouch.get(car.localId).then(function(carDoc) {
+        assert.equal(0, siesta.app.storage._unsavedObjects.length, 'Should be no more cars');
+        siesta.app.storage._pouch.get(car.localId).then(function(carDoc) {
           assert.ok(carDoc);
           assert.equal(carDoc._id, car.localId, 'Should have same localId');
           assert.equal(carDoc._rev, car._rev, 'Should have same revision');
@@ -153,13 +153,13 @@ describe('storage', function() {
     });
 
     it('update object', function(done) {
-      assert.equal(1, siesta.ext.storage._unsavedObjects.length, 'Should be one car to save.');
-      var car = siesta.ext.storage._unsavedObjects[0];
+      assert.equal(1, siesta.app.storage._unsavedObjects.length, 'Should be one car to save.');
+      var car = siesta.app.storage._unsavedObjects[0];
       siesta.save().then(function() {
-        assert.equal(0, siesta.ext.storage._unsavedObjects.length, 'Should be no more cars');
+        assert.equal(0, siesta.app.storage._unsavedObjects.length, 'Should be no more cars');
         car.colour = 'blue';
         siesta.save().then(function() {
-          siesta.ext.storage._pouch.get(car.localId).then(function(carDoc) {
+          siesta.app.storage._pouch.get(car.localId).then(function(carDoc) {
             assert.ok(carDoc);
             assert.equal(carDoc._id, car.localId, 'Should have same localId');
             assert.equal(carDoc._rev, car._rev, 'Should have same revision');
@@ -176,13 +176,13 @@ describe('storage', function() {
 
 
     it('remove object', function(done) {
-      var car = siesta.ext.storage._unsavedObjects[0];
+      var car = siesta.app.storage._unsavedObjects[0];
       siesta.save().then(function() {
         car.remove()
           .then(function() {
             siesta.notify(function() {
               siesta.save().then(function() {
-                siesta.ext.storage._pouch.get(car.localId).then(function() {
+                siesta.app.storage._pouch.get(car.localId).then(function() {
                   done('Should be deleted...');
                 }).catch(function(e) {
                   assert.equal(e.status, 404);
@@ -210,11 +210,11 @@ describe('storage', function() {
         });
       });
       it('load attributes', function(done) {
-        siesta.ext.storage._pouch.bulkDocs([
+        siesta.app.storage._pouch.bulkDocs([
           {collection: 'myCollection', model: 'Car', colour: 'red', name: 'Aston Martin'},
           {collection: 'myCollection', model: 'Car', colour: 'black', name: 'Bentley'}
         ]).then(function() {
-          assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+          assert.notOk(siesta.app.storage._unsavedObjects.length, 'Notifications should be disabled');
           Car.all().then(function(cars) {
             assert.equal(cars.length, 2, 'Should have loaded the two cars');
             var redCar = _.filter(cars, function(x) {
@@ -259,7 +259,7 @@ describe('storage', function() {
             attributes: ['name', 'age']
           });
 
-          siesta.ext.storage._pouch.bulkDocs([
+          siesta.app.storage._pouch.bulkDocs([
             {
               collection: 'myCollection',
               model: 'Car',
@@ -288,7 +288,7 @@ describe('storage', function() {
             Model
               .install([Person, Car])
               .then(function() {
-                assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+                assert.notOk(siesta.app.storage._unsavedObjects.length, 'Notifications should be disabled');
                 done();
               })
               .catch(done);
@@ -350,7 +350,7 @@ describe('storage', function() {
           attributes: ['name', 'age']
         });
 
-        siesta.ext.storage._pouch.bulkDocs([
+        siesta.app.storage._pouch.bulkDocs([
           {
             collection: 'myCollection',
             model: 'Car',
@@ -387,7 +387,7 @@ describe('storage', function() {
           Model
             .install([Person, Car])
             .then(function() {
-              assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+              assert.notOk(siesta.app.storage._unsavedObjects.length, 'Notifications should be disabled');
               Car.all().then(function(cars) {
                 assert.equal(cars.length, 2, 'Should have loaded the two cars');
                 var redCar = _.filter(cars, function(x) {
@@ -428,7 +428,7 @@ describe('storage', function() {
           attributes: ['name', 'age']
         });
 
-        siesta.ext.storage._pouch.bulkDocs([
+        siesta.app.storage._pouch.bulkDocs([
           {
             collection: 'myCollection',
             model: 'Car',
@@ -454,7 +454,7 @@ describe('storage', function() {
             car: 'def'
           }
         ]).then(function() {
-          assert.notOk(siesta.ext.storage._unsavedObjects.length, 'Notifications should be disabled');
+          assert.notOk(siesta.app.storage._unsavedObjects.length, 'Notifications should be disabled');
           Car.all().then(function(cars) {
             assert.equal(cars.length, 2, 'Should have loaded the two cars');
             var redCar = _.filter(cars, function(x) {
@@ -500,7 +500,7 @@ describe('storage', function() {
           attributes: ['name', 'age']
         });
 
-        siesta.ext.storage._pouch.bulkDocs([
+        siesta.app.storage._pouch.bulkDocs([
           {
             collection: 'myCollection',
             model: 'Car',
@@ -576,11 +576,11 @@ describe('storage', function() {
     });
 
     it('global dirtyness', function(done) {
-      assert.ok(siesta.dirty);
+      assert.ok(siesta.app.dirty);
       siesta
         .save()
         .then(function() {
-          assert.notOk(siesta.dirty);
+          assert.notOk(siesta.app.dirty);
           done();
         }).catch(done);
     });
@@ -639,7 +639,7 @@ describe('storage', function() {
       });
 
       function extracted(cb) {
-        siesta.ext.storage._pouch.query(function(doc) {
+        siesta.app.storage._pouch.query(function(doc) {
           if (doc.model == 'ColourConfig') {
             emit(doc._id, doc);
           }
@@ -651,7 +651,7 @@ describe('storage', function() {
       }
 
       it('repeated saves', function(done) {
-        siesta.ext.storage._pouch.put({
+        siesta.app.storage._pouch.put({
           collection: 'Pomodoro',
           model: 'ColourConfig',
           primary: 'red',
@@ -695,7 +695,7 @@ describe('storage', function() {
     var db;
 
     beforeEach(function() {
-      db = siesta.ext.storage._pouch;
+      db = siesta.app.storage._pouch;
     });
 
     describe('date', function() {
@@ -751,7 +751,7 @@ describe('storage', function() {
           }
         });
       internal.Model.install([Model]).then(function () {
-        var pouch = siesta.ext.storage._pouch;
+        var pouch = siesta.app.storage._pouch;
         done();
       });
     })

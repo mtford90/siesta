@@ -4,7 +4,7 @@ describe('statistics', function () {
     var Car, Person, Collection;
 
     before(function () {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
     });
     beforeEach(function () {
         siesta.reset(function () {
@@ -28,10 +28,10 @@ describe('statistics', function () {
     });
 
     before(function () {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
     });
     after(function () {
-        siesta.ext.storageEnabled = true;
+        siesta.app.storageEnabled = true;
     });
     describe('collection level', function () {
         describe('single mapping', function () {

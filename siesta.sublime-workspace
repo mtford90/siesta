@@ -595,7 +595,7 @@
 			"fault",
 			"s.ext.stora",
 			"only(",
-			"siesta.ext.storage.store.getMultipleRemoteFrompouch",
+			"siesta.app.storage.store.getMultipleRemoteFrompouch",
 			"siesta.ext",
 			"siesta.save",
 			"pouch",

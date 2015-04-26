@@ -7,9 +7,9 @@ describe('reactive query', function() {
 
   beforeEach(function(done) {
     // Ensure that storage is wiped clean for each test.
-    siesta.ext.storageEnabled = true;
+    siesta.app.storageEnabled = true;
     siesta.reset(function() {
-      siesta.ext.storageEnabled = false;
+      siesta.app.storageEnabled = false;
       done();
     });
   });

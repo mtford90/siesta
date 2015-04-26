@@ -6,7 +6,7 @@ var assert = require('chai').assert,
 describe('Models', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   beforeEach(function(done) {

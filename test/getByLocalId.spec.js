@@ -4,7 +4,7 @@ describe('to sort', function() {
   var Model, Collection;
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
   beforeEach(function(done) {
     siesta.reset(done);

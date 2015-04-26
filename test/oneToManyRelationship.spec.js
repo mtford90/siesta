@@ -7,7 +7,7 @@ var assert = require('chai').assert,
 describe('one to many relationship', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   function instance(model) {

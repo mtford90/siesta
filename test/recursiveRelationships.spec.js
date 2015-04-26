@@ -5,7 +5,7 @@ describe('recursive relationships', function () {
     var Collection, Repo;
 
     before(function () {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
     });
 
     beforeEach(function (done) {

@@ -7,7 +7,7 @@ var assert = require('chai').assert,
 describe('remove models from object graph', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   describe('one to one', function() {

@@ -70,8 +70,8 @@ function timeQueries() {
 }
 
 function timeStorage() {
-  var oldLoad = siesta.ext.storage._load;
-  siesta.ext.storage._load = function(cb) {
+  var oldLoad = siesta.app.storage._load;
+  siesta.app.storage._load = function(cb) {
     return util.promise(cb, function(cb) {
       var start = (new Date).getTime();
       oldLoad(function(err, n) {
@@ -87,8 +87,8 @@ function timeStorage() {
       });
     }.bind(this));
   };
-  var oldGraphData = siesta.ext.storage._graphData;
-  siesta.ext.storage._graphData = function(data, Model, callback) {
+  var oldGraphData = siesta.app.storage._graphData;
+  siesta.app.storage._graphData = function(data, Model, callback) {
     var start = (new Date).getTime();
     oldGraphData(data, Model, function(err, instances) {
       if (!err) {
@@ -103,8 +103,8 @@ function timeStorage() {
       callback(err, instances)
     });
   };
-  var oldGetDataFromPouch = siesta.ext.storage._getDataFromPouch;
-  siesta.ext.storage._getDataFromPouch = function(collcetionName, modelName, callback) {
+  var oldGetDataFromPouch = siesta.app.storage._getDataFromPouch;
+  siesta.app.storage._getDataFromPouch = function(collcetionName, modelName, callback) {
     var start = (new Date).getTime();
     oldGetDataFromPouch(collcetionName, modelName, function(err, data) {
       if (!err) {

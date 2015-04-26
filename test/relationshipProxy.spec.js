@@ -8,7 +8,7 @@ var assert = require('chai').assert,
 describe('relationship proxy', function() {
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   var MyCollection, Car, Person;

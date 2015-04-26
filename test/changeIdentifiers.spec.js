@@ -8,7 +8,7 @@ describe('change identifiers', function () {
     var car;
 
     before(function () {
-        siesta.ext.storageEnabled = false;
+        siesta.app.storageEnabled = false;
     });
     beforeEach(function (done) {
         siesta.reset(function () {

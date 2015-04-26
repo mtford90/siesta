@@ -6,7 +6,7 @@ describe('Subclass', function() {
   var Collection, Car, SportsCar;
 
   before(function() {
-    siesta.ext.storageEnabled = false;
+    siesta.app.storageEnabled = false;
   });
 
   beforeEach(function(done) {

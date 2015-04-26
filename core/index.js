@@ -85,6 +85,7 @@ siesta.ext = {};
 
 util.extend(siesta, {
   reset: siesta.app.reset.bind(siesta.app),
+  save: siesta.app.save.bind(siesta.save),
   collection: siesta.app.collection.bind(siesta.app),
   _pushTask: siesta.app._pushTask.bind(siesta.app),
   graph: siesta.app.graph.bind(siesta.app),
@@ -93,7 +94,8 @@ util.extend(siesta, {
   count: siesta.app.count.bind(siesta.app),
   get: siesta.app.get.bind(siesta.app),
   removeAll: siesta.app.removeAll.bind(siesta.app),
-  _ensureInstalled: siesta.app._ensureInstalled.bind(siesta.app)
+  _ensureInstalled: siesta.app._ensureInstalled.bind(siesta.app),
+  setPouch: siesta.app.setPouch.bind(siesta.app)
 });
 
 
