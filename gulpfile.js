@@ -13,6 +13,17 @@ gulp.task('build', function() {
     .pipe(plugins.livereload({port: 47835}));
 });
 
+
+gulp.task('build-performance', function() {
+  return gulp.src(['./performance/index.js'])
+    .pipe(plugins.webpack({
+      devtool: 'inline-source-map'
+    }))
+    .pipe(plugins.rename('siesta.performance.js'))
+    .pipe(gulp.dest('./build'))
+    .pipe(plugins.livereload({port: 47835}));
+});
+
 gulp.task('build-source-map', function() {
   return gulp.src(['./core/index.js'])
     .pipe(plugins.webpack({
@@ -34,7 +45,11 @@ gulp.task('test-bundle', function() {
     .pipe(plugins.livereload({port: 47835}));
 });
 
-gulp.task('dist', ['build'], function() {
+gulp.task('dist', ['build', 'build-performance'], function() {
+  gulp.src(['./build/siesta.performance.js'])
+    .pipe(plugins.uglify())
+    .pipe(plugins.rename('siesta.performance.min.js'))
+    .pipe(gulp.dest('./build'));
   return gulp.src(['./build/siesta.js'])
     .pipe(plugins.uglify())
     .pipe(plugins.rename('siesta.min.js'))
@@ -42,7 +57,7 @@ gulp.task('dist', ['build'], function() {
 });
 
 gulp.task('release', ['dist'], function() {
-  return gulp.src(['./build/siesta.js', './build/siesta.min.js'])
+  return gulp.src(['./build/siesta.js', './build/siesta.min.js','./build/siesta.performance.js', './build/siesta.performance.min.js' ])
     .pipe(gulp.dest('./dist'));
 });
 
@@ -59,7 +74,7 @@ gulp.task('livereload:listen', function() {
 
 
 gulp.task('watch:js', function() {
-  return gulp.watch(['./core/**/*.js', './storage/**/*.js'], ['build-source-map']);
+  return gulp.watch(['./core/**/*.js', './storage/**/*.js', './performance/**/*.js'], ['build-source-map', 'build-performance']);
 });
 
 gulp.task('watch:test', function() {
