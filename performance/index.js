@@ -11,6 +11,7 @@ if (typeof siesta == 'undefined' && typeof module == 'undefined') {
 
 var util = siesta._internal.util;
 
+
 if (!siesta.ext) siesta.ext = {};
 
 // TODO: Place this in Siesta core and use it for all other extensions.
@@ -77,7 +78,7 @@ function timeStorage() {
         if (!err) {
           var end = (new Date).getTime(),
             timeTaken = end - start;
-          console.info('[Performance: Storage._load] It took ' + timeTaken + 'ms to load ' + n.toString() + ' instances from storage.');
+          console.info('[Performance: Storage.load] It took ' + timeTaken + 'ms to load ' + n.toString() + ' instances from storage.');
         }
         else {
           console.error('Error loading when measuring performance of storage', err);
@@ -86,29 +87,42 @@ function timeStorage() {
       });
     }.bind(this));
   };
-  var oldLoadModel = siesta.ext.storage._loadModel;
-  siesta.ext.storage._loadModel = function(opts, cb) {
+  var oldGraphData = siesta.ext.storage._graphData;
+  siesta.ext.storage._graphData = function(data, Model, callback) {
     var start = (new Date).getTime();
-    return util.promise(cb, function(cb) {
-      oldLoadModel(opts, function(err, instances) {
-        var collectionName = opts.collectionName,
-          modelName = opts.modelName,
-          fullyQualifiedName = collectionName + '.' + modelName,
-          end = (new Date).getTime(),
+    oldGraphData(data, Model, function(err, instances) {
+      if (!err) {
+        var end = (new Date).getTime(),
           timeTaken = end - start;
-        if (!err) {
-          console.info('[Performance: Storage._loadModel] It took ' + timeTaken + 'ms to load ' + instances.length.toString() + ' instances of "' + fullyQualifiedName + '"');
-        }
-        else {
-          console.error('Error loading when measuring performance of storage', err);
-        }
-        cb(err, instances);
-      });
-    }.bind(this));
+        var n = instances.length;
+        console.info('[Performance: Storage.graph] It took ' + timeTaken + 'ms to graph ' + n.toString() + ' ' + Model.name +  ' instances.');
+      }
+      else {
+        console.error('Error loading when measuring performance of storage graphing', err);
+      }
+      callback(err, instances)
+    });
   };
+  var oldGetDataFromPouch = siesta.ext.storage._getDataFromPouch;
+  siesta.ext.storage._getDataFromPouch = function(collcetionName, modelName, callback) {
+    var start = (new Date).getTime();
+    oldGetDataFromPouch(collcetionName, modelName, function(err, data) {
+      if (!err) {
+        var end = (new Date).getTime(),
+          timeTaken = end - start;
+        var n = data.length;
+        console.info('[Performance: Storage.graph] It took ' + timeTaken + 'ms to pull ' + n.toString() + ' ' + modelName + ' datums from PouchDB');
+      }
+      else {
+        console.error('Error loading when measuring performance of storage graphing', err);
+      }
+      callback(err, data)
+    });
+  };
+
 }
 
-timeMaps();
-timeQueries();
+//timeMaps();
+//timeQueries();
 timeStorage();
 module.exports = performance;

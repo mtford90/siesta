@@ -29,6 +29,17 @@ function fullyQualifiedModelName(collectionName, modelName) {
   return collectionName + '.' + modelName;
 }
 
+function _graphData(data, Model, callback) {
+  Model.graph(data, {
+    _ignoreInstalled: true,
+    fromStorage: true
+  }, function(err, instances) {
+    if (err) {
+      log('Error loading models', err);
+    }
+    callback(err, instances);
+  });
+}
 if (typeof PouchDB == 'undefined') {
   siesta.ext.storageEnabled = false;
   console.log('PouchDB is not present therefore storage is disabled.');
@@ -212,33 +223,17 @@ else {
     return datum;
   }
 
-  /**
-   *
-   * @param opts
-   * @param [opts.collectionName]
-   * @param [opts.modelName]
-   * @param [opts.model]
-   * @param callback
-   * @private
-   */
-  function loadModel(opts, callback) {
-    var loaded = {};
-    var collectionName = opts.collectionName,
-      modelName = opts.modelName,
-      model = opts.model;
-    if (model) {
-      collectionName = model.collectionName;
-      modelName = model.name;
-    }
+  function _getDataFromPouch(collectionName, modelName, cb) {
     var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
     var Model = CollectionRegistry[collectionName][modelName];
-    pouch.query(fullyQualifiedName)
+    pouch
+      .query(fullyQualifiedName)
       .then(function(resp) {
-        log('Queried pouch successfully');
         var rows = resp.rows;
         var data = util.pluck(rows, 'value').map(function(datum) {
           return _prepareDatum(datum, Model);
         });
+        var loaded = {};
 
         data.map(function(datum) {
           var remoteId = datum[Model.id];
@@ -251,27 +246,36 @@ else {
             }
           }
         });
-
-        log('Mapping data', data);
-
-        Model.graph(data, {
-          _ignoreInstalled: true,
-          fromStorage: true
-        }, function(err, instances) {
-          if (!err) {
-            if (log.enabled)
-              log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
-          }
-          else {
-            log('Error loading models', err);
-          }
-          callback(err, instances);
-        });
+        cb(null, data);
       })
-      .catch(function(err) {
-        callback(err);
-      });
+      .catch(cb);
 
+  }
+
+  /**
+   *
+   * @param opts
+   * @param [opts.collectionName]
+   * @param [opts.modelName]
+   * @param [opts.model]
+   * @param callback
+   * @private
+   */
+  function loadModel(opts, callback) {
+    var collectionName = opts.collectionName,
+      modelName = opts.modelName,
+      model = opts.model;
+    if (model) {
+      collectionName = model.collectionName;
+      modelName = model.name;
+    }
+    var fullyQualifiedName = fullyQualifiedModelName(collectionName, modelName);
+    var Model = CollectionRegistry[collectionName][modelName];
+    storage._getDataFromPouch(collectionName, modelName, function(err, data) {
+      if (!err)
+        storage._graphData(data, Model, callback);
+      else callback(err);
+    });
   }
 
   /**
@@ -400,6 +404,8 @@ else {
   }
 
   util.extend(storage, {
+    _getDataFromPouch: _getDataFromPouch,
+    _graphData: _graphData,
     _load: _load,
     loadModel: loadModel,
     save: save,
