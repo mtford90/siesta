@@ -5,18 +5,20 @@ var assert = require('chai').assert,
 
 describe('intercoll relationships', function() {
 
+  var app = siesta.app;
+
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
-    siesta.reset(done);
+    app.reset(done);
   });
 
   var Collection, Car, Person;
 
   function configureAPI(type, done) {
-    Collection = siesta.collection('myCollection');
+    Collection = app.collection('myCollection');
     Car = Collection.model('Car', {
       id: 'id',
       attributes: ['colour', 'name'],
@@ -50,7 +52,7 @@ describe('intercoll relationships', function() {
 
     describe('foreign key', function() {
       beforeEach(function(done) {
-        anotherCollection = siesta.collection('anotherCollection');
+        anotherCollection = app.collection('anotherCollection');
         anotherCollection.model('AnotherMapping', {
           attributes: ['field'],
           relationships: {

@@ -4,18 +4,19 @@ var assert = require('chai').assert,
 
 describe('Subclass', function() {
   var Collection, Car, SportsCar;
+  var app = siesta.app;
 
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
-    siesta.reset(done);
+    app.reset(done);
   });
 
   describe('hierarchy', function() {
     beforeEach(function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
 
       Car = Collection.model('Car', {
         id: 'id',
@@ -40,7 +41,7 @@ describe('Subclass', function() {
 
   describe('attributes', function() {
     beforeEach(function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -69,7 +70,7 @@ describe('Subclass', function() {
 
     describe('names', function() {
       beforeEach(function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Car = Collection.model('Car', {
           attributes: ['colour', 'name'],
           relationships: {
@@ -104,8 +105,8 @@ describe('Subclass', function() {
 
       describe('OneToMany', function() {
         beforeEach(function(done) {
-          siesta.reset(function() {
-            Collection = siesta.collection('myCollection');
+          app.reset(function() {
+            Collection = app.collection('myCollection');
             Car = Collection.model('Car', {
               attributes: ['colour', 'name'],
               relationships: {
@@ -158,8 +159,8 @@ describe('Subclass', function() {
 
       describe('OneToOne', function() {
         beforeEach(function(done) {
-          siesta.reset(function() {
-            Collection = siesta.collection('myCollection');
+          app.reset(function() {
+            Collection = app.collection('myCollection');
             Car = Collection.model('Car', {
               attributes: ['colour', 'name'],
               relationships: {
@@ -214,8 +215,8 @@ describe('Subclass', function() {
 
       describe('ManyToMany', function() {
         beforeEach(function(done) {
-          siesta.reset(function() {
-            Collection = siesta.collection('myCollection');
+          app.reset(function() {
+            Collection = app.collection('myCollection');
             Car = Collection.model('Car', {
               attributes: ['colour', 'name'],
               relationships: {
@@ -272,8 +273,8 @@ describe('Subclass', function() {
   describe('methods', function() {
     var Collection, Car, SportsCar;
     beforeEach(function(done) {
-      siesta.reset(function() {
-        Collection = siesta.collection('myCollection');
+      app.reset(function() {
+        Collection = app.collection('myCollection');
         Car = Collection.model('Car', {
           attributes: ['x'],
           methods: {
@@ -326,8 +327,8 @@ describe('Subclass', function() {
   describe('statics', function() {
     var Collection, Car, SportsCar;
     beforeEach(function(done) {
-      siesta.reset(function() {
-        Collection = siesta.collection('myCollection');
+      app.reset(function() {
+        Collection = app.collection('myCollection');
         Car = Collection.model('Car', {
           attributes: ['x'],
           statics: {
@@ -370,7 +371,7 @@ describe('Subclass', function() {
   describe('id', function() {
 
     it('inherits', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'blah'
       });
@@ -385,7 +386,7 @@ describe('Subclass', function() {
     });
 
     it('overrides', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'blah'
       });
@@ -406,7 +407,7 @@ describe('Subclass', function() {
 
   describe('properties', function() {
     beforeEach(function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
 
       Car = Collection.model('Car', {
         attributes: ['x'],
@@ -473,7 +474,7 @@ describe('Subclass', function() {
     var Collection, Car, SportsCar;
 
     it('parent init inherited by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         init: function(fromStorage) {
           assert.notOk(fromStorage);
@@ -492,7 +493,7 @@ describe('Subclass', function() {
     });
 
     it('parent init overriden by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         init: function(fromStorage) {
           assert.notOk(fromStorage);
@@ -522,7 +523,7 @@ describe('Subclass', function() {
     var Collection, Car, SportsCar;
 
     it('parent remove inherited by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         remove: function() {
           return 'a';
@@ -539,7 +540,7 @@ describe('Subclass', function() {
     });
 
     it('parent remove overriden by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         remove: function() {
           return 'a';
@@ -567,7 +568,7 @@ describe('Subclass', function() {
     var Collection, Car, SportsCar;
 
     it('parent serialise inherited by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x'],
         serialise: function(model) {
@@ -585,7 +586,7 @@ describe('Subclass', function() {
     });
 
     it('parent serialise overriden by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x'],
         serialise: function(model) {
@@ -610,7 +611,7 @@ describe('Subclass', function() {
     var Collection, Car, SportsCar;
 
     it('parent serialiseField inherited by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x'],
         serialiseField: function(field, value) {
@@ -630,7 +631,7 @@ describe('Subclass', function() {
     });
 
     it('parent serialiseField overriden by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x'],
         serialiseField: function(field, value) {
@@ -659,7 +660,7 @@ describe('Subclass', function() {
     var Collection, Car, SportsCar;
 
     it('parent serialiseFields inherited by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x', 'y'],
         serialisableFields: ['x']
@@ -681,7 +682,7 @@ describe('Subclass', function() {
     });
 
     it('parent serialiseFields merged with child serialisableFields', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x', 'y'],
         serialisableFields: ['x']
@@ -710,7 +711,7 @@ describe('Subclass', function() {
     var Collection, Car, SportsCar;
 
     it('parent parseAttribute inherited by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x'],
         parseAttribute: function(field, value) {
@@ -731,7 +732,7 @@ describe('Subclass', function() {
     });
 
     it('parent parseAttribute overriden by child', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         attributes: ['x'],
         parseAttribute: function(field, value) {
@@ -763,8 +764,8 @@ describe('Subclass', function() {
     var collection, Car, SportsCar, SuperCar;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        collection = siesta.collection('myCollection');
+      app.reset(function() {
+        collection = app.collection('myCollection');
 
         Car = collection.model('Car', {
           id: 'id',
@@ -833,8 +834,8 @@ describe('Subclass', function() {
     var collection, Car, SportsCar, Person, SuperCar;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        collection = siesta.collection('myCollection');
+      app.reset(function() {
+        collection = app.collection('myCollection');
         Car = collection.model('Car', {
           id: 'id',
           attributes: ['colour', 'name']

@@ -7,15 +7,16 @@ var assert = require('chai').assert,
 
 describe('relationship proxy', function() {
 
+  var app = siesta.app;
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   var MyCollection, Car, Person;
 
   beforeEach(function(done) {
-    siesta.reset(function() {
-      MyCollection = siesta.collection('MyCollection');
+    app.reset(function() {
+      MyCollection = app.collection('MyCollection');
       Car = MyCollection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']

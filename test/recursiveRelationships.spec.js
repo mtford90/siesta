@@ -1,51 +1,52 @@
 var assert = require('chai').assert;
 
-describe('recursive relationships', function () {
+describe('recursive relationships', function() {
 
-    var Collection, Repo;
+  var Collection, Repo;
+  var app = siesta.app;
 
-    before(function () {
-        siesta.app.storageEnabled = false;
+  before(function() {
+    app.storageEnabled = false;
+  });
+
+  beforeEach(function(done) {
+    siesta.reset(function() {
+      Collection = app.collection('MyCollection');
+      Repo = Collection.model('Repo', {
+        id: 'id',
+        attributes: ['name'],
+        relationships: {
+          forkedFrom: {
+            model: 'Repo',
+            type: 'OneToMany',
+            reverse: 'forks'
+          }
+        }
+      });
+      done();
     });
+  });
 
-    beforeEach(function (done) {
-        siesta.reset(function () {
-            Collection = siesta.collection('MyCollection');
-            Repo = Collection.model('Repo', {
-                id: 'id',
-                attributes: ['name'],
-                relationships: {
-                    forkedFrom: {
-                        model: 'Repo',
-                        type: 'OneToMany',
-                        reverse: 'forks'
-                    }
-                }
-            });
+  it('map', function(done) {
+    var masterRepoData = {id: '5', name: 'Master Repo'};
+    Repo.graph(masterRepoData, function(err, repo) {
+      if (err) {
+        done(err);
+      }
+      else {
+        var childRepoData = {id: '6', name: 'Child Repo', forkedFrom: {localId: repo.localId}};
+        Repo.graph(childRepoData, function(err, childRepo) {
+          if (err) {
+            done(err);
+          }
+          else {
+            assert.include(repo.forks, childRepo);
+            assert.equal(childRepo.forkedFrom, repo);
             done();
+          }
         });
+      }
     });
-
-    it('map', function (done) {
-        var masterRepoData = {id: '5', name: 'Master Repo'};
-        Repo.graph(masterRepoData, function (err, repo) {
-            if (err) {
-                done(err);
-            }
-            else {
-                var childRepoData = {id: '6', name: 'Child Repo', forkedFrom: {localId: repo.localId}};
-                Repo.graph(childRepoData, function (err, childRepo) {
-                    if (err) {
-                        done(err);
-                    }
-                    else {
-                        assert.include(repo.forks, childRepo);
-                        assert.equal(childRepo.forkedFrom, repo);
-                        done();
-                    }
-                });
-            }
-        });
-    });
+  });
 
 });

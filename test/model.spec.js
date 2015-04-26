@@ -5,12 +5,14 @@ var assert = require('chai').assert,
 
 describe('Models', function() {
 
+  var app = siesta.app;
+
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
-    siesta.reset(done);
+    app.reset(done);
   });
 
   it('_attributeNames', function() {
@@ -18,7 +20,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: siesta.app}
+      collection: {name: 'x', app: app}
     });
     assert.include(model._attributeNames, 'id');
     assert.include(model._attributeNames, 'field1');
@@ -31,7 +33,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: siesta.app}
+      collection: {name: 'x', app: app}
     });
     var attributes = _.pluck(model.attributes, 'name');
     assert.include(attributes, 'field1');
@@ -43,13 +45,13 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: siesta.app}
+      collection: {name: 'x', app: app}
     });
     assert.equal(model.name, 'name');
   });
 
   it('named attribute', function(done) {
-    var Collection = siesta.collection('myCollection');
+    var Collection = app.collection('myCollection');
     var Model = Collection.model({
       name: 'Car',
       id: 'id',
@@ -75,13 +77,13 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: siesta.app}
+      collection: {name: 'x', app: app}
     });
     assert.equal(model.id, 'id');
   });
 
   it('define relationship with string', function(done) {
-    var Collection = siesta.collection('myCollection'),
+    var Collection = app.collection('myCollection'),
       Person = Collection.model('Person', {
         attributes: ['name']
       }),
@@ -105,7 +107,7 @@ describe('Models', function() {
   });
 
   it('define relationship with model', function(done) {
-    var Collection = siesta.collection('myCollection'),
+    var Collection = app.collection('myCollection'),
       Person = Collection.model('Person', {
         attributes: ['name']
       }),
@@ -133,7 +135,7 @@ describe('Models', function() {
     var Model, Collection;
 
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model({
         name: 'Car',
         id: 'id',
@@ -160,7 +162,7 @@ describe('Models', function() {
   describe('parse attribute', function() {
     it('per attribute basis', function(done) {
       var modelInstance;
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model({
         name: 'Car',
         id: 'id',
@@ -190,7 +192,7 @@ describe('Models', function() {
     });
     it('whole model basis', function(done) {
       var modelInstance;
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model({
         name: 'Car',
         id: 'id',
@@ -225,7 +227,7 @@ describe('Models', function() {
     var Model, Collection;
 
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model({
         name: 'Car',
         id: 'id',
@@ -251,7 +253,7 @@ describe('Models', function() {
     var Model, Collection, car;
 
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model({
         name: 'Car',
         id: 'id',
@@ -268,11 +270,11 @@ describe('Models', function() {
         car.name = 'Aston Martin';
         car.id = '2';
         car.localId = 'xyz';
-        siesta.app.cache.insert(car);
+        app.cache.insert(car);
         assert.notOk(car.removed);
-        assert.ok(siesta.app.cache.contains(car));
+        assert.ok(app.cache.contains(car));
         car.remove();
-        assert.notOk(siesta.app.cache.contains(car));
+        assert.notOk(app.cache.contains(car));
         assert.ok(car.removed);
       }
 
@@ -284,7 +286,7 @@ describe('Models', function() {
         remove();
         car.restore();
         assert.notOk(car.removed);
-        assert.ok(siesta.app.cache.contains(car));
+        assert.ok(app.cache.contains(car));
       });
 
     });
@@ -295,11 +297,11 @@ describe('Models', function() {
         car.colour = 'red';
         car.name = 'Aston Martin';
         car.localId = 'xyz';
-        siesta.app.cache.insert(car);
+        app.cache.insert(car);
         assert.notOk(car.removed);
-        assert.ok(siesta.app.cache.contains(car));
+        assert.ok(app.cache.contains(car));
         car.remove();
-        assert.notOk(siesta.app.cache.contains(car));
+        assert.notOk(app.cache.contains(car));
         assert.ok(car.removed);
       }
 
@@ -311,7 +313,7 @@ describe('Models', function() {
         remove();
         car.restore();
         assert.notOk(car.removed);
-        assert.ok(siesta.app.cache.contains(car));
+        assert.ok(app.cache.contains(car));
       });
     })
 
@@ -322,7 +324,7 @@ describe('Models', function() {
     var Model, Collection;
 
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model({
         name: 'Car',
         id: 'id',
@@ -332,8 +334,8 @@ describe('Models', function() {
     });
 
     it('string format', function(done) {
-      siesta.reset(function() {
-        Collection = siesta.collection('myCollection');
+      app.reset(function() {
+        Collection = app.collection('myCollection');
         Model = Collection.model('Model', {
           attributes: ['colour'],
           methods: {
@@ -357,8 +359,8 @@ describe('Models', function() {
       });
     });
     it('obj format', function(done) {
-      siesta.reset(function() {
-        Collection = siesta.collection('myCollection');
+      app.reset(function() {
+        Collection = app.collection('myCollection');
         Model = Collection.model('Model', {
           attributes: ['colour'],
           methods: {
@@ -388,7 +390,7 @@ describe('Models', function() {
     describe('methods', function() {
       describe('init', function() {
         it('sync', function(done) {
-          var C = siesta.collection('C');
+          var C = app.collection('C');
           var M = C.model('M', {
             init: function(fromStorage) {
               assert.notOk(fromStorage);
@@ -404,7 +406,7 @@ describe('Models', function() {
 
         });
         it('async', function(done) {
-          var C = siesta.collection('C');
+          var C = app.collection('C');
           var initExecuted = false;
           var M = C.model('M', {
             init: function(fromStorage, cb) {
@@ -429,7 +431,7 @@ describe('Models', function() {
             .catch(done);
         });
         it('mixture of async and sync', function(done) {
-          var C = siesta.collection('C');
+          var C = app.collection('C');
           var asyncInitExecuted = false,
             syncInitExecuted = false;
           var M = C.model('M', {
@@ -466,7 +468,7 @@ describe('Models', function() {
         });
 
         it('use queries within', function(done) {
-          var C = siesta.collection('C'),
+          var C = app.collection('C'),
             asyncInitExecuted = false,
             syncInitExecuted = false;
           var M = C.model('M', {
@@ -501,7 +503,7 @@ describe('Models', function() {
         });
 
         it('use singleton within', function(done) {
-          var C = siesta.collection('C');
+          var C = app.collection('C');
           var asyncInitExecuted = false;
           var M = C.model('M', {
               init: function(fromStorage, cb) {
@@ -526,7 +528,7 @@ describe('Models', function() {
         });
 
         it('use with singleton', function(done) {
-          var C = siesta.collection('C');
+          var C = app.collection('C');
           var asyncInitExecuted = false;
           var M = C.model('M', {
               init: function(fromStorage, cb) {
@@ -552,7 +554,7 @@ describe('Models', function() {
       });
 
       it('valid', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var M = C.model('M', {
           methods: {
             f: function() {
@@ -575,7 +577,7 @@ describe('Models', function() {
           }).catch(done);
       });
       it('clash', function(done) {
-        var C = siesta.collection('C'),
+        var C = app.collection('C'),
           M = C.model('M', {
             methods: {
               restore: function() {
@@ -593,7 +595,7 @@ describe('Models', function() {
       });
 
       it('sync remove', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var m;
         var M = C.model('M', {
           remove: function() {
@@ -614,7 +616,7 @@ describe('Models', function() {
 
       });
       it('async remove', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var m;
         var removeCalled = false;
         var M = C.model('M', {
@@ -641,7 +643,7 @@ describe('Models', function() {
 
       });
       it('init on restore', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var m;
         var initCalled = false;
         var M = C.model('M', {
@@ -674,7 +676,7 @@ describe('Models', function() {
     });
     describe('statics', function() {
       it('valid', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var M = C.model('M', {
           statics: {
             f: function() {
@@ -690,7 +692,7 @@ describe('Models', function() {
           }).catch(done);
       });
       it('clash', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var staticMethod = function() {
           return 'a';
         };
@@ -711,7 +713,7 @@ describe('Models', function() {
     });
     describe('properties', function() {
       it('define properties', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var M = C.model('M', {
           properties: {
             prop: {
@@ -731,7 +733,7 @@ describe('Models', function() {
         }).catch(done);
       });
       it('clash', function(done) {
-        var C = siesta.collection('C');
+        var C = app.collection('C');
         var M = C.model('M', {
           properties: {
             restore: {

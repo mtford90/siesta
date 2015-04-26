@@ -6,6 +6,8 @@ var assert = require('chai').assert,
 
 describe('many to many proxy', function() {
 
+  var app = siesta.app;
+
   function instance(model) {
     var i = new ModelInstance(model);
     i._emitEvents = true;
@@ -13,15 +15,15 @@ describe('many to many proxy', function() {
   }
 
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
   var MyCollection, Car, Person;
   var carProxy, personProxy;
   var car, person;
 
   beforeEach(function(done) {
-    siesta.reset(function() {
-      MyCollection = siesta.collection('MyCollection');
+    app.reset(function() {
+      MyCollection = app.collection('MyCollection');
       Car = MyCollection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -57,8 +59,8 @@ describe('many to many proxy', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      siesta.app.cache.insert(person);
-      siesta.app.cache.insert(car);
+      app.cache.insert(person);
+      app.cache.insert(car);
     });
 
 
@@ -157,9 +159,9 @@ describe('many to many proxy', function() {
           isReverse: true
         });
         anotherPersonProxy.install(anotherPerson);
-        siesta.app.cache.insert(anotherPerson);
-        siesta.app.cache.insert(person);
-        siesta.app.cache.insert(car);
+        app.cache.insert(anotherPerson);
+        app.cache.insert(person);
+        app.cache.insert(car);
       });
 
       describe('no fault', function() {
@@ -260,8 +262,8 @@ describe('many to many proxy', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      siesta.app.cache.insert(person);
-      siesta.app.cache.insert(car);
+      app.cache.insert(person);
+      app.cache.insert(car);
       done();
     });
 

@@ -57,13 +57,14 @@ describe('array flattening', function() {
 });
 
 describe('mapping operation', function() {
+  var app = siesta.app;
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
   describe('general', function() {
     beforeEach(function(done) {
-      siesta.reset(function() {
-        collection = siesta.collection('MyCollection');
+      app.reset(function() {
+        collection = app.collection('MyCollection');
         Repo = collection.model('Repo', {
           id: 'id',
           attributes: ['name', 'full_name', 'description'],
@@ -285,7 +286,7 @@ describe('mapping operation', function() {
               name: 'Old Name',
               full_name: 'Old Full Name'
             });
-            siesta.app.cache.insert(repo);
+            app.cache.insert(repo);
             var data = [{
               login: 'mike',
               id: '123',
@@ -380,8 +381,8 @@ describe('mapping operation', function() {
     var op;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        collection = siesta.collection('MyCollection');
+      app.reset(function() {
+        collection = app.collection('MyCollection');
         Repo = collection.model('Repo', {
           id: 'id',
           attributes: ['name', 'full_name', 'description'],
@@ -481,8 +482,8 @@ describe('mapping operation', function() {
   });
 
   it('preprocess', function(done) {
-    siesta.reset(function() {
-      var Collection = siesta.collection('Collection'),
+    app.reset(function() {
+      var Collection = app.collection('Collection'),
         Model = Collection.model('Model', {
           attributes: ['x'],
           relationships: {
@@ -515,8 +516,8 @@ describe('mapping operation', function() {
   });
 
   it('return model instance if map model instance', function(done) {
-    siesta.reset(function() {
-      var Collection = siesta.collection('Collection'),
+    app.reset(function() {
+      var Collection = app.collection('Collection'),
         Model = Collection.model('Model', {
           attributes: ['x']
         });
@@ -539,13 +540,15 @@ describe('bug', function() {
 
   var coll, Car;
 
+  var app = siesta.app;
+
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
-    siesta.reset(function() {
-      coll = siesta.collection('myCollection');
+    app.reset(function() {
+      coll = app.collection('myCollection');
       Car = coll.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']

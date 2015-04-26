@@ -6,8 +6,9 @@ var assert = require('chai').assert,
 
 describe('remove models from object graph', function() {
 
+  var app = siesta.app;
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   describe('one to one', function() {
@@ -15,8 +16,8 @@ describe('remove models from object graph', function() {
     var car, person;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        MyCollection = siesta.collection('MyCollection');
+      app.reset(function() {
+        MyCollection = app.collection('MyCollection');
         Car = MyCollection.model('Car', {
           id: 'id',
           attributes: ['colour'],
@@ -71,8 +72,8 @@ describe('remove models from object graph', function() {
     var car, person;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        MyCollection = siesta.collection('MyCollection');
+      app.reset(function() {
+        MyCollection = app.collection('MyCollection');
         Car = MyCollection.model('Car', {
           id: 'id',
           attributes: ['colour'],
@@ -127,8 +128,8 @@ describe('remove models from object graph', function() {
     var car, person;
 
     beforeEach(function(done) {
-      siesta.reset(function() {
-        MyCollection = siesta.collection('MyCollection');
+      app.reset(function() {
+        MyCollection = app.collection('MyCollection');
         Car = MyCollection.model('Car', {
           id: 'id',
           attributes: ['colour'],
@@ -177,6 +178,4 @@ describe('remove models from object graph', function() {
         }).catch(done);
     });
   });
-
-
 });

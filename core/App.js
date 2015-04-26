@@ -6,6 +6,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   Model = require('./model'),
   error = require('./error'),
   Storage = require('../storage'),
+  Query = require('./Query'),
   Collection = require('./collection');
 
 function App(name) {
@@ -23,7 +24,8 @@ function App(name) {
     removeListener: off,
     once: this.events.once.bind(this.events),
     removeAllListeners: this.events.removeAllListeners.bind(this.events),
-    notify: util.next
+    notify: util.next,
+    registerComparator: Query.registerComparator.bind(Query)
   });
 
   this.storage = storage;

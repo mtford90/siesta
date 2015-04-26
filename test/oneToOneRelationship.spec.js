@@ -6,8 +6,10 @@ var assert = require('chai').assert,
 
 describe('one to one relationship', function() {
 
+  var app = siesta.app;
+
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   function instance(model) {
@@ -21,8 +23,8 @@ describe('one to one relationship', function() {
   var car, person;
 
   beforeEach(function(done) {
-    siesta.reset(function() {
-      MyCollection = siesta.collection('MyCollection');
+    app.reset(function() {
+      MyCollection = app.collection('MyCollection');
       Car = MyCollection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -57,8 +59,8 @@ describe('one to one relationship', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      siesta.app.cache.insert(person);
-      siesta.app.cache.insert(car);
+      app.cache.insert(person);
+      app.cache.insert(car);
     });
 
     it('forward', function(done) {
@@ -155,9 +157,9 @@ describe('one to one relationship', function() {
           isReverse: true
         });
         anotherPersonProxy.install(anotherPerson);
-        siesta.app.cache.insert(anotherPerson);
-        siesta.app.cache.insert(person);
-        siesta.app.cache.insert(car);
+        app.cache.insert(anotherPerson);
+        app.cache.insert(person);
+        app.cache.insert(car);
       });
 
 
@@ -233,8 +235,8 @@ describe('one to one relationship', function() {
       person = instance(Person);
       person.localId = 'person';
       personProxy.install(person);
-      siesta.app.cache.insert(car);
-      siesta.app.cache.insert(person);
+      app.cache.insert(car);
+      app.cache.insert(person);
     });
 
     it('removal', function(done) {

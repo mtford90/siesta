@@ -6,13 +6,14 @@ describe('singleton mapping', function() {
 
   var Collection, Car;
 
+  var app = siesta.app;
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
-    siesta.reset(function() {
-      Collection = siesta.collection('Car');
+    app.reset(function() {
+      Collection = app.collection('Car');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: [
@@ -65,7 +66,7 @@ describe('singleton mapping', function() {
       id: 5
     }, function(err, car) {
       if (err) done(err);
-      var obj = siesta.app.cache.get({
+      var obj = app.cache.get({
         model: Car
       });
       assert.equal(obj, car);
@@ -120,8 +121,8 @@ describe('singleton mapping', function() {
     var MoreComplicatedCollection, ParentConfig,
       FirstChildConfig, SecondChildConfig;
     beforeEach(function(done) {
-      siesta.reset(function() {
-        MoreComplicatedCollection = siesta.collection('MyCollection');
+      app.reset(function() {
+        MoreComplicatedCollection = app.collection('MyCollection');
         ParentConfig = MoreComplicatedCollection.model('ParentConfig', {
           relationships: {
             settings: {
@@ -178,9 +179,9 @@ describe('singleton mapping', function() {
     var Pomodoro, PomodoroTimer;
     var initialised;
     beforeEach(function(done) {
-      siesta.reset(function() {
+      app.reset(function() {
         initialised = false;
-        Pomodoro = siesta.collection('Pomodoro');
+        Pomodoro = app.collection('Pomodoro');
         PomodoroTimer = Pomodoro.model('PomodoroTimer', {
           attributes: [
             {
@@ -224,8 +225,8 @@ describe('singleton mapping', function() {
 
     describe('OneToOne', function() {
       it('with ordinary model', function(done) {
-        siesta.reset(function() {
-          Collection = siesta.collection('Collection');
+        app.reset(function() {
+          Collection = app.collection('Collection');
           Car = Collection.model('Car', {
             id: 'id',
             attributes: [
@@ -255,8 +256,8 @@ describe('singleton mapping', function() {
 
 
       it('with singleton model', function(done) {
-        siesta.reset(function() {
-          Collection = siesta.collection('Collection');
+        app.reset(function() {
+          Collection = app.collection('Collection');
           Car = Collection.model('Car', {
             id: 'id',
             attributes: [
@@ -289,8 +290,8 @@ describe('singleton mapping', function() {
     describe('ManyToMany', function() {
 
       it('should throw error with singleton model', function(done) {
-        siesta.reset(function() {
-          Collection = siesta.collection('Collection');
+        app.reset(function() {
+          Collection = app.collection('Collection');
 
           assert.throws(function() {
             Person = Collection.model('Person', {
@@ -323,8 +324,8 @@ describe('singleton mapping', function() {
 
     describe('OneToMany', function() {
       it('with ordinary model', function(done) {
-        siesta.reset(function() {
-          Collection = siesta.collection('Collection');
+        app.reset(function() {
+          Collection = app.collection('Collection');
           Person = Collection.model('Person', {
             id: 'id',
             attributes: ['name']
@@ -359,9 +360,9 @@ describe('singleton mapping', function() {
       });
 
       it('with singleton model', function(done) {
-        siesta.reset(function() {
+        app.reset(function() {
           assert.throws(function() {
-            Collection = siesta.collection('Collection');
+            Collection = app.collection('Collection');
             Car = Collection.model('Car', {
               id: 'id',
               attributes: [

@@ -6,13 +6,15 @@ describe('model serialisation', function() {
 
   var Collection, PersonModel, CarModel, CustomModel;
 
+  var app = siesta.app;
+
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
-    siesta.reset(function() {
-      Collection = siesta.collection('myCollection');
+    app.reset(function() {
+      Collection = app.collection('myCollection');
       CustomModel = Collection.model('Custom', {
         attributes: ['attr'],
         serialise: function(model) {
@@ -117,10 +119,10 @@ describe('model serialisation', function() {
 
   describe('custom serialisation', function() {
     beforeEach(function(done) {
-      siesta.reset(done);
+      app.reset(done);
     });
     it('comprehensive', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       CustomModel = Collection.model('Custom', {
         attributes: ['attr'],
         serialise: function(model) {
@@ -137,7 +139,7 @@ describe('model serialisation', function() {
       });
     });
     it('field by field', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       CustomModel = Collection.model('Custom', {
         attributes: ['attr1', 'attr2'],
         serialiseField: function(fieldName, value) {
@@ -156,7 +158,7 @@ describe('model serialisation', function() {
     });
     describe('attribute', function() {
       it('attribute', function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: [
             {
@@ -178,7 +180,7 @@ describe('model serialisation', function() {
         }).catch(done);
       });
       it('serialiseField should be overidden by serialise', function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: [
             {
@@ -209,7 +211,7 @@ describe('model serialisation', function() {
         }).catch(done);
       });
       it('serialise should override per-attribute serialise', function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: [
             {
@@ -239,7 +241,7 @@ describe('model serialisation', function() {
 
       it('serialise', function(done) {
         var _instance;
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: ['attr1'],
           relationships: {
@@ -266,7 +268,7 @@ describe('model serialisation', function() {
       });
 
       it('serialiseField should be overidden by serialise', function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           relationships: {
             other: {
@@ -295,7 +297,7 @@ describe('model serialisation', function() {
       });
 
       it('serialise should override per-relationship serialise', function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           relationships: {
             other: {
@@ -325,7 +327,7 @@ describe('model serialisation', function() {
       var OtherModel;
       describe('attributes', function() {
         it('plain', function(done) {
-          Collection = siesta.collection('myCollection');
+          Collection = app.collection('myCollection');
           CustomModel = Collection.model('Custom', {
             attributes: ['attr1', 'attr2'],
             serialisableFields: ['attr1', 'id']
@@ -343,7 +345,7 @@ describe('model serialisation', function() {
           }).catch(done);
         });
         it('remote id', function(done) {
-          Collection = siesta.collection('myCollection');
+          Collection = app.collection('myCollection');
           CustomModel = Collection.model('Custom', {
             attributes: ['attr1', 'attr2'],
             serialisableFields: ['attr1']
@@ -361,7 +363,7 @@ describe('model serialisation', function() {
           }).catch(done);
         });
         it('overrides serialiseField', function(done) {
-          Collection = siesta.collection('myCollection');
+          Collection = app.collection('myCollection');
           CustomModel = Collection.model('Custom', {
             attributes: ['attr1', 'attr2'],
             serialisableFields: ['attr1', 'id'],
@@ -389,7 +391,7 @@ describe('model serialisation', function() {
       it('relationships', function(done) {
 
         var _instance;
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
           attributes: ['attr1', 'attr2'],
           serialisableFields: ['attr1', 'id'],

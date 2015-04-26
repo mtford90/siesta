@@ -251,8 +251,8 @@ describe('installation', function() {
         .install([Person])
         .then(function() {
           var AnotherCollection = app.collection('AnotherCollection');
-          assert.equal(siesta.AnotherCollection, AnotherCollection);
-          assert.equal(siesta.app.collectionRegistry.AnotherCollection, AnotherCollection);
+          assert.equal(AnotherCollection, AnotherCollection);
+          assert.equal(app.collectionRegistry.AnotherCollection, AnotherCollection);
           done();
         }).catch(done);
     });
