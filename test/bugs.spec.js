@@ -7,17 +7,18 @@
 var assert = require('chai').assert;
 
 describe('bugs', function() {
+  var app = siesta.app;
   beforeEach(function(done) {
-    siesta.reset(done);
+    app.reset(done);
   });
   describe('no name specified when creating mapping', function() {
     it('No obj', function() {
-      var Collection = siesta.collection('Collection'),
+      var Collection = app.collection('Collection'),
         Model = Collection.model('Model');
     });
 
     it('obj', function() {
-      var Collection = siesta.collection('Collection'),
+      var Collection = app.collection('Collection'),
         Model = Collection.model('Model', {});
     });
 
@@ -27,7 +28,7 @@ describe('bugs', function() {
     describe('ModelInstance', function() {
       describe('OneToOne', function() {
         it('forward', function(done) {
-          var Collection = siesta.collection('Collection'),
+          var Collection = app.collection('Collection'),
             Person = Collection.model('Person', {
               id: 'id',
               attributes: ['name']
@@ -56,7 +57,7 @@ describe('bugs', function() {
             .catch(done);
         });
         it('reverse', function(done) {
-          var Collection = siesta.collection('Collection'),
+          var Collection = app.collection('Collection'),
             Person = Collection.model('Person', {
               id: 'id',
               attributes: ['name']
@@ -88,7 +89,7 @@ describe('bugs', function() {
       });
       describe('OneToMany', function() {
         it('forward', function(done) {
-          var Collection = siesta.collection('Collection'),
+          var Collection = app.collection('Collection'),
             Person = Collection.model('Person', {
               id: 'id',
               attributes: ['name']
@@ -116,7 +117,7 @@ describe('bugs', function() {
             .catch(done);
         });
         it('reverse', function(done) {
-          var Collection = siesta.collection('Collection'),
+          var Collection = app.collection('Collection'),
             Person = Collection.model('Person', {
               id: 'id',
               attributes: ['name']
@@ -149,7 +150,7 @@ describe('bugs', function() {
       });
       describe('ManyToMany', function() {
         it('forward', function(done) {
-          var Collection = siesta.collection('Collection'),
+          var Collection = app.collection('Collection'),
             Person = Collection.model('Person', {
               id: 'id',
               attributes: ['name']
@@ -177,7 +178,7 @@ describe('bugs', function() {
             .catch(done);
         });
         it('reverse', function(done) {
-          var Collection = siesta.collection('Collection'),
+          var Collection = app.collection('Collection'),
             Person = Collection.model('Person', {
               id: 'id',
               attributes: ['name']
@@ -210,7 +211,7 @@ describe('bugs', function() {
   });
 
   it('custom ids dont work...?', function(done) {
-    var Collection = siesta.collection('Collection'),
+    var Collection = app.collection('Collection'),
       Model = Collection.model('Model', {
         id: 'customId',
         attributes: ['name']
@@ -228,7 +229,7 @@ describe('bugs', function() {
 
 
   it('errors in event handlers break graph', function(done) {
-    var Collection = siesta.collection('Collection'),
+    var Collection = app.collection('Collection'),
       Person = Collection.model('Person', {
         id: 'id',
         attributes: ['name']
@@ -245,7 +246,7 @@ describe('bugs', function() {
   });
 
   it('way too many events sent out on object creation (sets and news)', function(done) {
-    var Collection = siesta.collection('Collection'),
+    var Collection = app.collection('Collection'),
       Person = Collection.model('Person', {
         attributes: ['name', 'age']
       });
@@ -267,7 +268,7 @@ describe('bugs', function() {
   });
 
   //it.only('errors in promises being swallowed', function(done) {
-  //  var Collection = siesta.collection('Collection'),
+  //  var Collection =app.collection('Collection'),
   //    Person = Collection.model('Person', {
   //      attributes: ['name', 'age']
   //    });
