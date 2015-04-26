@@ -7,8 +7,8 @@ var util = require('../core/util'),
 var UNDERSCORE = /_/g,
   UNDERSCORE_REPLACEMENT = /@/g;
 
-function Storage(name, app) {
-  name = name || 'siesta-old';
+function Storage(app) {
+  var name = app.name;
 
   this.app = app;
   this.unsavedObjects = [];

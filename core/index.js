@@ -25,13 +25,6 @@ var siesta = function(ext) {
   return siesta;
 };
 
-/**
- * - Collection Registry
- * - Event Emitter
- * - Cache
- * - PouchDB Instnace
- *
- */
 siesta.app = new App('siesta');
 
 // Notifications
@@ -81,7 +74,6 @@ util.extend(siesta, {
 });
 
 siesta.ext = {};
-
 
 util.extend(siesta, {
   reset: siesta.app.reset.bind(siesta.app),

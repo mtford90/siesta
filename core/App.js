@@ -10,7 +10,7 @@ var CollectionRegistry = require('./collectionRegistry'),
 
 function App(name) {
   if (!name) throw new Error('App must have a name');
-  var storage = new Storage();
+  var storage = new Storage(this);
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
   this.name = name;
