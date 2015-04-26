@@ -3,11 +3,12 @@ var assert = require('chai').assert;
 describe('to sort', function() {
   var Model, Collection;
 
+    var app = siesta.app;
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
   beforeEach(function(done) {
-    siesta.reset(done);
+    app.reset(done);
   });
 
   describe('get by localid', function() {
@@ -20,7 +21,7 @@ describe('to sort', function() {
         .graph({x: 1})
         .then(function(instance) {
           var id = instance.localId;
-          siesta
+          app
             .get(id)
             .then(function(_instance) {
               assert.equal(instance, _instance);
@@ -37,7 +38,7 @@ describe('to sort', function() {
       Model
         .graph({x: 1})
         .then(function(instance) {
-          siesta
+          app
             .get('sdfsdfsdf')
             .then(function(_instance) {
               assert.notOk(_instance);

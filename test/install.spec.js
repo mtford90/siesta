@@ -10,20 +10,22 @@ var assert = require('chai').assert,
   RelationshipType = siesta.RelationshipType;
 
 describe('installation', function() {
+  var app = siesta.app;
+
   describe('install step', function() {
     var MyCollection, Person;
 
     beforeEach(function(done) {
-      siesta.reset(done);
+      app.reset(done);
     });
 
     describe('no storage', function() {
       before(function() {
-        siesta.app.storageEnabled = false;
+        app.storageEnabled = false;
       });
 
       beforeEach(function() {
-        MyCollection = siesta.collection('MyCollection');
+        MyCollection = app.collection('MyCollection');
         Person = MyCollection.model('Person', {
           id: 'id',
           attributes: ['name', 'age', 'index']
@@ -31,7 +33,8 @@ describe('installation', function() {
       });
 
       it('map', function(done) {
-        Person.graph({name: 'Mike', age: 24})
+        Person
+          .graph({name: 'Mike', age: 24})
           .then(function() {
             done();
           })
@@ -39,7 +42,8 @@ describe('installation', function() {
       });
 
       it('query', function(done) {
-        Person.query({age__gt: 23})
+        Person
+          .query({age__gt: 23})
           .then(function(res) {
             assert.notOk(res.length, 'Should be no results');
             done();
@@ -52,20 +56,20 @@ describe('installation', function() {
 
     describe('storage', function() {
       before(function() {
-        siesta.app.storageEnabled = true;
+        app.storageEnabled = true;
       });
 
       after(function(done) {
-        siesta.reset(function() {
-          siesta.app.storageEnabled = false;
-          siesta.app.storage._pouch.allDocs().then(function(resp) {
+        app.reset(function() {
+          app.storageEnabled = false;
+          app.storage._pouch.allDocs().then(function(resp) {
             done();
           });
         })
       });
 
       beforeEach(function() {
-        MyCollection = siesta.collection('MyCollection');
+        MyCollection = app.collection('MyCollection');
         Person = MyCollection.model('Person', {
           id: 'id',
           attributes: ['name', 'age', 'index']
@@ -82,7 +86,7 @@ describe('installation', function() {
 
 
       it('query', function(done) {
-        siesta.app.storage._pouch.bulkDocs([
+        app.storage._pouch.bulkDocs([
           {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
           {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
         ]).then(function() {
@@ -101,17 +105,17 @@ describe('installation', function() {
 
     describe('install relationships', function() {
       before(function() {
-        siesta.app.storageEnabled = false;
+        app.storageEnabled = false;
       });
 
       beforeEach(function(done) {
-        siesta.reset(done);
+        app.reset(done);
       });
 
       var Collection, Car, Person;
 
       function configureAPI(type, done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Car = Collection.model('Car', {
           id: 'id',
           attributes: ['colour', 'name'],
@@ -211,7 +215,7 @@ describe('installation', function() {
 
       describe('invalid', function() {
         it('No such relationship type', function() {
-          var collection = siesta.collection('myCollection');
+          var collection = app.collection('myCollection');
           assert.throws(function() {
             Car = collection.model('Car', {
               id: 'id',
@@ -234,10 +238,10 @@ describe('installation', function() {
   describe('add stuff after install', function() {
 
     beforeEach(function(done) {
-      siesta.reset(done);
+      app.reset(done);
     });
     it('add collection', function(done) {
-      var MyCollection = siesta.collection('MyCollection'),
+      var MyCollection = app.collection('MyCollection'),
         Person = MyCollection.model('Person', {
           id: 'id',
           attributes: ['name', 'age', 'index']
@@ -246,7 +250,7 @@ describe('installation', function() {
       Model
         .install([Person])
         .then(function() {
-          var AnotherCollection = siesta.collection('AnotherCollection');
+          var AnotherCollection = app.collection('AnotherCollection');
           assert.equal(siesta.AnotherCollection, AnotherCollection);
           assert.equal(siesta.app.collectionRegistry.AnotherCollection, AnotherCollection);
           done();
@@ -256,7 +260,7 @@ describe('installation', function() {
     describe('add simple model', function() {
       var MyCollection, Car;
       beforeEach(function(done) {
-        MyCollection = siesta.collection('MyCollection');
+        MyCollection = app.collection('MyCollection');
         Car = MyCollection.model('Car', {
           attributes: ['type']
         });
@@ -295,7 +299,7 @@ describe('installation', function() {
 
       describe('delay creation of relationship', function() {
         beforeEach(function(done) {
-          MyCollection = siesta.collection('MyCollection');
+          MyCollection = app.collection('MyCollection');
           Person = MyCollection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -340,7 +344,7 @@ describe('installation', function() {
 
       describe('delay creation of related model', function() {
         beforeEach(function() {
-          MyCollection = siesta.collection('MyCollection');
+          MyCollection = app.collection('MyCollection');
           Car = MyCollection.model('Car', {
             attributes: ['type'],
             relationships: {

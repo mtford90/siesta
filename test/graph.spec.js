@@ -1,142 +1,143 @@
 var assert = require('chai').assert,
-    internal = siesta._internal,
-    RelationshipType = siesta.RelationshipType,
-    ModelInstance = internal.ModelInstance;
+  internal = siesta._internal,
+  RelationshipType = siesta.RelationshipType,
+  ModelInstance = internal.ModelInstance;
 
 describe('perform mapping', function() {
 
   var Collection, Car, Person;
 
+  var app = siesta.app;
   before(function() {
-    siesta.app.storageEnabled = false;
+    app.storageEnabled = false;
   });
 
   beforeEach(function(done) {
     Collection = null;
     Car = null;
     Person = null;
-    siesta.reset(done);
+    app.reset(done);
   });
 
 
   describe('attributes', function() {
     describe('default values', function() {
       it('simple', function(done) {
-        var Collection = siesta.collection('Collection'),
-            Model = Collection.model('Model', {
-              id: 'id',
-              attributes: [
-                {
-                  name: 'field1',
-                  default: 1
-                },
-                {
-                  name: 'field2',
-                  default: 'xyz'
-                },
-                'field3'
-              ]
-            });
+        var Collection = app.collection('Collection'),
+          Model = Collection.model('Model', {
+            id: 'id',
+            attributes: [
+              {
+                name: 'field1',
+                default: 1
+              },
+              {
+                name: 'field2',
+                default: 'xyz'
+              },
+              'field3'
+            ]
+          });
         Model.graph({field1: 5, field3: 'abc'})
-            .then(function(p) {
-              assert.equal(p.field1, 5);
-              assert.equal(p.field2, 'xyz');
-              assert.equal(p.field3, 'abc');
-              done();
-            })
-            .catch(done);
+          .then(function(p) {
+            assert.equal(p.field1, 5);
+            assert.equal(p.field2, 'xyz');
+            assert.equal(p.field3, 'abc');
+            done();
+          })
+          .catch(done);
       });
 
       it('false', function(done) {
-        var Collection = siesta.collection('Collection'),
-            Model = Collection.model('Model', {
-              id: 'id',
-              attributes: [
-                {
-                  name: 'field1',
-                  default: false
-                },
-                'field2'
-              ]
-            });
+        var Collection = app.collection('Collection'),
+          Model = Collection.model('Model', {
+            id: 'id',
+            attributes: [
+              {
+                name: 'field1',
+                default: false
+              },
+              'field2'
+            ]
+          });
         Model.graph({field2: 'abc'})
-            .then(function(p) {
-              assert(p.field1 === false, 'should be false');
-              assert.equal(p.field2, 'abc');
-              done();
-            })
-            .catch(done);
+          .then(function(p) {
+            assert(p.field1 === false, 'should be false');
+            assert.equal(p.field2, 'abc');
+            done();
+          })
+          .catch(done);
       });
 
       it('true', function(done) {
-        var Collection = siesta.collection('Collection'),
-            Model = Collection.model('Model', {
-              id: 'id',
-              attributes: [
-                {
-                  name: 'field1',
-                  default: true
-                },
-                'field2'
-              ]
-            });
+        var Collection = app.collection('Collection'),
+          Model = Collection.model('Model', {
+            id: 'id',
+            attributes: [
+              {
+                name: 'field1',
+                default: true
+              },
+              'field2'
+            ]
+          });
         Model.graph({field2: 'abc'})
-            .then(function(p) {
-              assert(p.field1 === true, 'should be true');
-              assert.equal(p.field2, 'abc');
-              done();
-            })
-            .catch(done);
+          .then(function(p) {
+            assert(p.field1 === true, 'should be true');
+            assert.equal(p.field2, 'abc');
+            done();
+          })
+          .catch(done);
       });
 
       it('null', function(done) {
-        var Collection = siesta.collection('Collection'),
-            Model = Collection.model('Model', {
-              id: 'id',
-              attributes: [
-                {
-                  name: 'field1',
-                  default: null
-                },
-                'field2'
-              ]
-            });
+        var Collection = app.collection('Collection'),
+          Model = Collection.model('Model', {
+            id: 'id',
+            attributes: [
+              {
+                name: 'field1',
+                default: null
+              },
+              'field2'
+            ]
+          });
         Model.graph({field2: 'abc'})
-            .then(function(p) {
-              assert(p.field1 === null);
-              assert.equal(p.field2, 'abc');
-              done();
-            })
-            .catch(done);
+          .then(function(p) {
+            assert(p.field1 === null);
+            assert.equal(p.field2, 'abc');
+            done();
+          })
+          .catch(done);
       });
 
 
       it('empty string', function(done) {
-        var Collection = siesta.collection('Collection'),
-            Model = Collection.model('Model', {
-              id: 'id',
-              attributes: [
-                {
-                  name: 'field1',
-                  default: ''
-                },
-                'field2'
-              ]
-            });
+        var Collection = app.collection('Collection'),
+          Model = Collection.model('Model', {
+            id: 'id',
+            attributes: [
+              {
+                name: 'field1',
+                default: ''
+              },
+              'field2'
+            ]
+          });
         Model.graph({field2: 'abc'})
-            .then(function(p) {
-              assert(p.field1 == '');
-              assert.equal(p.field2, 'abc');
-              done();
-            })
-            .catch(done);
+          .then(function(p) {
+            assert(p.field1 == '');
+            assert.equal(p.field2, 'abc');
+            done();
+          })
+          .catch(done);
       });
     });
   });
 
   describe('empty', function() {
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -152,7 +153,7 @@ describe('perform mapping', function() {
 
   describe('no id', function() {
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -178,7 +179,7 @@ describe('perform mapping', function() {
     var obj;
 
     beforeEach(function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -261,7 +262,7 @@ describe('perform mapping', function() {
   describe('with relationship', function() {
     describe('foreign key', function() {
       beforeEach(function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Person = Collection.model('Person', {
           id: 'id',
           attributes: ['name', 'age']
@@ -918,7 +919,7 @@ describe('perform mapping', function() {
     describe('one-to-one', function() {
       var personModel;
       beforeEach(function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Person = Collection.model('Person', {
           id: 'id',
           attributes: ['name', 'age']
@@ -1413,7 +1414,7 @@ describe('perform mapping', function() {
 
   describe('caveats', function() {
     beforeEach(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -1437,7 +1438,7 @@ describe('perform mapping', function() {
   describe('errors', function() {
     describe('one-to-one', function() {
       beforeEach(function() {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Person = Collection.model('Person', {
           id: 'id',
           attributes: ['name', 'age']
@@ -1486,7 +1487,7 @@ describe('perform mapping', function() {
     describe('foreign key', function() {
 
       beforeEach(function() {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Person = Collection.model('Person', {
           id: 'id',
           attributes: ['name', 'age']
@@ -1537,7 +1538,7 @@ describe('perform mapping', function() {
     describe('new', function() {
       describe('no relationships', function() {
         beforeEach(function(done) {
-          Collection = siesta.collection('myCollection');
+          Collection = app.collection('myCollection');
           Car = Collection.model('Car', {
             id: 'id',
             attributes: ['colour', 'name']
@@ -1573,7 +1574,7 @@ describe('perform mapping', function() {
         var personModel;
 
         beforeEach(function(done) {
-          Collection = siesta.collection('myCollection');
+          Collection = app.collection('myCollection');
           Person = Collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -1654,7 +1655,7 @@ describe('perform mapping', function() {
       var personModel;
 
       beforeEach(function(done) {
-        Collection = siesta.collection('myCollection');
+        Collection = app.collection('myCollection');
         Person = Collection.model('Person', {
           id: 'id',
           attributes: ['name', 'age']
@@ -1937,8 +1938,8 @@ describe('perform mapping', function() {
       var Collection, PersonModel, CarModel;
 
       beforeEach(function(done) {
-        siesta.reset(function() {
-          Collection = siesta.collection('myCollection');
+        app.reset(function() {
+          Collection = app.collection('myCollection');
           PersonModel = Collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -1976,7 +1977,7 @@ describe('perform mapping', function() {
           Person: {name: 'Mike', age: 24}
         }).then(function(results) {
           var carResults = results.Car,
-              personResults = results.Person;
+            personResults = results.Person;
           assert.equal(carResults.length, 2);
           assert.equal(personResults.name, 'Mike');
           done();
@@ -2002,8 +2003,8 @@ describe('perform mapping', function() {
 
 
       beforeEach(function(done) {
-        siesta.reset(function() {
-          Collection = siesta.collection('Collection');
+        app.reset(function() {
+          Collection = app.collection('Collection');
           PersonModel = Collection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -2012,7 +2013,7 @@ describe('perform mapping', function() {
             id: 'id',
             attributes: ['colour']
           });
-          OtherCollection = siesta.collection('OtherCollection');
+          OtherCollection = app.collection('OtherCollection');
           OtherModel = OtherCollection.model('Other', {
             attributes: ['attr']
           });
@@ -2021,7 +2022,7 @@ describe('perform mapping', function() {
       });
 
       it('map single collection & model', function(done) {
-        siesta.graph({
+        app.graph({
           Collection: {
             Car: {colour: 'red', id: 5}
           }
@@ -2033,7 +2034,7 @@ describe('perform mapping', function() {
       });
 
       it('map array', function(done) {
-        siesta.graph({
+        app.graph({
           Collection: {
             Car: [{colour: 'red', id: 5}, {colour: 'blue', id: 6}]
           }
@@ -2045,14 +2046,14 @@ describe('perform mapping', function() {
       });
 
       it('map multiple models', function(done) {
-        siesta.graph({
+        app.graph({
           Collection: {
             Car: [{colour: 'red', id: 5}, {colour: 'blue', id: 6}],
             Person: {name: 'Mike', age: 24}
           }
         }).then(function(results) {
           var carResults = results.Collection.Car,
-              personResults = results.Collection.Person;
+            personResults = results.Collection.Person;
           assert.equal(carResults.length, 2);
           assert.equal(personResults.name, 'Mike');
           done();
@@ -2060,7 +2061,7 @@ describe('perform mapping', function() {
       });
 
       it('map multiple collections', function(done) {
-        siesta.graph({
+        app.graph({
           Collection: {
             Car: [{colour: 'red', id: 5}, {colour: 'blue', id: 6}],
             Person: {name: 'Mike', age: 24}
@@ -2070,8 +2071,8 @@ describe('perform mapping', function() {
           }
         }).then(function(results) {
           var carResults = results.Collection.Car,
-              personResults = results.Collection.Person,
-              otherResults = results.OtherCollection.Other;
+            personResults = results.Collection.Person,
+            otherResults = results.OtherCollection.Other;
           assert.equal(carResults.length, 2);
           assert.equal(personResults.name, 'Mike');
           assert.equal(otherResults.attr, 1);
@@ -2080,7 +2081,7 @@ describe('perform mapping', function() {
       });
 
       it('invalid model', function(done) {
-        siesta.graph({
+        app.graph({
           Collection: {
             Car: [{colour: 'red', id: 5}, {colour: 'blue', id: 6}],
             Invalid: {name: 'Mike', age: 24}
@@ -2097,7 +2098,7 @@ describe('perform mapping', function() {
       });
 
       it('invalid collection', function(done) {
-        siesta.graph({
+        app.graph({
           Invalid: {
             Car: [{colour: 'red', id: 5}, {colour: 'blue', id: 6}],
             Person: {name: 'Mike', age: 24}
