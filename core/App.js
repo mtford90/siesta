@@ -16,9 +16,11 @@ function App(name) {
   this.name = name;
 
   this.events = events();
+  var off = this.events.removeListener.bind(this.events);
   util.extend(this, {
     on: this.events.on.bind(this.events),
-    off: this.events.removeListener.bind(this.events),
+    off: off,
+    removeListener: off,
     once: this.events.once.bind(this.events),
     removeAllListeners: this.events.removeAllListeners.bind(this.events),
     notify: util.next
