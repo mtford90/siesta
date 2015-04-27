@@ -14,7 +14,7 @@ describe('change identifiers', function() {
   });
   beforeEach(function(done) {
     app.reset(function() {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Car = Collection.model('Car', {
         id: 'id',
         attributes: ['colour', 'name']
@@ -28,10 +28,10 @@ describe('change identifiers', function() {
   });
 
   it('xyz', function(done) {
-    assert.equal(siesta.app.cache.get({id: 'xyz', model: Car}), car);
+    assert.equal(app.cache.get({id: 'xyz', model: Car}), car);
     car.id = 'abc';
-    assert.notOk(siesta.app.cache.get({id: 'xyz', model: Car}), car);
-    assert.equal(siesta.app.cache.get({id: 'abc', model: Car}), car);
+    assert.notOk(app.cache.get({id: 'xyz', model: Car}), car);
+    assert.equal(app.cache.get({id: 'abc', model: Car}), car);
     done();
   });
 

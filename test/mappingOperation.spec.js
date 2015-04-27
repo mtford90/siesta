@@ -57,7 +57,7 @@ describe('array flattening', function() {
 });
 
 describe('mapping operation', function() {
-  var app = siesta.app;
+  var app = siesta.createApp('mapping-op');
   before(function() {
     app.storageEnabled = false;
   });
@@ -540,7 +540,7 @@ describe('bug', function() {
 
   var coll, Car;
 
-  var app = siesta.app;
+  var app = siesta.createApp('mapping-op-bug');
 
   before(function() {
     app.storageEnabled = false;
