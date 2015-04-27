@@ -6,7 +6,7 @@ var assert = require('chai').assert,
 
 describe('many to many proxy', function() {
 
-  var app = siesta.app;
+  var app = siesta.createApp('many-to-many');
 
   function instance(model) {
     var i = new ModelInstance(model);

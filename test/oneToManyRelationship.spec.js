@@ -6,7 +6,7 @@ var assert = require('chai').assert,
 
 describe('one to many relationship', function() {
 
-  var app = siesta.app;
+  var app = siesta.createApp('one-to-many');
 
   before(function() {
     app.storageEnabled = false;

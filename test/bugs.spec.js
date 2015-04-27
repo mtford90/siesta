@@ -7,7 +7,7 @@
 var assert = require('chai').assert;
 
 describe('bugs', function() {
-  var app = siesta.app;
+  var app = siesta.createApp('bugs');
   beforeEach(function(done) {
     app.reset(done);
   });

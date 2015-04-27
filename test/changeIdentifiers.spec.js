@@ -7,7 +7,7 @@ describe('change identifiers', function() {
 
   var car;
 
-  var app = siesta.app;
+  var app = siesta.createApp('change-identifiers');
 
   before(function() {
     app.storageEnabled = false;

@@ -4,7 +4,7 @@ var assert = require('chai').assert,
 
 describe('storage', function() {
 
-  var app = siesta.app;
+  var app = siesta.createApp('storage');
 
   before(function() {
     app.storageEnabled = true;
@@ -136,11 +136,9 @@ describe('storage', function() {
     });
 
     it('new object', function(done) {
-      console.log(1);
       assert.equal(1, app.storage._unsavedObjects.length, 'Should be one car to save.');
       var car = app.storage._unsavedObjects[0];
-      console.log(2);
-      siesta
+      app
         .save()
         .then(function() {
           console.log(3);
@@ -584,7 +582,7 @@ describe('storage', function() {
 
     it('global dirtyness', function(done) {
       assert.ok(app.dirty);
-      siesta
+      app
         .save()
         .then(function() {
           assert.notOk(app.dirty);

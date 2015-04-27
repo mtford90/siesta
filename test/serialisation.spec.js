@@ -6,7 +6,7 @@ describe('model serialisation', function() {
 
   var Collection, PersonModel, CarModel, CustomModel;
 
-  var app = siesta.app;
+  var app = siesta.createApp('model-serialisation');
 
   before(function() {
     app.storageEnabled = false;

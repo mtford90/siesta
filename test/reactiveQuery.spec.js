@@ -4,7 +4,7 @@ var Collection = siesta;
 
 describe('reactive query', function() {
   var MyCollection, Person;
-  var app = siesta.app;
+  var app = siesta.createApp('reactive-query');
 
   beforeEach(function(done) {
     // Ensure that storage is wiped clean for each test.

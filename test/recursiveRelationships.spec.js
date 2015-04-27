@@ -3,7 +3,7 @@ var assert = require('chai').assert;
 describe('recursive relationships', function() {
 
   var Collection, Repo;
-  var app = siesta.app;
+  var app = siesta.createApp('recursive');
 
   before(function() {
     app.storageEnabled = false;

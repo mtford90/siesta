@@ -7,7 +7,7 @@ var assert = require('chai').assert,
 
 describe('relationship proxy', function() {
 
-  var app = siesta.app;
+  var app = siesta.createApp('relationship-proxy');
   before(function() {
     app.storageEnabled = false;
   });

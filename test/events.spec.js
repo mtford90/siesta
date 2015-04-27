@@ -19,7 +19,7 @@ function _instance(Model) {
   return instance;
 }
 
-var app = siesta.app,
+var app = siesta.createApp('events'),
   events = app.events;
 describe('events', function() {
 

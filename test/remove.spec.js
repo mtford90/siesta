@@ -6,7 +6,7 @@ var assert = require('chai').assert,
 
 describe('remove models from object graph', function() {
 
-  var app = siesta.app;
+  var app = siesta.createApp('remove');
   before(function() {
     app.storageEnabled = false;
   });

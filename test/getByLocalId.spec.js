@@ -3,7 +3,8 @@ var assert = require('chai').assert;
 describe('to sort', function() {
   var Model, Collection;
 
-    var app = siesta.app;
+  var app = siesta.createApp('to-sort');
+
   before(function() {
     app.storageEnabled = false;
   });
@@ -13,7 +14,7 @@ describe('to sort', function() {
 
   describe('get by localid', function() {
     it('exists', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model('Car', {
         attributes: ['name']
       });

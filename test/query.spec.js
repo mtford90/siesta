@@ -6,7 +6,7 @@ var assert = require('chai').assert,
   Query = internal.Query;
 
 describe('query...', function() {
-  var app = siesta.app;
+  var app = siesta.createApp('query');
   before(function() {
     app.storageEnabled = false;
   });

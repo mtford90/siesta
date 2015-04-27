@@ -54,7 +54,6 @@ Storage.prototype = {
     return util.promise(cb, function(cb) {
       this.app._ensureInstalled(function() {
         var instances = this.unsavedObjects;
-        console.log(4);
         this.unsavedObjects = [];
         this.unsavedObjectsHash = {};
         this.unsavedObjectsByCollection = {};
@@ -174,7 +173,6 @@ Storage.prototype = {
           fromStorage: true
         }, function(err, instances) {
           if (!err) {
-            console.log('Loaded ' + instances ? instances.length.toString() : 0 + ' instances for ' + fullyQualifiedName);
             this._listener = this.listener.bind(this);
             model.on('*', this._listener);
           }

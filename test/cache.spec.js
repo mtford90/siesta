@@ -6,7 +6,7 @@ var assert = require('chai').assert,
   RelationshipType = siesta.RelationshipType;
 
 describe('cache...', function() {
-  var app = siesta.app;
+  var app = siesta.createApp('cache');
 
   before(function() {
     app.storageEnabled = false;
