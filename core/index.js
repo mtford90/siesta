@@ -25,24 +25,11 @@ var siesta = function(ext) {
   return siesta;
 };
 
-siesta.app = new App('siesta');
 
 siesta.createApp = function(name) {
   return new App(name);
 };
 
-// Notifications
-util.extend(siesta, {
-  on: siesta.app.on,
-  off: siesta.app.off,
-  once: siesta.app.once,
-  removeAllListeners: siesta.app.removeAllListeners
-});
-
-util.extend(siesta, {
-  removeListener: siesta.off,
-  addListener: siesta.on
-});
 
 // Expose some stuff for usage by extensions and/or users
 util.extend(siesta, {
@@ -78,21 +65,6 @@ util.extend(siesta, {
 });
 
 siesta.ext = {};
-
-util.extend(siesta, {
-  reset: siesta.app.reset.bind(siesta.app),
-  save: siesta.app.save.bind(siesta.app),
-  collection: siesta.app.collection.bind(siesta.app),
-  _pushTask: siesta.app._pushTask.bind(siesta.app),
-  graph: siesta.app.graph.bind(siesta.app),
-  notify: util.next,
-  registerComparator: Query.registerComparator.bind(Query),
-  count: siesta.app.count.bind(siesta.app),
-  get: siesta.app.get.bind(siesta.app),
-  removeAll: siesta.app.removeAll.bind(siesta.app),
-  _ensureInstalled: siesta.app._ensureInstalled.bind(siesta.app),
-  setPouch: siesta.app.setPouch.bind(siesta.app)
-});
 
 
 if (typeof window != 'undefined') {

@@ -32,7 +32,7 @@ describe('to sort', function() {
         }).catch(done);
     });
     it('does not exist', function(done) {
-      Collection = siesta.collection('myCollection');
+      Collection = app.collection('myCollection');
       Model = Collection.model('Car', {
         attributes: ['name']
       });

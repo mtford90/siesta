@@ -10,7 +10,7 @@ describe('recursive relationships', function() {
   });
 
   beforeEach(function(done) {
-    siesta.reset(function() {
+    app.reset(function() {
       Collection = app.collection('MyCollection');
       Repo = Collection.model('Repo', {
         id: 'id',
