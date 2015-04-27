@@ -109,7 +109,7 @@ function Context(name, app) {
 Context.prototype = {
   collection: function(name, opts) {
     opts = opts || {};
-    opts.app = this;
+    opts.context = this;
     return new Collection(name, opts);
   },
 
@@ -248,11 +248,55 @@ function App(name) {
     });
   }
 
+  // App should act like it's default context.
   var passThroughproperties = ['dirty', 'autosaveInterval', 'autosave', 'storageEnabled'];
   passThroughproperties.forEach(copyProperty.bind(this));
 }
 
-App.prototype = Context.prototype;
+// App should act like it's default context.
+App.prototype = Object.create(Context.prototype);
 
+util.extend(App.prototype, {
+  /**
+   *
+   * @param opts
+   * @param opts.name - Name of the context.
+   */
+  context: function(opts) {
+    var name = opts.name;
+    if (!name) throw new Error('Context must have a name (used in creating the PouchDB database).');
+
+    var context = new Context(name, this),
+      collectionNames = this.collectionRegistry.collectionNames,
+      collections = {};
+    collectionNames.forEach(function(collectionName) {
+      var newCollection = context.collection(collectionName),
+        existingCollection = this.collectionRegistry[collectionName];
+      collections[collectionName] = newCollection;
+
+      var rawModels = existingCollection._rawModels;
+      Object.keys(rawModels).forEach(function(modelName) {
+        var rawModel = util.extend({}, rawModels[modelName]);
+        rawModel.name = modelName;
+        var relationships = rawModel.relationships;
+        if (relationships) {
+          Object.keys(relationships).forEach(function(relName) {
+            var rel = util.extend({}, relationships[relName]);
+            if (rel.model) {
+              if (rel.model instanceof Model) {
+                // The raw models cannot refer to Models that exist in different contexts.
+                rel.model = rel.model.name;
+              }
+            }
+            relationships[relName] = rel;
+          });
+        }
+        newCollection.model(rawModel);
+      });
+    }.bind(this));
+
+    return context;
+  }
+});
 
 module.exports = App;

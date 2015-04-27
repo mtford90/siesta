@@ -22,6 +22,9 @@ var log = require('./log')('model'),
  */
 function Model(opts) {
   var self = this;
+
+  // Used when creating new contexts when must clone all the models/collections over to the new one
+  this._rawOpts = util.extend({}, opts || {});
   this._opts = opts ? util.extend({}, opts) : {};
 
   util.extendFromOpts(this, opts, {

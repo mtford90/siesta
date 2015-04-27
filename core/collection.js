@@ -34,7 +34,7 @@ function Collection(name, opts) {
 
   opts = opts || {};
   util.extendFromOpts(this, opts, {
-    app: null
+    context: null
   });
 
   util.extend(this, {
@@ -62,6 +62,11 @@ function Collection(name, opts) {
         return Object.keys(this._models).map(function(modelName) {
           return this._models[modelName];
         }.bind(this));
+      }
+    },
+    app: {
+      get: function() {
+        return this.context.app;
       }
     }
   });
