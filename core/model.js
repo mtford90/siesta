@@ -120,6 +120,11 @@ function Model(opts) {
       get: function() {
         return this.collection.app;
       }
+    },
+    context: {
+      get: function() {
+        return this.collection.context;
+      }
     }
   });
   var globalEventName = this.collectionName + ':' + this.name,

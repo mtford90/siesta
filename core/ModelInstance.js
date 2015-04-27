@@ -67,6 +67,11 @@ function ModelInstance(model) {
       get: function() {
         return this.model.app;
       }
+    },
+    context: {
+      get: function() {
+        return this.model.context;
+      }
     }
   });
 
