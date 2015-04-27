@@ -9,15 +9,15 @@ var CollectionRegistry = require('./collectionRegistry'),
   Query = require('./Query'),
   Collection = require('./collection');
 
-function App(name) {
-  if (!name) throw new Error('App must have a name');
+function Context(name, app) {
+  this.name = name;
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
-  this.name = name;
-  var storage = new Storage(this);
-
+  this.app = app;
+  this.storage = new Storage(this.app);
   this.events = events();
   var off = this.events.removeListener.bind(this.events);
+
   util.extend(this, {
     on: this.events.on.bind(this.events),
     off: off,
@@ -25,26 +25,27 @@ function App(name) {
     once: this.events.once.bind(this.events),
     removeAllListeners: this.events.removeAllListeners.bind(this.events),
     notify: util.next,
-    registerComparator: Query.registerComparator.bind(Query)
-  });
-
-  this.storage = storage;
-
-  util.extend(this, {
+    registerComparator: Query.registerComparator.bind(Query),
     save: this.storage.save.bind(this.storage),
     setPouch: function(p) {
-      storage.pouch = p;
-    }
+      this.storage.pouch = p;
+    }.bind(this)
   });
 
   var interval, saving, autosaveInterval = 500;
   var storageEnabled;
 
+
+  if (typeof PouchDB == 'undefined') {
+    this.storageEnabled = false;
+    console.warn('PouchDB is not present therefore storage is disabled.');
+  }
+
   Object.defineProperties(this, {
     dirty: {
       get: function() {
-        var unsavedObjectsByCollection = storage._unsavedObjectsByCollection;
-        return !!Object.keys(storage.unsavedObjectsByCollection).length;
+        var unsavedObjectsByCollection = this.storage._unsavedObjectsByCollection;
+        return !!Object.keys(this.storage.unsavedObjectsByCollection).length;
       },
       enumerable: true
     },
@@ -103,15 +104,9 @@ function App(name) {
       enumerable: true
     }
   });
-
-  if (typeof PouchDB == 'undefined') {
-    this.storageEnabled = false;
-    console.warn('PouchDB is not present therefore storage is disabled.');
-  }
-
 }
 
-App.prototype = {
+Context.prototype = {
   collection: function(name, opts) {
     opts = opts || {};
     opts.app = this;
@@ -233,5 +228,31 @@ App.prototype = {
     }
   },
 };
+
+function App(name) {
+  if (!name) throw new Error('App must have a name');
+  this.name = name;
+
+  this.defaultContext = new Context(name + '-default', this);
+  util.extend(this, this.defaultContext);
+
+  function copyProperty(prop) {
+    Object.defineProperty(this, prop, {
+      get: function() {
+        return this.defaultContext[prop];
+      },
+      set: function(v) {
+        this.defaultContext[prop] = v;
+      },
+      enumerable: true
+    });
+  }
+
+  var passThroughproperties = ['dirty', 'autosaveInterval', 'autosave', 'storageEnabled'];
+  passThroughproperties.forEach(copyProperty.bind(this));
+}
+
+App.prototype = Context.prototype;
+
 
 module.exports = App;

@@ -25,11 +25,9 @@ var siesta = function(ext) {
   return siesta;
 };
 
-
 siesta.createApp = function(name) {
   return new App(name);
 };
-
 
 // Expose some stuff for usage by extensions and/or users
 util.extend(siesta, {
