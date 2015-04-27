@@ -2,7 +2,11 @@ var assert = require('chai').assert;
 
 describe('auto save', function() {
   var MyCollection, Person;
-  var app = siesta.app;
+
+  var app = siesta.createApp('autosave');
+
+  console.log('app', app);
+
   before(function() {
     app.storageEnabled = true;
   });
@@ -18,6 +22,7 @@ describe('auto save', function() {
         id: 'id',
         attributes: ['name', 'age']
       });
+      console.log('reset');
       done();
     });
   });
@@ -25,7 +30,11 @@ describe('auto save', function() {
   it('autosaves on modelEvents if enabled', function(done) {
     app.autosave = true;
     app.once('saved', function() {
-      app.storage._pouch.allDocs()
+      console.log('saved!');
+      app
+        .storage
+        ._pouch
+        .allDocs()
         .then(function(resp) {
           assert.ok(resp.rows.length, 'Should be a row');
           var person = resp.rows[0];
@@ -33,17 +42,21 @@ describe('auto save', function() {
         })
         .catch(done);
     });
-    Person.graph({name: 'Mike', age: 24})
+    Person
+      .graph({name: 'Mike', age: 24})
       .catch(done)
   });
 
   it('does not interval on modelEvents if disabled', function(done) {
     app.autosave = false;
-    console.log(1);
-    Person.graph({name: 'Mike', age: 24})
+    console.log('starting graph');
+    Person
+      .graph({name: 'Mike', age: 24})
       .then(function() {
-        console.log(2);
-        app.storage._pouch.allDocs()
+        app
+          .storage
+          ._pouch
+          .allDocs()
           .then(function(resp) {
             console.log('resp', resp);
             assert.equal(resp.rows.length, 1, 'Only row should be a design doc');

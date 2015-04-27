@@ -130,18 +130,31 @@ function Model(opts) {
   this.installReverseRelationships();
 
   this._indexIsInstalled = new Condition(function(done) {
-    if (this.app.storageEnabled) this.app.storage.ensureIndexInstalled(this, done);
+    if (this.app.storageEnabled) {
+      this.app.storage.ensureIndexInstalled(this, function(err) {
+        done(err);
+      });
+    }
     else done();
   }.bind(this));
 
   this._modelLoadedFromStorage = new Condition(function(done) {
     if (this.app.storageEnabled) {
-      this.app.storage.loadModel({model: this}, done);
+      this.app.storage.loadModel({model: this}, function(err) {
+        done(err);
+      });
     }
     else done();
   }.bind(this));
 
   this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
+
+  this._storageEnabled
+    .then(function() {
+    }.bind(this))
+    .catch(function(err) {
+      console.error('Could not enable storage for model ' + this.name + ':', err);
+    }.bind(this))
 }
 
 util.extend(Model, {
@@ -168,7 +181,8 @@ util.extend(Model, {
     cb = cb || function() {};
     return new Promise(function(resolve, reject) {
       Condition
-        .all.apply(Condition, models.map(function(x) {return x._storageEnabled}))
+        .all
+        .apply(Condition, models.map(function(x) {return x._storageEnabled}))
         .then(function() {
           models.forEach(function(m) {
             m._installReversePlaceholders();
@@ -353,7 +367,7 @@ util.extend(Model.prototype, {
   query: function(query, cb) {
     var queryInstance;
     var promise = util.promise(cb, function(cb) {
-      siesta._ensureInstalled(function() {
+      this.app._ensureInstalled(function() {
         if (!this.singleton) {
           queryInstance = this._query(query);
           return queryInstance.execute(cb);
@@ -493,7 +507,7 @@ util.extend(Model.prototype, {
     if (typeof opts == 'function') cb = opts;
     opts = opts || {};
     return util.promise(cb, function(cb) {
-      siesta._ensureInstalled(function() {
+      this.app._ensureInstalled(function() {
         this._graph(data, opts, cb);
       }.bind(this));
     }.bind(this));
@@ -519,7 +533,7 @@ util.extend(Model.prototype, {
   },
   count: function(cb) {
     return util.promise(cb, function(cb) {
-      siesta._ensureInstalled(function() {
+      this.app._ensureInstalled(function() {
         cb(null, Object.keys(this._countCache()).length);
       }.bind(this));
     }.bind(this));

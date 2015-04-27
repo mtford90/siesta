@@ -7,6 +7,11 @@ var util = require('../core/util'),
 var UNDERSCORE = /_/g,
   UNDERSCORE_REPLACEMENT = /@/g;
 
+/**
+ *
+ * @param app
+ * @constructor
+ */
 function Storage(app) {
   var name = app.name;
 
@@ -47,7 +52,7 @@ Storage.prototype = {
    */
   save: function(cb) {
     return util.promise(cb, function(cb) {
-      siesta._ensureInstalled(function() {
+      this.app._ensureInstalled(function() {
         var instances = this.unsavedObjects;
         console.log(4);
         this.unsavedObjects = [];
@@ -264,7 +269,7 @@ Storage.prototype = {
     }
   },
   _reset: function(cb) {
-    if (this._listener) siesta.removeListener('Siesta', this._listener);
+    if (this._listener) this.app.removeListener('Siesta', this._listener);
     this.unsavedObjects = [];
     this.unsavedObjectsHash = {};
 

@@ -199,9 +199,7 @@ util.extend(RelationshipProxy.prototype, {
     reverseProxies.forEach(function(p) {
       if (util.isArray(p.related)) {
         p.makeChangesToRelatedWithoutObservations(function() {
-          console.log('p.related', p.related);
           p.splicer(opts)(p.related.length, 0, self.object);
-          console.log('new p.related', p.related);
         });
       } else {
         p.clearReverseRelated(opts);
@@ -229,7 +227,7 @@ util.extend(RelationshipProxy.prototype, {
     if (util.isArray(oldValue) && !oldValue.length) {
       oldValue = null;
     }
-    return oldValue;
+    return oldValue;g
   },
   registerSetChange: function(newValue, oldValue) {
     var proxyObject = this.object;

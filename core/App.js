@@ -11,10 +11,10 @@ var CollectionRegistry = require('./collectionRegistry'),
 
 function App(name) {
   if (!name) throw new Error('App must have a name');
-  var storage = new Storage(this);
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
   this.name = name;
+  var storage = new Storage(this);
 
   this.events = events();
   var off = this.events.removeListener.bind(this.events);
@@ -37,7 +37,7 @@ function App(name) {
     }
   });
 
-  var interval, saving, autosaveInterval = 1000;
+  var interval, saving, autosaveInterval = 500;
   var storageEnabled;
 
   Object.defineProperties(this, {
@@ -72,7 +72,7 @@ function App(name) {
               // Cheeky way of avoiding multiple saves happening...
               if (!saving) {
                 saving = true;
-                this.save(function(err) {
+                this.storage.save(function(err) {
                   if (!err) {
                     this.events.emit('saved');
                   }
@@ -181,11 +181,13 @@ App.prototype = {
   },
   _ensureInstalled: function(cb) {
     cb = cb || function() {};
-    var allModels = this.collectionRegistry.collectionNames.reduce(function(memo, collectionName) {
-      var collection = this.collectionRegistry[collectionName];
-      memo = memo.concat(collection.models);
-      return memo;
-    }.bind(this), []);
+    var collectionNames = this.collectionRegistry.collectionNames;
+    var allModels = collectionNames
+      .reduce(function(memo, collectionName) {
+        var collection = this.collectionRegistry[collectionName];
+        memo = memo.concat(collection.models);
+        return memo;
+      }.bind(this), []);
     Model.install(allModels, cb);
   },
   _pushTask: function(task) {
@@ -208,19 +210,19 @@ App.prototype = {
     this.collectionRegistry.reset();
     var collectionNames = this.collectionRegistry.collectionNames;
     collectionNames.reduce(function(memo, collName) {
-      var coll = siesta[collName];
+      var coll = this.collectionRegistry[collName];
       Object.keys(coll._models).forEach(function(modelName) {
         var model = coll[modelName];
         memo.push(model._storageEnabled);
       });
       return memo;
-    }, []);
+    }.bind(this), []);
     this.removeAllListeners();
     if (this.storageEnabled) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
       if (resetStorage) {
         this.storage._reset(cb);
-        siesta.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
+        this.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
       }
       else {
         cb();
