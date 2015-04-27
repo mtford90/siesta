@@ -20,7 +20,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: app}
+      collection: {name: 'x', context: app}
     });
     assert.include(model._attributeNames, 'id');
     assert.include(model._attributeNames, 'field1');
@@ -33,7 +33,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: app}
+      collection: {name: 'x', context: app}
     });
     var attributes = _.pluck(model.attributes, 'name');
     assert.include(attributes, 'field1');
@@ -45,7 +45,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: app}
+      collection: {name: 'x', context: app}
     });
     assert.equal(model.name, 'name');
   });
@@ -77,7 +77,7 @@ describe('Models', function() {
       name: 'name',
       id: 'id',
       attributes: ['field1', 'field2'],
-      collection: {name: 'x', app: app}
+      collection: {name: 'x', context: app}
     });
     assert.equal(model.id, 'id');
   });

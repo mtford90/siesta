@@ -81,7 +81,7 @@ ModelInstanceFactory.prototype = {
           propertyDependencies.forEach(function(dep) {
             var propertyName = dep.prop;
             var new_ = this[propertyName];
-            Model.app.broadcast({
+            Model.context.broadcast({
               collection: Model.collectionName,
               model: Model.name,
               localId: modelInstance.localId,
@@ -103,7 +103,7 @@ ModelInstanceFactory.prototype = {
             obj: modelInstance
           };
           window.lastEmission = e;
-          Model.app.broadcast(e);
+          Model.context.broadcast(e);
           if (util.isArray(v)) {
             wrapArray(v, attributeName, modelInstance);
           }
@@ -147,7 +147,7 @@ ModelInstanceFactory.prototype = {
   },
   _installRemoteId: function(modelInstance) {
     var Model = this.model;
-    var cache = Model.app.cache;
+    var cache = Model.context.cache;
     var idField = Model.id;
     Object.defineProperty(modelInstance, idField, {
       get: function() {
@@ -156,7 +156,7 @@ ModelInstanceFactory.prototype = {
       set: function(v) {
         var old = modelInstance[Model.id];
         modelInstance.__values[Model.id] = v;
-        Model.app.broadcast({
+        Model.context.broadcast({
           collection: Model.collectionName,
           model: Model.name,
           localId: modelInstance.localId,
@@ -203,7 +203,7 @@ ModelInstanceFactory.prototype = {
     }
   },
   _registerInstance: function(modelInstance, shouldRegisterChange) {
-    var cache = this.model.app.cache;
+    var cache = this.model.context.cache;
     cache.insert(modelInstance);
     shouldRegisterChange = shouldRegisterChange === undefined ? true : shouldRegisterChange;
     if (shouldRegisterChange) modelInstance._emitNew();

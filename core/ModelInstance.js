@@ -11,7 +11,7 @@ function ModelInstance(model) {
   var self = this;
   this.model = model;
 
-  ProxyEventEmitter.call(this, model.app);
+  ProxyEventEmitter.call(this, model.context);
 
   this.__proxies = {};
   this._proxies = [];
@@ -50,8 +50,8 @@ function ModelInstance(model) {
     },
     dirty: {
       get: function() {
-        if (this.app.storageEnabled) {
-          return self.localId in this.app.storage._unsavedObjectsHash;
+        if (this.context.storageEnabled) {
+          return self.localId in this.context.storage._unsavedObjectsHash;
         }
         else return undefined;
       },
@@ -111,7 +111,7 @@ util.extend(ModelInstance.prototype, {
       localId: this.localId,
       obj: this
     });
-    this.app.broadcast(opts);
+    this.context.broadcast(opts);
   },
   remove: function(cb, notification) {
     _.each(this._relationshipNames, function(name) {
@@ -124,7 +124,7 @@ util.extend(ModelInstance.prototype, {
     }.bind(this));
     notification = notification == null ? true : notification;
     return util.promise(cb, function(cb) {
-      this.app.cache.remove(this);
+      this.context.cache.remove(this);
       this.removed = true;
       if (notification) {
         this.emit(modelEvents.ModelEventType.Remove, {
@@ -161,7 +161,7 @@ util.extend(ModelInstance.prototype, {
         cb(err, this);
       }.bind(this);
       if (this.removed) {
-        this.app.cache.insert(this);
+        this.context.cache.insert(this);
         this.removed = false;
         var init = this.model.init;
         if (init) {
@@ -291,7 +291,7 @@ util.extend(ModelInstance.prototype, {
    * @private
    */
   _emitNew: function() {
-    this.app.broadcast({
+    this.context.broadcast({
       collection: this.model.collectionName,
       model: this.model.name,
       localId: this.localId,

@@ -101,7 +101,7 @@ extend(exports, {
         var fieldIsAttribute = modelInstance._attributeNames.indexOf(field) > -1;
         if (fieldIsAttribute) {
           splices.forEach(function(splice) {
-            emit(modelInstance.app, {
+            emit(modelInstance.context, {
               collection: modelInstance.collectionName,
               model: modelInstance.model.name,
               localId: modelInstance.localId,

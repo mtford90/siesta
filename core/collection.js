@@ -48,8 +48,8 @@ function Collection(name, opts) {
   Object.defineProperties(this, {
     dirty: {
       get: function() {
-        if (this.app.storageEnabled) {
-          var unsavedObjectsByCollection = this.app.storage._unsavedObjectsByCollection,
+        if (this.context.storageEnabled) {
+          var unsavedObjectsByCollection = this.context.storage._unsavedObjectsByCollection,
             hash = unsavedObjectsByCollection[self.name] || {};
           return !!Object.keys(hash).length;
         }
@@ -71,9 +71,9 @@ function Collection(name, opts) {
     }
   });
 
-  this.app.collectionRegistry.register(this);
+  this.context.collectionRegistry.register(this);
   this._makeAvailableOnRoot();
-  ProxyEventEmitter.call(this, this.app, this.name);
+  ProxyEventEmitter.call(this, this.context, this.name);
 
 }
 

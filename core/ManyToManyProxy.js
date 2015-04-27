@@ -75,7 +75,7 @@ util.extend(ManyToManyProxy.prototype, {
           self.clearReverse(removed);
           self.setReverseOfAdded(added);
           var model = self.getForwardModel();
-          model.app.broadcast({
+          model.context.broadcast({
             collection: model.collectionName,
             model: model.name,
             localId: self.object.localId,

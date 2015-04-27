@@ -149,7 +149,7 @@ util.extend(MappingOperation.prototype, {
     return {remoteLookups: remoteLookups, localLookups: localLookups};
   },
   _performLocalLookups: function(localLookups) {
-    var cache = this.model.app.cache;
+    var cache = this.model.context.cache;
     var localIdentifiers = util.pluck(util.pluck(localLookups, 'datum'), 'localId'),
       localObjects = cache.getViaLocalId(localIdentifiers);
     for (var i = 0; i < localIdentifiers.length; i++) {
@@ -168,7 +168,7 @@ util.extend(MappingOperation.prototype, {
 
   },
   _performRemoteLookups: function(remoteLookups) {
-    var cache = this.model.app.cache;
+    var cache = this.model.context.cache;
     var remoteIdentifiers = util.pluck(util.pluck(remoteLookups, 'datum'), this.model.id),
       remoteObjects = cache.getViaRemoteId(remoteIdentifiers, {model: this.model});
     for (var i = 0; i < remoteObjects.length; i++) {
@@ -223,7 +223,7 @@ util.extend(MappingOperation.prototype, {
       }
     }
     // The mapping operation is responsible for creating singleton instances if they do not already exist.
-    var singleton = this.model.app.cache.getSingleton(this.model) || this._instance(localId);
+    var singleton = this.model.context.cache.getSingleton(this.model) || this._instance(localId);
     for (var i = 0; i < this.data.length; i++) {
       this.objects[i] = singleton;
     }

@@ -101,8 +101,8 @@ function Model(opts) {
     },
     dirty: {
       get: function() {
-        if (this.app.storageEnabled) {
-          var unsavedObjectsByCollection = this.app.storage._unsavedObjectsByCollection,
+        if (this.context.storageEnabled) {
+          var unsavedObjectsByCollection = this.context.storage._unsavedObjectsByCollection,
             hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
           return !!Object.keys(hash).length;
         }
@@ -132,14 +132,14 @@ function Model(opts) {
       query: this.query.bind(this)
     };
 
-  ProxyEventEmitter.call(this, this.collection.app, globalEventName, proxied);
+  ProxyEventEmitter.call(this, this.context, globalEventName, proxied);
 
   this.installRelationships();
   this.installReverseRelationships();
 
   this._indexIsInstalled = new Condition(function(done) {
-    if (this.app.storageEnabled) {
-      this.app.storage.ensureIndexInstalled(this, function(err) {
+    if (this.context.storageEnabled) {
+      this.context.storage.ensureIndexInstalled(this, function(err) {
         done(err);
       });
     }
@@ -147,8 +147,8 @@ function Model(opts) {
   }.bind(this));
 
   this._modelLoadedFromStorage = new Condition(function(done) {
-    if (this.app.storageEnabled) {
-      this.app.storage.loadModel({model: this}, function(err) {
+    if (this.context.storageEnabled) {
+      this.context.storage.loadModel({model: this}, function(err) {
         done(err);
       });
     }
@@ -241,7 +241,7 @@ util.extend(Model.prototype, {
       if (arr.length == 2) {
         var collectionName = arr[0];
         reverseName = arr[1];
-        var otherCollection = this.app.collectionRegistry[collectionName];
+        var otherCollection = this.context.collectionRegistry[collectionName];
         if (otherCollection)
           reverseModel = otherCollection[reverseName];
       }
@@ -335,7 +335,7 @@ util.extend(Model.prototype, {
         reverseModel.relationships[reverseName] = reverseRelationship;
       }
 
-      var existingReverseInstances = (this.app.cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
+      var existingReverseInstances = (this.context.cache._localCacheByType[reverseModel.collectionName] || {})[reverseModel.name] || {};
       Object.keys(existingReverseInstances).forEach(function(localId) {
         var instancce = existingReverseInstances[localId];
         this._factory._installRelationship(reverseRelationship, instancce);
@@ -375,7 +375,7 @@ util.extend(Model.prototype, {
   query: function(query, cb) {
     var queryInstance;
     var promise = util.promise(cb, function(cb) {
-      this.app._ensureInstalled(function() {
+      this.context._ensureInstalled(function() {
         if (!this.singleton) {
           queryInstance = this._query(query);
           return queryInstance.execute(cb);
@@ -515,7 +515,7 @@ util.extend(Model.prototype, {
     if (typeof opts == 'function') cb = opts;
     opts = opts || {};
     return util.promise(cb, function(cb) {
-      this.app._ensureInstalled(function() {
+      this.context._ensureInstalled(function() {
         this._graph(data, opts, cb);
       }.bind(this));
     }.bind(this));
@@ -532,7 +532,7 @@ util.extend(Model.prototype, {
     });
   },
   _countCache: function() {
-    var collCache = this.app.cache._localCacheByType[this.collectionName] || {};
+    var collCache = this.context.cache._localCacheByType[this.collectionName] || {};
     var modelCache = collCache[this.name] || {};
     return Object.keys(modelCache).reduce(function(m, localId) {
       m[localId] = {};
@@ -541,7 +541,7 @@ util.extend(Model.prototype, {
   },
   count: function(cb) {
     return util.promise(cb, function(cb) {
-      this.app._ensureInstalled(function() {
+      this.context._ensureInstalled(function() {
         cb(null, Object.keys(this._countCache()).length);
       }.bind(this));
     }.bind(this));

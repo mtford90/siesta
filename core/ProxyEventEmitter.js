@@ -10,11 +10,11 @@ var ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
  * Manages its own set of listeners.
  * @constructor
  */
-function ProxyEventEmitter(app, event, chainOpts) {
-  if (!app) throw new Error('wtf');
+function ProxyEventEmitter(context, event, chainOpts) {
+  if (!context) throw new Error('wtf');
   util.extend(this, {
     event: event,
-    app: app,
+    context: context,
     listeners: {}
   });
   var defaultChainOpts = {};
@@ -53,7 +53,7 @@ util.extend(ProxyEventEmitter.prototype, {
         listeners[type].push(fn);
       }
     }
-    this.app.events.on(this.event, fn);
+    this.context.events.on(this.event, fn);
     return this._handlerLink({
       fn: fn,
       type: type,
@@ -73,7 +73,7 @@ util.extend(ProxyEventEmitter.prototype, {
         e = e || {};
         if (type) {
           if (e.type == type) {
-            this.app.events.removeListener(event, fn);
+            this.context.events.removeListener(event, fn);
             _fn(e);
           }
         }
@@ -82,8 +82,8 @@ util.extend(ProxyEventEmitter.prototype, {
         }
       }.bind(this)
     }
-    if (type) return this.app.events.on(event, fn);
-    else return this.app.events.once(event, fn);
+    if (type) return this.context.events.on(event, fn);
+    else return this.context.events.once(event, fn);
   },
   _removeListener: function(fn, type) {
     if (type) {
@@ -91,7 +91,7 @@ util.extend(ProxyEventEmitter.prototype, {
         idx = listeners.indexOf(fn);
       listeners.splice(idx, 1);
     }
-    return this.app.events.removeListener(this.event, fn);
+    return this.context.events.removeListener(this.event, fn);
   },
   emit: function(type, payload) {
     if (typeof type == 'object') {
@@ -102,11 +102,11 @@ util.extend(ProxyEventEmitter.prototype, {
       payload = payload || {};
       payload.type = type;
     }
-    this.app.events.emit.call(this.app.events, this.event, payload);
+    this.context.events.emit.call(this.context.events, this.event, payload);
   },
   _removeAllListeners: function(type) {
     (this.listeners[type] || []).forEach(function(fn) {
-      this.app.events.removeListener(this.event, fn);
+      this.context.events.removeListener(this.event, fn);
     }.bind(this));
     this.listeners[type] = [];
   },
