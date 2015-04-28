@@ -11,10 +11,12 @@ var UNDERSCORE = /_/g,
  *
  * @param context
  * @constructor
+ * @param opts
  */
-function Storage(context) {
+function Storage(context, opts) {
   if (!window.PouchDB) throw new Error('Cannot enable storage for app "' + name + '" as PouchDB is not present.');
 
+  opts = opts || {};
   var name = context.name;
 
   this.context = context;
@@ -45,7 +47,7 @@ function Storage(context) {
     }
   });
 
-  this.pouch = new PouchDB(name, {auto_compaction: true})
+  this.pouch = opts.pouch || (new PouchDB(name, {auto_compaction: true}));
 }
 
 Storage.prototype = {
@@ -269,13 +271,13 @@ Storage.prototype = {
       this.unsavedObjectsByCollection[collectionName][modelName][ident] = changedObject;
     }
   },
-  _reset: function(cb) {
+  _reset: function(cb, pdb) {
     if (this._listener) this.context.removeListener('Siesta', this._listener);
     this.unsavedObjects = [];
     this.unsavedObjectsHash = {};
 
-    this
-      .pouch
+    var pouch = this.pouch;
+    pouch
       .allDocs()
       .then(function(results) {
         var docs = results.rows.map(function(r) {
@@ -284,7 +286,10 @@ Storage.prototype = {
 
         this.pouch
           .bulkDocs(docs)
-          .then(function() {cb()})
+          .then(function() {
+            if (pdb) this.pouch = pdb;
+            cb();
+          }.bind(this))
           .catch(cb);
       }.bind(this))
       .catch(cb);

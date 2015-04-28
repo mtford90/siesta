@@ -9,8 +9,8 @@ var CollectionRegistry = require('./collectionRegistry'),
   Query = require('./Query'),
   Collection = require('./collection');
 
-function configureStorage() {
-  this._storage = new Storage(this);
+function configureStorage(opts) {
+  this._storage = new Storage(this, opts);
 }
 
 function Context(opts) {
@@ -21,7 +21,7 @@ function Context(opts) {
   this.name = opts.name;
 
   if (opts.storage) {
-    configureStorage.call(this);
+    configureStorage.call(this, opts.storage);
   }
 
   if (!this.name) throw new Error('Must provide name to context');
@@ -44,10 +44,7 @@ function Context(opts) {
         }
         else cb();
       }.bind(this));
-    },
-    setPouch: function(p) {
-      this._storage.pouch = p;
-    }.bind(this)
+    }
   });
 
   var interval, saving, autosaveInterval = 500;
@@ -241,8 +238,7 @@ Context.prototype = {
     if (this._storage) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
       if (resetStorage) {
-        this._storage._reset(cb);
-        this.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
+        this._storage._reset(cb, new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
       }
       else {
         cb();

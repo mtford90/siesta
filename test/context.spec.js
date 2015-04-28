@@ -61,11 +61,9 @@ describe('contexts', function() {
     assert.notOk(context._storage);
   });
 
-  it('customPouch', function(done) {
-    var context = app.context({name: 'another-context', storage: true});
-    context._ensureInstalled(function() {
-
-      done();
-    })
+  it('customPouch', function() {
+    var pouchDB = new PouchDB('custom');
+    var context = app.context({name: 'another-context', storage: {pouch: pouchDB}});
+    assert.equal(context._storage._pouch, pouchDB);
   });
 });
