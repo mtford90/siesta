@@ -5,11 +5,11 @@ var log = require('./log')('query'),
   constructFilterSet = require('./FilterSet');
 
 /**
- * @class [Query description]
+ * @class
  * @param {Model} model
  * @param {Object} query
  */
-function Query(model, query) {
+function Filter(model, query) {
   var opts = {};
   for (var prop in query) {
     if (query.hasOwnProperty(prop)) {
@@ -79,7 +79,7 @@ var comparators = {
   in: contains
 };
 
-util.extend(Query, {
+util.extend(Filter, {
   comparators: comparators,
   registerComparator: function(symbol, fn) {
     if (!comparators[symbol]) {
@@ -100,7 +100,7 @@ function cacheForModel(model) {
   return cacheByLocalId;
 }
 
-util.extend(Query.prototype, {
+util.extend(Filter.prototype, {
   execute: function(cb) {
     return util.promise(cb, function(cb) {
       this._executeInMemory(cb);
@@ -242,7 +242,7 @@ util.extend(Query.prototype, {
         var val = obj[field];
         var invalid = util.isArray(val) ? false : val === null || val === undefined;
       }
-      var comparator = Query.comparators[op],
+      var comparator = Filter.comparators[op],
         opts = {object: obj, field: field, value: value, invalid: invalid};
       if (!comparator) {
         return 'No comparator registered for query operation "' + op + '"';
@@ -289,4 +289,4 @@ util.extend(Query.prototype, {
   }
 });
 
-module.exports = Query;
+module.exports = Filter;
