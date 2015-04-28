@@ -45,7 +45,7 @@ function defineAttribute(arr, prop) {
   if (!(prop in arr)) { // e.g. we cannot redefine .length
     Object.defineProperty(arr, prop, {
       get: function() {
-        return querySet(util.pluck(arr, prop));
+        return filterSet(util.pluck(arr, prop));
       },
       set: function(v) {
         if (util.isArray(v)) {
@@ -83,18 +83,18 @@ function defineMethod(arr, prop) {
         });
       var arePromises = false;
       if (res.length) arePromises = isPromise(res[0]);
-      return arePromises ? Promise.all(res) : querySet(res);
+      return arePromises ? Promise.all(res) : filterSet(res);
     };
   }
 }
 
 /**
- * Transform the array into a query set.
+ * Transform the array into a filter set.
  * Renders the array immutable.
  * @param arr
  * @param model - The model with which to proxy to
  */
-function modelQuerySet(arr, model) {
+function modelFilterSet(arr, model) {
   arr = util.extend([], arr);
   var attributeNames = model._attributeNames,
     relationshipNames = model._relationshipNames,
@@ -111,7 +111,7 @@ function modelQuerySet(arr, model) {
  * based on that.
  * @param arr
  */
-function querySet(arr) {
+function filterSet(arr) {
   if (arr.length) {
     var referenceObject = arr[0],
       propertyNames = getPropertyNames(referenceObject);
@@ -138,15 +138,15 @@ function renderImmutable(arr) {
   arr.immutable = true;
   arr.mutableCopy = arr.asArray = function() {
     var mutableArr = this.map(function(x) {return x});
-    mutableArr.asQuerySet = function() {
-      return querySet(this);
+    mutableArr.asFilterSet = function() {
+      return filterSet(this);
     };
-    mutableArr.asModelQuerySet = function(model) {
-      return modelQuerySet(this, model);
+    mutableArr.asModelFilterSet = function(model) {
+      return modelFilterSet(this, model);
     };
     return mutableArr;
   };
   return arr;
 }
 
-module.exports = modelQuerySet;
+module.exports = modelFilterSet;

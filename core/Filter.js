@@ -1,4 +1,4 @@
-var log = require('./log')('query'),
+var log = require('./log')('filter'),
   util = require('./util'),
   error = require('./error'),
   ModelInstance = require('./ModelInstance'),

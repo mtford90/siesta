@@ -129,7 +129,7 @@ util.extend(ReactiveFilter.prototype, {
     var results = this.results.mutableCopy();
     if (this.insertionPolicy == ReactiveFilter.InsertionPolicy.Back) var idx = results.push(newObj);
     else idx = results.unshift(newObj);
-    this.results = results.asModelQuerySet(this.model);
+    this.results = results.asModelFilterSet(this.model);
     return idx;
   },
   /**
@@ -175,7 +175,7 @@ util.extend(ReactiveFilter.prototype, {
         log('Updated object no longer matches!', newObj);
         results = this.results.mutableCopy();
         var removed = results.splice(index, 1);
-        this.results = results.asModelQuerySet(this.model);
+        this.results = results.asModelFilterSet(this.model);
         this.emit(modelEvents.ModelEventType.Splice, {
           index: index,
           obj: this,
