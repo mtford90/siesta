@@ -5,7 +5,7 @@ var util = require('./util'),
 
 /*
  TODO: Use ES6 Proxy instead.
- Eventually query sets should use ES6 Proxies which will be much more natural and robust. E.g. no need for the below
+ Eventually filter sets should use ES6 Proxies which will be much more natural and robust. E.g. no need for the below
  */
 var ARRAY_METHODS = ['push', 'sort', 'reverse', 'splice', 'shift', 'unshift'],
   NUMBER_METHODS = ['toString', 'toExponential', 'toFixed', 'toPrecision', 'valueOf'],
@@ -106,7 +106,7 @@ function modelFilterSet(arr, model) {
 }
 
 /**
- * Transform the array into a query set, based on whatever is in it.
+ * Transform the array into a filter set, based on whatever is in it.
  * Note that all objects must be of the same type. This function will take the first object and decide how to proxy
  * based on that.
  * @param arr
@@ -124,7 +124,7 @@ function filterSet(arr) {
 }
 
 function throwImmutableError() {
-  throw new Error('Cannot modify a query set');
+  throw new Error('Cannot modify a filter set');
 }
 
 /**

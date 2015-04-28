@@ -2,7 +2,7 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   Model = internal.Model,
   SiestaUserError = internal.error.SiestaUserError,
-  createQuerySet = internal.querySet,
+  createFilterSet = internal.filterSet,
   Filter = internal.Filter;
 
 describe('query...', function() {
@@ -1345,7 +1345,7 @@ describe('query...', function() {
         Person._storageEnabled.then(function() {
           michael = _instance(Person, {name: 'Michael', age: 24});
           bob = _instance(Person, {name: 'Bob', age: 21});
-          querySet = createQuerySet([michael, bob], Person);
+          querySet = createFilterSet([michael, bob], Person);
           done();
         }).catch(done);
       });
@@ -1432,7 +1432,7 @@ describe('query...', function() {
       });
 
       it('new owner', function() {
-        var querySet = createQuerySet(michael.cars, Car);
+        var querySet = createFilterSet(michael.cars, Car);
         querySet.owner = bob;
         assert.equal(bob.cars.length, 2);
         assert.equal(michael.cars.length, 0)
@@ -1440,7 +1440,7 @@ describe('query...', function() {
 
       it('remove all cars', function(done) {
         var cars = _.extend([], michael.cars),
-          querySet = createQuerySet(cars, Car);
+          querySet = createFilterSet(cars, Car);
 
         querySet.remove().then(function() {
           app.notify(function() {

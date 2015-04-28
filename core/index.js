@@ -12,7 +12,7 @@ var util = require('./util'),
   RelationshipProxy = require('./RelationshipProxy'),
   modelEvents = require('./modelEvents'),
   Filter = require('./Filter'),
-  querySet = require('./FilterSet'),
+  filterSet = require('./FilterSet'),
   Condition = require('./Condition'),
   log = require('./log');
 
@@ -52,7 +52,7 @@ util.extend(siesta, {
     Collection: Collection,
     utils: util,
     util: util,
-    querySet: querySet,
+    filterSet: filterSet,
     observe: require('../vendor/observe-js/src/observe'),
     Filter: Filter,
     ManyToManyProxy: ManyToManyProxy,
@@ -61,7 +61,7 @@ util.extend(siesta, {
     RelationshipProxy: RelationshipProxy
   },
   isArray: util.isArray,
-  isString: util.isString
+  isString: util.isString        
 });
 
 siesta.ext = {};
