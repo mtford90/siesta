@@ -60,4 +60,12 @@ describe('contexts', function() {
     context.storage = false;
     assert.notOk(context._storage);
   });
+
+  it('customPouch', function(done) {
+    var context = app.context({name: 'another-context', storage: true});
+    context._ensureInstalled(function() {
+
+      done();
+    })
+  });
 });

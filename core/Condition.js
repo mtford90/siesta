@@ -3,57 +3,12 @@ var util = require('./util'),
 
 function Condition(fn, lazy) {
   if (lazy === undefined || lazy === null) {
-    lazy = true;
+    this.lazy = true;
   }
-  fn = fn || function(done) {
+  this._fn = fn || function(done) {
     done();
   };
-
-  this._promise = new util.Promise(function(resolve, reject) {
-    this.reject = reject;
-    this.resolve = resolve;
-    this.fn = function() {
-      this.executed = true;
-      var numComplete = 0;
-      var results = [];
-      var errors = [];
-      if (util.isArray(fn)) {
-        var checkComplete = function() {
-          if (numComplete == fn.length) {
-            if (errors.length) {
-              reject(errors);
-            }
-            else {
-              resolve(results);
-            }
-          }
-        }.bind(this);
-        fn.forEach(function(cond, idx) {
-          cond
-            .then(function(res) {
-              results[idx] = res;
-              numComplete++;
-              checkComplete();
-            })
-            .catch(function(err) {
-              errors[idx] = err;
-              numComplete++;
-              checkComplete();
-            });
-        });
-      }
-      else {
-        fn(function(err, res) {
-          if (err) reject(err);
-          else resolve(res);
-        }.bind(this))
-      }
-    }
-  }.bind(this));
-
-  if (!lazy) this._execute();
-  this.executed = false;
-  this.dependent = [];
+  this.reset();
 }
 
 Condition.all = argsarray(function(args) {
@@ -94,7 +49,51 @@ Condition.prototype = {
     this.dependent.push(cond);
   },
   reset: function() {
+    this._promise = new util.Promise(function(resolve, reject) {
+      this.reject = reject;
+      this.resolve = resolve;
+      this.fn = function() {
+        this.executed = true;
+        var numComplete = 0;
+        var results = [];
+        var errors = [];
+        if (util.isArray(this._fn)) {
+          var checkComplete = function() {
+            if (numComplete == this._fn.length) {
+              if (errors.length) {
+                reject(errors);
+              }
+              else {
+                resolve(results);
+              }
+            }
+          }.bind(this);
+          this._fn.forEach(function(cond, idx) {
+            cond
+              .then(function(res) {
+                results[idx] = res;
+                numComplete++;
+                checkComplete();
+              }.bind(this))
+              .catch(function(err) {
+                errors[idx] = err;
+                numComplete++;
+                checkComplete();
+              }.bind(this));
+          });
+        }
+        else {
+          this._fn(function(err, res) {
+            if (err) reject(err);
+            else resolve(res);
+          }.bind(this))
+        }
+      }.bind(this)
+    }.bind(this));
 
+    if (!this.lazy) this._execute();
+    this.executed = false;
+    this.dependent = [];
   }
 };
 
