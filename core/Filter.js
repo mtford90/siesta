@@ -189,7 +189,7 @@ util.extend(Filter.prototype, {
   clearOrdering: function() {
     this.opts.order = null;
   },
-  objectMatchesOrQuery: function(obj, orQuery) {
+  objectMatchesOrFilter: function(obj, orQuery) {
     for (var idx in orQuery) {
       if (orQuery.hasOwnProperty(idx)) {
         var query = orQuery[idx];
@@ -200,11 +200,11 @@ util.extend(Filter.prototype, {
     }
     return false;
   },
-  objectMatchesAndQuery: function(obj, andQuery) {
-    for (var idx in andQuery) {
-      if (andQuery.hasOwnProperty(idx)) {
-        var query = andQuery[idx];
-        if (!this.objectMatchesBaseFilter(obj, query)) {
+  objectMatchesAndFilter: function(obj, andFilter) {
+    for (var idx in andFilter) {
+      if (andFilter.hasOwnProperty(idx)) {
+        var filter = andFilter[idx];
+        if (!this.objectMatchesBaseFilter(obj, filter)) {
           return false;
         }
       }
@@ -250,9 +250,9 @@ util.extend(Filter.prototype, {
     }
     return false;
   },
-  objectMatches: function(obj, unprocessedField, value, query) {
+  objectMatches: function(obj, unprocessedField, value, filter) {
     if (unprocessedField == '$or') {
-      var $or = query['$or'];
+      var $or = filter['$or'];
       if (!util.isArray($or)) {
         $or = Object.keys($or).map(function(k) {
           var normalised = {};
@@ -260,10 +260,10 @@ util.extend(Filter.prototype, {
           return normalised;
         });
       }
-      if (!this.objectMatchesOrQuery(obj, $or)) return false;
+      if (!this.objectMatchesOrFilter(obj, $or)) return false;
     }
     else if (unprocessedField == '$and') {
-      if (!this.objectMatchesAndQuery(obj, query['$and'])) return false;
+      if (!this.objectMatchesAndFilter(obj, filter['$and'])) return false;
     }
     else {
       var matches = this.splitMatches(obj, unprocessedField, value);
@@ -272,12 +272,12 @@ util.extend(Filter.prototype, {
     }
     return true;
   },
-  objectMatchesBaseFilter: function(obj, query) {
-    var fields = Object.keys(query);
+  objectMatchesBaseFilter: function(obj, filter) {
+    var fields = Object.keys(filter);
     for (var i = 0; i < fields.length; i++) {
       var unprocessedField = fields[i],
-        value = query[unprocessedField];
-      var rt = this.objectMatches(obj, unprocessedField, value, query);
+        value = filter[unprocessedField];
+      var rt = this.objectMatches(obj, unprocessedField, value, filter);
       if (typeof rt != 'boolean') return rt;
       if (!rt) return false;
     }
