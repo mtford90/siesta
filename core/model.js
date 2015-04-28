@@ -1,7 +1,7 @@
 var log = require('./log')('model'),
   InternalSiestaError = require('./error').InternalSiestaError,
   RelationshipType = require('./RelationshipType'),
-  Query = require('./Filter'),
+  Filter = require('./Filter'),
   MappingOperation = require('./mappingOperation'),
   ModelInstance = require('./ModelInstance'),
   util = require('./util'),
@@ -13,7 +13,7 @@ var log = require('./log')('model'),
   ProxyEventEmitter = require('./ProxyEventEmitter'),
   Promise = util.Promise,
   Placeholder = require('./Placeholder'),
-  ReactiveQuery = require('./ReactiveQuery'),
+  ReactiveFilter = require('./ReactiveFilter'),
   InstanceFactory = require('./instanceFactory');
 
 /**
@@ -365,7 +365,7 @@ util.extend(Model.prototype, {
     }
   },
   _query: function(query) {
-    return new Query(this, query || {});
+    return new Filter(this, query || {});
   },
   query: function(query, cb) {
     var queryInstance;
@@ -422,7 +422,7 @@ util.extend(Model.prototype, {
       then: linkPromise.then.bind(linkPromise),
       catch: linkPromise.catch.bind(linkPromise),
       on: argsarray(function(args) {
-        var rq = new ReactiveQuery(this._query(query));
+        var rq = new ReactiveFilter(this._query(query));
         rq.init();
         rq.on.apply(rq, args);
       }.bind(this))
@@ -431,10 +431,10 @@ util.extend(Model.prototype, {
   /**
    * Only used in testing at the moment.
    * @param query
-   * @returns {ReactiveQuery}
+   * @returns {ReactiveFilter}
    */
   _reactiveQuery: function(query) {
-    return new ReactiveQuery(new Query(this, query || {}));
+    return new ReactiveFilter(new Filter(this, query || {}));
   },
   one: function(opts, cb) {
     if (typeof opts == 'function') {

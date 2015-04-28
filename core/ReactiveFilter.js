@@ -6,7 +6,7 @@
  */
 
 var log = require('./log')('query:reactive'),
-  Query = require('./Filter'),
+  Filter = require('./Filter'),
   EventEmitter = require('events').EventEmitter,
   Chain = require('./Chain'),
   modelEvents = require('./modelEvents'),
@@ -16,15 +16,15 @@ var log = require('./log')('query:reactive'),
 
 /**
  *
- * @param {Query} query - The underlying query
+ * @param {Filter} query - The underlying query
  * @constructor
  */
-function ReactiveQuery(query) {
+function ReactiveFilter(query) {
   var self = this;
   EventEmitter.call(this);
   Chain.call(this);
   util.extend(this, {
-    insertionPolicy: ReactiveQuery.InsertionPolicy.Back,
+    insertionPolicy: ReactiveFilter.InsertionPolicy.Back,
     initialised: false
   });
 
@@ -77,17 +77,17 @@ function ReactiveQuery(query) {
 
 }
 
-ReactiveQuery.prototype = Object.create(EventEmitter.prototype);
-util.extend(ReactiveQuery.prototype, Chain.prototype);
+ReactiveFilter.prototype = Object.create(EventEmitter.prototype);
+util.extend(ReactiveFilter.prototype, Chain.prototype);
 
-util.extend(ReactiveQuery, {
+util.extend(ReactiveFilter, {
   InsertionPolicy: {
     Front: 'Front',
     Back: 'Back'
   }
 });
 
-util.extend(ReactiveQuery.prototype, {
+util.extend(ReactiveFilter.prototype, {
   /**
    *
    * @param cb
@@ -127,7 +127,7 @@ util.extend(ReactiveQuery.prototype, {
   },
   insert: function(newObj) {
     var results = this.results.mutableCopy();
-    if (this.insertionPolicy == ReactiveQuery.InsertionPolicy.Back) var idx = results.push(newObj);
+    if (this.insertionPolicy == ReactiveFilter.InsertionPolicy.Back) var idx = results.push(newObj);
     else idx = results.unshift(newObj);
     this.results = results.asModelQuerySet(this.model);
     return idx;
@@ -262,4 +262,4 @@ util.extend(ReactiveQuery.prototype, {
   }
 });
 
-module.exports = ReactiveQuery;
+module.exports = ReactiveFilter;

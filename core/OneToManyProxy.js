@@ -18,7 +18,7 @@ function OneToManyProxy(opts) {
 }
 
 OneToManyProxy.prototype = Object.create(RelationshipProxy.prototype);
-git
+
 util.extend(OneToManyProxy.prototype, {
   clearReverse: function(removed) {
     var self = this;

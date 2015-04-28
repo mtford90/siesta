@@ -11,7 +11,7 @@ var log = require('./log')('model'),
   OneToManyProxy = require('./OneToManyProxy'),
   OneToOneProxy = require('./OneToOneProxy'),
   ManyToManyProxy = require('./ManyToManyProxy'),
-  ReactiveQuery = require('./ReactiveQuery'),
+  ReactiveQuery = require('./ReactiveFilter'),
   ModelEventType = modelEvents.ModelEventType;
 
 function ModelInstanceFactory(model) {
