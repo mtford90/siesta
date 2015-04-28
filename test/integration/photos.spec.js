@@ -144,8 +144,8 @@ describe('photos intercollection', function() {
 
   describe('local queries', function() {
     describe('offline', function() {
-      it('should return mike when querying for him', function(done) {
-        MyOfflineCollection.User.query({
+      it('should return mike when filtering for him', function(done) {
+        MyOfflineCollection.User.filter({
           username: 'gaz'
         }, function(err, users) {
           if (err) done(err);
@@ -158,7 +158,7 @@ describe('photos intercollection', function() {
 
     describe('online', function() {
 
-      it('should return 3 users when run a local all query against users', function(done) {
+      it('should return 3 users when run a local all filter against users', function(done) {
         MyOnlineCollection.User.all(function(err, users) {
           if (err) done(err);
           assert.equal(users.length, 3);
@@ -166,7 +166,7 @@ describe('photos intercollection', function() {
         });
       });
 
-      it('should return 3 photos when run a local all query against photos', function(done) {
+      it('should return 3 photos when run a local all filter against photos', function(done) {
         MyOnlineCollection.Photo.all(function(err, photos) {
           if (err) done(err);
           assert.equal(photos.length, 3);
@@ -176,7 +176,7 @@ describe('photos intercollection', function() {
 
       it('should return 2 photos with height 500', function(done) {
         this.timeout(10000);
-        MyOnlineCollection.Photo.query({
+        MyOnlineCollection.Photo.filter({
           height: 500
         }, function(err, photos) {
           if (err) done(err);
@@ -190,7 +190,7 @@ describe('photos intercollection', function() {
 
       it('should return 1 photo with height 500, width, 750', function(done) {
         this.timeout(10000);
-        MyOnlineCollection.Photo.query({
+        MyOnlineCollection.Photo.filter({
           height: 500,
           width: 750
         }, function(err, photos) {
@@ -202,7 +202,7 @@ describe('photos intercollection', function() {
         });
       });
 
-      it('should be able to query by remote identifier', function(done) {
+      it('should be able to filter by remote identifier', function(done) {
         MyOnlineCollection.User.one({userId: '1'}, function(err, user) {
           if (err) done(err);
           assert.equal(user.userId, '1');

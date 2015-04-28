@@ -41,9 +41,9 @@ describe('installation', function() {
           .catch(done);
       });
 
-      it('query', function(done) {
+      it('filter', function(done) {
         Person
-          .query({age__gt: 23})
+          .filter({age__gt: 23})
           .then(function(res) {
             assert.notOk(res.length, 'Should be no results');
             done();
@@ -83,15 +83,15 @@ describe('installation', function() {
       });
 
 
-      it('query', function(done) {
+      it('filter', function(done) {
         app._storage._pouch.bulkDocs([
           {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
           {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
         ]).then(function() {
           Person
-            .query({age__gt: 23})
+            .filter({age__gt: 23})
             .then(function(res) {
-              assert.equal(res.length, 1, 'Should have installed and loaded before returning from the query');
+              assert.equal(res.length, 1, 'Should have installed and loaded before returning from the filter');
               done();
             })
             .catch(done);

@@ -95,8 +95,8 @@ describe('singleton mapping', function() {
     }).catch(done);
   });
 
-  it('query should return an empty car, even if nothing has ever been mapped', function(done) {
-    Car.query({}).then(function(cars) {
+  it('filter should return an empty car, even if nothing has ever been mapped', function(done) {
+    Car.filter({}).then(function(cars) {
       assert.equal(cars.length, 1);
       done();
     }).catch(done);

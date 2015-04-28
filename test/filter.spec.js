@@ -5,8 +5,8 @@ var assert = require('chai').assert,
   createFilterSet = internal.filterSet,
   Filter = internal.Filter;
 
-describe('query...', function() {
-  var app = siesta.createApp('query');
+describe('filter...', function() {
+  var app = siesta.createApp('filter');
   before(function() {
     app.storage = false;
   });
@@ -780,7 +780,7 @@ describe('query...', function() {
           {name: '111122'},
           {name: '4343bb'}
         ]).then(function() {
-          Model.query({name__contains: 'bb'}).then(function(res) {
+          Model.filter({name__contains: 'bb'}).then(function(res) {
             assert.equal(res.length, 2);
             res.forEach(function(m) {
               assert(m.name.indexOf('bb') > -1, 'All contain');
@@ -795,7 +795,7 @@ describe('query...', function() {
           {name: [4, 5, 6]},
           {name: [3, 4, 5]}
         ]).then(function() {
-          Model.query({name__contains: 3}).then(function(res) {
+          Model.filter({name__contains: 3}).then(function(res) {
             assert.equal(res.length, 2);
             res.forEach(function(m) {
               assert(m.name.indexOf(3) > -1, 'All contain');
@@ -878,7 +878,7 @@ describe('query...', function() {
       });
       Person.graph([{age: 2}, {age: 3}])
         .then(function() {
-          Person.query({age__three: 'doesnt matter'})
+          Person.filter({age__three: 'doesnt matter'})
             .then(function(res) {
               assert.equal(res.length, 1);
               done();
@@ -903,7 +903,7 @@ describe('query...', function() {
         {name: 'Bob', age: 40},
         {name: 'John', age: 12}
       ]).then(function() {
-        Person.query({__order: '-age'})
+        Person.filter({__order: '-age'})
           .then(function(orderedPeople) {
             var lastAge = orderedPeople[0].age;
             for (var i = 1; i < orderedPeople.length; i++) {
@@ -922,7 +922,7 @@ describe('query...', function() {
         {name: 'Bob', age: 40},
         {name: 'John', age: 12}
       ]).then(function() {
-        Person.query({__order: 'age'})
+        Person.filter({__order: 'age'})
           .then(function(orderedPeople) {
             var lastAge = orderedPeople[0].age;
             for (var i = 1; i < orderedPeople.length; i++) {
@@ -941,7 +941,7 @@ describe('query...', function() {
         {name: 'Bob', age: 24},
         {name: 'John', age: 12}
       ]).then(function() {
-        var query = Person.query({__order: ['age', 'name']})
+        var filter = Person.filter({__order: ['age', 'name']})
           .then(function(orderedPeople) {
             var lastAge = orderedPeople[0].age;
             for (var i = 1; i < orderedPeople.length; i++) {
@@ -960,7 +960,7 @@ describe('query...', function() {
         {name: 'Bob', dob: new Date(1993, 1, 12)},
         {name: 'John', dob: new Date(1984, 3, 5)}
       ]).then(function() {
-        Person.query({__order: 'dob'})
+        Person.filter({__order: 'dob'})
           .then(function(orderedPeople) {
             var lastDob = orderedPeople[0].dob;
             for (var i = 1; i < orderedPeople.length; i++) {
@@ -980,7 +980,7 @@ describe('query...', function() {
         {name: 'Bob'},
         {name: 'John'}
       ]).then(function(people) {
-        Person.query({__order: 'name'})
+        Person.filter({__order: 'name'})
           .then(function(orderedPeople) {
             console.log(_.pluck(orderedPeople, 'name'));
             assert.equal(orderedPeople[0], people[1]);
@@ -998,7 +998,7 @@ describe('query...', function() {
         {name: 'Bob'},
         {name: 'John'}
       ]).then(function(people) {
-        Person.query({__order: '-name'})
+        Person.filter({__order: '-name'})
           .then(function(orderedPeople) {
             console.log(_.pluck(orderedPeople, 'name'));
             assert.equal(orderedPeople[2], people[1]);
@@ -1025,7 +1025,7 @@ describe('query...', function() {
         {name: 'Bob', age: 22},
         {name: 'Peter', age: 29}
       ]).then(function() {
-        Person.query({
+        Person.filter({
           $or: [
             {age: 24},
             {age: 22}
@@ -1045,7 +1045,7 @@ describe('query...', function() {
         {name: 'Bob', age: 22},
         {name: 'Peter', age: 24}
       ]).then(function() {
-        Person.query({
+        Person.filter({
           $or: [
             {age: 24, name: 'Mike'},
             {age: 22}
@@ -1067,7 +1067,7 @@ describe('query...', function() {
         {name: 'Peter', age: 24},
         {name: 'Roger', age: 24}
       ]).then(function() {
-        Person.query({
+        Person.filter({
           $or: [
             {$or: [{name: 'Mike'}, {name: 'Peter'}], age: 24},
             {age: 22}
@@ -1085,7 +1085,7 @@ describe('query...', function() {
         {name: 'Bob', age: 24},
         {name: 'Peter', age: 29}
       ]).then(function() {
-        Person.query({
+        Person.filter({
           $or: {
             age: 24,
             name: 'Mike'
@@ -1117,7 +1117,7 @@ describe('query...', function() {
         {name: 'Peter', age: 24}
       ])
         .then(function() {
-          Person.query({
+          Person.filter({
             $and: [
               {age: 24},
               {name: 'Mike'}
@@ -1142,7 +1142,7 @@ describe('query...', function() {
         {name: 'Roger', age: 24}
       ])
         .then(function() {
-          Person.query({
+          Person.filter({
             $and: [
               {$or: [{name: 'Mike'}, {name: 'Peter'}]},
               {age: 24}
@@ -1185,7 +1185,7 @@ describe('query...', function() {
         {name: 'Bentley', colour: 'green', owner: {id: 2, name: 'Bob', age: 22}}
       ])
         .then(function() {
-          Car.query({'owner.age': 23})
+          Car.filter({'owner.age': 23})
             .then(function(cars) {
               assert.equal(cars.length, 2);
               done();
@@ -1204,7 +1204,7 @@ describe('query...', function() {
         {name: 'Bentley', colour: 'green', owner: {id: 3, name: 'Bob', age: 25}}
       ])
         .then(function() {
-          Car.query({'owner.age__lte': 24})
+          Car.filter({'owner.age__lte': 24})
             .then(function(cars) {
               assert.equal(cars.length, 2);
               done();
@@ -1219,7 +1219,7 @@ describe('query...', function() {
 
   });
 
-  describe('querying non-relationship objects', function() {
+  describe('filtering non-relationship objects', function() {
 
     it('object', function(done) {
       var Collection = app.collection('myCollection'),
@@ -1230,7 +1230,7 @@ describe('query...', function() {
       var data = [{x: {y: 1}}, {x: {y: 2}}];
       Model.graph(data)
         .then(function() {
-          Model.query({'x.y': 1})
+          Model.filter({'x.y': 1})
             .then(function(res) {
               assert.equal(res.length, 1);
               assert.equal(res[0].x.y, 1);
@@ -1249,7 +1249,7 @@ describe('query...', function() {
       var data = [{x: {y: 1}}, {}];
       Model.graph(data)
         .then(function() {
-          Model.query({'x.y': 1})
+          Model.filter({'x.y': 1})
             .then(function(res) {
               assert.equal(res.length, 1);
               assert.equal(res[0].x.y, 1);
@@ -1267,7 +1267,7 @@ describe('query...', function() {
       var data = [{x: {y: 1}}, {x: {y: {z: 1}}}, {x: {y: undefined}}, {x: {y: null}}, {x: {y: [1, 2, 3]}}];
       Model.graph(data)
         .then(function() {
-          Model.query({'x.y': 1})
+          Model.filter({'x.y': 1})
             .then(function(res) {
               assert.equal(res.length, 1);
               assert.equal(res[0].x.y, 1);
@@ -1279,7 +1279,7 @@ describe('query...', function() {
 
   });
 
-  describe('querying non-relationship arrays', function() {
+  describe('filtering non-relationship arrays', function() {
     it('should be able to match against arrays', function(done) {
       var Collection = app.collection('myCollection'),
         Model = Collection.model('Model', {
@@ -1289,7 +1289,7 @@ describe('query...', function() {
       var data = [{x: {y: [1, 2, 3]}}, {x: {y: [4, 5, 6]}}];
       Model.graph(data)
         .then(function() {
-          Model.query({'x.y__contains': 2})
+          Model.filter({'x.y__contains': 2})
             .then(function(res) {
               assert.equal(res.length, 1);
               assert.include(res[0].x.y, 2);
@@ -1307,7 +1307,7 @@ describe('query...', function() {
       var data = [{x: {y: [1, 2, 3]}}, {x: {y: 1}}, {x: {y: {}}}, {x: {y: undefined}}, {x: {y: null}}, {x: 1}];
       Model.graph(data)
         .then(function() {
-          Model.query({'x.y__contains': 2})
+          Model.filter({'x.y__contains': 2})
             .then(function(res) {
               assert.equal(res.length, 1);
               assert.include(res[0].x.y, 2);
@@ -1317,7 +1317,7 @@ describe('query...', function() {
     });
   });
 
-  describe('query sets', function() {
+  describe('filter sets', function() {
 
     function _instance(Model, data) {
       var instance = Model._instance(data);
@@ -1334,7 +1334,7 @@ describe('query...', function() {
     });
 
     describe('attributes', function() {
-      var querySet, Collection, Person;
+      var filterSet, Collection, Person;
       var michael, bob;
       beforeEach(function(done) {
         Collection = app.collection('myCollection');
@@ -1345,18 +1345,18 @@ describe('query...', function() {
         Person._storageEnabled.then(function() {
           michael = _instance(Person, {name: 'Michael', age: 24});
           bob = _instance(Person, {name: 'Bob', age: 21});
-          querySet = createFilterSet([michael, bob], Person);
+          filterSet = createFilterSet([michael, bob], Person);
           done();
         }).catch(done);
       });
 
       it('contains the instances', function() {
-        assert.include(querySet, michael);
-        assert.include(querySet, bob);
+        assert.include(filterSet, michael);
+        assert.include(filterSet, bob);
       });
 
       it('contains the ages', function() {
-        var ages = querySet.age;
+        var ages = filterSet.age;
         assert.include(ages, michael.age);
         assert.include(ages, bob.age);
       });
@@ -1364,39 +1364,39 @@ describe('query...', function() {
       it('can set ages', function() {
         var michaelsNewAge = 25,
           bobsNewAge = 28;
-        querySet.age = [michaelsNewAge, bobsNewAge];
+        filterSet.age = [michaelsNewAge, bobsNewAge];
         assert.equal(michael.age, michaelsNewAge);
         assert.equal(bob.age, bobsNewAge);
       });
 
       it('should throw an error if attempt to set with a diff. length array', function() {
         assert.throws(function() {
-          querySet.age = [1, 2, 3];
+          filterSet.age = [1, 2, 3];
         }, SiestaUserError);
       });
 
       it('can set a single age', function() {
         var newAge = 25;
-        querySet.age = newAge;
+        filterSet.age = newAge;
         assert.equal(michael.age, newAge);
         assert.equal(bob.age, newAge);
       });
 
       it('uppercase all names', function() {
-        var nameQuerySet = querySet.name;
+        var nameQuerySet = filterSet.name;
         assert.include(nameQuerySet, 'Michael');
         assert.include(nameQuerySet, 'Bob');
-        querySet.name = nameQuerySet.toUpperCase();
+        filterSet.name = nameQuerySet.toUpperCase();
         assert.equal(michael.name, 'MICHAEL');
         assert.equal(bob.name, 'BOB');
       });
 
       it('uppercase then lowercase all names', function() {
-        var nameQuerySet = querySet.name;
+        var nameQuerySet = filterSet.name;
         assert.include(nameQuerySet, 'Michael');
         assert.include(nameQuerySet, 'Bob');
         var upper = nameQuerySet.toUpperCase();
-        querySet.name = upper.toLowerCase();
+        filterSet.name = upper.toLowerCase();
         assert.equal(michael.name, 'michael');
         assert.equal(bob.name, 'bob');
       });
@@ -1432,17 +1432,17 @@ describe('query...', function() {
       });
 
       it('new owner', function() {
-        var querySet = createFilterSet(michael.cars, Car);
-        querySet.owner = bob;
+        var filterSet = createFilterSet(michael.cars, Car);
+        filterSet.owner = bob;
         assert.equal(bob.cars.length, 2);
         assert.equal(michael.cars.length, 0)
       });
 
       it('remove all cars', function(done) {
         var cars = _.extend([], michael.cars),
-          querySet = createFilterSet(cars, Car);
+          filterSet = createFilterSet(cars, Car);
 
-        querySet.remove().then(function() {
+        filterSet.remove().then(function() {
           app.notify(function() {
             cars.forEach(function(c) {
               assert.ok(c.removed);
@@ -1498,7 +1498,7 @@ describe('query...', function() {
 
         it('simple', function(done) {
           var instance = data.RelatedModel[0];
-          Model.query({rel: instance})
+          Model.filter({rel: instance})
             .then(function(instances) {
               console.log('?', instances);
 
@@ -1511,7 +1511,7 @@ describe('query...', function() {
         it('simple, _id', function(done) {
           var instance = data.RelatedModel[0];
           Model
-            .query({'rel.id': instance.id})
+            .filter({'rel.id': instance.id})
             .then(function(instances) {
               console.log('?', instances);
               assert.equal(instances.length, 1);
@@ -1544,7 +1544,7 @@ describe('query...', function() {
           var reverseInstance = data.RelatedModel[0];
           var instance = reverseInstance.reverseRel[0];
           RelatedModel
-            .query({reverseRel__in: instance})
+            .filter({reverseRel__in: instance})
             .then(function(instances) {
               assert.equal(instances[0], reverseInstance);
               done();
@@ -1556,7 +1556,7 @@ describe('query...', function() {
           var reverseInstance = data.RelatedModel[0],
             instance = reverseInstance.reverseRel[0];
           RelatedModel
-            .query({'reverseRel.id__in': instance.id})
+            .filter({'reverseRel.id__in': instance.id})
             .then(function(instances) {
               console.log(instances);
               assert.equal(instances[0], reverseInstance);

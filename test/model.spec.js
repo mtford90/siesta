@@ -474,7 +474,7 @@ describe('Models', function() {
           var M = C.model('M', {
               init: function(fromStorage, cb) {
                 assert.notOk(fromStorage);
-                M_2.query({}).then(function() {
+                M_2.filter({}).then(function() {
                   asyncInitExecuted = true;
                   cb();
                 }).catch(cb);
@@ -698,13 +698,13 @@ describe('Models', function() {
         };
         var M = C.model('M', {
           statics: {
-            query: staticMethod
+            filter: staticMethod
           },
           attributes: ['attr']
         });
         internal.Model.install([M])
           .then(function() {
-            assert.notEqual(M.query(), 'a', 'Existing statics should not be replaced...');
+            assert.notEqual(M.filter(), 'a', 'Existing statics should not be replaced...');
             done();
           })
           .catch(done);

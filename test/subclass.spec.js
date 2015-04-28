@@ -760,7 +760,7 @@ describe('Subclass', function() {
   });
 
 
-  describe('query', function() {
+  describe('filter', function() {
     var collection, Car, SportsCar, SuperCar;
 
     beforeEach(function(done) {
@@ -796,7 +796,7 @@ describe('Subclass', function() {
 
     });
 
-    it('parent query', function(done) {
+    it('parent filter', function(done) {
       Car.all()
         .then(function(cars) {
           assert.equal(cars.length, 3, 'All descends should be returned');
@@ -806,7 +806,7 @@ describe('Subclass', function() {
       ;
     });
 
-    it('middle query', function(done) {
+    it('middle filter', function(done) {
       SportsCar.all()
         .then(function(cars) {
           assert.equal(cars.length, 2, 'Sports cars and super cars should be returned');
@@ -816,7 +816,7 @@ describe('Subclass', function() {
       ;
     });
 
-    it('child query', function(done) {
+    it('child filter', function(done) {
       SuperCar.all()
         .then(function(cars) {
           assert.equal(cars.length, 1, 'Only the supercar should be returned');

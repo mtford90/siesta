@@ -124,7 +124,7 @@ function Model(opts) {
   });
   var globalEventName = this.collectionName + ':' + this.name,
     proxied = {
-      query: this.query.bind(this)
+      filter: this.filter.bind(this)
     };
 
   ProxyEventEmitter.call(this, this.context, globalEventName, proxied);
@@ -364,29 +364,29 @@ util.extend(Model.prototype, {
       throw new InternalSiestaError('Reverse relationships for "' + this.name + '" have already been installed.');
     }
   },
-  _query: function(query) {
-    return new Filter(this, query || {});
+  _filter: function(filter) {
+    return new Filter(this, filter || {});
   },
-  query: function(filter, cb) {
+  filter: function(filter, cb) {
     var filterInstance;
     var promise = util.promise(cb, function(cb) {
       this.context._ensureInstalled(function() {
         if (!this.singleton) {
-          filterInstance = this._query(filter);
+          filterInstance = this._filter(filter);
           return filterInstance.execute(cb);
         }
         else {
-          filterInstance = this._query({__ignoreInstalled: true});
+          filterInstance = this._filter({__ignoreInstalled: true});
           filterInstance.execute(function(err, objs) {
             if (err) cb(err);
             else {
-              // Cache a new singleton and then reexecute the query
+              // Cache a new singleton and then reexecute the filter
               filter = util.extend({}, filter);
               filter.__ignoreInstalled = true;
               if (!objs.length) {
                 this.graph({}, function(err) {
                   if (!err) {
-                    filterInstance = this._query(filter);
+                    filterInstance = this._filter(filter);
                     filterInstance.execute(cb);
                   }
                   else {
@@ -395,7 +395,7 @@ util.extend(Model.prototype, {
                 }.bind(this));
               }
               else {
-                filterInstance = this._query(filter);
+                filterInstance = this._filter(filter);
                 filterInstance.execute(cb);
               }
             }
@@ -422,7 +422,7 @@ util.extend(Model.prototype, {
       then: linkPromise.then.bind(linkPromise),
       catch: linkPromise.catch.bind(linkPromise),
       on: argsarray(function(args) {
-        var rq = new ReactiveFilter(this._query(filter));
+        var rq = new ReactiveFilter(this._filter(filter));
         rq.init();
         rq.on.apply(rq, args);
       }.bind(this))
@@ -430,11 +430,11 @@ util.extend(Model.prototype, {
   },
   /**
    * Only used in testing at the moment.
-   * @param query
+   * @param filter
    * @returns {ReactiveFilter}
    */
-  _reactiveFilter: function(query) {
-    return new ReactiveFilter(new Filter(this, query || {}));
+  _reactiveFilter: function(filter) {
+    return new ReactiveFilter(new Filter(this, filter || {}));
   },
   one: function(opts, cb) {
     if (typeof opts == 'function') {
@@ -442,7 +442,7 @@ util.extend(Model.prototype, {
       opts = {};
     }
     return util.promise(cb, function(cb) {
-      this.query(opts, function(err, res) {
+      this.filter(opts, function(err, res) {
         if (err) cb(err);
         else {
           if (res.length > 1) {
@@ -456,15 +456,15 @@ util.extend(Model.prototype, {
       });
     }.bind(this));
   },
-  all: function(q, cb) {
-    if (typeof q == 'function') {
-      cb = q;
-      q = {};
+  all: function(f, cb) {
+    if (typeof f == 'function') {
+      cb = f;
+      f = {};
     }
-    q = q || {};
-    var query = {};
-    if (q.__order) query.__order = q.__order;
-    return this.query(q, cb);
+    f = f || {};
+    var filter = {};
+    if (f.__order) filter.__order = f.__order;
+    return this.filter(f, cb);
   },
   _attributeDefinitionWithName: function(name) {
     for (var i = 0; i < this.attributes.length; i++) {

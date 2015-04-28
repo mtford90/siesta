@@ -2,9 +2,9 @@ var assert = require('chai').assert;
 
 var Collection = siesta;
 
-describe('reactive query', function() {
+describe('reactive filter', function() {
   var MyCollection, Person;
-  var app = siesta.createApp('reactive-query');
+  var app = siesta.createApp('reactive-filter');
 
   beforeEach(function(done) {
     // Ensure that storage is wiped clean for each test.
@@ -63,7 +63,7 @@ describe('reactive query', function() {
 
     describe('updates', function() {
 
-      describe('new matching query', function() {
+      describe('new matching filter', function() {
         function assertExpectedResults(results, peter) {
           assert.equal(results.length, 3, 'Should now be 3 results');
           assert.include(results, peter, 'The results should include peter');
@@ -120,7 +120,7 @@ describe('reactive query', function() {
 
       });
 
-      describe('new, not matching query', function() {
+      describe('new, not matching filter', function() {
         function matchResults(rq, peter) {
           assert.equal(rq.results.length, 2, 'Should still be 2 results');
           assert.notInclude(rq.results, peter, 'The results should not include peter');
@@ -455,7 +455,7 @@ describe('reactive query', function() {
     });
     it('emission, register handler afterwards', function(done) {
       var cancel;
-      cancel = Person.query({age__lt: 30})
+      cancel = Person.filter({age__lt: 30})
         .then(function() {
           Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
         })
@@ -466,7 +466,7 @@ describe('reactive query', function() {
     });
     it('emission, register handler first', function(done) {
       var cancel;
-      cancel = Person.query({age__lt: 30})
+      cancel = Person.filter({age__lt: 30})
         .on('*', function() {
           cancel();
           done();
@@ -478,7 +478,7 @@ describe('reactive query', function() {
     it('emission, multiple handlers', function(done) {
       var cancel;
       var numCalls = 0;
-      cancel = Person.query({age__lt: 30})
+      cancel = Person.filter({age__lt: 30})
         .then(function() {
           Person.graph({name: 'Peter', age: 21, id: 4}).catch(done);
         })
@@ -502,7 +502,7 @@ describe('reactive query', function() {
     it('emission, multiple handlers, weird order', function(done) {
       var cancel;
       var numCalls = 0;
-      cancel = Person.query({age__lt: 30})
+      cancel = Person.filter({age__lt: 30})
         .on('*', function() {
           numCalls++;
         })

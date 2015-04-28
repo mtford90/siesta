@@ -1182,7 +1182,7 @@ describe('events', function() {
                 if (e.new == 'red') {
                   setCalled++;
                 }
-              }).query({})
+              }).filter({})
                 .then(function(allCars) {
                   assert.include(allCars, purpleCar);
                   Car.graph({colour: 'green'}, function(err, car) {
