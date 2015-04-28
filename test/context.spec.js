@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 
-describe('contexts', function() {
+describe.only('contexts', function() {
   var MyCollection, Person, Car;
 
   var app = siesta.createApp('context');
@@ -25,8 +25,23 @@ describe('contexts', function() {
     });
   });
 
-  it('yo!', function() {
+  it('yo!', function(done) {
     var context = app.context({name: 'another-context'});
     assert.notEqual(context.Person, Person);
+    assert.notEqual(context.storage, app.storage);
+    context
+      .MyCollection
+      .Person
+      .graph({name: 'Mike', age: 21})
+      .then(function(person) {
+        app.get(person._id)
+          .then(function(p) {
+            assert.notOk(p);
+            assert.equal(person.name, 'Mike');
+            assert.equal(person.age, 21);
+            done();
+          })
+          .catch(done);
+      }).catch(done);
   });
 });

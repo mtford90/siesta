@@ -236,7 +236,7 @@ util.extend(RelationshipProxy.prototype, {
     var modelName = model.name;
     var collectionName = proxyObject.collectionName;
     // We take [] == null == undefined in the case of relationships.
-    model.app.broadcast({
+    model.context.broadcast({
       collection: collectionName,
       model: modelName,
       localId: proxyObject.localId,
@@ -261,7 +261,7 @@ util.extend(RelationshipProxy.prototype, {
     var model = this.object.model,
       modelName = model.name,
       coll = this.object.collectionName;
-    model.app.broadcast({
+    model.context.broadcast({
       collection: coll,
       model: modelName,
       localId: this.object.localId,
@@ -282,7 +282,7 @@ util.extend(RelationshipProxy.prototype, {
         splices.forEach(function(splice) {
           var added = splice.addedCount ? arr.slice(splice.index, splice.index + splice.addedCount) : [];
           var model = self.getForwardModel();
-          model.app.broadcast({
+          model.context.broadcast({
             collection: model.collectionName,
             model: model.name,
             localId: self.object.localId,

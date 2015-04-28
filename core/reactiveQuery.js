@@ -101,7 +101,7 @@ util.extend(ReactiveQuery.prototype, {
         this._handleNotif(n);
       }.bind(this);
       this.handler = handler;
-      this.model.app.events.on(name, handler);
+      this.model.context.events.on(name, handler);
       return util.promise(cb, function(cb) {
         if ((!this.initialised) || _ignoreInit) {
           this._query.execute(function(err, results) {
@@ -222,7 +222,7 @@ util.extend(ReactiveQuery.prototype, {
   },
   terminate: function() {
     if (this.handler) {
-      this.model.app.events.removeListener(this._constructNotificationName(), this.handler);
+      this.model.context.events.removeListener(this._constructNotificationName(), this.handler);
     }
     this.results = null;
     this.handler = null;

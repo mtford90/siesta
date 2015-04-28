@@ -110,9 +110,15 @@ Context.prototype = {
   collection: function(name, opts) {
     opts = opts || {};
     opts.context = this;
-    return new Collection(name, opts);
+    var collection = new Collection(name, opts);
+    if (!this[name]) {
+      this[name] = collection;
+    }
+    else {
+      throw Error('A collection with name "' + name + '" already exists, or that name is not allowed');
+    }
+    return collection;
   },
-
   broadcast: function(opts) {
     modelEvents.emit(this, opts);
   },
