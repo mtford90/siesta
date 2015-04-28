@@ -2,7 +2,7 @@ var log = require('./log')('query'),
   util = require('./util'),
   error = require('./error'),
   ModelInstance = require('./ModelInstance'),
-  constructQuerySet = require('./FilterSet');
+  constructFilterSet = require('./FilterSet');
 
 /**
  * @class [Query description]
@@ -185,7 +185,7 @@ util.extend(Query.prototype, {
     }
     res = this._sortResults(res);
     if (err) log('Error executing query', err);
-    callback(err, err ? null : constructQuerySet(res, this.model));
+    callback(err, err ? null : constructFilterSet(res, this.model));
   },
   clearOrdering: function() {
     this.opts.order = null;

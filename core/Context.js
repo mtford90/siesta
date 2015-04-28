@@ -6,7 +6,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   Model = require('./model'),
   error = require('./error'),
   Storage = require('../storage'),
-  Query = require('./Filter'),
+  Filter = require('./Filter'),
   Collection = require('./collection');
 
 function configureStorage(opts) {
@@ -36,7 +36,7 @@ function Context(opts) {
     once: this.events.once.bind(this.events),
     removeAllListeners: this.events.removeAllListeners.bind(this.events),
     notify: util.next,
-    registerComparator: Query.registerComparator.bind(Query),
+    registerComparator: Filter.registerComparator.bind(Filter),
     save: function(cb) {
       return util.promise(cb, function(cb) {
         if (this._storage) {
