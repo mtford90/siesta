@@ -11,8 +11,8 @@ var util = require('./util'),
   OneToManyProxy = require('./OneToManyProxy'),
   RelationshipProxy = require('./RelationshipProxy'),
   modelEvents = require('./modelEvents'),
-  Query = require('./Query'),
-  querySet = require('./QuerySet'),
+  Query = require('./Filter'),
+  querySet = require('./FilterSet'),
   Condition = require('./Condition'),
   log = require('./log');
 

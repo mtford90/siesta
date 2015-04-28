@@ -2,7 +2,7 @@ var log = require('./log')('query'),
   util = require('./util'),
   error = require('./error'),
   ModelInstance = require('./ModelInstance'),
-  constructQuerySet = require('./QuerySet');
+  constructQuerySet = require('./FilterSet');
 
 /**
  * @class [Query description]

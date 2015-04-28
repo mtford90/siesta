@@ -1,7 +1,7 @@
 var log = require('./log')('model'),
   InternalSiestaError = require('./error').InternalSiestaError,
   RelationshipType = require('./RelationshipType'),
-  Query = require('./Query'),
+  Query = require('./Filter'),
   MappingOperation = require('./mappingOperation'),
   ModelInstance = require('./ModelInstance'),
   util = require('./util'),

@@ -4,7 +4,7 @@
  */
 var InternalSiestaError = require('./error').InternalSiestaError,
   util = require('./util'),
-  Query = require('./Query'),
+  Query = require('./Filter'),
   log = require('./log'),
   modelEvents = require('./modelEvents'),
   wrapArrayForAttributes = modelEvents.wrapArray,

@@ -6,7 +6,7 @@ var CollectionRegistry = require('./collectionRegistry'),
   Model = require('./model'),
   error = require('./error'),
   Storage = require('../storage'),
-  Query = require('./Query'),
+  Query = require('./Filter'),
   Collection = require('./collection');
 
 function configureStorage(opts) {

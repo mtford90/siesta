@@ -6,12 +6,12 @@
  */
 
 var log = require('./log')('query:reactive'),
-  Query = require('./Query'),
+  Query = require('./Filter'),
   EventEmitter = require('events').EventEmitter,
   Chain = require('./Chain'),
   modelEvents = require('./modelEvents'),
   InternalSiestaError = require('./error').InternalSiestaError,
-  constructQuerySet = require('./QuerySet'),
+  constructQuerySet = require('./FilterSet'),
   util = require('./util');
 
 /**
