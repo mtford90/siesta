@@ -7,21 +7,21 @@ var log = require('./log')('query'),
 /**
  * @class
  * @param {Model} model
- * @param {Object} query
+ * @param {Object} filter
  */
-function Filter(model, query) {
+function Filter(model, filter) {
   var opts = {};
-  for (var prop in query) {
-    if (query.hasOwnProperty(prop)) {
+  for (var prop in filter) {
+    if (filter.hasOwnProperty(prop)) {
       if (prop.slice(0, 2) == '__') {
-        opts[prop.slice(2)] = query[prop];
-        delete query[prop];
+        opts[prop.slice(2)] = filter[prop];
+        delete filter[prop];
       }
     }
   }
   util.extend(this, {
     model: model,
-    query: query,
+    query: filter,
     opts: opts
   });
   opts.order = opts.order || [];
@@ -184,7 +184,6 @@ util.extend(Filter.prototype, {
       }
     }
     res = this._sortResults(res);
-    if (err) log('Error executing query', err);
     callback(err, err ? null : constructFilterSet(res, this.model));
   },
   clearOrdering: function() {
@@ -194,7 +193,7 @@ util.extend(Filter.prototype, {
     for (var idx in orQuery) {
       if (orQuery.hasOwnProperty(idx)) {
         var query = orQuery[idx];
-        if (this.objectMatchesBaseQuery(obj, query)) {
+        if (this.objectMatchesBaseFilter(obj, query)) {
           return true;
         }
       }
@@ -205,7 +204,7 @@ util.extend(Filter.prototype, {
     for (var idx in andQuery) {
       if (andQuery.hasOwnProperty(idx)) {
         var query = andQuery[idx];
-        if (!this.objectMatchesBaseQuery(obj, query)) {
+        if (!this.objectMatchesBaseFilter(obj, query)) {
           return false;
         }
       }
@@ -233,7 +232,7 @@ util.extend(Filter.prototype, {
       }
     });
     // If we get to the point where we're about to index null or undefined we stop - obviously this object does
-    // not match the query.
+    // not match the filter.
     var notNullOrUndefined = obj != undefined;
     if (notNullOrUndefined) {
       if (util.isArray(obj)) {
@@ -273,7 +272,7 @@ util.extend(Filter.prototype, {
     }
     return true;
   },
-  objectMatchesBaseQuery: function(obj, query) {
+  objectMatchesBaseFilter: function(obj, query) {
     var fields = Object.keys(query);
     for (var i = 0; i < fields.length; i++) {
       var unprocessedField = fields[i],
@@ -285,7 +284,7 @@ util.extend(Filter.prototype, {
     return true;
   },
   objectMatchesQuery: function(obj) {
-    return this.objectMatchesBaseQuery(obj, this.query);
+    return this.objectMatchesBaseFilter(obj, this.query);
   }
 });
 
