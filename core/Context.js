@@ -36,6 +36,8 @@ function Context(opts) {
     once: this.events.once.bind(this.events),
     removeAllListeners: this.events.removeAllListeners.bind(this.events),
     notify: util.next,
+    digest: util.next,
+    emit: util.next,
     registerComparator: Filter.registerComparator.bind(Filter),
     save: function(cb) {
       return util.promise(cb, function(cb) {
