@@ -175,7 +175,7 @@ util.extend(Filter.prototype, {
     for (var i = 0; i < keys.length; i++) {
       var k = keys[i];
       var obj = cacheByLocalId[k];
-      var matches = self.objectMatchesQuery(obj);
+      var matches = self.objectMatchesFilter(obj);
       if (typeof(matches) == 'string') {
         err = error(matches);
         break;
@@ -189,11 +189,11 @@ util.extend(Filter.prototype, {
   clearOrdering: function() {
     this.opts.order = null;
   },
-  objectMatchesOrFilter: function(obj, orQuery) {
-    for (var idx in orQuery) {
-      if (orQuery.hasOwnProperty(idx)) {
-        var query = orQuery[idx];
-        if (this.objectMatchesBaseFilter(obj, query)) {
+  objectMatchesOrFilter: function(obj, orFilter) {
+    for (var idx in orFilter) {
+      if (orFilter.hasOwnProperty(idx)) {
+        var filter = orFilter[idx];
+        if (this.objectMatchesBaseFilter(obj, filter)) {
           return true;
         }
       }
@@ -244,7 +244,7 @@ util.extend(Filter.prototype, {
       var comparator = Filter.comparators[op],
         opts = {object: obj, field: field, value: value, invalid: invalid};
       if (!comparator) {
-        return 'No comparator registered for query operation "' + op + '"';
+        return 'No comparator registered for filter operation "' + op + '"';
       }
       return comparator(opts);
     }
@@ -283,7 +283,7 @@ util.extend(Filter.prototype, {
     }
     return true;
   },
-  objectMatchesQuery: function(obj) {
+  objectMatchesFilter: function(obj) {
     return this.objectMatchesBaseFilter(obj, this.query);
   }
 });

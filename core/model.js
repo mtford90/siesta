@@ -446,7 +446,7 @@ util.extend(Model.prototype, {
         if (err) cb(err);
         else {
           if (res.length > 1) {
-            cb(error('More than one instance returned when executing get query!'));
+            cb(error('More than one instance returned when executing get filter!'));
           }
           else {
             res = res.length ? res[0] : null;

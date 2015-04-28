@@ -5,21 +5,21 @@
  * @module reactiveQuery
  */
 
-var log = require('./log')('query:reactive'),
+var log = require('./log')('filter:reactive'),
   Filter = require('./Filter'),
   EventEmitter = require('events').EventEmitter,
   Chain = require('./Chain'),
   modelEvents = require('./modelEvents'),
   InternalSiestaError = require('./error').InternalSiestaError,
-  constructQuerySet = require('./FilterSet'),
+  constructFilterSet = require('./FilterSet'),
   util = require('./util');
 
 /**
  *
- * @param {Filter} query - The underlying query
+ * @param {Filter} filter - The underlying query
  * @constructor
  */
-function ReactiveFilter(query) {
+function ReactiveFilter(filter) {
   var self = this;
   EventEmitter.call(this);
   Chain.call(this);
@@ -28,17 +28,17 @@ function ReactiveFilter(query) {
     initialised: false
   });
 
-  Object.defineProperty(this, 'query', {
+  Object.defineProperty(this, 'filter', {
     get: function() {
-      return this._query
+      return this._filter
     },
     set: function(v) {
       if (v) {
-        this._query = v;
-        this.results = constructQuerySet([], v.model);
+        this._filter = v;
+        this.results = constructFilterSet([], v.model);
       }
       else {
-        this._query = null;
+        this._filter = null;
         this.results = null;
       }
     },
@@ -46,10 +46,10 @@ function ReactiveFilter(query) {
     enumerable: true
   });
 
-  if (query) {
+  if (filter) {
     util.extend(this, {
-      _query: query,
-      results: constructQuerySet([], query.model)
+      _filter: filter,
+      results: constructFilterSet([], filter.model)
     })
   }
 
@@ -61,9 +61,9 @@ function ReactiveFilter(query) {
     },
     model: {
       get: function() {
-        var query = self._query;
-        if (query) {
-          return query.model
+        var filter = self._filter;
+        if (filter) {
+          return filter.model
         }
       }
     },
@@ -95,7 +95,7 @@ util.extend(ReactiveFilter.prototype, {
    * @returns {*}
    */
   init: function(cb, _ignoreInit) {
-    if (this._query) {
+    if (this._filter) {
       var name = this._constructNotificationName();
       var handler = function(n) {
         this._handleNotif(n);
@@ -104,7 +104,7 @@ util.extend(ReactiveFilter.prototype, {
       this.model.context.events.on(name, handler);
       return util.promise(cb, function(cb) {
         if ((!this.initialised) || _ignoreInit) {
-          this._query.execute(function(err, results) {
+          this._filter.execute(function(err, results) {
             if (!err) {
               cb(null, this._applyResults(results));
             }
@@ -118,7 +118,7 @@ util.extend(ReactiveFilter.prototype, {
         }
       }.bind(this));
     }
-    else throw new InternalSiestaError('No _query defined');
+    else throw new InternalSiestaError('No _filter defined');
   },
   _applyResults: function(results) {
     this.results = results;
@@ -142,7 +142,7 @@ util.extend(ReactiveFilter.prototype, {
   _handleNotif: function(n) {
     if (n.type == modelEvents.ModelEventType.New) {
       var newObj = n.new;
-      if (this._query.objectMatchesQuery(newObj)) {
+      if (this._filter.objectMatchesFilter(newObj)) {
         log('New object matches', newObj);
         var idx = this.insert(newObj);
         this.emit(modelEvents.ModelEventType.Splice, {
@@ -160,7 +160,7 @@ util.extend(ReactiveFilter.prototype, {
       newObj = n.obj;
       var index = this.results.indexOf(newObj),
         alreadyContains = index > -1,
-        matches = this._query.objectMatchesQuery(newObj);
+        matches = this._filter.objectMatchesFilter(newObj);
       if (matches && !alreadyContains) {
         log('Updated object now matches!', newObj);
         idx = this.insert(newObj);
@@ -200,7 +200,7 @@ util.extend(ReactiveFilter.prototype, {
       if (index > -1) {
         log('Removing object', newObj);
         removed = results.splice(index, 1);
-        this.results = constructQuerySet(results, this.model);
+        this.results = constructFilterSet(results, this.model);
         this.emit(modelEvents.ModelEventType.Splice, {
           index: index,
           obj: this,
@@ -215,7 +215,7 @@ util.extend(ReactiveFilter.prototype, {
     else {
       throw new InternalSiestaError('Unknown change type "' + n.type.toString() + '"')
     }
-    this.results = constructQuerySet(this._query._sortResults(this.results), this.model);
+    this.results = constructFilterSet(this._filter._sortResults(this.results), this.model);
   },
   _constructNotificationName: function() {
     return this.model.collectionName + ':' + this.model.name;
