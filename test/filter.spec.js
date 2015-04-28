@@ -3,7 +3,7 @@ var assert = require('chai').assert,
   Model = internal.Model,
   SiestaUserError = internal.error.SiestaUserError,
   createQuerySet = internal.querySet,
-  Query = internal.Query;
+  Filter = internal.Filter;
 
 describe('query...', function() {
   var app = siesta.createApp('query');
@@ -32,7 +32,7 @@ describe('query...', function() {
         if (err) done(err);
         else {
           assert.ok(obj);
-          var q = new Query(Mapping, {
+          var q = new Filter(Mapping, {
             age: 15
           });
           q.execute(function(err, objs) {
@@ -53,7 +53,7 @@ describe('query...', function() {
         if (err) done(err);
         else {
           assert.ok(obj);
-          var q = new Query(Mapping, {
+          var q = new Filter(Mapping, {
             age: 15
           });
           q.execute(function(err, objs) {
@@ -79,7 +79,7 @@ describe('query...', function() {
         if (err) done(err);
         else {
           assert.ok(mapped);
-          var q = new Query(Mapping, {
+          var q = new Filter(Mapping, {
             age: 21
           });
           q.execute(function(err, objs) {
@@ -133,7 +133,7 @@ describe('query...', function() {
             if (err) done(err);
             else {
               assert.ok(mapped);
-              var q = new Query(Person, {
+              var q = new Filter(Person, {
                 age__e: 21
               });
               q.execute(function(err, objs) {
@@ -161,7 +161,7 @@ describe('query...', function() {
             if (err) done(err);
             else {
               assert.ok(mapped);
-              var q = new Query(Person, {
+              var q = new Filter(Person, {
                 age__e: 23
               });
               q.execute(function(err, objs) {
@@ -190,7 +190,7 @@ describe('query...', function() {
               if (err) done(err);
               else {
                 assert.equal(car.owner, person);
-                var q = new Query(Car, {
+                var q = new Filter(Car, {
                   owner__e: person
                 });
                 q.execute().then(function(objs) {
@@ -241,7 +241,7 @@ describe('query...', function() {
             if (err) done(err);
             else {
               assert.ok(mapped);
-              var q = new Query(Person, {
+              var q = new Filter(Person, {
                 age__ne: 21
               });
               q.execute(function(err, objs) {
@@ -268,7 +268,7 @@ describe('query...', function() {
             if (err) done(err);
             else {
               assert.ok(mapped);
-              var q = new Query(Person, {
+              var q = new Filter(Person, {
                 age__ne: 21
               });
               q.execute(function(err, objs) {
@@ -305,7 +305,7 @@ describe('query...', function() {
               }], function(err, car) {
                 if (err) done(err);
                 else {
-                  var q = new Query(Car, {
+                  var q = new Filter(Car, {
                     owner__ne: michael
                   });
                   q.execute().then(function(objs) {
@@ -347,7 +347,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lt: 22
             });
             q.execute(function(err, objs) {
@@ -374,7 +374,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lt: 22
             });
             q.execute(function(err, objs) {
@@ -401,7 +401,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lt: 22
             });
             q.execute(function(err, objs) {
@@ -429,7 +429,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lt: 22
             });
             q.execute(function(err, objs) {
@@ -456,7 +456,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lt: 21
             });
             q.execute(function(err, objs) {
@@ -494,7 +494,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lte: 21
             });
             q.execute(function(err, objs) {
@@ -526,7 +526,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lte: 22
             });
             q.execute(function(err, objs) {
@@ -554,7 +554,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__lte: 20
             });
             q.execute(function(err, objs) {
@@ -592,7 +592,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__gt: 20
             });
             q.execute(function(err, objs) {
@@ -624,7 +624,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__gt: 21
             });
             q.execute(function(err, objs) {
@@ -652,7 +652,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__gt: 21
             });
             q.execute(function(err, objs) {
@@ -690,7 +690,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__gte: 21
             });
             q.execute(function(err, objs) {
@@ -722,7 +722,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__gte: 22
             });
             q.execute(function(err, objs) {
@@ -750,7 +750,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__gte: 22
             });
             q.execute(function(err, objs) {
@@ -843,7 +843,7 @@ describe('query...', function() {
           if (err) done(err);
           else {
             assert.ok(mapped);
-            var q = new Query(Person, {
+            var q = new Filter(Person, {
               age__dfsoigsd: 21
             });
             q.execute(function(err, objs) {
