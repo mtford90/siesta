@@ -204,6 +204,124 @@ describe('query...', function() {
       });
     });
 
+    describe('ne', function() {
+      var collection, Person, Car;
+
+      beforeEach(function() {
+        collection = app.collection('myCollection');
+        Person = collection.model('Person', {
+          id: 'id',
+          attributes: ['name', 'age']
+        });
+        Car = collection.model('Car', {
+          id: 'id',
+          attributes: ['colour', 'name'],
+          relationships: {
+            owner: {
+              type: 'OneToMany',
+              model: 'Person',
+              reverse: 'cars'
+            }
+          }
+        });
+      });
+
+      describe('attributes', function() {
+        it('matches', function(done) {
+          Person.graph([
+            {
+              name: 'Michael',
+              age: 21
+            },
+            {
+              name: 'Bob',
+              age: 22
+            }
+          ], function(err, mapped) {
+            if (err) done(err);
+            else {
+              assert.ok(mapped);
+              var q = new Query(Person, {
+                age__ne: 21
+              });
+              q.execute(function(err, objs) {
+                if (err) done(err);
+                assert.equal(objs.length, 1);
+                assert.include(objs, mapped[1]);
+                done();
+              });
+            }
+          });
+        });
+
+        it('no matches', function(done) {
+          Person.graph([
+            {
+              name: 'Michael',
+              age: 21
+            },
+            {
+              name: 'Bob',
+              age: 21
+            }
+          ], function(err, mapped) {
+            if (err) done(err);
+            else {
+              assert.ok(mapped);
+              var q = new Query(Person, {
+                age__ne: 21
+              });
+              q.execute(function(err, objs) {
+                if (err) done(err);
+                assert.notOk(objs.length);
+                done();
+              });
+            }
+          });
+        });
+      });
+
+      describe('relationships', function() {
+        it('model', function(done) {
+          Person.graph([{
+            name: 'Michael',
+            age: 21
+          }, {
+            name: 'John',
+            age: 22
+          }], function(err, people) {
+            if (err) done(err);
+            else {
+              var michael = people[0];
+              var john = people[1];
+              Car.graph([{
+                colour: 'red',
+                name: 'Aston Martin',
+                owner: michael
+              }, {
+                colour: 'blue',
+                name: 'Lamby',
+                owner: john
+              }], function(err, car) {
+                if (err) done(err);
+                else {
+                  var q = new Query(Car, {
+                    owner__ne: michael
+                  });
+                  q.execute().then(function(objs) {
+                    assert.equal(objs.length, 1);
+                    var car = objs[0];
+                    assert.equal(car.owner, john);
+                    done();
+                  }).catch(done);
+                }
+              });
+            }
+          });
+        });
+      });
+    });
+
     describe('lt', function() {
       var Collection, Person;
 
@@ -689,6 +807,7 @@ describe('query...', function() {
 
     });
 
+
     describe('errors', function() {
       var Collection, Person, Car;
       beforeEach(function() {
@@ -736,6 +855,7 @@ describe('query...', function() {
         });
       })
     });
+
 
   });
 

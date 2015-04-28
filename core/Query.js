@@ -54,11 +54,10 @@ function contains(opts) {
 
 var comparators = {
   e: function(opts) {
-    var fieldValue = opts.object[opts.field];
-    if (log.enabled) {
-      log(opts.field + ': ' + valueAsString(fieldValue) + ' == ' + valueAsString(opts.value), {opts: opts});
-    }
-    return fieldValue == opts.value;
+    return opts.object[opts.field] == opts.value;
+  },
+  ne: function(opts) {
+    return opts.object[opts.field] != opts.value;
   },
   lt: function(opts) {
     if (!opts.invalid) return opts.object[opts.field] < opts.value;
