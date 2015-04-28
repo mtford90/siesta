@@ -9,12 +9,23 @@ var CollectionRegistry = require('./collectionRegistry'),
   Query = require('./Query'),
   Collection = require('./collection');
 
-function Context(name, app) {
-  this.name = name;
+function configureStorage() {
+  this._storage = new Storage(this);
+}
+
+function Context(opts) {
   this.collectionRegistry = new CollectionRegistry();
   this.cache = new Cache();
-  this.app = app;
-  this.storage = new Storage(this.app);
+
+  opts = opts || {};
+  this.name = opts.name;
+
+  if (opts.storage) {
+    configureStorage.call(this);
+  }
+
+  if (!this.name) throw new Error('Must provide name to context');
+
   this.events = events();
   var off = this.events.removeListener.bind(this.events);
 
@@ -26,26 +37,43 @@ function Context(name, app) {
     removeAllListeners: this.events.removeAllListeners.bind(this.events),
     notify: util.next,
     registerComparator: Query.registerComparator.bind(Query),
-    save: this.storage.save.bind(this.storage),
+    save: function(cb) {
+      return util.promise(cb, function(cb) {
+        if (this._storage) {
+          this._storage.save(cb);
+        }
+        else cb();
+      }.bind(this));
+    },
     setPouch: function(p) {
-      this.storage.pouch = p;
+      this._storage.pouch = p;
     }.bind(this)
   });
 
   var interval, saving, autosaveInterval = 500;
-  var storageEnabled;
-
-
-  if (typeof PouchDB == 'undefined') {
-    this.storageEnabled = false;
-    console.warn('PouchDB is not present therefore storage is disabled.');
-  }
 
   Object.defineProperties(this, {
+    storage: {
+      get: function() {
+        return !!this._storage;
+      },
+      set: function(v) {
+        if (!v) {
+          delete this._storage;
+        }
+        else {
+          this._storage = new Storage(this);
+        }
+      }
+    },
     dirty: {
       get: function() {
-        var unsavedObjectsByCollection = this.storage._unsavedObjectsByCollection;
-        return !!Object.keys(this.storage.unsavedObjectsByCollection).length;
+        var storage = this._storage;
+        if (storage) {
+          var unsavedObjectsByCollection = storage._unsavedObjectsByCollection;
+          return !!Object.keys(storage.unsavedObjectsByCollection).length;
+        }
+        return false;
       },
       enumerable: true
     },
@@ -73,7 +101,7 @@ function Context(name, app) {
               // Cheeky way of avoiding multiple saves happening...
               if (!saving) {
                 saving = true;
-                this.storage.save(function(err) {
+                this._storage.save(function(err) {
                   if (!err) {
                     this.events.emit('saved');
                   }
@@ -90,20 +118,13 @@ function Context(name, app) {
           }
         }
       }
-    },
-    storageEnabled: {
-      get: function() {
-        if (storageEnabled !== undefined) {
-          return storageEnabled;
-        }
-        return !!this.storage;
-      },
-      set: function(v) {
-        storageEnabled = v;
-      },
-      enumerable: true
     }
   });
+
+  this.autosave = opts.autosave;
+  if (opts.autosaveInterval) {
+    this.autosaveInterval = opts.autosaveInterval;
+  }
 }
 
 Context.prototype = {
@@ -115,7 +136,9 @@ Context.prototype = {
       this[name] = collection;
     }
     else {
-      throw Error('A collection with name "' + name + '" already exists, or that name is not allowed');
+      var errMsg = 'A collection with name "' + name + '" already exists, or that name is not allowed';
+      console.error(errMsg, this[name]);
+      throw Error(errMsg);
     }
     return collection;
   },
@@ -189,6 +212,7 @@ Context.prototype = {
         memo = memo.concat(collection.models);
         return memo;
       }.bind(this), []);
+    console.log('installing models', allModels);
     Model.install(allModels, cb);
   },
   _pushTask: function(task) {
@@ -208,21 +232,16 @@ Context.prototype = {
   reset: function(cb, resetStorage) {
     delete this.queuedTasks;
     this.cache.reset();
-    this.collectionRegistry.reset();
     var collectionNames = this.collectionRegistry.collectionNames;
-    collectionNames.reduce(function(memo, collName) {
-      var coll = this.collectionRegistry[collName];
-      Object.keys(coll._models).forEach(function(modelName) {
-        var model = coll[modelName];
-        memo.push(model._storageEnabled);
-      });
-      return memo;
-    }.bind(this), []);
+    collectionNames.forEach(function(collectionName) {
+      this[collectionName] = undefined;
+    }.bind(this));
+    this.collectionRegistry.reset();
     this.removeAllListeners();
-    if (this.storageEnabled) {
+    if (this._storage) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
       if (resetStorage) {
-        this.storage._reset(cb);
+        this._storage._reset(cb);
         this.setPouch(new PouchDB('siesta', {auto_compaction: true, adapter: 'memory'}));
       }
       else {
@@ -233,46 +252,13 @@ Context.prototype = {
       cb();
     }
   },
-};
-
-function App(name) {
-  if (!name) throw new Error('App must have a name');
-  this.name = name;
-
-  this.defaultContext = new Context(name + '-default', this);
-  util.extend(this, this.defaultContext);
-
-  function copyProperty(prop) {
-    Object.defineProperty(this, prop, {
-      get: function() {
-        return this.defaultContext[prop];
-      },
-      set: function(v) {
-        this.defaultContext[prop] = v;
-      },
-      enumerable: true
-    });
-  }
-
-  // App should act like it's default context.
-  var passThroughproperties = ['dirty', 'autosaveInterval', 'autosave', 'storageEnabled'];
-  passThroughproperties.forEach(copyProperty.bind(this));
-}
-
-// App should act like it's default context.
-App.prototype = Object.create(Context.prototype);
-
-util.extend(App.prototype, {
   /**
    *
    * @param opts
    * @param opts.name - Name of the context.
    */
   context: function(opts) {
-    var name = opts.name;
-    if (!name) throw new Error('Context must have a name (used in creating the PouchDB database).');
-
-    var context = new Context(name, this),
+    var context = new Context(opts),
       collectionNames = this.collectionRegistry.collectionNames,
       collections = {};
     collectionNames.forEach(function(collectionName) {
@@ -303,6 +289,6 @@ util.extend(App.prototype, {
 
     return context;
   }
-});
+};
 
-module.exports = App;
+module.exports = Context;

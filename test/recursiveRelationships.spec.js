@@ -6,7 +6,7 @@ describe('recursive relationships', function() {
   var app = siesta.createApp('recursive');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

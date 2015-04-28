@@ -8,7 +8,7 @@ var assert = require('chai').assert,
 describe('query...', function() {
   var app = siesta.createApp('query');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   beforeEach(function(done) {
     app.reset(done);
@@ -1206,7 +1206,7 @@ describe('query...', function() {
     }
 
     before(function() {
-      app.storageEnabled = false;
+      app.storage = false;
     });
 
     beforeEach(function(done) {

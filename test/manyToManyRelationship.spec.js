@@ -15,7 +15,7 @@ describe('many to many proxy', function() {
   }
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   var MyCollection, Car, Person;
   var carProxy, personProxy;

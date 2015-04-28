@@ -101,8 +101,8 @@ function Model(opts) {
     },
     dirty: {
       get: function() {
-        if (this.context.storageEnabled) {
-          var unsavedObjectsByCollection = this.context.storage._unsavedObjectsByCollection,
+        if (this.context.storage) {
+          var unsavedObjectsByCollection = this.context._storage._unsavedObjectsByCollection,
             hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
           return !!Object.keys(hash).length;
         }
@@ -115,11 +115,6 @@ function Model(opts) {
         return this.collection.name;
       },
       enumerable: true
-    },
-    app: {
-      get: function() {
-        return this.collection.app;
-      }
     },
     context: {
       get: function() {
@@ -138,8 +133,8 @@ function Model(opts) {
   this.installReverseRelationships();
 
   this._indexIsInstalled = new Condition(function(done) {
-    if (this.context.storageEnabled) {
-      this.context.storage.ensureIndexInstalled(this, function(err) {
+    if (this.context.storage) {
+      this.context._storage.ensureIndexInstalled(this, function(err) {
         done(err);
       });
     }
@@ -147,8 +142,8 @@ function Model(opts) {
   }.bind(this));
 
   this._modelLoadedFromStorage = new Condition(function(done) {
-    if (this.context.storageEnabled) {
-      this.context.storage.loadModel({model: this}, function(err) {
+    if (this.context.storage) {
+      this.context._storage.loadModel({model: this}, function(err) {
         done(err);
       });
     }

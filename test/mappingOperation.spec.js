@@ -59,7 +59,7 @@ describe('array flattening', function() {
 describe('mapping operation', function() {
   var app = siesta.createApp('mapping-op');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   describe('general', function() {
     beforeEach(function(done) {
@@ -543,7 +543,7 @@ describe('bug', function() {
   var app = siesta.createApp('mapping-op-bug');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

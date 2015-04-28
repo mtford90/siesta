@@ -9,7 +9,7 @@ describe('perform mapping', function() {
 
   var app = siesta.createApp('perform-mapping');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

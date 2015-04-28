@@ -8,9 +8,9 @@ describe('reactive query', function() {
 
   beforeEach(function(done) {
     // Ensure that storage is wiped clean for each test.
-    app.storageEnabled = true;
+    app.storage = true;
     app.reset(function() {
-      app.storageEnabled = false;
+      app.storage = false;
       done();
     });
   });

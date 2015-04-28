@@ -1,9 +1,9 @@
 var assert = require('chai').assert;
 
-describe.only('contexts', function() {
+describe('contexts', function() {
   var MyCollection, Person, Car;
 
-  var app = siesta.createApp('context');
+  var app = siesta.createApp('context', {storage: true});
 
   beforeEach(function(done) {
     app.reset(function() {
@@ -25,10 +25,9 @@ describe.only('contexts', function() {
     });
   });
 
-  it('yo!', function(done) {
+  it('works', function(done) {
     var context = app.context({name: 'another-context'});
     assert.notEqual(context.Person, Person);
-    assert.notEqual(context.storage, app.storage);
     context
       .MyCollection
       .Person
@@ -43,5 +42,22 @@ describe.only('contexts', function() {
           })
           .catch(done);
       }).catch(done);
+  });
+
+  it('enable storage', function() {
+    var context = app.context({name: 'another-context', storage: true});
+    assert.ok(context._storage);
+  });
+
+  it('no storage', function() {
+    var context = app.context({name: 'another-context'});
+    assert.notOk(context._storage);
+  });
+
+  it('enable then storage', function() {
+    var context = app.context({name: 'another-context', storage: true});
+    assert.ok(context._storage);
+    context.storage = false;
+    assert.notOk(context._storage);
   });
 });

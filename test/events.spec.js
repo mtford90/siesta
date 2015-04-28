@@ -24,7 +24,7 @@ var app = siesta.createApp('events'),
 describe('events', function() {
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

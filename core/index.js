@@ -6,7 +6,7 @@ var util = require('./util'),
   RelationshipType = require('./RelationshipType'),
   ReactiveQuery = require('./ReactiveQuery'),
   ManyToManyProxy = require('./ManyToManyProxy'),
-  App = require('./App'),
+  Context = require('./Context'),
   OneToOneProxy = require('./OneToOneProxy'),
   OneToManyProxy = require('./OneToManyProxy'),
   RelationshipProxy = require('./RelationshipProxy'),
@@ -25,8 +25,10 @@ var siesta = function(ext) {
   return siesta;
 };
 
-siesta.createApp = function(name) {
-  return new App(name);
+siesta.createApp = function(name, opts) {
+  opts = opts || {};
+  opts.name = name;
+  return new Context(opts);
 };
 
 // Expose some stuff for usage by extensions and/or users

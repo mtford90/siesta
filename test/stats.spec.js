@@ -5,7 +5,7 @@ describe('statistics', function() {
 
   var app = siesta.createApp('statistics');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   beforeEach(function() {
     app.reset(function() {
@@ -29,10 +29,10 @@ describe('statistics', function() {
   });
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   after(function() {
-    app.storageEnabled = true;
+    app.storage = true;
   });
   describe('collection level', function() {
     describe('single mapping', function() {

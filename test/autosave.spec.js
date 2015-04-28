@@ -3,17 +3,7 @@ var assert = require('chai').assert;
 describe('auto save', function() {
   var MyCollection, Person;
 
-  var app = siesta.createApp('autosave');
-
-  console.log('app', app);
-
-  before(function() {
-    app.storageEnabled = true;
-  });
-
-  afterEach(function() {
-    app.autosave = false;
-  });
+  var app = siesta.createApp('autosave', {storage: true});
 
   beforeEach(function(done) {
     app.reset(function() {
@@ -27,12 +17,16 @@ describe('auto save', function() {
     });
   });
 
+  afterEach(function() {
+    app.autosave = false;
+  });
+
   it('autosaves on modelEvents if enabled', function(done) {
     app.autosave = true;
     app.once('saved', function() {
       console.log('saved!');
       app
-        .storage
+        ._storage
         ._pouch
         .allDocs()
         .then(function(resp) {
@@ -54,7 +48,7 @@ describe('auto save', function() {
       .graph({name: 'Mike', age: 24})
       .then(function() {
         app
-          .storage
+          ._storage
           ._pouch
           .allDocs()
           .then(function(resp) {

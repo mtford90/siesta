@@ -9,7 +9,7 @@ describe('cache...', function() {
   var app = siesta.createApp('cache');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   var Car;
 

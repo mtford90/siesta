@@ -48,8 +48,8 @@ function Collection(name, opts) {
   Object.defineProperties(this, {
     dirty: {
       get: function() {
-        if (this.context.storageEnabled) {
-          var unsavedObjectsByCollection = this.context.storage._unsavedObjectsByCollection,
+        if (this.context.storage) {
+          var unsavedObjectsByCollection = this.context._storage._unsavedObjectsByCollection,
             hash = unsavedObjectsByCollection[self.name] || {};
           return !!Object.keys(hash).length;
         }
@@ -63,16 +63,10 @@ function Collection(name, opts) {
           return this._models[modelName];
         }.bind(this));
       }
-    },
-    app: {
-      get: function() {
-        return this.context.app;
-      }
     }
   });
 
   this.context.collectionRegistry.register(this);
-  this._makeAvailableOnRoot();
   ProxyEventEmitter.call(this, this.context, this.name);
 
 }
@@ -80,14 +74,6 @@ function Collection(name, opts) {
 Collection.prototype = Object.create(ProxyEventEmitter.prototype);
 
 util.extend(Collection.prototype, {
-  /**
-   * Means that we can access the collection on the siesta object.
-   * @private
-   */
-  _makeAvailableOnRoot: function() {
-    siesta[this.name] = this;
-  },
-
   _model: function(name, opts) {
     if (name) {
       this._rawModels[name] = opts;

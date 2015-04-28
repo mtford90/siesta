@@ -4,7 +4,7 @@ var assert = require('chai').assert;
 describe('bulk removal', function() {
   var app = siesta.createApp('bulk-removal');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   beforeEach(function(done) {
     app.reset(done);

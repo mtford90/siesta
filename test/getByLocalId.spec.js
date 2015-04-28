@@ -6,7 +6,7 @@ describe('to sort', function() {
   var app = siesta.createApp('to-sort');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   beforeEach(function(done) {
     app.reset(done);

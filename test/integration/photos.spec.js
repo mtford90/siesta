@@ -14,7 +14,7 @@ describe('photos intercollection', function() {
 
   var app = siesta.createApp('photos-app');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function() {

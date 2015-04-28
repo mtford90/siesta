@@ -10,7 +10,7 @@ describe('change identifiers', function() {
   var app = siesta.createApp('change-identifiers');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
   beforeEach(function(done) {
     app.reset(function() {

@@ -9,7 +9,7 @@ describe('relationship proxy', function() {
 
   var app = siesta.createApp('relationship-proxy');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   var MyCollection, Car, Person;

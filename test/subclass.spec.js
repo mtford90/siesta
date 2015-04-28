@@ -7,7 +7,7 @@ describe('Subclass', function() {
   var app = siesta.createApp('subclass');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

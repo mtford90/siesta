@@ -9,10 +9,12 @@ var UNDERSCORE = /_/g,
 
 /**
  *
- * @param app
+ * @param context
  * @constructor
  */
 function Storage(context) {
+  if (!window.PouchDB) throw new Error('Cannot enable storage for app "' + name + '" as PouchDB is not present.');
+
   var name = context.name;
 
   this.context = context;
@@ -173,6 +175,7 @@ Storage.prototype = {
           fromStorage: true
         }, function(err, instances) {
           if (!err) {
+            console.log('binding listener');
             this._listener = this.listener.bind(this);
             model.on('*', this._listener);
           }

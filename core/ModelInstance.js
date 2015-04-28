@@ -50,8 +50,8 @@ function ModelInstance(model) {
     },
     dirty: {
       get: function() {
-        if (this.context.storageEnabled) {
-          return self.localId in this.context.storage._unsavedObjectsHash;
+        if (this.context.storage) {
+          return self.localId in this.context._storage._unsavedObjectsHash;
         }
         else return undefined;
       },
@@ -61,11 +61,6 @@ function ModelInstance(model) {
     event: {
       get: function() {
         return this.localId
-      }
-    },
-    app: {
-      get: function() {
-        return this.model.app;
       }
     },
     context: {
@@ -89,8 +84,6 @@ function ModelInstance(model) {
    * @private
    */
   this._emitEvents = false;
-
-
 }
 
 ModelInstance.prototype = Object.create(ProxyEventEmitter.prototype);

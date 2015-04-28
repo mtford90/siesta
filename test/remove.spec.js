@@ -8,7 +8,7 @@ describe('remove models from object graph', function() {
 
   var app = siesta.createApp('remove');
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   describe('one to one', function() {

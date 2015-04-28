@@ -9,7 +9,7 @@ describe('model serialisation', function() {
   var app = siesta.createApp('model-serialisation');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

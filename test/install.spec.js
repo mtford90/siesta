@@ -21,7 +21,7 @@ describe('installation', function() {
 
     describe('no storage', function() {
       before(function() {
-        app.storageEnabled = false;
+        app.storage = false;
       });
 
       beforeEach(function() {
@@ -56,15 +56,13 @@ describe('installation', function() {
 
     describe('storage', function() {
       before(function() {
-        app.storageEnabled = true;
+        app.storage = true;
       });
 
       after(function(done) {
         app.reset(function() {
-          app.storageEnabled = false;
-          app.storage._pouch.allDocs().then(function(resp) {
-            done();
-          });
+          app.storage = false;
+          done();
         })
       });
 
@@ -86,7 +84,7 @@ describe('installation', function() {
 
 
       it('query', function(done) {
-        app.storage._pouch.bulkDocs([
+        app._storage._pouch.bulkDocs([
           {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
           {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
         ]).then(function() {
@@ -105,7 +103,7 @@ describe('installation', function() {
 
     describe('install relationships', function() {
       before(function() {
-        app.storageEnabled = false;
+        app.storage = false;
       });
 
       beforeEach(function(done) {

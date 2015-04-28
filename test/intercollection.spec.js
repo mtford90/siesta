@@ -8,7 +8,7 @@ describe('intercoll relationships', function() {
   var app = siesta.createApp('intercoll');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

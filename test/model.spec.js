@@ -8,7 +8,7 @@ describe('Models', function() {
   var app = siesta.createApp('Models');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   beforeEach(function(done) {

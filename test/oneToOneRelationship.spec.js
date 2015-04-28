@@ -9,7 +9,7 @@ describe('one to one relationship', function() {
   var app = siesta.createApp('one-to-one');
 
   before(function() {
-    app.storageEnabled = false;
+    app.storage = false;
   });
 
   function instance(model) {
