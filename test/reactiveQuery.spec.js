@@ -42,7 +42,7 @@ describe('reactive query', function() {
     });
     it('initial results', function(done) {
       Person.graph(initialData).then(function() {
-        var rq = Person._reactiveQuery({age__lt: 30});
+        var rq = Person._reactiveFilter({age__lt: 30});
         assert.notOk(rq.initialised, 'Should not yet be initialised');
         rq.init(function(err, results) {
           if (err) done(err);
@@ -74,7 +74,7 @@ describe('reactive query', function() {
 
         it('results are as expected', function(done) {
           Person.graph(initialData).then(function() {
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err, results) {
               if (err) done(err);
               else {
@@ -96,7 +96,7 @@ describe('reactive query', function() {
 
         it('emission', function(done) {
           Person.graph(initialData).then(function() {
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err, results) {
               if (err) done(err);
               else {
@@ -131,7 +131,7 @@ describe('reactive query', function() {
 
         it('results match', function(done) {
           Person.graph(initialData).then(function() {
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err, results) {
               if (err) done(err);
               else {
@@ -163,7 +163,7 @@ describe('reactive query', function() {
           Person.graph(initialData).then(function(res) {
             var person = res[0];
             person.age = 40;
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err, results) {
               if (err) done(err);
               else {
@@ -186,7 +186,7 @@ describe('reactive query', function() {
         it('emission', function(done) {
           Person.graph(initialData).then(function(res) {
             var person = res[0];
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err) {
               if (err) done(err);
               else {
@@ -214,7 +214,7 @@ describe('reactive query', function() {
       it('update, still matching, should emit the notification', function(done) {
         Person.graph(initialData).then(function(res) {
           var person = res[0];
-          var rq = Person._reactiveQuery({age__lt: 30});
+          var rq = Person._reactiveFilter({age__lt: 30});
           rq.init(function(err) {
             if (err) done(err);
             else {
@@ -242,7 +242,7 @@ describe('reactive query', function() {
         it('results correct', function(done) {
           Person.graph(initialData).then(function(res) {
             var person = res[0];
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err) {
               person.remove(function() {
                 if (err) done(err);
@@ -268,7 +268,7 @@ describe('reactive query', function() {
           Person.graph(initialData)
             .then(function(res) {
               var person = res[0];
-              var rq = Person._reactiveQuery({age__lt: 30});
+              var rq = Person._reactiveFilter({age__lt: 30});
               rq.init(function(err) {
                 if (err) done(err);
                 else {
@@ -298,7 +298,7 @@ describe('reactive query', function() {
           Person.graph(initialData)
             .then(function(res) {
               var person = res[0];
-              var rq = Person._reactiveQuery({age__lt: 30});
+              var rq = Person._reactiveFilter({age__lt: 30});
               rq.once('*', function(change) {
                 try {
                   var removed = change.removed;
@@ -335,7 +335,7 @@ describe('reactive query', function() {
         it('results are as expected', function(done) {
           Person.graph(initialData).then(function(res) {
             var person = res[0];
-            var rq = Person._reactiveQuery({age__lt: 30});
+            var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err, results) {
               if (err) done(err);
               else {
@@ -392,7 +392,7 @@ describe('reactive query', function() {
 
     it('initial results', function(done) {
       Person.graph(initialData).then(function() {
-        var rq = Person._reactiveQuery({age__lt: 30, __order: 'age'});
+        var rq = Person._reactiveFilter({age__lt: 30, __order: 'age'});
         assert.notOk(rq.initialised, 'Should not yet be initialised');
         rq.init(function(err, results) {
           if (err) done(err);
@@ -417,7 +417,7 @@ describe('reactive query', function() {
 
     it('add new, matching', function(done) {
       Person.graph(initialData).then(function() {
-        var rq = Person._reactiveQuery({age__lt: 30, __order: 'age'});
+        var rq = Person._reactiveFilter({age__lt: 30, __order: 'age'});
         assert.notOk(rq.initialised, 'Should not yet be initialised');
         rq.init().then(function() {
           Person.graph({name: 'peter', age: 10}).then(function() {

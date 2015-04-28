@@ -367,27 +367,27 @@ util.extend(Model.prototype, {
   _query: function(query) {
     return new Filter(this, query || {});
   },
-  query: function(query, cb) {
-    var queryInstance;
+  query: function(filter, cb) {
+    var filterInstance;
     var promise = util.promise(cb, function(cb) {
       this.context._ensureInstalled(function() {
         if (!this.singleton) {
-          queryInstance = this._query(query);
-          return queryInstance.execute(cb);
+          filterInstance = this._query(filter);
+          return filterInstance.execute(cb);
         }
         else {
-          queryInstance = this._query({__ignoreInstalled: true});
-          queryInstance.execute(function(err, objs) {
+          filterInstance = this._query({__ignoreInstalled: true});
+          filterInstance.execute(function(err, objs) {
             if (err) cb(err);
             else {
               // Cache a new singleton and then reexecute the query
-              query = util.extend({}, query);
-              query.__ignoreInstalled = true;
+              filter = util.extend({}, filter);
+              filter.__ignoreInstalled = true;
               if (!objs.length) {
                 this.graph({}, function(err) {
                   if (!err) {
-                    queryInstance = this._query(query);
-                    queryInstance.execute(cb);
+                    filterInstance = this._query(filter);
+                    filterInstance.execute(cb);
                   }
                   else {
                     cb(err);
@@ -395,8 +395,8 @@ util.extend(Model.prototype, {
                 }.bind(this));
               }
               else {
-                queryInstance = this._query(query);
-                queryInstance.execute(cb);
+                filterInstance = this._query(filter);
+                filterInstance.execute(cb);
               }
             }
           }.bind(this));
@@ -422,7 +422,7 @@ util.extend(Model.prototype, {
       then: linkPromise.then.bind(linkPromise),
       catch: linkPromise.catch.bind(linkPromise),
       on: argsarray(function(args) {
-        var rq = new ReactiveFilter(this._query(query));
+        var rq = new ReactiveFilter(this._query(filter));
         rq.init();
         rq.on.apply(rq, args);
       }.bind(this))
@@ -433,7 +433,7 @@ util.extend(Model.prototype, {
    * @param query
    * @returns {ReactiveFilter}
    */
-  _reactiveQuery: function(query) {
+  _reactiveFilter: function(query) {
     return new ReactiveFilter(new Filter(this, query || {}));
   },
   one: function(opts, cb) {

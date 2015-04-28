@@ -21,7 +21,7 @@ function Filter(model, filter) {
   }
   util.extend(this, {
     model: model,
-    query: filter,
+    filter: filter,
     opts: opts
   });
   opts.order = opts.order || [];
@@ -284,7 +284,7 @@ util.extend(Filter.prototype, {
     return true;
   },
   objectMatchesFilter: function(obj) {
-    return this.objectMatchesBaseFilter(obj, this.query);
+    return this.objectMatchesBaseFilter(obj, this.filter);
   }
 });
 
