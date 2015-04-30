@@ -1,5 +1,4 @@
-var CollectionRegistry = require('./collectionRegistry'),
-  events = require('./events'),
+var events = require('./events'),
   modelEvents = require('./modelEvents'),
   Cache = require('./cache'),
   util = require('./util'),
@@ -14,7 +13,7 @@ function configureStorage(opts) {
 }
 
 function Context(opts) {
-  this.collectionRegistry = new CollectionRegistry();
+  this.collections = {};
   this.cache = new Cache();
 
   opts = opts || {};
@@ -117,6 +116,11 @@ function Context(opts) {
           }
         }
       }
+    },
+    collectionNames: {
+      get: function() {
+        return Object.keys(this.collections);
+      }
     }
   });
 
@@ -151,7 +155,7 @@ Context.prototype = {
       var tasks = [], err;
       for (var collectionName in data) {
         if (data.hasOwnProperty(collectionName)) {
-          var collection = this.collectionRegistry[collectionName];
+          var collection = this.collections[collectionName];
           if (collection) {
             (function(collection, data) {
               tasks.push(function(done) {
@@ -194,8 +198,9 @@ Context.prototype = {
   removeAll: function(cb) {
     return util.promise(cb, function(cb) {
       util.Promise.all(
-        this.collectionRegistry.collectionNames.map(function(collectionName) {
-          return this.collectionRegistry[collectionName].removeAll();
+        this.collectionNames.map(function(collectionName) {
+          var collection = this.collections[collectionName];
+          return collection.removeAll();
         }.bind(this))
       ).then(function() {
           cb(null);
@@ -204,13 +209,11 @@ Context.prototype = {
   },
   _ensureInstalled: function(cb) {
     cb = cb || function() {};
-    var collectionNames = this.collectionRegistry.collectionNames;
-    var allModels = collectionNames
-      .reduce(function(memo, collectionName) {
-        var collection = this.collectionRegistry[collectionName];
-        memo = memo.concat(collection.models);
-        return memo;
-      }.bind(this), []);
+    var allModels = this.collectionNames.reduce(function(memo, collectionName) {
+      var collection = this.collections[collectionName];
+      memo = memo.concat(collection.models);
+      return memo;
+    }.bind(this), []);
     console.log('installing models', allModels);
     Model.install(allModels, cb);
   },
@@ -231,11 +234,10 @@ Context.prototype = {
   reset: function(cb, resetStorage) {
     delete this.queuedTasks;
     this.cache.reset();
-    var collectionNames = this.collectionRegistry.collectionNames;
+    var collectionNames = this.collectionNames;
     collectionNames.forEach(function(collectionName) {
       this[collectionName] = undefined;
     }.bind(this));
-    this.collectionRegistry.reset();
     this.removeAllListeners();
     if (this._storage) {
       resetStorage = resetStorage === undefined ? true : resetStorage;
@@ -257,11 +259,11 @@ Context.prototype = {
    */
   context: function(opts) {
     var context = new Context(opts),
-      collectionNames = this.collectionRegistry.collectionNames,
+      collectionNames = this.collectionNames,
       collections = {};
     collectionNames.forEach(function(collectionName) {
       var newCollection = context.collection(collectionName),
-        existingCollection = this.collectionRegistry[collectionName];
+        existingCollection = this.collections[collectionName];
       collections[collectionName] = newCollection;
 
       var rawModels = existingCollection._rawModels;

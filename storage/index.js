@@ -149,7 +149,7 @@ Storage.prototype = {
     }
 
     var fullyQualifiedName = this.fullyQualifiedModelName(collectionName, modelName);
-    var Model = this.context.collectionRegistry[collectionName][modelName];
+    var Model = this.context.collections[collectionName][modelName];
     this
       .pouch
       .query(fullyQualifiedName)

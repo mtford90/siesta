@@ -279,6 +279,10 @@ util.extend(ModelInstance.prototype, {
 });
 
 util.extend(ModelInstance.prototype, {
+  serialize: ModelInstance.prototype.serialise
+});
+
+util.extend(ModelInstance.prototype, {
   /**
    * Emit an event indicating that this instance has just been created.
    * @private

@@ -6,26 +6,25 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   Model = internal.Model,
   Condition = internal.Condition,
-  CollectionRegistry = internal.CollectionRegistry,
   RelationshipType = siesta.RelationshipType;
 
 describe('installation', function() {
-  var app = siesta.createApp('installation');
+  var context = siesta.createApp('installation');
 
   describe('install step', function() {
     var MyCollection, Person;
 
     beforeEach(function(done) {
-      app.reset(done);
+      context.reset(done);
     });
 
     describe('no storage', function() {
       before(function() {
-        app.storage = false;
+        context.storage = false;
       });
 
       beforeEach(function() {
-        MyCollection = app.collection('MyCollection');
+        MyCollection = context.collection('MyCollection');
         Person = MyCollection.model('Person', {
           id: 'id',
           attributes: ['name', 'age', 'index']
@@ -56,18 +55,18 @@ describe('installation', function() {
 
     describe('storage', function() {
       before(function() {
-        app.storage = true;
+        context.storage = true;
       });
 
       after(function(done) {
-        app.reset(function() {
-          app.storage = false;
+        context.reset(function() {
+          context.storage = false;
           done();
         })
       });
 
       beforeEach(function() {
-        MyCollection = app.collection('MyCollection');
+        MyCollection = context.collection('MyCollection');
         Person = MyCollection.model('Person', {
           id: 'id',
           attributes: ['name', 'age', 'index']
@@ -84,7 +83,7 @@ describe('installation', function() {
 
 
       it('filter', function(done) {
-        app._storage._pouch.bulkDocs([
+        context._storage._pouch.bulkDocs([
           {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
           {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
         ]).then(function() {
@@ -103,17 +102,17 @@ describe('installation', function() {
 
     describe('install relationships', function() {
       before(function() {
-        app.storage = false;
+        context.storage = false;
       });
 
       beforeEach(function(done) {
-        app.reset(done);
+        context.reset(done);
       });
 
       var Collection, Car, Person;
 
       function configureAPI(type, done) {
-        Collection = app.collection('myCollection');
+        Collection = context.collection('myCollection');
         Car = Collection.model('Car', {
           id: 'id',
           attributes: ['colour', 'name'],
@@ -213,7 +212,7 @@ describe('installation', function() {
 
       describe('invalid', function() {
         it('No such relationship type', function() {
-          var collection = app.collection('myCollection');
+          var collection = context.collection('myCollection');
           assert.throws(function() {
             Car = collection.model('Car', {
               id: 'id',
@@ -236,10 +235,10 @@ describe('installation', function() {
   describe('add stuff after install', function() {
 
     beforeEach(function(done) {
-      app.reset(done);
+      context.reset(done);
     });
     it('add collection', function(done) {
-      var MyCollection = app.collection('MyCollection'),
+      var MyCollection = context.collection('MyCollection'),
         Person = MyCollection.model('Person', {
           id: 'id',
           attributes: ['name', 'age', 'index']
@@ -248,9 +247,9 @@ describe('installation', function() {
       Model
         .install([Person])
         .then(function() {
-          var AnotherCollection = app.collection('AnotherCollection');
+          var AnotherCollection = context.collection('AnotherCollection');
           assert.equal(AnotherCollection, AnotherCollection);
-          assert.equal(app.collectionRegistry.AnotherCollection, AnotherCollection);
+          assert.equal(context.collections.AnotherCollection, AnotherCollection);
           done();
         }).catch(done);
     });
@@ -258,7 +257,7 @@ describe('installation', function() {
     describe('add simple model', function() {
       var MyCollection, Car;
       beforeEach(function(done) {
-        MyCollection = app.collection('MyCollection');
+        MyCollection = context.collection('MyCollection');
         Car = MyCollection.model('Car', {
           attributes: ['type']
         });
@@ -297,7 +296,7 @@ describe('installation', function() {
 
       describe('delay creation of relationship', function() {
         beforeEach(function(done) {
-          MyCollection = app.collection('MyCollection');
+          MyCollection = context.collection('MyCollection');
           Person = MyCollection.model('Person', {
             id: 'id',
             attributes: ['name', 'age']
@@ -342,7 +341,7 @@ describe('installation', function() {
 
       describe('delay creation of related model', function() {
         beforeEach(function() {
-          MyCollection = app.collection('MyCollection');
+          MyCollection = context.collection('MyCollection');
           Car = MyCollection.model('Car', {
             attributes: ['type'],
             relationships: {

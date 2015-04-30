@@ -46,9 +46,9 @@ ModelEvent.prototype._dump = function(pretty) {
   return pretty ? util.prettyPrint(dumped) : dumped;
 };
 
-function broadcastEvent(app, collectionName, modelName, opts) {
+function broadcastEvent(context, collectionName, modelName, opts) {
   var genericEvent = 'Siesta',
-    collection = app.collectionRegistry[collectionName],
+    collection = context.collections[collectionName],
     model = collection[modelName];
   if (!collection) throw new InternalSiestaError('No such collection "' + collectionName + '"');
   if (!model) throw new InternalSiestaError('No such model "' + modelName + '"');
@@ -63,13 +63,13 @@ function broadcastEvent(app, collectionName, modelName, opts) {
     }
   }
   if (shouldEmit) {
-    app.events.emit(genericEvent, opts);
+    context.events.emit(genericEvent, opts);
     var modelEvent = collectionName + ':' + modelName,
       localIdEvent = opts.localId;
-    app.events.emit(collectionName, opts);
-    app.events.emit(modelEvent, opts);
-    app.events.emit(localIdEvent, opts);
-    if (model.id && opts.obj[model.id]) app.events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
+    context.events.emit(collectionName, opts);
+    context.events.emit(modelEvent, opts);
+    context.events.emit(localIdEvent, opts);
+    if (model.id && opts.obj[model.id]) context.events.emit(collectionName + ':' + modelName + ':' + opts.obj[model.id], opts);
   }
 }
 

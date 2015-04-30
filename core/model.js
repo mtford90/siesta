@@ -236,7 +236,7 @@ util.extend(Model.prototype, {
       if (arr.length == 2) {
         var collectionName = arr[0];
         reverseName = arr[1];
-        var otherCollection = this.context.collectionRegistry[collectionName];
+        var otherCollection = this.context.collections[collectionName];
         if (otherCollection)
           reverseModel = otherCollection[reverseName];
       }

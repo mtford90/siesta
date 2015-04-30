@@ -1,5 +1,4 @@
 var log = require('./log')('collection'),
-  CollectionRegistry = require('./collectionRegistry'),
   InternalSiestaError = require('./error').InternalSiestaError,
   Model = require('./model'),
   extend = require('extend'),
@@ -66,7 +65,7 @@ function Collection(name, opts) {
     }
   });
 
-  this.context.collectionRegistry.register(this);
+  this.context.collections[this.name] = this;
   ProxyEventEmitter.call(this, this.context, this.name);
 
 }
