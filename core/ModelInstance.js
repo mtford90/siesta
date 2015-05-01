@@ -108,12 +108,29 @@ util.extend(ModelInstance.prototype, {
   },
   remove: function(cb, notification) {
     _.each(this._relationshipNames, function(name) {
+      var toRemove;
+      var def = this.model.relationships[name];
+      if (def) {
+        if (def.deletion === siesta.constants.Deletion.Cascade && def.isReverse) {
+          if (def.type == 'OneToMany') {
+            console.log('cascade!!!');
+            toRemove = this[name];
+          }
+        }
+      }
+
       if (util.isArray(this[name])) {
         this[name] = [];
       }
       else {
         this[name] = null;
       }
+      if (toRemove) {
+        toRemove.forEach(function(r) {
+          r.remove();
+        });
+      }
+
     }.bind(this));
     notification = notification == null ? true : notification;
     return util.promise(cb, function(cb) {
