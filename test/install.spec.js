@@ -3,7 +3,7 @@
  */
 
 var assert = require('chai').assert,
-  internal = siesta._internal,
+  internal = siesta.lib,
   Model = internal.Model,
   Condition = internal.Condition,
   RelationshipType = siesta.RelationshipType;

@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  util = siesta._internal.util;
+  util = siesta.lib.util;
 
 describe('async', function() {
   describe('parallel', function() {

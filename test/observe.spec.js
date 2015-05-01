@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  ArrayObserver = siesta._internal.observe.ArrayObserver;
+  ArrayObserver = siesta.lib.observe.ArrayObserver;
 
 /**
  * Assertions against the observe-js library from polymer, modified to fit browserify.

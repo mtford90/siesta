@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  Condition = siesta._internal.Condition;
+  Condition = siesta.lib.Condition;
 
 describe('conditions', function() {
   it('bulk', function(done) {

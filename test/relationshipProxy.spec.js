@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  internal = siesta._internal,
+  internal = siesta.lib,
   InternalSiestaError = internal.error.InternalSiestaError,
   RelationshipProxy = internal.RelationshipProxy,
   ModelInstance = internal.ModelInstance;

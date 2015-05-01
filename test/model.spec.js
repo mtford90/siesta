@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  internal = siesta._internal,
+  internal = siesta.lib,
   Model = internal.Model,
   ModelInstance = internal.ModelInstance;
 
@@ -173,7 +173,7 @@ describe('Models', function() {
               if (!(value instanceof Date)) {
                 value = new Date(Date.parse(value));
               }
-              assert.instanceOf(this, siesta._internal.ModelInstance);
+              assert.instanceOf(this, siesta.lib.ModelInstance);
               return value;
             }
           },
@@ -205,7 +205,7 @@ describe('Models', function() {
             if (!(value instanceof Date)) {
               value = new Date(Date.parse(value));
             }
-            assert.instanceOf(this, siesta._internal.ModelInstance);
+            assert.instanceOf(this, siesta.lib.ModelInstance);
           }
           return value;
         },

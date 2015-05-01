@@ -1,9 +1,9 @@
 var assert = require('chai').assert,
-  util = siesta._internal.util,
+  util = siesta.lib.util,
   RelationshipType = siesta.RelationshipType,
-  cache = siesta._internal.cache,
-  Model = siesta._internal.Model,
-  MappingOperation = siesta._internal.MappingOperation;
+  cache = siesta.lib.cache,
+  Model = siesta.lib.Model,
+  MappingOperation = siesta.lib.MappingOperation;
 
 var collection;
 var Repo, User;
@@ -507,7 +507,7 @@ describe('mapping operation', function() {
           });
           console.log('2');
           var preprocessedData = op.data[0];
-          assert.notInstanceOf(preprocessedData.rel, siesta._internal.ModelInstance);
+          assert.notInstanceOf(preprocessedData.rel, siesta.lib.ModelInstance);
           assert.equal(preprocessedData.rel.localId, instance.localId);
           done();
         })

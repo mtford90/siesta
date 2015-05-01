@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  internal = siesta._internal,
+  internal = siesta.lib,
   cache = internal.cache,
   ModelInstance = internal.ModelInstance,
   ManyToManyProxy = internal.ManyToManyProxy;

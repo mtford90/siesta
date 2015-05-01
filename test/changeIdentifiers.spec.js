@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  cache = siesta._internal.cache;
+  cache = siesta.lib.cache;
 
 describe('change identifiers', function() {
 

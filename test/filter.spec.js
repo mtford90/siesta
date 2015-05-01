@@ -1,5 +1,5 @@
 var assert = require('chai').assert,
-  internal = siesta._internal,
+  internal = siesta.lib,
   Model = internal.Model,
   SiestaUserError = internal.error.SiestaUserError,
   createFilterSet = internal.filterSet,
