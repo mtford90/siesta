@@ -260,6 +260,7 @@ util.extend(Model.prototype, {
       for (var name in this._opts.relationships) {
         if (this._opts.relationships.hasOwnProperty(name)) {
           var relationship = this._opts.relationships[name];
+          if (!relationship.deletion) relationship.deletion = siesta.constants.Deletion.Nullify;
           // If a reverse relationship is installed beforehand, we do not want to process them.
           var isForward = !relationship.isReverse;
           if (isForward) {
