@@ -248,11 +248,15 @@ util.extend(ModelInstance.prototype, {
         var val = this[attrName];
         if (val === null) {
           if (includeNullAttributes) {
-            serialised[attrName] = serialiser(val);
+            var serialisedVal = serialiser(val);
+            if (serialisedVal !== undefined)
+              serialised[attrName] = serialisedVal;
           }
         }
         else if (val !== undefined) {
-          serialised[attrName] = serialiser(val);
+          serialisedVal = serialiser(val);
+          if (serialisedVal !== undefined)
+            serialised[attrName] = serialisedVal;
         }
       }
     }.bind(this));
@@ -277,16 +281,22 @@ util.extend(ModelInstance.prototype, {
           }
           if (val === null) {
             if (includeNullRelationships) {
-              serialised[relName] = serialiser(val);
+              var serialisedVal = serialiser(val);
+              if (serialisedVal !== undefined)
+                serialised[relName] = serialisedVal;
             }
           }
           else if (util.isArray(val)) {
             if ((includeNullRelationships && !val.length) || val.length) {
-              serialised[relName] = serialiser(val);
+              serialisedVal = serialiser(val);
+              if (serialisedVal !== undefined)
+                serialised[relName] = serialisedVal;
             }
           }
           else if (val !== undefined) {
-            serialised[relName] = serialiser(val);
+            serialisedVal = serialiser(val);
+            if (serialisedVal !== undefined)
+              serialised[relName] = serialisedVal;
           }
         }
       }

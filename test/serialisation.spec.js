@@ -138,6 +138,7 @@ describe('model serialisation', function() {
         }
       });
     });
+
     it('field by field', function(done) {
       Collection = app.collection('myCollection');
       CustomModel = Collection.model('Custom', {
@@ -156,6 +157,28 @@ describe('model serialisation', function() {
         done();
       }).catch(done);
     });
+
+    it('should not include key if undefined is returned', function(done) {
+      Collection = app.collection('myCollection');
+      CustomModel = Collection.model('Custom', {
+        attributes: ['attr1', 'attr2'],
+        serialiseField: function(fieldName, value) {
+          if (fieldName == 'attr1') return undefined;
+          return value;
+        }
+      });
+      CustomModel.graph({
+        attr1: 'attr1',
+        attr2: 'attr2'
+      }).then(function(model) {
+        var serialised = model.serialise();
+        console.log('serialised', serialised);
+        assert.equal(serialised.attr2, 'attr2');
+        assert.notInclude(Object.keys(serialised), 'attr1');
+        done();
+      }).catch(done);
+    });
+
     describe('attribute', function() {
       it('attribute', function(done) {
         Collection = app.collection('myCollection');
@@ -179,6 +202,33 @@ describe('model serialisation', function() {
           done();
         }).catch(done);
       });
+
+      it('should not include key if undefined is returned', function(done) {
+        Collection = app.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: [
+            {
+              name: 'attr1',
+              serialise: function(value) {
+                return undefined;
+              }
+            },
+            'attr2'
+          ]
+        });
+
+        CustomModel.graph({
+          attr1: 'attr1',
+          attr2: 'attr2'
+        }).then(function(model) {
+          var serialised = model.serialise();
+          assert.notInclude(Object.keys(serialised), 'attr1');
+          assert.equal(serialised.attr2, 'attr2');
+          done();
+        }).catch(done);
+
+      });
+
       it('serialiseField should be overidden by serialise', function(done) {
         Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
@@ -266,6 +316,33 @@ describe('model serialisation', function() {
           done();
         }).catch(done);
       });
+
+      it('should not include the relationship if undefined is returned...', function(done) {
+        var _instance;
+        Collection = app.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: ['attr1'],
+          relationships: {
+            other: {
+              model: 'Other',
+              reverse: 'customs',
+              serialise: function(instance) {
+                return undefined;
+              }
+            }
+          }
+        });
+        OtherModel = Collection.model('Other', {});
+        CustomModel.graph({
+          attr1: 'asdasdasd',  
+          other: 'abcd'
+        }).then(function(custom) {
+          var serialised = custom.serialise();
+          assert.notInclude(Object.keys(serialised), 'other');
+          done();
+        }).catch(done);
+      });
+
 
       it('serialiseField should be overidden by serialise', function(done) {
         Collection = app.collection('myCollection');
@@ -389,7 +466,6 @@ describe('model serialisation', function() {
       });
 
       it('relationships', function(done) {
-
         var _instance;
         Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
