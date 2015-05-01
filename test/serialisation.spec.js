@@ -64,7 +64,6 @@ describe('model serialisation', function() {
         var serialised = person.serialise({includeNullAttributes: false});
         assert.equal(serialised.name, 'Mike');
         assert.equal(serialised.age, 24);
-        console.log('serialised', serialised);
         assert.equal(Object.keys(serialised).length, 2);
         done();
       }).catch(done);
@@ -172,7 +171,6 @@ describe('model serialisation', function() {
         attr2: 'attr2'
       }).then(function(model) {
         var serialised = model.serialise();
-        console.log('serialised', serialised);
         assert.equal(serialised.attr2, 'attr2');
         assert.notInclude(Object.keys(serialised), 'attr1');
         done();
@@ -317,6 +315,35 @@ describe('model serialisation', function() {
         }).catch(done);
       });
 
+      it('serialiseField', function(done) {
+        var _instance;
+        Collection = app.collection('myCollection');
+        CustomModel = Collection.model('Custom', {
+          attributes: ['attr1'],
+          relationships: {
+            other: {
+              model: 'Other',
+              reverse: 'customs'
+            }
+          },
+          serialiseField: function(field, value) {
+            if (field == 'other') {
+              return value.id;
+            }
+            return value;
+          }
+        });
+        OtherModel = Collection.model('Other', {});
+        CustomModel.graph({
+          attr1: 'asdasdasd',
+          other: 'abcd'
+        }).then(function(custom) {
+          var serialised = custom.serialise();
+          assert.equal(serialised.other, custom.other.id);
+          done();
+        }).catch(done);
+      });
+
       it('should not include the relationship if undefined is returned...', function(done) {
         var _instance;
         Collection = app.collection('myCollection');
@@ -334,7 +361,7 @@ describe('model serialisation', function() {
         });
         OtherModel = Collection.model('Other', {});
         CustomModel.graph({
-          attr1: 'asdasdasd',  
+          attr1: 'asdasdasd',
           other: 'abcd'
         }).then(function(custom) {
           var serialised = custom.serialise();
