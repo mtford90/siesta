@@ -111,10 +111,15 @@ util.extend(ModelInstance.prototype, {
       var toRemove;
       var def = this.model.relationships[name];
       if (def) {
-        if (def.deletion === siesta.constants.Deletion.Cascade && def.isReverse) {
+        if (def.deletion === siesta.constants.Deletion.Cascade) {
           if (def.type == 'OneToMany') {
-            console.log('cascade!!!');
-            toRemove = this[name];
+            if (def.isReverse) {
+              toRemove = this[name];
+            }
+          }
+          else if (def.type == 'OneToOne') {
+            var val = this[name];
+            if (val)  toRemove = [val];
           }
         }
       }
