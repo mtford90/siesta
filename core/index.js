@@ -39,6 +39,12 @@ var siesta = {
     Storage: require('../storage'),
     Context: Context
   },
+  constants: {
+    Deletion: {
+      Cascade: 'cascade',
+      Nullify: 'nullify'
+    }
+  },
   isArray: util.isArray,
   isString: util.isString,
   RelationshipType: require('./RelationshipType'),
