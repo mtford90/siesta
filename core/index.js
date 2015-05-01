@@ -13,6 +13,7 @@ var siesta = {
     return new Context(opts);
   },
   log: require('debug'),
+  // Make components available for testing.
   lib: {
     log: log,
     Condition: require('./Condition'),
@@ -29,11 +30,12 @@ var siesta = {
     ReactiveFilter: ReactiveFilter,
     utils: util,
     util: util,
+    Serialiser: require('./Serialiser'),
     filterSet: require('./FilterSet'),
     observe: require('../vendor/observe-js/src/observe'),
     Filter: require('./Filter'),
     ManyToManyProxy: require('./ManyToManyProxy'),
-    OneToManyProxy:  require('./OneToManyProxy'),
+    OneToManyProxy: require('./OneToManyProxy'),
     OneToOneProxy: require('./OneToOneProxy'),
     RelationshipProxy: require('./RelationshipProxy'),
     Storage: require('../storage'),

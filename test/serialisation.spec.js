@@ -5,8 +5,9 @@ var assert = require('chai').assert,
 describe('model serialisation', function() {
 
   var Collection, PersonModel, CarModel, CustomModel;
-
   var app = siesta.createApp('model-serialisation');
+
+  var Serialiser = siesta.lib.Serialiser;
 
   before(function() {
     app.storage = false;
@@ -48,7 +49,8 @@ describe('model serialisation', function() {
     PersonModel
       .graph({name: 'Mike', age: 24})
       .then(function(person) {
-        var serialised = person.serialise();
+        var s = new Serialiser(PersonModel);
+        var serialised = s.data(person);
         assert.equal(serialised.name, 'Mike');
         assert.equal(serialised.age, 24);
         assert.equal(serialised.id, null);
@@ -526,3 +528,5 @@ describe('model serialisation', function() {
   });
 
 });
+
+
