@@ -214,7 +214,6 @@ Context.prototype = {
       memo = memo.concat(collection.models);
       return memo;
     }.bind(this), []);
-    console.log('installing models', allModels);
     Model.install(allModels, cb);
   },
   _pushTask: function(task) {
