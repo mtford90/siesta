@@ -74,7 +74,8 @@ describe('installation', function() {
       });
 
       it('map', function(done) {
-        Person.graph({name: 'Mike', age: 24})
+        Person
+          .graph({name: 'Mike', age: 24})
           .then(function() {
             done();
           })

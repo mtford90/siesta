@@ -181,17 +181,17 @@ describe('Subclass', function() {
             Person.graph({age: 24, name: 'Mike'}).then(function(_mike) {
               mike = _mike;
               Car.graph({colour: 'red', name: 'Aston Martin', owner: {localId: mike.localId}})
-                .then(SportsCar.graph({
-                  colour: 'yellow',
-                  name: 'Lamborghini',
-                  maxSpeed: 160,
-                  owner: {localId: mike.localId}
-                }))
                 .then(function() {
-                  done();
-                })
-                .catch(done)
-              ;
+                  SportsCar.graph({
+                    colour: 'yellow',
+                    name: 'Lamborghini',
+                    maxSpeed: 160,
+                    owner: {localId: mike.localId}
+                  })
+                    .then(function() {
+                      done();
+                    }).catch(done);
+                }). catch(done);
             });
           });
 
@@ -237,17 +237,16 @@ describe('Subclass', function() {
             Person.graph({age: 24, name: 'Mike'}).then(function(_mike) {
               mike = _mike;
               Car.graph({colour: 'red', name: 'Aston Martin', owners: [{localId: mike.localId}]})
-                .then(SportsCar.graph({
-                  colour: 'yellow',
-                  name: 'Lamborghini',
-                  maxSpeed: 160,
-                  owners: [{localId: mike.localId}]
-                }))
                 .then(function() {
-                  done();
-                })
-                .catch(done)
-              ;
+                  SportsCar.graph({
+                    colour: 'yellow',
+                    name: 'Lamborghini',
+                    maxSpeed: 160,
+                    owners: [{localId: mike.localId}]
+                  }).then(function() {
+                    done();
+                  }).catch(done);
+                }).catch(done);
             })
           });
 

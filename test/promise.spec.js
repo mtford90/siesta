@@ -1,7 +1,7 @@
 var Promise = require('../core/Promise');
 var assert = require('chai').assert;
 
-describe.only('promises', function() {
+describe('promises', function() {
   describe('sync', function() {
     it('success', function(done) {
       var payload = {};

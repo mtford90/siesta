@@ -10,10 +10,14 @@ function Promise(fn) {
 
   this.resolved = null;
   this.rejected = null;
+  this.isResolved = false;
+  this.isRejected = false;
+
 
   var resolve = function(payload) {
     if (!(this.resolved || this.rejected)) {
-      this.resolved = payload || true;
+      this.resolved = payload;
+      this.isResolved = true;
       for (var i = 0; i < this.okCallbacks.length; i++) {
         var cb = this.okCallbacks[i];
         cb(payload);
@@ -23,7 +27,8 @@ function Promise(fn) {
 
   var reject = function(err) {
     if (!(this.resolved || this.rejected)) {
-      this.rejected = err || true;
+      this.rejected = err;
+      this.isRejected = true;
       for (var i = 0; i < this.errorCallbacks.length; i++) {
         var cb = this.errorCallbacks[i];
         cb(err);
@@ -37,41 +42,43 @@ function Promise(fn) {
 Promise.all = function(promises) {
   return new Promise(function(resolve, reject) {
     var n = promises.length;
-    var numResolve = 0;
-    var numReject = 0;
-    var resolveValues = [];
-    var rejectValues = [];
+    if (n) {
+      var numResolve = 0;
+      var numReject = 0;
+      var resolveValues = [];
+      var rejectValues = [];
 
-
-    promises.forEach(function(promise, idx) {
-      promise.then(function(payload) {
-        resolveValues[idx] = payload;
-        numResolve++;
-        check();
-      }, function(err) {
-        rejectValues[idx] = err;
-        numReject++;
-        check();
+      promises.forEach(function(promise, idx) {
+        promise.then(function(payload) {
+          resolveValues[idx] = payload;
+          numResolve++;
+          check();
+        }, function(err) {
+          rejectValues[idx] = err;
+          numReject++;
+          check();
+        });
       });
-    });
 
-    function check() {
-      if ((numResolve + numReject) == n) {
-        if (numReject) reject(rejectValues);
-        else resolve(resolveValues);
+      function check() {
+        if ((numResolve + numReject) == n) {
+          if (numReject) reject(rejectValues);
+          else resolve(resolveValues);
+        }
       }
     }
+    else resolve([]);
   });
 };
 
 Promise.prototype = {
   then: function(ok, err) {
-    if (this.resolved) {
+    if (this.isResolved) {
       if (ok) {
         ok(this.resolved);
       }
     }
-    else if (this.rejected) {
+    else if (this.isRejected) {
       if (err) {
         err(this.rejected);
       }
@@ -87,7 +94,7 @@ Promise.prototype = {
     return this;
   },
   catch: function(err) {
-    if (this.rejected) {
+    if (this.isRejected) {
       if (err) {
         err(this.rejected);
       }

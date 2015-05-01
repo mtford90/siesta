@@ -1,5 +1,5 @@
 var observe = require('../vendor/observe-js/src/observe').Platform,
-  Promise = require('lie'),
+  Promise = require('./Promise'),
   argsarray = require('argsarray'),
   InternalSiestaError = require('./error').InternalSiestaError;
 
@@ -99,25 +99,10 @@ extend(module.exports, {
         var err = args[0],
           rest = args.slice(1);
         if (err) {
-          try {
-            reject(err);
-          }
-          catch (e) {
-            console.error('Uncaught error during promise rejection', e);
-          }
+          reject(err);
         }
         else {
-          try {
-            resolve(rest[0]);
-          }
-          catch (e) {
-            try {
-              reject(e);
-            }
-            catch (e) {
-              console.error('Uncaught error during promise rejection', e);
-            }
-          }
+          resolve(rest[0]);
         }
         var bound = cb['__siesta_bound_object'] || cb; // Preserve bound object.
         cb.apply(bound, args);

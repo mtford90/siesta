@@ -56,12 +56,17 @@ Storage.prototype = {
    */
   save: function(cb) {
     return util.promise(cb, function(cb) {
-      this.context._ensureInstalled(function() {
-        var instances = this.unsavedObjects;
-        this.unsavedObjects = [];
-        this.unsavedObjectsHash = {};
-        this.unsavedObjectsByCollection = {};
-        this.saveToPouch(instances, cb);
+      this.context._ensureInstalled(function(err) {
+        if (!err) {
+          var instances = this.unsavedObjects;
+          this.unsavedObjects = [];
+          this.unsavedObjectsHash = {};
+          this.unsavedObjectsByCollection = {};
+          this.saveToPouch(instances, cb);
+        }
+        else {
+          cb(err);
+        }
       }.bind(this));
     }.bind(this));
   },
@@ -150,6 +155,12 @@ Storage.prototype = {
 
     var fullyQualifiedName = this.fullyQualifiedModelName(collectionName, modelName);
     var Model = this.context.collections[collectionName][modelName];
+
+    if (!Model) {
+      cb('No such model with name "' + modelName + '" in context.');
+      return;
+    }
+
     this
       .pouch
       .query(fullyQualifiedName)

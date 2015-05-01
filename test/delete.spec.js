@@ -20,9 +20,7 @@ describe('relationship deletion policies', function() {
 
     app._ensureInstalled(function() {
       var rel = Car.relationships.owner;
-      console.log(1);
       assert.equal(rel.deletion, siesta.constants.Deletion.Nullify);
-      console.log(2);
       done();
     })
 

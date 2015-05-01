@@ -12,6 +12,7 @@ var log = require('./log')('model'),
   Condition = require('./Condition'),
   ProxyEventEmitter = require('./ProxyEventEmitter'),
   Promise = util.Promise,
+  SiestaPromise = require('./Promise'),
   Placeholder = require('./Placeholder'),
   ReactiveFilter = require('./ReactiveFilter'),
   InstanceFactory = require('./instanceFactory');
@@ -142,7 +143,8 @@ function Model(opts) {
   }.bind(this));
 
   this._modelLoadedFromStorage = new Condition(function(done) {
-    if (this.context.storage) {
+    var storage = this.context.storage;
+    if (storage) {
       this.context._storage.loadModel({model: this}, function(err) {
         done(err);
       });
@@ -151,13 +153,6 @@ function Model(opts) {
   }.bind(this));
 
   this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
-
-  this._storageEnabled
-    .then(function() {
-    }.bind(this))
-    .catch(function(err) {
-      console.error('Could not enable storage for model ' + this.name + ':', err);
-    }.bind(this))
 }
 
 util.extend(Model, {
@@ -182,10 +177,11 @@ util.extend(Model, {
   },
   install: function(models, cb) {
     cb = cb || function() {};
-    return new Promise(function(resolve, reject) {
+    return new SiestaPromise(function(resolve, reject) {
+      var storageConditions = models.map(function(x) {return x._storageEnabled});
       Condition
         .all
-        .apply(Condition, models.map(function(x) {return x._storageEnabled}))
+        .apply(Condition, storageConditions)
         .then(function() {
           models.forEach(function(m) {
             m._installReversePlaceholders();
@@ -510,9 +506,16 @@ util.extend(Model.prototype, {
     if (typeof opts == 'function') cb = opts;
     opts = opts || {};
     return util.promise(cb, function(cb) {
-      this.context._ensureInstalled(function() {
-        this._graph(data, opts, cb);
-      }.bind(this));
+      this
+        .context
+        ._ensureInstalled(function(err) {
+          if (!err) {
+            this._graph(data, opts, cb);
+          }
+          else {
+            cb(err);
+          }
+        }.bind(this));
     }.bind(this));
   },
   _mapBulk: function(data, opts, callback) {
