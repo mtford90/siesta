@@ -78,7 +78,8 @@ describe('relationship deletion policies', function() {
     });
   });
 
-  describe('perform delete', function() {
+  describe('cascade', function() {
+
     it('OneToMany', function(done) {
       var coll = app.collection('Collection');
       var Person = coll.model('Person', {
@@ -94,7 +95,6 @@ describe('relationship deletion policies', function() {
           }
         }
       });
-
 
       Car.graph({
         id: 3,
@@ -176,6 +176,6 @@ describe('relationship deletion policies', function() {
       }).catch(done);
 
     });
-  })
+  });
 
 });
