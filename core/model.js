@@ -43,15 +43,8 @@ function Model(opts) {
     serialise: null,
     serialiseField: null,
     serialisableFields: null,
-    remove: null,
-    parseAttribute: null
+    remove: null
   }, false);
-
-  if (!this.parseAttribute) {
-    this.parseAttribute = function(attrName, value) {
-      return value;
-    }
-  }
 
   this.attributes = Model._processAttributes(this.attributes);
 
@@ -588,8 +581,7 @@ util.extend(Model.prototype, {
       properties: util.extend(util.extend({}, this._opts.properties) || {}, opts.properties),
       id: opts.id || this._opts.id,
       init: opts.init || this._opts.init,
-      remove: opts.remove || this._opts.remove,
-      parseAttribute: opts.parseAttribute || this._opts.parseAttribute
+      remove: opts.remove || this._opts.remove
     });
 
     var model = this.collection.model(opts.name, opts);

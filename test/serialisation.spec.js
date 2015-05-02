@@ -2,7 +2,7 @@ var assert = require('chai').assert,
   internal = siesta.lib,
   Model = internal.Model;
 
-describe.only('Serialiser', function() {
+describe('Serialiser', function() {
   var Collection, PersonModel, CarModel, CustomModel;
   var app = siesta.createApp('model-serialisation');
 

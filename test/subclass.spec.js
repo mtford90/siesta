@@ -562,58 +562,6 @@ describe('Subclass', function() {
 
   });
 
-  describe('parseAttribute', function() {
-    var Collection, Car, SportsCar;
-
-    it('parent parseAttribute inherited by child', function(done) {
-      Collection = app.collection('myCollection');
-      Car = Collection.model('Car', {
-        attributes: ['x'],
-        parseAttribute: function(field, value) {
-          if (field == 'x') {
-            return 'a';
-          }
-          return value;
-        }
-      });
-      SportsCar = Car.child('SportsCar', {
-        attributes: ['y']
-      });
-      SportsCar.graph({x: 1})
-        .then(function(c) {
-          assert.equal(c.x, 'a');
-          done();
-        }, done);
-    });
-
-    it('parent parseAttribute overriden by child', function(done) {
-      Collection = app.collection('myCollection');
-      Car = Collection.model('Car', {
-        attributes: ['x'],
-        parseAttribute: function(field, value) {
-          if (field == 'x') {
-            return 'a';
-          }
-          return value;
-        }
-      });
-      SportsCar = Car.child('SportsCar', {
-        attributes: ['y'],
-        parseAttribute: function(field, value) {
-          if (field == 'x') {
-            return 'b';
-          }
-          return value;
-        }
-      });
-      SportsCar.graph({x: 1})
-        .then(function(c) {
-          assert.equal(c.x, 'b');
-          done();
-        }, done);
-    });
-  });
-
 
   describe('filter', function() {
     var collection, Car, SportsCar, SuperCar;

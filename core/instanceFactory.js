@@ -55,12 +55,6 @@ ModelInstanceFactory.prototype = {
           return value === undefined ? null : value;
         },
         set: function(v) {
-          if (attributeDefinition.parse) {
-            v = attributeDefinition.parse.call(modelInstance, v);
-          }
-          if (Model.parseAttribute) {
-            v = Model.parseAttribute.call(modelInstance, attributeName, v);
-          }
           var old = modelInstance.__values[attributeName];
           var propertyDependencies = this._propertyDependencies[attributeName] || [];
           propertyDependencies = propertyDependencies.map(function(dependant) {
