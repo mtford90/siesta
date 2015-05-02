@@ -875,17 +875,17 @@ describe('events', function() {
         } else {
           car = _car;
           app.on('myCollection:Car', function(n) {
-            if (n.type == ModelEventType.Remove) {
+            if (n.type == ModelEventType.Delete) {
               event = n;
             }
           });
           app.on('myCollection', function(n) {
-            if (n.type == ModelEventType.Remove) {
+            if (n.type == ModelEventType.Delete) {
               collectionEvent = n;
             }
           });
           app.on('Siesta', function(n) {
-            if (n.type == ModelEventType.Remove) {
+            if (n.type == ModelEventType.Delete) {
               genericEvent = n;
             }
           });
@@ -908,10 +908,10 @@ describe('events', function() {
       assert.ok(collectionEvent);
     });
 
-    it('type is Remove', function() {
-      assert.equal(event.type, ModelEventType.Remove);
-      assert.equal(genericEvent.type, ModelEventType.Remove);
-      assert.equal(collectionEvent.type, ModelEventType.Remove);
+    it('type is Delete', function() {
+      assert.equal(event.type, ModelEventType.Delete);
+      assert.equal(genericEvent.type, ModelEventType.Delete);
+      assert.equal(collectionEvent.type, ModelEventType.Delete);
     });
 
     it('old', function() {

@@ -142,7 +142,7 @@ util.extend(ModelInstance.prototype, {
       this.context.cache.remove(this);
       this.removed = true;
       if (notification) {
-        this.emit(modelEvents.ModelEventType.Remove, {
+        this.emit(modelEvents.ModelEventType.Delete, {
           old: this
         });
       }

@@ -193,7 +193,7 @@ util.extend(ReactiveFilter.prototype, {
         this.emit(n.type, n);
       }
     }
-    else if (n.type == modelEvents.ModelEventType.Remove) {
+    else if (n.type == modelEvents.ModelEventType.Delete) {
       newObj = n.obj;
       var results = this.results.mutableCopy();
       index = results.indexOf(newObj);

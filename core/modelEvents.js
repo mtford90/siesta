@@ -16,7 +16,7 @@ var ModelEventType = {
   Set: 'set',
   Splice: 'splice',
   New: 'new',
-  Remove: 'remove'
+  Delete: 'delete'
 };
 
 /**
