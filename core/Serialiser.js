@@ -26,13 +26,12 @@ Serialiser.prototype = {
     var attributeNames = this.model._attributeNames;
     var relationshipNames = this.model._relationshipNames;
     var idField = this.model.id;
-    var serialisableFields = this.serialisableFields || attributeNames.concat.apply(attributeNames, relationshipNames).concat(idField);
+    var fields = this.fields || attributeNames.concat.apply(attributeNames, relationshipNames).concat(idField);
     attributeNames.forEach(function(attrName) {
-      if (serialisableFields.indexOf(attrName) > -1) {
+      if (fields.indexOf(attrName) > -1) {
         var serialiser = this[attrName];
         if (!serialiser) {
-          var serialiseField = this.serialiseField || defaultSerialiser;
-          serialiser = serialiseField.bind(this, attrName);
+          serialiser = defaultSerialiser.bind(this, attrName);
         }
         var val = instance[attrName];
         if (val === null) {
@@ -51,7 +50,7 @@ Serialiser.prototype = {
     }.bind(this));
     var relationships = this.model.relationships;
     relationshipNames.forEach(function(relName) {
-      if (serialisableFields.indexOf(relName) > -1) {
+      if (fields.indexOf(relName) > -1) {
         var val = instance[relName],
           rel = relationships[relName];
 
@@ -62,13 +61,9 @@ Serialiser.prototype = {
             serialiser = relSerialiser.bind(this);
           }
           else {
-            var serialiseField = this.serialiseField;
-            if (!serialiseField) {
-              if (util.isArray(val)) val = util.pluck(val, this.model.id);
-              else if (val) val = val[this.model.id];
-            }
-            serialiseField = serialiseField || defaultSerialiser;
-            serialiser = serialiseField.bind(this, relName);
+            if (util.isArray(val)) val = util.pluck(val, this.model.id);
+            else if (val) val = val[this.model.id];
+            serialiser = defaultSerialiser.bind(this, relName);
           }
           if (val === null) {
             if (includeNullRelationships) {
