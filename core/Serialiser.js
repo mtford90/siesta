@@ -14,7 +14,7 @@ Serialiser.prototype = {
   data: function(instance, opts) {
     opts = opts || {};
     if (!this.serialise) return this._defaultSerialise(instance, opts);
-    else return this.serialise(this, opts);
+    else return this.serialise(instance, opts);
   },
   _getRelationshipSerialiser: function(rel) {
     return this[rel.isReverse ? rel.reverseName : rel.forwardName];
