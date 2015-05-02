@@ -93,7 +93,7 @@ Serialiser.prototype = {
       }
     }.bind(this));
     return serialised;
-  },
+  }
 };
 
 module.exports = Serialiser;
