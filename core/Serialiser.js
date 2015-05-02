@@ -16,9 +16,7 @@ Serialiser.prototype = {
     if (!this.serialise) return this._defaultSerialise(instance, opts);
     else return this.serialise(instance, opts);
   },
-  _getRelationshipSerialiser: function(rel) {
-    return this[rel.isReverse ? rel.reverseName : rel.forwardName];
-  },
+
   _defaultSerialise: function(instance, opts) {
     var serialised = {};
     var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
@@ -56,7 +54,7 @@ Serialiser.prototype = {
 
         if (rel && !rel.isReverse) {
           var serialiser;
-          var relSerialiser = this._getRelationshipSerialiser(rel);
+          var relSerialiser = this[rel.isReverse ? rel.reverseName : rel.forwardName];
           if (relSerialiser) {
             serialiser = relSerialiser.bind(this);
           }

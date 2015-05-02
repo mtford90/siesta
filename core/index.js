@@ -31,6 +31,7 @@ var siesta = {
     utils: util,
     util: util,
     Serialiser: require('./Serialiser'),
+    Deserialiser: require('./Deserialiser'),
     filterSet: require('./FilterSet'),
     observe: require('../vendor/observe-js/src/observe'),
     Filter: require('./Filter'),

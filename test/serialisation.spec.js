@@ -3,12 +3,11 @@ var assert = require('chai').assert,
   Model = internal.Model;
 
 describe.only('Serialiser', function() {
-
-
   var Collection, PersonModel, CarModel, CustomModel;
   var app = siesta.createApp('model-serialisation');
 
   var Serialiser = siesta.lib.Serialiser;
+  var Deserialiser = siesta.lib.Deserialiser;
 
   before(function() {
     app.storage = false;
@@ -19,10 +18,7 @@ describe.only('Serialiser', function() {
       app.reset(function() {
         Collection = app.collection('myCollection');
         CustomModel = Collection.model('Custom', {
-          attributes: ['attr'],
-          serialise: function(model) {
-            return model.attr;
-          }
+          attributes: ['attr']
         });
         PersonModel = Collection.model('Person', {
           id: 'id',
@@ -370,11 +366,41 @@ describe.only('Serialiser', function() {
       })
     });
 
-    it('array', function() {
-
-    })
   });
 
+  describe('deserialisation', function() {
+    beforeEach(function(done) {
+      app.reset(function() {
+        done();
+      });
+    });
+    it('default should do nothing', function() {
+      var d = new Deserialiser(CustomModel);
+      var deserialised = d._deserialise({attr1: 1});
+      assert.equal(deserialised.attr1, 1);
+    });
+    it('non default', function() {
+      var d = new Deserialiser(CustomModel, {
+        attr1: function(v) {
+          return v * 2;
+        }
+      });
+      var deserialised = d._deserialise({attr1: 1});
+      assert.equal(deserialised.attr1, 2);
+    });
+    it('non default graph', function(done) {
+      var d = new Deserialiser(CustomModel, {
+        attr1: function(v) {
+          return v * 2;
+        }
+      });
+      d.deserialise({
+        attr1: 1
+      }).then(function(instance) {
+        assert.equal(instance.attr1, 2);
+        done();
+      }).catch(done);
+    });
+  })
+
 });
-
-
