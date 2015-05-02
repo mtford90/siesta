@@ -366,6 +366,18 @@ describe.only('Serialiser', function() {
       })
     });
 
+    it('array', function(done) {
+      var data = [{name: 'Mike', age: 24}, {name: 'Bob', age: 23}];
+      PersonModel
+        .graph(data)
+        .then(function(people) {
+          var s = new Serialiser(PersonModel);
+          var serialised = s.data(people);
+          assert.equal(serialised.length, 2);
+          done();
+        }).catch(done);
+    });
+
   });
 
   describe('deserialisation', function() {
@@ -398,6 +410,22 @@ describe.only('Serialiser', function() {
         attr1: 1
       }).then(function(instance) {
         assert.equal(instance.attr1, 2);
+        done();
+      }).catch(done);
+    });
+    it('non default graph array', function(done) {
+      var d = new Deserialiser(CustomModel, {
+        attr1: function(v) {
+          return v * 2;
+        }
+      });
+      d.deserialise([{
+        attr1: 1
+      }, {
+        attr1: 2
+      }]).then(function(instances) {
+        assert.equal(instances[0].attr1, 2);
+        assert.equal(instances[1].attr1, 4);
         done();
       }).catch(done);
     });

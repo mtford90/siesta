@@ -11,12 +11,21 @@ function defaultSerialiser(attrName, value) {
 }
 
 Serialiser.prototype = {
-  data: function(instance, opts) {
+  _data: function(instance, opts) {
     opts = opts || {};
     if (!this.serialise) return this._defaultSerialise(instance, opts);
     else return this.serialise(instance, opts);
   },
-
+  data: function(instance, opts) {
+    if (util.isArray(instance)) {
+      return instance.map(function(i) {
+        return this._data(i, opts);
+      }.bind(this));
+    }
+    else {
+      return this._data(instance, opts);
+    }
+  },
   _defaultSerialise: function(instance, opts) {
     var serialised = {};
     var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
@@ -51,7 +60,6 @@ Serialiser.prototype = {
       if (fields.indexOf(relName) > -1) {
         var val = instance[relName],
           rel = relationships[relName];
-
         if (rel && !rel.isReverse) {
           var serialiser;
           var relSerialiser = this[rel.isReverse ? rel.reverseName : rel.forwardName];
