@@ -365,7 +365,7 @@ describe('events', function() {
             if (err) done(err);
             var listener = function(n) {
               notifs.push(n);
-              if (notifs.length == 2) {
+              if (notifs.length == 4) {
                 app.removeListener('myCollection:Car', listener);
                 done();
               }
@@ -398,12 +398,13 @@ describe('events', function() {
           var removalNotif;
           var addNotif;
           _.each(notifs, function(notif) {
-            assert.equal(notif.field, 'colours');
-            assert.equal(notif.type, ModelEventType.Splice);
-            if (notif.removed.length) {
-              removalNotif = notif;
-            } else if (notif.added) {
-              addNotif = notif;
+            if (notif.type == ModelEventType.Splice) {
+              assert.equal(notif.field, 'colours');
+              if (notif.removed.length) {
+                removalNotif = notif;
+              } else if (notif.added) {
+                addNotif = notif;
+              }
             }
           });
 
@@ -424,7 +425,7 @@ describe('events', function() {
 
     describe('array', function() {
 
-      var personEvent, personGenericEvent, personCollectionEvent;
+      var personSpliceEvent, personGenericSpliceEvent, personCollectionSpliceEvent;
       var carEvent, carGenericEvent, carCollectionEvent;
 
       describe('foreign key', function() {
@@ -460,17 +461,17 @@ describe('events', function() {
               person.cars = [car];
               app.on('myCollection:Person', function(n) {
                 if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                  personEvent = n;
+                  personSpliceEvent = n;
                 }
               });
               app.on('myCollection', function(n) {
                 if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                  personCollectionEvent = n;
+                  personCollectionSpliceEvent = n;
                 }
               });
               app.on('Siesta', function(n) {
                 if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                  personGenericEvent = n;
+                  personGenericSpliceEvent = n;
                 }
               });
               app.on('myCollection:Car', function(n) {
@@ -498,20 +499,20 @@ describe('events', function() {
 
           describe('person', function() {
             it('type', function() {
-              assert.ok(personEvent);
-              assert.ok(personGenericEvent);
-              assert.ok(personCollectionEvent);
+              assert.ok(personSpliceEvent);
+              assert.ok(personGenericSpliceEvent);
+              assert.ok(personCollectionSpliceEvent);
 
-              assert.equal(personEvent.type, ModelEventType.Splice);
-              assert.equal(personGenericEvent.type, ModelEventType.Splice);
-              assert.equal(personCollectionEvent.type, ModelEventType.Splice);
+              assert.equal(personSpliceEvent.type, ModelEventType.Splice);
+              assert.equal(personGenericSpliceEvent.type, ModelEventType.Splice);
+              assert.equal(personCollectionSpliceEvent.type, ModelEventType.Splice);
             });
 
 
             it('added', function() {
-              assert.include(personEvent.added, anotherCar);
-              assert.include(personGenericEvent.added, anotherCar);
-              assert.include(personCollectionEvent.added, anotherCar);
+              assert.include(personSpliceEvent.added, anotherCar);
+              assert.include(personGenericSpliceEvent.added, anotherCar);
+              assert.include(personCollectionSpliceEvent.added, anotherCar);
             });
           });
 
@@ -531,43 +532,52 @@ describe('events', function() {
         });
 
         describe('splice', function() {
+          var personRemovedEvent, personAddedEvent;
+          var car2;
 
           beforeEach(function(done) {
             app._ensureInstalled(function() {
               car = _instance(Car);
+              car2 = _instance(Car);
               person = _instance(Person);
               person.cars = [car];
-              app.on('myCollection:Person', function(n) {
-                if (n.type == ModelEventType.Splice) {
-                  personEvent = n;
+              app.on('myCollection:Person', function(e) {
+                if (e.type == ModelEventType.Splice) {
+                  personSpliceEvent = e;
+                }
+                else if (e.type == ModelEventType.Remove) {
+                  personRemovedEvent = e;
+                }
+                else if (e.type == ModelEventType.Add) {
+                  personAddedEvent = e;
                 }
               });
               app.on('myCollection', function(n) {
                 if (n.type == ModelEventType.Splice) {
-                  personCollectionEvent = n;
+                  personCollectionSpliceEvent = n;
                 }
               });
               app.on('Siesta', function(n) {
                 if (n.type == ModelEventType.Splice) {
-                  personGenericEvent = n;
+                  personGenericSpliceEvent = n;
                 }
               });
               app.on('myCollection:Car', function(n) {
-                if (n.type == ModelEventType.Set && n.model == 'Car') {
+                if (n.type == ModelEventType.Set && n.model == 'Car' && n.obj == car) {
                   carEvent = n;
                 }
               });
               app.on('myCollection', function(n) {
-                if (n.type == ModelEventType.Set && n.model == 'Car') {
+                if (n.type == ModelEventType.Set && n.model == 'Car' && n.obj == car) {
                   carCollectionEvent = n;
                 }
               });
               app.on('Siesta', function(n) {
-                if (n.type == ModelEventType.Set && n.model == 'Car') {
+                if (n.type == ModelEventType.Set && n.model == 'Car' && n.obj == car) {
                   carGenericEvent = n;
                 }
               });
-              person.cars.splice(0, 1);
+              person.cars.splice(0, 1, car2);
               util.next(function() {
                 events.removeAllListeners();
                 done();
@@ -577,15 +587,22 @@ describe('events', function() {
 
           describe('person', function() {
             it('type', function() {
-              assert.equal(personEvent.type, ModelEventType.Splice);
-              assert.equal(personGenericEvent.type, ModelEventType.Splice);
-              assert.equal(personCollectionEvent.type, ModelEventType.Splice);
+              assert.equal(personSpliceEvent.type, ModelEventType.Splice);
+              assert.equal(personGenericSpliceEvent.type, ModelEventType.Splice);
+              assert.equal(personCollectionSpliceEvent.type, ModelEventType.Splice);
+              assert.equal(personRemovedEvent.type, ModelEventType.Remove);
+              assert.equal(personAddedEvent.type, ModelEventType.Add);
+            });
+
+            it('removed', function() {
+              assert.include(personSpliceEvent.removed, car);
+              assert.include(personGenericSpliceEvent.removed, car);
+              assert.include(personCollectionSpliceEvent.removed, car);
+              assert.include(personRemovedEvent.removed, car);
             });
 
             it('added', function() {
-              assert.include(personEvent.removed, car);
-              assert.include(personGenericEvent.removed, car);
-              assert.include(personCollectionEvent.removed, car);
+              assert.include(personAddedEvent.added, car2);
             });
           });
 
@@ -648,17 +665,17 @@ describe('events', function() {
                 person.cars = [car];
                 app.on('myCollection:Person', function(n) {
                   if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personEvent = n;
+                    personSpliceEvent = n;
                   }
                 });
                 app.on('myCollection', function(n) {
                   if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personCollectionEvent = n;
+                    personCollectionSpliceEvent = n;
                   }
                 });
                 app.on('Siesta', function(n) {
                   if (n.type == ModelEventType.Splice && n.model == 'Person') {
-                    personGenericEvent = n;
+                    personGenericSpliceEvent = n;
                   }
                 });
                 app.on('myCollection:Car', function(n) {
@@ -687,16 +704,16 @@ describe('events', function() {
             describe('person', function() {
 
               it('type', function() {
-                assert.equal(personEvent.type, ModelEventType.Splice);
-                assert.equal(personGenericEvent.type, ModelEventType.Splice);
-                assert.equal(personCollectionEvent.type, ModelEventType.Splice);
+                assert.equal(personSpliceEvent.type, ModelEventType.Splice);
+                assert.equal(personGenericSpliceEvent.type, ModelEventType.Splice);
+                assert.equal(personCollectionSpliceEvent.type, ModelEventType.Splice);
               });
 
 
               it('added', function() {
-                assert.include(personEvent.added, anotherCar);
-                assert.include(personGenericEvent.added, anotherCar);
-                assert.include(personCollectionEvent.added, anotherCar);
+                assert.include(personSpliceEvent.added, anotherCar);
+                assert.include(personGenericSpliceEvent.added, anotherCar);
+                assert.include(personCollectionSpliceEvent.added, anotherCar);
               });
             });
 

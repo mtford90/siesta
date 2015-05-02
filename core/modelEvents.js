@@ -1,7 +1,8 @@
 var InternalSiestaError = require('./error').InternalSiestaError,
   log = require('./log')('events'),
   ArrayObserver = require('../vendor/observe-js/src/observe').ArrayObserver,
-  extend = require('./util').extend;
+  util = require('./util'),
+  extend = util.extend;
 
 /**
  * Constants that describe change events.
@@ -16,7 +17,9 @@ var ModelEventType = {
   Set: 'set',
   Splice: 'splice',
   New: 'new',
-  Delete: 'delete'
+  Delete: 'delete',
+  Remove: 'remove',
+  Add: 'add'
 };
 
 /**
@@ -86,6 +89,20 @@ function emit(app, opts) {
   var model = opts.model;
   var c = new ModelEvent(opts);
   broadcastEvent(app, collection, model, c);
+  if (opts.type == ModelEventType.Splice) {
+    if (opts.removed.length) {
+      var removedOpts = util.extend({}, opts);
+      delete(removedOpts.added);
+      removedOpts.type = ModelEventType.Remove;
+      broadcastEvent(app, collection, model, new ModelEvent(removedOpts))
+    }
+    if (opts.added.length) {
+      var addedOpts = util.extend({}, opts);
+      delete(addedOpts.removed);
+      addedOpts.type = ModelEventType.Add;
+      broadcastEvent(app, collection, model, new ModelEvent(addedOpts))
+    }
+  }
   return c;
 }
 
