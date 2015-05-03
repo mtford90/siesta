@@ -106,20 +106,20 @@ util.extend(ModelInstance.prototype, {
     });
     this.context.broadcast(opts);
   },
-  remove: function(cb, notification) {
+  delete: function(cb, notification) {
     _.each(this._relationshipNames, function(name) {
-      var toRemove;
+      var toDelete;
       var def = this.model.relationships[name];
       if (def) {
         if (def.deletion === siesta.constants.Deletion.Cascade) {
           if (def.type == 'OneToMany') {
             if (def.isReverse) {
-              toRemove = this[name];
+              toDelete = this[name];
             }
           }
           else if (def.type == 'OneToOne') {
             var val = this[name];
-            if (val)  toRemove = [val];
+            if (val)  toDelete = [val];
           }
         }
       }
@@ -130,9 +130,9 @@ util.extend(ModelInstance.prototype, {
       else {
         this[name] = null;
       }
-      if (toRemove) {
-        toRemove.forEach(function(r) {
-          r.remove();
+      if (toDelete) {
+        toDelete.forEach(function(r) {
+          r.delete();
         });
       }
 

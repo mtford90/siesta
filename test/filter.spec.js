@@ -1442,7 +1442,7 @@ describe('filter...', function() {
         var cars = _.extend([], michael.cars),
           filterSet = createFilterSet(cars, Car);
 
-        filterSet.remove().then(function() {
+        filterSet.delete().then(function() {
           app.notify(function() {
             cars.forEach(function(c) {
               assert.ok(c.removed);

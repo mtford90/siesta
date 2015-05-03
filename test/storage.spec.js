@@ -186,7 +186,7 @@ describe('storage', function() {
     it('remove object', function(done) {
       var car = app._storage._unsavedObjects[0];
       app.save().then(function() {
-        car.remove()
+        car.delete()
           .then(function() {
             app.notify(function() {
               app.save().then(function() {

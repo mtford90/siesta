@@ -244,7 +244,7 @@ describe('reactive filter', function() {
             var person = res[0];
             var rq = Person._reactiveFilter({age__lt: 30});
             rq.init(function(err) {
-              person.remove(function() {
+              person.delete(function() {
                 if (err) done(err);
                 else {
                   app.notify(function() {
@@ -286,7 +286,7 @@ describe('reactive filter', function() {
                       done(e);
                     }
                   });
-                  person.remove();
+                  person.delete();
                   app.notify();
                 }
               });
@@ -316,7 +316,7 @@ describe('reactive filter', function() {
               rq.init(function(err) {
                 if (err) done(err);
                 else {
-                  person.remove();
+                  person.delete();
                   app.notify();
                 }
               });

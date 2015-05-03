@@ -101,7 +101,7 @@ describe('relationship deletion policies', function() {
         color: 'red',
         owner: {name: 'mike', id: 1}
       }).then(function(car) {
-        car.owner.remove();
+        car.owner.delete();
         assert.notOk(car.owner);
         assert.ok(car.removed);
         app.get(car.localId).then(function(car) {
@@ -134,7 +134,7 @@ describe('relationship deletion policies', function() {
         color: 'red',
         owner: {name: 'mike', id: 1}
       }).then(function(car) {
-        car.owner.remove();
+        car.owner.delete();
         assert.notOk(car.owner);
         assert.ok(car.removed);
         app.get(car.localId).then(function(car) {
@@ -167,7 +167,7 @@ describe('relationship deletion policies', function() {
         owner: {name: 'mike', id: 1}
       }).then(function(car) {
         var owner = car.owner;
-        car.remove();
+        car.delete();
         assert.ok(owner.removed);
         app.get(owner.localId).then(function(person) {
           assert.notOk(person);

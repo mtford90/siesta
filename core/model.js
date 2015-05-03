@@ -556,7 +556,7 @@ util.extend(Model.prototype, {
     return util.promise(cb, function(cb) {
       this.all()
         .then(function(instances) {
-          instances.remove();
+          instances.delete();
           cb();
         })
         .catch(cb);

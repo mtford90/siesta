@@ -269,7 +269,7 @@ describe('many to many proxy', function() {
 
     it('removal', function(done) {
       car.owners = [person];
-      person.remove().then(function() {
+      person.delete().then(function() {
         assert.notOk(car.owners.length);
         done();
       }).catch(done);
@@ -277,7 +277,7 @@ describe('many to many proxy', function() {
 
     it('reverse removal', function(done) {
       person.cars = [car];
-      car.remove().then(function() {
+      car.delete().then(function() {
         assert.notOk(person.cars.length);
         done();
       }).catch(done);

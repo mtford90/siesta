@@ -50,7 +50,7 @@ describe('remove models from object graph', function() {
 
     it('removal', function(done) {
       person
-        .remove()
+        .delete()
         .then(function() {
           assert.notOk(car.owner);
           done();
@@ -59,7 +59,7 @@ describe('remove models from object graph', function() {
 
     it('reverse removal', function(done) {
       car
-        .remove()
+        .delete()
         .then(function() {
           assert.notOk(person.car);
           done();
@@ -106,7 +106,7 @@ describe('remove models from object graph', function() {
 
     it('removal', function(done) {
       person
-        .remove()
+        .delete()
         .then(function() {
           assert.notOk(car.owner);
           done();
@@ -115,7 +115,7 @@ describe('remove models from object graph', function() {
 
     it('reverse removal', function(done) {
       car
-        .remove()
+        .delete()
         .then(function() {
           assert.notOk(person.cars.length);
           done();
@@ -162,7 +162,7 @@ describe('remove models from object graph', function() {
 
     it('removal', function(done) {
       person
-        .remove()
+        .delete()
         .then(function() {
           assert.notOk(car.owners.length);
           done();
@@ -171,7 +171,7 @@ describe('remove models from object graph', function() {
 
     it('reverse removal', function(done) {
       car
-        .remove()
+        .delete()
         .then(function() {
           assert.notOk(person.cars.length);
           done();

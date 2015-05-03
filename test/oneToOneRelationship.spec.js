@@ -241,7 +241,7 @@ describe('one to one relationship', function() {
 
     it('removal', function(done) {
       car.owner = person;
-      person.remove().then(function() {
+      person.delete().then(function() {
         assert.notOk(car.owner);
         done();
       }).catch(done);
@@ -249,7 +249,7 @@ describe('one to one relationship', function() {
 
     it('reverse removal', function(done) {
       person.car = car;
-      car.remove().then(function() {
+      car.delete().then(function() {
         assert.notOk(person.car);
         done();
       }).catch(done);

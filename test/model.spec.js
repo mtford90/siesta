@@ -210,7 +210,7 @@ describe('Models', function() {
         app.cache.insert(car);
         assert.notOk(car.removed);
         assert.ok(app.cache.contains(car));
-        car.remove();
+        car.delete();
         assert.notOk(app.cache.contains(car));
         assert.ok(car.removed);
       }
@@ -237,7 +237,7 @@ describe('Models', function() {
         app.cache.insert(car);
         assert.notOk(car.removed);
         assert.ok(app.cache.contains(car));
-        car.remove();
+        car.delete();
         assert.notOk(app.cache.contains(car));
         assert.ok(car.removed);
       }
@@ -547,7 +547,7 @@ describe('Models', function() {
         })
           .then(function(_m) {
             m = _m;
-            _m.remove();
+            _m.delete();
             done();
           });
 
@@ -570,7 +570,7 @@ describe('Models', function() {
         })
           .then(function(_m) {
             m = _m;
-            _m.remove()
+            _m.delete()
               .then(function() {
                 assert.ok(removeCalled);
                 done();
@@ -596,7 +596,7 @@ describe('Models', function() {
           attr: 1
         }).then(function(_m) {
           m = _m;
-          _m.remove()
+          _m.delete()
             .then(function() {
               initCalled = false;
               M.init = function(restored) {

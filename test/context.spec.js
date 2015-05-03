@@ -67,7 +67,7 @@ describe('contexts', function() {
     assert.equal(context._storage._pouch, pouchDB);
   });
 
-  describe.only('merge', function() {
+  describe('merge', function() {
     var mainContext = app.context({name: 'main-context', storage: false});
     var secondaryContext;
 

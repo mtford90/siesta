@@ -906,7 +906,7 @@ describe('events', function() {
               genericEvent = n;
             }
           });
-          car.remove();
+          car.delete();
           events.removeAllListeners();
           done();
         }
@@ -964,7 +964,7 @@ describe('events', function() {
           done(err);
         } else {
           car = _car;
-          car.remove();
+          car.delete();
           app.on('myCollection:Car', function(n) {
             if (n.type == ModelEventType.New) {
               event = n;
