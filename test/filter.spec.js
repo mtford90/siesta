@@ -6,7 +6,7 @@ var assert = require('chai').assert,
   Filter = internal.Filter;
 
 describe('filter...', function() {
-  var app = siesta.createApp('filter');
+  var app = siesta.app('filter');
   before(function() {
     app.storage = false;
   });

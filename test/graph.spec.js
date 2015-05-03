@@ -7,7 +7,7 @@ describe('perform mapping', function() {
 
   var Collection, Car, Person;
 
-  var app = siesta.createApp('perform-mapping');
+  var app = siesta.app('perform-mapping');
   before(function() {
     app.storage = false;
   });

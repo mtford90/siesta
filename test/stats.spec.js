@@ -3,7 +3,7 @@ var assert = require('chai').assert;
 describe('statistics', function() {
   var Car, Person, Collection;
 
-  var app = siesta.createApp('statistics');
+  var app = siesta.app('statistics');
   before(function() {
     app.storage = false;
   });

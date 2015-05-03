@@ -9,7 +9,7 @@ var assert = require('chai').assert,
   RelationshipType = siesta.RelationshipType;
 
 describe('installation', function() {
-  var context = siesta.createApp('installation');
+  var context = siesta.app('installation');
 
   describe('install step', function() {
     var MyCollection, Person;

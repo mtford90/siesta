@@ -4,7 +4,7 @@ var assert = require('chai').assert,
 
 describe('Subclass', function() {
   var Collection, Car, SportsCar;
-  var app = siesta.createApp('subclass');
+  var app = siesta.app('subclass');
 
   before(function() {
     app.storage = false;

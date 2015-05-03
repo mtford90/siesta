@@ -4,7 +4,7 @@ var assert = require('chai').assert,
 
 describe('storage', function() {
 
-  var app = siesta.createApp('storage', {storage: true});
+  var app = siesta.app('storage', {storage: true});
 
   beforeEach(function(done) {
     app.reset(done);

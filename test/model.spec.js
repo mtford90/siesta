@@ -5,7 +5,7 @@ var assert = require('chai').assert,
 
 describe('Models', function() {
 
-  var app = siesta.createApp('Models');
+  var app = siesta.app('Models');
 
   before(function() {
     app.storage = false;

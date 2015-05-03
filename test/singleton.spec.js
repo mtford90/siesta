@@ -6,7 +6,7 @@ describe('singleton mapping', function() {
 
   var Collection, Car;
 
-  var app = siesta.createApp('singleton-mapping');
+  var app = siesta.app('singleton-mapping');
   before(function() {
     app.storage = false;
   });

@@ -4,7 +4,7 @@ var Collection = siesta;
 
 describe('reactive filter', function() {
   var MyCollection, Person;
-  var app = siesta.createApp('reactive-filter');
+  var app = siesta.app('reactive-filter');
 
   beforeEach(function(done) {
     // Ensure that storage is wiped clean for each test.

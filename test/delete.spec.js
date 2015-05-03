@@ -1,6 +1,6 @@
 describe('relationship deletion policies', function() {
 
-  var app = siesta.createApp('deletion', {storage: false});
+  var app = siesta.app('deletion', {storage: false});
   var assert = require('chai').assert;
 
   beforeEach(function(done) {

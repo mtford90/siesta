@@ -3,7 +3,7 @@ var assert = require('chai').assert;
 describe('to sort', function() {
   var Model, Collection;
 
-  var app = siesta.createApp('to-sort');
+  var app = siesta.app('to-sort');
 
   before(function() {
     app.storage = false;

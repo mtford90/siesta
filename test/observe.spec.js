@@ -6,7 +6,7 @@ var assert = require('chai').assert,
  */
 
 describe('observer', function() {
-  var app = siesta.createApp('observer');
+  var app = siesta.app('observer');
   before(function() {
     app.storage = false;
   });

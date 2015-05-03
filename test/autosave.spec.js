@@ -3,7 +3,7 @@ var assert = require('chai').assert;
 describe('auto save', function() {
   var MyCollection, Person;
 
-  var app = siesta.createApp('autosave', {storage: true});
+  var app = siesta.app('autosave', {storage: true});
 
   beforeEach(function(done) {
     app.reset(function() {

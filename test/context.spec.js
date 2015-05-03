@@ -3,7 +3,7 @@ var assert = require('chai').assert;
 describe('contexts', function() {
   var MyCollection, Person, Car;
 
-  var app = siesta.createApp('context', {storage: true});
+  var app = siesta.app('context', {storage: true});
 
   beforeEach(function(done) {
     app.reset(function() {

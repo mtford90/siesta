@@ -7,7 +7,7 @@ var util = require('./util'),
 util._patchBind();
 
 var siesta = {
-  createApp: function(name, opts) {
+  app: function(name, opts) {
     opts = opts || {};
     opts.name = name;
     return new Context(opts);

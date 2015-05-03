@@ -2,7 +2,7 @@ var assert = require('chai').assert;
 
 
 describe('bulk removal', function() {
-  var app = siesta.createApp('bulk-removal');
+  var app = siesta.app('bulk-removal');
   before(function() {
     app.storage = false;
   });
