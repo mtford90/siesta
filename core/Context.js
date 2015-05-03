@@ -5,6 +5,7 @@ var events = require('./events'),
   Model = require('./model'),
   error = require('./error'),
   Storage = require('../storage'),
+  Promise = require('./Promise'),
   Serialiser = require('./Serialiser'),
   Filter = require('./Filter'),
   Collection = require('./collection');
@@ -121,6 +122,13 @@ function Context(opts) {
     collectionNames: {
       get: function() {
         return Object.keys(this.collections);
+      }
+    },
+    _collectionArr: {
+      get: function() {
+        return Object.keys(this.collections).map(function(collName) {
+          return this.collections[collName];
+        }.bind(this));
       }
     }
   });
@@ -314,6 +322,40 @@ Context.prototype = {
         }.bind(this)).catch(cb);
     }.bind(this));
   },
+  _mergeCollection: function(collection, cb) {
+    return util.promise(cb, function(cb) {
+      var models = collection.models;
+      var promises = models.map(function(model) {
+        return model.all();
+      });
+      Promise
+        .all(promises)
+        .then(function(res) {
+          var instances = res.reduce(function(memo, arr) {
+            return memo.concat(arr);
+          }, []);
+          this._mergeIterable(instances, cb);
+        }.bind(this));
+    }.bind(this));
+  },
+  _mergeContext: function(context, cb) {
+    return util.promise(cb, function(cb) {
+      var models = context._collectionArr.reduce(function(models, coll) {
+        return models.concat(coll.models);
+      }, []);
+      var promises = models.map(function(model) {
+        return model.all();
+      });
+      Promise
+        .all(promises)
+        .then(function(res) {
+          var instances = res.reduce(function(memo, arr) {
+            return memo.concat(arr);
+          }, []);
+          this._mergeIterable(instances, cb);
+        }.bind(this));
+    }.bind(this));
+  },
   merge: function(payload, cb) {
     if (util.isArray(payload)) {
       return this._mergeIterable(payload, cb);
@@ -321,16 +363,14 @@ Context.prototype = {
     else if (payload instanceof Model) {
       return this._mergeModel(payload, cb);
     }
+    else if (payload instanceof Collection) {
+      return this._mergeCollection(payload, cb);
+    }
+    else if (payload instanceof Context) {
+      return this._mergeContext(payload, cb);
+    }
     else {
-      var data = this._prepare(payload);
-      var otherModel = payload.model;
-      var otherCollection = otherModel.collection;
-      var collName = otherCollection.name;
-      var modelName = otherModel.name;
-      var collection = this[collName];
-      var model = collection[modelName];
-
-      return model.graph(data, cb);
+      return this._mergeIterable([payload], cb);
     }
   }
 };

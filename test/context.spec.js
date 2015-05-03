@@ -71,7 +71,7 @@ describe('contexts', function() {
     var mainContext = app.context({name: 'main-context', storage: false});
     var secondaryContext;
 
-    var Coll1, Coll2, Model1, Model2;
+    var Coll1, Model1, Model2;
 
     beforeEach(function(done) {
       mainContext.reset(function() {
@@ -79,7 +79,6 @@ describe('contexts', function() {
         Model1 = Coll1.model('Model1', {
           attributes: ['attr']
         });
-        Coll2 = mainContext.collection('Coll2');
         Model2 = Coll1.model('Model2', {
           attributes: ['attr']
         });
@@ -100,6 +99,7 @@ describe('contexts', function() {
         mainContext
           .merge(instance)
           .then(function(mainContextInstance) {
+            mainContextInstance = mainContextInstance.Coll1.Model1[0];
             assert.notEqual(instance.localId, mainContextInstance.localId);
             assert.equal(mainContextInstance.id, 1);
             assert.equal(mainContextInstance.attr, 1);
@@ -145,12 +145,40 @@ describe('contexts', function() {
       }).catch(done);
     });
 
-    it('collection', function() {
-
+    it('collection', function(done) {
+      secondaryContext.Coll1.Model1.graph([{
+        id: 1,
+        attr: 1
+      }, {
+        id: 2,
+        attr: 2
+      }]).then(function(instance) {
+        mainContext
+          .merge(secondaryContext.Coll1)
+          .then(function(mainContextInstances) {
+            assert.equal(mainContextInstances.Coll1.Model1.length, 2);
+            done();
+          })
+          .catch(done);
+      }).catch(done);
     });
 
-    it('context', function() {
-
+    it('context', function(done) {
+      secondaryContext.Coll1.Model1.graph([{
+        id: 1,
+        attr: 1
+      }, {
+        id: 2,
+        attr: 2
+      }]).then(function(instance) {
+        mainContext
+          .merge(secondaryContext)
+          .then(function(mainContextInstances) {
+            assert.equal(mainContextInstances.Coll1.Model1.length, 2);
+            done();
+          })
+          .catch(done);
+      }).catch(done);
     });
 
     it('error if not a parent context', function() {
