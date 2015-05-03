@@ -5,6 +5,7 @@ var events = require('./events'),
   Model = require('./model'),
   error = require('./error'),
   Storage = require('../storage'),
+  Serialiser = require('./Serialiser'),
   Filter = require('./Filter'),
   Collection = require('./collection');
 
@@ -287,6 +288,28 @@ Context.prototype = {
     }.bind(this));
 
     return context;
+  },
+  _prepare: function(instance) {
+    var s = new Serialiser(instance.model);
+    return s.data(instance);
+  },
+  merge: function(payload) {
+    var data;
+    if (util.isArray(payload)) {
+      throw new Error('NYI');
+    }
+    else {
+      data = this._prepare(payload);
+    }
+
+    var otherModel = payload.model;
+    var otherCollection = otherModel.collection;
+    var collName = otherCollection.name;
+    var modelName = otherModel.name;
+    var collection = this[collName];
+    var model = collection[modelName];
+
+    return model.graph(data);
   }
 };
 

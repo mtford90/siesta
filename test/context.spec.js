@@ -66,4 +66,63 @@ describe('contexts', function() {
     var context = app.context({name: 'another-context', storage: {pouch: pouchDB}});
     assert.equal(context._storage._pouch, pouchDB);
   });
+
+  describe.only('merge', function() {
+    var mainContext = app.context({name: 'main-context', storage: false});
+    var secondaryContext;
+
+    var Coll1, Coll2, Model1, Model2;
+
+    beforeEach(function(done) {
+      mainContext.reset(function() {
+        Coll1 = mainContext.collection('Coll1');
+        Model1 = Coll1.model('Model1', {
+          attributes: ['attr']
+        });
+        Coll2 = mainContext.collection('Coll2');
+        Model2 = Coll1.model('Model2', {
+          attributes: ['attr']
+        });
+        secondaryContext = mainContext.context({name: 'secondary-context', storage: false});
+        done();
+      });
+    });
+
+    afterEach(function(done) {
+      secondaryContext.reset(done);
+    });
+
+    it('instance', function(done) {
+      secondaryContext.Coll1.Model1.graph({
+        id: 1,
+        attr: 1
+      }).then(function(instance) {
+        mainContext
+          .merge(instance)
+          .then(function(mainContextInstance) {
+            assert.notEqual(instance.localId, mainContextInstance.localId);
+            assert.equal(mainContextInstance.id, 1);
+            assert.equal(mainContextInstance.attr, 1);
+            done();
+          })
+          .catch(done);
+      }).catch(done);
+    });
+    it('instance iterable', function() {
+
+    });
+    it('model', function() {
+
+    });
+    it('collection', function() {
+
+    });
+    it('context', function() {
+
+    });
+    it('error if not a parent context', function() {
+
+    });
+  });
+
 });
