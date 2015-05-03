@@ -182,7 +182,9 @@ describe('contexts', function() {
     });
 
     it('error if not a parent context', function() {
-
+      assert.throws(function() {
+        mainContext.merge(siesta.app('other-context'));
+      });
     });
 
   });

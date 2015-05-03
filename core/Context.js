@@ -15,6 +15,8 @@ function configureStorage(opts) {
 }
 
 function Context(opts) {
+  this.parent = null;
+  this.children = [];
   this.collections = {};
   this.cache = new Cache();
 
@@ -269,6 +271,8 @@ Context.prototype = {
     var context = new Context(opts),
       collectionNames = this.collectionNames,
       collections = {};
+    context.parent = this;
+    this.children.push(context);
     collectionNames.forEach(function(collectionName) {
       var newCollection = context.collection(collectionName),
         existingCollection = this.collections[collectionName];
@@ -338,23 +342,37 @@ Context.prototype = {
         }.bind(this));
     }.bind(this));
   },
+  isAncestor: function(childContext) {
+    var parent = childContext.parent;
+    while (parent) {
+      if (parent == this) return true;
+      parent = parent.parent;
+    }
+    return false;
+  },
   _mergeContext: function(context, cb) {
-    return util.promise(cb, function(cb) {
-      var models = context._collectionArr.reduce(function(models, coll) {
-        return models.concat(coll.models);
-      }, []);
-      var promises = models.map(function(model) {
-        return model.all();
-      });
-      Promise
-        .all(promises)
-        .then(function(res) {
-          var instances = res.reduce(function(memo, arr) {
-            return memo.concat(arr);
-          }, []);
-          this._mergeIterable(instances, cb);
-        }.bind(this));
-    }.bind(this));
+    if (this.isAncestor(context)) {
+      return util.promise(cb, function(cb) {
+        var models = context._collectionArr.reduce(function(models, coll) {
+          return models.concat(coll.models);
+        }, []);
+        var promises = models.map(function(model) {
+          return model.all();
+        });
+        Promise
+          .all(promises)
+          .then(function(res) {
+            var instances = res.reduce(function(memo, arr) {
+              return memo.concat(arr);
+            }, []);
+            this._mergeIterable(instances, cb);
+          }.bind(this));
+      }.bind(this));
+    }
+    else {
+      throw new Error('Cannot merge contexts from two different apps.');
+    }
+
   },
   merge: function(payload, cb) {
     if (util.isArray(payload)) {
