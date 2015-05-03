@@ -56,7 +56,7 @@ Storage.prototype = {
    */
   save: function(cb) {
     return util.promise(cb, function(cb) {
-      this.context._ensureInstalled(function(err) {
+      this.context._setup(function(err) {
         if (!err) {
           var instances = this.unsavedObjects;
           this.unsavedObjects = [];

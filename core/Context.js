@@ -207,7 +207,7 @@ Context.prototype = {
         }).catch(cb)
     }.bind(this));
   },
-  _ensureInstalled: function(cb) {
+  _setup: function(cb) {
     cb = cb || function() {};
     var allModels = this.collectionNames.reduce(function(memo, collectionName) {
       var collection = this.collections[collectionName];

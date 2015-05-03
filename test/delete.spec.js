@@ -23,7 +23,7 @@ describe('relationship deletion policies', function() {
         }
       });
 
-      app._ensureInstalled(function() {
+      app._setup(function() {
         var rel = Car.relationships.owner;
         assert.equal(rel.deletion, siesta.constants.Deletion.Nullify);
         done();
@@ -47,7 +47,7 @@ describe('relationship deletion policies', function() {
         }
       });
 
-      app._ensureInstalled(function() {
+      app._setup(function() {
         var rel = Car.relationships.owner;
         assert.equal(rel.deletion, siesta.constants.Deletion.Cascade);
         done();
@@ -70,7 +70,7 @@ describe('relationship deletion policies', function() {
         }
       });
 
-      app._ensureInstalled(function() {
+      app._setup(function() {
         var rel = Car.relationships.owner;
         assert.equal(rel.deletion, siesta.constants.Deletion.Nullify);
         done();

@@ -272,7 +272,7 @@ describe('Subclass', function() {
           attributes: ['age', 'name']
         });
 
-        app._ensureInstalled(function() {
+        app._setup(function() {
           done();
         });
         Car = Collection.model('Car', {

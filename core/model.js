@@ -360,7 +360,7 @@ util.extend(Model.prototype, {
   filter: function(filter, cb) {
     var filterInstance;
     var promise = util.promise(cb, function(cb) {
-      this.context._ensureInstalled(function() {
+      this.context._setup(function() {
         if (!this.singleton) {
           filterInstance = this._filter(filter);
           return filterInstance.execute(cb);
@@ -502,7 +502,7 @@ util.extend(Model.prototype, {
     return util.promise(cb, function(cb) {
       this
         .context
-        ._ensureInstalled(function(err) {
+        ._setup(function(err) {
           if (!err) {
             this._graph(data, opts, cb);
           }
@@ -533,7 +533,7 @@ util.extend(Model.prototype, {
   },
   count: function(cb) {
     return util.promise(cb, function(cb) {
-      this.context._ensureInstalled(function() {
+      this.context._setup(function() {
         cb(null, Object.keys(this._countCache()).length);
       }.bind(this));
     }.bind(this));

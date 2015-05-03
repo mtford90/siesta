@@ -453,7 +453,7 @@ describe('events', function() {
           var anotherCar;
 
           beforeEach(function(done) {
-            app._ensureInstalled(function() {
+            app._setup(function() {
               car = _instance(Car);
               anotherCar = _instance(Car);
               person = _instance(Person);
@@ -536,7 +536,7 @@ describe('events', function() {
           var car2;
 
           beforeEach(function(done) {
-            app._ensureInstalled(function() {
+            app._setup(function() {
               car = _instance(Car);
               car2 = _instance(Car);
               person = _instance(Person);
@@ -658,7 +658,7 @@ describe('events', function() {
 
           describe('push', function() {
             beforeEach(function(done) {
-              app._ensureInstalled(function() {
+              app._setup(function() {
                 car = _instance(Car);
                 anotherCar = _instance(Car);
                 person = _instance(Person);
@@ -737,7 +737,7 @@ describe('events', function() {
 
           describe('splice', function() {
             beforeEach(function(done) {
-              app._ensureInstalled(function() {
+              app._setup(function() {
                 car = _instance(Car);
                 person = _instance(Person);
                 person.cars = [car];
