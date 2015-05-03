@@ -108,21 +108,55 @@ describe('contexts', function() {
           .catch(done);
       }).catch(done);
     });
-    it('instance iterable', function() {
 
+    it('instance iterable', function(done) {
+      secondaryContext.Coll1.Model1.graph([{
+        id: 1,
+        attr: 1
+      }, {
+        id: 2,
+        attr: 2
+      }]).then(function(instance) {
+        mainContext
+          .merge(instance)
+          .then(function(mainContextInstances) {
+            assert.equal(mainContextInstances.Coll1.Model1.length, 2);
+            done();
+          })
+          .catch(done);
+      }).catch(done);
     });
-    it('model', function() {
 
+    it('model', function(done) {
+      secondaryContext.Coll1.Model1.graph([{
+        id: 1,
+        attr: 1
+      }, {
+        id: 2,
+        attr: 2
+      }]).then(function(instance) {
+        mainContext
+          .merge(secondaryContext.Coll1.Model1)
+          .then(function(mainContextInstances) {
+            assert.equal(mainContextInstances.Coll1.Model1.length, 2);
+            done();
+          })
+          .catch(done);
+      }).catch(done);
     });
+
     it('collection', function() {
 
     });
+
     it('context', function() {
 
     });
+
     it('error if not a parent context', function() {
 
     });
+
   });
 
 });

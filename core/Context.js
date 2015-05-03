@@ -293,23 +293,45 @@ Context.prototype = {
     var s = new Serialiser(instance.model);
     return s.data(instance);
   },
-  merge: function(payload) {
-    var data;
+  _mergeIterable: function(iterable, cb) {
+    var data = iterable.reduce(function(memo, instance) {
+      var modelName = instance.model.name,
+        collName = instance.collection.name;
+      if (!memo[collName]) memo[collName] = {};
+      if (!memo[collName][modelName]) memo[collName][modelName] = [];
+      memo[collName][modelName].push(this._prepare(instance));
+      return memo;
+    }.bind(this), {});
+
+    return this.graph(data, cb);
+  },
+  _mergeModel: function(model, cb) {
+    return util.promise(cb, function(cb) {
+      model
+        .all()
+        .then(function(instances) {
+          this._mergeIterable(instances, cb);
+        }.bind(this)).catch(cb);
+    }.bind(this));
+  },
+  merge: function(payload, cb) {
     if (util.isArray(payload)) {
-      throw new Error('NYI');
+      return this._mergeIterable(payload, cb);
+    }
+    else if (payload instanceof Model) {
+      return this._mergeModel(payload, cb);
     }
     else {
-      data = this._prepare(payload);
+      var data = this._prepare(payload);
+      var otherModel = payload.model;
+      var otherCollection = otherModel.collection;
+      var collName = otherCollection.name;
+      var modelName = otherModel.name;
+      var collection = this[collName];
+      var model = collection[modelName];
+
+      return model.graph(data, cb);
     }
-
-    var otherModel = payload.model;
-    var otherCollection = otherModel.collection;
-    var collName = otherCollection.name;
-    var modelName = otherModel.name;
-    var collection = this[collName];
-    var model = collection[modelName];
-
-    return model.graph(data);
   }
 };
 
