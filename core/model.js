@@ -573,9 +573,18 @@ util.extend(Model.prototype, {
     } else {
       opts = name;
     }
+    var subentityRelationships = this._opts.relationships || {};
+    var relationships = opts.relationships || {};
+
+    Object.keys(subentityRelationships).forEach(function(relName) {
+      if (relName in relationships) {
+        throw new Error('Relationship with name ' + relName + ' already exists on parent model ' + this.name);
+      }
+    });
+
     util.extend(opts, {
       attributes: Array.prototype.concat.call(opts.attributes || [], this._opts.attributes),
-      relationships: util.extend(opts.relationships || {}, this._opts.relationships),
+      relationships: util.extend(relationships || {}, subentityRelationships),
       methods: util.extend(util.extend({}, this._opts.methods) || {}, opts.methods),
       statics: util.extend(util.extend({}, this._opts.statics) || {}, opts.statics),
       properties: util.extend(util.extend({}, this._opts.properties) || {}, opts.properties),

@@ -191,7 +191,7 @@ describe('Subclass', function() {
                     .then(function() {
                       done();
                     }).catch(done);
-                }). catch(done);
+                }).catch(done);
             });
           });
 
@@ -263,7 +263,41 @@ describe('Subclass', function() {
           assert.include(sportsCar.owners, mike);
         });
       });
+    });
 
+    describe('override relationship should not be possible', function() {
+      it('OneToMany', function(done) {
+        Collection = app.collection('myCollection');
+        Person = Collection.model('Person', {
+          attributes: ['age', 'name']
+        });
+
+        app._ensureInstalled(function() {
+          done();
+        });
+        Car = Collection.model('Car', {
+          attributes: ['colour', 'name'],
+          relationships: {
+            owners: {
+              model: 'Person',
+              type: 'OneToMany',
+              reverse: 'cars'
+            }
+          }
+        });
+        assert.throws(function() {
+          SportsCar = Car.child('SportsCar', {
+            attributes: ['maxSpeed'],
+            relationships: {
+              owners: {
+                model: 'Person',
+                type: 'OneToMany',
+                reverse: 'sportsCars'
+              }
+            }
+          });
+        });
+      });
 
     });
 
@@ -562,7 +596,6 @@ describe('Subclass', function() {
 
   });
 
-
   describe('filter', function() {
     var collection, Car, SportsCar, SuperCar;
 
@@ -718,6 +751,4 @@ describe('Subclass', function() {
 
 
   })
-
-
 });
