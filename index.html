@@ -30,9 +30,8 @@ Users
       // Called on user creation
   })
   .query({$or: {age__gte: 20, age__lte: 30}})
-  .on('*', function (change) {
-      // Called whenever result set changes
-      // as well as when elements change
+  .on('new', function (e) {
+      // Fired whenever a new user matching the query is created.
    });</code></pre><p>React to changes in the object graph.</p></div><div class="col-md-6"><h3>Local Persistence</h3><pre><code>Users
   .graph([
       {id: 1, username: 'mike'},

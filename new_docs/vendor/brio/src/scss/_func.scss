@@ -1,0 +1,43 @@
+.func {
+  h1, h2 {
+    margin-top: 0;
+  }
+  .func-examples {
+    .func-example {
+      p {
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+      .code {
+
+      }
+    }
+  }
+  .func-def {
+    div {
+      display: inline-block;
+    }
+  }
+}
+
+.highlighted-tooltip {
+  text-decoration: none !important;
+  background-color: #fff7cd;
+  color: black !important;
+  &:hover {
+    background-color: #fff5a7;
+    color: black !important;
+  }
+}
+
+.inner-tooltip-contents {
+  h5 {
+    text-decoration: underline;
+  }
+  .key {
+    margin-bottom: 5px;
+    .key-name {
+      font-weight: bold;
+    }
+  }
+}

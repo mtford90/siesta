@@ -1,0 +1,20 @@
+{
+  "js": [
+    "node_modules/react/dist/react-with-addons.js",
+    "node_modules/jquery/dist/jquery.js",
+    "node_modules/underscore/underscore.js",
+    "node_modules/async/lib/async.js",
+    "node_modules/babel-core/browser-polyfill.js",
+    "node_modules/stacktrace-js/dist/stacktrace.js",
+    "vendor/tooltipster/js/jquery.tooltipster.js",
+    "vendor/jQuery-Collapse/src/jquery.collapse.js",
+    "vendor/bootstrap-sass/assets/javascripts/bootstrap.js",
+    "node_modules/react-bootstrap/dist/react-bootstrap.js",
+    "node_modules/react-router/umd/ReactRouter.js",
+    "node_modules/marked/lib/marked.js"
+  ],
+  "css": [
+    "vendor/tooltipster/css/tooltipster.css",
+    "vendor/bootstrap/dist/css/bootstrap.css"
+  ]
+}

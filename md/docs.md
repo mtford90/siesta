@@ -14,7 +14,7 @@ bower install siesta --save
 ### Script tag
 
 ```html
-<script src="path/to/siesta/dist/siesta.js"></script>
+<script src="siesta.min.js"></script>
 ```
 
 ### CommonJS
@@ -31,8 +31,8 @@ To enable storage you must include PouchDB. If the availability of PouchDB is no
 
 ```html
 <!-- If using script tags -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/pouchdb/3.2.0/pouchdb.min.js"></script>
-<script src="https://github.com/mtford90/siesta/releases/download/{{site.version}}/siesta.min.js"></script>
+<script src="pouchdb.min.js"></script>
+<script src="siesta.min.js"></script>
 ```
 
 ```js
@@ -40,30 +40,25 @@ To enable storage you must include PouchDB. If the availability of PouchDB is no
 window.PouchDB = require('pouchdb');
 ```
 
-## Example Projects
+# App
 
-At the moment the only example project is the ReactJS/Siesta TodoMVC implementation, the demo of which is [here](http://mtford.co.uk/siesta-reactjs-todomvc/) and source [here](https://github.com/mtford90/siesta-reactjs-todomvc).
+To get started with Siesta you must first initialise an app.
 
-Various web apps and hybrid mobile apps are currently under development using Siesta and will be listed here upon completion.
-
-## Boilerplates
-
-Coming soon for your favourite framework. In the works:
-
-* ReactJS
-* AngularJS
+```js
+var app = siesta.app('myApp');
+```
 
 # Collections
 
-A collection organises a set of models, descriptors and other components. If you are interacting with REST APIs, you would define a collection for each of them. For example we could define a collection for interacting with the Github API.
+A collection organises a set of models. For example we could create a collection for organising models that represent resources on Github.
 
 ```js
-var Github = siesta.collection('Github');
+var Github = app.collection('Github');
 ```
 
 # Models
 
-A model defines the (possibly remote) resources that our app will deal with. *Instances* of our models will make up the object graph.
+Models describe the objects that we are going to represent. Instances of the models will make up the object graph.
 
 ```js
 var User = Github.model('User', {
@@ -101,51 +96,9 @@ var User = Collection.model({
 }); 
 ```
 
-It is also possible to define a parse function that can perform some processing when values are assigned to an attribute.
-
-```js
-var User = Collection.model({
-  attributes: [
-    'username',
-    'name',
-    {
-      name: 'dateOfBirth',
-      parse: function (value) {
-        if (!(value instanceof Date)) {
-          value = new Date(Date.parse(value));
-        }
-        return value;
-      }
-    }
-  ]
-});
-```
-
-Attribute parsing can also be done at the Model level:
-
-```js
-var User = Collection.model({
-  attributes: [
-    'username',
-    'name',
-    'dateOfBirth'
-  ],
-  parseAttribute: function (attributeName, value) {
-    if (attributeName == 'dateOfBirth') {
-       if (!(value instanceof Date)) {
-           value = new Date(Date.parse(value));
-       }
-    }
-    return value;
-  }
-});
-```
-
-Do note that per attribute parsing is performed before Model-level attribute parsing.
-
 ### id
 
-Define the field that uniquely identifies each model instance. The value of this field will be used by Siesta to determine onto which object data should be mapped. If an object within the object graph exists with the unique identifier, data will be mapped onto that instance, otherwise a new object will be created.
+Define the field that uniquely identifies each model instance. The value of this field will be used by Siesta to determine onto which instance data will be mapped. If an object within the object graph exists with the unique identifier, data will be mapped onto that instance, otherwise a new object will be created.
 
 ```js
 var Repo = Github.model({
@@ -159,26 +112,26 @@ There are three types of relationships, described here with examples from the Gi
 
 ```js
 var Repo = Github.model('Repo', {
-    relationships: {
-        // One github user has many repositories.
-        owner: {
-            model: 'Repo',
-            type: 'OneToMany',
-            reverse: 'repos'
-        },
-        // One github user has one rate limit status.
-        rateLimit: {
-            model: 'RateLimit',
-            type: 'OneToOne',
-            reverse: 'user'
-        },
-        // Many github users can belong to many organisations.
-        organisation: {
-            model: 'Organisation',
-            type: 'ManyToMany',
-            reverse: 'users'
-        }
+  relationships: {
+    // One github user has many repositories.
+    owner: {
+      model: 'Repo',
+      type: 'OneToMany',
+      reverse: 'repos'
+    },
+    // One github user has one rate limit status.
+    rateLimit: {
+      model: 'RateLimit',
+      type: 'OneToOne',
+      reverse: 'user'
+    },
+    // Many github users can belong to many organisations.
+    organisation: {
+      model: 'Organisation',
+      type: 'ManyToMany',
+      reverse: 'users'
     }
+  }
 }
 ```
 
@@ -201,8 +154,8 @@ If you do not define a reverse a default name will be used instead which takes t
 It is entirely possible to define relationships between models that are in different collections.
 
 ```js
-var MyCollection = siesta.collection('MyCollection'),
-    MyOtherCollection = siesta.collection('MyOtherCollection'),
+var MyCollection = app.collection('MyCollection'),
+    MyOtherCollection = app.collection('MyOtherCollection'),
     MyModel = MyCollection.model({attributes: ['attr']}),
     MyOtherModel = MyOtherCollection.model({
         relationships: {
@@ -260,7 +213,7 @@ RateLimit.graph([
 Custom methods for model instances can be defined using the methods option.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
 	Account = Collection.model('Account', {
                   attributes: ['transactions']
                   methods: {
@@ -287,7 +240,7 @@ Account.graph({transactions: [5, 3, -2]})
 Similar to javascript's `Object.defineProperty` we can also define derived properties on our model instances.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
     Account = Collection.model('Account', {
                   attributes: ['transactions']
                   properties: {
@@ -379,53 +332,13 @@ var Model = Collection.model('Model', {
 });
 ```
 
-### serialise
-
-`serialise` allows overriding the default serialisation mechanism. By default `depth=1` serialisation is used whereby all related objects are serialised into their unique identifier.
-
-```js
-var Model = Collection.model('Model', {
-	serialise: function (instance) {
-      return {
-        instanceId: instance.id,
-        related: instance.related.map(function (r) {
-          return r.name;
-        });
-      }
-	}
-});
-```
-
-To prevent a field from being serialised return `undefined`.
-
-### serialiseField
-
-`serialiseField` allows overriding the default serialisation on a field-by-field basis. If `serialise` is defined, `serialiseField will be ignored.
-
-```js
-var Model = Collection.model('Model', {
-	attributes: ['date'],
-	relationships: {
-	  user: {
-	    model: 'User'
-	  }
-	},
-	serialiseField: function (fieldName, value) {
-    if (fieldName == 'date') return value.format('YYYY-MM-DD');
-    else if (fieldName == 'user') return value._id;
-    return value;
-	}
-});
-```
-
-To prevent a field from being serialised return `undefined`.
 
 ## Inheritance
 
 Siesta supports model inheritance through which a child can inherit all attributes, relationships, methods etc.
 
 ```js
-var Collection         = siesta.collection('Collection'),
+var Collection         = app.collection('Collection'),
     Employee           = Collection.model('Employee', {attributes: ['name']}),
     SoftwareEngineer   = Employee.child('SoftwareEngineer', {attributes: ['programmingLanguages']}),
     JavascriptEngineer = SoftwareEngineer.child('JavascriptEngineer', {attributes: ['knowsNodeJS']});
@@ -565,7 +478,7 @@ MyCollection.graph({
 Similarly it's also possible to map at the `Siesta` level.
 
 ```js
-Siesta.graph({
+app.graph({
     MyCollection: {
         User: [{id: 5, username: 'mike'}, {id: 6, username: 'john'}],
         Email: {subject: 'An email', body: 'An email body', user: 5}
@@ -581,7 +494,7 @@ Siesta.graph({
 
 Siesta assigns each object a unique local identifier which is available at `localId`.
 
-You can query by `localId` using `siesta.get`.
+You can query by `localId` using `app.get`.
 
 ```js
 siesta
@@ -609,37 +522,37 @@ User.graph({login: 'mtford90', id: 1}, function (err, user) {
 To delete instances from the object graph simply call `remove`.
 
 ```js
-myInstance.remove();
-console.log(myInstance.removed); // true
+myInstance.delete();
+console.log(myInstance.deleted); // true
 ```
 
 You can restore a deleted instance by calling `restore` however do note that all relationships will now be cleared.
 
 ```js
 myInstance.restore();
-console.log(myInstance.removed); // false
+console.log(myInstance.deleted); // false
 ```
 
-You can also remove objects in bulk.
+You can also delete objects in bulk.
 
 ```js
 // Remove all instances of a particular model.
 User
-  .removeAll()
+  .deleteAll()
   .then(function() {
     // ...
   });
 
 // Remove all instances of a particular collection.
 Collection
-  .removeAll()
+  .deleteAll()
   .then(function () {
     // ...
   });
 
 // Remove all instances in the app
-siesta
-  .removeAll()
+app
+  .deleteAll()
   .then(function () {
     // ...
   });
@@ -690,7 +603,9 @@ There are four different event types.
 |   set   | Set events are     | ```modelInstance.attr = 1;``` |
 |   splice   | Events relating to array modifications, whether attribute or relationship are emitted as splice operations.              |  ```modelInstance.attrArray.reverse()``` |
 |   new   |  Emitted when new model instances are created              | `Model.graph({id: 2, desc: 'A new model instance!'});` |
-|   remove |  Emitted when model instances are removed from the object graph              | `myInstance.remove()` |
+|   delete |  Emitted when model instances are deleted from the object graph              | `myInstance.delete()` |
+|   add |  Emitted when something is added to an array. Emitted alongside the splice event              | `myInstance.relatedInstances.push(instance)` |
+|   remove |  Emitted when something is removed from array. Emitted alongside the splice event              | `myInstance.relatedInstances.splice(0, 1)` |
 
 ### The Event Object
 
@@ -721,14 +636,30 @@ Every event features the following fields.
 |added|added model instances|
 |field|name of the property that refers to the spliced array|
 
-`new` and `remove` events do not have any additional fields.
+`remove` events have the following extra fields
+
+|Field|Description|
+|-----|-----------|
+|index|index at which the splice begins|
+|removed|removed model instances|
+|field|name of the property that refers to the spliced array|
+
+`add` events have the following extra fields
+
+|Field|Description|
+|-----|-----------|
+|index|index at which the splice begins|
+|added|added model instances|
+|field|name of the property that refers to the spliced array|
+
+`new` and `delete` events do not have any additional fields.
 
 ### Custom Events
 
 You can also emit custom events from your models.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
     Model = Collection.model('Model', {
         attributes: ['x', 'y']
     });
@@ -747,7 +678,7 @@ Model.graph({x: 1}, function (err, instance) {
 Generally you would wrap custom event emissions up in methods.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
     Model = Collection.model('Model', {
         attributes: ['x', 'y'],
         methods: {
@@ -763,7 +694,7 @@ var Collection = siesta.collection('Collection'),
 Due to limitations with `Object.observe` events are not emitted automatically for changes in computed properties. In the below example, if `x` or `y` changes, `z` will also change however an event will **not** be emitted for `z`.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
     Model = Collection.model('Model', {
         attributes: ['x', 'y'],
         properties: {
@@ -790,7 +721,7 @@ Model.one().then(function (instance) {
 You can get round this by defining attribute dependencies. Once defined, whenever `x` or `y` changes, Siesta will check to see if `z` has also changed. Note that dependencies can only be attributes for now. They cannot be other properties or relationships.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
     Model = Collection.model('Model', {
         attributes: ['x', 'y'],
         properties: {
@@ -931,7 +862,7 @@ You can register your own comparators.
 
 ```js
 // A custom < comparator.
-siesta.registerComparator('customLt', function (opts) {
+app.registerComparator('customLt', function (opts) {
     var value = opts.object[opts.field];
     return value < opts.value;
 });
@@ -1012,7 +943,7 @@ Repo.query({stars__gte: 1000})
 
 Siesta assigns each object a unique local identifier which is available at `localId`.
 
-You can query by `localId` using `siesta.get`.
+You can query by `localId` using `app.get`.
 
 ```js
 siesta
@@ -1088,105 +1019,80 @@ var query = Repo
 
 # Serialisation
 
-`Serialisation` is the process of getting a model ready for conversion into a data transfer format like JSON e.g. eliminating circular references.
+`Serialisation` is the process of getting a model instance ready for conversion into a data transfer format like JSON e.g. eliminating circular references.
 
-To serialise a model instance call `serialise`.
 
-```js
-var data = user.serialise();
-```
-
-By default depth=1 serialisation is used whereby all related objects are serialised into their unique identifier e.g. in a Todo app a serialised todo may look like:
+`siesta.serializer(model, opts)` will create a serialiser.
 
 ```js
-{
-  id: 53,
-  description: 'Go to the store',
-  user: 'mike'
-}
-```
-
-`serialise` takes an options object that allows you to customise how the instance is serialised.
-
-```js
-var data = user.serialise({
-	// If an attribute is null/undefined it will not be present in the serialised data.
-	includeNullAttributes: false,
-	// If a relationship is not defined it will not be present as null in the serialised data.
-	includeNullRelationships: false
-});
-```
-
-You can customise how models are serialised by setting the `serialise` attribute when defining your models.
-
-```js
-var Model = Collection.model('Model', {
-	serialise: function (instance) {
-      return {
-        instanceId: instance.id,
-        related: instance.related.map(function (r) {
-          return r.name;
-        });
-      }
-	}
-});
-```
-
-You can also customise serialisation on a per-field basis by setting `serialiseField`:
-
-```js
-var Model = Collection.model('Model', {
-	attributes: ['date'],
-	relationships: {
-	  user: {
-	    model: 'User'
-	  }
+var s = siesta.serialiser(Model, {
+	// Should null attributes be serialised?
+	nullAttributes: false,
+	// Should null relationships be serialised?
+	nullRelationships: false,
+	// Configure how the value of each attribute/relationship should serialised.
+	fields: {
+		field1: function (value) {
+			return value;
+		},
+		// ...
+		fieldN: function(value) {
+			// Returning undefined means that the field will not be serialised.
+			return undefined;
+		}
 	},
-	serialiseField: function (fieldName, value) {
-    if (fieldName == 'date') return value.format('YYYY-MM-DD');
-    else if (fieldName == 'user') return value._id;
-    return value;
-	}
+	// Alternatively, you can specify an array of fields to serialise.
+	// fields: ['field1', 'field2'],
+	// Or mix them up
+	// fields: ['field1', {
+	//	  field2: function (value) {
+	//	      return value.toLowerCase();
+	//	  }
+	// }],
+	// These fields will not be serialised.
+	exclude: ['field3']
 });
+
+var serialised = s.serialise(instance);
 ```
 
-The `serialisableFields` attribute can be used to customise which fields undergo serialisation:
+By default, Siesta will serialise your instances with a depth of 1, that is, all relationships will be serialised to their `id` or arrays of `id` depending on the type of relationship. Null and undefined attributes will be ignored.
+
+# Deserialisation
+
+`Deserialisation` is the process of converting data (e.g. JSON data returned from a remote API) into model instances within the object graph of your app.
+
+Using a deserialiser is similar to using `Model.graph` however adds an extra layer where you can manipulate the data before it is mapped on the object graph.
+
+Configuration is similar to `siesta.serialiser`:
 
 ```js
-var Model = Collection.model('Model', {
-  id: '_id',
-	attributes: ['date'],
-	relationships: {
-	  user: {
-	    model: 'User'
-	  }
+var d = siesta.deserialiser(Model, {
+	// Configure how the value of each attribute/relationship should deserialised.
+	fields: {
+		field1: function (value) {
+			return value;
+		},
+		// ...
+		fieldN: function(value) {
+			// Returning undefined means that the field will not be serialised.
+			return undefined;
+		}
 	},
-	// _id field will not be serialised
-	serialisableFields: ['date', 'user']
+	// Alternatively, you can specify an array of fields that should be deserialised
+	// fields: ['field1', 'field2'],
+	// Or mix them up
+	// fields: ['field1', {
+	//	  field2: function (value) {
+	//	      return value.toLowerCase();
+	//	  }
+	// }],
+	// These fields will not be deserialised.
+	exclude: ['field3']
 });
-```
 
-You can also set the serialise function on a per-attribute and per-relationship basis. Note that these will be ignored if `serialise` or `serialiseField` is present on the model.
-
-```js
-var Model = Collection.model('Model', {
-  id: '_id',
-	attributes: [
-	  {
-	    name: 'date',
-	    serialise: function (value) {
-	      return value.format('YYYY-MM-DD');
-	    }
-	  }
-	],
-	relationships: {
-	  user: {
-	    model: 'User',
-	    serialise: function (instance) {
-	      return instance._id;
-	    }
-	  }
-	}
+d.deserialise(data).then(function (instance) {
+	// data has now been mapped onto the object graph.
 });
 ```
 
@@ -1196,10 +1102,10 @@ The Siesta storage extension is responsible for storing model instances locally.
 
 ## Save
 
-`siesta.save([callback])` will save all changes to Siesta models to PouchDB.
+`app.save([callback])` will save all changes to Siesta models to PouchDB.
 
 ```js
-siesta.save()
+app.save()
     .then(function () {
         console.log('Save success!');
     })
@@ -1215,8 +1121,8 @@ We can tell siesta to automatically save any changes to models. Siesta will chec
 
 
 ```js
-siesta.autosave = true;
-siesta.autosaveInterval = 1000; // How regularly to check for changes to save.
+app.autosave = true;
+app.autosaveInterval = 1000; // How regularly to check for changes to save.
 ```
 
 ## Dirtyness
@@ -1238,10 +1144,10 @@ PouchDB has a rich set of configuration options which you can explore in their [
 new PouchDB('siesta', {auto_compaction: true});
 ```
 
-You can inject your own instance pouch by calling `siesta.setPouch`. Note that this will throw an error if an object graph has been initialised and therefore must be done before any map or query operations.
+You can inject your own instance pouch by passing your pouch instance when setting up Siesta. 
 
 ```js
-siesta.setPouch(new PouchDB('custom'));
+var app = siesta.app('myApp', {storage: {pouch: new PouchDB(opts)}});
 ```
 
 # Misc
@@ -1260,6 +1166,65 @@ Model.graph({key: 'value')
     });
 ```
 
+# Contexts
+
+It can often be the case that we need multiple object graphs for the same set of collections/models in our app.
+
+A context encapsulates an object graph - you can think of it as a clean scratch pad for creating and manipulating models. 
+
+You can then selectively merge your contexts. For example, a common pattern is to have a base context with storage enabled, and an in-memory context which is then selectively synced into the storage enabled context at will.
+
+You can create a context by calling `.context()`
+
+```js
+var app = siesta.app('myApp', {storage: true});
+var context = app.context('myContext', {storage: false})
+```
+
+You can also create another context from a context.
+
+```js
+var yetAnotherContext = context.context('yetAnotherContext');
+```
+
+Contexts behave and have the same methods as the app.
+
+## Merge
+
+You can merge contexts at different levels of granularity.
+
+```js
+// Merge a whole context into the main context.
+app.merge(context)
+   .then(function (instancesInMainContext) { /* ... */ });
+
+// Merge all instances belonging to a particular collection into the main context.
+app.merge(context.Collection)
+   .then(function (instancesInMainContext) { /* ... */ });
+
+// Merge all instances belong to a particular model into the main context.
+app.merge(context.Collection.Model)
+   .then(function (instancesInMainContext) { /* ... */ });
+
+// Merge a single instance into the main context.
+context.Collection.Model.graph({
+	attr: 'something',
+	id: 1
+}).then(function (instance) {
+	app.merge(instance)
+	   .then(function (instancesInMainContext) { /* ... */ });
+});
+
+// Merge multiple instances into the main context
+context.Collection.Model.graph([
+	{attr: 'something', id: 1},
+	{attr: 'something else', id: 2}
+]).then(function (instance) {
+	app.merge(instances)
+	   .then(function (instancesInMainContext) { /* ... */ });
+});
+```
+
 # Recipes
 
 This section features various useful examples that demonstrate the power of Siesta and its dependencies.
@@ -1269,7 +1234,7 @@ This section features various useful examples that demonstrate the power of Sies
 If you need to manage settings in your app you can use singletons, and relationships between them e.g.
 
 ```js
-var Collection = siesta.collection('Collection'),
+var Collection = app.collection('Collection'),
     Settings = Collection.model('Settings', {
         relationships: {
              someSettings: {model: 'SomeSettings'},
@@ -1328,7 +1293,7 @@ Model.graph('sdfsdfsdf')
 		assert.notOk(err.ok);
 	});
 ```
-
+  
 # Logging
 
 Siesta uses the [debug](https://www.npmjs.org/package/debug) module for log output. You can enable all logs by executing the following:
@@ -1356,40 +1321,6 @@ Note that these settings are saved to the browsers local storage. To disable log
 siesta.log.disable();
 ```
 
-# Testing
-
-Testing with Siesta is easy. There are two methods to aid in clearing and resetting Siesta's state.
-
-```js
-siesta.reset(function () {
-    // All collections, models, data & descriptors will now be removed.
-});
-
-siesta.resetData(function () {
-    // All model instances will now be removed. Collections, models & descriptors will remain intact.
-    // If storage extension is being used, PouchDB will also have been reset.
-});
-```
-
-e.g. if using bdd
-
-```js
-var Collection = siesta.collection('MyCollection'),
-    MyModel = Collection.model('MyModel', {
-        attributes: ['x', 'y']
-    });
-
-describe('something', function () {
-    beforeEach(siesta.resetData);
-    it('test', function (done) {
-        MyModel.graph({x: 1}, function (err, instance) {
-            assert.equal(instance.x, 1);
-            done(err);
-        });
-    });    
-})
-```
-
 # Caveats
 
 ## Object.observe shim
@@ -1406,7 +1337,7 @@ Repo.graph({name: 'MyNewRepo'})
     });
 ```
 
-In browsers that implement `Object.observe`, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until `siesta.notify()` is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:
+In browsers that implement `Object.observe`, notifications will be sent on the next available tick in the event loop. In browsers that do not, notifications will not be sent until `app.notify()` is executed. So to ensure that notifications work correctly in all browsers we need to change the above example to the following:
 
 ```js
 Repo.graph({name: 'MyNewRepo'})
