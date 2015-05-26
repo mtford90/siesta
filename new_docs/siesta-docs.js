@@ -4,6 +4,36 @@ brio({
     title: 'Siesta',
     pages: {
       Documentation: {
+        Collections: [
+          {
+            type: 'paragraph',
+            content: 'A collection organises a set of models. For example we could create a collection' +
+            ' for organising models that represent resources on Github.'
+          },
+          {
+            type: 'function',
+            name: 'app.collection',
+            parameters: {
+              name: {
+                type: 'String',
+                name: 'The name of your collection',
+                optional: false
+              }
+            },
+            examples: [
+              {
+                name: 'Creating a collection',
+                description: '',
+                code: function (done) {
+                  var app = siesta.app('My App'),
+                    Github = app.collection('Github');
+
+                  done();
+                }
+              }
+            ]
+          }
+        ],
         Serialisation: [
           {
             type: 'paragraph',
@@ -48,7 +78,9 @@ brio({
                 description: 'In the below example we explictly specify which ' +
                 'fields can be serialised.',
                 code: function (done) {
-                  var MyCollection = siesta.collection('MyCollection');
+
+                  var app = siesta.app('My App'),
+                    MyCollection = app.collection('MyCollection');
 
                   var MyModel = MyCollection.model({
                     name: 'MyModel',
@@ -60,7 +92,8 @@ brio({
                     field1: 1,
                     field2: 2
                   }).then(function (instance) {
-                    var serialised = instance.serialise(),
+                    var s = siesta.serialiser(MyModel);
+                    var serialised = s.data(instance),
                       json = JSON.stringify(serialised, null, 4);
                     console.log(json);
                     done();
@@ -70,13 +103,6 @@ brio({
             ]
           }
         ],
-        'Other Section': {
-          'Inner Section': [],
-          'Inner Section 2': {
-            'Inner Inner Section': []
-          }
-        },
-        'And Another Section': []
       },
       Guide: [
         {
