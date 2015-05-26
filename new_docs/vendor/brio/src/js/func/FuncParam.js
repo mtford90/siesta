@@ -46,7 +46,6 @@ var FuncParam = React.createClass({
     var $content = $(this.refs['tooltipContents'].getDOMNode()).clone();
     $content.css('display', 'block');
 
-    console.log('$content', $content);
     $a.tooltipster({
       theme: 'my-custom-theme',
       position: 'bottom-right',
