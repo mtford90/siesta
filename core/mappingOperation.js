@@ -7,6 +7,7 @@ function SiestaError(opts) {
   this.opts = opts;
 }
 
+
 SiestaError.prototype.toString = function() {
   return JSON.stringify(this.opts, null, 4);
 };
