@@ -2,9 +2,6 @@ var assert = require('chai').assert;
 
 
 describe('bulk removal', function() {
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
   beforeEach(function(done) {
     siesta.reset(done);
   });

@@ -7,10 +7,6 @@ describe('collection setup', function () {
         siesta.reset(done);
     });
 
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
-
     describe('install', function () {
         var collection;
         beforeEach(function () {

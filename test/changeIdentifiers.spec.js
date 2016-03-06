@@ -4,12 +4,8 @@ var assert = require('chai').assert,
 describe('change identifiers', function () {
 
     var Collection, Car;
-
     var car;
 
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
     beforeEach(function (done) {
         siesta.reset(function () {
             Collection = siesta.collection('myCollection');

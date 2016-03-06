@@ -6,10 +6,6 @@ describe('model serialisation', function() {
 
   var Collection, PersonModel, CarModel, CustomModel;
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   beforeEach(function(done) {
     siesta.reset(function() {
       Collection = siesta.collection('myCollection');

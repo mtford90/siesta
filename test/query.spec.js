@@ -5,9 +5,6 @@ var assert = require('chai').assert,
   Query = internal.Query;
 
 describe('query...', function() {
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
   beforeEach(function(done) {
     siesta.reset(done);
   });
@@ -1202,10 +1199,6 @@ describe('query...', function() {
       instance._emitEvents = true;
       return instance;
     }
-
-    before(function() {
-      siesta.ext.storageEnabled = false;
-    });
 
     beforeEach(function(done) {
       siesta.reset(done);

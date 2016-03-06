@@ -12,9 +12,6 @@ describe('many to many proxy', function() {
     return i;
   }
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
   var MyCollection, Car, Person;
   var carProxy, personProxy;
   var car, person;

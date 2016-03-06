@@ -5,11 +5,6 @@ var assert = require('chai').assert,
   OneToManyProxy = internal.OneToManyProxy;
 
 describe('one to many relationship', function() {
-
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   function instance(model) {
     var i = new ModelInstance(model);
     i._emitEvents = true;

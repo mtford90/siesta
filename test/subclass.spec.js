@@ -3,10 +3,6 @@ var assert = require('chai').assert;
 describe('Subclass', function() {
   var Collection, Car, SportsCar;
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   beforeEach(function(done) {
     siesta.reset(done);
   });
@@ -465,8 +461,7 @@ describe('Subclass', function() {
     it('parent init inherited by child', function() {
       Collection = siesta.collection('myCollection');
       Car = Collection.model('Car', {
-        init: function(fromStorage) {
-          assert.notOk(fromStorage);
+        init: function() {
           return 'a';
         }
       });
@@ -480,14 +475,12 @@ describe('Subclass', function() {
     it('parent init overriden by child', function() {
       Collection = siesta.collection('myCollection');
       Car = Collection.model('Car', {
-        init: function(fromStorage) {
-          assert.notOk(fromStorage);
+        init: function() {
           return 'a';
         }
       });
       SportsCar = Car.child('SportsCar', {
-        init: function(fromStorage) {
-          assert.notOk(fromStorage);
+        init: function() {
           return 'b';
         }
       });

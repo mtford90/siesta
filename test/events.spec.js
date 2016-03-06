@@ -21,10 +21,6 @@ function _instance(Model) {
 
 describe('events', function() {
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   beforeEach(function(done) {
     siesta.reset(done);
   });
@@ -926,79 +922,6 @@ describe('events', function() {
       assert.equal(collectionEvent.localId, car.localId);
     });
 
-  });
-
-  describe('object restoration', function() {
-    beforeEach(function(done) {
-      event = null;
-      genericEvent = null;
-      collectionEvent = null;
-      Collection = siesta.collection('myCollection');
-      Car = Collection.model('Car', {
-        id: 'id',
-        attributes: ['colour', 'name']
-      });
-      Car.graph({
-        colour: 'red',
-        name: 'Aston Martin',
-        id: 'xyz'
-      }, function(err, _car) {
-        if (err) {
-          done(err);
-        } else {
-          car = _car;
-          car.remove();
-          siesta.on('myCollection:Car', function(n) {
-            if (n.type == ModelEventType.New) {
-              event = n;
-            }
-          });
-          siesta.on('myCollection', function(n) {
-            if (n.type == ModelEventType.New) {
-              collectionEvent = n;
-            }
-          });
-          siesta.on('Siesta', function(n) {
-            if (n.type == ModelEventType.New) {
-              genericEvent = n;
-            }
-          });
-          car.restore();
-          events.removeAllListeners();
-          done();
-        }
-      });
-    });
-
-    it('is notif', function() {
-      assert.ok(event);
-    });
-
-    it('is genericNotif', function() {
-      assert.ok(genericEvent);
-    });
-
-    it('is collectionNotif', function() {
-      assert.ok(collectionEvent);
-    });
-
-    it('type is New', function() {
-      assert.equal(event.type, ModelEventType.New);
-      assert.equal(genericEvent.type, ModelEventType.New);
-      assert.equal(collectionEvent.type, ModelEventType.New);
-    });
-
-    it('new', function() {
-      assert.equal(event.new, car);
-      assert.equal(genericEvent.new, car);
-      assert.equal(collectionEvent.new, car);
-    });
-
-    it('localId', function() {
-      assert.equal(event.localId, car.localId);
-      assert.equal(genericEvent.localId, car.localId);
-      assert.equal(collectionEvent.localId, car.localId);
-    });
   });
 
   describe('proxy event emission', function() {

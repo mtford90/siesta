@@ -6,10 +6,6 @@ var assert = require('chai').assert,
 
 describe('one to one relationship', function() {
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   function instance(model) {
     var i = new ModelInstance(model);
     i._emitEvents = true;

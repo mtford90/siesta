@@ -5,11 +5,6 @@ var assert = require('chai').assert,
   RelationshipType = siesta.RelationshipType;
 
 describe('cache...', function() {
-
-
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
   var Car;
 
   describe('insertion', function() {

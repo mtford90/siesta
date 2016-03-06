@@ -56,9 +56,6 @@ describe('array flattening', function() {
 });
 
 describe('mapping operation', function() {
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
   describe('general', function() {
     beforeEach(function(done) {
       siesta.reset(function() {
@@ -530,10 +527,6 @@ describe('mapping operation', function() {
 describe('bug', function() {
 
   var coll, Car;
-
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
 
   beforeEach(function(done) {
     siesta.reset(function() {

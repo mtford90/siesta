@@ -102,17 +102,6 @@ function Model(opts) {
       },
       enumerable: true
     },
-    dirty: {
-      get: function() {
-        if (siesta.ext.storageEnabled) {
-          var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-            hash = (unsavedObjectsByCollection[this.collectionName] || {})[this.name] || {};
-          return !!Object.keys(hash).length;
-        }
-        else return undefined;
-      },
-      enumerable: true
-    },
     collectionName: {
       get: function() {
         return this.collection.name;
@@ -128,16 +117,8 @@ function Model(opts) {
   events.ProxyEventEmitter.call(this, globalEventName, proxied);
 
   this._indexIsInstalled = new Condition(function(done) {
-    if (siesta.ext.storageEnabled) siesta.ext.storage.ensureIndexInstalled(this, done);
-    else done();
+     done();
   }.bind(this));
-
-  this._modelLoadedFromStorage = new Condition(function(done) {
-    if (siesta.ext.storageEnabled) siesta.ext.storage.loadModel({model: this}, done);
-    else done();
-  });
-
-  this._storageEnabled = new Condition([this._indexIsInstalled, this._modelLoadedFromStorage]);
 }
 
 util.extend(Model, {

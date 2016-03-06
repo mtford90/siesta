@@ -7,127 +7,52 @@ var assert = require('chai').assert,
   CollectionRegistry = internal.CollectionRegistry,
   RelationshipType = siesta.RelationshipType;
 
-describe('install step', function() {
+describe('install step', function () {
   var MyCollection, Person;
 
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     siesta.reset(done);
   });
 
-  describe('no storage', function() {
-    before(function() {
-      siesta.ext.storageEnabled = false;
+  beforeEach(function () {
+    MyCollection = siesta.collection('MyCollection');
+    Person = MyCollection.model('Person', {
+      id: 'id',
+      attributes: ['name', 'age', 'index']
     });
-
-    beforeEach(function() {
-      MyCollection = siesta.collection('MyCollection');
-      Person = MyCollection.model('Person', {
-        id: 'id',
-        attributes: ['name', 'age', 'index']
-      });
-    });
-
-    it('map', function(done) {
-      Person.graph({name: 'Mike', age: 24})
-        .then(function() {
-          done();
-        })
-        .catch(done);
-    });
-
-    it('query', function(done) {
-      Person.query({age__gt: 23})
-        .then(function(res) {
-          assert.notOk(res.length, 'Should be no results');
-          done();
-        })
-        .catch(done);
-    });
-
-    it('reactive query', function(done) {
-      var rq = Person._reactiveQuery({age__lt: 30});
-      rq.init()
-        .then(function() {
-          assert.notOk(rq.results.length);
-          rq.terminate();
-          done();
-        })
-        .catch(done);
-    });
-
-
   });
 
-  describe('storage', function() {
-    before(function() {
-      siesta.ext.storageEnabled = true;
-    });
-
-    after(function(done) {
-      siesta.reset(function() {
-        siesta.ext.storageEnabled = false;
-        siesta.ext.storage._pouch.allDocs().then(function(resp) {
-          done();
-        });
+  it('map', function (done) {
+    Person.graph({name: 'Mike', age: 24})
+      .then(function () {
+        done();
       })
-    });
-
-    beforeEach(function() {
-      MyCollection = siesta.collection('MyCollection');
-      Person = MyCollection.model('Person', {
-        id: 'id',
-        attributes: ['name', 'age', 'index']
-      });
-    });
-
-    it('map', function(done) {
-      Person.graph({name: 'Mike', age: 24})
-        .then(function() {
-          done();
-        })
-        .catch(done);
-    });
-
-
-    it('query', function(done) {
-      siesta.ext.storage._pouch.bulkDocs([
-        {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
-        {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
-      ]).then(function() {
-        Person.query({age__gt: 23})
-          .then(function(res) {
-            assert.equal(res.length, 1, 'Should have installed and loaded before returning from the query');
-            done();
-          })
-          .catch(done);
-      }).catch(done);
-    });
-
-
-    it('reactive query', function(done) {
-      siesta.ext.storage._pouch.bulkDocs([
-        {collection: 'MyCollection', model: 'Person', name: 'Mike', age: 24},
-        {collection: 'MyCollection', model: 'Person', name: 'Bob', age: 21}
-      ]).then(function() {
-        var rq = Person._reactiveQuery({age__gt: 23});
-        rq.init()
-          .then(function() {
-            assert.equal(rq.results.length, 1, 'Should have installed and loaded before returning from the query');
-            rq.terminate();
-            done();
-          })
-          .catch(done);
-      }).catch(done);
-    });
-
+      .catch(done);
   });
 
-  describe('install relationships', function() {
-    before(function() {
-      siesta.ext.storageEnabled = false;
-    });
+  it('query', function (done) {
+    Person.query({age__gt: 23})
+      .then(function (res) {
+        assert.notOk(res.length, 'Should be no results');
+        done();
+      })
+      .catch(done);
+  });
 
-    beforeEach(function(done) {
+  it('reactive query', function (done) {
+    var rq = Person._reactiveQuery({age__lt: 30});
+    rq.init()
+      .then(function () {
+        assert.notOk(rq.results.length);
+        rq.terminate();
+        done();
+      })
+      .catch(done);
+  });
+
+
+  describe('install relationships', function () {
+    beforeEach(function (done) {
       siesta.reset(done);
     });
 
@@ -153,33 +78,33 @@ describe('install step', function() {
       siesta.install(done);
     }
 
-    describe('valid', function() {
-      describe('Foreign Key', function() {
+    describe('valid', function () {
+      describe('Foreign Key', function () {
 
-        beforeEach(function(done) {
-          configureAPI(RelationshipType.OneToMany, function(err) {
+        beforeEach(function (done) {
+          configureAPI(RelationshipType.OneToMany, function (err) {
             if (err) done(err);
             done();
           });
         });
 
-        it('configures reverse mapping', function() {
+        it('configures reverse mapping', function () {
           assert.equal(Car.relationships.owner.reverseModel, Person);
         });
 
-        it('configures reverse name', function() {
+        it('configures reverse name', function () {
           assert.equal(Car.relationships.owner.reverseName, 'cars');
 
-          it('configures forward mapping', function() {
+          it('configures forward mapping', function () {
             assert.equal(Car.relationships.owner.forwardModel, Car);
           });
 
         });
-        it('configures forward name', function() {
+        it('configures forward name', function () {
           assert.equal(Car.relationships.owner.forwardName, 'owner');
         });
 
-        it('installs on reverse', function() {
+        it('installs on reverse', function () {
           var keys = Object.keys(Person.relationships.cars);
           for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
@@ -192,34 +117,34 @@ describe('install step', function() {
 
       });
 
-      describe('OneToOne', function() {
+      describe('OneToOne', function () {
 
-        beforeEach(function(done) {
-          configureAPI(RelationshipType.OneToOne, function(err) {
+        beforeEach(function (done) {
+          configureAPI(RelationshipType.OneToOne, function (err) {
             if (err) done(err);
             done();
           });
 
 
         });
-        it('configures reverse mapping', function() {
+        it('configures reverse mapping', function () {
           assert.equal(Car.relationships.owner.reverseModel, Person);
         });
 
-        it('configures reverse name', function() {
+        it('configures reverse name', function () {
           assert.equal(Car.relationships.owner.reverseName, 'cars');
 
 
         });
 
-        it('configures forward mapping', function() {
+        it('configures forward mapping', function () {
           assert.equal(Car.relationships.owner.forwardModel, Car);
         });
-        it('configures forward name', function() {
+        it('configures forward name', function () {
           assert.equal(Car.relationships.owner.forwardName, 'owner');
         });
 
-        it('installs on reverse', function() {
+        it('installs on reverse', function () {
           var keys = Object.keys(Person.relationships.cars);
           for (var i = 0; i < keys.length; i++) {
             var key = keys[i];
@@ -231,8 +156,8 @@ describe('install step', function() {
       });
     });
 
-    describe('invalid', function() {
-      it('No such relationship type', function(done) {
+    describe('invalid', function () {
+      it('No such relationship type', function (done) {
         var collection = siesta.collection('myCollection');
         collection.model('Car', {
           id: 'id',
@@ -250,7 +175,7 @@ describe('install step', function() {
           attributes: ['name', 'age']
         });
 
-        siesta.install(function(err) {
+        siesta.install(function (err) {
           assert.ok(err);
           done();
         });
@@ -260,12 +185,12 @@ describe('install step', function() {
   });
 });
 
-describe('add stuff after install', function() {
+describe('add stuff after install', function () {
 
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     siesta.reset(done);
   });
-  it('add collection', function(done) {
+  it('add collection', function (done) {
     var MyCollection = siesta.collection('MyCollection'),
       Person = MyCollection.model('Person', {
         id: 'id',
@@ -273,7 +198,7 @@ describe('add stuff after install', function() {
       });
     siesta
       .install()
-      .then(function() {
+      .then(function () {
         var AnotherCollection = siesta.collection('AnotherCollection');
         assert.equal(siesta.AnotherCollection, AnotherCollection);
         assert.equal(CollectionRegistry.AnotherCollection, AnotherCollection);
@@ -281,13 +206,13 @@ describe('add stuff after install', function() {
       }).catch(done);
   });
 
-  describe('add simple model', function() {
+  describe('add simple model', function () {
     var MyCollection, Car;
-    beforeEach(function(done) {
+    beforeEach(function (done) {
       MyCollection = siesta.collection('MyCollection');
       siesta
         .install()
-        .then(function() {
+        .then(function () {
           Car = MyCollection.model('Car', {
             attributes: ['type']
           });
@@ -296,13 +221,13 @@ describe('add stuff after install', function() {
         .catch(done);
     });
 
-    it('is available on the collection', function() {
+    it('is available on the collection', function () {
       assert.equal(MyCollection.Car, Car);
     });
 
-    it('graph works', function(done) {
+    it('graph works', function (done) {
       Car.graph({type: 'red'})
-        .then(function(car) {
+        .then(function (car) {
           assert.ok(car);
           done();
         })
@@ -312,17 +237,17 @@ describe('add stuff after install', function() {
   });
 
 
-  describe('add model with relationship', function() {
+  describe('add model with relationship', function () {
     var MyCollection, Car, Person;
 
-    afterEach(function() {
+    afterEach(function () {
       MyCollection = null;
       Car = null;
       Person = null;
     });
 
-    describe('delay creation of relationship', function() {
-      beforeEach(function(done) {
+    describe('delay creation of relationship', function () {
+      beforeEach(function (done) {
         MyCollection = siesta.collection('MyCollection');
         Person = MyCollection.model('Person', {
           id: 'id',
@@ -330,7 +255,7 @@ describe('add stuff after install', function() {
         });
         siesta
           .install()
-          .then(function() {
+          .then(function () {
             Car = MyCollection.model('Car', {
               attributes: ['type'],
               relationships: {
@@ -345,15 +270,15 @@ describe('add stuff after install', function() {
           .catch(done);
       });
 
-      it('is available on the collection', function() {
+      it('is available on the collection', function () {
         assert.equal(MyCollection.Car, Car);
       });
 
-      it('graph works', function(done) {
+      it('graph works', function (done) {
         Person.graph({name: 'mike', age: 21})
-          .then(function(p) {
+          .then(function (p) {
             Car.graph({type: 'red', owner: p})
-              .then(function(car) {
+              .then(function (car) {
                 assert.ok(car);
                 assert.equal(car.owner, p);
                 assert.include(p.cars, car);
@@ -365,8 +290,8 @@ describe('add stuff after install', function() {
       });
     });
 
-    describe('delay creation of related model', function() {
-      beforeEach(function(done) {
+    describe('delay creation of related model', function () {
+      beforeEach(function (done) {
         MyCollection = siesta.collection('MyCollection');
         Car = MyCollection.model('Car', {
           attributes: ['type'],
@@ -378,7 +303,7 @@ describe('add stuff after install', function() {
           }
         });
         siesta.install()
-          .then(function() {
+          .then(function () {
             Person = MyCollection.model('Person', {
               id: 'id',
               attributes: ['name', 'age']
@@ -387,15 +312,15 @@ describe('add stuff after install', function() {
           }).catch(done);
       });
 
-      it('is available on the collection', function() {
+      it('is available on the collection', function () {
         assert.equal(MyCollection.Car, Car);
       });
 
-      it('graph works', function(done) {
+      it('graph works', function (done) {
         Person.graph({name: 'mike', age: 21})
-          .then(function(p) {
+          .then(function (p) {
             Car.graph({type: 'red', owner: p})
-              .then(function(car) {
+              .then(function (car) {
                 assert.ok(car);
                 assert.equal(car.owner, p);
                 assert.include(p.cars, car);

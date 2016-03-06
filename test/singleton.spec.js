@@ -6,10 +6,6 @@ describe('singleton mapping', function() {
 
   var Collection, Car;
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   beforeEach(function(done) {
     siesta.reset(function() {
       Collection = siesta.collection('Car');
@@ -196,8 +192,7 @@ describe('singleton mapping', function() {
               default: 1
             }
           ],
-          init: function(fromStorage, cb) {
-            assert.notOk(fromStorage);
+          init: function(cb) {
             initialised = true;
             this.poop = true;
             cb();

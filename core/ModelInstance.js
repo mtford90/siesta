@@ -28,11 +28,11 @@ function ModelInstance(model) {
 
   Object.defineProperties(this, {
     _relationshipNames: {
-      get: function() {
-        var proxies = Object.keys(self.__proxies || {}).map(function(x) {
+      get: function () {
+        var proxies = Object.keys(self.__proxies || {}).map(function (x) {
           return self.__proxies[x]
         });
-        return proxies.map(function(p) {
+        return proxies.map(function (p) {
           if (p.isForward) {
             return p.forwardName;
           } else {
@@ -43,18 +43,9 @@ function ModelInstance(model) {
       enumerable: true,
       configurable: true
     },
-    dirty: {
-      get: function() {
-        if (siesta.ext.storageEnabled) {
-          return self.localId in siesta.ext.storage._unsavedObjectsHash;
-        }
-        else return undefined;
-      },
-      enumerable: true
-    },
     // This is for ProxyEventEmitter.
     event: {
-      get: function() {
+      get: function () {
         return this.localId
       }
     }
@@ -79,12 +70,12 @@ function ModelInstance(model) {
 ModelInstance.prototype = Object.create(events.ProxyEventEmitter.prototype);
 
 util.extend(ModelInstance.prototype, {
-  get: function(cb) {
-    return util.promise(cb, function(cb) {
+  get: function (cb) {
+    return util.promise(cb, function (cb) {
       cb(null, this);
     }.bind(this));
   },
-  emit: function(type, opts) {
+  emit: function (type, opts) {
     if (typeof type == 'object') opts = type;
     else opts.type = type;
     opts = opts || {};
@@ -96,8 +87,8 @@ util.extend(ModelInstance.prototype, {
     });
     modelEvents.emit(opts);
   },
-  remove: function(cb, notification) {
-    _.each(this._relationshipNames, function(name) {
+  remove: function (cb, notification) {
+    _.each(this._relationshipNames, function (name) {
       if (util.isArray(this[name])) {
         this[name] = [];
       }
@@ -106,7 +97,7 @@ util.extend(ModelInstance.prototype, {
       }
     }.bind(this));
     notification = notification == null ? true : notification;
-    return util.promise(cb, function(cb) {
+    return util.promise(cb, function (cb) {
       cache.remove(this);
       this.removed = true;
       if (notification) {
@@ -119,7 +110,7 @@ util.extend(ModelInstance.prototype, {
         var paramNames = util.paramNames(remove);
         if (paramNames.length) {
           var self = this;
-          remove.call(this, function(err) {
+          remove.call(this, function (err) {
             cb(err, self);
           });
         }
@@ -133,58 +124,27 @@ util.extend(ModelInstance.prototype, {
       }
     }.bind(this));
   },
-  restore: function(cb) {
-    return util.promise(cb, function(cb) {
-      var _finish = function(err) {
-        if (!err) {
-          this.emit(modelEvents.ModelEventType.New, {
-            new: this
-          });
-        }
-        cb(err, this);
-      }.bind(this);
-      if (this.removed) {
-        cache.insert(this);
-        this.removed = false;
-        var init = this.model.init;
-        if (init) {
-          var paramNames = util.paramNames(init);
-          var fromStorage = true;
-          if (paramNames.length > 1) {
-            init.call(this, fromStorage, _finish);
-          }
-          else {
-            init.call(this, fromStorage);
-            _finish();
-          }
-        }
-        else {
-          _finish();
-        }
-      }
-    }.bind(this));
-  }
 });
 
 // Inspection
 util.extend(ModelInstance.prototype, {
-  getAttributes: function() {
+  getAttributes: function () {
     return util.extend({}, this.__values);
   },
-  isInstanceOf: function(model) {
+  isInstanceOf: function (model) {
     return this.model == model;
   },
-  isA: function(model) {
+  isA: function (model) {
     return this.model == model || this.model.isDescendantOf(model);
   }
 });
 
 // Dump
 util.extend(ModelInstance.prototype, {
-  _dumpString: function(reverseRelationships) {
+  _dumpString: function (reverseRelationships) {
     return JSON.stringify(this._dump(reverseRelationships, null, 4));
   },
-  _dump: function(reverseRelationships) {
+  _dump: function (reverseRelationships) {
     var dumped = util.extend({}, this.__values);
     dumped._rev = this._rev;
     dumped.localId = this.localId;
@@ -198,13 +158,13 @@ function defaultSerialiser(attrName, value) {
 
 // Serialisation
 util.extend(ModelInstance.prototype, {
-  _defaultSerialise: function(opts) {
+  _defaultSerialise: function (opts) {
     var serialised = {};
     var includeNullAttributes = opts.includeNullAttributes !== undefined ? opts.includeNullAttributes : true,
       includeNullRelationships = opts.includeNullRelationships !== undefined ? opts.includeNullRelationships : true;
     var serialisableFields = this.model.serialisableFields ||
       this._attributeNames.concat.apply(this._attributeNames, this._relationshipNames).concat(this.id);
-    this._attributeNames.forEach(function(attrName) {
+    this._attributeNames.forEach(function (attrName) {
       if (serialisableFields.indexOf(attrName) > -1) {
         var attrDefinition = this.model._attributeDefinitionWithName(attrName) || {};
         var serialiser;
@@ -224,7 +184,7 @@ util.extend(ModelInstance.prototype, {
         }
       }
     }.bind(this));
-    this._relationshipNames.forEach(function(relName) {
+    this._relationshipNames.forEach(function (relName) {
       if (serialisableFields.indexOf(relName) > -1) {
         var val = this[relName],
           rel = this.model.relationships[relName];
@@ -261,7 +221,7 @@ util.extend(ModelInstance.prototype, {
     }.bind(this));
     return serialised;
   },
-  serialise: function(opts) {
+  serialise: function (opts) {
     opts = opts || {};
     if (!this.model.serialise) return this._defaultSerialise(opts);
     else return this.model.serialise(this, opts);
@@ -273,7 +233,7 @@ util.extend(ModelInstance.prototype, {
    * Emit an event indicating that this instance has just been created.
    * @private
    */
-  _emitNew: function() {
+  _emitNew: function () {
     modelEvents.emit({
       collection: this.model.collectionName,
       model: this.model.name,

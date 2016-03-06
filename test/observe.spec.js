@@ -6,10 +6,6 @@ var assert = require('chai').assert,
  */
 
 describe('observer', function () {
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
-
     it('indexes', function (done) {
         var arr = [1, 2, 3];
         var observer = new ArrayObserver(arr);

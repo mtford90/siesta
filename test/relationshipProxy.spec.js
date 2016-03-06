@@ -6,11 +6,6 @@ var assert = require('chai').assert,
 
 
 describe('relationship proxy', function() {
-
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   var MyCollection, Car, Person;
 
   beforeEach(function(done) {

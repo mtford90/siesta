@@ -6,10 +6,6 @@ var assert = require('chai').assert,
 
 describe('remove models from object graph', function() {
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   describe('one to one', function() {
     var MyCollection, Car, Person;
     var car, person;

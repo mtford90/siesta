@@ -9,11 +9,6 @@ var assert = require('chai').assert,
     cache = internal.cache;
 
 describe('mapping new object', function () {
-
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
-
     beforeEach(function (done) {
         siesta.reset(done);
     });

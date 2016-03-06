@@ -44,20 +44,6 @@ function Collection(name, opts) {
     installed: false
   });
 
-  Object.defineProperties(this, {
-    dirty: {
-      get: function() {
-        if (siesta.ext.storageEnabled) {
-          var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection,
-            hash = unsavedObjectsByCollection[self.name] || {};
-          return !!Object.keys(hash).length;
-        }
-        else return undefined;
-      },
-      enumerable: true
-    }
-  });
-
   CollectionRegistry.register(this);
   this._makeAvailableOnRoot();
   events.ProxyEventEmitter.call(this, this.name);

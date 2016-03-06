@@ -1,15 +1,12 @@
 var assert = require('chai').assert;
 
-var Collection = siesta;
 
 describe('reactive query', function() {
   var MyCollection, Person;
 
   beforeEach(function(done) {
     // Ensure that storage is wiped clean for each test.
-    siesta.ext.storageEnabled = true;
     siesta.reset(function() {
-      siesta.ext.storageEnabled = false;
       done();
     });
   });
@@ -484,17 +481,6 @@ describe('reactive query', function() {
         done();
       });
     });
-    it('before install', function(done) {
-      siesta.ext.storage._pouch.bulkDocs(initialData)
-          .then(function() {
-            var rq = Person._reactiveQuery({age__lt: 30, __order: 'age'});
-            siesta.install(function() {
-              rq.terminate();
-              done();
-            });
-          })
-          .catch(done);
-    })
   });
 
   describe('chains', function() {

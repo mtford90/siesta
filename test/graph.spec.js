@@ -7,10 +7,6 @@ describe('perform mapping', function() {
 
   var Collection, Car, Person;
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
-
   beforeEach(function(done) {
     Collection = null;
     Car = null;

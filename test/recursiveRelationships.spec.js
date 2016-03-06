@@ -4,10 +4,6 @@ describe('recursive relationships', function () {
 
     var Collection, Repo;
 
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
-
     beforeEach(function (done) {
         siesta.reset(function () {
             Collection = siesta.collection('MyCollection');

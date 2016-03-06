@@ -3,9 +3,6 @@ var assert = require('chai').assert;
 describe('statistics', function () {
     var Car, Person, Collection;
 
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
     beforeEach(function () {
         siesta.reset(function () {
             Collection = siesta.collection('myCollection');
@@ -27,12 +24,6 @@ describe('statistics', function () {
         });
     });
 
-    before(function () {
-        siesta.ext.storageEnabled = false;
-    });
-    after(function () {
-        siesta.ext.storageEnabled = true;
-    });
     describe('collection level', function () {
         describe('single mapping', function () {
             it('no objects', function (done) {

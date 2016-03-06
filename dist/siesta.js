@@ -4725,72 +4725,13 @@
 	      unsavedObjectsByCollection[collectionName][modelName][ident] = changedObject;
 	    }
 	  }
+
 	
-	  util.extend(storage, {
-	    _getDataFromPouch: _getDataFromPouch,
-	    _graphData: _graphData,
-	    _load: _load,
-	    loadModel: loadModel,
-	    save: save,
-	    _serialise: _serialise,
-	    ensureIndexesForAll: ensureIndexesForAll,
-	    ensureIndexInstalled: ensureIndexInstalled,
-	    _reset: function(cb) {
-	      siesta.removeListener('Siesta', listener);
-	      unsavedObjects = [];
-	      unsavedObjectsHash = {};
-	      all = undefined;
-	      pouch.destroy(function(err) {
-	        if (!err) {
-	          pouch = new PouchDB(DB_NAME);
-	        }
-	        log('Reset complete');
-	        cb(err);
-	      })
-	    }
-	
-	  });
-	
-	  Object.defineProperties(storage, {
-	    _unsavedObjects: {
-	      get: function() {
-	        return unsavedObjects
-	      }
-	    },
-	    _unsavedObjectsHash: {
-	      get: function() {
-	        return unsavedObjectsHash
-	      }
-	    },
-	    _unsavedObjectsByCollection: {
-	      get: function() {
-	        return unsavedObjectsByCollection
-	      }
-	    },
-	    _pouch: {
-	      get: function() {
-	        return pouch
-	      }
-	    }
-	  });
+
 	
 	  if (!siesta.ext) siesta.ext = {};
-	  siesta.ext.storage = storage;
-	
-	  Object.defineProperties(siesta.ext, {
-	    storageEnabled: {
-	      get: function() {
-	        if (siesta.ext._storageEnabled !== undefined) {
-	          return siesta.ext._storageEnabled;
-	        }
-	        return !!siesta.ext.storage;
-	      },
-	      set: function(v) {
-	        siesta.ext._storageEnabled = v;
-	      },
-	      enumerable: true
-	    }
-	  });
+
+
 	
 	  var interval, saving, autosaveInterval = 1000;
 	
@@ -4836,13 +4777,6 @@
 	          siesta.autosave = true;
 	        }
 	      }
-	    },
-	    dirty: {
-	      get: function() {
-	        var unsavedObjectsByCollection = siesta.ext.storage._unsavedObjectsByCollection;
-	        return !!Object.keys(unsavedObjectsByCollection).length;
-	      },
-	      enumerable: true
 	    }
 	  });
 	

@@ -27,8 +27,7 @@ function MappingOperation(opts) {
     data: null,
     objects: [],
     disableevents: false,
-    _ignoreInstalled: false,
-    fromStorage: false
+    _ignoreInstalled: false
   });
 
   util.extend(this, {
@@ -63,8 +62,6 @@ util.extend(MappingOperation.prototype, {
               }
             }
           }.bind(this));
-          // PouchDB revision (if using storage module).
-          // TODO: Can this be pulled out of core?
           if (datum._rev) object._rev = datum._rev;
         }
       }
@@ -272,16 +269,15 @@ util.extend(MappingOperation.prototype, {
         // finish until all inits have executed.
         //
         // Here we ensure the execution of all of them
-        var fromStorage = this.fromStorage;
         var initTasks = self._newObjects.reduce(function(memo, o) {
           var init = o.model.init;
           if (init) {
             var paramNames = util.paramNames(init);
-            if (paramNames.length > 1) {
-              memo.push(init.bind(o, fromStorage, done));
+            if (paramNames.length == 1) {
+              memo.push(init.bind(o, done));
             }
             else {
-              init.call(o, fromStorage);
+              init.call(o);
             }
           }
           o._emitEvents = true;
@@ -355,8 +351,7 @@ util.extend(MappingOperation.prototype, {
             model: reverseModel,
             data: flatRelatedData,
             disableevents: self.disableevents,
-            _ignoreInstalled: self._ignoreInstalled,
-            fromStorage: this.fromStorage
+            _ignoreInstalled: self._ignoreInstalled
           });
         }
 

@@ -3,9 +3,6 @@ var assert = require('chai').assert;
 describe('to sort', function() {
   var Model, Collection;
 
-  before(function() {
-    siesta.ext.storageEnabled = false;
-  });
   beforeEach(function(done) {
     siesta.reset(done);
   });
