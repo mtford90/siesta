@@ -1,5 +1,4 @@
 var observe = require('../vendor/observe-js/src/observe').Platform,
-  Promise = require('lie'),
   argsarray = require('argsarray'),
   InternalSiestaError = require('./error').InternalSiestaError;
 
