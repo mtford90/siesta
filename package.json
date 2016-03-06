@@ -27,7 +27,8 @@
   "scripts": {
     "build": "webpack",
     "uglify": "./node_modules/.bin/uglifyjs build/siesta.js > build/siesta.min.js",
-    "dist": "npm run build && npm run uglify && cp build/* dist/"
+    "dist": "npm run build && npm run uglify && cp build/* dist/",
+    "test": "node ./node_modules/mocha/bin/_mocha --ui bdd --require ./test/babelHook.js test/integration/photos.spec.js "
   },
   "devDependencies": {
     "babel-preset-stage-1": "^6.5.0",
