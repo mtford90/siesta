@@ -51,6 +51,8 @@ describe('events', function() {
       event = null;
       collectionEvent = null;
       genericEvent = null;
+      localIdEvent = null;
+      remoteIdEvent = null;
       car = null;
       Collection = null;
       Car = null;
@@ -85,6 +87,7 @@ describe('events', function() {
             }
 
             siesta.once('myCollection:Car', function(n) {
+              console.log('collection');
               event = n;
               checkDone();
             });

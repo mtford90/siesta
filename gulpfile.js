@@ -5,17 +5,7 @@ var gulp = require('gulp'),
 
 
 const webpackConfig = {
-  devtool: 'inline-source-map',
-  loaders: [
-    {
-      test: /\.js?$/,
-      exclude: /(node_modules|bower_components)/,
-      loader: 'babel',
-      query: {
-        presets: ['es2015', 'stage-0', 'stage-1']
-      }
-    }
-  ]
+  devtool: 'inline-source-map'
 };
 
 gulp.task('build', function () {
@@ -37,7 +27,9 @@ gulp.task('build-source-map', function () {
 
 gulp.task('test-bundle', function () {
   return gulp.src(['./test/**/*.spec.js'])
-    .pipe(plugins.webpack(webpackConfig))
+    .pipe(plugins.webpack({
+      devtool: 'inline-source-map'
+    }))
     .pipe(plugins.rename('test-bundle.js'))
     .pipe(gulp.dest('./build'))
     .pipe(plugins.livereload({port: 47835}));

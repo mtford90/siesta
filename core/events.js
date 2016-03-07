@@ -156,11 +156,12 @@ var oldEmit = eventEmitter.emit;
 
 // Ensure that errors in event handlers do not stall Siesta.
 eventEmitter.emit = function(event, payload) {
+  if (!event) throw new Error(`Must pass event`);
   try {
-    oldEmit.call(eventEmitter, event, payload);
+    oldEmit.call(eventEmitter, event, payload || {});
   }
   catch (e) {
-    console.error(e);
+    console.error(e, e.stack);
   }
 };
 

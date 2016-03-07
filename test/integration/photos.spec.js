@@ -10,8 +10,6 @@ var assert = require('chai').assert,
   internal = siesta._internal,
   RelationshipType = siesta.RelationshipType;
 
-import siesta from '../../core/index'
-
 describe('photos intercollection', function () {
   var MyOfflineCollection, MyOnlineCollection, OfflineUser, Photo, OnlineUser;
 
